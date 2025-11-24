@@ -772,6 +772,9 @@ const ProductDetail = ({params, searchParams, storeInit}) => {
     setLoginInfo(logininfo);
   }, []);
 
+  // this is commnet for testing
+  // wdbwkdb
+
   useEffect(() => {
     callAllApi();
   }, [storeInit]);
