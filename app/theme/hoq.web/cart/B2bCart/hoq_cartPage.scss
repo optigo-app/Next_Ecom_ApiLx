@@ -1,0 +1,1070 @@
+@use "../../../hoq.web/style/variable.scss" as *;
+
+$cartUpdateBtncolor: #b1b1b1;
+
+.cust_hoq_toast {
+  font-family: $fontDmSans;
+  font-size: 16px;
+  font-weight: 500;
+
+}
+
+.hoq_MainBGDiv {
+  background-color: $backgroundColor;
+  font-family: $primaryFontFamily;
+  margin-bottom: 110px;
+  font-family: $fontTenorSans !important;
+
+  .cust_hoq_toast {
+    font-family: $fontDmSans;
+    font-size: 16px;
+    font-weight: 500;
+
+  }
+
+  .cartMainPageDiv {
+    margin-inline: 6%;
+  }
+
+  .hoq_cartmainRowDiv {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 40px;
+
+    .hoq_cartButton-groups {
+      flex: 1;
+      text-align: left;
+    }
+
+    .hoq_cart-title {
+      flex: 1;
+      text-align: center;
+    }
+
+    .hoq_placeOrderMainbtnDivs {
+      flex: 1;
+      text-align: right;
+    }
+  }
+
+  .hoq_placeOrderMainbtnDiv {
+    flex: 1;
+    text-align: right;
+  }
+
+  // Top button Group code
+  .hoq_cartMainPage {
+    display: flex;
+    gap: 15px !important;
+    margin-bottom: -8%;
+    padding: 0px 15px 0px 10px;
+  }
+
+  .cartBtnGroupMainDiv {
+    text-align: center;
+    padding-top: 40px;
+
+    .hoq_cart-title {
+      color: $titleColor;
+      // padding-bottom: 35px;
+      font-size: $fontSize8;
+      font-family: $primaryFontFamily !important;
+    }
+
+    .hoq_cartButton-groups {
+      .hoq_ReomoveAllCartbtn {
+        text-transform: capitalize !important;
+        color: $titleColor !important;
+        text-decoration-color: $titleColor !important;
+        cursor: pointer;
+      }
+
+      .hoq_ReomoveAllCartbtn {
+        margin-left: 20px;
+      }
+
+      .hoq_cartBtn {
+        height: 60px;
+        width: 150px;
+        font-family: $primaryFontFamily !important;
+        font-size: $fontSize3;
+        color: $btn1FontColor;
+        background-color: $btn1bgColor;
+        border: 1px solid $btn1FontColor;
+        cursor: pointer;
+        transition: background-color 0.3s, color 0.3s;
+
+        &.hoq_cartActivebtn {
+          background-color: $btn1ActivebgColor;
+          color: $btn1hoverFontColor;
+        }
+
+        &:hover {
+          color: $btn1hoverFontColor;
+          background-color: $btn1ActivebgColor;
+        }
+      }
+    }
+
+    .hoq_place-order-btn {
+      font-family: $primaryFontFamily !important;
+      background-color: #c20000 !important;
+      color: $btn1hoverFontColor;
+      font-size: $fontSize3;
+      border: none;
+      outline: none;
+      height: 45px;
+      border-radius: 2px;
+      width: 200px;
+      font-weight: 500;
+      margin-inline: 6%;
+      cursor: pointer;
+      transition: background-color 0.3s;
+
+      &:hover {
+        background-color: #666;
+      }
+    }
+  }
+
+  .hoq_place-order-btnMobile {
+    font-family: $primaryFontFamily !important;
+    background-color: $btn1hoverColor;
+    color: $btn1hoverFontColor;
+    font-size: $fontSize2;
+    border: none;
+    outline: none;
+    height: 45px;
+    border-radius: 5px;
+    width: 200px;
+    font-weight: 500;
+    margin-inline: 6%;
+    cursor: pointer !important;
+    transition: background-color 0.3s;
+
+    &:hover {
+      background-color: #666;
+    }
+  }
+
+  .hoq_noCartlistData {
+    text-align: center;
+    height: 100%;
+    margin-bottom: 327px;
+
+    .hoq_title {
+      color: $titleColor;
+      font-size: $fontSize6;
+    }
+
+    .hoq_desc {
+      color: $titleColor;
+      font-size: $fontSize4;
+    }
+
+    .hoq_browseOurCollectionbtn {
+      background-color: #7d7f85;
+      border: none;
+      color: #fff;
+      font-size: 15px;
+      font-weight: 500;
+      height: 50px;
+      outline: none;
+      width: 220px;
+    }
+  }
+
+  // cart Main Page layout
+
+  .hoq_cartMainPage {
+    display: flex;
+
+    .hoq_cart-left-sides {
+      max-width: 75%;
+      width: 75%;
+      display: flex;
+      justify-content: start;
+      align-items: start;
+
+      .hoq_RightCartList {
+        width: 100%;
+
+        .hoq_cartListCardGrid {
+          padding-left: 15px !important;
+          padding-top: 15px !important;
+        }
+      }
+    }
+
+    .hoq_cart-right-side {
+      max-width: 25%;
+      width: 25%;
+      display: flex;
+      justify-content: start;
+      align-items: start;
+      margin-top: 6px;
+      position: sticky;
+      height: 80vh;
+      top: 150px;
+      margin-bottom: 190px;
+    }
+
+    .hoq_mobile-cartDetails {
+      display: none;
+    }
+
+    .hoq_currencyFontPrice {
+      color: $titleColor !important;
+      font-weight: bold;
+    }
+
+    .hoq_remarktext {
+      font-size: $fontSize0 !important;
+      color: $titleColor !important;
+      max-width: 130px !important;
+      word-wrap: break-word !important;
+      margin-bottom: 20px !important;
+      font-family: $primaryFontFamily !important;
+
+      span {
+        font-weight: bold;
+      }
+    }
+
+    .hoq_mui_CartBox {
+      display: flex !important;
+      justify-content: space-evenly !important;
+    }
+
+    .hoq_inStockbadgeDiv {
+      position: absolute;
+      top: 0;
+      left: 0;
+      background-color: rgba(0, 128, 0, 0.2705882353);
+      color: black;
+      padding: 2px 5px;
+      font-size: $fontSize0;
+      font-weight: bold;
+    }
+
+    .hoq_cartListCard {
+      .hoq_card-ContentsData {
+        padding: 2px 0px 2px 0px !important;
+        font-size: $fontSize0 !important;
+      }
+    }
+
+    .hoq_cartListCard1 {
+      width: 400px !important;
+      box-shadow: rgba(0, 0, 0, 0.02) 0px 1px 3px 0px,
+        rgba(27, 31, 35, 0.15) 0px 0px 0px 1px !important;
+
+      .hoq_card-ContentsData {
+        padding: 2px 0px 2px 0px !important;
+        font-size: $fontSize0 !important;
+      }
+    }
+
+    .hoq_PriceBox {
+      margin-bottom: 10px !important;
+    }
+  }
+
+  .hoq_cart-container {
+    height: 100%;
+    overflow: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    margin-top: -10px;
+  }
+
+  .hoq_cart-container::-webkit-scrollbar {
+    display: none !important;
+  }
+
+  // cart Details SCSS code (cart right side)
+
+  .hoq_cart-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    @media (min-width: 768px) {
+      flex-direction: column;
+    }
+  }
+
+  .hoq_Cart-imageDiv {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    // max-width: 400px;
+    // max-height: 400px;
+    width: 100%;
+    height: 100%;
+    border-radius: 0px;
+    border: 1px solid rgb(225, 225, 225);
+
+    .hoq_cartDetailImage {
+      width: 100%;
+      height: 400px;
+      /* default height */
+      padding: 2px;
+      border-radius: 0px;
+      object-fit: contain;
+
+      @media (max-width: 1750px) {
+        height: 350px !important;
+      }
+
+      @media (max-width: 1500px) {
+        height: 300px !important;
+      }
+
+      @media (max-width: 1100px) {
+        height: 250px !important;
+      }
+
+    }
+  }
+
+  .hoq_CartCusto_R-details {
+    // padding: 0 20px;
+    flex: 1;
+    max-width: 600px;
+    width: 100%;
+
+    .hoq_cart-Titleline {
+      font-size: $fontSize4;
+      color: $titleColor;
+      margin: 10px;
+      text-align: center;
+      max-height: 100px;
+      // height: 55px;
+      // display: -webkit-box;
+      // -webkit-line-clamp: 2;
+      // -webkit-box-orient: vertical;
+      // overflow: hidden;
+      // text-overflow: ellipsis;
+    }
+
+    .hoq_Cart-options {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      margin-bottom: 20px;
+      margin-top: 20px;
+
+      .option {
+        flex: 1 1 45%;
+        display: flex;
+        flex-direction: column;
+        font-family: $primaryFontFamily !important;
+
+        label {
+          font-weight: bold;
+          font-size: $fontSize2;
+          color: $titleColor;
+          margin-bottom: 5px;
+        }
+
+        select {
+          padding: 10px;
+          border-radius: 0px !important;
+          border: 1px solid #ccc;
+          color: $titleColor;
+        }
+      }
+    }
+
+    .hoq_StockCart-options {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 10px;
+      margin-top: 20px;
+
+      .option {
+        background-color: #f7f7f7;
+        padding: 10px;
+        border-radius: 8px;
+        margin-bottom: 10px;
+        // width: 48%;
+        max-width: 550px;
+        width: 180px;
+
+        label {
+          display: block;
+          font-weight: bold;
+          margin-right: 10px;
+          color: $titleColor;
+          font-family: $primaryFontFamily !important;
+        }
+
+        span {
+          display: block;
+          color: $titleColor;
+        }
+      }
+    }
+
+    .hoq_stockPriceQtyDiv {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+
+      .hoq_Stockproduct-price {
+        font-size: $fontSize6;
+        color: $titleColor;
+        width: 100%;
+      }
+
+      .option {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-family: $primaryFontFamily !important;
+
+        label {
+          font-weight: bold;
+          font-size: $fontSize2;
+          color: $titleColor;
+          margin-right: 10px;
+        }
+
+        span {
+          font-size: $fontSize2;
+          color: $titleColor;
+        }
+      }
+    }
+
+    .hoq_cartQtyPricemainDev {
+      display: flex;
+      justify-content: space-between;
+    }
+
+    // cart quantity scss
+
+    .hoq_cart-quantity {
+      display: flex;
+      width: 130px;
+      height: 45px;
+
+      .bttn-left {
+        border-top-left-radius: 0px;
+        border-bottom-left-radius: 0px;
+      }
+
+      .input {
+        width: calc(100px * 0.5);
+        padding: 0;
+        margin: 0;
+        text-align: center;
+        color: $titleColor;
+        border-top: 1px solid #ccc;
+        border-bottom: 1px solid #ccc;
+        border-left: none;
+        border-right: none;
+      }
+
+      a.bttn,
+      .bttn {
+        width: calc(100px * 0.5);
+        padding: 0;
+        text-align: center;
+        color: $titleColor;
+        border: 1px solid #ccc;
+        box-shadow: none;
+        background-color: white;
+        font-size: 24px;
+        cursor: pointer;
+
+        span {
+          margin: auto !important;
+        }
+      }
+
+      .bttn-right {
+        border-top-right-radius: 0px;
+        border-bottom-right-radius: 0px;
+      }
+    }
+
+    input[type="number"]::-webkit-inner-spin-button,
+    input[type="number"]::-webkit-outer-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    .product-price {
+      font-size: $fontSize6;
+      color: $titleColor;
+      margin-bottom: 20px;
+      width: 100%;
+      display: flex;
+      justify-content: end;
+    }
+
+    .hoq_UpdateCartBtn {
+      display: flex;
+      justify-content: flex-end;
+      align-items: end;
+    }
+
+    .hoq_cartUpdate-button {
+      display: block;
+      height: 40px;
+      width: 100px;
+      // padding: 15px;
+      background-color: #c20000 !important;
+      color: white;
+      border: none;
+      border-radius: 0px;
+      font-size: $fontSize3;
+      cursor: pointer;
+      margin-bottom: 20px;
+    }
+  }
+
+  // cart list item css(left side)
+
+  .hoq_cartListCard {
+    box-shadow: rgba(0, 0, 0, 0.02) 0px 1px 3px 0px,
+      rgba(27, 31, 35, 0.15) 0px 0px 0px 1px !important;
+    display: flex !important;
+    justify-content: space-between !important;
+    flex-direction: column !important;
+    position: relative;
+    border-radius: 0px !important;
+
+    .hoq_DesignNoTExt {
+      color: $titleColor;
+      font-weight: bold;
+      font-size: $fontSize1;
+      font-family: $primaryFontFamily !important;
+    }
+
+    .hoq_card-ContentsData {
+      color: $titleColor;
+      font-size: $fontSize1;
+      font-family: $primaryFontFamily;
+      display: flex !important;
+      justify-content: start I !important;
+      margin-right: 5px !important;
+    }
+  }
+
+  .hoq_cartListImage {
+    width: 100%;
+    max-width: 200px;
+    max-height: 200px;
+    height: 200px;
+    object-fit: cover;
+  }
+
+  .hoq_rightContentDataDiv {
+    // max-width: 150px;
+    max-width: 200px;
+  }
+
+  .hoq_cartcontentData {
+    padding: 16px 0px !important;
+  }
+
+  .hoq_cartlistdetails {
+    font-size: 10px !important;
+  }
+
+  .hoq_cartbtngroupReRm {
+    position: absolute;
+    bottom: 5px;
+
+    .hoq_ItemRemarkbtn,
+    .hoq_ReomoveCartbtn {
+      color: #c1c1c1 !important;
+      font-size: $fontSize1;
+    }
+
+    .hoq_ItemRemarkbtn {
+      // margin-right: 20px;
+      margin-right: 4px;
+    }
+  }
+
+  // update cart modal
+
+  .hoq_modal {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .hoq_Modal-cardList {
+    max-height: 600px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 10px;
+  }
+
+  .hoq_Modal-FilterList {
+    max-height: 600px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 10px;
+  }
+
+  .hoq_paper {
+    position: relative;
+    width: 1200px;
+    max-width: 1200px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.16) !important;
+    padding: 16px 32px;
+  }
+
+  .hoq_Modal_Title {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+
+    .hoq_Modal_TitleTypo {
+      color: $titleColor;
+      margin: 0;
+    }
+  }
+
+  .hoq_closeIcon {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+  }
+
+  .hoq_cartmodal_body {
+    margin-top: 20px;
+  }
+
+  .hoq_cart-Accordian {
+    box-shadow: rgba(0, 0, 0, 0.02) 0px 1px 3px 0px,
+      rgba(27, 31, 35, 0.15) 0px 0px 0px 1px !important;
+  }
+
+  .hoq_Cart-prCard {
+    box-shadow: rgba(0, 0, 0, 0.02) 0px 1px 3px 0px,
+      rgba(27, 31, 35, 0.15) 0px 0px 0px 1px !important;
+  }
+
+  .hoq_ShortCutCombo-section {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 20px;
+
+    .form-control {
+      width: 250px;
+      max-width: 250px;
+    }
+  }
+
+  .hoq_cartModal-Divider {
+    margin: 10px 0px 20px 0px;
+  }
+
+  .hoq_filter-AccrodianDetails {
+    display: flex !important;
+    justify-content: space-between !important;
+  }
+
+  .hoq_cart-Accordion {
+    .hoq_FilterTitle {
+      color: $titleColor;
+      font-weight: 500;
+      font-size: $fontSize4;
+      font-family: $primaryFontFamily;
+    }
+
+    .hoq_filterAccordianDeatilTitle {
+      color: $titleColor;
+      font-size: $fontSize3;
+      font-family: $primaryFontFamily;
+      padding-left: 10px;
+    }
+
+    .hoq_filterCheckbox {
+      color: $titleColor;
+      font-size: $fontSize3;
+      font-family: $primaryFontFamily;
+    }
+  }
+
+  // customization ui
+
+  .hoq_projectRemark {
+    max-width: 600px;
+    padding: 5px 40px 20px 20px;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+  }
+
+  .hoq_remarkTitle {
+    color: $titleColor;
+    font-size: $fontSize4;
+    font-weight: bold;
+  }
+
+  .hoq_prRemarkText {
+    color: $titleColor;
+    font-size: $fontSize2;
+  }
+
+  .hoq_AddReamrkBtn {
+    display: flex;
+    justify-content: end;
+    align-items: center;
+
+    button {
+      background-color: $cartUpdateBtncolor;
+      color: $btn1hoverFontColor;
+      height: 40px;
+      width: 150px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+
+      &:hover {
+        background-color: $btn1hoverColor;
+      }
+    }
+  }
+
+  .hoq_product-remark {
+    margin: 15px 0px 15px 0px;
+
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+      color: $titleColor;
+    }
+
+    textarea {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #e5e7eb;
+      border-radius: 4px;
+      resize: none;
+      color: $titleColor;
+    }
+  }
+
+  .hoq_projectUpdateCartBtn-group {
+    display: flex !important;
+    justify-content: end !important;
+    gap: 10px;
+    align-items: end;
+
+    button {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .hoq_cartUpdate-btn {
+      background-color: $cartUpdateBtncolor;
+      color: $btn1hoverFontColor;
+
+      &:hover {
+        background-color: $btn1hoverColor;
+      }
+    }
+
+    .hoq_cartCancel-btn {
+      background-color: $btn1bgColor;
+      color: $btn1FontColor;
+      border: 1px solid $titleColor;
+
+      &:hover {
+        background-color: #f3f4f6;
+      }
+    }
+  }
+
+  .hoq_CartSkelton {
+    background-color: #f6f6f6 !important;
+  }
+
+  .hoq_remarkModalBox {
+    width: 90%;
+    max-width: 500px;
+    min-width: 300px;
+    margin: 0 auto;
+  }
+
+  @media (max-width: 1200px) {
+    .cartMainPageDiv {
+      margin-inline: 1%;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .hoq_remarkModalBox {
+      width: 95%;
+      max-width: 100%;
+      min-width: 0;
+    }
+
+    .hoq_Cart_R-details {
+      .hoq_cart-Titleline {
+        font-size: $fontSize3 !important;
+        margin-bottom: 20px;
+        color: #7d7f85;
+        text-align: center;
+      }
+    }
+
+    .hoq_Cart_R-details {
+      padding: 0 !important;
+    }
+  }
+
+  @media (max-width: 770px) {
+    .hoq_cartmainRowDiv {
+      margin-bottom: 30px;
+    }
+
+    .cartBtnGroupMainDiv {
+      .hoq_place-order-btn {
+        height: 35px !important;
+        width: 120px !important;
+      }
+    }
+  }
+
+  @media (max-width: 474px) {
+    .hoq_place-order-btn {
+      width: 120px;
+      font-size: $fontSize2;
+      height: 35px;
+    }
+  }
+
+  @media screen and (min-width: 1000px) {
+    .hoq_mobile-cartDetails {
+      display: none !important;
+    }
+
+    .hoq_cart-modal {
+      display: none !important;
+    }
+  }
+
+  @media (max-width: 1500px) and (min-width: 1440px) {
+    .cartMainPageDiv {
+      .hoq_cartMainPage {
+        .hoq_cart-left-sides {
+          max-width: 80%;
+          width: 80%;
+
+          .hoq_RightCartList {
+            .hoq_mui_CartBox {
+              .hoq_cartListImage {
+                max-width: 180px;
+                max-height: 180px;
+                height: 150px;
+              }
+            }
+          }
+        }
+
+        .hoq_cart-right-side {
+          max-width: 20%;
+          width: 20%;
+        }
+      }
+    }
+  }
+
+  @media (max-width: 1439px) and (min-width: 1360px) {
+    .cartMainPageDiv {
+      .hoq_cartMainPage {
+        .hoq_cart-left-sides {
+          max-width: 80%;
+          width: 80%;
+
+          .hoq_RightCartList {
+            .hoq_cartListCardGrid {
+              padding-left: 10px !important;
+              padding-top: 15px !important;
+            }
+
+            .hoq_mui_CartBox {
+              .hoq_cartListImage {
+                max-width: 180px;
+                max-height: 180px;
+                height: 130px;
+                width: 130px;
+              }
+            }
+          }
+        }
+
+        .hoq_cart-right-side {
+          max-width: 20%;
+          width: 20%;
+        }
+      }
+    }
+  }
+
+  @media (max-width: 1359px) and (min-width: 1000px) {
+    .cartMainPageDiv {
+      .hoq_cartMainPage {
+        .hoq_cart-left-sides {
+          max-width: 75%;
+          width: 75%;
+
+          .hoq_RightCartList {
+            .hoq_cartListCardGrid {
+              flex-basis: 50% !important;
+              max-width: 50% !important;
+            }
+
+            .hoq_mui_CartBox {
+              .hoq_cartListImage {
+                max-width: 180px;
+                max-height: 180px;
+                height: 150px;
+                width: 130px;
+              }
+            }
+          }
+        }
+
+        .hoq_cart-right-side {
+          max-width: 25%;
+          width: 25%;
+        }
+      }
+    }
+  }
+
+  @media (max-width: 999px) {
+    .cartMainPageDiv {
+      .hoq_cartMainPage {
+        .hoq_cart-left-sides {
+          max-width: 100%;
+          width: 100%;
+
+          .hoq_RightCartList {
+            .hoq_cartListCardGrid {
+              flex-basis: 33.333333% !important;
+              max-width: 33.333333% !important;
+            }
+
+            .hoq_mui_CartBox {
+              height: 180px;
+
+              .hoq_cartListImage {
+                max-width: 180px;
+                max-height: 180px;
+                height: 150px;
+                width: 130px;
+                object-fit: contain;
+              }
+            }
+          }
+        }
+
+        .hoq_cart-right-side {
+          display: none;
+        }
+      }
+    }
+  }
+
+  @media (max-width: 849px) {
+    .cartMainPageDiv {
+      .hoq_cartMainPage {
+        .hoq_cart-left-sides {
+          max-width: 100%;
+          width: 100%;
+
+          .hoq_RightCartList {
+            .hoq_cartListCardGrid {
+              flex-basis: 50% !important;
+              max-width: 50% !important;
+            }
+          }
+        }
+
+        .hoq_cart-right-side {
+          display: none;
+        }
+      }
+    }
+  }
+
+  @media (max-width: 570px) {
+    .cartMainPageDiv {
+      .hoq_cartMainPage {
+        padding: 0;
+
+        .hoq_cart-left-sides {
+          width: 100%;
+          max-width: 100%;
+          max-height: 100%;
+          overflow: auto;
+
+          .hoq_RightCartList {
+            width: 100%;
+            // padding: 0px 12px 0px 10px;
+
+            .hoq_cartListCardGrid {
+              padding-left: 10px !important;
+              padding-top: 10px !important;
+              width: 50% !important;
+              max-width: 50% !important;
+              flex-basis: 50% !important;
+              margin-bottom: 20px;
+
+              .hoq_mui_CartBox {
+                display: flex;
+                flex-direction: column;
+                height: auto;
+
+                .hoq_cartListImage {
+                  display: flex;
+                  justify-content: center;
+                  align-items: center;
+                  text-align: center;
+                  width: 100%;
+                  max-width: 100%;
+                  height: 200px;
+                  object-fit: contain;
+                }
+              }
+
+              .hoq_rightContentDataDiv {
+                width: 100%;
+                max-width: 100%;
+                padding: 5px;
+              }
+            }
+
+            .hoq_remarkModalBox {
+              width: 200px !important;
+            }
+          }
+        }
+
+        .hoq_cart-right-side {
+          display: none;
+        }
+      }
+    }
+  }
+}

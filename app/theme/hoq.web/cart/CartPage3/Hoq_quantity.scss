@@ -1,0 +1,27 @@
+@use "../../../hoq.web/style/variable.scss" as *;
+
+.Hoq3_cart-quantity {
+  display: flex;
+  width: 90px;
+  height: 35px;
+  border: none;
+  border: 1px solid rgba(168, 167, 167, 0.829);
+
+  .input {
+    width: calc(100px * 0.3);
+    padding: 0;
+    margin: 0;
+    border: none;
+    text-align: center;
+    outline: none;
+  }
+
+  a.bttn,
+  .bttn {
+    border: none;
+    background-color: transparent;
+    width: calc(100px * 0.5);
+    padding: 0;
+    font-size: 18px;
+  }
+}

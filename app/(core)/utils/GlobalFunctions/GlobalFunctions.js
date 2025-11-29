@@ -53,6 +53,61 @@ export const getAboutUsContent = async () => {
   }
 };
 
+export const getPrivacyHoqContent = async () => {
+  try {
+    const filePath = path.join(process.cwd(), "public", "WebSiteStaticImage", "html", "privacyhoq.html");
+    const htmlContent = await fs.promises.readFile(filePath, "utf-8");
+    return htmlContent;
+  } catch (error) {
+    console.error("Error loading AboutUs HTML file:", error);
+    return null;
+  }
+};
+
+export const getTermsHoqContent = async () => {
+  try {
+    const filePath = path.join(process.cwd(), "public", "WebSiteStaticImage", "html", "termshoq.html");
+    const htmlContent = await fs.promises.readFile(filePath, "utf-8");
+    return htmlContent;
+  } catch (error) {
+    console.error("Error loading AboutUs HTML file:", error);
+    return null;
+  }
+};
+
+export const getStoryHoqContent = async () => {
+  try {
+    const filePath = path.join(process.cwd(), "public", "WebSiteStaticImage", "html", "Story.html");
+    const htmlContent = await fs.promises.readFile(filePath, "utf-8");
+    return htmlContent;
+  } catch (error) {
+    console.error("Error loading AboutUs HTML file:", error);
+    return null;
+  }
+};
+
+export const getQualityHoqContent = async () => {
+  try {
+    const filePath = path.join(process.cwd(), "public", "WebSiteStaticImage", "html", "hoqquality.html");
+    const htmlContent = await fs.promises.readFile(filePath, "utf-8");
+    return htmlContent;
+  } catch (error) {
+    console.error("Error loading AboutUs HTML file:", error);
+    return null;
+  }
+};
+
+export const getCustomHoqContent = async () => {
+  try {
+    const filePath = path.join(process.cwd(), "public", "WebSiteStaticImage", "html", "hoqcustomization.html");
+    const htmlContent = await fs.promises.readFile(filePath, "utf-8");
+    return htmlContent;
+  } catch (error) {
+    console.error("Error loading AboutUs HTML file:", error);
+    return null;
+  }
+};
+
 export const getContactUsContent = async () => {
   try {
     const filePath = path.join(process.cwd(), "public", "WebSiteStaticImage", "html", "SonasonsContactPage.html");

@@ -1,0 +1,132 @@
+@use "../../../hoq.web/style/variable.scss" as *;
+
+.Hoq_loginwithemailCode {
+
+  .css-1wc848c-MuiFormHelperText-root {
+    margin-right: 0px !important;
+    margin-left: 0px !important;
+  }
+
+
+  .smling-register-main {
+    margin-inline: 6%;
+    background-color: white;
+  }
+
+  .labgrowRegister {
+    width: 420px;
+    margin: 10px;
+  }
+
+  .createBtnRegister {
+    height: 60px;
+    width: 420px;
+    color: white;
+    background-color: #7d7f85;
+    border: 0;
+    margin-top: 10px;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 1;
+    transition: all 0.5s ease;
+  }
+
+  .smling-forgot-main {
+    margin-inline: 6%;
+    background-color: white;
+  }
+
+  .hoq_submitBtnForgot {
+    height: 60px;
+    width: 420px;
+    color: white;
+    background-color: #C20000;
+    border-radius: 4PX;
+    border: 0;
+    margin-top: 10px;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 1;
+    cursor: pointer;
+    transition: all 0.5s ease;
+  }
+
+  .hoq_submitBtnForgot:hover {
+    background-color: white;
+    color: #7d7f85;
+    border: 1px solid #7d7f85;
+  }
+
+  .createBtnRegister:hover {
+    background-color: white;
+    color: #7d7f85;
+    border: 1px solid #7d7f85;
+  }
+
+  .SmilingSignInHere {
+    color: #7d7f85;
+    font-size: 12px;
+    margin-top: 10px;
+    font-weight: 500;
+
+    position: relative;
+    text-decoration: none;
+    transition: color 0.3s;
+    cursor: pointer;
+  }
+
+  .SmilingSignInHere::before {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 1px;
+    bottom: 0;
+    left: 0;
+    background-color: #000;
+    transition: width 0.3s ease;
+  }
+
+  .SmilingSignInHere:hover::before {
+    width: 100%;
+  }
+
+  @media screen and (max-width: 950px) {
+    .AuthScreenMainTitle {
+      font-size: 25px !important;
+      padding-bottom: 50px !important;
+    }
+
+    .AuthScreenSubTitle {
+      margin-top: -60px !important;
+    }
+  }
+
+  @media screen and (max-width: 700px) {
+    .labgrowRegister {
+      width: 90%;
+      margin: 10px;
+    }
+
+    .createBtnRegister {
+      width: 80%;
+    }
+
+    .hoq_submitBtnForgot {
+      width: 90%;
+      height: 50px !important;
+
+    }
+
+  }
+
+
+
+  @media screen and (max-width: 500px) {
+
+
+    .hoq_submitBtnForgot {
+      width: 100%;
+      height: 40px !important;
+    }
+  }
+}

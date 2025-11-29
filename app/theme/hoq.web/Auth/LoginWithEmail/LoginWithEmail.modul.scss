@@ -1,0 +1,100 @@
+@use "../../../hoq.web/style/variable.scss" as *;
+
+.Hoq_loginEmail {
+    font-family: $fontTenorSans;
+
+    #outlined-confirm-password-input::-ms-reveal {
+        display: none !important;
+    }
+
+    .smr_loginEmailD {
+        background-color: white;
+        margin-inline: 6%;
+    }
+
+    .hoq_SmilingLoginCodeBtn {
+        height: 60px;
+        width: 420px;
+        color: white;
+        background-color: #c20000;
+        border: 0;
+        margin-top: 10px;
+        font-size: 13px;
+        font-weight: 500;
+        letter-spacing: 1;
+        transition: all 0.5s ease;
+        border-radius: 4px;
+    }
+
+    .hoq_submitBtnForgot {
+        height: 60px;
+        width: 420px;
+        color: white;
+        background-color: #c20000;
+        border: 0;
+        margin-top: 10px;
+        font-size: 13px;
+        cursor: pointer;
+        font-weight: 500;
+        letter-spacing: 1;
+        transition: all 0.5s ease;
+        border-radius: 4px;
+    }
+
+    .hoq_SmilingLoginCodeBtn:hover {
+        background-color: white;
+        color: #7d7f85;
+        border: 1px solid #7d7f85;
+    }
+
+    .smr_loginPasswordBox {
+        width: 420px;
+        margin: 10px;
+
+        input[type="password"] {
+            font-size: 2rem;
+            padding: 5px 13px;
+
+        }
+    }
+
+    @media screen and (max-width: 950px) {
+        .AuthScreenMainTitle {
+            font-size: 25px !important;
+            padding-bottom: 50px !important;
+        }
+    }
+
+    @media screen and (max-width: 700px) {
+        .smr_loginPasswordBox {
+            width: 90%;
+        }
+
+        .hoq_submitBtnForgot {
+            width: 90%;
+            height: 50px !important;
+        }
+
+        .hoq_SmilingLoginCodeBtn {
+            width: 90%;
+            height: 50px !important;
+        }
+    }
+
+    @media screen and (max-width: 500px) {
+        .hoq_SmilingLoginCodeBtn {
+            width: 90%;
+            height: 40px !important;
+            font-size: 12px !important;
+        }
+
+        .hoq_submitBtnForgot {
+            width: 90%;
+            height: 40px !important;
+        }
+
+        .AuthScreenSubTitle {
+            margin-top: -65px !important;
+        }
+    }
+}

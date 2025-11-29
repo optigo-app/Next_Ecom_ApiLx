@@ -1,0 +1,57 @@
+@use "../../../hoq.web/style/variable.scss" as *;
+
+.hoqMo_confirMaindiv {
+    background-color: #c0bbb1;
+    font-family: $fontDmSans;
+}
+
+.hoqMo_confirSecondMaindiv {
+    margin-inline: 0%;
+    background-color: #fff;
+    padding-bottom: 100px;
+}
+
+.hoqMo_thankYouContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-top: 70px;
+}
+
+.hoqMo_thankYouContent {
+    text-align: center;
+}
+
+.hoqMo_thankYouMessage h1 span {
+    color: $titleColor;
+}
+
+.orderNumber p {
+    font-size: $fontSize3;
+    color: $titleColor;
+}
+
+.orderNumber p span {
+    font-weight: bold;
+    color: #c20000;
+}
+
+.hoqMo_continueShoppingBtn {
+    margin-top: 20px;
+    height: 40px;
+    width: 180px;
+    font-size: $fontSize3;
+    color: #000;
+    background-color: #c20000;
+    border: none;
+    border-radius: 2px;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s;
+    color: white;
+    font-family: $fontDmSans;
+}
+
+.hoq_orderCnfThankyouImage {
+    height: 350px;
+    width: 350px;
+}

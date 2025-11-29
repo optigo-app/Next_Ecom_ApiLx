@@ -24,6 +24,7 @@ const nextConfig = {
   //   config.infrastructureLogging = { level: "error" }; // hides warnings
   //   return config;
   // },
+  reactStrictMode: false,
 
   eslint: {
     ignoreDuringBuilds: true,

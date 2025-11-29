@@ -19,6 +19,7 @@ import { useNextRouterLikeRR } from '@/app/(core)/hooks/useLocationRd';
 
 
 const CartPage = ({ storeinit, visiterId, islogin, setCartCountNum }) => {
+console.log("TCL: CartPage -> setCartCountNum", setCartCountNum)
 
   const {
     isloding,

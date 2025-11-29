@@ -127,8 +127,8 @@ const ProductList = ({ params, searchParams, storeinit }) => {
   const [grossRange, setGrossRange] = useState("")
   const [securityKey, setSecurityKey] = useState();
   const formatter = new Intl.NumberFormat("en-IN");
-    let cookie = Cookies.get('visiterId')
-    const [menuDecode, setMenuDecode] = useState('');
+  let cookie = Cookies.get('visiterId')
+  const [menuDecode, setMenuDecode] = useState('');
 
   const [inputPage, setInputPage] = useState(currPage);
   const [inputGross, setInputGross] = useState([]);
@@ -287,27 +287,27 @@ const ProductList = ({ params, searchParams, storeinit }) => {
     }
   }, [params]);
 
-  
+
 
 
   useEffect(() => {
 
     try {
-    if (searchParams?.value) {
-      const parsed = JSON.parse(searchParams.value);
+      if (searchParams?.value) {
+        const parsed = JSON.parse(searchParams.value);
 
-      if (parsed && typeof parsed === "object") {
-        result = Object.entries(parsed).map(([key, value]) => {
-          const decoded = atob(value);       // decode base64
-          const reEncoded = btoa(decoded);   // re-encode
-          return `${key}=${reEncoded}`;
-        });
-        console.log(result, "hii")
+        if (parsed && typeof parsed === "object") {
+          result = Object.entries(parsed).map(([key, value]) => {
+            const decoded = atob(value);       // decode base64
+            const reEncoded = btoa(decoded);   // re-encode
+            return `${key}=${reEncoded}`;
+          });
+          console.log(result, "hii")
+        }
       }
+    } catch (err) {
+      console.error("Invalid searchParams.value:", searchParams?.value, err);
     }
-  } catch (err) {
-    console.error("Invalid searchParams.value:", searchParams?.value, err);
-  }
 
 
     // Create a unique key for current searchParams to avoid duplicate calls
@@ -830,18 +830,18 @@ const ProductList = ({ params, searchParams, storeinit }) => {
     setSortBySelect('Recommended')
   }, [params])
 
-      const prevFilterChecked = useRef();
-  
+  const prevFilterChecked = useRef();
+
 
   useEffect(() => {
     setAfterCountStatus(true);
-      const previousChecked = prevFilterChecked.current;
-        prevFilterChecked.current = filterChecked;
+    const previousChecked = prevFilterChecked.current;
+    prevFilterChecked.current = filterChecked;
 
-          if (Object.keys(filterChecked).length > 0 || (previousChecked && JSON.stringify(previousChecked) !== JSON.stringify(filterChecked))) {
-            setCurrPage(1);
-            setInputPage(1);
-        }
+    if (Object.keys(filterChecked).length > 0 || (previousChecked && JSON.stringify(previousChecked) !== JSON.stringify(filterChecked))) {
+      setCurrPage(1);
+      setInputPage(1);
+    }
 
     let output = FilterValueWithCheckedOnly();
     let obj = { mt: selectedMetalId, dia: selectedDiaId, cs: selectedCsId };
@@ -874,7 +874,7 @@ const ProductList = ({ params, searchParams, storeinit }) => {
     // console.log("locationkey",location?.key !== locationKey,location?.key,locationKey);
 
     // if (location?.key === locationKey && (Object.keys(filterChecked)?.length > 0 || isClearAllClicked === true)) {
-            if ((Object.keys(filterChecked)?.length > 0 || isClearAllClicked === true)) {
+    if ((Object.keys(filterChecked)?.length > 0 || isClearAllClicked === true)) {
       setIsOnlyProdLoading(true);
       let DiaRange = { DiaMin: isDia ? sliderValue[0] : "", DiaMax: isDia ? sliderValue[1] : "" }
       let grossRange = { grossMin: isGross ? sliderValue2[0] : "", grossMax: isGross ? sliderValue2[1] : "" }
@@ -918,81 +918,81 @@ const ProductList = ({ params, searchParams, storeinit }) => {
     // }
   }, [filterChecked]);
 
-    const handelFilterClearAll = useCallback(() => {
-        const diafilter =
-            filterData?.find((ele) => ele?.Name === "Diamond")?.options?.length > 0
-                ? JSON.parse(
-                    filterData.find((ele) => ele?.Name === "Diamond")?.options
-                )[0]
-                : [];
-        const diafilter1 =
-            filterData?.find((ele) => ele?.Name === "NetWt")?.options?.length > 0
-                ? JSON.parse(
-                    filterData.find((ele) => ele?.Name === "NetWt")?.options
-                )[0]
-                : [];
-        const diafilter2 =
-            filterData?.find((ele) => ele?.Name === "Gross")?.options?.length > 0
-                ? JSON.parse(
-                    filterData.find((ele) => ele?.Name === "Gross")?.options
-                )[0]
-                : [];
+  const handelFilterClearAll = useCallback(() => {
+    const diafilter =
+      filterData?.find((ele) => ele?.Name === "Diamond")?.options?.length > 0
+        ? JSON.parse(
+          filterData.find((ele) => ele?.Name === "Diamond")?.options
+        )[0]
+        : [];
+    const diafilter1 =
+      filterData?.find((ele) => ele?.Name === "NetWt")?.options?.length > 0
+        ? JSON.parse(
+          filterData.find((ele) => ele?.Name === "NetWt")?.options
+        )[0]
+        : [];
+    const diafilter2 =
+      filterData?.find((ele) => ele?.Name === "Gross")?.options?.length > 0
+        ? JSON.parse(
+          filterData.find((ele) => ele?.Name === "Gross")?.options
+        )[0]
+        : [];
 
-        const isFilterChecked = Object.values(filterChecked).some(
-            (ele) => ele.checked
-        );
-        const isSliderChanged =
-            JSON.stringify(sliderValue) !==
-            JSON.stringify(
-                diafilter?.Min != null || diafilter?.Max != null
-                    ? [diafilter?.Min, diafilter?.Max]
-                    : []
-            ) ||
-            JSON.stringify(sliderValue1) !==
-            JSON.stringify(
-                diafilter1?.Min != null || diafilter1?.Max != null
-                    ? [diafilter1?.Min, diafilter1?.Max]
-                    : []
-            ) ||
-            JSON.stringify(sliderValue2) !==
-            JSON.stringify(
-                diafilter2?.Min != null || diafilter2?.Max != null
-                    ? [diafilter2?.Min, diafilter2?.Max]
-                    : []
-            );
+    const isFilterChecked = Object.values(filterChecked).some(
+      (ele) => ele.checked
+    );
+    const isSliderChanged =
+      JSON.stringify(sliderValue) !==
+      JSON.stringify(
+        diafilter?.Min != null || diafilter?.Max != null
+          ? [diafilter?.Min, diafilter?.Max]
+          : []
+      ) ||
+      JSON.stringify(sliderValue1) !==
+      JSON.stringify(
+        diafilter1?.Min != null || diafilter1?.Max != null
+          ? [diafilter1?.Min, diafilter1?.Max]
+          : []
+      ) ||
+      JSON.stringify(sliderValue2) !==
+      JSON.stringify(
+        diafilter2?.Min != null || diafilter2?.Max != null
+          ? [diafilter2?.Min, diafilter2?.Max]
+          : []
+      );
 
-        if (isFilterChecked || isSliderChanged) {
-            setSliderValue(
-                diafilter?.Min != null || diafilter?.Max != null
-                    ? [diafilter.Min, diafilter.Max]
-                    : []
-            );
-            setSliderValue1(
-                diafilter1?.Min != null || diafilter1?.Max != null
-                    ? [diafilter1?.Min, diafilter1?.Max]
-                    : []
-            );
-            setSliderValue2(
-                diafilter2?.Min != null || diafilter2?.Max != null
-                    ? [diafilter2?.Min, diafilter2?.Max]
-                    : []
-            );
-            setInputDia([diafilter?.Min, diafilter?.Max]);
-            setInputNet([diafilter1?.Min, diafilter1?.Max]);
-            setInputGross([diafilter2?.Min, diafilter2?.Max]);
-            setAppliedRange1(["", ""]);
-            setAppliedRange2(["", ""]);
-            setAppliedRange3(["", ""]);
-            setShow(false);
-            setShow1(false);
-            setShow2(false);
-            setIsReset(false);
-            setFilterChecked({});
-            if (Object.keys(filterChecked).length > 0 || isSliderChanged) {
-                setIsClearAllClicked(true);
-            }
-        }
-    }, [filterData, filterChecked, sliderValue, sliderValue1, sliderValue2]);
+    if (isFilterChecked || isSliderChanged) {
+      setSliderValue(
+        diafilter?.Min != null || diafilter?.Max != null
+          ? [diafilter.Min, diafilter.Max]
+          : []
+      );
+      setSliderValue1(
+        diafilter1?.Min != null || diafilter1?.Max != null
+          ? [diafilter1?.Min, diafilter1?.Max]
+          : []
+      );
+      setSliderValue2(
+        diafilter2?.Min != null || diafilter2?.Max != null
+          ? [diafilter2?.Min, diafilter2?.Max]
+          : []
+      );
+      setInputDia([diafilter?.Min, diafilter?.Max]);
+      setInputNet([diafilter1?.Min, diafilter1?.Max]);
+      setInputGross([diafilter2?.Min, diafilter2?.Max]);
+      setAppliedRange1(["", ""]);
+      setAppliedRange2(["", ""]);
+      setAppliedRange3(["", ""]);
+      setShow(false);
+      setShow1(false);
+      setShow2(false);
+      setIsReset(false);
+      setFilterChecked({});
+      if (Object.keys(filterChecked).length > 0 || isSliderChanged) {
+        setIsClearAllClicked(true);
+      }
+    }
+  }, [filterData, filterChecked, sliderValue, sliderValue1, sliderValue2]);
 
 
   const totalPages = Math.ceil(
@@ -1016,6 +1016,7 @@ const ProductList = ({ params, searchParams, storeinit }) => {
     let output = FilterValueWithCheckedOnly();
     let obj = { mt: selectedMetalId, dia: selectedDiaId, cs: selectedCsId };
     setIsProdLoading(true);
+    setIsProdLoading(true)
     setCurrPage(value);
     setInputPage(value);
     setTimeout(() => {
@@ -1069,6 +1070,7 @@ const ProductList = ({ params, searchParams, storeinit }) => {
         if (res) {
           setProductListData(res?.pdList);
           setAfterFilterCount(res?.pdResp?.rd1[0]?.designcount);
+          setIsProdLoading(false)
         }
         return res;
       })
@@ -1087,6 +1089,7 @@ const ProductList = ({ params, searchParams, storeinit }) => {
         setTimeout(() => {
           setIsProdLoading(false);
         }, 100);
+        setIsProdLoading(false)
       });
   };
 
@@ -1246,31 +1249,31 @@ const ProductList = ({ params, searchParams, storeinit }) => {
   //   }
   // }, [selectedMetalId, selectedDiaId, selectedCsId, storeInit]);
 
-    useEffect(() => {
-          const obj = { mt: selectedMetalId, dia: selectedDiaId, cs: selectedCsId };
-          const loginInfo = JSON.parse(sessionStorage.getItem("loginUserDetail"));
-  
-          sessionStorage.setItem("short_cutCombo_val", JSON.stringify(obj));
-  
-          if (loginInfo && Object.keys(loginInfo).length > 0) {
-              if (selectedMetalId != undefined || selectedDiaId != undefined || selectedCsId != undefined) {
-                  if (loginInfo.MetalId !== selectedMetalId || loginInfo.cmboDiaQCid !== selectedDiaId) {
-                      handelCustomCombo(obj);
-                  }
-              }
-          } else {
-              if (storeInit && Object.keys(storeInit).length > 0) {
-                  if (selectedMetalId != undefined || selectedDiaId != undefined || selectedCsId != undefined) {
-                      if (
-                          storeInit?.MetalId !== selectedMetalId ||
-                          storeInit?.cmboDiaQCid !== selectedDiaId
-                      ) {
-                          handelCustomCombo(obj);
-                      }
-                  }
-              }
+  useEffect(() => {
+    const obj = { mt: selectedMetalId, dia: selectedDiaId, cs: selectedCsId };
+    const loginInfo = JSON.parse(sessionStorage.getItem("loginUserDetail"));
+
+    sessionStorage.setItem("short_cutCombo_val", JSON.stringify(obj));
+
+    if (loginInfo && Object.keys(loginInfo).length > 0) {
+      if (selectedMetalId != undefined || selectedDiaId != undefined || selectedCsId != undefined) {
+        if (loginInfo.MetalId !== selectedMetalId || loginInfo.cmboDiaQCid !== selectedDiaId) {
+          handelCustomCombo(obj);
+        }
+      }
+    } else {
+      if (storeInit && Object.keys(storeInit).length > 0) {
+        if (selectedMetalId != undefined || selectedDiaId != undefined || selectedCsId != undefined) {
+          if (
+            storeInit?.MetalId !== selectedMetalId ||
+            storeInit?.cmboDiaQCid !== selectedDiaId
+          ) {
+            handelCustomCombo(obj);
           }
-      }, [selectedMetalId, selectedDiaId, selectedCsId]);
+        }
+      }
+    }
+  }, [selectedMetalId, selectedDiaId, selectedCsId]);
 
   const compressAndEncode = (inputString) => {
     try {
@@ -1315,7 +1318,7 @@ const ProductList = ({ params, searchParams, storeinit }) => {
     );
 
     let output = FilterValueWithCheckedOnly();
-        const uniqueNmList = [...new Set(JSON.parse(productData?.ImageVideoDetail).map(item => item.Nm))];
+    const uniqueNmList = [...new Set(JSON.parse(productData?.ImageVideoDetail).map(item => item.Nm))];
 
     let obj = {
       a: productData?.autocode,
@@ -1337,9 +1340,9 @@ const ProductList = ({ params, searchParams, storeinit }) => {
       gr: grossRange,
       in: i,
 
-       i: productData?.MetalColorid,
-            l: JSON.parse(productData?.ImageVideoDetail)[0]?.Ex,
-            count: uniqueNmList.length,
+      i: productData?.MetalColorid,
+      l: JSON.parse(productData?.ImageVideoDetail)[0]?.Ex,
+      count: uniqueNmList.length,
     };
     decodeAndDecompress();
     let encodeObj = compressAndEncode(JSON?.stringify(obj));
@@ -3941,34 +3944,34 @@ const ProductList = ({ params, searchParams, storeinit }) => {
                                 })}
                               </div>
                             </div>
-                             {isEditablePage === 1 ? (
+                            {isEditablePage === 1 ? (
                               <>
-                                  {storeInit?.IsProductListPagination == 1 &&
-                                      Math.ceil(
-                                          afterFilterCount / storeInit.PageSize
-                                      ) > 1 &&
-                                <Box sx={{
-                                  py:1 ,
-                                  display:'flex',
-                                  alignItems:'center',
-                                  justifyContent:'center' ,
-                                  width:'100%' ,
-                                  mb:2
-                                }} >
+                                {storeInit?.IsProductListPagination == 1 &&
+                                  Math.ceil(
+                                    afterFilterCount / storeInit.PageSize
+                                  ) > 1 &&
+                                  <Box sx={{
+                                    py: 1,
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    width: '100%',
+                                    mb: 2
+                                  }} >
                                     <EditablePagination
-                                  currentPage={currPage}
-                                  totalItems={afterFilterCount || 0}
-                                  itemsPerPage={storeInit?.PageSize || 60}
-                                  onPageChange={handelPageChange}
-                                  inputPage={inputPage}
-                                  setInputPage={setInputPage}
-                                  handlePageInputChange={handlePageInputChange}
-                                  maxwidth464px={maxwidth464px}
-                                  totalPages={totalPages}
-                                  currPage={currPage}
-                                  isShowButton={false}
-                                  />
-                                </Box>
+                                      currentPage={currPage}
+                                      totalItems={afterFilterCount || 0}
+                                      itemsPerPage={storeInit?.PageSize || 60}
+                                      onPageChange={handelPageChange}
+                                      inputPage={inputPage}
+                                      setInputPage={setInputPage}
+                                      handlePageInputChange={handlePageInputChange}
+                                      maxwidth464px={maxwidth464px}
+                                      totalPages={totalPages}
+                                      currPage={currPage}
+                                      isShowButton={false}
+                                    />
+                                  </Box>
                                 }
                               </>
                             ) : (

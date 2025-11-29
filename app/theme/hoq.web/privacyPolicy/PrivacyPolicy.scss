@@ -1,0 +1,49 @@
+@use "../../../theme/hoq.web/style/variable.scss" as *;
+
+.hoq_privacyPolicy {
+  width: 100%;
+  height: auto;
+  font-family: $fontDmSans;
+  padding-top: 25px;
+
+  .privacy-policy {
+    width: 70%;
+    margin: 0 auto;
+
+    h1 {
+      padding: 40px 0;
+      font-size: 32px !important;
+    }
+
+    h2 {
+      font-size: 24px;
+      font-weight: 700;
+      padding: 10px 0;
+    }
+
+    h3 {
+      font-size: 17px;
+      padding: 23px 0;
+      font-weight: 600;
+    }
+  }
+
+  .back-to-home {
+    width: 100%;
+    margin-top: 2rem;
+    height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    a {
+      padding: 8px 12px;
+      text-decoration: none;
+      background-color: #c20000;
+      color: white;
+      outline: none;
+      border: none;
+      border-radius: 3px;
+    }
+  }
+}
