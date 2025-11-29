@@ -1,0 +1,134 @@
+@use "../../../hoq.web/style/variable.scss" as *;
+
+.Hoq_forgotMain {
+  font-family: $fontTenorSans;
+
+  .smling-forgot-main {
+    margin-inline: 6%;
+    background-color: white;
+  }
+
+  .labGrowForgot {
+    width: 420px;
+    margin: 10px;
+  }
+
+  .submitBtnForgot {
+    height: 60px;
+    width: 420px;
+    color: white;
+    background-color: #7d7f85;
+    border: 0;
+    margin-top: 10px;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 1;
+    transition: all 0.5s ease;
+  }
+
+  .submitBtnForgot:hover {
+    background-color: white;
+    color: #7d7f85;
+    border: 1px solid #7d7f85;
+  }
+
+  .cancleForgot {
+    color: #7d7f85;
+    font-size: 12px;
+    margin-top: 25px;
+    font-weight: 500;
+    letter-spacing: 1px;
+    position: relative;
+    text-decoration: none;
+    transition: color 0.3s;
+    cursor: pointer;
+  }
+
+  .cancleForgot::before {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 1px;
+    bottom: 0;
+    left: 0;
+    background-color: #000;
+    transition: width 0.3s ease;
+  }
+
+  .cancleForgot:hover::before {
+    width: 100%;
+  }
+
+  #outlined-password-input::-ms-reveal {
+    display: none !important;
+  }
+
+  #outlined-confirm-password-input::-ms-reveal {
+    display: none !important;
+  }
+
+  .smr_forgotBox {
+    width: 420px;
+    margin: 10px;
+  }
+
+  .createBtnRegister {
+    height: 60px;
+    width: 420px;
+    color: white;
+    background-color: #c20000;
+    border: 0;
+    margin-top: 10px;
+    font-size: 13px;
+    cursor: pointer;
+    font-weight: 500;
+    letter-spacing: 1;
+    border-radius: 4px;
+    transition: all 0.5s ease;
+  }
+
+  .createBtnRegister:hover {
+    background-color: white;
+    color: #7d7f85;
+    border: 1px solid #7d7f85;
+  }
+
+
+  .smr_forgotSubDiv {
+    margin-inline: 6%;
+    background-color: white;
+  }
+
+  @media screen and (max-width: 950px) {
+    .AuthScreenMainTitle {
+      font-size: 25px !important;
+      padding-bottom: 50px !important;
+    }
+
+    .AuthScreenSubTitle {
+      margin-top: -60px !important;
+    }
+  }
+
+  @media screen and (max-width: 700px) {
+
+    .createBtnRegister {
+      width: 90%;
+      height: 50px !important;
+    }
+
+    .smr_forgotBox {
+      width: 90%;
+      margin: 10px;
+    }
+
+    .labGrowForgot {
+      width: 80%;
+    }
+
+    .submitBtnForgot {
+      width: 80%;
+    }
+
+  }
+}

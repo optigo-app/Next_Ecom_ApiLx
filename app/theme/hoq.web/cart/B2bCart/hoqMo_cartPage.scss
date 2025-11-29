@@ -1,0 +1,191 @@
+@use '../../../hoq.web/style/variable.scss' as *;
+
+.hoq_cart-modal {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.hoq_cart-container {
+    max-width: 600px;
+    width: 100%;
+    margin: auto;
+    background: #fff;
+    padding: 10px;
+    position: relative;
+    border: none;
+    box-shadow: none;
+
+    @media (max-width: 1050px) {
+        padding: 10px;
+    }
+}
+
+.hoq_cart-quantity {
+    display: flex;
+    width: 130px;
+    height: 45px;
+
+    .bttn-left {
+        border-top-left-radius: 5px;
+        border-bottom-left-radius: 5px;
+    }
+
+    .input {
+        width: calc(100px * 0.5);
+        padding: 0;
+        margin: 0;
+        text-align: center;
+        border-top: 1px solid #ececec;
+        border-bottom: 1px solid #ececec;
+        border-left: none;
+        border-right: none;
+    }
+
+    a.bttn,
+    .bttn {
+        width: calc(100px * 0.5);
+        padding: 0;
+        text-align: center;
+        color: $titleColor;
+        border: 1px solid #ececec;
+        box-shadow: none;
+        background-color: white;
+        font-size: 24px;
+        cursor: pointer;
+
+        span {
+            margin: auto !important;
+        }
+    }
+
+    .bttn-right {
+        border-top-right-radius: 5px;
+        border-bottom-right-radius: 5px;
+        margin-right: 10px;
+    }
+}
+
+.hoq_Cart-imageDiv {
+    text-align: center;
+    margin-bottom: 20px;
+
+    @media (max-width: 1050px) {
+        margin-bottom: 10px;
+    }
+
+    .hoq_cartImage {
+        max-width: 100%;
+        height: auto;
+        cursor: pointer;
+        border-radius: 4px;
+    }
+}
+
+.hoq_Cart_R-details,
+.hoq_CartCusto_R-details {
+    .hoq_cart-Titleline {
+        font-size: 1.2rem;
+        font-weight: bold;
+        margin-bottom: 10px;
+
+        @media (max-width: 1050px) {
+            font-size: 1rem;
+        }
+    }
+
+    .hoq_Cart-options,
+    .hoq_StockCart-options {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+        margin-bottom: 15px;
+
+        .option {
+            display: flex;
+            flex-direction: column;
+            color: $titleColor;
+            font-family: $primaryFontFamily;
+
+            label {
+                font-weight: bold;
+                margin-bottom: 5px;
+                font-size: $fontSize2;
+                color: $titleColor;
+                font-family: $primaryFontFamily;
+
+            }
+
+            select {
+                padding: 10px;
+                border: 1px solid #ececec;
+                border-radius: 4px;
+                background: #fff;
+                font-size: $fontSize2;
+                color: $titleColor;
+                font-family: $primaryFontFamily;
+
+            }
+
+            span {
+                font-size: $fontSize2;
+                color: $titleColor;
+                font-family: $primaryFontFamily;
+
+            }
+        }
+    }
+
+    .hoq_cartQtyPricemainDev {
+        display: flex;
+        align-items: center;
+        font-family: $primaryFontFamily;
+
+        .product-price,
+        .hoq_Stockproduct-price {
+            font-size: $fontSize4;
+            color: $titleColor;
+            font-weight: bold;
+
+            .smr_currencyFont {
+                margin-right: 5px;
+            }
+        }
+    }
+
+    .hoq_UpdateCartBtn {
+        margin-top: 20px;
+        display: flex;
+        justify-content: end;
+        align-items: center;
+        font-family: $primaryFontFamily;
+
+
+        .hoq_cartUpdate-button {
+            background-color: #b1b1b1;
+            border: none;
+            border-radius: 5px;
+            color: #fff;
+            cursor: pointer;
+            display: block;
+            font-size: 16px;
+            height: 40px;
+            margin-bottom: 20px;
+            width: 100px;
+            font-family: $primaryFontFamily;
+
+            &:hover {
+                background-color: #bcbcbc;
+            }
+        }
+    }
+}
+
+
+.hoq_CloseIcon {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    cursor: pointer;
+    color: #7d7f85;
+}

@@ -1,0 +1,235 @@
+@use '../../../hoq.web/style/variable.scss' as *;
+
+.hoqMo_DeliverMainDiv {
+  // background-color: #c0bbb1;
+  height: auto;
+  font-family: $fontDmSans !important;
+  width: 95%;
+  margin-inline: auto;
+}
+
+.hoqMo_secondMaindivAdd {
+  margin-inline: 0%;
+  background-color: #fff;
+  position: relative;
+  padding-bottom: 100px;
+  padding-top: 20px;
+}
+
+.hoqMo_addMainDiv {
+}
+
+.hoqMo_getAddrMainDiv {
+  margin-bottom: 40px;
+}
+
+.hoq_addressTextFields {
+  margin-bottom: 18px !important;
+  font-family: $fontDmSans !important;
+  color: $titleColor !important;
+}
+
+.hoq_AddrCard {
+  box-shadow: rgba(0, 0, 0, 0.02) 0px 1px 3px 0px, rgba(27, 31, 35, 0.15) 0px 0px 0px 1px !important;
+  padding: 20px 20px 0px 20px !important;
+}
+
+.hoq_ActiveAddrCard {
+  padding: 20px 20px 0px 20px !important;
+  box-shadow: rgba(0, 0, 0, 0.02) 0px 1px 3px 0px, rgba(27, 31, 35, 0.15) 0px 0px 0px 1px !important;
+  background: #f5f4f4 !important;
+  position: relative;
+}
+
+.hoq_defualt_addrSelected {
+  padding: 3px 10px;
+  font-family: $fontDmSans !important;
+  font-size: $fontSize3;
+  color: #fff;
+  background: #c20000;
+  border-radius: 2px;
+  border: none;
+  cursor: pointer;
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.hoq_defualt_addrSelectedHide {
+  display: none !important;
+}
+
+.hoq_addrTypoTitle {
+  color: $titleColor;
+  font-family: $fontDmSans !important;
+  text-transform: capitalize;
+}
+
+.hoq_addrTypo {
+  color: $titleColor;
+  font-family: $fontDmSans !important;
+  text-transform: capitalize;
+}
+
+.hoqMo_AddressBtnGroup {
+  display: flex;
+  // position: fixed;
+  bottom: 60px;
+  width: 100%;
+  justify-content: space-between;
+  margin-bottom: 2rem;
+
+  .hoqMo_AddNewAddrbtn {
+    height: 50px;
+    border: none;
+    flex-basis: 20%;
+    outline: none;
+    border-radius: none !important;
+    font-family: $fontDmSans !important;
+    font-size: $fontSize3;
+    color: #FFF;
+    background-color: #c20000;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s;
+    border-radius: 4px;
+
+    &:hover {
+      background-color: #af0101;
+    }
+  }
+
+  .hoqMo_ContinueOrderbtn {
+    font-family: $fontDmSans !important;
+    background-color: #c20000 !important;
+    color: #fff !important;
+    font-size: $fontSize3 !important;
+    height: 50px;
+    border: none;
+    flex-basis: 20%;
+    outline: none;
+    border-radius: none !important;
+    border-radius: 4px;
+
+    &:hover {
+      background-color: #8b0202;
+    }
+  }
+}
+
+.hoq_dialogTitle {
+  color: $titleColor;
+  font-weight: 500 !important;
+  text-align: center;
+}
+
+.hoqMo_AddressModalBtnGroup {
+  .hoqMo_AddNewAddrModalbtn {
+    margin-right: 20px;
+    margin-left: 20px;
+    height: 40px;
+    width: 150px;
+    font-family: $fontDmSans !important;
+    font-size: $fontSize3;
+    color: $btn1hoverFontColor;
+    background-color: #c20000 !important;
+    border: 1px solid #c20000;
+    margin-bottom: 15px;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s;
+  }
+
+  .hoqMo_Cancelbtn {
+    margin-right: 20px;
+    height: 40px;
+    width: 150px;
+    font-family: $fontDmSans !important;
+    font-size: $fontSize3;
+    color: $btn1FontColor;
+    background-color: $btn1bgColor;
+    border: 1px solid $btn1FontColor;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s;
+
+    &:hover {
+      background-color: #c20000 !important;
+      border: 1px solid #c20000;
+      color: white;
+    }
+  }
+}
+
+.hoq_editDeleteBtngroup {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  margin-bottom: 10px;
+
+  .hoq_editIcon {
+    font-size: 20px;
+    color: $titleColor;
+  }
+
+  .hoq_DeleteIcon {
+    font-size: 20px;
+    color: $titleColor;
+  }
+}
+
+// Media Query for max-width: 800px
+@media (max-width: 800px) {
+  .hoqMo_addrcardContent {
+    .hoq_addrTypoTitle {
+      font-size: $fontSize4 !important;
+    }
+
+    p {
+      font-size: $fontSize1;
+    }
+  }
+
+  .hoq_editIcon {
+    font-size: 15px !important;
+    color: $titleColor;
+  }
+
+  .hoq_DeleteIcon {
+    font-size: 15px !important;
+    color: $titleColor;
+  }
+
+  .hoq_defualt_addrSelected {
+    padding: 3px 10px;
+    font-size: $fontSize2;
+  }
+
+  .hoq_AddrCard,
+  .hoq_ActiveAddrCard {
+    padding: 5px !important;
+  }
+
+  .hoqMo_cardActionBtn {
+    margin: 0px 10px 20px 10px;
+
+    .hoqMo_AddressModalBtnGroup {
+      display: flex;
+      justify-content: space-evenly;
+      align-items: center;
+      gap: 10px;
+
+      .hoqMo_AddNewAddrModalbtn {
+        margin-right: 0 !important;
+        height: 35px;
+        width: 120px;
+        font-size: $fontSize2;
+      }
+
+      .hoqMo_Cancelbtn {
+        margin-right: 0 !important;
+        height: 35px;
+        width: 120px;
+        font-size: $fontSize2;
+      }
+    }
+  }
+}

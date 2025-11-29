@@ -1,4 +1,4 @@
-@import "../../../scss/variable";
+@use "../../../fgstore.pro/style/variable.scss" as *;
 
 .proCat_prodDetail_bodyContain {
   background-color: $backgroundColor;

@@ -1,0 +1,163 @@
+@import '../../fgstore.web/style/variable.scss';
+
+
+.hero-container {
+    background-color: #000;
+    color: #fff;
+    overflow: hidden;
+    height: 70vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: $Pfonts;
+    @media screen and (max-width: 1200px) {
+      height: 60vh;
+    }
+    @media screen and (max-width: 972px) {
+      height: 50vh;
+    }
+    @media screen and (max-width: 780px) {
+      height: auto;
+    }
+    .hero-content {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 4rem 2rem;
+      gap: 4rem;
+      
+      .text-content {
+        flex: 1;
+
+        
+        h1 {
+          font-size: 45px;
+          line-height: 56px;
+          margin-bottom: 1.5rem;
+          font-style: normal;
+          font-weight: 500;
+          font-family: "Prata", serif;
+          @media screen and (max-width: 972px) {
+            font-size: 37px;
+            line-height: 50px;
+            margin-bottom: 0.8rem;
+          }
+        }
+        
+        p {
+          font-size: 16px;
+          margin-bottom: 2rem;
+          line-height: 24px;
+          color: rgb(203, 203, 203)          ;
+          opacity: 0.9;
+    font-weight: 300;
+    @media screen and (max-width: 972px) {
+      font-size: 14px;
+      line-height: 20px;
+      margin-bottom: 1.2rem;
+    }
+        }
+        
+        .shop-button {
+          background: transparent;
+          color: #fff;
+          border: 1px solid #fff;
+          padding: 1rem 2rem;
+          font-size: 0.9rem;
+          letter-spacing: 1px;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          display: inline-flex;
+          align-items: center;
+          gap: 0.5rem;
+          @media screen and (max-width: 972px) {
+            padding: 0.7rem  2rem;
+          }
+          &:hover {
+            background: #fff;
+            color: #000;
+            
+            .arrow {
+              transform: translateX(5px);
+            }
+          }
+          
+          .arrow {
+            transition: transform 0.3s ease;
+          }
+        }
+      }
+      
+      .image-content {
+        flex: 1;
+        
+        .hero-image {
+          width: 100%;
+          height: auto;
+          object-fit: cover;
+        }
+      }
+    }
+    
+    .collection-section {
+      text-align: center;
+      padding: 4rem 2rem;
+      
+      h2 {
+        font-size: 2.5rem;
+        margin-bottom: 2rem;
+      }
+      
+      .see-collections {
+        background: transparent;
+        color: #fff;
+        border: 1px solid #fff;
+        padding: 1rem 2rem;
+        font-size: 0.9rem;
+        letter-spacing: 1px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        
+        &:hover {
+          background: #fff;
+          color: #000;
+          
+          .arrow {
+            transform: translateX(5px);
+          }
+        }
+        
+        .arrow {
+          transition: transform 0.3s ease;
+        }
+      }
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .hero-container {
+      .hero-content {
+        flex-direction: column;
+        padding: 2rem 1rem;
+        
+        .text-content {
+          h1 {
+            font-size: 2.5rem;
+          }
+        }
+      }
+      
+      .collection-section {
+        h2 {
+          font-size: 2rem;
+        }
+      }
+    }
+  }
+  
+  

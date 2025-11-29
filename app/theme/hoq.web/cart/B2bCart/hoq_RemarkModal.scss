@@ -1,0 +1,66 @@
+@use '../../../hoq.web/style/variable.scss' as *;
+
+$cartUpdateBtncolor: #b1b1b1;
+
+
+.hoq_remarkModalBox h2 {
+    color: $titleColor !important;
+}
+
+.hoq_remarkModalBox .hoq_projectRemarkBtn-group {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 10px;
+
+    button {
+        padding: 10px 20px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    .hoq_remarksave-btn {
+        background-color: $cartUpdateBtncolor;
+        background-color: #c20000;
+        color: $btn1hoverFontColor;
+
+        &:hover {
+            background-color: #aa0303;
+        }
+    }
+
+    .hoq_remarkcancel-btn {
+        background-color: $btn1bgColor;
+        color: $btn1FontColor;
+        border: 1px solid $titleColor;
+
+        &:hover {
+            background-color: #f3f4f6;
+        }
+    }
+}
+
+
+@media(max-width:445px) {
+    .hoq_remarkModalBox {
+        padding: 20px 8px 20px 8px !important;
+
+        h2 {
+            color: $titleColor !important;
+            font-size: $fontSize2 !important;
+        }
+
+        .hoq_projectRemarkBtn-group {
+
+            .hoq_remarksave-btn,
+            .hoq_remarkcancel-btn {
+                font-size: $fontSize0 !important;
+                padding: 5px 10px !important;
+            }
+        }
+        .hoq_RemarkMoalInput textarea{
+            font-size: $fontSize1 !important;
+          }
+    }
+}

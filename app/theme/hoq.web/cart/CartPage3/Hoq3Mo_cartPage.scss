@@ -1,0 +1,364 @@
+@use '../../../hoq.web/style/variable.scss' as *;
+
+$borderColor: rgba(232, 232, 232, 1);
+
+.HoqMo_cart-modal {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.HoqMo_cart-container {
+  max-width: 600px;
+  width: 100%;
+  height: 100vh;
+  margin: auto;
+  background: #fff;
+  padding: 10px;
+  position: relative;
+  border: none;
+  box-shadow: none;
+  outline: none;
+  overflow: auto;
+
+  @media (max-width: 1050px) {
+    padding: 10px;
+  }
+}
+
+.HoqMo_cart-quantity {
+  display: flex;
+  width: 130px;
+  height: 45px;
+  border: none;
+
+  .bttn-left {
+    // border-top-left-radius: 0px;
+    // border-bottom-left-radius: 0px;
+  }
+
+  .input {
+    width: calc(100px * 0.5);
+    padding: 0;
+    margin: 0;
+    text-align: center;
+    // border: none;
+    // box-shadow: 0 3px 8px rgba(0, 0, 0, 0.24);
+    border-top: 1px solid #bfbfbf;
+    border-bottom: 1px solid #bfbfbf;
+    border-left: none;
+    border-right: none;
+  }
+
+  a.bttn,
+  .bttn {
+    width: calc(100px * 0.5);
+    padding: 0;
+    text-align: center;
+    color: $titleColor;
+    // box-shadow: 0 3px 8px rgba(0, 0, 0, 0.24);
+    border: 1px solid #bfbfbf;
+    box-shadow: none;
+    // border: none;
+    background-color: white;
+    font-size: 24px;
+    cursor: pointer;
+
+    span {
+      margin: auto !important;
+    }
+  }
+
+  .bttn-right {
+    // border-top-right-radius: 0px;
+    // border-bottom-right-radius: 0px;
+  }
+}
+
+.HoqMo_Cart-imageDiv {
+  text-align: center;
+  margin-bottom: 20px;
+
+  @media (max-width: 1050px) {
+    margin-bottom: 10px;
+  }
+
+  .HoqMo_cartImage {
+    max-width: 100%;
+    height: auto;
+    cursor: pointer;
+    border-radius: 4px;
+  }
+}
+
+.HoqMo_Cart_R-details,
+.HoqMo_CartCusto_R-details {
+  .HoqMo_cart-Titleline {
+    font-size: 1.2rem;
+    font-weight: bold;
+    margin-bottom: 10px;
+
+    @media (max-width: 1050px) {
+      font-size: 1rem;
+    }
+  }
+
+  .HoqMo_Cart-options,
+  .HoqMo_StockCart-options {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    margin-bottom: 15px;
+
+    .option {
+      display: flex;
+      flex-direction: column;
+      color: $titleColor;
+      font-family: $primaryFontFamily;
+
+      label {
+        font-weight: bold;
+        margin-bottom: 5px;
+        font-size: $fontSize2;
+        color: $titleColor;
+        font-family: $primaryFontFamily;
+
+      }
+
+      select {
+        padding: 10px;
+        border: 1px solid #ececec;
+        border-radius: 4px;
+        background: #fff;
+        font-size: $fontSize2;
+        color: $titleColor;
+        font-family: $primaryFontFamily;
+
+      }
+
+      span {
+        font-size: $fontSize2;
+        color: $titleColor;
+        font-family: $primaryFontFamily;
+
+      }
+    }
+  }
+
+  .HoqMo_cartQtyPricemainDev {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-family: $primaryFontFamily;
+
+    .product-price,
+    .HoqMo_Stockproduct-price {
+      font-size: $fontSize4;
+      color: $titleColor;
+      font-weight: bold;
+
+      .HoqMo_currencyFont {
+        margin-right: 5px;
+      }
+    }
+
+    .product-price {
+      margin: 0;
+    }
+  }
+
+  .HoqMo_UpdateCartBtn {
+    margin-top: 20px;
+    display: flex;
+    justify-content: end;
+    align-items: center;
+    font-family: $primaryFontFamily;
+
+
+    .HoqMo_cartUpdate-button {
+      background-color: #b1b1b1;
+      border: none;
+      border-radius: 5px;
+      color: #fff;
+      cursor: pointer;
+      display: block;
+      font-size: 16px;
+      height: 40px;
+      margin-bottom: 20px;
+      width: 100px;
+      font-family: $primaryFontFamily;
+
+      &:hover {
+        background-color: #bcbcbc;
+      }
+    }
+  }
+}
+
+
+.HoqMo_CloseIcon {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  cursor: pointer;
+  color: #7d7f85;
+}
+
+
+.HoqMo_CartCusto_R-details {
+  flex: 1;
+  width: 100%;
+
+  .HoqMo_cart-Titleline {
+    font-size: $fontSize4;
+    color: $primaryfontcolor2;
+    margin: 10px;
+    text-align: center;
+    max-height: 100px;
+    // height: 55px;
+    // display: -webkit-box;
+    // -webkit-line-clamp: 2;
+    // -webkit-box-orient: vertical;
+    // overflow: hidden;
+    // text-overflow: ellipsis;
+  }
+
+  .HoqMo_dividerline {
+    margin-bottom: 10px !important;
+  }
+
+  .HoqMo_Cart-options {
+    color: $primaryfontcolor2;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    margin-bottom: 20px;
+    margin-top: 20px;
+
+    .option {
+      color: $primaryfontcolor2;
+      flex: 1 1 45%;
+      display: flex;
+      flex-direction: column;
+      font-family: $primaryFontFamily !important;
+
+      label {
+        color: $primaryfontcolor2;
+        font-weight: bold;
+        font-size: $fontSize2;
+        margin-bottom: 5px;
+      }
+
+      select {
+        color: $primaryfontcolor2;
+        padding: 10px;
+        border-radius: 0px !important;
+        border: 1px solid $borderColor;
+        // box-shadow: 0 3px 8px rgba(0, 0, 0, 0.24);
+        border: 1px solid $borderColor;
+      }
+    }
+  }
+
+  .HoqMo_cartQtyPricemainDev {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    .product-price {
+      font-size: $fontSize6;
+      width: 100%;
+      display: flex;
+      justify-content: end;
+
+      span {
+        color: $primaryfontcolor2;
+      }
+    }
+  }
+
+  .HoqMo_StockCart-options {
+    color: $primaryfontcolor2;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    margin-bottom: 20px;
+    margin-top: 20px;
+
+
+    .option {
+      color: $primaryfontcolor2;
+      flex: 1 1 45%;
+      display: flex;
+      flex-direction: column;
+      font-family: $primaryFontFamily !important;
+
+      label {
+        color: $primaryfontcolor2;
+        font-weight: bold;
+        font-size: $fontSize2;
+        margin-bottom: 5px;
+      }
+
+      span {
+        border: 1px solid $borderColor;
+        padding: 10px;
+      }
+
+      select {
+        color: $primaryfontcolor2;
+        padding: 10px;
+        border-radius: 0px !important;
+        border: 1px solid $borderColor;
+        // box-shadow: 0 3px 8px rgba(0, 0, 0, 0.24);
+        border: 1px solid $borderColor;
+      }
+    }
+  }
+
+  .HoqMo_stockPriceQtyDiv {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    .option {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: $fontSize3;
+
+      label {
+        color: $primaryfontcolor2;
+        font-weight: bold;
+
+      }
+
+      span {
+        color: $primaryfontcolor2;
+        margin-left: 10px;
+      }
+    }
+
+    .HoqMo_Stockproduct-price {
+      span {
+        color: $primaryfontcolor2;
+        font-weight: bold;
+        font-size: $fontSize4;
+      }
+    }
+  }
+
+  .HoqMo_UpdateCartBtn {
+    display: flex;
+    justify-content: flex-end;
+    align-items: end;
+
+    button {
+      padding: 5px 20px;
+      font-size: $fontSize5;
+      margin-top: 10px;
+      border: 1px solid $borderColor;
+      // box-shadow: 0 3px 8px rgba(0, 0, 0, 0.24);
+    }
+  }
+}

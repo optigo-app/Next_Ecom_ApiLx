@@ -1,0 +1,67 @@
+@use "../../../theme/hoq.web/style/variable.scss" as *;
+
+.hoq_main_FeaturedBrand {
+  width: 100%;
+  height: auto;
+  display: flex;
+  align-items: center;
+  text-align: center;
+  flex-direction: column;
+  margin-bottom: 3rem;
+  font-family: $fontTenorSans;
+  .heading {
+    display: flex;
+    align-items: center;
+    padding-top: 90px;
+    padding-bottom: 15px;
+    width: 100%;
+    justify-content: center;
+    flex-direction: column;
+    h3 {
+      font-size: 22px;
+      font-weight: 500;
+    }
+  }
+  .horizontal_list {
+    width: 80%;
+    height: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    padding: 0 40px;
+    gap: 2rem;
+    .brand_card {
+      width: 150px;
+      height: 220px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      img {
+        width: 100%;
+        object-fit: contain;
+      }
+    }
+  }
+  @media screen and (max-width: 768px) {
+    .horizontal_list {
+      gap: 1em;
+      width: 100%;
+      .brand_card {
+        height: 150px;
+        width: 100px;
+      }
+    }
+  }
+
+  @media screen and (max-width: 420px) {
+    .horizontal_list {
+      gap: 1em;
+      width: 100%;
+      .brand_card {
+        height: 120px;
+        width: 100px;
+      }
+    }
+  }
+}

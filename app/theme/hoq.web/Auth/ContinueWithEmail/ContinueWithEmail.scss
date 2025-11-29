@@ -1,0 +1,123 @@
+@use "../../../hoq.web/style/variable.scss" as *;
+
+.Hoq_continuemail {
+  background-color: transparent;
+  font-family: $fontTenorSans;
+
+  .css-1wc848c-MuiFormHelperText-root {
+    margin-right: 0px !important;
+    margin-left: 0px !important;
+  }
+
+  .smling-forgot-main {
+    margin-inline: 6%;
+    background-color: white;
+  }
+
+  .smr_continuEmailBox {
+    width: 420px;
+    margin: 10px;
+  }
+
+  .hoq_submitBtnForgot {
+    height: 60px;
+    width: 420px;
+    color: white;
+    background-color: #c20000;
+    border-radius: 4px;
+    border: 0;
+    margin-top: 10px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    letter-spacing: 1;
+    transition: all 0.5s ease;
+  }
+
+  .hoq_submitBtnForgot:hover {
+    background-color: transparent;
+    color: #7d7f85;
+    border: 1px solid #7d7f85;
+  }
+
+  .hoq_cancleForgot {
+    color: #7d7f85;
+    width: 420px;
+    font-size: 13px;
+    margin-top: 25px;
+    font-weight: 500;
+    letter-spacing: 1px;
+    font-family: $fontDmSans;
+    position: relative;
+    text-decoration: none;
+    transition: color 0.3s;
+    cursor: pointer;
+  }
+
+  .hoq_cancleForgot::before {
+    content: "";
+    position: absolute;
+    width: 0;
+    height: 1px;
+    bottom: 0;
+    left: 0;
+    background-color: #000;
+    transition: width 0.3s ease;
+  }
+
+  .hoq_cancleForgot:hover::before {
+    width: 100%;
+  }
+
+  .cancleBtn {
+    margin-top: 10px;
+  }
+
+  @media screen and (max-width: 950px) {
+    .AuthScreenMainTitle {
+      font-size: 25px !important;
+      padding-bottom: 50px !important;
+    }
+
+    .AuthScreenSubTitle {
+      font-size: 12px !important;
+      margin-inline: 15%;
+    }
+
+    .smling-forgot-main {
+      margin-inline: 2% !important;
+    }
+  }
+
+  @media screen and (max-width: 700px) {
+    .smr_continuEmailBox {
+      width: 90%;
+    }
+
+    .hoq_submitBtnForgot {
+      width: 90%;
+      height: 50px !important;
+    }
+
+    .hoq_cancleForgot {
+      width: 90%;
+      height: 50px !important;
+    }
+  }
+
+  @media screen and (max-width: 500px) {
+    .hoq_submitBtnForgot {
+      width: 90%;
+      height: 40px !important;
+    }
+
+    .hoq_cancleForgot {
+      width: 90%;
+      height: 40px !important;
+    }
+
+    .AuthScreenSubTitle {
+      margin-top: -65px !important;
+    }
+  }
+}

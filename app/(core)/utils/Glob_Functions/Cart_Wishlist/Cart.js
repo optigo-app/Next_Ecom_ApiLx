@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { fetchCartDetails } from '@/app/(core)/utils/API/CartAPI/CartApi';
 import { handleProductRemark } from '@/app/(core)/utils/API/CartAPI/ProductRemarkAPIData';
 import { removeFromCartList } from '@/app/(core)/utils/API/RemoveCartAPI/RemoveCartAPI';
@@ -52,6 +52,7 @@ const useCart = () => {
   const [diaQua, setDiaQua] = useState();
   const [csColor, setCsColor] = useState();
   const [csQua, setCsQua] = useState();
+  const [cartStatus, setCartStatus] = useState(null);
 
   const imageNotFound = "/image-not-found.jpg";
 
@@ -62,7 +63,6 @@ const useCart = () => {
 
   const isLargeScreen = useMediaQuery('(min-width:1050px)');
   const isMaxWidth1050 = useMediaQuery('(max-width:1050px)');
-  const cartStatus = sessionStorage.getItem('isCartDrawer')
 
   const validThemenos = [3, 4, 11, 12, 10, 7, 1, 9, 2, 6];
 
@@ -76,6 +76,7 @@ const useCart = () => {
       setCurrencyData(storedData)
       const cartStatus = sessionStorage.getItem('isCartDrawer')
       setCartDrawer(cartStatus)
+      setCartStatus(cartStatus);
     } else {
       setCurrencyData(storeInit)
     }
@@ -120,7 +121,12 @@ const useCart = () => {
     }
   };
 
+  const didRun = useRef(false);
+
   useEffect(() => {
+    if (didRun.current) return; // prevent second execution in StrictMode
+    didRun.current = true;
+
     getCartData();
   }, []);
 
@@ -432,7 +438,6 @@ const useCart = () => {
   };
 
   const handleIncrement = async (item) => {
-    console.log("TCL: handleIncrement -> item", item)
     const newQuantity = (item?.Quantity || 0) + 1;
     const priceQty = (item?.UnitCostWithMarkUp) * newQuantity;
 
@@ -490,17 +495,18 @@ const useCart = () => {
 
   const handleMetalColorChange = (event, selectedId) => {
     const selectedTypeName = event.target.value;
+    const fetchColorCode = metalColorCombo.find((item) => item?.metalcolorname === event.target.value)
     // const selectedID = event.target.name;
     setMtColor(selectedTypeName);
     if (validThemenos?.includes(storeInit?.Themeno)) {
       setSelectedItem(prevItem => ({
-        ...prevItem, metalcolorname: selectedTypeName,
+        ...prevItem, metalcolorname: selectedTypeName, colorcode: fetchColorCode?.colorcode,
         // images: `${storeInit?.CDNDesignImageFol}${selectedItem?.designno}~1~${selectedTypeName}.${selectedItem?.ImageExtension}`,
-        images: `${storeInit?.CDNDesignImageFolThumb}${selectedItem?.designno}~1~${selectedTypeName}.${selectedItem?.ImageExtension}`,
+        images: `${storeInit?.CDNDesignImageFolThumb}${selectedItem?.designno}~1~${fetchColorCode?.colorcode}.${selectedItem?.ImageExtension}`,
         loading: false
       }));
     } else {
-      setSelectedItem(prevItem => ({ ...prevItem, metalcolorname: selectedTypeName }));
+      setSelectedItem(prevItem => ({ ...prevItem, metalcolorname: selectedTypeName, colorcode: fetchColorCode?.colorcode }));
     }
 
     const selectedMetal = metalColorCombo.find(option => option.metalcolorname === selectedTypeName);
@@ -750,6 +756,9 @@ const useCart = () => {
         c: logindata?.cmboCSQCid,
         f: {},
         g: [["", ""], ["", "", ""]],
+        i: cartData?.MetalColorid,
+        l: cartData?.ImageExtension,
+        count: cartData?.ImageCount,
       };
       createAndNavigate(obj);
     } else {
@@ -761,11 +770,13 @@ const useCart = () => {
         c: colorStoneID,
         f: {},
         g: [["", ""], ["", "", ""]],
+        i: cartData?.MetalColorid,
+        l: cartData?.ImageExtension,
+        count: cartData?.ImageCount,
       };
       createAndNavigate(obj);
     }
   };
-
 
   // browse our collection
   const handelMenu = () => {

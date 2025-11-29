@@ -1,0 +1,215 @@
+@use "../../../theme/hoq.web/style/variable.scss" as *;
+
+.hoq_contactfrom {
+    width: 100%;
+    height: auto;
+    font-family: $fontTenorSans;
+    display: flex;
+    align-items: center;
+    text-align: center;
+    flex-direction: column;
+    padding: 75px 0;
+
+    .details {
+        width: 60%;
+        display: flex;
+
+        h1 {
+            padding: 10px 0;
+        }
+
+        flex-direction: column;
+
+        p,
+        span,
+        address {
+            font-weight: 500;
+            font-family: $fontDmSans;
+        }
+    }
+
+    .contact_from {
+        padding: 20px 12px;
+        width: 46%;
+
+        .layout {
+            height: auto;
+
+            form {
+                display: flex;
+                width: 100%;
+                flex-direction: column;
+                gap: 10px;
+                margin-top: 25px;
+
+                .input {
+                    display: flex;
+                    width: 100%;
+                    gap: 8px;
+
+                    .box_input {
+                        // width: 100%;
+                        width: 50%;
+                        display: flex;
+                        flex-direction: column;
+                        align-items: start;
+
+                        @media (max-width: 768px) {
+                            width: 100%;
+                        }
+
+                        input {
+                            width: 100%;
+                            padding: 8px 8px;
+                        }
+                    }
+                }
+
+                .input-last {
+                    display: flex;
+                    width: 100%;
+                    gap: 8px;
+
+                    .box_input {
+                        width: 100%;
+                        display: flex;
+                        flex-direction: column;
+                        align-items: start;
+
+                        input {
+                            width: 100%;
+                            padding: 8px 8px;
+                        }
+                    }
+                }
+
+                .textarea {
+                    display: flex;
+                    font-family: $fontTenorSans;
+                    align-items: start;
+                    flex-direction: column;
+
+                    textarea {
+                        width: 100%;
+                        border-radius: 3px;
+                        height: 150px;
+                        outline: none;
+                        border: none;
+                        border: 1px solid rgb(184, 184, 184);
+                        padding: 10px;
+
+                        &:focus {
+                            outline: 1px solid black;
+                            border: 1px solid black;
+                        }
+                    }
+                }
+
+                .btn_form {
+                    width: 100%;
+                    padding: 20px 0;
+
+                    button {
+                        padding: 10px 45px;
+                        border-radius: 3px;
+                        outline: none;
+                        text-align: center;
+                        border: none;
+                        font-family: $fontTenorSans;
+                        background-color: #c20000;
+                        font-size: 17px;
+                        color: white;
+                    }
+                }
+            }
+        }
+    }
+
+    @media (max-width: 1200px) {
+        .details {
+            width: 80%;
+        }
+
+        .contact_from {
+            width: 50%;
+        }
+    }
+
+    @media (max-width: 992px) {
+        .details {
+            width: 90%;
+        }
+
+        .contact_from {
+            width: 100%;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .details {
+            width: 100%;
+            padding: 0 20px;
+        }
+
+        .contact_from {
+            width: 100%;
+
+            .layout {
+                form {
+                    .input {
+                        width: 100%;
+                        flex-direction: column;
+                    }
+
+                    .textarea {
+                        textarea {
+                            height: 120px;
+                        }
+                    }
+
+                    .btn_form {
+                        button {
+                            padding: 10px 30px;
+                            font-size: 15px;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    @media (max-width: 576px) {
+        padding: 50px 0;
+
+        .details {
+            width: 100%;
+            padding: 0 10px;
+        }
+
+        .contact_from {
+            width: 100%;
+
+            .layout {
+                form {
+                    .input {
+                        gap: 4px;
+                    }
+
+                    .textarea {
+                        textarea {
+                            height: 100px;
+                            padding: 8px;
+                        }
+                    }
+
+                    .btn_form {
+                        button {
+                            padding: 8px 20px;
+                            font-size: 14px;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
