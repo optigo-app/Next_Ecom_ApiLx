@@ -22,7 +22,7 @@ const Confirmation = ({ storeinit }) => {
     const storeInit = storeinit;
     const setCartCountVal = setCartCountNum;
 
-    useEffect(() => {
+    useEffect(() => {  
         setTimeout(() => {
             triggerConfetti();
         }, 300)
