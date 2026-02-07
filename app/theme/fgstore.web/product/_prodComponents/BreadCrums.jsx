@@ -1,3 +1,6 @@
+"use client";
+
+import { useNextRouterLikeRR } from '@/app/(core)/hooks/useLocationRd'
 import React from 'react'
 
 const BreadCrumbs = ({
@@ -6,37 +9,42 @@ const BreadCrumbs = ({
     menuDecode
 }) => {
 
-    const handleBreadcums = (mparams) => {
+    const location = useNextRouterLikeRR();
 
-        let key = Object?.keys(mparams)
-        let val = Object?.values(mparams)
+    const handleBreadcums = (mparams) => {
+        let key = Object?.keys(mparams);
+        let val = Object?.values(mparams);
 
         let KeyObj = {};
         let ValObj = {};
 
         key.forEach((value, index) => {
-            let keyName = `FilterKey${index === 0 ? '' : index}`;
+            let keyName = `FilterKey${index === 0 ? "" : index}`;
             KeyObj[keyName] = value;
         });
 
         val.forEach((value, index) => {
-            let keyName = `FilterVal${index === 0 ? '' : index}`;
+            let keyName = `FilterVal${index === 0 ? "" : index}`;
             ValObj[keyName] = value;
         });
 
-        let finalData = { ...KeyObj, ...ValObj }
+        let finalData = { ...KeyObj, ...ValObj };
 
         const queryParameters1 = [
             finalData?.FilterKey && `${finalData.FilterVal}`,
             finalData?.FilterKey1 && `${finalData.FilterVal1}`,
             finalData?.FilterKey2 && `${finalData.FilterVal2}`,
-        ].filter(Boolean).join('/');
+        ]
+            .filter(Boolean)
+            .join("/");
 
         const queryParameters = [
             finalData?.FilterKey && `${finalData.FilterVal}`,
             finalData?.FilterKey1 && `${finalData.FilterVal1}`,
             finalData?.FilterKey2 && `${finalData.FilterVal2}`,
-        ].filter(Boolean).join(',');
+        ]
+            .filter(Boolean)
+            .join(",");
 
         const otherparamUrl = Object.entries({
             b: finalData?.FilterKey,
@@ -46,20 +54,26 @@ const BreadCrumbs = ({
             .filter(([key, value]) => value !== undefined)
             .map(([key, value]) => value)
             .filter(Boolean)
-            .join(',');
+            .join(",");
 
         let menuEncoded = `${queryParameters}/${otherparamUrl}`;
 
-        const url = `/p/${BreadCumsObj()?.menuname}/${queryParameters1}/?M=${btoa(menuEncoded)}`;
+        const url = `/p/${BreadCumsObj()?.menuname}/${queryParameters1}/?M=${btoa(
+            menuEncoded
+        )}`;
+        // const url = `/p?V=${queryParameters}/K=${otherparamUrl}`;
 
         navigate(url);
-    }
+
+        // console.log("mparams", KeyObj, ValObj)
+    };
 
     const BreadCumsObj = () => {
-        let BreadCum = menuDecode;
+        let BreadCum = decodeURI(atob(location?.search?.slice(3))).split('/')
+        console.log("TCL: BreadCum", BreadCum)
 
-        const values = BreadCum[0]?.split(',');
-        const labels = BreadCum[1]?.split(',');
+        const values = BreadCum?.[0]?.split(',');
+        const labels = BreadCum?.[1]?.split(',');
 
         const updatedBreadCum = labels?.reduce((acc, label, index) => {
             acc[label] = values[index] || '';
@@ -67,12 +81,10 @@ const BreadCrumbs = ({
         }, {});
 
         let result = Object?.entries(updatedBreadCum ?? {})?.reduce((acc, [key, value], index) => {
-            acc[`FilterKey${index === 0 ? '' : index}`] = key.charAt(0).toUpperCase() + key.slice(1);
+            acc[`FilterKey${index === 0 ? '' : index}`] = key?.charAt(0)?.toUpperCase() + key?.slice(1);
             acc[`FilterVal${index === 0 ? '' : index}`] = value;
             return acc;
         }, {});
-
-
 
         if (result) {
             result.menuname = decodeURI(location?.pathname)?.slice(3)?.slice(0, -1)?.split("/")[0]

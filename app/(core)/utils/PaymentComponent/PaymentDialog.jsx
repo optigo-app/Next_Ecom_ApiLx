@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { Dialog, DialogContent, CircularProgress, Typography, Box } from '@mui/material';
-import {HourglassEmpty, Payment } from '@mui/icons-material';
+import { HourglassEmpty, Payment } from '@mui/icons-material';
 
 export default function EnhancedPaymentDialog({ open, close, mode }) {
     const [loading, setLoading] = useState(true);
@@ -35,11 +35,12 @@ export default function EnhancedPaymentDialog({ open, close, mode }) {
                 maxWidth="xs"
                 fullWidth
                 sx={{
+                    zIndex: 2000000,   // ⬅️ Increase Dialog z-index here
                     '& .MuiDialog-paper': {
                         borderRadius: '10px',
                         padding: '20px',
                         boxShadow: 24,
-                        height:'270px',
+                        height: '270px',
                     },
                 }}
             >

@@ -1,3 +1,5 @@
+"use client";
+
 // import React, { useState, useEffect, useMemo } from "react";
 // import { Box, Pagination, PaginationItem, TextField, Typography } from "@mui/material";
 // import debounce from "lodash.debounce";

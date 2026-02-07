@@ -582,6 +582,7 @@ const Product = ({ params, searchParams, storeinit }) => {
         let output = FilterValueWithCheckedOnly()
         let obj = { mt: selectedMetalId, dia: selectedDiaId, cs: selectedCsId }
         setIsOnlyProdLoading(true)
+        setIsProdLoading(true)
         setCurrPage(value)
         setInputPage(value);
         setTimeout(() => {
@@ -626,6 +627,7 @@ const Product = ({ params, searchParams, storeinit }) => {
                 if (res) {
                     setProductListData(res?.pdList);
                     setAfterFilterCount(res?.pdResp?.rd1[0]?.designcount)
+                    setIsProdLoading(false)
                 }
                 return res;
             })
@@ -633,6 +635,7 @@ const Product = ({ params, searchParams, storeinit }) => {
                 setTimeout(() => {
                     setIsOnlyProdLoading(false)
                 }, 100);
+                setIsProdLoading(false)
             })
     }
 
