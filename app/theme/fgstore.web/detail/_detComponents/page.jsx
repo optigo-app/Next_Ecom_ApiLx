@@ -16,8 +16,6 @@ import ProductInfo from './components/ProductInfo';
 import ProductSections from './components/ProductSections';
 
 const ProductDetail = ({ params, searchParams, storeInit }) => {
-
-    // Use custom hooks
     const productData = useProductDetail(searchParams, storeInit);
     const {
         singleProd,
@@ -45,10 +43,7 @@ const ProductDetail = ({ params, searchParams, storeInit }) => {
         SimilarBrandArr,
         designSetList,
         loginInfo,
-        handleCustomChange,
-        defaultImage,
-        defaultExtension,
-        proThumImgCount,
+        handleCustomChange
     } = productData;
 
     const cartWishlistData = useCartWishlist(
@@ -79,12 +74,8 @@ const ProductDetail = ({ params, searchParams, storeInit }) => {
         singleProd,
         singleProd1,
         selectMtColor,
-        setSelectMtColor,
         storeInit,
-        prodLoading,
-        defaultImage,
-        defaultExtension,
-        proThumImgCount
+        prodLoading
     );
 
     const {
@@ -101,7 +92,7 @@ const ProductDetail = ({ params, searchParams, storeInit }) => {
         setVision360,
         setImagePromise,
         setIsVisionShow,
-        handleMetalWiseColorImg,
+        handleMetalWiseColorImg
     } = imageData;
 
     const customizationData = useProductCustomization(singleProd, singleProd1, storeInit);

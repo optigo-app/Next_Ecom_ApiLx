@@ -88,9 +88,8 @@ export default function ForgotPassword() {
       errors.confirmPassword = "Passwords do not match";
     }
 
-    const queryParams = new URLSearchParams(window.location.search);
-    let userid = queryParams?.get("userid");
-    userid = decodeURIComponent(userid)?.replace(/^"|"$/g, '');
+    const queryParams = new URLSearchParams(window?.location?.search);
+    const userid = queryParams?.get("userid");
 
     if (Object.keys(errors).length === 0) {
       const hashedPassword = hashPasswordSHA1(password);
@@ -141,7 +140,7 @@ export default function ForgotPassword() {
             }}
             className="AuthScreenSubTitle"
           >
-            { }
+            {}
           </p>
 
           <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>

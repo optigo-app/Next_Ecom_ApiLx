@@ -29,6 +29,7 @@ import FilterSection from './FilterSection';
 
 import BreadCrumbs from './BreadCrums';
 import { useStore } from '@/app/(core)/contexts/StoreProvider';
+import { ParseAndDecodeSearchParams } from '@/app/(core)/utils/GlobalFunctions/Parser';
 
 const MobileFilter = dynamic(() => import('./MobileFilter'), { ssr: false });
 
@@ -292,36 +293,16 @@ const Product = ({ params, searchParams, storeinit }) => {
         }
     }, [params, productListData, filterChecked])
 
-    let result = [];
+    let result = ParseAndDecodeSearchParams(searchParams);
 
     const lastSearchParamsRef = useRef(null);
     const isApiCallInProgressRef = useRef(false);
 
-    try {
-        if (searchParams?.value) {
-            const parsed = JSON.parse(searchParams.value);
-
-            if (parsed && typeof parsed === "object") {
-                result = Object.entries(parsed).map(([key, value]) => {
-                    const decoded = atob(value);       // decode base64
-                    const reEncoded = btoa(decoded);   // re-encode
-                    return `${key}=${reEncoded}`;
-                });
-            }
-        }
-    } catch (err) {
-        console.error("Invalid searchParams.value:", searchParams?.value, err);
-    }
-
     useEffect(() => {
-        // Create a unique key for current searchParams to avoid duplicate calls
         const currentSearchKey = JSON.stringify(searchParams);
-
-        // Skip if same searchParams or API call already in progress
         if (lastSearchParamsRef.current === currentSearchKey || isApiCallInProgressRef.current) {
             return;
         }
-
         lastSearchParamsRef.current = currentSearchKey;
         isApiCallInProgressRef.current = true;
 
@@ -340,6 +321,7 @@ const Product = ({ params, searchParams, storeinit }) => {
             let productlisttype;
 
             UrlVal?.forEach((ele) => {
+                console.log("🚀 ~ fetchData ~ ele:", ele)
                 let firstChar = ele.charAt(0);
 
                 switch (firstChar) {
@@ -582,7 +564,6 @@ const Product = ({ params, searchParams, storeinit }) => {
         let output = FilterValueWithCheckedOnly()
         let obj = { mt: selectedMetalId, dia: selectedDiaId, cs: selectedCsId }
         setIsOnlyProdLoading(true)
-        setIsProdLoading(true)
         setCurrPage(value)
         setInputPage(value);
         setTimeout(() => {
@@ -627,7 +608,6 @@ const Product = ({ params, searchParams, storeinit }) => {
                 if (res) {
                     setProductListData(res?.pdList);
                     setAfterFilterCount(res?.pdResp?.rd1[0]?.designcount)
-                    setIsProdLoading(false)
                 }
                 return res;
             })
@@ -635,7 +615,6 @@ const Product = ({ params, searchParams, storeinit }) => {
                 setTimeout(() => {
                     setIsOnlyProdLoading(false)
                 }, 100);
-                setIsProdLoading(false)
             })
     }
 
@@ -817,18 +796,13 @@ const Product = ({ params, searchParams, storeinit }) => {
 
     const handleMoveToDetail = (productData) => {
         let output = FilterValueWithCheckedOnly()
-        const uniqueNmList = [...new Set(JSON.parse(productData?.ImageVideoDetail).map(item => item.Nm))];
-
         let obj = {
             a: productData?.autocode,
             b: productData?.designno,
             m: selectedMetalId,
             d: selectedDiaId,
             c: selectedCsId,
-            f: output,
-            i: productData?.MetalColorid,
-            l: JSON.parse(productData?.ImageVideoDetail)[0]?.Ex,
-            count: uniqueNmList.length,
+            f: output
         }
 
         decodeAndDecompress()

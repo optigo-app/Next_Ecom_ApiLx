@@ -73,9 +73,9 @@ export default function ContinueWithMobile({ params, searchParams }) {
     setIsLoading(true);
     ContimueWithMobileAPI(mobileNo)
       .then((response) => {
-        if (response.Data.rd[0].stat === 1 && response.Data.rd[0].islead === 1) {
+        if (response.Data.Table1[0].stat === "1" && response.Data.Table1[0].islead === "1") {
           toast.error("You are not a customer, contact to admin");
-        } else if (response.Data.rd[0].stat === 1 && response.Data.rd[0].islead === 0) {
+        } else if (response.Data.Table1[0].stat === "1" && response.Data.Table1[0].islead === "0") {
           toast.success("OTP send Sucssessfully");
           navigation(redirectMobileUrl);
           sessionStorage.setItem("registerMobile", mobileNo);

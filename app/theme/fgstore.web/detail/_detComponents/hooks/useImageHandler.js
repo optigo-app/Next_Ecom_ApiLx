@@ -1,20 +1,11 @@
 import { useState, useEffect } from "react";
 
-export const useImageHandler = (
-    singleProd,
-    singleProd1,
-    selectMtColor,
-    setSelectMtColor,
-    storeInit,
-    prodLoading,
-    defaultImage = "",
-    defaultExtension,
-    proThumImgCount
-) => {
+export const useImageHandler = (singleProd, singleProd1, selectMtColor, storeInit, prodLoading) => {
+
     // Image and video states
     const [pdThumbImg, setPdThumbImg] = useState([]);
     const [selectedThumbImg, setSelectedThumbImg] = useState({});
-    const [thumbImgIndex, setThumbImgIndex] = useState(0);
+    const [thumbImgIndex, setThumbImgIndex] = useState();
     const [metalWiseColorImg, setMetalWiseColorImg] = useState();
     const [vison360, setVision360] = useState();
     const [selectedMetalColor, setSelectedMetalColor] = useState();
@@ -22,20 +13,6 @@ export const useImageHandler = (
     const [filteredVideos, setFilteredVideos] = useState([]);
     const [ImagePromise, setImagePromise] = useState(true);
     const [isVisionShow, setIsVisionShow] = useState(false);
-
-    // Generate thumbnail URLs
-    const generateThumbnails = (designNo, count, extension) => {
-        const thumbBase = storeInit?.CDNDesignImageFolThumb || "";
-        return Array.from({ length: count }, (_, i) => {
-            const index = i + 1;
-            const fileName = `${designNo}~${index}`;
-            return {
-                thumbImageUrl: `${thumbBase}${fileName}.jpg`,
-                originalImageExtension: extension,
-                originalImageUrl: `${storeInit?.CDNDesignImageFol}${fileName}.${extension}`,
-            };
-        });
-    };
 
     // Check if image is available
     const checkImageAvailability = (imageUrl) => {
@@ -47,34 +24,31 @@ export const useImageHandler = (
         });
     };
 
-    // Load default images
+    // Filter videos based on selected metal color
     useEffect(() => {
-        const loadInitialImages = async () => {
-            if (!defaultImage || !defaultExtension) return;
-            try {
-                setSelectedThumbImg({
-                    link: { imageUrl: defaultImage, extension: defaultExtension },
-                    type: "img",
-                });
+        if (!pdVideoArr || !selectedMetalColor) return;
 
-                if (proThumImgCount > 0) {
-                    const designNo = defaultImage.split("~")[0].split("/").pop();
-                    const thumbs = generateThumbnails(designNo, proThumImgCount, defaultExtension);
-                    setPdThumbImg(thumbs);
-                }
+        const colorMatched = pdVideoArr.filter((url) => {
+            const parts = url.split("~");
+            const colorPart = parts[2]?.split(".")[0];
+            return colorPart === selectedMetalColor;
+        });
 
-                setImagePromise(false);
-            } catch (error) {
-                console.error("Error loading default images:", error);
-            }
-        };
-        loadInitialImages();
-    }, [defaultImage, defaultExtension, proThumImgCount, storeInit]);
+        if (colorMatched.length > 0) {
+            setFilteredVideos(colorMatched);
+        } else {
+            // Fallback: videos without any color in the filename
+            const noColorVideos = pdVideoArr.filter((url) => {
+                const parts = url.split("~");
+                return parts.length === 2; // means format is like MCJ66~1.mp4
+            });
+            setFilteredVideos(noColorVideos);
+        }
+    }, [pdVideoArr, selectedMetalColor]);
 
+    // Main function to process product card images
     const ProdCardImageFunc = async () => {
-        if (!singleProd) return;
-
-        const mtColorLocal = JSON.parse(sessionStorage.getItem("MetalColorCombo") || "[]");
+        const mtColorLocal = JSON.parse(sessionStorage.getItem("MetalColorCombo")) || [];
         const imageVideoDetail = singleProd?.ImageVideoDetail;
         const pd = singleProd;
 
@@ -86,65 +60,91 @@ export const useImageHandler = (
             return;
         }
 
-        const normalImages = [],
-            colorImages = [],
-            normalVideos = [],
-            colorVideos = [];
-
-        parsedData.forEach((item) => {
+        // Filter categorized media
+        const normalImages = [], colorImages = [], normalVideos = [], colorVideos = [];
+        parsedData.forEach(item => {
             if (item?.TI === 1 && !item?.CN) normalImages.push(item);
             else if (item?.TI === 2 && item?.CN) colorImages.push(item);
             else if (item?.TI === 4 && item?.CN) colorVideos.push(item);
             else if (item?.TI === 3 && !item?.CN) normalVideos.push(item);
         });
 
-        const maxColorCount = Math.max(
-            ...Object.values(
-                colorImages.reduce((acc, { CN }) => {
-                    acc[CN] = (acc[CN] || 0) + 1;
-                    return acc;
-                }, {})
-            ),
-            0
-        );
+        const getMaxCountByColor = (list) => {
+            return list.reduce((acc, curr) => {
+                const color = curr.CN;
+                acc[color] = (acc[color] || 0) + 1;
+                return acc;
+            }, {});
+        };
 
-        const normalImageCount = normalImages.length ? Math.max(...normalImages.map((i) => i.Nm)) : 0;
-        const mcArr = mtColorLocal.find((ele) => ele.id === singleProd?.MetalColorid);
+        const maxColorCount = Math.max(...Object.values(getMaxCountByColor(colorImages)), 0);
+        const normalImageCount = normalImages.length ? Math.max(...normalImages.map(i => i.Nm)) : 0;
+
+        // Get metal color code
+        const mcArr = mtColorLocal.find(ele => ele.id === singleProd?.MetalColorid);
         setSelectedMetalColor(mcArr?.colorcode);
-        setSelectMtColor(selectedColorCode);
+
+        const buildImageURL = (i, isColor = false) => {
+            const base = storeInit?.CDNDesignImageFol;
+            const extension = isColor ? colorImages[i - 1]?.Ex : normalImages[i - 1]?.Ex;
+            const imageUrl = isColor
+                ? `${base}${pd.designno}~${i}~${mcArr?.colorcode}.${colorImages[i - 1]?.Ex}`
+                : `${base}${pd.designno}~${i}.${normalImages[i - 1]?.Ex}`;
+            return { imageUrl, extension };
+        };
 
         const pdImgList = [];
 
         if (maxColorCount > 0) {
+            // Asynchronously populate pdImgList with color images
             for (let i = 1; i <= maxColorCount; i++) {
-                const extension = colorImages[i - 1]?.Ex;
-                const imageUrl = `${storeInit?.CDNDesignImageFol}${pd.designno}~${i}~${mcArr?.colorcode}.${extension}`;
-                pdImgList.push({ imageUrl, extension });
-            }
-        } else if (normalImageCount > 0) {
-            for (let i = 1; i <= normalImageCount; i++) {
-                const extension = normalImages[i - 1]?.Ex;
-                const imageUrl = `${storeInit?.CDNDesignImageFol}${pd.designno}~${i}.${extension}`;
-                pdImgList.push({ imageUrl, extension });
+                const colorImageUrl = buildImageURL(i, true);
+                const isColorImageAvailable = await checkImageAvailability(colorImageUrl?.imageUrl);
+                if (isColorImageAvailable) {
+                    pdImgList.push(colorImageUrl);
+                }
             }
         }
 
+        // If no color image was added, push normal images
+        if (pdImgList.length === 0 && normalImageCount > 0) {
+            for (let i = 1; i <= normalImageCount; i++) {
+                pdImgList.push(buildImageURL(i));
+            }
+        }
+
+        // Set the first image as selected
+        let finalprodListimg = {};
         if (pdImgList.length > 0) {
-            setSelectedThumbImg({
-                link: { imageUrl: pdImgList[0].imageUrl, extension: pdImgList[0].extension },
-                type: "img",
-            });
-            const thumbImagePath = pdImgList.map((url) => {
+            finalprodListimg = pdImgList[0];
+            if (Object.keys(finalprodListimg).length > 0) {
+                setSelectedThumbImg({
+                    link: {
+                        imageUrl: finalprodListimg?.imageUrl,
+                        extension: finalprodListimg?.extension
+                    },
+                    type: 'img'
+                });
+            }
+        }
+
+        setImagePromise(false);
+
+        // Set thumbnail images
+        if (pdImgList.length) {
+            const thumbImagePath = pdImgList.map(url => {
                 const fileName = url?.imageUrl?.split("Design_Image/")[1];
-                return {
-                    thumbImageUrl: `${storeInit?.CDNDesignImageFolThumb}${fileName?.split(".")[0]}.jpg`,
-                    originalImageExtension: url?.extension,
-                };
+                const thumbImageUrl = `${storeInit?.CDNDesignImageFolThumb}${fileName?.split('.')[0]}.jpg`;
+                const originalImageExtension = url?.extension;
+                return { thumbImageUrl, originalImageExtension };
             });
             setPdThumbImg(thumbImagePath);
             setThumbImgIndex(0);
+        } else {
+            setThumbImgIndex();
         }
 
+        // Video processing
         const buildVideoURL = (video, isColor = false) => {
             const base = storeInit?.CDNVPath;
             return isColor
@@ -152,11 +152,13 @@ export const useImageHandler = (
                 : `${base}${pd.designno}~${video.Nm}.${video.Ex}`;
         };
 
-        const pdvideoList = [...colorVideos.map((v) => buildVideoURL(v, true)), ...normalVideos.map((v) => buildVideoURL(v))];
-        setPdVideoArr(pdvideoList.length ? pdvideoList : []);
-        setImagePromise(false);
-    };
+        const pdvideoList = [
+            ...colorVideos.map(v => buildVideoURL(v, true)),
+            ...normalVideos.map(v => buildVideoURL(v))
+        ];
 
+        setPdVideoArr(pdvideoList.length ? pdvideoList : []);
+    };
 
     // Handle metal color change with image update
     const handleMetalWiseColorImg = async (e) => {
@@ -170,7 +172,6 @@ export const useImageHandler = (
         const thumbCDN = storeInit?.CDNDesignImageFolThumb;
 
         setSelectedMetalColor(mcArr?.colorcode);
-        setSelectMtColor(selectedColorCode);
 
         // Parse image/video data
         let parsedData = [];
@@ -293,7 +294,6 @@ export const useImageHandler = (
             setThumbImgIndex(safeIndex);
         }
     };
-    // Main function to process product card images
 
     // Initialize images when product changes
     useEffect(() => {
@@ -304,8 +304,14 @@ export const useImageHandler = (
 
     // Set fallback image when no images are available
     useEffect(() => {
-        if (!(pdThumbImg?.length || pdVideoArr?.length)) {
-            setSelectedThumbImg({ link: { imageUrl: "", extension: "jpg" }, type: "img" });
+        if (!(pdThumbImg?.length !== 0 || pdVideoArr?.length !== 0)) {
+            setSelectedThumbImg({
+                link: {
+                    imageUrl: "",
+                    extension: "jpg"
+                },
+                type: 'img'
+            });
         }
     }, [pdThumbImg, pdVideoArr]);
 
@@ -333,6 +339,6 @@ export const useImageHandler = (
         // Functions
         handleMetalWiseColorImg,
         checkImageAvailability,
-        ProdCardImageFunc,
+        ProdCardImageFunc
     };
 };
