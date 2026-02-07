@@ -9,8 +9,8 @@ export const themeMap = {
   },
   "nxt10.optigoapps.com": {
     // // page: "fgstore.pro",
-    page: "fgstore.web",
-    // page: "hoq.web",
+    // page: "fgstore.web",
+    page: "hoq.web",
     // page: "hoq.web",
     // page: "fgstore.web",
   },

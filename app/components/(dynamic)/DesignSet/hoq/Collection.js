@@ -70,7 +70,13 @@ const Collection = ({ storeInit }) => {
     };
 
     const handleNavigation = (designNo, autoCode, titleLine, index, product) => {
-        console.log("TCL: handleNavigation -> product", product)
+
+        const parsed = product?.ImageVideoDetail
+        ? JSON.parse(product?.ImageVideoDetail)
+        : [];
+
+        const uniqueNmList = [...new Set(parsed?.map(item => item.Nm))];
+
         let obj = {
             a: autoCode,
             b: designNo,
@@ -78,6 +84,9 @@ const Collection = ({ storeInit }) => {
             d: loginUserDetail?.cmboDiaQCid ?? storeInit?.cmboDiaQCid,
             c: loginUserDetail?.cmboCSQCid ?? storeInit?.cmboCSQCid,
             f: {},
+             i: product?.MetalColorid,
+            l: parsed[0]?.Ex || "",
+            count: uniqueNmList.length,
         };
         let encodeObj = compressAndEncode(JSON.stringify(obj));
         sessionStorage.setItem('scrollToProduct1', `product-${index}`);
