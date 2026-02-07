@@ -7,25 +7,25 @@ const Payment = ({ assetBase }) => {
     <div className="payment-btn">
       <div className="pay">
         <img
-          src={assetBase + `/footer/mastercard.webp`}
+          src={ "/"+assetBase + `/footer/mastercard.webp`}
           alt=""
         />
       </div>
       <div className="pay">
         <img
-          src={assetBase + `/footer/gpay.webp`}
+          src={ "/"+assetBase + `/footer/gpay.webp`}
           alt=""
         />
       </div>
       <div className="pay">
         <img
-          src={assetBase + `/footer/visa.webp`}
+          src={ "/"+assetBase + `/footer/visa.webp`}
           alt=""
         />
       </div>
       <div className="pay">
         <img
-          src={assetBase + `/footer/paytm.webp`}
+          src={ "/"+assetBase + `/footer/paytm.webp`}
           alt=""
         />
       </div>

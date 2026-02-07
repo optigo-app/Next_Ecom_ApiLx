@@ -1,15 +1,15 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import "./ReviewTab.modul.scss";
-import "slick-carousel/slick/slick.css";
-import "slick-carousel/slick/slick-theme.css";
-import Slider from "react-slick";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Pagination } from "swiper/modules";
+import "swiper/css";
+import "swiper/css/pagination";
 import { FaStar } from "react-icons/fa";
 import { FcGoogle } from "react-icons/fc";
 import { fakeReviewsList } from "@/app/components/(static)/Constants/FakeReviewList";
 import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
-import { settings } from "@/app/components/(static)/Constants/SliderConfig";
 
 const ReviewTab = () => {
   const slider = useRef(null);
@@ -29,14 +29,31 @@ const ReviewTab = () => {
       </div>
       <div className="review_Slider">
         <div className="Slider_Custom_btn next">
-          <button onClick={() => slider?.current?.slickPrev()}>
+          <button onClick={() => slider?.current?.slidePrev()}>
             <FiChevronLeft size={24} />
           </button>
-          <button onClick={() => slider?.current?.slickNext()}>
+          <button onClick={() => slider?.current?.slideNext()}>
             <FiChevronRight size={24} />
           </button>
         </div>
-        <Slider {...settings} ref={slider} infinite={true}>
+        <Swiper
+          modules={[Pagination]}
+          onSwiper={(instance) => {
+            slider.current = instance;
+          }}
+          slidesPerView={1}
+          slidesPerGroup={1}
+          loop={true}
+          allowTouchMove={true}
+          pagination={{ clickable: true }}
+          breakpoints={{
+            480: { slidesPerView: 1, slidesPerGroup: 1 },
+            768: { slidesPerView: 2, slidesPerGroup: 1 },
+            820: { slidesPerView: 2, slidesPerGroup: 1 },
+            1024: { slidesPerView: 3, slidesPerGroup: 1 },
+            1200: { slidesPerView: 5, slidesPerGroup: 1 },
+          }}
+        >
           {fakeReviewsList?.map((review, index) => {
             const {
               img,
@@ -50,7 +67,7 @@ const ReviewTab = () => {
             const isLongReview = reviewText?.trim().length > 50;
 
             return (
-              <div key={index} className="review_card">
+              <SwiperSlide key={index} className="review_card">
                 <div className="r_card">
                   <div className="user_info_">
                     <img src={img} alt={`${user}'s profile`}
@@ -97,10 +114,10 @@ const ReviewTab = () => {
                     <hr />
                   </div>
                 </div>
-              </div>
+              </SwiperSlide>
             );
           })}
-        </Slider>
+        </Swiper>
       </div>
     </div>
   );
