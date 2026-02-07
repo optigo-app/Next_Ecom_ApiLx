@@ -7,11 +7,12 @@ import { Visibility, VisibilityOff } from '@mui/icons-material'
 import CryptoJS from 'crypto-js';
 import { ResetPasswordAPI } from '@/app/(core)/utils/API/Auth/ResetPasswordAPI';
 import { useNextRouterLikeRR } from "@/app/(core)/hooks/useLocationRd";
+import { useSearchParams } from "next/navigation";
 
 
-export default function ForgotPass() {
+export default function ForgotPass({ params, searchParams, storeInit }) {
 
- const location = useNextRouterLikeRR();
+  const location = useNextRouterLikeRR();
   const navigation = location?.push;
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -21,14 +22,18 @@ export default function ForgotPass() {
   const [errors, setErrors] = useState({});
   const [passwordError, setPasswordError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const searchParamsHook = useSearchParams();
+  const userid = searchParamsHook.get('userid');
+    const search = searchParams.LoginRedirect || searchParams.loginRedirect || searchParams.search || "";
+    const redirectEmailUrl = `/ContinueWithEmail?LoginRedirect=${search}`;
+
 
   useEffect(() => {
     const storedEmail = sessionStorage.getItem('userEmailForPdList');
     if (storedEmail) {
       setEmail(storedEmail);
     }
-
-  }, []); // 
+  }, []); 
 
 
 
@@ -96,15 +101,13 @@ export default function ForgotPass() {
     }
 
 
-    const queryParams = new URLSearchParams(window.location.search);
-    const userid = queryParams.get('userid');
 
     if (Object.keys(errors).length === 0) {
       const hashedPassword = hashPasswordSHA1(password);
       setIsLoading(true);
       ResetPasswordAPI(userid, hashedPassword).then((response) => {
         if (response.Data.rd[0].stat === 1) {
-          navigation('/ContinueWithEmail');
+          navigation(redirectEmailUrl);
         } else {
           setIsLoading(false);
           alert(response.Data.rd[0].stat_msg);

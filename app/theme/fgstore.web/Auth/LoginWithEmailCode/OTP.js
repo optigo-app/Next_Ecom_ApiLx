@@ -141,18 +141,17 @@ function OTP({
               input: InputElement,
             }}
             aria-label={`Digit ${index + 1} of OTP`}
-            slotProps={{
-              input: {
-                ref: (ele) => {
-                  inputRefs.current[index] = ele;
-                },
-                onKeyDown: (event) => handleKeyDown(event, index),
-                onChange: (event) => handleChange(event, index),
-                onClick: (event) => handleClick(event, index),
-                onPaste: (event) => handlePaste(event, index),
-                value: value[index] ?? '',
-              },
+            inputComponent={InputElement}
+            inputProps={{
+              ref: (ele) => (inputRefs.current[index] = ele),
+              onKeyDown: (event) => handleKeyDown(event, index),
+              onChange: (event) => handleChange(event, index),
+              onClick: (event) => handleClick(event, index),
+              onPaste: (event) => handlePaste(event, index),
+              value: value[index] ?? '',
             }}
+            type="text"
+            inputMode="numeric"
           />
           {index === length - 1 ? null : separator}
         </React.Fragment>
@@ -185,20 +184,19 @@ const grey = {
 
 const InputElement = styled('input')(
   ({ theme }) => `
-  width: 40px;
+  width: 45px;
   font-family: 'IBM Plex Sans', sans-serif;
   font-size: 0.875rem;
   font-weight: 400;
-  line-height: 1.5;
+  line-height: 3;
   padding: 8px 0px;
-  border-radius: 8px;
+  border-radius: 3px;
   text-align: center;
   color: ${theme.palette.mode === 'dark' ? grey[300] : grey[900]};
   background: ${theme.palette.mode === 'dark' ? grey[900] : '#fff'};
   border: 1px solid ${theme.palette.mode === 'dark' ? grey[700] : grey[200]};
-  box-shadow: 0px 2px 4px ${
-    theme.palette.mode === 'dark' ? 'rgba(0,0,0, 0.5)' : 'rgba(0,0,0, 0.05)'
-  };
+  box-shadow: 0px 2px 4px ${theme.palette.mode === 'dark' ? 'rgba(0,0,0, 0.5)' : 'rgba(0,0,0, 0.05)'
+    };
 
   &:hover {
     border-color: ${blue[400]};

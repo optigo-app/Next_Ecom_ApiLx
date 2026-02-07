@@ -11,7 +11,7 @@ import { CountryCode } from "@/app/(core)/utils/assets/Countrylist";
 import CountryDropDown from "@/app/(core)/utils/Glob_Functions/CountryDropDown/CountryDropDown";
 import { useNextRouterLikeRR } from "@/app/(core)/hooks/useLocationRd";
 
-export default function Register({searchParams }) {
+export default function Register({ searchParams }) {
   const { push } = useNextRouterLikeRR();
   const navigation = push;
   const location = useNextRouterLikeRR();
@@ -35,12 +35,11 @@ export default function Register({searchParams }) {
   const confirmPasswordRef = useRef(null);
   const [open, setOpen] = useState(false); // Track dropdown open/close
 
-  const search = JSON.parse(searchParams?.value)?.LoginRedirect ?? "";
-  console.log("🚀 ~ Register ~ search:", search);
-  // const updatedSearch = search.replace('?LoginRedirect=', '');
-  // const redirectEmailUrl = `${decodeURIComponent(updatedSearch)}`;
-  const cancelRedireactUrl = `/LoginOption${location.queryString ? `?${location.queryString}` : ""}`;
-  const singupRedirectUrl = `/LoginOption${location.queryString ? `?${location.queryString}` : ""}`;
+  const search = searchParams?.LoginRedirect || searchParams?.loginRedirect || searchParams?.search || "";
+  const cancelRedireactUrl = `/LoginOption?LoginRedirect=${search}`;
+  const singupRedirectUrl = `/LoginOption?LoginRedirect=${search}`;
+
+
   const handleKeyDown = (event, nextRef) => {
     if (event.key === "Enter") {
       event.preventDefault();

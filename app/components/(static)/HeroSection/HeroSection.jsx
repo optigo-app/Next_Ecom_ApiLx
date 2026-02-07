@@ -27,7 +27,7 @@ export default async function TopSection() {
         loop
         playsInline
         controls={false}
-        poster={`${assetBase}/Banner/homepageVideoPoster.webp`}
+        poster={`/${assetBase}/Banner/homepageVideoPoster.webp`}
         fetchPriority="high"
         sx={{
           position: "absolute",

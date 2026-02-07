@@ -5,11 +5,7 @@ import { Visibility, VisibilityOff } from "@mui/icons-material";
 import CryptoJS from "crypto-js";
 import { toast } from "react-toastify";
 import "./LoginWithEmail.modul.scss";
-// import { DesignSet } from '../../../../Utils/API/DesignSet';
-// import { GetCount } from '../../../../Utils/API/GetCount';
-// import { getDesignPriceList } from '../../../../Utils/API/PriceDataApi';
 import { LoginWithEmailAPI } from "@/app/(core)/utils/API/Auth/LoginWithEmailAPI";
-// import { CommonAPI } from '@/app/(core)/utils/API/CommonAPI/CommonAPI';
 import { ForgotPasswordEmailAPI } from "@/app/(core)/utils/API/Auth/ForgotPasswordEmailAPI";
 import Cookies from "js-cookie";
 import { CurrencyComboAPI } from "@/app/(core)/utils/API/Combo/CurrencyComboAPI";
@@ -19,7 +15,7 @@ import { GetCountAPI } from "@/app/(core)/utils/API/GetCount/GetCountAPI";
 import { useNextRouterLikeRR } from "@/app/(core)/hooks/useLocationRd";
 import { useStore } from "@/app/(core)/contexts/StoreProvider";
 
-export default function LoginWithEmail({params ,  searchParams}) {
+export default function LoginWithEmail({ params, searchParams }) {
   const { islogin, setislogin, setCartCountNum, setWishCountNum } = useStore();
   const [email, setEmail] = useState("");
 
@@ -31,44 +27,23 @@ export default function LoginWithEmail({params ,  searchParams}) {
   const navigation = push;
   const location = useNextRouterLikeRR();
 
-  const search = JSON.parse(searchParams?.value)?.LoginRedirect ?? "";
-  const updatedSearch = search?.replace("?LoginRedirect=", "");
-  const redirectEmailUrl = `${decodeURIComponent(updatedSearch)}`;
-  const cancelRedireactUrl = `/LoginOption/${search}`;
-
-  // const setPdData = useSetRecoilState(productDataNew)
-  // const setDesignList = useSetRecoilState(designSet)
-
-  // const setCartCount = useSetRecoilState(CartListCounts)
-  // const setWishCount = useSetRecoilState(WishListCounts)
-  // const setTestProdData = useSetRecoilState(newTestProdData);
-
-  // const getCountFunc = async () => {
-
-  //     await GetCount().then((res) => {
-  //         if (res) {
-  //             setCartCount(res.CountCart)
-  //             setWishCount(res.WishCount)
-  //         }
-  //     })
-
-  // }
-
-  // let pdDataCalling = async () => {
-  //     await productListApiCall().then((res) => {
-  //         setPdData(res)
-  //     })
-  // }
-
-  // let designDataCall = async () => {
-  //     await DesignSet().then((res) => {
-  //         setDesignList(res)
-  //     })
-  // }
+  const search = searchParams?.LoginRedirect || searchParams?.loginRedirect || searchParams?.search || "";
+  const redirectEmailUrl = search ? decodeURIComponent(search) : "/";
+  const cancelRedireactUrl = `/LoginOption?LoginRedirect=${search}`;
 
   useEffect(() => {
     setCSSVariable();
-    const storedEmail = sessionStorage.getItem("registerEmail") ?? "";
+    const storedEmail = (() => {
+      const raw = sessionStorage.getItem("registerEmail");
+      if (!raw) return "";
+      try {
+        return raw.trim().startsWith("{") || raw.trim().startsWith("[") || raw.trim().startsWith('"')
+          ? JSON.parse(raw)
+          : raw;
+      } catch {
+        return raw;
+      }
+    })();
     if (storedEmail) setEmail(storedEmail);
   }, []);
 
@@ -98,34 +73,7 @@ export default function LoginWithEmail({params ,  searchParams}) {
     return hashedPassword;
   }
 
-  // const handelCurrencyData = () =>{
-
-  //     let currencyData = JSON.parse(sessionStorage.getItem('CURRENCYCOMBO'));
-  //     let loginData = JSON.parse(sessionStorage.getItem('loginUserDetail'));
-  //     console.log("param",loginData);
-
-  //     const filterData = currencyData?.filter((cd)=>cd?.Currencyid === loginData?.CurrencyCodeid)
-
-  //     console.log("currencyData",filterData);
-
-  //     if(filterData.length && filterData){
-  //         if(Array.isArray(filterData)){
-  //             sessionStorage.setItem("currencyData",JSON.stringify(filterData[0]))
-  //         }else{
-  //             sessionStorage.setItem("currencyData",JSON.stringify(filterData))
-  //         }
-  //     }else{
-  //         let DefaultObj = {
-  //             "Currencyid": 42,
-  //             "Currencycode": "INR",
-  //             "Currencyname": "Rupees",
-  //             "Currencysymbol": "₹",
-  //             "CurrencyRate": 1.00000,
-  //             "IsDefault": 1
-  //         }
-  //         sessionStorage.setItem("currencyData",JSON.stringify(DefaultObj))
-  //     }
-  // }
+ 
 
   const handleSubmit = async () => {
     const visiterId = Cookies.get("visiterId");
@@ -190,65 +138,19 @@ export default function LoginWithEmail({params ,  searchParams}) {
             .catch((err) => console.log(err));
 
           if (redirectEmailUrl) {
-            // navigation(redirectEmailUrl);
             window.location.href = redirectEmailUrl;
           } else {
-            // navigation('/')
+        
             window.location.href = "/";
           }
 
-          // pdDataCalling()
-          // designDataCall()
-          // getCountFunc()
-          // getDesignPriceList()
-
-          // handelCurrencyData()
-          // getAllProdData()
-          // window.location.reload();
+       
         } else {
           errors.confirmPassword = "Password is Invalid";
         }
       })
       .catch((err) => console.log(err));
 
-    // try {
-    //     setIsLoading(true);
-
-    //     const storeInit = JSON.parse(sessionStorage.getItem('storeInit'));
-    //     const { FrontEnd_RegNo } = storeInit;
-    //     const combinedValue = JSON.stringify({
-    //         userid: `${email}`, mobileno: '', pass: `${hashedPassword}`, mobiletoken: '', FrontEnd_RegNo: `${FrontEnd_RegNo}`
-    //     });
-    //     const encodedCombinedValue = btoa(combinedValue);
-    //     const body = {
-    //         "con": "{\"id\":\"\",\"mode\":\"WEBLOGIN\"}",
-    //         "f": "LoginWithEmail (handleSubmit)",
-    //         p: encodedCombinedValue
-    //     };
-    //     const response = await CommonAPI(body);
-
-    //     if (response.Data.rd[0].stat === 1) {
-    //         let resData = response.Data.rd[0]
-    //         sessionStorage.setItem('registerEmail', email)
-    //         setislogin('true')
-    //         sessionStorage.setItem('LoginUser', 'true')
-    //         sessionStorage.setItem('loginUserDetail', JSON.stringify(response.Data.rd[0]));
-    //         navigation('/');
-    //         pdDataCalling()
-    //         designDataCall()
-    //         getCountFunc()
-    //         getDesignPriceList()
-    //         // handelCurrencyData()
-    //         // getAllProdData()
-    //         // window.location.reload();
-    //     } else {
-    //         errors.confirmPassword = 'Password is Invalid'
-    //     }
-    // } catch (error) {
-    //     console.error('Error:', error);
-    // } finally {
-    //     setIsLoading(false);
-    // }
   };
 
   const handleTogglePasswordVisibility = (fieldName) => {
@@ -263,22 +165,7 @@ export default function LoginWithEmail({params ,  searchParams}) {
   const handleForgotPassword = async () => {
     // try {
     const storeInit = JSON.parse(sessionStorage.getItem("storeInit"));
-    // const { FrontEnd_RegNo, domain } = storeInit;
-    // // let Domian = `https://${domain}`
     let Domian = `${window?.location?.protocol}//${storeInit?.domain}`;
-
-    // const combinedValue = JSON.stringify({
-    //     domain: `${Domian}`, userid: `${email}`, FrontEnd_RegNo: `${FrontEnd_RegNo}`, Customerid: '0'
-    // });
-
-    // const encodedCombinedValue = btoa(combinedValue);
-    // const body = {
-    //     "con": "{\"id\":\"\",\"mode\":\"FORGOTPASSWORDEMAIL\",\"appuserid\":\"\"}",
-    //     "f": "m-test2.orail.co.in (getdesignnolist)",
-    //     p: encodedCombinedValue
-    // };
-    // const response = await CommonAPI(body);
-
     setIsLoading(true);
     ForgotPasswordEmailAPI(Domian, email)
       .then((response) => {
@@ -297,6 +184,11 @@ export default function LoginWithEmail({params ,  searchParams}) {
     //     setIsLoading(false);
     // }
   };
+
+    const HandleCancel = () => {
+    navigation(`/LoginOption?LoginRedirect=${search}`)
+  }
+
   return (
     <div className="smr_loginEmail">
       {isLoading && (
@@ -368,7 +260,7 @@ export default function LoginWithEmail({params ,  searchParams}) {
             >
               Login
             </button>
-            <Button style={{ marginTop: "10px", color: "gray" }} onClick={() => navigation(cancelRedireactUrl)}>
+            <Button style={{ marginTop: "10px", color: "gray" }} onClick={HandleCancel}>
               CANCEL
             </Button>
 

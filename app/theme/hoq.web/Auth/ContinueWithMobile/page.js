@@ -19,11 +19,11 @@ export default function ContimueWithMobile({ params, searchParams }) {
   const navigation = location?.push;
   const [isOpen, setIsOpen] = useState(false);
 
-  const search = JSON.parse(searchParams?.value)?.LoginRedirect ?? "";
+  const search = searchParams?.LoginRedirect || searchParams?.loginRedirect || searchParams?.search || "";
   const updatedSearch = search?.replace('?LoginRedirect=', '');
-  const redirectMobileUrl = `/LoginWithMobileCode/${updatedSearch}`;
-  const redirectSignUpUrl = `/register/${updatedSearch}`;
-  const cancelRedireactUrl = `/LoginOption/${search}`;
+  const redirectMobileUrl = `/LoginWithMobileCode${updatedSearch ? `?${updatedSearch}` : ""}`;
+  const redirectSignUpUrl = `/register${updatedSearch ? `?${updatedSearch}` : ""}`;
+  const cancelRedireactUrl = `/LoginOption?LoginRedirect=${search}`;
 
   const handleInputChange = (e, setter, fieldName) => {
     const { value } = e.target;

@@ -11,6 +11,21 @@
     font-family: $Pratafonts;
   }
 
+    .fg_opt_div {
+    .MuiBox-root {
+      @media screen and (max-width: 500px) {
+        gap: 3px;
+      }
+
+      @media screen and (max-width: 338px) {
+        gap: 1px;
+        input {
+          width: 32px !important;
+        }
+      }
+    }
+  }
+
   .css-1wc848c-MuiFormHelperText-root {
     margin-right: 0px !important;
     margin-left: 0px !important;

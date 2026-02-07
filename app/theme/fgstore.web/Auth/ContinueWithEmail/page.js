@@ -1,4 +1,4 @@
-"use client";
+    "use client";
 import React, { useEffect, useState } from 'react';
 import './ContinueWithEmail.modul.scss';
 import { Button, CircularProgress, TextField } from '@mui/material';
@@ -8,15 +8,17 @@ import OTPContainer from '@/app/(core)/utils/Glob_Functions/Otpflow/App';
 import { useNextRouterLikeRR } from '@/app/(core)/hooks/useLocationRd';
 import { useRouter } from 'next/navigation';
 
-export default function ContinueWithEmail({ params, searchParams }) {
+export default function ContinueWithEmail({ params, searchParams ,storeInit }) {
     const [email, setEmail] = useState('');
     const [emailError, setEmailError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const navigation = useRouter();
-    const search = JSON.parse(searchParams?.value)?.LoginRedirect ?? "";
-    const redirectEmailUrl = `/LoginWithEmail/?LoginRedirect=${search}`;
-    const redirectSignUpUrl = `/register/?LoginRedirect=${search}`;
-    const cancelRedireactUrl = `/LoginOption/?LoginRedirect=${search}`;
+    const paramsObj = searchParams || {};
+    const search = paramsObj.LoginRedirect || paramsObj.loginRedirect || paramsObj.search || "";
+
+    const redirectEmailUrl = `/LoginWithEmail?LoginRedirect=${search}`;
+    const redirectSignUpUrl = `/register?LoginRedirect=${search}`;
+    const cancelRedireactUrl = `/LoginOption?LoginRedirect=${search}`;
 
     useEffect(() => {
         setCSSVariable();
@@ -40,7 +42,6 @@ export default function ContinueWithEmail({ params, searchParams }) {
     };
 
     const setCSSVariable = () => {
-        const storeInit = JSON.parse(sessionStorage.getItem("storeInit"));
         const backgroundColor = storeInit?.IsPLW == 1 ? "#c4cfdb" : "#c0bbb1";
         document.documentElement.style.setProperty(
             "--background-color",

@@ -10,7 +10,7 @@ import {
   TextField,
 } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
-import CryptoJS from "crypto-js"; 
+import CryptoJS from "crypto-js";
 import { RegisterAPI } from "@/app/(core)/utils/API/Auth/RegisterAPI";
 import { useNextRouterLikeRR } from "@/app/(core)/hooks/useLocationRd";
 
@@ -37,11 +37,9 @@ export default function Register({ params, searchParams }) {
   const confirmPasswordRef = useRef(null);
   const [open, setOpen] = useState(false); // Track dropdown open/close
 
-  const search = JSON.parse(searchParams?.value)?.LoginRedirect ?? "";
-  // const updatedSearch = search.replace('?LoginRedirect=', '');
-  // const redirectEmailUrl = `${decodeURIComponent(updatedSearch)}`;
-  const cancelRedireactUrl = `/LoginOption${location.queryString ? `?${location.queryString}` : ""}`;
-  const singupRedirectUrl = `/LoginOption${location.queryString ? `?${location.queryString}` : ""}`;
+  const search = searchParams?.LoginRedirect || searchParams?.loginRedirect || searchParams?.search || "";
+  const cancelRedireactUrl = `/LoginOption?LoginRedirect=${search}`;
+  const singupRedirectUrl = `/LoginOption?LoginRedirect=${search}`;
 
   const handleKeyDown = (event, nextRef) => {
     if (event.key === "Enter") {
@@ -51,19 +49,21 @@ export default function Register({ params, searchParams }) {
   };
 
   useEffect(() => {
-    const storedEmail = location.state?.email;
-    const routeMobileNo = location.state?.mobileNo;
+    const storedEmail = sessionStorage.getItem("registerEmail");
+    const routeMobileNo = sessionStorage.getItem("registerMobile");
 
     if (routeMobileNo) {
       setMobileNo(routeMobileNo);
       mobileNoRef.current.disabled = true;
+      sessionStorage.removeItem("registerMobile");
     }
 
     if (storedEmail) {
       setEmail(storedEmail);
       emailRef.current.disabled = true;
+      sessionStorage.removeItem("registerEmail");
     }
-  }, [location.state]);
+  }, [location.searchParams]);
 
   const handleInputChange = (e, setter, fieldName) => {
     const { value } = e.target;

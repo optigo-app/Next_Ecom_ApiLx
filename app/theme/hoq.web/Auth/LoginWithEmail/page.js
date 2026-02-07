@@ -35,14 +35,23 @@ export default function LoginWithEmail({ params, searchParams }) {
   const navigation = push;
   const location = useNextRouterLikeRR();
 
-  const search = JSON.parse(searchParams?.value)?.LoginRedirect ?? "";
-  const updatedSearch = search?.replace("?LoginRedirect=", "");
-  const redirectEmailUrl = `${decodeURIComponent(updatedSearch)}`;
-  const cancelRedireactUrl = `/LoginOption/${search}`;
+  const search = searchParams?.LoginRedirect || searchParams?.loginRedirect || searchParams?.search || "";
+  const redirectEmailUrl = search ? decodeURIComponent(search) : "/";
+  const cancelRedireactUrl = `/LoginOption?LoginRedirect=${search}`;
 
   useEffect(() => {
     setCSSVariable();
-    const storedEmail = sessionStorage.getItem("registerEmail") ?? "";
+    const storedEmail = (() => {
+      const raw = sessionStorage.getItem("registerEmail");
+      if (!raw) return "";
+      try {
+        return raw.trim().startsWith("{") || raw.trim().startsWith("[") || raw.trim().startsWith('"')
+          ? JSON.parse(raw)
+          : raw;
+      } catch {
+        return raw;
+      }
+    })();
     if (storedEmail) setEmail(storedEmail);
   }, []);
 

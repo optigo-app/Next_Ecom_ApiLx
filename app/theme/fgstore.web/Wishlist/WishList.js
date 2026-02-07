@@ -123,6 +123,7 @@ const {setCartCountNum ,  setWishCountNum} = useStore()
             handleWishlistToCart={handleWishlistToCart}
             handleMoveToDetail={handleMoveToDetail}
             handelMenu={handelMenu}
+            storeInit={storeInit}
           />
         ) : (
           <div style={{ marginTop: '90px' }}>
