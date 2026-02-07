@@ -19,11 +19,12 @@ export function StoreProvider({ children }) {
   const [cartCountNum, setCartCountNum] = useState(0);
   const [wishCountNum, setWishCountNum] = useState(0);
   const [loginUserDetail, setLoginUserDetail] = useState(null);
-  const [islogin, setislogin] = useState(true);
+  const [islogin, setislogin] = useState(false);
   const [cartOpenStateB2C, setCartOpenStateB2C] = useState(false);
   const [SoketData, setSoketData] = useState([])
 
   useEffect(() => {
+    if (typeof window === "undefined") return;
     const storedDetail = sessionStorage.getItem("loginUserDetail");
     if (storedDetail) {
       const parsed = JSON.parse(storedDetail);

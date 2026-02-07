@@ -5,7 +5,7 @@ const page = async ({ params, searchParams }) => {
     const storeint = await getStoreInit();
     return (
         <>
-            <ProductDetail storeinit={storeint} params={params} searchParams={searchParams}  />
+            <ProductDetail storeInit={storeint} params={params} searchParams={searchParams}  />
         </>
     );
 };

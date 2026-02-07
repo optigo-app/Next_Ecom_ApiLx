@@ -1,0 +1,176 @@
+@use "../../../style/variable.scss" as *;
+
+.hoq_Stockitems {
+  width: 100%;
+  margin-top: 0rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  overflow: hidden;
+  margin-bottom: 2rem;
+  font-family: $fontDmSans !important;
+
+  .hoq_stockItem_div {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    flex-direction: column;
+  }
+
+  .hoq_details_title {
+    font-size: 30px;
+    //font-family: $homePageFontFamily;
+    color: $primaryfontcolor2;
+  }
+
+  .hoq_material_details_portion_inner {
+    width: 60%;
+  }
+
+  .hoq_mt_detail_title_ul {
+    display: flex;
+    text-decoration: none;
+    list-style: none;
+    margin: 0px 0px 3px;
+  }
+
+  .cart_and_wishlist_icon {
+    position: absolute;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    z-index: 1;
+    flex-direction: row-reverse;
+  }
+
+  .hoq_stockitem_container {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+  }
+
+  .hoq_stock_item_card {
+    display: flex;
+    justify-content: center;
+    width: 94%;
+    align-items: center;
+    margin-inline: 3%;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .hoq_stockItemCard {
+    display: flex;
+    position: relative;
+    width: 310px;
+    border: 1px solid #e1e1e1;
+    text-align: center;
+    flex-direction: column;
+  }
+
+  .hoq_productCard_Image {
+    object-fit: contain;
+    // background-position: 50%;
+    background-size: cover;
+    // height: 100%;
+    // min-height: 100%;
+    width: 100%;
+  }
+
+  .hoq_prod_Allwt {
+    display: flex;
+    // flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    padding-inline: 30px;
+    gap: 3px;
+    //font-family: $primaryFontFamily;
+    color: $primaryfontcolor2;
+  }
+
+  .hoq_prod_wt {
+    display: flex;
+    gap: 2px;
+    //font-family: $primaryFontFamily;
+  }
+
+  .hoq_d_keys {
+    font-size: 13px;
+  }
+
+  .hoq_d_val {
+    font-size: 13px;
+    font-weight: 400;
+  }
+
+  .hoq_prod_designno {
+    font-size: 14px;
+    font-weight: 400;
+    padding: 0px 5px;
+    color: $primaryfontcolor2;
+  }
+
+  .hoq_stockItem_price_type_mt {
+    color: $primaryfontcolor;
+    font-size: 14px;
+    //font-family: $primaryFontFamily;
+  }
+
+  .hoq_prodd_datanotfound {
+    //font-family: $primaryFontFamilyMedium;
+    color: $primaryfontcolor;
+    font-size: 42px;
+  }
+
+  .hoq_stockItem_table_tr,
+  .hoq_stockItem_table_td {
+    border: 1px solid #dddddd;
+    text-align: left;
+    padding: 8px;
+    color: #7d7f85;
+  }
+
+  // .hoq_stockItem_table_tr:nth-child(even){
+  //     background-color: #dddddd;
+  // }
+
+  .hoq_stockItem_table {
+    border-collapse: collapse;
+    width: 70%;
+    //font-family: $primaryFontFamily;
+    border: 1px solid #dddddd;
+  }
+
+  .hoq_Swiper_designSet {
+    max-width: 1600px;
+  }
+
+  .hoq_Price_breakup_label {
+    width: 70px;
+    color: #7d7f85;
+    //font-family: $primaryFontFamily;
+  }
+
+  .hoq_currencyFont {
+    //font-family: $primaryFontFamily;
+  }
+
+  .hoq_PriceBreakup_Price {
+    //font-family: $primaryFontFamily;
+  }
+
+  @media screen and (max-width: 768px) {
+    width: 100%;
+    display: unset !important;
+    padding: 0 18px;
+
+    .hoq_stockItem_table {
+      display: block;
+      width: 100%;
+      padding: 0;
+      margin: 0;
+      overflow: scroll;
+    }
+  }
+}

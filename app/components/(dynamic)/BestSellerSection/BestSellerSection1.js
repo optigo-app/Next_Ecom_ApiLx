@@ -8,6 +8,32 @@ import cookies from "js-cookie";
 import { useNextRouterLikeRR } from "@/app/(core)/hooks/useLocationRd";
 import { useStore } from "@/app/(core)/contexts/StoreProvider";
 
+
+
+const buildAlbumCacheKey = ( type ,storeData, pricing, id) => {
+  const meta = {
+  type,
+  PackageId: pricing?.PackageId ?? "",
+  Laboursetid: pricing?.Laboursetid ?? "",
+  diamondpricelistname: pricing?.diamondpricelistname ?? "",
+  colorstonepricelistname: pricing?.colorstonepricelistname ?? "",
+};
+
+const key = [
+    type,
+    pricing?.PackageId,
+    pricing?.Laboursetid,
+    pricing?.diamondpricelistname,
+    pricing?.colorstonepricelistname,
+  ].join("_");
+
+  return {
+    key,
+    meta,
+  }
+};
+
+
 const BestSellerSection1 = ({ data, storeData }) => {
   const { push } = useNextRouterLikeRR();
   const { islogin } = useStore();
@@ -65,16 +91,41 @@ const BestSellerSection1 = ({ data, storeData }) => {
     return uid;
   }, [mounted, loginUserDetail, islogin, storeData?.IsB2BWebsite]);
 
+   const pricingContext = useMemo(() => {
+    if (!mounted) return null;
+    const loginInfo = loginUserDetail;
+  
+    return {
+      PackageId: (loginInfo?.PackageId ?? storeData?.PackageId) ?? "",
+      Laboursetid:
+           !islogin 
+          ? storeData?.pricemanagement_laboursetid
+          : loginInfo?.pricemanagement_laboursetid ?? "",
+      diamondpricelistname:
+           !islogin 
+          ? storeData?.diamondpricelistname
+          : loginInfo?.diamondpricelistname ?? "",
+      colorstonepricelistname:
+           !islogin 
+          ? storeData?.colorstonepricelistname
+          : loginInfo?.colorstonepricelistname ?? "",
+    };
+  }, [mounted, loginUserDetail, storeData, islogin]);
+  
+  
+
   const callAllApi = async (id) => {
-    const key = `bestseller_${storeData?.ukey}`;
+    console.log("🚀 ~ callAllApi ~ pricingContext:", pricingContext)
+      const {key ,meta} = buildAlbumCacheKey("bestseller_" ,storeData, pricingContext, id);
+
 
     try {
       setLoadingHome(false);
       const cachedRes = await fetch(`/api/cache?key=${key}`);
       const cached = await cachedRes.json();
       if (cached.cached && Array.isArray(cached.data)) {
-        console.log("🔥 Using cached data", cached.data);
-        return cached.data;
+         setBestSellerData(cached?.data);
+        return cached?.data;
       }
       const res = await Get_Tren_BestS_NewAr_DesigSet_Album(storeData, "GETBestSeller", id);
       const rows = res?.Data?.rd || [];
@@ -83,7 +134,7 @@ const BestSellerSection1 = ({ data, storeData }) => {
         fetch("/api/cache", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ key, data: rows }),
+          body: JSON.stringify({ key, data: rows ,meta }),
         }).catch(console.error);
       } else {
         setBestSellerData([]);

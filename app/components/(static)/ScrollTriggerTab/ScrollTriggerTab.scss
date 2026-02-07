@@ -1,0 +1,209 @@
+@use "../../../theme/hoq.web/style/variable.scss" as *;
+
+.hoq_main_ScrollTriggerTab {
+  width: 100%;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+  margin-top: 2.2rem;
+
+  .ScrollImageCard {
+    width: 100%;
+    position: relative;
+    height: 450px;
+    transition: 0.3s ease-out;
+    overflow: hidden;
+    display: flex;
+    padding: 10px 50px;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      position: absolute;
+      top: 0;
+      right: 0;
+      transition: 0.3s ease-out;
+      animation: scale-up 0.5s ease forwards;
+      opacity: 0;
+      z-index: 0;
+
+      @keyframes scale-up {
+        to {
+          transform: scale(1.1);
+          opacity: 1;
+        }
+      }
+    }
+
+    &.is-visible {
+      img {
+        animation: scale-up 0.8s ease forwards;
+        opacity: 0;
+      }
+    }
+
+    .details_card {
+      width: 400px;
+      height: 320px;
+      background-color: white;
+      position: relative;
+      padding: 15px;
+
+      .info {
+        width: 88%;
+        height: 83%;
+        padding: 25px;
+
+        h1 {
+          font-family: $fontTenorSans;
+
+          font-size: 15px;
+          letter-spacing: 2px;
+          text-transform: uppercase;
+          color: black;
+          font-weight: 400;
+        }
+
+        h2 {
+          font-family: $fontTenorSans;
+
+          font-size: 22.75px;
+          font-weight: 500;
+          letter-spacing: 0.3px;
+          color: black;
+        }
+
+        p {
+          font-family: $fontDmSans;
+          font-size: 17px;
+          font-weight: 450;
+        }
+
+        button {
+          padding: 10px 25px;
+          outline: none;
+          border: none;
+          border-radius: 2px;
+          font-weight: 200;
+          letter-spacing: 2.1px;
+          text-transform: uppercase;
+          font-size: 14px;
+          color: white;
+          background-color: #c20000;
+          position: relative;
+          overflow: hidden;
+          font-family: $fontTenorSans;
+
+          &::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 120%;
+            width: 100%;
+            height: 200%;
+            background: rgba(255, 255, 255, 0.274);
+            transform: translateY(-100%);
+            pointer-events: none;
+          }
+
+          &:hover::after {
+            animation: ripple 0.4s ease-in forwards;
+          }
+
+          @keyframes ripple {
+            from {
+              left: 120%;
+            }
+
+            to {
+              left: -320%;
+            }
+          }
+        }
+      }
+    }
+
+    .details_card:nth-child(1) {
+      left: auto; // reset
+      right: 5%;
+    }
+
+    /* 2nd card on the left */
+    .details_card:nth-child(2) {
+      right: auto; // reset
+      left: -3%;
+    }
+
+    .details_card:nth-child(3) {
+      left: auto; // reset
+      right: 5%;
+    }
+
+  }
+
+  @media screen and (max-width: 768px) {
+    gap: 0.8em;
+
+    .ScrollImageCard {
+      display: flex;
+      margin: 0;
+      padding: 10px;
+      justify-content: end;
+      flex-direction: column;
+
+      .details_card {
+        position: static;
+        width: 100%;
+        max-width: 750px;
+        z-index: 15;
+        height: auto;
+        margin-top: 0;
+        display: flex;
+        flex-direction: column;
+        text-align: center;
+        justify-content: center;
+        padding: 5px;
+
+        .info {
+          h1 {
+            font-size: 12px;
+          }
+        }
+      }
+    }
+  }
+
+  @media screen and (max-width: 425px) {
+    .ScrollImageCard {
+      padding: 5px;
+
+      .details_card {
+        .info {
+          padding: 20px;
+          height: auto;
+
+          h1 {
+            font-size: 14px;
+          }
+
+          h2 {
+            font-size: 20px;
+          }
+
+          p {
+            font-size: 15px;
+            padding: 0;
+          }
+
+          button {
+            padding: 7px 15px;
+            margin-top: -10px;
+            border-radius: 3px;
+          }
+        }
+      }
+    }
+  }
+}

@@ -46,3 +46,10 @@ export function getLogos() {
     mobile: "/WebSiteStaticImage/logoIcon/mobileLogo.png",
   };
 }
+
+export function getHoqLogos() {
+  return {
+    web: "/WebSiteStaticImage/logoIcon/webLogo1.png",
+    mobile: "/WebSiteStaticImage/logoIcon/mobileLogo2.png",
+  };
+}

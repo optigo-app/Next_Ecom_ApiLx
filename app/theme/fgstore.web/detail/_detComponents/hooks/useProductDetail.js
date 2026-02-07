@@ -11,6 +11,7 @@ import { DesignSetListAPI } from "@/app/(core)/utils/API/DesignSetListAPI/Design
 import { SaveLastViewDesign } from "@/app/(core)/utils/API/SaveLastViewDesign/SaveLastViewDesign";
 import Cookies from "js-cookie";
 import { useSearchParams } from "next/navigation";
+import { SearchParamsParser } from "@/app/(core)/utils/GlobalFunctions/Parser";
 
 export const useProductDetail = (searchParams, storeInit) => {
     const search = useSearchParams();
@@ -77,25 +78,6 @@ export const useProductDetail = (searchParams, storeInit) => {
         }
     };
 
-    // Parse search params
-    const parseSearchParams = () => {
-        let result = [];
-        try {
-            if (searchParams?.value) {
-                const parsed = JSON.parse(searchParams.value);
-                if (parsed && typeof parsed === "object") {
-                    result = Object.entries(parsed).map(([key, value]) => {
-                        const decoded = atob(value);
-                        const reEncoded = btoa(decoded);
-                        return `${key}=${reEncoded}`;
-                    });
-                }
-            }
-        } catch (err) {
-            console.error("Invalid searchParams.value:", searchParams?.value, err);
-        }
-        return result;
-    };
 
     // Load combo data from session storage or API
     const callAllApi = () => {
@@ -335,7 +317,7 @@ export const useProductDetail = (searchParams, storeInit) => {
 
     // Handle URL parameters and initial product load
     useEffect(() => {
-        const result = parseSearchParams();
+        const result = SearchParamsParser(searchParams);
         let navVal = result[0]?.split("=")[1];
         let decodeobj = decodeAndDecompress(navVal);
         console.log("TCL: useProductDetail -> decodeobj", decodeobj)

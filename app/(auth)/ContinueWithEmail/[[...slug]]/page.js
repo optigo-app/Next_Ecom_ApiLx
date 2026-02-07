@@ -8,8 +8,10 @@ const page = async ({ params, searchParams }) => {
   const theme = await getActiveTheme();
   const storeInit = await getStoreInit();
   const themeData = themeMap[theme];
+    const [awaitedParams, awaitedSearchParams] = await Promise.all([params, searchParams]);
+
   const ContinueWithEmail = (await import(`@/app/theme/${themeData.page}/Auth/ContinueWithEmail/page.js`)).default;
-  return <ContinueWithEmail storeInit={storeInit} params={params} searchParams={searchParams} />;
+  return <ContinueWithEmail storeInit={storeInit} params={awaitedParams} searchParams={awaitedSearchParams} />;
 };
 
 export default page;

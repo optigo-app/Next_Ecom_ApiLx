@@ -1,0 +1,218 @@
+@use "../../../theme/hoq.web/style/variable.scss" as *;
+
+.hoq_main_ReviewTab {
+  width: 100%;
+  height: auto;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  overflow: hidden;
+  margin-bottom: 3rem;
+
+  .header {
+    display: flex;
+    align-items: center;
+    height: 100px;
+    width: 100%;
+    justify-content: center;
+    flex-direction: column;
+    text-align: center;
+    font-family: $fontTenorSans;
+
+    h1 {
+      font-size: 22px;
+      letter-spacing: 0.2px;
+      font-weight: 500 !important;
+    }
+  }
+
+  .review_Slider {
+    position: relative;
+    width: 85%;
+    height: auto;
+
+    .Slider_Custom_btn {
+      width: 100%;
+      position: absolute;
+      z-index: 15;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      top: 150px;
+      padding: 0 15px;
+
+      button {
+        padding: 4px;
+        border-radius: 50%;
+        border: none;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        outline: none;
+        background-color: rgba(128, 128, 128, 0.726);
+        color: white;
+
+        &:hover {
+          background-color: rgba(0, 0, 0, 0.856);
+          transition: 0.3s ease-in;
+        }
+
+        &:nth-child(1) {
+          margin-left: -15px;
+        }
+      }
+    }
+
+    .slick-dots {
+      bottom: -25px;
+      margin: 0;
+
+      li.slick-active button:before {
+        font-size: 11px;
+      }
+
+      li button:before {
+        font-size: 8px;
+        color: rgba(128, 128, 128, 0.295);
+      }
+    }
+
+    .review_card {
+      width: 200px;
+      height: auto;
+      display: flex;
+      align-items: center;
+      padding: 10px;
+      justify-content: center;
+
+      .r_card {
+        width: 95%;
+        height: auto;
+        background-color: #fafafa;
+        border-radius: 12px;
+        padding: 10px 20px;
+        font-family: $fontDmSans ;
+
+        .description {
+          padding: 0 0 10px 0;
+
+          p {
+            margin-bottom: 0;
+            font-size: 15px;
+
+            @media screen and (max-width : 900px) {
+              font-size: 14px;
+            }
+
+            @media screen and (max-width : 600px) {
+              font-size: 14.2px;
+            }
+          }
+
+          small {
+            color: gray;
+            font-size: $fontSize2;
+            cursor: pointer;
+            font-family: $fontTenorSans;
+
+            &:hover {
+              text-decoration: underline;
+            }
+          }
+        }
+
+        .user_info_ {
+          width: 100%;
+          display: flex;
+          align-items: start;
+          flex-direction: column;
+
+          span {
+            margin-left: 15px;
+          }
+
+          img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+          }
+
+          &:hover {
+            ~.line::after {
+              width: 100%;
+            }
+          }
+        }
+
+        .star {
+          display: flex;
+          margin-left: 15px;
+          align-items: center;
+
+          small {
+            font-size: 11px;
+            margin-top: 5px;
+            margin-left: 8px;
+          }
+        }
+
+        .line {
+          height: 2px;
+          background-color: rgba(0, 0, 0, 0.144);
+          width: 100%;
+          position: relative;
+          margin: 10px 0;
+
+          &::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 0%;
+            background-color: rgba(0, 0, 0, 0.5);
+            transition: width 0.3s ease;
+          }
+
+          &:hover::after {
+            width: 100%;
+          }
+        }
+
+        .posted_on {
+          display: flex;
+          align-items: start;
+          flex-direction: column;
+
+          small {
+            margin-left: 8px;
+          }
+
+          a {
+            text-decoration: none;
+            margin-top: -5px;
+            margin-left: 8px;
+          }
+        }
+      }
+    }
+  }
+
+  @media screen and (max-width: 1200px) {
+    overflow: hidden;
+  }
+
+  @media screen and (max-width: 768px) {
+    .review_Slider {
+      width: 98%;
+      margin-left: 1.5em;
+    }
+  }
+
+  @media screen and (max-width: 420px) {
+    .review_Slider {
+      width: 98%;
+      margin-left: 1.2em;
+    }
+  }
+}

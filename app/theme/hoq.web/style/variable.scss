@@ -1,0 +1,97 @@
+@font-face {
+  font-family: "CrimsonText Regular";
+  src: url("./fonts/CrimsonText-Regular.ttf");
+  // format('truetype');
+}
+
+@font-face {
+  font-family: "CrimsonText Medium";
+  src: url("./fonts/CrimsonText-SemiBold.ttf");
+  // format('truetype');
+}
+
+@font-face {
+  font-family: "CrimsonText Bold";
+  src: url("./fonts/CrimsonText-Bold.ttf");
+  // format('truetype');
+}
+
+@keyframes scaleUpDown {
+  0% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.1);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+// Fonts
+$fontCrimsonTextRegular: "CrimsonText Regular", serif;
+$fontCrimsonTextMedium: "CrimsonText Medium", serif;
+$fontCrimsonTextBold: "CrimsonText Bold", serif;
+$fontDmSans: "DM Sans", Arial;
+$fontTenorSans: "Tenor Sans", sans-serif;
+
+// Font -sizes
+$fontSize0: 10px;
+$fontSize1: 12px;
+$fontSize2: 14px;
+$fontSize2-5: 15px;
+$fontSize3: 16px;
+$fontSize4: 18px;
+$fontSize5: 22px;
+$fontSize6: 28px;
+$fontSize7: 35px;
+$fontSize8: 40px;
+
+
+// .{
+//   background-color: #312f2f21;
+// }
+
+//backgroundcolors
+
+$backgroundColor: var(--background-color);
+// $backgroundColor:  storeInit?.IsPLW == 1 ? #c4cfdb :#c0bbb1 ;
+$btn1bgColor: #fff;
+$btn1ActivebgColor: #7d7f85;
+
+//fontcolors
+$primaryfontcolor: #8f8c8be6;
+$primaryfontcolor2: #7d7f85;
+// $primaryfontcolor:#8f8c8b;
+$homePageFontColor: #7d7f85;
+$titleColor: #7d7f85;
+$btn1FontColor: #7d7f85;
+$btn1hoverColor: #c20000;
+$color: #c20000;
+$btn1hoverFontColor: #fff;
+$primaryfontcolorLight: #7d7f856e;
+
+//fontFamily
+$homePageFontFamily: "FreightDispProMedium-Regular,Times New Roman,serif";
+// $primaryFontFamily:"Rubik", sans-serif;
+$primaryFontFamily: "TT Commons Regular";
+// $primaryFontFamily:"Roboto", sans-serif;
+$primaryFontFamilyMedium: "TT Commons Medium";
+// $primaryFontFamilyMedium:"Roboto", sans-serif;
+
+// //fontSize
+// $fontSize0: 10px;
+// $fontSize1: 12px;
+// $fontSize2: 14px;
+// $fontSize3: 16px;
+// $fontSize4: 18px;
+// $fontSize5: 22px;
+// $fontSize6: 28px;
+// $fontSize7: 35px;
+// $fontSize8: 40px;
+
+//borderColor
+$primaryBorderColor: #e1e1e1;
+$primaryBorderColor2: #42424233;

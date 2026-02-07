@@ -125,7 +125,7 @@ const Album = ({ storeinit }) => {
     const albumName = data?.AlbumName;
     const securityKey = data?.AlbumSecurityId;
     const url = `/p/${encodeURIComponent(data?.AlbumName)}/K=${btoa(securityKey)}/?A=${btoa(`AlbumName=${albumName}`)}`;
-    const redirectUrl = `/loginOption/?LoginRedirect=${encodeURIComponent(url)}`;
+    const redirectUrl = `/LoginOption/?LoginRedirect=${encodeURIComponent(url)}`;
     const Newdata = data?.AlbumDetail ? JSON.parse(data?.AlbumDetail) : [];
     setSecurityKey(securityKey);
     const state = { SecurityKey: securityKey };
@@ -150,7 +150,7 @@ const Album = ({ storeinit }) => {
     setSecurityKey(securityKey);
     const url = `/p/${encodeURIComponent(data?.AlbumName)}/K=${btoa(securityKey)}/?A=${btoa(`AlbumName=${albumName}`)}`;
     const state = { SecurityKey: securityKey };
-    const redirectUrl = `/loginOption/?LoginRedirect=${encodeURIComponent(url)}`;
+    const redirectUrl = `/LoginOption/?LoginRedirect=${encodeURIComponent(url)}`;
     sessionStorage.setItem("redirectURL", url);
     navigate(islogin || (data?.AlbumSecurityId == 0 && storeinit?.IsB2BWebsite === 0) ? url : redirectUrl);
     sessionStorage.setItem("SecurityKey", JSON.stringify(state));

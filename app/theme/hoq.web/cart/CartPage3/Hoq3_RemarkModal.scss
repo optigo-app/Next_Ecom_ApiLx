@@ -1,0 +1,66 @@
+@use '../../../hoq.web/style/variable.scss' as *;
+
+$cartUpdateBtncolor: #b1b1b1;
+
+
+.Hoq3_remarkModalBox h2 {
+    color: $titleColor !important;
+}
+
+.Hoq3_remarkModalBox .Hoq3_projectRemarkBtn-group {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 10px;
+
+    button {
+        padding: 10px 20px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    .Hoq3_remarksave-btn {
+        background-color: $cartUpdateBtncolor;
+        color: $btn1hoverFontColor;
+
+        &:hover {
+            background-color: $btn1hoverColor;
+        }
+    }
+
+    .Hoq3_remarkcancel-btn {
+        background-color: $btn1bgColor;
+        color: $btn1FontColor;
+        border: 1px solid $titleColor;
+
+        &:hover {
+            background-color: #f3f4f6;
+        }
+    }
+}
+
+
+@media(max-width:445px) {
+    .Hoq3_remarkModalBox {
+        padding: 20px 8px 20px 8px !important;
+        width: 300px;
+
+        h2 {
+            color: $titleColor !important;
+            font-size: $fontSize2 !important;
+        }
+
+        .Hoq3_projectRemarkBtn-group {
+
+            .Hoq3_remarksave-btn,
+            .Hoq3_remarkcancel-btn {
+                font-size: $fontSize0 !important;
+                padding: 5px 10px !important;
+            }
+        }
+        .Hoq3_RemarkMoalInput textarea{
+            font-size: $fontSize1 !important;
+          }
+    }
+}

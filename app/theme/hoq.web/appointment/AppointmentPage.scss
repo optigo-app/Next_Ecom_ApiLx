@@ -1,0 +1,212 @@
+@use "../../../theme/hoq.web/style/variable.scss" as *;
+
+.hoq_appointment-page {
+    text-align: center;
+    font-family: $fontTenorSans;
+
+    h1 {
+        letter-spacing: 0.8px;
+    }
+
+    .hoq_intro {
+        font-size: $fontSize4;
+        max-width: 1500px;
+        margin: 2rem auto;
+        letter-spacing: 0.8px;
+        line-height: 1.6;
+
+        @media (max-width: 768px) {
+            font-size: $fontSize3;
+            padding-inline: 10px;
+        }
+
+        @media (max-width: 576px) {
+            font-size: $fontSize2;
+        }
+    }
+
+    .hoq_itemsMainDiv {
+        .hoq_itemsSubDiv {
+            .title_hoq_App {
+                letter-spacing: 0.8px;
+
+                @media (max-width: 768px) {
+                    font-size: $fontSize5;
+                }
+
+                @media (max-width: 576px) {
+                    font-size: $fontSize4;
+                }
+            }
+
+            .hoq_items-grid {
+                width: 85%;
+                margin: 0 auto;
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 2rem;
+                padding-inline: 40px;
+                padding-block: 40px;
+
+                @media screen and (max-width: 1320px) {
+                    width: 90%;
+                    padding-inline: 25px;
+                }
+
+                @media screen and (max-width: 1150px) {
+                    width: 98%;
+                    padding-inline: 15px;
+                }
+
+                @media (max-width: 768px) {
+                    padding-inline: 20px;
+                    padding-top: 30px;
+                }
+
+                @media (max-width: 440px) {
+                    width: 85%;
+                    flex-direction: column;
+                    gap: 2rem;
+                    padding-inline: 10px;
+                    padding-top: 20px;
+                }
+
+                .hoq_item-card {
+                    display: flex;
+                    flex: 1 1 calc(50% - 1.5rem);
+                    max-width: calc(50% - 1.5rem);
+                    border: 1px solid #000;
+                    background-color: #fff;
+                    align-items: center;
+                    text-align: left;
+                    transition: transform 0.3s ease-in-out;
+
+                    .hoq_imageDiv {
+                        img {
+                            max-width: 100%;
+                            height: auto;
+                        }
+                    }
+
+                    .hoq_item-content {
+                        flex: 1;
+                        padding-inline: 20px;
+
+                        .hoq_btn_a {
+                            border: none;
+                            background-color: $color;
+                            color: #fff;
+                            font-weight: 500;
+                            border: none;
+                        }
+
+                        h2 {
+                            font-size: $fontSize5;
+                            margin-bottom: 1rem;
+                            font-weight: 600;
+                            letter-spacing: 0.8px;
+                        }
+
+                        button {
+                            padding: 0.5rem 1rem;
+                            font-size: 1rem;
+                        }
+                    }
+
+                    @media (max-width: 768px) {
+                        flex-direction: column;
+                        max-width: 100%;
+                        align-items: center;
+                        text-align: center;
+
+                        .hoq_item-content {
+                            width: 100%;
+                            margin-bottom: 15px;
+                        }
+
+                        .hoq_imageDiv {
+                            margin-right: 0;
+                            width: 100%;
+                        }
+
+                        img {
+                            margin-bottom: 1rem;
+                        }
+                    }
+
+                    @media (max-width: 576px) {
+                        flex-direction: column;
+                        align-items: center;
+                        max-width: 100%;
+
+                        .hoq_imageDiv,
+                        .hoq_item-content {
+                            width: 100%;
+                        }
+
+                        h2 {
+                            font-size: $fontSize4;
+                        }
+
+                        button {
+                            font-size: 0.9rem;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    .hoq_bg-imageCart {
+        position: relative;
+        background-size: cover;
+        background-position: center;
+        height: 180px;
+        background-color: $color;
+        color: #fff;
+
+        @media (max-width: 576px) {
+            height: 140px;
+        }
+
+        @media (max-width: 420px) {
+            height: 100px;
+        }
+    }
+
+    .hoq_overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: transparent;
+    }
+
+    .hoq_text-container {
+        position: relative;
+        z-index: 1;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .hoq_textContainerData {
+        h2 {
+            font-size: $fontSize8;
+            color: $primaryfontcolor2;
+            text-align: start;
+
+            @media (max-width: 768px) {
+                font-size: $fontSize6;
+            }
+
+            @media (max-width: 576px) {
+                font-size: $fontSize5;
+                text-align: center;
+            }
+        }
+    }
+}

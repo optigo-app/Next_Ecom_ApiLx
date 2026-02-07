@@ -1,0 +1,158 @@
+@use "../../../theme/hoq.web/style/variable.scss" as *;
+
+.hoq_custom {
+    width: auto;
+    height: auto;
+    font-family: $fontDmSans;
+    padding-top: 25px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    .custom {
+        width: 52%;
+
+        .hoq_cust {
+            padding: 20px;
+            text-align: center;
+        }
+
+        .hoq_cust h1 {
+            margin: 0 0 10px 0;
+        }
+
+        .hoq_cust p {
+            margin: 0;
+            color: #666;
+        }
+
+        .Hoq_cust_card-container {
+            display: flex;
+            justify-content: space-around;
+            padding: 20px;
+            width: 100%;
+            gap: 1rem;
+            text-align: center;
+        }
+
+        .Hoq_cust_card {
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            width: 300px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .Hoq_cust_card img {
+            width: 100%;
+            border-radius: 8px;
+        }
+
+        .Hoq_cust_card p {
+            margin-top: 10px;
+            color: #666;
+        }
+    }
+
+    .back-to-home {
+        width: 100%;
+        margin-top: 2rem;
+        height: 100px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        a {
+            padding: 8px 12px;
+            text-decoration: none;
+            background-color: #c20000;
+            color: white;
+            outline: none;
+            border: none;
+            border-radius: 3px;
+        }
+    }
+
+    @media (max-width: 1560px) {
+        .custom {
+            width: 60%;
+        }
+    }
+
+    @media (max-width: 1360px) {
+        .custom {
+            width: 70%;
+        }
+    }
+
+    @media (max-width: 1138px) {
+        .custom {
+            width: 80%;
+        }
+    }
+
+    @media (max-width: 1000px) {
+        .custom {
+            width: 100%;
+        }
+    }
+
+    @media (max-width: 1000px) {
+        .custom {
+            .Hoq_cust_card {
+                width: 300px;
+                padding: 10px;
+                text-align: center;
+            }
+
+            .Hoq_cust_card p {
+                margin-top: 10px;
+                font-size: 13px;
+                color: #666;
+                margin-bottom: -5px;
+                display: -webkit-box;
+                text-align: center;
+                -webkit-line-clamp: 2;
+                -webkit-box-orient: vertical;
+                overflow: hidden;
+            }
+        }
+    }
+
+    @media (max-width: 480px) {
+        .custom {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+
+            .Hoq_cust_card-container {
+                display: flex;
+                justify-content: center;
+                flex-direction: column;
+                align-items: center;
+                padding: 20px;
+                width: 100%;
+                gap: 1rem;
+                text-align: center;
+
+                p {
+                    font-size: 14px;
+                }
+            }
+
+            .hoq_cust {
+                width: 100%;
+                padding: 0;
+                margin: 0;
+
+                p {
+                    font-size: 14px;
+                }
+            }
+        }
+    }
+}

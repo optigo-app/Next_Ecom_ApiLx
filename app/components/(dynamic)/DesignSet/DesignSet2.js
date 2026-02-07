@@ -16,6 +16,35 @@ import { useNextRouterLikeRR } from "@/app/(core)/hooks/useLocationRd";
 import { useStore } from "@/app/(core)/contexts/StoreProvider";
 import cookies from "js-cookie";
 
+
+
+
+const buildAlbumCacheKey = ( type ,storeData, pricing, id) => {
+  const meta = {
+  type,
+  PackageId: pricing?.PackageId ?? "",
+  Laboursetid: pricing?.Laboursetid ?? "",
+  diamondpricelistname: pricing?.diamondpricelistname ?? "",
+  colorstonepricelistname: pricing?.colorstonepricelistname ?? "",
+};
+
+const key = [
+    type,
+    pricing?.PackageId,
+    pricing?.Laboursetid,
+    pricing?.diamondpricelistname,
+    pricing?.colorstonepricelistname,
+  ].join("_");
+
+  return {
+    key,
+    meta,
+  }
+};
+
+
+
+
 const DesignSet2 = ({ data, storeInit }) => {
   const location = useNextRouterLikeRR();
   const { islogin } = useStore()
@@ -61,9 +90,35 @@ const DesignSet2 = ({ data, storeInit }) => {
   }, [mounted, loginUserDetail, islogin, storeInit?.IsB2BWebsite]);
 
 
+     const pricingContext = useMemo(() => {
+      if (!mounted) return null;
+    
+     
+      const loginInfo = loginUserDetail;
+    
+    return {
+      PackageId: (loginInfo?.PackageId ?? storeInit?.PackageId) ?? "",
+      Laboursetid:
+          !islogin 
+          ? storeInit?.pricemanagement_laboursetid
+          : loginInfo?.pricemanagement_laboursetid ?? "",
+      diamondpricelistname:
+          !islogin 
+          ? storeInit?.diamondpricelistname
+          : loginInfo?.diamondpricelistname ?? "",
+      colorstonepricelistname:
+          !islogin 
+          ? storeInit?.colorstonepricelistname
+          : loginInfo?.colorstonepricelistname ?? "",
+    };
+    }, [mounted, loginUserDetail, storeInit, islogin]);
+    
+    
+
 
   const callAPI = async (id) => {
-  const key = `designset_${storeInit?.ukey}`;
+  const {key ,meta} = buildAlbumCacheKey("designset_" ,storeInit, pricingContext, id);
+
     try {
       const cachedRes = await fetch(`/api/cache?key=${key}`);
       const cached = await cachedRes.json();
@@ -80,7 +135,7 @@ const DesignSet2 = ({ data, storeInit }) => {
         fetch("/api/cache", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ key, data: rows }),
+          body: JSON.stringify({ key, data: rows ,meta }),
         }).catch(console.error);
       } else {
         setDesignSetList([]);

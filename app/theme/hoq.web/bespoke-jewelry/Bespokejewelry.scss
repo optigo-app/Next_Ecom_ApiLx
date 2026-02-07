@@ -1,0 +1,254 @@
+@use "../../../theme/hoq.web/style/variable.scss" as *;
+
+.hoq_Bespokejewelry {
+  width: 100%;
+  height: auto;
+  font-family: $fontDmSans ;
+
+  .bespoke-banner {
+    width: 100%;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+
+    @media screen and (max-width: 768px) {
+      height: auto;
+    }
+
+    .banner_content {
+      width: 100%;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 60px;
+
+      @media screen and (max-width: 768px) {
+        padding: 50px 25px;
+      }
+
+      @media screen and (max-width: 420px) {
+        padding: 40px 10px;
+      }
+
+      .title {
+        font-size: 40px;
+        text-transform: uppercase;
+        color: $color;
+        font-weight: 500;
+
+        @media screen and (max-width: 1535px) {
+          font-size: 35px;
+        }
+
+        @media screen and (max-width: 420px) {
+          font-size: 27px;
+        }
+
+      }
+
+      .Parisienne {
+        font-size: 40px;
+        font-weight: 400;
+        margin-bottom: 25px;
+
+        @media screen and (max-width: 1535px) {
+          font-size: 32px;
+        }
+
+        @media screen and (max-width: 420px) {
+          font-size: 24px;
+          margin-bottom: 10px;
+        }
+      }
+
+      .para {
+        color: #212529;
+        width: 70%;
+        font-weight: 400;
+        line-height: 25px;
+        letter-spacing: 1.1px;
+        font-size: 16px;
+        text-align: center;
+        text-wrap: pretty;
+
+        @media screen and (max-width:768px) {
+          width: 100%;
+          line-height: 21px;
+        }
+
+        @media screen and (max-width: 420px) {
+          font-size: 14px;
+        }
+      }
+
+      .inquire_btn {
+
+        background-color: $color;
+        color: #fff;
+        max-width: 220px;
+        width: 100%;
+        padding: 8px;
+        border: none;
+        text-transform: uppercase;
+
+        @media screen and (max-width: 420px) {
+          font-size: 16px;
+          padding: 6px;
+        }
+      }
+    }
+  }
+
+  .ColumnGrid {
+    margin: 0 auto;
+    height: auto;
+    padding: 45px 25px;
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
+    justify-content: center;
+    align-items: center;
+    width: 75%;
+
+    @media screen and (max-width: 920px) {
+      width: 98%;
+      gap: 2rem;
+    }
+
+    @media screen and (max-width: 420px) {
+      width: 100%;
+      gap: .7rem;
+      padding: 25px 14px;
+    }
+
+    .column_card {
+      display: flex;
+      gap: 25px;
+
+      @media screen and (max-width: 768px) {
+        gap: 0;
+      }
+
+      @media screen and (max-width: 920px) {
+        flex-direction: column !important;
+      }
+
+      .image_col {
+        flex: 1;
+        max-height: 300px;
+
+        @media screen and (max-width: 920px) {
+          height: 150px;
+          max-height: 50% !important;
+        }
+
+        img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+        }
+      }
+
+      .details_col {
+        flex: 1;
+        padding-top: 1.5rem;
+        padding-bottom: 1.5rem;
+        display: flex;
+        flex-direction: column;
+
+        @media screen and (max-width: 768px) {
+          padding-bottom: 0.8rem;
+          padding-top: 0.8rem;
+        }
+
+        .title_col {
+          font-size: 32px;
+          text-transform: uppercase;
+          font-weight: 500;
+          color: $color;
+
+          @media screen and (max-width: 768px) {
+            font-size: 26px;
+            margin-bottom: 0.5rem;
+          }
+        }
+
+        .subtitle_col {
+          font-size: 22px;
+          font-weight: 500;
+          margin-bottom: .5rem;
+          line-height: 25px;
+
+          @media screen and (max-width: 768px) {
+            font-size: 18px;
+            margin-bottom: 0.8rem;
+          }
+        }
+
+        .para_col {
+          font-size: 16px;
+          font-weight: 400;
+
+          @media screen and (max-width: 768px) {
+            font-size: 14px;
+          }
+        }
+      }
+
+      &:nth-child(even) {
+        flex-direction: row-reverse;
+      }
+
+      &:nth-child(odd) {
+        flex-direction: row;
+      }
+    }
+
+    .inquire_btn {
+      background-color: $color;
+      color: #fff;
+      max-width: 220px;
+      width: 100%;
+      padding: 8px;
+      border: none;
+      text-transform: uppercase;
+    }
+  }
+}
+
+// .for_global_spinner {
+//   width: 35px;
+//   height: 35px;
+//   display: grid;
+//   border-radius: 50%;
+//   -webkit-mask: radial-gradient(farthest-side, #0000 40%, #000000 41%);
+//   background: linear-gradient(0deg, #000000 50%, #000000 0) center/4.5px 100%,
+//     linear-gradient(90deg, rgba(21, 21, 31, 0.25) 50%, #000000 0) center/100% 4.5px;
+//   background-repeat: no-repeat;
+//   animation: for_global_spinner-d3o0rx 1s infinite steps(12);
+//   position: absolute;
+//   left: 50%;
+//   transform: translateX(-50%, -50%);
+// }
+
+// .for_global_spinner::before,
+// .for_global_spinner::after {
+//   content: "";
+//   grid-area: 1/1;
+//   border-radius: 50%;
+//   background: inherit;
+//   opacity: 0.915;
+//   transform: rotate(30deg);
+// }
+
+// .for_global_spinner::after {
+//   opacity: 0.83;
+//   transform: rotate(60deg);
+// }
+
+// @keyframes for_global_spinner-d3o0rx {
+//   100% {
+//     transform: rotate(1turn);
+//   }
+// }

@@ -7,9 +7,33 @@ import Link from "next/link";
 import { useStore } from "@/app/(core)/contexts/StoreProvider";
 import { Get_Tren_BestS_NewAr_DesigSet_Album } from "@/app/(core)/utils/API/Home/Get_Tren_BestS_NewAr_DesigSet_Album/Get_Tren_BestS_NewAr_DesigSet_Album";
 
-const fetchAlbum = async ([storeData, id]) => {
-  const key = `album_${storeData?.ukey}`;
-  // 1️⃣ Check cache
+const buildAlbumCacheKey = (type, storeData, pricing, id) => {
+  const meta = {
+  type,
+  PackageId: pricing?.PackageId ?? "",
+  Laboursetid: pricing?.Laboursetid ?? "",
+  diamondpricelistname: pricing?.diamondpricelistname ?? "",
+  colorstonepricelistname: pricing?.colorstonepricelistname ?? "",
+};
+
+const key = [
+    type,
+    pricing?.PackageId,
+    pricing?.Laboursetid,
+    pricing?.diamondpricelistname,
+    pricing?.colorstonepricelistname,
+  ].join("_");
+
+  return {
+    key,
+    meta,
+  }
+};
+
+
+
+const fetchAlbum = async ([storeData, pricing, id]) => {
+  const {key ,meta} = buildAlbumCacheKey("album",storeData, pricing, id);
   const cachedRes = await fetch(`/api/cache?key=${key}`);
   const cached = await cachedRes.json();
 
@@ -18,16 +42,13 @@ const fetchAlbum = async ([storeData, id]) => {
     return cached.data; 
   }
 
-  // 2️⃣ No cache — fetch fresh data
-  console.log("🌐 No cache — fetching fresh data");
   const res = await Get_Tren_BestS_NewAr_DesigSet_Album(storeData, "GETAlbum", id);
   const data = res?.Data?.rd || [];
 
-  // 3️⃣ Store in cache (non-blocking)
   fetch("/api/cache", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ key, data }),
+    body: JSON.stringify({ key, meta, data }),
   }).catch(console.error);
 
   return data;
@@ -64,8 +85,36 @@ const Main = ({ storeData }) => {
     return uid;
   }, [mounted, loginUserDetail, islogin, storeData?.IsB2BWebsite]);
 
-  // SWR data fetch
-  const { data: albumData = [], isLoading } = useSWR(finalID ? [storeData, finalID] : null, fetchAlbum);
+  const pricingContext = useMemo(() => {
+  if (!mounted) return null;
+
+  const loginInfo = loginUserDetail;
+
+ return {
+      PackageId: (loginInfo?.PackageId ?? storeData?.PackageId) ?? "",
+      Laboursetid:
+          !islogin 
+          ? storeData?.pricemanagement_laboursetid
+          : loginInfo?.pricemanagement_laboursetid ?? "",
+      diamondpricelistname:
+          !islogin 
+          ? storeData?.diamondpricelistname
+          : loginInfo?.diamondpricelistname ?? "",
+      colorstonepricelistname:
+          !islogin 
+          ? storeData?.colorstonepricelistname
+          : loginInfo?.colorstonepricelistname ?? "",
+    };
+}, [mounted, loginUserDetail, storeData, islogin]);
+
+
+
+const { data: albumData = [], isLoading } = useSWR(
+  finalID && pricingContext
+    ? [storeData, pricingContext, finalID]
+    : null,
+  fetchAlbum
+);
 
   const skeletons = Array.from({ length: 5 }).map((_, i) => (
     <Grid item size={{ xs: 12, sm: 6, md: 4, lg: 2 }} key={i} mb={4}>

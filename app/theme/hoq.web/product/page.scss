@@ -1,0 +1,1941 @@
+@use "../../../theme/hoq.web/style/variable.scss" as *;
+
+$scrollbar-width: 2px;
+$scrollbar-track-color: #f1f1f100;
+$scrollbar-thumb-color: #e4e4e4;
+$settedcOLOR: rgba(112, 128, 144, 0.096);
+
+.hoq_filterDrawer {
+  font-family: $fontTenorSans !important;
+
+  .MuiPaper-root.MuiAccordion-root:last-of-type {
+    font-family: $fontTenorSans !important;
+  }
+
+  .MuiAccordionSummary-root {
+    font-family: $fontTenorSans !important;
+  }
+}
+
+@mixin LabelColor($bgcolor) {
+  background-color: $bgcolor !important;
+  color: #fff !important;
+  border: none !important;
+}
+
+@mixin custom-scrollbar {
+  &::-webkit-scrollbar {
+    width: $scrollbar-width;
+    display: block;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: $scrollbar-track-color;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: $scrollbar-thumb-color;
+    border-radius: $scrollbar-width;
+  }
+}
+
+.hoq_dynamic_Collections {
+  width: 100%;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  font-family: $fontTenorSans;
+
+  .filter_btn_mobile {
+    width: 1442px;
+    margin: 0 auto;
+
+    // display: none;
+    .fb_btn {
+      margin: 0 auto;
+      width: 98%;
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      // box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+      padding: 12px 0;
+      border-radius: 3px;
+    }
+  }
+
+  .Banner {
+    width: 100%;
+    height: 45vh;
+    background-color: rgba(225, 233, 233, 0.192);
+    text-align: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    padding: 30px 0;
+
+    h1 {
+      font-family: $fontDmSans;
+      font-weight: 600;
+      letter-spacing: 0px;
+      color: rgba(255, 255, 255, 0.925);
+    }
+  }
+
+  .collection_info {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    height: auto;
+    padding: 20px 0;
+    text-align: center;
+
+    h1 {
+      font-family: $fontTenorSans;
+      font-weight: 600;
+      font-size: 35px;
+    }
+
+    .para {
+      width: 80%;
+      padding: 10px 65px;
+
+      p {
+        font-size: 17px;
+        font-family: $fontDmSans;
+        letter-spacing: 0.4px;
+        transition: 0.5s ease;
+      }
+
+      span {
+        cursor: pointer;
+        font-size: 16px;
+        position: relative;
+        font-family: $fontCrimsonTextRegular;
+        color: black;
+
+        &::after {
+          content: "";
+          position: absolute;
+          width: 100%;
+          border-radius: 4px;
+          height: 2px;
+          background-color: rgba(247, 240, 230, 0.767);
+          left: 0;
+          bottom: -2px;
+        }
+
+        &::before {
+          content: "";
+          position: absolute;
+          transition: 0.5s ease-in;
+          width: 0%;
+          height: 2px;
+          background-color: black;
+          left: 0;
+          z-index: 12;
+          bottom: -2px;
+        }
+      }
+
+      &:hover {
+        span {
+          &::before {
+            width: 100%;
+          }
+        }
+      }
+    }
+  }
+
+  .bread_crumb_section {
+    width: 1442px;
+    margin: 0 auto;
+    display: flex;
+    height: 80px;
+    align-items: center;
+    padding-left: 10px;
+
+    span {
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-weight: 500;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+
+    .hoq_breadcums_port {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+  }
+
+  .filter_section {
+    width: 1442px;
+    margin: 0 auto;
+    display: flex;
+    height: auto;
+    margin-bottom: 2rem;
+    justify-content: center;
+    top: 170px;
+
+    .filter_accordian_section {
+      width: 20%;
+      overflow-y: scroll;
+      height: 100vh;
+      border-radius: 4px;
+      position: sticky;
+      display: flex;
+      top: 170px;
+      flex-direction: column;
+      padding: 0 10px;
+      gap: 0;
+      font-family: $fontDmSans;
+
+      .breadcrumb {
+        width: 100%;
+        display: flex;
+        margin: 0;
+        padding: 15px 0px;
+
+        span {
+          font-family: $fontDmSans;
+          font-size: 16px;
+        }
+      }
+
+      .filter_results {
+        width: 100%;
+        height: 100px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+
+        span:last-child {
+          margin-right: 10px;
+        }
+      }
+
+      &::-webkit-scrollbar {
+        display: none;
+      }
+
+      &:hover {
+        overflow-y: auto;
+        @include custom-scrollbar;
+      }
+
+      .accordian {
+        box-shadow: none;
+        margin: 0;
+        padding: 5px 0;
+        margin-right: 10px;
+
+        .hoq_category_names {
+          margin: 0;
+          padding: 0;
+        }
+
+        .accordian_details_col {
+          padding: 0;
+          width: 100%;
+          margin: 0;
+
+          .price {
+            display: flex;
+
+            .price_checkbox {
+              padding: 0 4px;
+              margin: 0;
+            }
+
+            .hoq_subCategory_name_price {
+              padding-left: 5px;
+
+              display: flex;
+              width: 100%;
+              margin: 0 auto;
+              flex-direction: row-reverse;
+              justify-content: space-between;
+            }
+          }
+
+          .hoq_subCategory_name {
+            display: flex;
+            margin: 0;
+            padding: 5px 10px;
+            align-items: center;
+            justify-content: space-between;
+            color: #727174;
+            font-size: 15px;
+
+            &:last-child {
+              margin-bottom: 15px;
+            }
+          }
+        }
+      }
+    }
+
+    .cc_list {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+
+      .filter_select {
+        width: 100%;
+        justify-content: space-between;
+        display: flex;
+        align-items: center;
+        padding: 15px 0;
+
+        div {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          border: 1px solid #d3d3d3;
+          border-radius: 4px;
+          padding: 5px;
+
+          .label {
+            font-size: 16px;
+          }
+
+          select {
+            border: none;
+            border-radius: none;
+            font-size: 15px;
+            background: transparent;
+
+            .option {
+              font-size: 12px;
+            }
+          }
+        }
+      }
+
+      // .C_Card {
+      //   width: 23.6%;
+      //   height: 550px;
+      //   position: relative;
+      //   box-shadow: none;
+      //   border-radius: 0.3px;
+      //   margin: 10px;
+      //   overflow: hidden;
+      //   &:hover {
+      //     .hoq_plus {
+      //       display: flex;
+      //       opacity: 1;
+      //     }
+      //   }
+      //   .hoq_CartSkelton {
+      //     background-color: #f6f6f6a6 !important;
+      //   }
+      //   .hoq_plus {
+      //     position: absolute;
+      //     bottom: 6rem;
+      //     width: 100%;
+      //     height: 10vh;
+      //     display: flex;
+      //     align-items: center;
+      //     justify-content: space-between;
+      //     padding: 0 10px;
+      //     z-index: 55;
+      //     display: none;
+      //     opacity: 0.3;
+      //     button {
+      //       transition: 0.3s ease-in;
+      //       border: none;
+      //       outline: none;
+      //       background-color: transparent;
+      //       color: rgba(116, 114, 114, 0.466);
+      //       opacity: 0.5;
+      //       font-size: 2rem;
+      //     }
+      //   }
+      //   .hoq_product_label {
+      //     position: absolute;
+      //     top: 10px;
+      //     z-index: 56;
+      //     display: flex;
+      //     flex-direction: column;
+      //     font-family: $fontDmSans;
+      //     left: 7px;
+      //     gap: 5px;
+      //     span {
+      //       border-radius: 5px;
+      //       text-align: center;
+      //       padding: 2.5px 6px;
+      //       font-size: 12px;
+      //       font-weight: 500;
+      //       border-radius: 3px;
+      //     }
+      //     .hoq_instock {
+      //       background-color: green !important;
+      //       text-align: center;
+      //       border: none !important;
+      //       color: white !important;
+      //     }
+      //     .hoq_bestSeller {
+      //       background-color: #1e90ff !important;
+      //       text-align: center;
+      //       border: none !important;
+      //       color: white !important;
+      //     }
+      //     .hoq_intrending {
+      //       background-color: purple!important;
+      //       text-align: center;
+      //       border: none !important;
+      //       color: white !important;
+      //     }
+      //     .hoq_newarrival {
+      //       background-color: deeppink!important;
+      //       text-align: center;
+      //       border: none !important;
+      //       color: white !important;
+      //     }
+      //   }
+      //   .image {
+      //     width: 100%;
+      //     height: 450px;
+      //     overflow: hidden;
+      //     position: relative;
+      //     overflow: hidden;
+      //     img {
+      //       width: 100%;
+      //       height: auto;
+      //     }
+      //     background-color: $settedcOLOR;
+      //     .rollup_video {
+      //       position: absolute;
+      //       z-index: 45;
+      //       width: 100%;
+      //       height: 100%;
+      //       top: 0;
+      //       video {
+      //         width: 100%;
+      //         // height: 100%;
+      //         object-fit: contain !important;
+      //         transition: 0.3s ease-in-out;
+      //       }
+      //     }
+      //     .rollup_img {
+      //       width: 100%;
+      //       height: 100%;
+      //       object-fit: cover;
+      //       img {
+      //         width: 100%;
+      //         height: 100%;
+      //         object-fit: contain !important;
+      //         border: transparent;
+      //         outline: none;
+      //         mix-blend-mode: multiply;
+      //         &:hover {
+      //           transition: 0.3s ease-in-out;
+      //         }
+      //       }
+      //     }
+      //     img {
+      //       width: 100%;
+      //       object-fit: contain !important;
+      //       border: transparent;
+      //       outline: none;
+      //       mix-blend-mode: multiply;
+      //       transition: 0.3s ease-in-out;
+      //     }
+      //   }
+      //   .det {
+      //     width: 100%;
+      //     height: auto;
+      //     display: flex;
+      //     align-items: center;
+      //     flex-direction: column;
+      //     text-align: center;
+      //     font-family: $fontCrimsonTextRegular;
+      //     overflow: hidden;
+      //     padding: 8px 0px;
+      //     h2 {
+      //       font-size: 19px;
+      //       font-weight: 400;
+      //       color: #7d7f85;
+      //       padding: 0;
+      //       width: 100%;
+      //       height: auto;
+      //       display: -webkit-box;
+      //       text-align: center;
+      //       -webkit-line-clamp: 1;
+      //       -webkit-box-orient: vertical;
+      //       overflow: hidden;
+      //       padding: 2px 10px;
+      //     }
+      //     .jewel_parameter {
+      //       margin-top: -8px;
+      //       display: flex;
+      //       align-items: center;
+      //       color: #7d7f85;
+      //       font-size: 0px !important;
+      //       font-family: $fontCrimsonTextRegular !important;
+      //       &:has(span) {
+      //         display: flex;
+      //         align-items: center;
+      //         gap: 2px;
+      //         letter-spacing: 0.2px !important;
+      //       }
+      //     }
+      //     .hoq_prod_mtcolr_price {
+      //       color: #7d7f85;
+      //       span {
+      //         color: #7d7f85;
+      //         font-size: 14px;
+      //       }
+      //     }
+      //   }
+      // }
+      .collections_list {
+        width: 100%;
+        // padding: 10px;
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+
+        .loading_container {
+          width: 100%;
+          height: 100vh;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+
+          img {
+            width: 5%;
+          }
+        }
+
+        .C_Card {
+          width: 23.6%;
+          height: 550px;
+          position: relative;
+          box-shadow: none;
+          border-radius: 0.3px;
+          margin: 10px;
+          overflow: hidden;
+
+          &:hover {
+            .hoq_plus {
+              display: flex;
+              opacity: 1;
+            }
+          }
+
+          .hoq_CartSkelton {
+            background-color: #f6f6f6a6 !important;
+          }
+
+          .hoq_CartSkelton_1 {
+            background-color: #f2f3f5 !important;
+          }
+
+          .hoq_plus {
+            position: absolute;
+            bottom: 6rem;
+            width: 100%;
+            height: 10vh;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            z-index: 55;
+            display: none;
+            opacity: 0.3;
+
+            button {
+              transition: 0.3s ease-in;
+              border: none;
+              outline: none;
+              background-color: transparent;
+              color: rgba(116, 114, 114, 0.466);
+              opacity: 0.5;
+              font-size: 2rem;
+            }
+          }
+
+          .hoq_product_label {
+            position: absolute;
+            top: 10px;
+            z-index: 56;
+            display: flex;
+            flex-direction: column;
+            font-family: $fontDmSans;
+            left: 7px;
+            gap: 5px;
+
+            span {
+              border-radius: 5px;
+              text-align: center;
+              padding: 2.5px 6px;
+              font-size: 12px;
+              font-weight: 500;
+              border-radius: 3px;
+              background-color: white;
+            }
+
+            .hoq_instock {
+              @include LabelColor(green);
+            }
+
+            .hoq_bestSeller {
+              @include LabelColor(#1e90ff);
+            }
+
+            .hoq_intrending {
+              @include LabelColor(purple);
+            }
+
+            .hoq_newarrival {
+              @include LabelColor(deeppink);
+            }
+          }
+
+          .image {
+            width: 100%;
+            height: 450px;
+            overflow: hidden;
+            position: relative;
+            overflow: hidden;
+            background-color: rgba(112, 128, 144, 0.096);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: 0.3s ease-in-out;
+            // .story-diamond{
+            //     z-index: 100 !important;
+            //     opacity: 0;
+            //     visibility: hidden;  // Hidden by default
+            //     opacity: 0;
+            //     transition: opacity 0.3s ease-in-out, visibility 0s linear 0.3s;  // Smooth fade-in and delay for visibility
+            //     pointer-events: none;  // Avoid interaction when hidden
+
+            //     img{
+            //       width: 100%;
+            //       background-color: unset !important;
+            //     }
+            // }
+            // &:hover{
+            //     transition: 0.3s ease-in-out;
+            //     .story-diamond{
+            //       visibility: visible;  // Make it visible on hover
+            //       opacity: 1;  // Fade in the .story-diamond
+            //       transition: opacity 0.3s ease-in-out, visibility 0s linear 0s;  // Smooth opacity fade and immediate visibility change
+            //     }  
+            // }
+
+            .rollup_video {
+              position: absolute;
+              z-index: 45;
+              width: 100%;
+              height: 100%;
+              top: 0;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+
+              video {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                transition: 0.3s ease-in-out;
+              }
+            }
+
+            .rollup_img {
+              width: 100%;
+              // height: 100%;
+              object-fit: cover;
+
+              img {
+                width: 100%;
+                // height: 100%;
+                object-fit: contain !important;
+                border: transparent;
+                outline: none;
+                mix-blend-mode: multiply;
+              }
+            }
+
+            img {
+              width: 100%;
+              height: 100%;
+              object-fit: contain;
+              border: transparent;
+              outline: none;
+              mix-blend-mode: multiply;
+
+              &:hover {
+                transition: 0.3s ease-in-out;
+                scale: 1.02;
+              }
+            }
+          }
+
+          .det {
+            width: 100%;
+            height: auto;
+            display: flex;
+            align-items: center;
+            flex-direction: column;
+            text-align: center;
+            font-family: $fontCrimsonTextRegular;
+            overflow: hidden;
+            padding: 8px 0px;
+
+            h2 {
+              font-size: 19px;
+              font-weight: 400;
+              color: #7d7f85;
+              padding: 0;
+              width: 100%;
+              height: auto;
+              display: -webkit-box;
+              text-align: center;
+              -webkit-line-clamp: 1;
+              -webkit-box-orient: vertical;
+              overflow: hidden;
+              padding: 2px 10px;
+
+              @media (max-width: 1100px) {
+                font-size: 15px;
+              }
+            }
+
+            .jewel_parameter {
+              margin-top: -8px;
+              display: flex;
+              align-items: center;
+              color: #7d7f85;
+              font-size: 11px;
+
+              // font-size: 15px;
+              &:has(span) {
+                display: flex;
+                align-items: center;
+                gap: 2px;
+                letter-spacing: 0.5px;
+              }
+            }
+
+            .hoq_prod_mtcolr_price {
+              color: #7d7f85;
+
+              span {
+                color: #7d7f85;
+                font-size: 14px;
+              }
+            }
+          }
+        }
+      }
+
+      .NoProductFound {
+        width: 100%;
+        height: 90vh;
+        display: flex;
+        background-color: #cfcfcf17;
+        align-items: center;
+        overflow: hidden;
+        justify-content: center;
+        border-radius: 5px;
+        text-align: center;
+        flex-direction: column;
+
+        h1 {
+          font-size: 1.7rem;
+          font-weight: 500;
+          width: 80%;
+        }
+      }
+    }
+  }
+
+  .pagination_sec {
+    width: 100%;
+    height: 100%;
+
+    .pagination-bar {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 200px;
+
+      .pagination-btn {
+        .Mui-selected {
+          background-color: #c20000;
+          padding: 20px 15px;
+          color: white;
+        }
+      }
+    }
+  }
+
+  // Media queries for responsiveness
+  @media screen and (max-width: 1452px) {
+    width: 100%;
+    overflow: hidden;
+
+    .Banner {
+      margin-top: -1.2rem;
+      z-index: -555;
+      height: 30vh;
+    }
+
+    .bread_crumb_section {
+      margin-top: -1rem;
+    }
+
+    .collection_info {
+      display: flex;
+      align-items: center;
+      flex-direction: column;
+      height: auto;
+      padding: 20px 0;
+      text-align: center;
+
+      h1 {
+        font-family: $fontTenorSans;
+        font-weight: 600;
+        font-size: 35px;
+      }
+
+      .para {
+        width: 100%;
+        padding: 10px;
+
+        p {
+          font-size: 15px;
+          font-family: $fontDmSans;
+          letter-spacing: 0.4px;
+          transition: 0.5s ease;
+        }
+      }
+    }
+
+    .filter_section {
+      display: flex;
+      width: 100%;
+
+      .cc_list {
+        .collections_list {
+          width: 100%;
+          display: grid;
+          padding: 10px;
+          grid-template-columns: repeat(4, 1fr);
+          // grid-template-rows: minmax(200px,auto);
+          transition: 0.5s ease-in;
+
+          .C_Card {
+            width: auto;
+            height: 500px;
+
+            .hoq_plus {
+              bottom: 5.5rem;
+            }
+
+            .image {
+              width: 100%;
+              overflow: hidden;
+              height: 80%;
+              position: relative;
+              overflow: hidden;
+              background-color: rgba(112, 128, 144, 0.096);
+
+              .rollup_video {
+                position: absolute;
+                z-index: 45;
+                width: 100%;
+                height: 100%;
+                // height: 80%;
+                top: 0;
+
+                video {
+                  width: 100%;
+                  height: 100%;
+                  object-fit: cover;
+                  transition: 0.3s ease-in-out;
+                }
+              }
+
+              .rollup_img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+
+                img {
+                  width: 100%;
+                  height: 100%;
+                  object-fit: contain;
+                  border: transparent;
+                  outline: none;
+                  mix-blend-mode: multiply;
+                }
+              }
+
+              img {
+                width: 100%;
+                height: 100%;
+                object-fit: contain;
+                border: transparent;
+                outline: none;
+                mix-blend-mode: multiply;
+
+                &:hover {
+                  transition: 0.3s ease-in-out;
+                  scale: 1.02;
+                }
+              }
+
+              .det {
+                height: auto;
+              }
+            }
+
+            .det {
+              h2 {}
+
+              .jewel_parameter {
+                line-height: 18px;
+                display: flex;
+                flex-wrap: wrap;
+                text-align: center;
+                justify-content: center;
+                align-items: center;
+
+                &:has(span) {
+                  display: flex;
+                  align-items: center;
+                  letter-spacing: 0.5px;
+                }
+              }
+
+              .hoq_prod_mtcolr_price {
+                color: #7d7f85;
+
+                span {
+                  color: #7d7f85;
+                  font-size: 14px;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  @media screen and (max-width: 1180px) {
+    .filter_section {
+      .cc_list {
+        .collections_list {
+          .C_Card {
+            width: auto;
+            height: 470px;
+            transition: 0.5s ease-in;
+
+            .hoq_plus {
+              bottom: 5rem;
+            }
+
+            .det {
+              h2 {}
+
+              .jewel_parameter {
+                line-height: 12px;
+                margin-bottom: 2px;
+
+                &:has(span) {
+                  display: flex;
+                  align-items: center;
+                  letter-spacing: 0.5px;
+                }
+              }
+
+              .hoq_prod_mtcolr_price {
+                color: #7d7f85;
+
+                span {
+                  color: #7d7f85;
+                  font-size: 14px;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  @media screen and (max-width: 1090px) {
+    .filter_section {
+      .cc_list {
+        .collections_list {
+          .C_Card {
+            width: auto;
+            height: 420px;
+            transition: 0.5s ease-in;
+
+            .hoq_plus {
+              bottom: 4.3rem;
+            }
+
+            .det {
+              h2 {}
+
+              .jewel_parameter {
+                line-height: 12px;
+                font-size: 10px;
+
+                &:has(span) {
+                  display: flex;
+                  align-items: center;
+                  letter-spacing: 0.5px;
+                }
+              }
+
+              .hoq_prod_mtcolr_price {
+                color: #7d7f85;
+
+                span {
+                  color: #7d7f85;
+                  font-size: 12.5px;
+                  // font-size: 14px;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  @media screen and (max-width: 1004px) {
+    .filter_section {
+      .cc_list {
+        .collections_list {
+          .C_Card {
+            width: auto;
+            height: 370px;
+            transition: 0.5s ease-in;
+
+            .hoq_plus {
+              bottom: 5rem;
+            }
+
+            .image {
+              overflow: hidden;
+              height: 75%;
+              position: relative;
+              overflow: hidden;
+              background-color: rgba(112, 128, 144, 0.096);
+
+              .rollup_video {
+                position: absolute;
+                z-index: 45;
+                width: 100%;
+                height: 100%;
+                // height: 75%;
+                top: 0;
+
+                video {
+                  width: 100%;
+                  height: 100%;
+                  // object-fit: contain;
+                  object-fit: cover;
+                  transition: 0.3s ease-in-out;
+                }
+              }
+
+              .rollup_img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+
+                img {
+                  width: 100%;
+                  height: 100%;
+                  object-fit: contain;
+                  border: transparent;
+                  outline: none;
+                  mix-blend-mode: multiply;
+                }
+              }
+
+              img {
+                width: 100%;
+                height: 100%;
+                object-fit: contain;
+                border: transparent;
+                outline: none;
+                mix-blend-mode: multiply;
+
+                &:hover {
+                  transition: 0.3s ease-in-out;
+                  scale: 1.02;
+                }
+              }
+
+              .det {
+                height: auto;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  @media screen and (max-width: 818px) {
+    .filter_section {
+      .cc_list {
+        .collections_list {
+          .C_Card {
+            width: auto;
+            height: 330px;
+            transition: 0.5s ease-in;
+
+            .hoq_plus {
+              bottom: 4rem;
+            }
+
+            .det {
+              .hoq_prod_mtcolr_price {
+                color: #7d7f85;
+                font-size: 10px;
+                font-weight: 500;
+                margin-top: 5px;
+
+                span {
+                  color: #7d7f85;
+                  font-size: 10px;
+                  font-weight: 500;
+                }
+              }
+
+              .jewel_parameter {
+                line-height: 10px;
+                margin-bottom: 2px;
+
+                &:has(span) {
+                  display: flex;
+                  align-items: center;
+                  letter-spacing: 0.5px;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  @media screen and (max-width: 768px) {
+    .filter_section {
+      display: flex;
+      width: 100%;
+
+      .cc_list {
+        .collections_list {
+          width: 100%;
+          display: grid;
+          padding: 10px;
+          grid-template-columns: repeat(2, 1fr);
+          transition: 0.5s ease-in;
+
+          .C_Card {
+            width: auto;
+            height: 580px;
+
+            .hoq_plus {
+              bottom: 5rem;
+            }
+
+            .image {
+              width: 100%;
+              overflow: hidden;
+              height: 80%;
+              position: relative;
+              overflow: hidden;
+              background-color: rgba(112, 128, 144, 0.096);
+
+              .rollup_video {
+                position: absolute;
+                z-index: 45;
+                width: 100%;
+                height: 100%;
+                // height: 85%;
+                top: 0;
+
+                video {
+                  width: 100%;
+                  height: 100%;
+                  // object-fit: contain;
+                  object-fit: cover;
+                  transition: 0.3s ease-in-out;
+                }
+              }
+
+              .rollup_img {
+                width: 100%;
+                height: 100%;
+                object-fit: contain;
+
+                img {
+                  width: 100%;
+                  height: 100%;
+                  object-fit: contain;
+                  border: transparent;
+                  outline: none;
+                  mix-blend-mode: multiply;
+                }
+              }
+
+              img {
+                width: 100%;
+                height: 100%;
+                object-fit: contain;
+                border: transparent;
+                outline: none;
+                mix-blend-mode: multiply;
+
+                &:hover {
+                  transition: 0.3s ease-in-out;
+                  scale: 1.02;
+                }
+              }
+
+              .det {
+                height: auto;
+              }
+            }
+
+            .det {
+              h2 {
+                // font-size: 21px;
+                font-size: 15px;
+              }
+
+              .jewel_parameter {
+                font-size: 14px !important;
+                line-height: 10px;
+
+                &:has(span) {
+                  display: flex;
+                  align-items: center;
+                  gap: 5px;
+                  font-size: 12.5px !important;
+                  letter-spacing: 0.5px;
+                }
+              }
+
+              .hoq_prod_mtcolr_price {
+                color: #7d7f85;
+
+                span {
+                  color: #7d7f85;
+                  // font-size: 14px;
+                  font-size: 12px;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  @media screen and (max-width: 692px) {
+    .filter_section {
+      .cc_list {
+        .collections_list {
+          .C_Card {
+            width: auto;
+            height: 520px;
+            transition: 0.5s ease-in;
+
+            .hoq_plus {
+              bottom: 4.8rem !important;
+            }
+
+            .hoq_plus {
+              bottom: 3rem;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  @media screen and (max-width: 600px) {
+    .filter_section {
+      .cc_list {
+        .collections_list {
+          .C_Card {
+            width: auto;
+            height: 440px;
+            transition: 0.5s ease-in;
+
+            .hoq_plus {
+              bottom: 3.7rem !important;
+            }
+
+            .det {
+              h2 {
+                font-size: 15px !important;
+              }
+
+              .jewel_parameter {
+                line-height: 12px;
+                margin-bottom: -2px;
+
+                &:has(span) {
+                  display: flex;
+                  align-items: center;
+                  letter-spacing: 0.5px;
+                  font-size: 10px !important;
+                }
+              }
+
+              .hoq_prod_mtcolr_price {
+                color: #7d7f85;
+
+                span {
+                  color: #7d7f85;
+                  font-size: 14px;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  @media screen and (max-width: 530px) {
+    .filter_section {
+      .cc_list {
+        .collections_list {
+          .C_Card {
+            width: auto;
+            height: 420px;
+            transition: 0.5s ease-in;
+
+            .hoq_plus {
+              bottom: 3.3rem !important;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  @media screen and (max-width: 480px) {
+    .filter_section {
+      .cc_list {
+        .collections_list {
+          .C_Card {
+            width: auto;
+            height: 385px;
+            transition: 0.5s ease-in;
+
+            .hoq_plus {
+              bottom: 4.8rem !important;
+            }
+
+            .det {
+              h2 {
+                font-size: 18px;
+              }
+
+              .jewel_parameter {
+                line-height: 12px;
+                margin-bottom: -2px;
+
+                &:has(span) {
+                  display: flex;
+                  align-items: center;
+                  font-size: 12px !important;
+                  letter-spacing: 0.5px;
+                }
+              }
+
+              .hoq_prod_mtcolr_price {
+                color: #7d7f85;
+
+                span {
+                  color: #7d7f85;
+                  font-size: 12px;
+                }
+              }
+            }
+
+            .image {
+              overflow: hidden;
+              height: 78%;
+              position: relative;
+              overflow: hidden;
+              background-color: rgba(112, 128, 144, 0.096);
+
+              .rollup_video {
+                position: absolute;
+                z-index: 45;
+                width: 100%;
+                height: 100%;
+                // height: 80%;
+                top: 0;
+
+                video {
+                  width: 100%;
+                  height: 100%;
+                  // object-fit: contain;
+                  object-fit: cover;
+                  transition: 0.3s ease-in-out;
+                }
+              }
+
+              .rollup_img {
+                width: 100%;
+                height: 100%;
+                object-fit: contain;
+
+                img {
+                  width: 100%;
+                  height: 100%;
+                  object-fit: contain;
+                  border: transparent;
+                  outline: none;
+                  mix-blend-mode: multiply;
+                }
+              }
+
+              img {
+                width: 100%;
+                height: 100%;
+                object-fit: contain;
+                border: transparent;
+                outline: none;
+                mix-blend-mode: multiply;
+
+                &:hover {
+                  transition: 0.3s ease-in-out;
+                  scale: 1.02;
+                }
+              }
+
+              .det {
+                height: auto;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  @media screen and (max-width: 450px) {
+    .filter_section {
+      .cc_list {
+        .collections_list {
+          .C_Card {
+            width: auto;
+            height: 390px;
+            transition: 0.5s ease-in;
+
+            .hoq_plus {
+              bottom: 4.5rem !important;
+            }
+
+            .image {
+              overflow: hidden;
+              height: 79%;
+              position: relative;
+              overflow: hidden;
+              background-color: rgba(112, 128, 144, 0.096);
+
+              .rollup_video {
+                position: absolute;
+                z-index: 45;
+                width: 100%;
+                // height: 80%;
+                height: 100%;
+                top: 0;
+
+                video {
+                  width: 100%;
+                  height: 100%;
+                  // object-fit: contain;
+                  object-fit: cover;
+                  transition: 0.3s ease-in-out;
+                }
+              }
+
+              .rollup_img {
+                width: 100%;
+                height: 100%;
+                object-fit: contain;
+
+                img {
+                  width: 100%;
+                  height: 100%;
+                  object-fit: contain;
+                  border: transparent;
+                  outline: none;
+                  mix-blend-mode: multiply;
+                }
+              }
+
+              img {
+                width: 100%;
+                height: 100%;
+                object-fit: contain;
+                border: transparent;
+                outline: none;
+                mix-blend-mode: multiply;
+
+                &:hover {
+                  transition: 0.3s ease-in-out;
+                  scale: 1.02;
+                }
+              }
+            }
+
+            .det {
+              .jewel_parameter {
+                line-height: 9px !important;
+              }
+
+              .hoq_prod_mtcolr_price {}
+            }
+          }
+        }
+      }
+    }
+  }
+
+  @media screen and (max-width: 418px) {
+    .filter_section {
+      .cc_list {
+        .collections_list {
+          .C_Card {
+            width: auto;
+            height: 350px;
+            transition: 0.5s ease-in;
+
+            .hoq_plus {
+              bottom: 5.4rem !important;
+            }
+
+            .image {
+              overflow: hidden;
+              height: 75%;
+              position: relative;
+              overflow: hidden;
+              background-color: rgba(112, 128, 144, 0.096);
+
+              .rollup_video {
+                position: absolute;
+                z-index: 45;
+                width: 100%;
+                height: 100%;
+                // height: 75%;
+                top: 0;
+
+                video {
+                  width: 100%;
+                  height: 100%;
+                  // object-fit: contain;
+                  object-fit: cover;
+                  transition: 0.3s ease-in-out;
+                }
+              }
+
+              .rollup_img {
+                width: 100%;
+                height: 100%;
+                object-fit: contain;
+
+                img {
+                  width: 100%;
+                  height: 100%;
+                  object-fit: contain;
+                  border: transparent;
+                  outline: none;
+                  mix-blend-mode: multiply;
+                }
+              }
+
+              img {
+                width: 100%;
+                height: 100%;
+                object-fit: contain;
+                border: transparent;
+                outline: none;
+                mix-blend-mode: multiply;
+
+                &:hover {
+                  transition: 0.3s ease-in-out;
+                  scale: 1.02;
+                }
+              }
+            }
+
+            .det {
+              gap: 2px;
+
+              .jewel_parameter {
+                line-height: 9px !important;
+              }
+
+              .hoq_prod_mtcolr_price {
+                color: #7d7f85;
+
+                span {
+                  color: #7d7f85;
+                  font-size: 12px !important;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  @media screen and (max-width: 390px) {
+    .filter_section {
+      .cc_list {
+        .collections_list {
+          padding: 2px !important;
+
+          .C_Card {
+            width: auto;
+            height: 340px;
+            transition: 0.5s ease-in;
+
+            .det {
+              h2 {
+                font-size: 18px;
+              }
+
+              .jewel_parameter {
+                line-height: 12px;
+                margin-bottom: -2px;
+
+                &:has(span) {
+                  display: flex;
+                  align-items: center;
+                  font-size: 10px !important;
+                  letter-spacing: 0.5px;
+                }
+              }
+
+              .hoq_prod_mtcolr_price {
+                color: #7d7f85;
+
+                span {
+                  color: #7d7f85;
+                  font-size: 12px;
+                }
+              }
+            }
+
+            .image {
+              overflow: hidden;
+              height: 70%;
+              position: relative;
+              overflow: hidden;
+              background-color: rgba(112, 128, 144, 0.096);
+
+              .rollup_video {
+                position: absolute;
+                z-index: 45;
+                width: 100%;
+                height: 100%;
+                // height: 70%;
+                top: 0;
+
+                video {
+                  width: 100%;
+                  height: 100%;
+                  // object-fit: contain;
+                  object-fit: cover;
+                  transition: 0.3s ease-in-out;
+                }
+              }
+
+              .rollup_img {
+                width: 100%;
+                height: 100%;
+                object-fit: contain;
+
+                img {
+                  width: 100%;
+                  height: 100%;
+                  object-fit: contain;
+                  border: transparent;
+                  outline: none;
+                  mix-blend-mode: multiply;
+                }
+              }
+
+              img {
+                width: 100%;
+                // height: 100%;
+                object-fit: contain;
+                border: transparent;
+                outline: none;
+                mix-blend-mode: multiply;
+
+                &:hover {
+                  transition: 0.3s ease-in-out;
+                  scale: 1.02;
+                }
+              }
+            }
+
+            .det {
+              gap: 2px;
+
+              .jewel_parameter {
+                line-height: 9px !important;
+              }
+
+              .hoq_prod_mtcolr_price {
+                color: #7d7f85;
+
+                span {
+                  color: #7d7f85;
+                  font-size: 11px !important;
+                  margin-bottom: 5px;
+                }
+              }
+            }
+          }
+        }
+      }
+
+      .pagination_sec {
+        .pagination-btn .MuiPaginationItem-root {
+          font-size: 0.875rem;
+          /* Slightly larger font size */
+          width: 1rem;
+          /* Adjust width */
+          height: 1rem;
+          /* Adjust height */
+          margin: 0 !important;
+        }
+
+        .pagination-btn .MuiPaginationItem-root {
+          font-size: 1rem;
+          /* Larger font size for desktop */
+        }
+      }
+    }
+  }
+
+  @media screen and (max-width: 358px) {
+    .filter_section {
+      .cc_list {
+        .collections_list {
+          padding: 2px !important;
+
+          .C_Card {
+            width: auto;
+            transition: 0.5s ease-in;
+
+            .image {
+              overflow: hidden;
+              height: 70%;
+              position: relative;
+              overflow: hidden;
+              background-color: rgba(112, 128, 144, 0.096);
+
+              .rollup_video {
+                position: absolute;
+                z-index: 45;
+                width: 100%;
+                height: 100%;
+                // height: 75%;
+                top: 0;
+
+                video {
+                  width: 100%;
+                  height: 100%;
+                  // object-fit: contain;
+                  object-fit: cover;
+                  transition: 0.3s ease-in-out;
+                }
+              }
+
+              .rollup_img {
+                width: 100%;
+                height: 100%;
+                object-fit: contain;
+
+                img {
+                  width: 100%;
+                  // height: 100%;
+                  object-fit: contain;
+                  border: transparent;
+                  outline: none;
+                  mix-blend-mode: multiply;
+                }
+              }
+
+              img {
+                width: 100%;
+                height: 100%;
+                object-fit: contain;
+                border: transparent;
+                outline: none;
+                mix-blend-mode: multiply;
+
+                &:hover {
+                  transition: 0.3s ease-in-out;
+                  scale: 1.02;
+                }
+              }
+            }
+
+            .det {
+              gap: 2px;
+
+              .jewel_parameter {
+                line-height: 9px !important;
+              }
+
+              .hoq_prod_mtcolr_price {
+                color: #7d7f85;
+
+                span {
+                  color: #7d7f85;
+                  margin-bottom: 5px;
+                }
+              }
+            }
+          }
+        }
+      }
+
+      .pagination_sec {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        .pagination-btn .MuiPaginationItem-root {
+          font-size: 0.875rem;
+          /* Slightly larger font size */
+          width: 0.7rem !important;
+          /* Adjust width */
+          height: 0.6rem !important;
+          /* Adjust height */
+          margin: 0 !important;
+        }
+
+        .pagination-btn .MuiPaginationItem-root {
+          font-size: 1rem;
+          /* Larger font size for desktop */
+        }
+      }
+    }
+  }
+
+  @media screen and (max-width: 310px) {
+    .filter_section {
+      display: flex;
+      width: 100%;
+
+      .cc_list {
+        .collections_list {
+          width: 100%;
+          display: grid;
+          padding: 10px;
+          grid-template-columns: repeat(1, 1fr);
+          transition: 0.5s ease-in;
+
+          .C_Card {
+            width: auto;
+            height: 400px;
+
+            .hoq_plus {
+              bottom: 3rem !important;
+            }
+
+            .image {
+              overflow: hidden;
+              height: 84%;
+              position: relative;
+              overflow: hidden;
+              background-color: rgba(112, 128, 144, 0.096);
+
+              .rollup_video {
+                position: absolute;
+                z-index: 45;
+                width: 100%;
+                // height: 84%;
+                height: 100%;
+                top: 0;
+
+                video {
+                  width: 100%;
+                  height: 100%;
+                  // object-fit: contain;
+                  object-fit: cover;
+                  transition: 0.3s ease-in-out;
+                }
+              }
+
+              .rollup_img {
+                width: 100%;
+                height: 100%;
+                object-fit: contain;
+
+                img {
+                  width: 100%;
+                  height: 100%;
+                  object-fit: contain;
+                  border: transparent;
+                  outline: none;
+                  mix-blend-mode: multiply;
+                }
+              }
+
+              img {
+                width: 100%;
+                height: 100%;
+                object-fit: contain;
+                border: transparent;
+                outline: none;
+                mix-blend-mode: multiply;
+
+                &:hover {
+                  transition: 0.3s ease-in-out;
+                  scale: 1.02;
+                }
+              }
+
+              .det {
+                height: auto;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

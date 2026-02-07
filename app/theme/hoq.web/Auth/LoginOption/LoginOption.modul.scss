@@ -1,0 +1,136 @@
+@use '../../../hoq.web/style/variable.scss' as *;
+
+.Hoq_Loginoption {
+    .loginDailog {
+        margin-inline: 6%;
+        background-color: white;
+        padding: 15px;
+
+        .hoq_agree {
+            a {
+                color: #686a68 !important;
+                text-decoration: none;
+
+                &:nth-child(2):hover {
+                    text-decoration: none;
+                }
+
+                &:nth-child(1) {
+                    text-decoration: none;
+
+                    span {
+                        font-weight: 500;
+                        text-decoration: underline;
+                        color: #c20000;
+                    }
+                }
+
+            }
+        }
+    }
+
+    .smilingLoginOptionMain {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        font-family: $fontTenorSans;
+    }
+
+    .loginDiTile {
+        font-size: 30px;
+        font-weight: 600;
+        margin-top: 25px;
+        text-align: center;
+        color: #686a68;
+        font-family: $fontTenorSans;
+    }
+
+    .loginMail {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: #888;
+        color: white;
+        margin-inline: 7px;
+        height: 55px;
+        cursor: pointer;
+        width: 25%;
+        margin-top: 30px;
+        border-radius: 5px;
+        font-family: $fontDmSans;
+        background-color: #c20000;
+
+        &:hover {
+            background-color: #750505;
+            transition: 0.3s ease-in-out;
+        }
+    }
+
+    .loginMobile {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: #888;
+        color: white;
+        margin-inline: 7px;
+        height: 55px;
+        cursor: pointer;
+        margin-top: 25px;
+        width: 25%;
+        border-radius: 5px;
+        font-family: $fontDmSans;
+        background-color: #c20000;
+
+        &:hover {
+            background-color: #750505;
+            transition: 0.3s ease-in-out;
+        }
+    }
+
+    @media screen and (max-width: 1150px) {
+        .loginMail {
+            width: 50% !important;
+        }
+
+        .loginMobile {
+            width: 50% !important;
+        }
+    }
+
+    @media screen and (max-width: 900px) {
+        .loginDailog {
+            margin-inline: 2% !important;
+        }
+    }
+
+    @media screen and (max-width: 700px) {
+        .loginMail {
+            width: 80% !important;
+        }
+
+        .loginMobile {
+            width: 80% !important;
+        }
+
+        .loginDiTile {
+            font-size: 25px;
+        }
+    }
+
+    @media screen and (max-width: 500px) {
+        .loginMail {
+            margin-top: 0px !important;
+        }
+    }
+
+    @media screen and (max-width: 400px) {
+        .loginMail {
+            width: 100% !important;
+        }
+
+        .loginMobile {
+            width: 100% !important;
+        }
+    }
+}

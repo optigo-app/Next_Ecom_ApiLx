@@ -1,15 +1,32 @@
-'use client';
+"use client";
 
-import * as React from 'react';
-import { CacheProvider } from '@emotion/react';
-import createCache from '@emotion/cache';
+import { CacheProvider } from "@emotion/react";
+import createCache from "@emotion/cache";
+import { useServerInsertedHTML } from "next/navigation";
+import { useState } from "react";
 
 export function EmotionRegistry({ children }) {
-  const cache = React.useMemo(() => {
-    const cache = createCache({ key: 'css', prepend: true });
-    cache.compat = true;
-    return cache;
-  }, []);
+  const [cache] = useState(() => {
+    const c = createCache({ key: "css", prepend: true });
+    c.compat = true; // required for MUI SSR
+    return c;
+  });
+
+  useServerInsertedHTML(() => {
+    const inserted = cache.inserted;
+    const names = Object.keys(inserted);
+
+    if (names.length === 0) return null;
+
+    return (
+      <style
+        data-emotion={`css ${names.join(" ")}`}
+        dangerouslySetInnerHTML={{
+          __html: names.map((name) => inserted[name]).join(" "),
+        }}
+      />
+    );
+  });
 
   return <CacheProvider value={cache}>{children}</CacheProvider>;
 }

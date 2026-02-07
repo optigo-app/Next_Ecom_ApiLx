@@ -16,8 +16,9 @@ export const themeMap = {
 const page = async ({ params, searchParams }) => {
   const theme = await getActiveTheme();
   const themeData = themeMap[theme];
+  const [awaitedParams, awaitedSearchParams] = await Promise.all([params, searchParams]);
   const Register = (await import(`@/app/theme/${themeData.page}/Auth/Register/page.js`)).default;
-  return <Register params={params} searchParams={searchParams} />;
+  return <Register params={awaitedParams} searchParams={awaitedSearchParams} />;
 };
 
 export default page;
