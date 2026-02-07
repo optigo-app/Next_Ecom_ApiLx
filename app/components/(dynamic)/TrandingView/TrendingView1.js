@@ -9,8 +9,35 @@ import { useNextRouterLikeRR } from "@/app/(core)/hooks/useLocationRd";
 import { useStore } from "@/app/(core)/contexts/StoreProvider";
 import cookies from "js-cookie";
 
+
+
+const buildAlbumCacheKey = (type, storeData, pricing, id) => {
+    const meta = {
+        type,
+        PackageId: pricing?.PackageId ?? "",
+        Laboursetid: pricing?.Laboursetid ?? "",
+        diamondpricelistname: pricing?.diamondpricelistname ?? "",
+        colorstonepricelistname: pricing?.colorstonepricelistname ?? "",
+    };
+
+    const key = [
+        type,
+        pricing?.PackageId,
+        pricing?.Laboursetid,
+        pricing?.diamondpricelistname,
+        pricing?.colorstonepricelistname,
+    ].join("_");
+
+    return {
+        key,
+        meta,
+    }
+};
+
+
+
 const TrendingView1 = ({ data, storeInit }) => {
-    const {  islogin } = useStore();
+    const { islogin } = useStore();
     const { push } = useNextRouterLikeRR();
     const trendingRef = useRef(null);
     const [trandingViewData, setTrandingViewData] = useState([]);
@@ -29,7 +56,7 @@ const TrendingView1 = ({ data, storeInit }) => {
 
     const isOdd = (num) => num % 2 !== 0;
 
-    
+
 
     const settings = {
         dots: true,
@@ -42,93 +69,114 @@ const TrendingView1 = ({ data, storeInit }) => {
         // nextArrow: false,
     };
 
-    
-      useEffect(() => {
+
+    useEffect(() => {
         setImageUrl(storeInit?.CDNDesignImageFolThumb);
         setMounted(true);
         if (typeof window !== "undefined") {
-          try {
-            const stored = sessionStorage.getItem("loginUserDetail");
-            setLoginUserDetail(stored ? JSON.parse(stored) : null);
-          } catch (err) {
-            console.error("Failed to parse loginUserDetail:", err);
-            setLoginUserDetail(null);
-          }
+            try {
+                const stored = sessionStorage.getItem("loginUserDetail");
+                setLoginUserDetail(stored ? JSON.parse(stored) : null);
+            } catch (err) {
+                console.error("Failed to parse loginUserDetail:", err);
+                setLoginUserDetail(null);
+            }
         }
-      }, []);
-    
-      const finalID = useMemo(() => {
+    }, []);
+
+    const finalID = useMemo(() => {
         if (!mounted) return null;
         const visitorId = cookies.get("visitorId") ?? "0";
         const IsB2BWebsite = storeInit?.IsB2BWebsite ?? 0;
         const uid = loginUserDetail?.id || "0";
         if (IsB2BWebsite == 0) {
-          return islogin === false ? visitorId : uid;
+            return islogin === false ? visitorId : uid;
         }
         return uid;
-      }, [mounted, loginUserDetail, islogin, storeInit?.IsB2BWebsite]);
+    }, [mounted, loginUserDetail, islogin, storeInit?.IsB2BWebsite]);
+
+    const pricingContext = useMemo(() => {
+        if (!mounted) return null;
+
+        const loginInfo = loginUserDetail;
+
+        return {
+            PackageId: (loginInfo?.PackageId ?? storeInit?.PackageId) ?? "",
+            Laboursetid:
+                !islogin
+                    ? storeInit?.pricemanagement_laboursetid
+                    : loginInfo?.pricemanagement_laboursetid ?? "",
+            diamondpricelistname:
+                !islogin
+                    ? storeInit?.diamondpricelistname
+                    : loginInfo?.diamondpricelistname ?? "",
+            colorstonepricelistname:
+                !islogin
+                    ? storeInit?.colorstonepricelistname
+                    : loginInfo?.colorstonepricelistname ?? "",
+        };
+    }, [mounted, loginUserDetail, storeInit, islogin]);
 
 
-   useEffect(() => {
-     if (!mounted) return;
-     const storeInit = typeof window !== "undefined" ? sessionStorage.getItem("StoreInit") : null;
-     if (!finalID) return; 
-     callAPI(finalID);
-   }, [mounted, finalID]);
+
+    useEffect(() => {
+        if (!mounted) return;
+        const storeInit = typeof window !== "undefined" ? sessionStorage.getItem("StoreInit") : null;
+        if (!finalID) return;
+        callAPI(finalID);
+    }, [mounted, finalID]);
 
 
-const callAPI = async (id) => {
-  const key = `trending_${storeInit?.ukey}`;
-  setLoadingHome(true);
+    const callAPI = async (id) => {
+        const { key, meta } = buildAlbumCacheKey("trending_", storeInit, pricingContext, id);
+        setLoadingHome(true);
 
-  try {
-    // 1️⃣ Try reading from cache
-    const cachedRes = await fetch(`/api/cache?key=${key}`);
-    const cached = await cachedRes.json();
+        try {
+            const cachedRes = await fetch(`/api/cache?key=${key}`);
+            const cached = await cachedRes.json();
 
-    if (cached?.cached && Array.isArray(cached.data) && cached.data.length > 0) {
-      console.log("🔥 Using cached data", cached.data.length);
-      const records = cached.data;
-      const oddNumbers = records.filter((obj) => isOdd(obj.SrNo));
-      const evenNumbers = records.filter((obj) => !isOdd(obj.SrNo));
+            if (cached?.cached && Array.isArray(cached.data) && cached.data.length > 0) {
+                console.log("🔥 Using cached data", cached.data.length);
+                const records = cached.data;
+                const oddNumbers = records.filter((obj) => isOdd(obj.SrNo));
+                const evenNumbers = records.filter((obj) => !isOdd(obj.SrNo));
 
-      setTrandingViewData(records);
-      setOddNumberObjects(oddNumbers);
-      setEvenNumberObjects(evenNumbers);
-      return; // ✅ stop here, no API call needed
-    }
+                setTrandingViewData(records);
+                setOddNumberObjects(oddNumbers);
+                setEvenNumberObjects(evenNumbers);
+                return; // ✅ stop here, no API call needed
+            }
 
-    // 2️⃣ Fetch fresh data if no cache
-    console.log("🌐 No cache — fetching trending data from API");
-    const response = await Get_Tren_BestS_NewAr_DesigSet_Album(storeInit, "GETTrending", id);
+            console.log("🌐 No cache — fetching trending data from API");
+            const response = await Get_Tren_BestS_NewAr_DesigSet_Album(storeInit, "GETTrending", id);
 
-    const records = response?.Data?.rd ?? [];
-    const oddNumbers = records.filter((obj) => isOdd(obj.SrNo));
-    const evenNumbers = records.filter((obj) => !isOdd(obj.SrNo));
+            const records = response?.Data?.rd ?? [];
+            const oddNumbers = records.filter((obj) => isOdd(obj.SrNo));
+            const evenNumbers = records.filter((obj) => !isOdd(obj.SrNo));
 
-    setTrandingViewData(records);
-    setOddNumberObjects(oddNumbers);
-    setEvenNumberObjects(evenNumbers);
+            setTrandingViewData(records);
+            setOddNumberObjects(oddNumbers);
+            setEvenNumberObjects(evenNumbers);
 
-    // 3️⃣ Write to cache (fire-and-forget)
-    if (records.length > 0) {
-      fetch("/api/cache", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ key, data: records }),
-      }).catch((err) => console.warn("⚠️ Cache write failed:", err));
-    }
-  } catch (error) {
-    console.error("❌ callAPI error:", error);
-    setTrandingViewData([]);
-    setOddNumberObjects([]);
-    setEvenNumberObjects([]);
-  } finally {
-    setLoadingHome(false);
-  }
-};
+            // 3️⃣ Write to cache (fire-and-forget)
+            if (records.length > 0) {
+                fetch("/api/cache", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ key, data: records, meta }),
+                }).catch((err) => console.warn("⚠️ Cache write failed:", err));
+            }
+        } catch (error) {
+            console.error("❌ callAPI error:", error);
+            setTrandingViewData([]);
+            setOddNumberObjects([]);
+            setEvenNumberObjects([]);
+        } finally {
+            setLoadingHome(false);
+        }
+    };
 
-  
+
 
     const ProdCardImageFunc = (pd) => {
         let finalprodListimg;
@@ -239,7 +287,7 @@ const callAPI = async (id) => {
                         <div className="smr_leftSideBestTR">
                             {/* <img src="https://pipeline-theme-fashion.myshopify.com/cdn/shop/files/web-210128-BW-PF21_S219259.jpg?v=1646112530&width=2000" alt="modalimages" /> */}
                             {/* <img src={`${storImagePath()}/images/HomePage/TrendingViewBanner/TrendingViewImgHom2.png`} alt="modalimages" /> */}
-                            <img src={data?.image[0]} alt="modalimages"  loading="lazy" draggable={true} onContextMenu={(e) => e.preventDefault()} />
+                            <img src={data?.image[0]} alt="modalimages" loading="lazy" draggable={true} onContextMenu={(e) => e.preventDefault()} />
 
                             <div className="smr_lookbookImageRightDT">
                                 {/* <p>SHORESIDE COLLECTION</p>
@@ -269,7 +317,7 @@ const callAPI = async (id) => {
                                             draggable={true}
                                             onContextMenu={(e) => e.preventDefault()}
                                             loading="lazy"
-                                            
+
                                             alt={`product-${index}`}
                                         />
                                     </div>

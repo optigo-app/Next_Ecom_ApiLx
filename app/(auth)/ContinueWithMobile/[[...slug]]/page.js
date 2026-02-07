@@ -5,11 +5,12 @@ import { getStoreInit } from "@/app/(core)/utils/GlobalFunctions/GlobalFunctions
 
 const page = async ({ params, searchParams }) => {
   const theme = await getActiveTheme();
+  const [awaitedParams, awaitedSearchParams] = await Promise.all([params, searchParams]);
     const storeInit = await getStoreInit();
   
   const themeData = themeMap[theme];
   const ContinueWithMobile = (await import(`@/app/theme/${themeData.page}/Auth/ContinueWithMobile/page.js`)).default;
-  return <ContinueWithMobile params={params} searchParams={searchParams} storeInit={storeInit} />;
+  return <ContinueWithMobile params={awaitedParams} searchParams={awaitedSearchParams} storeInit={storeInit} />;
 };
 
 export default page;

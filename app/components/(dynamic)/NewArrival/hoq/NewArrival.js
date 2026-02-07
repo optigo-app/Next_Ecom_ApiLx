@@ -58,8 +58,15 @@ const TabSection = ({ storeData }) => {
         }
     };
     const handleMoveToDetail = (productData, index) => {
+        console.log("🚀 ~ handleMoveToDetail ~ productData:", productData)
         let loginInfo = JSON.parse(sessionStorage.getItem("loginUserDetail"));
+        const imageVideoDetail = productData?.ImageVideoDetail;
 
+        const parsed = imageVideoDetail
+            ? JSON.parse(imageVideoDetail)
+            : [];
+
+        const uniqueNmList = [...new Set(parsed.map(item => item.Nm))];
         let obj = {
             a: productData?.autocode,
             b: productData?.designno,
@@ -67,6 +74,9 @@ const TabSection = ({ storeData }) => {
             d: loginInfo?.cmboDiaQCid,
             c: loginInfo?.cmboCSQCid,
             f: {},
+            i: productData?.MetalColorid,
+            l: parsed[0]?.Ex,
+            count: uniqueNmList.length,
         };
 
         let encodeObj = compressAndEncode(JSON.stringify(obj));

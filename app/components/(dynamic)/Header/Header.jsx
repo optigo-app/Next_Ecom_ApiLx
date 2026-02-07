@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import "./Header.modul.scss";
 import { Badge, ButtonBase, List, ListItem, Tooltip } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
@@ -23,6 +23,30 @@ export function storImagePath() {
   return `${statiPath}/WebSiteStaticImage`;
 }
 
+
+const buildAlbumCacheKey = ( type ,storeData, pricing, id) => {
+  const meta = {
+  type,
+  PackageId: pricing?.PackageId ?? "",
+  Laboursetid: pricing?.Laboursetid ?? "",
+  diamondpricelistname: pricing?.diamondpricelistname ?? "",
+  colorstonepricelistname: pricing?.colorstonepricelistname ?? "",
+};
+
+const key = [
+    type,
+    pricing?.PackageId,
+    pricing?.Laboursetid,
+    pricing?.diamondpricelistname,
+    pricing?.colorstonepricelistname,
+  ].join("_");
+
+  return {
+    key,
+    meta,
+  }
+};
+
 const Header = ({ storeinit, logos }) => {
   const { islogin, setislogin, cartCountNum, setCartCountNum, wishCountNum, setWishCountNum, setCartOpenStateB2C } = useStore();
   const [isCartOpen, setIsCartOpen] = useState(false);
@@ -38,6 +62,21 @@ const Header = ({ storeinit, logos }) => {
   const IsCartNo = storeinit?.CartNo;
   const router = useRouter();
   const [isMounted, setIsMounted] = useState(false);
+  const [loginUserDetail, setLoginUserDetail] = useState({});
+
+
+    useEffect(() => {
+      setIsMounted(true);
+      if (typeof window !== "undefined") {
+        try {
+          const stored = sessionStorage.getItem("loginUserDetail");
+          setLoginUserDetail(stored ? JSON.parse(stored) : null);
+        } catch (err) {
+          console.error("Failed to parse loginUserDetail:", err);
+          setLoginUserDetail(null);
+        }
+      }
+    }, []);
 
   // const IsCartNo = 2;
   const [serachsShowOverlay, setSerachShowOverlay] = useState(false);
@@ -164,8 +203,30 @@ const Header = ({ storeinit, logos }) => {
     setislogin(value);
   };
 
+     const pricingContext = useMemo(() => {
+      if (!isMounted) return null;
+      const loginInfo = loginUserDetail;
+      return {
+      PackageId: (loginInfo?.PackageId ?? storeinit?.PackageId) ?? "",
+      Laboursetid:
+           !islogin 
+          ? storeinit?.pricemanagement_laboursetid
+          : loginInfo?.pricemanagement_laboursetid ?? "",
+      diamondpricelistname:
+           !islogin 
+          ? storeinit?.diamondpricelistname
+          : loginInfo?.diamondpricelistname ?? "",
+      colorstonepricelistname:
+           !islogin 
+          ? storeinit?.colorstonepricelistname
+          : loginInfo?.colorstonepricelistname ?? "",
+    };
+    }, [isMounted, loginUserDetail, storeinit, islogin]);
+     console.log("🚀 ~ Header ~ pricingContext:", pricingContext)
+    
+    
+
   const getMenuApi = async () => {
-    const loginUserDetail = JSON.parse(sessionStorage.getItem("loginUserDetail"));
     const storeInit = JSON.parse(sessionStorage.getItem("storeInit"));
     const { IsB2BWebsite } = storeInit;
     const visiterID = Cookies.get("visiterId");
@@ -175,9 +236,21 @@ const Header = ({ storeinit, logos }) => {
     } else {
       finalID = loginUserDetail?.id || "0";
     }
-
+    const id = finalID;
+    const {key ,meta} = buildAlbumCacheKey("header_menu_" ,storeinit, pricingContext, id);
+    const cachedRes = await fetch(`/api/cache?key=${key}`);
+      const cached = await cachedRes.json();
+      if (cached.cached && Array.isArray(cached.data)) {
+           setMenuData(cached?.data);
+        return cached?.data;
+      }
     await GetMenuAPI(finalID)
       .then((response) => {
+         fetch("/api/cache", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ key, data: response?.Data?.rd ,meta }),
+        }).catch(console.error);
         setMenuData(response?.Data?.rd);
       })
       .catch((err) => console.log(err));

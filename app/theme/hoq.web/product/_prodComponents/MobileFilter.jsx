@@ -253,7 +253,7 @@ const MobileFilter = ({
                                 value={selectedCsId}
                                 onChange={(e) => setSelectedCsId(e.target.value)}
                             >
-                                {ColorStoneQualityColorCombo?.map((csCombo) => (
+                                {csQcCombo?.map((csCombo) => (
                                     <option
                                         className="option"
                                         key={csCombo?.QualityId}

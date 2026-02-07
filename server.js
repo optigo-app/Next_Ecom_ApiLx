@@ -6,7 +6,7 @@ import cors from "cors";
 dotenv.config();
 
 const dev = process.env.NODE_ENV !== "production";
-const port = process.env.PORT || 4000;
+const port = process.env.PORT || 5009;
 const app = next({ dev });
 const handle = app.getRequestHandler();
 

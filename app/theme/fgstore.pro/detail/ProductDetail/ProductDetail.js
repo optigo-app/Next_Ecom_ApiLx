@@ -60,15 +60,21 @@ import { HiOutlineChevronLeft } from "react-icons/hi2";
 import { formatRedirectTitleLine, formatTitleLine, storImagePath } from "@/app/(core)/utils/Glob_Functions/GlobalFunction";
 import { SaveLastViewDesign } from "@/app/(core)/utils/API/SaveLastViewDesign/SaveLastViewDesign";
 import { useStore } from '@/app/(core)/contexts/StoreProvider';
+import { SearchParamsParser } from "@/app/(core)/utils/GlobalFunctions/Parser";
 
 
 const imageNotFound = "/image-not-found.jpg";
 
-
-const ProductDetail = ({params, searchParams, storeInit}) => {
-    const { islogin, setCartCountNum, setWishCountNum, SoketData } = useStore();
+// Parse search params
 
 
+
+
+
+
+
+const ProductDetail = ({ params, searchParams, storeInit }) => {
+  const { islogin, setCartCountNum, setWishCountNum, SoketData } = useStore();
   let location = useNextRouterLikeRR();
   let navigate = useNextRouterLikeRR();
   const Almacarino = true;
@@ -114,6 +120,74 @@ const ProductDetail = ({params, searchParams, storeInit}) => {
   const [SimilarBrandArr, setSimilarBrandArr] = useState([]);
   const [cartArr, setCartArr] = useState({});
   let cookie = Cookies.get("visiterId");
+  const [isImageLoaded, setIsImageLoaded] = useState(true);
+
+  const decodeAndDecompress = (encodedString) => {
+    try {
+      if (!encodedString) return null;
+
+      const base64 = encodedString.replace(/-/g, '+').replace(/_/g, '/');
+
+      const padded = base64.padEnd(base64.length + (4 - (base64.length % 4)) % 4, '=');
+
+      const binaryString = atob(padded);
+
+      const uint8Array = new Uint8Array(binaryString.length);
+      for (let i = 0; i < binaryString.length; i++) {
+        uint8Array[i] = binaryString.charCodeAt(i);
+      }
+
+      const decompressed = Pako.inflate(uint8Array, { to: 'string' });
+
+      const jsonObject = JSON.parse(decompressed);
+
+      return jsonObject;
+    } catch (error) {
+      console.error('Error decoding and decompressing:', error);
+      return null;
+    }
+  };
+
+  const parseSearchParams = () => {
+    let result = [];
+    try {
+      if (!searchParams?.value) return result;
+      let parsed;
+      try {
+        parsed = JSON.parse(searchParams.value);
+      } catch (jsonError) {
+        console.error("❌ Invalid JSON in searchParams.value:", searchParams.value, jsonError);
+        return result;
+      }
+      if (!parsed || typeof parsed !== "object") return result;
+      result = Object.entries(parsed).map(([key, rawValue]) => {
+        try {
+          let fixed = rawValue.replace(/ /g, "+");
+          fixed = decodeURIComponent(fixed);
+          fixed = fixed.replace(/-/g, "+").replace(/_/g, "/");
+          const paddingNeeded = fixed.length % 4;
+          if (paddingNeeded !== 0) {
+            fixed = fixed.padEnd(fixed.length + (4 - paddingNeeded), "=");
+          }
+          const decoded = atob(fixed);
+          const reEncoded = btoa(decoded);
+          return `${key}=${reEncoded}`;
+        } catch (err) {
+          console.error(`❌ Error decoding key "${key}" with value "${rawValue}":`, err);
+          return `${key}=null`;
+        }
+      });
+
+    } catch (err) {
+      console.error("❌ parseSearchParams failed:", err);
+    }
+
+    return result;
+  };
+
+  const result = SearchParamsParser(searchParams);
+  let navVal = result[0]?.split("=")[1];
+  let decodeobj = decodeAndDecompress(navVal);
 
   const innerSwiperRef = useRef(null);
 
@@ -123,26 +197,6 @@ const ProductDetail = ({params, searchParams, storeInit}) => {
       "--background-color",
       backgroundColor
     );
-  };
-
-  const decodeAndDecompress = (encodedString) => {
-    try {
-      const binaryString = atob(encodedString);
-
-      const uint8Array = new Uint8Array(binaryString.length);
-      for (let i = 0; i < binaryString.length; i++) {
-        uint8Array[i] = binaryString.charCodeAt(i);
-      }
-
-      const decompressed = Pako.inflate(uint8Array, { to: "string" });
-
-      const jsonObject = JSON.parse(decompressed);
-
-      return jsonObject;
-    } catch (error) {
-      console.error("Error decoding and decompressing:", error);
-      return null;
-    }
   };
 
   const maxwidth1023px = useMediaQuery('(max-width: 1023px)')
@@ -160,8 +214,8 @@ const ProductDetail = ({params, searchParams, storeInit}) => {
 
   const [isExpanded, setIsExpanded] = useState(false);
   const [isClamped, setIsClamped] = useState(false);
-  let navVal = location?.search.split("?p=")[1];
-  let decodeobj = decodeAndDecompress(navVal);
+  // let navVal = location?.search.split("?p=")[1];
+  // let decodeobj = decodeAndDecompress(navVal);
 
   const [nextindex, setNextIndex] = useState(decodeobj?.in || 0);
   const [prevIndex, setPrevIndex] = useState();
@@ -526,9 +580,11 @@ const ProductDetail = ({params, searchParams, storeInit}) => {
   // }
 
   useEffect(() => {
-    let navVal = location?.search.split("?p=")[1];
+    // let navVal = location?.search.split("?p=")[1];
+    // let decodeobj = decodeAndDecompress(navVal);
+    const result = SearchParamsParser(searchParams);
+    let navVal = result[0]?.split("=")[1];
     let decodeobj = decodeAndDecompress(navVal);
-
     let mtTypeLocal = JSON.parse(sessionStorage.getItem("metalTypeCombo"));
 
     let diaQcLocal = JSON.parse(
@@ -631,68 +687,6 @@ const ProductDetail = ({params, searchParams, storeInit}) => {
 
     setSelectMtColor(mcArr?.colorname);
   }, [singleProd]);
-  // }, [metalTypeCombo, diaQcCombo, csQcCombo, singleProd])
-
-  // useEffect(()=>{
-
-  //   let finalSize = SizeCombo?.rd1?.filter((ele)=>ele?.sizename == sizeData)
-  //   const filteredDataMetal = finalSize?.filter(item => item.DiamondStoneTypeName === "METAL")[0]
-  //   const filteredDataDaimond = finalSize?.filter(item => item.DiamondStoneTypeName === "DIAMOND")
-  //   const filteredDataColorStone = finalSize?.filter(item => item.DiamondStoneTypeName === "COLOR STONE")
-  //   const filteredDataFinding = finalSize?.filter(item => item.DiamondStoneTypeName === "FINDING")
-
-  //   setMetalFilterData(filteredDataMetal)
-  //   setDaimondFiletrData(filteredDataDaimond)
-  //   setColorStoneFiletrData(filteredDataColorStone)
-  //   setFindingFiletrData(filteredDataFinding)
-
-  // },[sizeData,SizeCombo])
-
-  // let metalUpdatedPrice = () => {
-  //   if (metalFilterData && metalFilterData.length && mtrd?.AE === 1) {
-
-  //     let CalcNetwt = ((mtrd?.I ?? 0) + (metalFilterData?.Weight ?? 0) ?? 0)
-
-  //     let fprice = ((mtrd?.AD ?? 0) * CalcNetwt) + ((mtrd?.AC ?? 0) * CalcNetwt)
-  //     console.log('fpricemetal', fprice);
-
-  //     return Number(fprice.toFixed(2))
-  //   } else {
-  //     return 0
-  //   }
-  // }
-
-  // let diaUpdatedPrice = () => {
-
-  //   if (daimondFilterData && daimondFilterData?.length && diard1[0]?.T === 1) {
-  //     let calcDiaWt = (mtrd?.K ?? 0) + (daimondFilterData?.Weight ?? 0)
-
-  //     let CalcPics = (mtrd?.J ?? 0) + (daimondFilterData?.pieces ?? 0)
-
-  //     let fpprice = ((dqcRate ?? 0) * (calcDiaWt ?? 0)) + ((dqcSettRate ?? 0) * (CalcPics ?? 0))
-
-  //     return Number(fpprice.toFixed(2))
-  //   }
-  //   else {
-  //     return 0
-  //   }
-  // }
-
-  // let colUpdatedPrice = () => {
-
-  //   if (colorStoneFilterData && colorStoneFilterData?.length && csrd2[0]?.T === 1) {
-
-  //     let calcDiaWt = (singleProd?.totalcolorstoneweight ?? 0) + (colorStoneFilterData?.Weight ?? 0)
-
-  //     let CalcPics = (singleProd?.totalcolorstonepcs ?? 0) + (colorStoneFilterData?.pieces ?? 0)
-
-  //     let fpprice = ((csqcRate ?? 0) * (calcDiaWt ?? 0)) + ((csqcSettRate ?? 0) * (CalcPics ?? 0))
-
-  //     return Number(fpprice.toFixed(2))
-  //   } else {
-  //     return 0
-  //   }
-  // }
 
   const callAllApi = () => {
     let mtTypeLocal = JSON.parse(sessionStorage.getItem("metalTypeCombo"));
@@ -779,26 +773,85 @@ const ProductDetail = ({params, searchParams, storeInit}) => {
     callAllApi();
   }, [storeInit]);
 
+  const generateThumbnails = (designNo, count, extension) => {
+    const thumbBase = storeInit?.CDNDesignImageFolThumb || "";
+    return Array.from({ length: count }, (_, i) => {
+      const index = i + 1;
+      const fileName = `${designNo}~${index}`;
+      return {
+        thumbImageUrl: `${thumbBase}${fileName}.jpg`,
+        originalImageExtension: extension,
+        originalImageUrl: `${storeInit?.CDNDesignImageFol}${fileName}.${extension}`,
+      };
+    });
+  };
+
+
+
+  useEffect(() => {
+    const result = SearchParamsParser(searchParams);
+    let navVal = result[0]?.split("=")[1];
+    let decodeobj = decodeAndDecompress(navVal);
+    const { b, l, count } = decodeobj;
+    const imageUrl = storeInit?.CDNDesignImageFol;
+    const urlPath = `${imageUrl}${b}~1.${l}`;
+
+    if (decodeobj) {
+      setDecodeUrl(decodeobj);
+
+      setSelectedThumbImg({
+        link: { imageUrl: urlPath, extension: l },
+        type: "img",
+      });
+
+      if (count > 0) {
+        const thumbs = generateThumbnails(b, count, l);
+        console.log(thumbs, "thumbs")
+        setPdThumbImg(thumbs);
+      }
+    }
+    setIsImageLoaded(false);
+    setImagePromise(false);
+    setIsImageLoad(false)
+
+
+  }, []);
+
 
   useEffect(() => {
     let url = `${location?.pathname}${location?.search}`;
-    let navVal = location?.search.split("?p=")[1];
+
+    const result = SearchParamsParser(searchParams);
+    let navVal = result[0]?.split("=")[1];
+
     let decodeobj = decodeAndDecompress(navVal);
-    const state = { SecurityKey: decodeobj?.sk };
-    if (decodeobj?.sk > 0) {
+    const getSK = JSON.parse(sessionStorage.getItem('SecurityKey'));
+
+    const state = { SecurityKey: getSK?.SecurityKey || decodeobj?.sk };
+
+    if (state?.SecurityKey > 0) {
       if (islogin !== true) {
         navigate.push(`/loginOption/?LoginRedirect=${(url)}`, { state })
       }
     }
-  }, [location?.key])
+  }, [params])
+
+  console.log(pdThumbImg, "pdThumbImg")
 
   useEffect(() => {
-    let navVal = location?.search.split("?p=")[1];
 
-    let storeinitInside = storeInit;
     let logininfoInside = JSON.parse(sessionStorage.getItem("loginUserDetail"));
 
+    let storeinitInside = storeInit;
+    const result = SearchParamsParser(searchParams);
+    let navVal = result[0]?.split("=")[1];
     let decodeobj = decodeAndDecompress(navVal);
+
+    if (decodeobj) {
+      setDecodeUrl(decodeobj);
+    }
+
+
     let alName = "";
 
     if (decodeobj) {
@@ -965,7 +1018,7 @@ const ProductDetail = ({params, searchParams, storeInit}) => {
         })
         .catch((err) => console.log("err", err))
         .finally(() => {
-          setIsImageLoad(false);
+          // setIsImageLoad(false);
           setProdLoading(false);
         });
     };
@@ -976,100 +1029,8 @@ const ProductDetail = ({params, searchParams, storeInit}) => {
       top: 0,
       behavior: "smooth",
     });
-  }, [location?.key]);
+  }, [params]);
 
-  // useEffect(() => {
-  //   let metal = metalTypeCombo?.filter(
-  //     (ele) => ele?.metaltype == selectMtType
-  //   )[0];
-  //   let dia = diaQcCombo?.filter(
-  //     (ele) =>
-  //       ele?.Quality == selectDiaQc.split(",")[0] &&
-  //       ele?.color == selectDiaQc.split(",")[1]
-  //   )[0];
-  //   let cs = csQcCombo?.filter(
-  //     (ele) =>
-  //       ele?.Quality == selectCsQc.split(",")[0] &&
-  //       ele?.color == selectCsQc.split(",")[1]
-  //   )[0];
-
-  //   let metalPdata = singleProdPrice?.rd?.filter(
-  //     (ele) => ele?.C == metal?.Metalid
-  //   )[0];
-
-  //   let diaPData = singleProdPrice?.rd1?.filter(
-  //     (ele) => ele?.G == dia?.QualityId && ele?.I == dia?.ColorId
-  //   );
-
-  //   let csPData = singleProdPrice?.rd2?.filter(
-  //     (ele) => ele?.G == cs?.QualityId && ele?.I == cs?.ColorId
-  //   );
-
-  //   let metalPrice = 0;
-  //   let diamondPrice = 0;
-  //   let csPrice = 0;
-
-  //   if (metalPdata) {
-  //     setMtrd(metalPdata);
-  //     metalPrice =
-  //       ((metalPdata?.V ?? 0) / storeInit?.CurrencyRate ?? 0) +
-  //         (metalPdata?.W ?? 0) +
-  //         (metalPdata?.X ?? 0) ?? 0;
-  //   }
-
-  //   console.log("metalPdata", metalPrice);
-
-  //   if (diaPData?.length > 0) {
-  //     setDiard1(diaPData);
-  //     let diasetRate = diard1?.reduce((acc, obj) => acc + obj.O, 0)
-  //     let diaSettRate = diard1?.reduce((acc, obj) => acc + obj.Q, 0)
-  //     setDqcRate(diasetRate ?? 0)
-  //     setDqcSettRate(diaSettRate ?? 0)
-  //     diamondPrice =
-  //       Number(diaPData?.reduce((acc, obj) => acc + obj.S, 0)) ?? 0;
-  //   }
-
-  //   if (csPData?.length > 0) {
-  //     setCsrd2(csPData);
-  //     let csRate = csrd2?.reduce((acc, obj) => acc + obj.O, 0)
-  //     let csSettRate = csrd2?.reduce((acc, obj) => acc + obj.Q, 0)
-  //     setCsqcRate(csRate ?? 0)
-  //     setCsqcSettRate(csSettRate ?? 0)
-  //     csPrice = Number(csPData?.reduce((acc, obj) => acc + obj.S, 0)) ?? 0;
-  //   }
-
-  //   let finalPrice =
-  //     Number(metalPrice) + Number(diamondPrice)  + Number(csPrice);
-  //   console.log("pData", { metalPrice, diamondPrice, csPrice });
-
-  //   let fp = finalPrice.toFixed(2)
-  //   setFinalprice(fp)
-  // }, [singleProd, singleProdPrice, selectMtType, selectDiaQc, selectCsQc]);
-
-  // const handlePrice = () =>{
-
-  //   let finalSize = SizeCombo?.rd?.filter((ele)=>ele?.sizename == sizeData)[0]
-
-  //   if(finalSize?.IsMarkUpInAmount == 1){
-
-  //     let ultimatePrice = (Number(finalprice)+ metalUpdatedPrice() + diaUpdatedPrice() + colUpdatedPrice())
-
-  //     console.log("ultimatePrice",(mtrd?.AB ?? 0) , ultimatePrice , mtrd?.AA , ((finalSize?.MarkUp ?? 0) / mtrd?.AA ));
-
-  //     return PriceWithMarkupFunction((mtrd?.AB ?? 0) , ultimatePrice , mtrd?.AA , ((finalSize?.MarkUp ?? 0) / mtrd?.AA ))
-
-  //   }else{
-
-  //     let finalSize = SizeCombo?.rd?.filter((ele)=>ele?.sizename == sizeData)[0]
-  //     const percentMarkupPlus = (mtrd?.AB ?? 0) + (finalSize?.MarkUp ?? 0)
-  //     let ultimatePrice = (Number(finalprice) + metalUpdatedPrice() + diaUpdatedPrice() + colUpdatedPrice())
-
-  //     console.log("ultimatePrice",percentMarkupPlus, ultimatePrice , mtrd?.AA);
-
-  //     return PriceWithMarkupFunction(percentMarkupPlus, ultimatePrice , mtrd?.AA )
-  //   }
-
-  // }
 
   function checkImageAvailability(imageUrl) {
     return new Promise((resolve, reject) => {
@@ -1095,7 +1056,7 @@ const ProductDetail = ({params, searchParams, storeInit}) => {
       imageCache[img] = result;  // Cache the result for future reference
       if (!isImageload) {
         setTimeout(() => {
-          setImagePromise(false);
+          // setImagePromise(false);
         }, 500);
       }
       return result;
@@ -1120,8 +1081,8 @@ const ProductDetail = ({params, searchParams, storeInit}) => {
     });
   };
 
+
   const ProdCardImageFunc = async () => {
-    const storeInit = storeInit;
     const mtColorLocal = JSON.parse(sessionStorage.getItem("MetalColorCombo")) || [];
     const imageVideoDetail = singleProd?.ImageVideoDetail;
     const pd = singleProd;
@@ -1240,6 +1201,9 @@ const ProductDetail = ({params, searchParams, storeInit}) => {
 
     setPdVideoArr(pdvideoList.length ? pdvideoList : []);
 
+    // setIsImageLoaded(false)
+
+
     const img = await loadAndCheckImages(finalprodListimg);
     return img;
   };
@@ -1248,13 +1212,13 @@ const ProductDetail = ({params, searchParams, storeInit}) => {
     ProdCardImageFunc();
   }, [singleProd, singleProd1]);
 
-  useEffect(() => {
-    if (isImageload === false) {
-      if (!(pdThumbImg?.length !== 0 || pdVideoArr?.length !== 0)) {
-        setSelectedThumbImg({ "link": { "imageUrl": imageNotFound, "extension": "" }, "type": 'img' });
-      }
-    }
-  }, [isImageload, pdThumbImg, pdVideoArr])
+  // useEffect(() => {
+  //   if (isImageload === false) {
+  //     if (!(pdThumbImg?.length !== 0 || pdVideoArr?.length !== 0)) {
+  //       setSelectedThumbImg({ "link": { "imageUrl": imageNotFound, "extension": "" }, "type": 'img' });
+  //     }
+  //   }
+  // }, [isImageload, pdThumbImg, pdVideoArr])
 
   const decodeEntities = (html) => {
     var txt = document.createElement("textarea");
@@ -1264,16 +1228,16 @@ const ProductDetail = ({params, searchParams, storeInit}) => {
 
   const metalColorName = () => {
 
-  if (typeof window === "undefined") return null;    // <--- IMPORTANT FIX
+    if (typeof window === "undefined") return null;    // <--- IMPORTANT FIX
 
-  let mcArr;
-  let mtColorLocal = null;
-  
-  try {
-    mtColorLocal = JSON.parse(sessionStorage.getItem("MetalColorCombo"));
-  } catch (e) {
-    mtColorLocal = null;
-  }   
+    let mcArr;
+    let mtColorLocal = null;
+
+    try {
+      mtColorLocal = JSON.parse(sessionStorage.getItem("MetalColorCombo"));
+    } catch (e) {
+      mtColorLocal = null;
+    }
 
     if (mtColorLocal?.length) {
       mcArr = mtColorLocal?.filter((ele) => ele?.colorcode == selectMtColor)[0];
@@ -1307,6 +1271,8 @@ const ProductDetail = ({params, searchParams, storeInit}) => {
     const { designno, ImageExtension } = prod || {};
     const baseCDN = storeInit?.CDNDesignImageFol;
     const thumbCDN = storeInit?.CDNDesignImageFolThumb;
+
+    setPdThumbImg([])
 
     setSelectedMetalColor(mcArr?.colorcode);
     setSelectMtColor(selectedColorCode);
@@ -1546,12 +1512,15 @@ const ProductDetail = ({params, searchParams, storeInit}) => {
       di: decodeobj?.di,
       ne: decodeobj?.ne,
       gr: decodeobj?.gr,
-      in: index
+      in: index,
+      i: productData?.MetalColorid,
+      l: productData?.ImageExtension,
+      count: productData?.ImageCount,
     };
     let encodeObj = compressAndEncode(JSON.stringify(obj));
     navigate.push(`/d/${formatRedirectTitleLine(productData?.TitleLine)}${productData?.designno}?p=${encodeObj}`);
     setProdLoading(true);
-    setIsImageLoad(true)
+    // setIsImageLoad(true)
     setPdThumbImg([]);
   };
 
@@ -1712,7 +1681,7 @@ const ProductDetail = ({params, searchParams, storeInit}) => {
       await fetchImageData(nextIndex);
       handleProductDetail(nextIndex);
       setProdLoading(true);
-      setIsImageLoad(true);
+      // setIsImageLoad(true);
     }
   };
 
@@ -1738,7 +1707,7 @@ const ProductDetail = ({params, searchParams, storeInit}) => {
       await fetchImageData(prevIndex);
       handleProductDetail(prevIndex);
       setProdLoading(true);
-      setIsImageLoad(true);
+      // setIsImageLoad(true);
     }
   };
 
@@ -1779,11 +1748,11 @@ const ProductDetail = ({params, searchParams, storeInit}) => {
 
   return (
     <>
-        <title>
-          {formatTitleLine(singleProd?.TitleLine)
-            ? `${singleProd.TitleLine} - ${singleProd?.designno ?? ''}`
-            : ((singleProd?.TitleLine || singleProd?.designno) ? `${singleProd?.designno ?? ''}` : "loading...")}
-        </title>
+      <title>
+        {formatTitleLine(singleProd?.TitleLine)
+          ? `${singleProd.TitleLine} - ${singleProd?.designno ?? ''}`
+          : ((singleProd?.TitleLine || singleProd?.designno) ? `${singleProd?.designno ?? ''}` : "loading...")}
+      </title>
       <div className="proCat_prodDetail_bodyContain" style={{
         height: "100%",
       }}>
@@ -1869,11 +1838,11 @@ const ProductDetail = ({params, searchParams, storeInit}) => {
                                 if (nextindex > 0) {
                                   setTimeout(() => {
                                     setProdLoading(false);
-                                    setImagePromise(false);
+                                    // setImagePromise(false);
                                   }, 500);
                                 } else {
                                   setProdLoading(false);
-                                  setImagePromise(false);
+                                  // setImagePromise(false);
                                 }
                               }}
                               alt={""}
@@ -1912,6 +1881,7 @@ const ProductDetail = ({params, searchParams, storeInit}) => {
                                 const secondhalf = ele?.thumbImageUrl?.split("/Design_Thumb")[1]?.split('.')[0];
                                 return (
                                   <img
+                                    key={i}
                                     src={ele?.thumbImageUrl ? ele?.thumbImageUrl : ele}
                                     alt={""}
                                     className="proCat_prod_thumb_img"
@@ -1919,11 +1889,11 @@ const ProductDetail = ({params, searchParams, storeInit}) => {
                                       if (nextindex > 0) {
                                         setTimeout(() => {
                                           setProdLoading(false);
-                                          setImagePromise(false);
+                                          // setImagePromise(false);
                                         }, 500);
                                       } else {
                                         setProdLoading(false);
-                                        setImagePromise(false);
+                                        // setImagePromise(false);
                                       }
                                     }}
                                     onClick={() => {

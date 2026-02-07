@@ -11,7 +11,7 @@ export const handleChangePassword = async(hashedOldPassword, hashedPassword, has
         const body = {
             "con": `{\"id\":\"\",\"mode\":\"CHANGEPASS\",\"appuserid\":\"${email}\"}`,
             "f": "Account (changePassword)",
-            "dp": encodedCombinedValue
+            "p": encodedCombinedValue
         }
 
         const response = await CommonAPI(body);

@@ -10,6 +10,30 @@ import { useStore } from "@/app/(core)/contexts/StoreProvider";
 import { useNextRouterLikeRR } from "@/app/(core)/hooks/useLocationRd";
 import cookies from "js-cookie";
 
+const buildAlbumCacheKey = ( type ,storeData, pricing, id) => {
+  const meta = {
+  type,
+  PackageId: pricing?.PackageId ?? "",
+  Laboursetid: pricing?.Laboursetid ?? "",
+  diamondpricelistname: pricing?.diamondpricelistname ?? "",
+  colorstonepricelistname: pricing?.colorstonepricelistname ?? "",
+};
+
+const key = [
+    type,
+    pricing?.PackageId,
+    pricing?.Laboursetid,
+    pricing?.diamondpricelistname,
+    pricing?.colorstonepricelistname,
+  ].join("_");
+
+  return {
+    key,
+    meta,
+  }
+};
+
+
 const NewArrival = ({ data, storeInit }) => {
   const { islogin } = useStore();
   const { push } = useNextRouterLikeRR();
@@ -51,23 +75,105 @@ const NewArrival = ({ data, storeInit }) => {
     return uid;
   }, [mounted, loginUserDetail, islogin, storeInit?.IsB2BWebsite]);
 
-  const callAPI = async (id) => {
-    try {
-      const res = await Get_Tren_BestS_NewAr_DesigSet_Album(storeInit, "GETNewArrival", id);
-      const rows = res?.Data?.rd || [];
-      console.log("🚀 ~ callAPI ~ rows:", rows)
-      if (Array.isArray(rows) && rows.length > 0) {
-        setNewArrivalData(rows);
-        setLoadingHome(false);
-      } else {
-        setNewArrivalData([]);
-        setLoadingHome(false);
-      }
-    } catch (error) {
-      console.log(error);
+     const pricingContext = useMemo(() => {
+      if (!mounted) return null;
+      const loginInfo = loginUserDetail;
+     return {
+      PackageId: (loginInfo?.PackageId ?? storeInit?.PackageId) ?? "",
+      Laboursetid:
+         (!islogin
+          ? storeInit?.pricemanagement_laboursetid
+          : loginInfo?.pricemanagement_laboursetid ) ?? "",
+      diamondpricelistname:
+         (!islogin
+          ? storeInit?.diamondpricelistname
+          : loginInfo?.diamondpricelistname) ?? "",
+      colorstonepricelistname:
+         (!islogin
+          ? storeInit?.colorstonepricelistname
+          : loginInfo?.colorstonepricelistname) ?? "",
+    };
+    }, [mounted, loginUserDetail, storeInit, islogin]);
+    
+
+const callAPI = async (id) => {
+  try {
+    const { key, meta } = buildAlbumCacheKey(
+      "newArrival_",
+      storeInit,
+      pricingContext,
+      id
+    );
+
+    // 1️⃣ Check cache
+    const cachedRes = await fetch(
+      `/api/cache?key=${encodeURIComponent(key)}`
+    );
+    const cached = await cachedRes.json();
+
+    if (cached.cached && Array.isArray(cached.data)) {
+      console.log("🔥 Using cached data", cached.data);
+      setNewArrivalData(cached.data);
       setLoadingHome(false);
+      return;
     }
-  };
+
+    // 2️⃣ Fetch fresh
+    const res = await Get_Tren_BestS_NewAr_DesigSet_Album(
+      storeInit,
+      "GETNewArrival",
+      id
+    );
+
+    const rows = res?.Data?.rd || [];
+
+    fetch("/api/cache", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ key, data: rows, meta }),
+    }).catch(console.error);
+
+    // 4️⃣ Update UI
+    setNewArrivalData(rows);
+    setLoadingHome(false);
+  } catch (error) {
+    console.error("❌ NewArrival error:", error);
+    setNewArrivalData([]);
+    setLoadingHome(false);
+  }
+};
+
+  // const callAPI = async (id) => {
+    
+  //      const {key ,meta} = buildAlbumCacheKey("newArrival_" ,storeInit, pricingContext, id);
+  //   try {
+  //     let rows = [];
+  //      const cachedRes = await fetch(`/api/cache?key=${key}`);
+  //     const cached = await cachedRes.json();
+  //     if (cached.cached && Array.isArray(cached.data)) {
+  //       console.log("🔥 Using cached data", cached.data);
+  //       return cached.data;
+  //     }else{
+  //     const res = await Get_Tren_BestS_NewAr_DesigSet_Album(storeInit, "GETNewArrival", id);
+  //     fetch("/api/cache", {
+  //         method: "POST",
+  //         headers: { "Content-Type": "application/json" },
+  //         body: JSON.stringify({ key, data: rows ,meta }),
+  //       }).catch(console.error);
+  //     rows = res?.Data?.rd || [];
+  //     }
+  //     if (Array.isArray(rows) && rows.length > 0) {
+  //       setNewArrivalData(rows);
+  //       setLoadingHome(false);
+  //     } else {
+  //       setNewArrivalData([]);
+  //       setLoadingHome(false);
+  //     }
+  //   } catch (error) {
+  //     console.log(error);
+  //     setLoadingHome(false);
+  //   }
+  // };
 
   useEffect(() => {
     if (!mounted) return;
