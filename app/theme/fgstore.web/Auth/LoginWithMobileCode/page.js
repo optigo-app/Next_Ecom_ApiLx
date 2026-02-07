@@ -91,7 +91,7 @@ export default function LoginWithMobileCode({ params, searchParams }) {
         setIsLoading(true);
         ContimueWithMobileAPI(mobileNo).then((response) => {
             setIsLoading(false);
-            if (response.Data.rd[0].stat === 1) {
+            if (response.Data.Table1[0].stat === '1') {
                 toast.success('OTP send Sucssessfully');
             } else {
                 alert('Error..')

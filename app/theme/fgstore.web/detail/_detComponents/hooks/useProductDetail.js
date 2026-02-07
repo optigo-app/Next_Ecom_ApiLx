@@ -10,20 +10,14 @@ import { StockItemApi } from "@/app/(core)/utils/API/StockItemAPI/StockItemApi";
 import { DesignSetListAPI } from "@/app/(core)/utils/API/DesignSetListAPI/DesignSetListAPI";
 import { SaveLastViewDesign } from "@/app/(core)/utils/API/SaveLastViewDesign/SaveLastViewDesign";
 import Cookies from "js-cookie";
-import { useSearchParams } from "next/navigation";
-import { SearchParamsParser } from "@/app/(core)/utils/GlobalFunctions/Parser";
+import { ParseAndDecodeSearchParams } from "@/app/(core)/utils/GlobalFunctions/Parser";
 
 export const useProductDetail = (searchParams, storeInit) => {
-    const search = useSearchParams();
-    // Product states
     const [singleProd, setSingleProd] = useState({});
     const [singleProd1, setSingleProd1] = useState({});
     const [prodLoading, setProdLoading] = useState(true);
     const [isPriceloading, setisPriceLoading] = useState(false);
     const [isDataFound, setIsDataFound] = useState(false);
-    const [defaultImage, setDefaultImage] = useState("");
-    const [defaultExtension, setDefaultExtension] = useState("");
-    const [proThumImgCount, setProThumImgCount] = useState("");
 
     // Combo data states
     const [metalTypeCombo, setMetalTypeCombo] = useState([]);
@@ -77,7 +71,6 @@ export const useProductDetail = (searchParams, storeInit) => {
             return null;
         }
     };
-
 
     // Load combo data from session storage or API
     const callAllApi = () => {
@@ -317,18 +310,9 @@ export const useProductDetail = (searchParams, storeInit) => {
 
     // Handle URL parameters and initial product load
     useEffect(() => {
-        const result = SearchParamsParser(searchParams);
+        const result = ParseAndDecodeSearchParams(searchParams);
         let navVal = result[0]?.split("=")[1];
         let decodeobj = decodeAndDecompress(navVal);
-        console.log("TCL: useProductDetail -> decodeobj", decodeobj)
-
-        const { b, l, count } = decodeobj;
-        const imageUrl = storeInit?.CDNDesignImageFol;
-        const urlPath = `${imageUrl}${b}~1.${l}`;
-
-        setDefaultImage(urlPath);
-        setDefaultExtension(l);
-        setProThumImgCount(count)
 
         if (decodeobj) {
             setDecodeUrl(decodeobj);
@@ -434,9 +418,6 @@ export const useProductDetail = (searchParams, storeInit) => {
         isDataFound,
         setSingleProd,
         setSingleProd1,
-        defaultImage,
-        defaultExtension,
-        proThumImgCount,
 
         // Combo data
         metalTypeCombo,

@@ -160,7 +160,7 @@ const MobileFilter = ({
                             {diaQcCombo?.map((diaQc) => (
                                 <option
                                     className="option"
-                                    key={diaQc?.QualityId}
+                                    key={`${diaQc?.QualityId},${diaQc?.ColorId}`}
                                     value={`${diaQc?.QualityId},${diaQc?.ColorId}`}
                                 >
                                     {" "}
@@ -197,7 +197,7 @@ const MobileFilter = ({
                             {csQcCombo?.map((csCombo) => (
                                 <option
                                     className="option"
-                                    key={csCombo?.QualityId}
+                                    key={`${csCombo?.QualityId},${csCombo?.ColorId}`}
                                     value={`${csCombo?.QualityId},${csCombo?.ColorId}`}
                                 >
                                     {" "}

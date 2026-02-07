@@ -321,7 +321,7 @@ export default function LoginWithEmail({params ,  searchParams}) {
           <p
             style={{
               textAlign: "center",
-              marginTop: "-60px",
+              marginTop: "-80px",
               fontSize: "15px",
               color: "#7d7f85",
             }}

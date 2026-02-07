@@ -1,10 +1,4 @@
-
-export const dynamic = "force-static";
-export const revalidate = 43200; // 12 hours = 12 * 60 * 60
-
-
 import React from "react";
-import { cache } from "react";
 import { getStoreInit } from "@/app/(core)/utils/GlobalFunctions/GlobalFunctions";
 import { generatePageMetadata } from "@/app/(core)/utils/HeadMeta";
 import { pages } from "@/app/(core)/utils/pages";
@@ -30,7 +24,7 @@ import NewsletterSignup from "@/app/components/(static)/SubscribeNewsLater/Newsl
 
 export const metadata = generatePageMetadata(pages["/"], "Sonasons");
 
-const SonasonsHome = cache(async () => {
+const SonasonsHome = async () => {
   const storeData = await getStoreInit();
   const { bestsellerBanner, newArrivalBanner, trendingBanner, lookbookBanner } = useHomeBannerImages({ host: assetBase });
 
@@ -52,7 +46,7 @@ const SonasonsHome = cache(async () => {
           {storeData?.IsHomeTrending === 1 && <TrendingView data={trendingBanner} storeInit={storeData} />}
           <AppointmentBanner />
           {storeData?.IsHomeDesignSet === 1 && <DesignSet data={lookbookBanner} storeInit={storeData} />}
-          <BrandsComponent />
+          <BrandsComponent/>
           <NewsletterSignup storeData={storeData} />
         </>
       )}
@@ -67,12 +61,12 @@ const SonasonsHome = cache(async () => {
           {storeData?.IsHomeTrending === 1 && <TrendingView2 data={trendingBanner} storeInit={storeData} />}
           <AppointmentBanner />
           {storeData?.IsHomeDesignSet === 1 && <DesignSet2 data={lookbookBanner} storeInit={storeData} />}
-          <BrandsComponent />
+          <BrandsComponent/>
           <NewsletterSignup storeData={storeData} />
         </>
       )}
     </Box>
   );
-});
+};
 
 export default SonasonsHome;

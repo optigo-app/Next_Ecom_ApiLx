@@ -4,9 +4,8 @@ import { FaMobileAlt } from "react-icons/fa";
 import { IoMdMail } from "react-icons/io";
 import Link from "next/link";
 
-const LoginOption = ({ searchParams }) => {
-    const {  LoginRedirect = "" , search = "" } = searchParams || {};
-  const loginRedirect =  LoginRedirect || search || "";
+const LoginOption = ({ params, searchParams }) => {
+  const loginRedirect = searchParams?.LoginRedirect || searchParams?.search || "";
   const redirectEmailUrl = `/ContinueWithEmail${loginRedirect ? `?LoginRedirect=${encodeURIComponent(loginRedirect)}` : ""}`;
   const redirectMobileUrl = `/ContinueWithMobile${loginRedirect ? `?LoginRedirect=${encodeURIComponent(loginRedirect)}` : ""}`;
 
