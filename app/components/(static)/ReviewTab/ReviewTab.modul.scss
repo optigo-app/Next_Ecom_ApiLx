@@ -63,18 +63,22 @@
       }
     }
 
-    .slick-dots {
+    .swiper-pagination {
       bottom: -25px;
       margin: 0;
+    }
 
-      li.slick-active button:before {
-        font-size: 11px;
-      }
+    .swiper-pagination-bullet {
+      width: 8px;
+      height: 8px;
+      background: rgba(128, 128, 128, 0.295);
+      opacity: 1;
+    }
 
-      li button:before {
-        font-size: 8px;
-        color: rgba(128, 128, 128, 0.295);
-      }
+    .swiper-pagination-bullet-active {
+      width: 11px;
+      height: 11px;
+      background: rgba(128, 128, 128, 0.6);
     }
 
     .review_card {

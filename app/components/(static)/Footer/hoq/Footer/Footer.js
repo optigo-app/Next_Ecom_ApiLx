@@ -7,7 +7,6 @@ import MobileFooter from "./MobileFooter";
 import Link from "next/link";
 
 const Footer = ({ companyInfoData, storeData, extraFlag, logos, assetBase }) => {
-
   const [email, setemail] = useState("");
   const [socialMediaData, setSocialMediaData] = useState([]);
   const [selectedFooteVal, setSelectedVal] = useState(0);
@@ -130,7 +129,7 @@ const Footer = ({ companyInfoData, storeData, extraFlag, logos, assetBase }) => 
           <Policy />
           <About />
         </div>
-        <Copyright assetBase={assetBase} />
+        <Copyright assetBase={assetBase} companyname={storeData?.companyname} />
       </footer>
       <MobileFooter socialLinkStr={socialMediaData} companyInfoData={companyInfoData} assetBase={assetBase} />
 
@@ -237,11 +236,13 @@ const NewsLetter = ({ onsubmit, email, setemail, loading1, result }) => {
     </div>
   );
 };
-const Copyright = ({ assetBase }) => {
+const Copyright = ({ assetBase ,companyname }) => {
   return (
     <div className="footer-bottom">
       <Payment assetBase={assetBase} />
-      <p>© 2025 Lorem ipsum dolor sit amet.</p>
+      <p>
+           &#169; {new Date().getFullYear()}, {companyname || "Company Name"}
+      </p>
     </div>
   );
 };
@@ -287,11 +288,3 @@ const ContactInformation = ({ socialLinkStr, companyInfoData }) => {
 };
 
 export default Footer;
-{/* <Link
-          href="https://www.facebook.com/"
-          style={{ display: "flex", alignItems: "center", gap: "5px" }}
-          target="_blank"
-        >
-          <FaFacebook size={17} color="blue" />
-          Facebook
-        </Link> */}

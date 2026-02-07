@@ -42,7 +42,7 @@ const ChatMenu = ({ assetBase, message = "Hello, Talk to a Jewellery expert now!
           href={whatsappLink}
           target="_blank"
         >
-          <img src={`${assetBase}/chatMenu/wa.png`} alt="" />
+          <img src={`/${assetBase}/chatMenu/wa.png`} alt="" />
         </a>
       </button>
     </div>

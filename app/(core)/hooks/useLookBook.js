@@ -361,7 +361,7 @@ const useLookBook = ({ storeInit }) => {
     }
   };
 
-  const handleNavigation = (designNo, autoCode, titleLine) => {
+  const handleNavigation = (designNo, autoCode, titleLine ,productData) => {
     let obj = {
       a: autoCode,
       b: designNo,
@@ -369,6 +369,10 @@ const useLookBook = ({ storeInit }) => {
       d: loginUserDetail?.cmboDiaQCid ?? storeInit?.cmboDiaQCid,
       c: loginUserDetail?.cmboCSQCid ?? storeInit?.cmboCSQCid,
       f: {},
+      i: productData?.MetalColorid,
+      l: productData?.ImageExtension,
+      count: productData?.ImageCount,
+    };
     };
     let encodeObj = compressAndEncode(JSON?.stringify(obj));
     navigate(`/d/${formatRedirectTitleLine(titleLine)}${designNo}?p=${encodeObj}`);
@@ -665,6 +669,4 @@ const useLookBook = ({ storeInit }) => {
     checkImageAvailability,
   };
   
-};
-
 export default useLookBook;

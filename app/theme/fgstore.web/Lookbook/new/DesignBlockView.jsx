@@ -152,7 +152,7 @@ const DesignBlockView = ({
                                                                 loading="lazy"
                                                                 src={imageSrc}
                                                                 alt={`Sub image ${subIndex} for slide ${index}`}
-                                                                onClick={() => handleNavigation(detail?.designno, detail?.autocode, detail?.TitleLine ? detail?.TitleLine : "")}
+                                                                onClick={() => handleNavigation(detail?.designno, detail?.autocode, detail?.TitleLine ? detail?.TitleLine : "",detail)}
                                                                 draggable={true}
                                                                 onContextMenu={(e) => e.preventDefault()}
                                                                 onError={(e) => {
@@ -323,7 +323,7 @@ const DesignBlockView = ({
                                                                     // src={`${imageUrlDesignSet}${detail?.designno}~1.${detail?.ImageExtension}`}
                                                                     src={`${imageUrlDesignSet}${detail?.designno}~1.jpg`}
                                                                     // alt={`Sub image ${subIndex} for slide ${index}`}
-                                                                    onClick={() => handleNavigation(detail?.designno, detail?.autocode, detail?.TitleLine ? detail?.TitleLine : "")}
+                                                                    onClick={() => handleNavigation(detail?.designno, detail?.autocode, detail?.TitleLine ? detail?.TitleLine : "",detail)}
                                                                     draggable={true}
                                                                     onContextMenu={(e) => e.preventDefault()}
                                                                     onError={(e) => {
@@ -371,7 +371,7 @@ const DesignBlockView = ({
                                                                             loading="lazy"
                                                                             src={`${imageUrlDesignSet}${detail?.designno}~1.jpg`}
                                                                             alt={`Sub image ${subIndex} for slide ${index}`}
-                                                                            onClick={() => handleNavigation(detail?.designno, detail?.autocode, detail?.TitleLine ? detail?.TitleLine : "")}
+                                                                            onClick={() => handleNavigation(detail?.designno, detail?.autocode, detail?.TitleLine ? detail?.TitleLine : "",detail)}
                                                                             draggable={true}
                                                                             onContextMenu={(e) => e.preventDefault()}
                                                                             onError={(e) => {
@@ -492,7 +492,7 @@ const DesignBlockView = ({
                                                                                     }
                                                                                     alt=""
                                                                                     className="smr_lb3srthelook_img"
-                                                                                    onClick={() => handleNavigation(ele?.designno, ele?.autocode, ele?.TitleLine ? ele?.TitleLine : "")}
+                                                                                    onClick={() => handleNavigation(ele?.designno, ele?.autocode, ele?.TitleLine ? ele?.TitleLine : "",detail)}
                                                                                     draggable={true}
                                                                                     onContextMenu={(e) => e.preventDefault()}
                                                                                     onError={(e) => {
@@ -500,7 +500,7 @@ const DesignBlockView = ({
                                                                                     }}
                                                                                 />
                                                                             </div>
-                                                                            <div className="smr_lb3srthelook_prodinfo" onClick={() => handleNavigation(ele?.designno, ele?.autocode, ele?.TitleLine ? ele?.TitleLine : "")}>
+                                                                            <div className="smr_lb3srthelook_prodinfo" onClick={() => handleNavigation(ele?.designno, ele?.autocode, ele?.TitleLine ? ele?.TitleLine : "",detail)}>
                                                                                 <div
                                                                                     style={{
                                                                                         fontSize: "14px",

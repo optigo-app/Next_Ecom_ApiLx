@@ -83,8 +83,6 @@ const Lookbook = ({ storeInit }) => {
   const [imageLoadError, setImageLoadError] = useState({});
   const [inputPage, setInputPage] = useState(currentPage);
 
-  console.log("kiokik", Math.ceil(dstCount / itemsPerPage) > 1)
-
   const handleImageError = (index, e) => {
     setImageLoadError((prev) => ({ ...prev, [index]: true }));
     e.target.src = noimage;
@@ -100,7 +98,6 @@ const Lookbook = ({ storeInit }) => {
     if (SwiperSlideRef.current) {
       const { offsetWidth } = SwiperSlideRef.current;
       setDynamicSize({ w: `${offsetWidth}px`, h: `${offsetWidth}px` });
-      console.log("Size updated:", offsetWidth, offsetWidth);
     }
   };
 
@@ -293,41 +290,7 @@ const Lookbook = ({ storeInit }) => {
     return output;
   };
 
-  // useEffect(() => {
-  //   const loginUserDetail = JSON?.parse(sessionStorage.getItem("loginUserDetail"));
-  //   const storeInit = JSON?.parse(sessionStorage.getItem("storeInit"));
-  //   const { IsB2BWebsite } = storeInit;
-
-  //   const visiterID = Cookies.get("visiterId");
-  //   let finalID;
-  //   if (IsB2BWebsite == 0) {
-  //     finalID = islogin === false ? visiterID : loginUserDetail?.id || "0";
-  //   } else {
-  //     finalID = loginUserDetail?.id || "0";
-  //   }
-
-  //   let output = FilterValueWithCheckedOnly();
-  //   if (Object.keys(filterChecked)?.length >= 0) {
-  //     Get_Tren_BestS_NewAr_DesigSet_Album("GETDesignSet_List", finalID, output, currentPage, itemsPerPage)
-  //       .then((response) => {
-  //         if (response?.Data?.rd) {
-  //           setDesignSetListData(response?.Data?.rd);
-  //           setDstCount(response?.Data?.rd1[0]?.TotalCount)
-  //           const initialCartItems = response?.Data?.rd.flatMap((slide) =>
-  //             parseDesignDetails(slide?.Designdetail)
-  //               .filter((detail) => detail?.IsInCart === 1)
-  //               .map((detail) => detail.autocode)
-  //           );
-  //           setCartItems((prevCartItems) => [
-  //             ...new Set([...prevCartItems, ...initialCartItems]),
-  //           ]); // Use Set to avoid duplicates
-  //           setIsProdLoading(false);
-  //           setIsPgLoading(false);
-  //         }
-  //       })
-  //       .catch((err) => console.log(err));
-  //   }
-  // }, [filterChecked, currentPage]);
+ 
 
   const ProdCardImageFunc = (pd) => {
     let finalprodListimg;
@@ -462,7 +425,6 @@ const Lookbook = ({ storeInit }) => {
   };
 
   const handleNavigation = (designNo, autoCode, titleLine, productData) => {
-    console.log("TCL: handleNavigation -> productData", productData)
     let obj = {
       a: autoCode,
       b: designNo,

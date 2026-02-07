@@ -30,6 +30,7 @@ import BreadCrumbs from './BreadCrums';
 import { useStore } from '@/app/(core)/contexts/StoreProvider';
 import { MdOutlineFilterList, MdOutlineFilterListOff } from 'react-icons/md';
 import Product_Card from './Product_Card';
+import { ParseAndDecodeSearchParams } from '@/app/(core)/utils/GlobalFunctions/Parser';
 
 const MobileFilter = dynamic(() => import('./MobileFilter'), { ssr: false });
 
@@ -301,26 +302,11 @@ const Product = ({ params, searchParams, storeinit }) => {
         }
     }, [params, productListData, filterChecked])
 
-    let result = [];
+    let result = ParseAndDecodeSearchParams(searchParams);
+
 
     const lastSearchParamsRef = useRef(null);
     const isApiCallInProgressRef = useRef(false);
-
-    try {
-        if (searchParams?.value) {
-            const parsed = JSON.parse(searchParams.value);
-
-            if (parsed && typeof parsed === "object") {
-                result = Object.entries(parsed).map(([key, value]) => {
-                    const decoded = atob(value);       // decode base64
-                    const reEncoded = btoa(decoded);   // re-encode
-                    return `${key}=${reEncoded}`;
-                });
-            }
-        }
-    } catch (err) {
-        console.error("Invalid searchParams.value:", searchParams?.value, err);
-    }
 
     useEffect(() => {
         // Create a unique key for current searchParams to avoid duplicate calls
