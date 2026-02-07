@@ -22,10 +22,10 @@ export default function LoginWithEmailCode({ params, searchParams }) {
     const navigation = location.push;
     const [isLoginState, setIsLoginState] = useState(false);
 
-    const search = JSON.parse(searchParams?.value)?.LoginRedirect ?? "";
+    const search = searchParams?.LoginRedirect || searchParams?.loginRedirect || searchParams?.search || "";
     const updatedSearch = search.replace('?LoginRedirect=', '');
     const redirectEmailUrl = `${decodeURIComponent(updatedSearch)}`;
-    const cancelRedireactUrl = `/LoginOption/${search}`;
+    const cancelRedireactUrl = `/LoginOption?LoginRedirect=${search}`;
 
     useEffect(() => {
         const fetchData = async () => {

@@ -7,19 +7,19 @@ import { toast } from "react-toastify";
 import { ContinueWithEmailAPI } from "@/app/(core)/utils/API/Auth/ContinueWithEmailAPI";
 import OTPContainer from '@/app/(core)/utils/Glob_Functions/Otpflow/App';
 import { useNextRouterLikeRR } from "@/app/(core)/hooks/useLocationRd";
+import { useRouter } from 'next/navigation';
 
-export default function ContinueWithEmail({ searchParams }) {
+export default function ContinueWithEmail({ params, searchParams, storeInit }) {
 
     const [email, setEmail] = useState("");
     const [emailError, setEmailError] = useState("");
 
     const [isLoading, setIsLoading] = useState(false);
-    const navigation = useNextRouterLikeRR();
-
-    const search = JSON.parse(searchParams?.value)?.LoginRedirect ?? "";
-    const redirectEmailUrl = `/LoginWithEmail/?LoginRedirect=${search}`;
-    const redirectSignUpUrl = `/register/?LoginRedirect=${search}`;
-    const cancelRedireactUrl = `/LoginOption/?LoginRedirect=${search}`;
+    const navigation = useRouter();
+    const search = searchParams.LoginRedirect || searchParams.loginRedirect || searchParams.search || "";
+    const redirectEmailUrl = `/LoginWithEmail?LoginRedirect=${search}`;
+    const redirectSignUpUrl = `/register?LoginRedirect=${search}`;
+    const cancelRedireactUrl = `/LoginOption?LoginRedirect=${search}`;
 
     useEffect(() => {
         setCSSVariable();

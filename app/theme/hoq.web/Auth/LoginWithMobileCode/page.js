@@ -20,13 +20,13 @@ export default function LoginWithMobileCode({ params, searchParams }) {
     const [resendTimer, setResendTimer] = useState(120);
     const [isLoginState, setIsLoginState] = useState(false)
 
-    const search = JSON.parse(searchParams?.value)?.LoginRedirect ?? "";
+    const search = searchParams?.LoginRedirect || searchParams?.loginRedirect || searchParams?.search || "";
     const updatedSearch = search?.replace('?LoginRedirect=', '');
     const redirectMobileUrl = `${decodeURIComponent(updatedSearch)}`;
-    const cancelRedireactUrl = `/LoginOption/${search}`;
+    const cancelRedireactUrl = `/LoginOption?LoginRedirect=${search}`;
 
     useEffect(() => {
-        const storedMobile = sessionStorage.getItem('registerMobile');
+        const storedMobile = sessionStorage?.getItem('registerMobile') ?? '';
         if (storedMobile) setMobileNo(storedMobile);
     }, []);
 

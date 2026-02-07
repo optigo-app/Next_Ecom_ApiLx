@@ -1,9 +1,9 @@
 import React from 'react'
 import Wishlist from './WishList'
 
-const page = () => {
+const page = ({storeInit}) => {
   return (
-    <Wishlist/>
+    <Wishlist storeInit={storeInit}/>
   )
 }
 

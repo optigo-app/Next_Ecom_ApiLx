@@ -16,7 +16,8 @@ const WishlistData = ({
   handleWishlistToCart,
   WishCardImageFunc,
   handleMoveToDetail,
-  handelMenu
+  handelMenu ,
+  storeInit
 }) => {
   const [alignment, setAlignment] = React.useState('1');
 
@@ -85,6 +86,7 @@ const WishlistData = ({
               handleRemoveItem={handleRemoveItem}
               handleWishlistToCart={handleWishlistToCart}
               handleMoveToDetail={handleMoveToDetail}
+              storeInit={storeInit}
             />
           ))}
         </Grid>

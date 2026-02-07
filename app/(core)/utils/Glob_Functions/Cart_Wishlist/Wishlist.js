@@ -267,12 +267,12 @@ const Usewishlist = () => {
   // };
 
   const WishCardImageFunc = (pd) => {
-    if (validThemenos?.includes(storeInit?.Themeno)) {
+    if (validThemenos.includes(storeInit?.Themeno)) {
       const mtcCode = metalColorCombo?.find(option => option?.metalcolorname === pd?.metalcolorname);
       let primaryImage;
 
       if (pd?.ImageCount > 0) {
-        // primaryImage = `${storeInit?.CDNDesignImageFolThumb}${pd?.designno}~1~${mtcCode?.colorcode}.${pd?.ImageExtension}`;
+        // primaryImage = `${storeInit?.CDNDesignImageFol}${pd?.designno}~1~${mtcCode?.colorcode}.${pd?.ImageExtension}`;
         primaryImage = `${storeInit?.CDNDesignImageFolThumb}${pd?.designno}~1~${mtcCode?.colorcode}.jpg`;
       } else {
         primaryImage = imageNotFound;
@@ -295,10 +295,18 @@ const Usewishlist = () => {
         if (pd?.ImageCount > 0) {
           primaryImage = `${storeInit?.CDNDesignImageFolThumb}${pd?.designno}~1~${mtcCode?.colorcode}.jpg`;
           secondaryImage = `${storeInit?.CDNDesignImageFolThumb}${pd?.designno}~1.jpg`;
-        }
-        else {
+          // primaryImage = `${storeInit?.CDNDesignImageFol}${pd?.designno}~1~${mtcCode?.colorcode}.${pd?.ImageExtension}`;
+          // secondaryImage = `${storeInit?.CDNDesignImageFol}${pd?.designno}~1.${pd?.ImageExtension}`;
+        } else {
           primaryImage = secondaryImage = imageNotFound;
         }
+        // if (pd?.ImageCount > 0) {
+        //   primaryImage = `${storeInit?.DesignImageFol}${pd?.designno}_1_${mtcCode?.colorcode}.${pd?.ImageExtension}`;
+        //   secondaryImage = `${storeInit?.DesignImageFol}${pd?.designno}_1.${pd?.ImageExtension}`;
+        // } else {
+        //   primaryImage = secondaryImage = imageNotFound;
+        // }
+
         loadImage(primaryImage)
           .then((imgSrc) => {
             resolve(imgSrc);
@@ -399,13 +407,13 @@ const Usewishlist = () => {
     };
 
     let delay = 20; // default
-    // if (storeInit?.Themeno === 3) delay = 130;
-    // if (storeInit?.Themeno === 1) delay = 0;
-    // if ([10, 11, 12, 7, 2].includes(storeInit?.Themeno)) delay = 150;
+    if (storeInit?.Themeno === 3) delay = 130;
+    if (storeInit?.Themeno === 1) delay = 0;
+    if ([10, 11, 12, 7, 2].includes(storeInit?.Themeno)) delay = 150;
 
     const timer = setTimeout(loadNextProductImages, delay);
     return () => clearTimeout(timer);
-  }, [loadingIndex, finalWishData, WishCardImageFunc]);
+  }, [loadingIndex, finalWishData.length, storeInit, WishCardImageFunc]);
 
 
   const compressAndEncode = (inputString) => {
@@ -423,7 +431,6 @@ const Usewishlist = () => {
   };
 
   const handleMoveToDetail = (wishtData) => {
-    console.log("TCL: handleMoveToDetail -> wishtData", wishtData)
     if (wishtData?.stockno) {
       const obj = {
         a: wishtData?.stockno,
@@ -443,11 +450,8 @@ const Usewishlist = () => {
         c: `${wishtData?.colorstonequalityid}${","}${wishtData?.colorstonecolorid}`,
         f: {},
         g: [["", ""], ["", "", ""]],
-        i: wishtData?.MetalColorid,
-        l: wishtData?.ImageExtension,
-        count: wishtData?.ImageCount,
       }
-
+      compressAndEncode(JSON.stringify(obj))
       let encodeObj = compressAndEncode(JSON.stringify(obj))
       // navigate(`/d/${?.replace(/\s+/g, `_`)}${wishtData?.TitleLine?.length > 0 ? "_" : ""}${}?p=${encodeObj}`)
       navigate(`/d/${formatRedirectTitleLine(wishtData?.TitleLine)}${wishtData?.designno}?p=${encodeObj}`);

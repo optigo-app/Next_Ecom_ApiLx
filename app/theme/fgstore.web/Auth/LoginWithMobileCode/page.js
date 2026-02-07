@@ -7,6 +7,7 @@ import {  toast } from 'react-toastify';
 import { LoginWithEmailAPI } from '@/app/(core)/utils/API/Auth/LoginWithEmailAPI';
 import Cookies from 'js-cookie';
 import { useNextRouterLikeRR } from '@/app/(core)/hooks/useLocationRd';
+import OTP from './OTP';
 
 export default function LoginWithMobileCode({ params, searchParams }) {
     const location = useNextRouterLikeRR();
@@ -18,10 +19,10 @@ export default function LoginWithMobileCode({ params, searchParams }) {
     const [resendTimer, setResendTimer] = useState(120);
     const [isLoginState, setIsLoginState] = useState(false)
 
-    const search = JSON.parse(searchParams?.value)?.LoginRedirect ?? "";
+    const search = searchParams?.LoginRedirect || searchParams?.loginRedirect || searchParams?.search || "";
     const updatedSearch = search?.replace('?LoginRedirect=', '');
     const redirectMobileUrl = `${decodeURIComponent(updatedSearch)}`;
-    const cancelRedireactUrl = `/LoginOption/${search}`;
+    const cancelRedireactUrl = `/LoginOption?${search}`;
 
 
     useEffect(() => {
@@ -72,10 +73,8 @@ export default function LoginWithMobileCode({ params, searchParams }) {
                 sessionStorage.setItem('registerMobile', mobileNo);
 
                 if(redirectMobileUrl){
-                    // navigation(redirectMobileUrl);
                     window.location.href = redirectMobileUrl;
                 }else{
-                    // navigation('/')
                     window.location.href = '/';
                 }
 
@@ -107,7 +106,6 @@ export default function LoginWithMobileCode({ params, searchParams }) {
                 </div>
             )}
             <div >
-            {/* style={{ backgroundColor: '#c0bbb1' }} */}
                 <div className='smling-forgot-main'>
                     <p style={{
                         textAlign: 'center',
@@ -128,38 +126,20 @@ export default function LoginWithMobileCode({ params, searchParams }) {
                     }}
                         className='AuthScreenSubTitle'
                     >Last step! To secure your account, enter the code we just sent to {mobileNo}.</p>
+                    <div className='fg_opt_div' style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: '20px' }}>
+                        <OTP separator={<span> </span>} value={enterOTP} onChange={setEnterOTP} length={6} onSubmit={handleSubmit} />
 
-                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' , marginTop: '20px' }}>
-                        <TextField
-                            autoFocus
-                            id="outlined-basic"
-                            label="Enter Code"
-                            variant="outlined"
-                            className='labgrowRegister'
-                            style={{ margin: '15px' }}
-                            onKeyDown={(event) => {
-                                if (event.key === 'Enter') {
-                                    handleSubmit();
-                                }
-                            }}
-                            onChange={(e) => handleInputChange(e, setEnterOTP, 'mobileNo')}
-                            error={!!errors.otp}
-                            helperText={errors.otp}
-                        />
+                        {errors.otp && (
+                            <p style={{ color: 'red', marginTop: '5px' }}>{errors.otp}</p>
+                        )}
 
-                        <button className='submitBtnForgot_for' onClick={handleSubmit}>Login</button>
+                        <button className='submitBtnForgot_for btnColorProCat' style={{ marginTop: '20px' }} onClick={handleSubmit}>Login</button>
                         <p className='resend_msg' style={{ marginTop: '10px' }}>Didn't get the code ? {resendTimer === 0 ? <span style={{ fontWeight: 500, color: 'blue', textDecoration: 'underline', cursor: 'pointer' }} onClick={handleResendCode}>Resend Code</span> : <span>Resend in {Math.floor(resendTimer / 60).toString().padStart(2, '0')}:{(resendTimer % 60).toString().padStart(2, '0')}</span>}</p>
                         <Button style={{ marginTop: '10px', color: 'gray' }} onClick={() => navigation(cancelRedireactUrl)}>CANCEL</Button>
                     </div>
-                    {/* <Footer /> */}
                 </div>
             </div>
-            {/* <div style={{ display: 'flex', justifyContent: 'center', paddingBlock: '30px' }}>
-                <p 
-          className="backtotop_Smr"
-                
-                style={{ margin: '0px', fontWeight: 500, width: '100px', color: 'white', cursor: 'pointer' }} onClick={() => window.scrollTo(0, 0)}>BACK TO TOP</p>
-            </div> */}
+          
         </div>
     );
 }

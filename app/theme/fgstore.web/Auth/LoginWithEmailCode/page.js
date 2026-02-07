@@ -20,12 +20,13 @@ export default function LoginWithEmailCode({ params, searchParams }) {
     const [isLoginState, setIsLoginState] = useState(false);
     const inputsRef = useRef([]);
 
-    const search = JSON.parse(searchParams?.value)?.LoginRedirect ?? "";
-    const updatedSearch = search.replace('?LoginRedirect=', '');
-    const redirectEmailUrl = `${decodeURIComponent(updatedSearch)}`;
-    const cancelRedireactUrl = `/LoginOption/${search}`;
 
-    useEffect(() => {
+    const search = searchParams?.LoginRedirect || searchParams?.loginRedirect || searchParams?.search || "";
+    const updatedSearch = search?.replace('?LoginRedirect=', '');
+    const redirectEmailUrl = `${decodeURIComponent(updatedSearch)}`;
+    const cancelRedireactUrl = `/LoginOption?${search}`;
+
+   useEffect(() => {
         const fetchData = async () => {
             const storedEmail = sessionStorage.getItem('registerEmail');
             if (storedEmail) {
@@ -34,7 +35,7 @@ export default function LoginWithEmailCode({ params, searchParams }) {
                 if (value === 'true') {
                     sessionStorage.setItem('LoginCodeEmail', 'false');
                     LoginWithEmailCodeAPI(storedEmail).then((response) => {
-                        if (response.Data.Table1[0].stat === '1') {
+                        if (response.Data.rd[0].stat === '1') {
                             toast.success('OTP sent successfully');
                         } else {
                             toast.error('OTP send error');
@@ -61,7 +62,6 @@ export default function LoginWithEmailCode({ params, searchParams }) {
         }
     }, [resendTimer]);
 
-    console.log('otp',otp?.length);
 
     const handleSubmit = async () => {
         const visiterId = Cookies.get('visiterId');
@@ -99,7 +99,7 @@ export default function LoginWithEmailCode({ params, searchParams }) {
     const handleResendCode = async () => {
         setResendTimer(120);
         LoginWithEmailCodeAPI(email).then((response) => {
-            if (response.Data.Table1[0].stat === '1') {
+            if (response.Data.rd[0].stat === '1') {
                 sessionStorage.setItem('LoginCodeEmail', 'false');
                 toast.success('OTP sent successfully');
             } else {

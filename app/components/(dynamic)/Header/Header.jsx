@@ -18,11 +18,6 @@ import { useNextRouterLikeRR } from "@/app/(core)/hooks/useLocationRd";
 import { useRouter } from "next/navigation";
 import { Search, Star } from "lucide-react";
 
-export function storImagePath() {
-  let statiPath = `${window?.location?.protocol}//${window.location.hostname === "localhost" || window.location.hostname === "zen" ? NEXT_APP_WEB : window.location.hostname}`;
-  return `${statiPath}/WebSiteStaticImage`;
-}
-
 
 const buildAlbumCacheKey = ( type ,storeData, pricing, id) => {
   const meta = {
@@ -1393,7 +1388,7 @@ const TopNavBar = ({ menuItems = [], handelMenu = () => { } }) => {
 };
 
 const HoverMenu = ({ selectedData, handelMenu, expandedMenu, hoveredIndex, handleMouseEnter, handleMouseLeave }) => {
-  const SliderbannerImages = [storImagePath() + "/1.png", storImagePath() + "/2.png"];
+  const SliderbannerImages = [`/WebSiteStaticImage/1.png`, `/WebSiteStaticImage/2.png`];
 
   if (expandedMenu === null || expandedMenu === undefined || selectedData?.param1[0].param1dataname === "") {
     return;

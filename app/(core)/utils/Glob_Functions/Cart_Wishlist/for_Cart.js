@@ -572,7 +572,7 @@ const useCart = () => {
         try {
             setIsPriceLoding(true);
             const response = await fetchSingleProdDT(selectedItem, sizedata, diaId, csQid, selectedMetalId, visiterId);
-            if (response?.Message === "Success") {
+      if (response?.Status === "200" || response?.Status === 200 || response?.Status == 200) {
                 const resData = response?.Data?.rd[0];
                 const finalPrice = resData?.UnitCostWithMarkUp * qtyCount;
                 setFinalPrice(resData)
