@@ -46,3 +46,6 @@ next-env.d.ts
 
 # cache file 
 .next_cache/
+.gitignore
+
+.next_cache

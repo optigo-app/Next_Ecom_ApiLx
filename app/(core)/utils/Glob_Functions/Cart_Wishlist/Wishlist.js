@@ -450,6 +450,9 @@ const Usewishlist = () => {
         c: `${wishtData?.colorstonequalityid}${","}${wishtData?.colorstonecolorid}`,
         f: {},
         g: [["", ""], ["", "", ""]],
+        i: wishtData?.MetalColorid,
+        l: wishtData?.ImageExtension,
+        count: wishtData?.ImageCount,
       }
       compressAndEncode(JSON.stringify(obj))
       let encodeObj = compressAndEncode(JSON.stringify(obj))

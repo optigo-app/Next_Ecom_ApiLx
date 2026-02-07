@@ -56,7 +56,15 @@ const BestSellerSection = ({ storeData }) => {
         }
     };
 
-    const handleNavigation = (designNo, autoCode, titleLine, index) => {
+    const handleNavigation = (designNo, autoCode, titleLine, index,data) => {
+             const imageVideoDetail = data?.ImageVideoDetail;
+
+        const parsed = imageVideoDetail
+            ? JSON.parse(imageVideoDetail)
+            : [];
+
+        const uniqueNmList = [...new Set(parsed?.map(item => item.Nm))];
+
         let obj = {
             a: autoCode,
             b: designNo,
@@ -64,6 +72,9 @@ const BestSellerSection = ({ storeData }) => {
             d: loginUserDetail?.cmboDiaQCid,
             c: loginUserDetail?.cmboCSQCid,
             f: {},
+            i: data?.MetalColorid,
+            l: parsed[0]?.Ex || "",
+            count: uniqueNmList.length,
         };
         let encodeObj = compressAndEncode(JSON.stringify(obj));
         sessionStorage.setItem('scrollToProduct4', `product-${index}`);
@@ -155,7 +166,8 @@ const BestSellerSection = ({ storeData }) => {
                                     data?.designno,
                                     data?.autocode,
                                     data?.TitleLine,
-                                    i
+                                    i ,
+                                    data
                                 )
                             }
                             ImageCount={data?.ImageCount}
@@ -230,3 +242,5 @@ const CARD = ({
         </div>
     );
 };
+
+

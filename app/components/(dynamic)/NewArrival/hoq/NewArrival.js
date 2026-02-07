@@ -58,7 +58,6 @@ const TabSection = ({ storeData }) => {
         }
     };
     const handleMoveToDetail = (productData, index) => {
-        console.log("🚀 ~ handleMoveToDetail ~ productData:", productData)
         let loginInfo = JSON.parse(sessionStorage.getItem("loginUserDetail"));
         const imageVideoDetail = productData?.ImageVideoDetail;
 
@@ -75,7 +74,7 @@ const TabSection = ({ storeData }) => {
             c: loginInfo?.cmboCSQCid,
             f: {},
             i: productData?.MetalColorid,
-            l: parsed[0]?.Ex,
+            l: parsed[0]?.Ex || "",
             count: uniqueNmList.length,
         };
 
