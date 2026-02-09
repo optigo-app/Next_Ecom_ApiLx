@@ -249,7 +249,7 @@ const Customization = ({
                         paddingRight: "0.1rem",
                       }}
                       dangerouslySetInnerHTML={{
-                        __html: decodeEntities(loginUserDetail?.CurrencyCode),
+                        __html: decodeEntities(loginUserDetail?.CurrencyCode ?? storeInitData?.CurrencyCode),
                       }}
                     />
                     {(selectedItem?.FinalCost).toLocaleString("en-IN")}
@@ -339,7 +339,7 @@ const Customization = ({
                       <span
                         className="hoq_currencyFont"
                         dangerouslySetInnerHTML={{
-                          __html: decodeEntities(CurrencyData?.Currencysymbol),
+                          __html: decodeEntities(loginUserDetail?.CurrencyCode ?? storeInitData?.CurrencyCode),
                         }}
                       />
                       {(selectedItem?.FinalCost).toLocaleString("en-IN")}
