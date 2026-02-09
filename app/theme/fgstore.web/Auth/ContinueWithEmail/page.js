@@ -1,4 +1,4 @@
-    "use client";
+"use client";
 import React, { useEffect, useState } from 'react';
 import './ContinueWithEmail.modul.scss';
 import { Button, CircularProgress, TextField } from '@mui/material';
@@ -8,7 +8,7 @@ import OTPContainer from '@/app/(core)/utils/Glob_Functions/Otpflow/App';
 import { useNextRouterLikeRR } from '@/app/(core)/hooks/useLocationRd';
 import { useRouter } from 'next/navigation';
 
-export default function ContinueWithEmail({ params, searchParams ,storeInit }) {
+export default function ContinueWithEmail({ params, searchParams, storeInit }) {
     const [email, setEmail] = useState('');
     const [emailError, setEmailError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
@@ -16,9 +16,10 @@ export default function ContinueWithEmail({ params, searchParams ,storeInit }) {
     const paramsObj = searchParams || {};
     const search = paramsObj.LoginRedirect || paramsObj.loginRedirect || paramsObj.search || "";
 
-    const redirectEmailUrl = `/LoginWithEmail?LoginRedirect=${search}`;
-    const redirectSignUpUrl = `/register?LoginRedirect=${search}`;
-    const cancelRedireactUrl = `/LoginOption?LoginRedirect=${search}`;
+    const redirectEmailUrl = `/LoginWithEmail${search ? `?LoginRedirect=${encodeURIComponent(search)}` : ""}`;
+    const redirectSignUpUrl = `/register${search ? `?LoginRedirect=${encodeURIComponent(search)}` : ""}`;
+    const cancelRedireactUrl = `/LoginOption${search ? `?LoginRedirect=${encodeURIComponent(search)}` : ""}`;
+
 
     useEffect(() => {
         setCSSVariable();

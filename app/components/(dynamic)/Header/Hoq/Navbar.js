@@ -183,7 +183,7 @@ const Navbar = ({ storeinit, logos }) => {
   };
 
   const handleLogout = () => {
-    navigate("/");
+
     setislogin(false);
     Cookies.remove("userLoginCookie");
     sessionStorage.setItem("LoginUser", false);
@@ -198,6 +198,7 @@ const Navbar = ({ storeinit, logos }) => {
     sessionStorage.removeItem("registerMobile");
     sessionStorage.removeItem("allproductlist");
     sessionStorage.clear();
+    window.location.href = "/";
   };
 
   useEffect(() => {

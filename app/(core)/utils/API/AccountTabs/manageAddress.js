@@ -36,7 +36,7 @@ export const handleAddAddress = async (formData, FrontEnd_RegNo, customerid, sto
         const body = {
             "con": `{\"id\":\"\",\"mode\":\"addAddress\",\"appuserid\":\"${data?.userid}\"}`,
             "f": "Delivery (addAddress)",
-            dp: encodedCombinedValue
+            p: encodedCombinedValue
         };
 
         const response = await CommonAPI(body);
@@ -83,7 +83,7 @@ export const handleEditAddress = async (editId, formData, FrontEnd_RegNo, custom
         const body = {
             "con": `{\"id\":\"\",\"mode\":\"EDITADDRESS\",\"appuserid\":\"${data?.userid}\"}`,
             "f": "Delivery (EditAddress)",
-            dp: encodedCombinedValue
+            p: encodedCombinedValue
         };
         const response = await CommonAPI(body);
         return response;
@@ -106,7 +106,7 @@ export const handleDeleteAddress = async (deleteId, data, FrontEnd_RegNo, custom
         const body = {
             "con": `{\"id\":\"\",\"mode\":\"DELADDRESS\",\"appuserid\":\"${data?.userid}\"}`,
             "f": "Delivery (removeFromCartList)",
-            dp: encodedCombinedValue
+            p: encodedCombinedValue
         };
 
         const response = await CommonAPI(body);
@@ -127,7 +127,7 @@ export const handleDefaultSelectionAddress = async (loginCred, addressId, FrontE
         const body = {
             "con": `{\"id\":\"\",\"mode\":\"SETDEFAULTADDRESS\",\"appuserid\":\"${loginCred?.email}\"}`,
             "f": "Delivery (fetchData)",
-            dp: (p_),
+            p: (p_),
         };
 
         const response = await CommonAPI(body);

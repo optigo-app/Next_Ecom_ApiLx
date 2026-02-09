@@ -6,26 +6,13 @@ const domainMap = {
   localhost: NEXT_APP_WEB,
 };
 
-const authPages = [
-  "ContinueWithEmail",
-  "ContinueWithMobile",
-  "ForgotPass",
-  "forgotpass",
-  "LoginOption",
-  "LoginWithEmail",
-  "LoginWithEmailCode",
-  "LoginWithMobileCode",
-  "register",
-];
+const authPages = ["loginoption", "continuewithemail", "loginwithemail", "register", "continuewithmobile", "loginwithemailcode", "loginwithmobilecode", "forgotpass"];
 
-const RestrictPages = ["delivery", "confirmation", "payment"];
-const B2BPages = ["payment", "myWishList", "Lookbook", "delivery", "confirmation", "cartPage", "p/*", "d/*", "account"];
-const WhiteList = ["privacypolicy", "privacypolicy"];
+const B2B_LoginRedirects = ["cartpage", "mywishlist", "custom-orders", "lookbook", "p/", "d/"];
 
+const B2B_HomeRedirects = ["account", "delivery", "payment", "confirmation"];
 
-const storeCache = {};
-const CACHE_TTL = 300 * 1000;
-
+const WhiteList = ["contactus", "aboutus", "privacypolicy", "servicepolicy", "expertadvice", "bespoke-jewelry", "appointment", "terms-and-conditions", "searchbystock", "funfact", "termspolicy", "natural-diamond"];
 
 export default async function middleware(req) {
   try {
@@ -38,84 +25,67 @@ export default async function middleware(req) {
     const Next_URL = new URL(req.url);
     const pathname = nextUrl.pathname.replace(/^\/+/, "").toLowerCase();
 
+    // 1. Fetch Store Data (with caching)
     const storeName = domainMap[host] || NEXT_APP_WEB;
     let storeData = {};
-    const cacheEntry = storeCache[storeName];
-    const now = Date.now();
-    if (cacheEntry && now - cacheEntry.ts < CACHE_TTL) {
-      storeData = cacheEntry.data;
-    } else {
-      try {
-        storeData = await fetchStoreInitData(storeName);
-      } catch {
-        storeData = { rd: [{}], rd1: [], rd2: [{}] };
-      }
-      storeCache[storeName] = { data: storeData, ts: now };
+
+    try {
+      storeData = await fetchStoreInitData(storeName);
+    } catch {
+      storeData = { rd: [{}], rd1: [], rd2: [{}] };
     }
-    const IsB2BWebsite = storeData?.rd[0]?.IsB2BWebsite;
+
+    const IsB2BWebsite = storeData?.rd?.[0]?.IsB2BWebsite;
 
     const isAuthenticated = !!loginUser && !!userLoginCookie;
 
-    const isAuthPage = authPages.some((page) => pathname === page.toLowerCase());
-
-
-    const isPublicPage = WhiteList.some((page) => pathname === page.toLowerCase());
-
-    
+    // 2. Prepare Response with Cookies (Always set these as before)
     const response = NextResponse.next();
     response.cookies.set("x-store-data", JSON.stringify(storeData?.rd?.[0] || {}), { httpOnly: false, path: "/" });
     response.cookies.set("x-myAccountFlags-data", JSON.stringify(storeData?.rd1 || []), { httpOnly: false, path: "/" });
     response.cookies.set("x-CompanyInfoData-data", JSON.stringify(storeData?.rd2?.[0] || {}), { httpOnly: false, path: "/" });
-    response.headers.set("Cache-Control", "public, max-age=604800, immutable");
+    response.headers.set("Cache-Control", "public, max-age=0, immutable");
 
-    if (isPublicPage) {
+    // 3. Routing Logic
+    if (pathname === "" || WhiteList.some((page) => pathname === page.toLowerCase())) {
       return response;
     }
 
-    const isRestrictPage = RestrictPages.some((page) => pathname.startsWith(page.toLowerCase()));
-
-
-    if (pathname.startsWith("LoginOption") || isAuthPage) {
-      return response;
-    }
-
-
-    const isB2BPage = B2BPages.some((page) => {
-      if (page.includes("/*")) {
-        const prefix = page.replace("/*", "").toLowerCase();
-        return pathname.startsWith(prefix);
+    // B. Check Auth Pages
+    const isAuthPage = authPages.some((page) => pathname === page.toLowerCase());
+    if (isAuthPage) {
+      if (isAuthenticated) {
+        return NextResponse.redirect(new URL("/", req.url));
       }
-      return pathname === page.toLowerCase();
-    });
+      return response;
+    }
 
-    // 🔹 Case 1: B2B Website → only restrict B2B-specific pages
-    if (IsB2BWebsite === 1) {
-      if (!isAuthenticated && isB2BPage) {
-        return NextResponse.redirect(
-          new URL(
-            `/LoginOption?LoginRedirect=${encodeURIComponent(Next_URL.pathname + Next_URL.search)}`,
-            req.url
-          )
-        );
+    // C. B2B vs B2C Logic
+    if (IsB2BWebsite !== 0) {
+      // B2B Flow
+      const shouldLoginRedirect = B2B_LoginRedirects.some((page) => {
+        if (page.endsWith("/")) return pathname.startsWith(page);
+        return pathname === page;
+      });
+
+      const shouldHomeRedirect = B2B_HomeRedirects.some((page) => pathname === page);
+
+      if (!isAuthenticated) {
+        if (shouldLoginRedirect) {
+          return NextResponse.redirect(new URL(`/LoginOption?LoginRedirect=${encodeURIComponent(Next_URL.pathname + Next_URL.search)}`, req.url));
+        }
+        if (shouldHomeRedirect) {
+          return NextResponse.redirect(new URL("/", req.url));
+        }
       }
     } else {
-      // 🔹 Case 2: Non-B2B Website → only restrict "RestrictPages"
-      if (!isAuthenticated && isRestrictPage) {
-        return NextResponse.redirect(
-          new URL(
-            `/LoginOption?LoginRedirect=${encodeURIComponent(Next_URL.pathname + Next_URL.search)}`,
-            req.url
-          )
-        );
+      // B2C Flow
+      const isRestrictedB2C = B2B_HomeRedirects.some((page) => pathname === page);
+      if (!isAuthenticated && isRestrictedB2C) {
+        return NextResponse.redirect(new URL(`/LoginOption?LoginRedirect=${encodeURIComponent(Next_URL.pathname + Next_URL.search)}`, req.url));
       }
     }
 
-    if (isAuthPage && isAuthenticated && pathname !== "") {
-      return NextResponse.redirect(new URL("/", req.url));
-    }
-
-
-    
     return response;
   } catch (err) {
     console.error("Middleware fatal error:", err);

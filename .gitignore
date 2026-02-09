@@ -49,3 +49,7 @@ next-env.d.ts
 .gitignore
 
 .next_cache
+
+.next
+next
+next-auth

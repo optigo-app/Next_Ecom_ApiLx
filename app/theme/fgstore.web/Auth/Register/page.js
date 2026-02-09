@@ -36,8 +36,9 @@ export default function Register({ searchParams }) {
   const [open, setOpen] = useState(false); // Track dropdown open/close
 
   const search = searchParams?.LoginRedirect || searchParams?.loginRedirect || searchParams?.search || "";
-  const cancelRedireactUrl = `/LoginOption?LoginRedirect=${search}`;
-  const singupRedirectUrl = `/LoginOption?LoginRedirect=${search}`;
+  const cancelRedireactUrl = `/LoginOption${search ? `?LoginRedirect=${encodeURIComponent(search)}` : ""}`;
+  const singupRedirectUrl = `/LoginOption${search ? `?LoginRedirect=${encodeURIComponent(search)}` : ""}`;
+
 
 
   const handleKeyDown = (event, nextRef) => {
