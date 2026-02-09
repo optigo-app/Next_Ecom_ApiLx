@@ -15,12 +15,12 @@ import { useNextRouterLikeRR } from "@/app/(core)/hooks/useLocationRd";
 import { useRouter } from "next/navigation";
 import './Header.modul.scss'
 
-const Header = ({ storeinit, logos}) => {
-    const { islogin, setislogin, cartCountNum, setCartCountNum, wishCountNum, setWishCountNum, setCartOpenStateB2C } = useStore();
+const Header = ({ storeinit, logos }) => {
+  const { islogin, setislogin, cartCountNum, setCartCountNum, wishCountNum, setWishCountNum, setCartOpenStateB2C } = useStore();
 
   const [isHeaderFixed, setIsHeaderFixed] = useState(false);
   const [isHeaderFixedDropShow, setIsHeaderFixedDropShow] = useState(false);
-const [isMounted, setIsMounted] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
   const compnyLogo = storeinit?.companylogo;
   const compnyLogoM = storeinit?.companyMlogo;
 
@@ -42,25 +42,25 @@ const [isMounted, setIsMounted] = useState(false);
   const navigation = useNextRouterLikeRR().push;
 
   useEffect(() => {
-       GetCountAPI(cookie)
-         .then((res) => {
-           if (res) {
-             console.log("🚀 ~ Header ~ res:", res);
-             setCartCountNum(res.cartcount ?? 0);
-             setWishCountNum(res.wishcount ?? 0);
-           }
-         })
-         .catch((err) => console.error("getCountApiErr", err));
-   }, [islogin, isMounted ,storeinit]); //
- 
+    GetCountAPI(cookie)
+      .then((res) => {
+        if (res) {
+          console.log("🚀 ~ Header ~ res:", res);
+          setCartCountNum(res.cartcount ?? 0);
+          setWishCountNum(res.wishcount ?? 0);
+        }
+      })
+      .catch((err) => console.error("getCountApiErr", err));
+  }, [islogin, isMounted, storeinit]); //
+
   // for rember me
   // }, [location.key])
 
   useEffect(() => {
-  const value = JSON.parse(sessionStorage.getItem('LoginUser'));
-  setislogin(value);
-  setIsMounted(true);
-}, []);
+    const value = JSON.parse(sessionStorage.getItem('LoginUser'));
+    setislogin(value);
+    setIsMounted(true);
+  }, []);
 
 
   useEffect(() => {
@@ -139,7 +139,6 @@ const [isMounted, setIsMounted] = useState(false);
 
 
   const handleLogout = () => {
-    navigation("/");
     setislogin(false);
     Cookies.remove("userLoginCookie");
     window.sessionStorage.clear();
@@ -163,6 +162,7 @@ const [isMounted, setIsMounted] = useState(false);
     sessionStorage.removeItem("selectedAddressId");
     window.localStorage.removeItem("AuthToken");
     Cookies.remove('visiterId');
+    window.location.href = "/";
   };
 
 
@@ -381,7 +381,7 @@ const [isMounted, setIsMounted] = useState(false);
                 />
               </div>
               <div className='smr_mobileHeader_top_div2'>
-               <a href="/" aria-label="Go to homepage" title="Go to homepage">
+                <a href="/" aria-label="Go to homepage" title="Go to homepage">
                   <img src={compnyLogo ? compnyLogo : webLogo} loading='lazy' className='smr_logo_header' />
                 </a>
               </div>
@@ -577,17 +577,17 @@ const [isMounted, setIsMounted] = useState(false);
       <div className='smiling_Top_header'>
         <div className='smiling_Top_header_sub'>
           <div className='smiling_Top_header_div2_web'>
-           <a href="/" aria-label="Go to homepage" title="Go to homepage">
+            <a href="/" aria-label="Go to homepage" title="Go to homepage">
               <img alt='PROCAT_LOGO' src={compnyLogo ? compnyLogo : webLogo} loading='lazy' className='smr_logo_header' />
             </a>
           </div>
           <div className='smiling_Top_header_div2_mobile'>
-           <a href="/" aria-label="Go to homepage" title="Go to homepage">
+            <a href="/" aria-label="Go to homepage" title="Go to homepage">
               <img alt='PROCAT_LOGO' src={compnyLogoM} loading='lazy' className='smr_logo_header' />
             </a>
           </div>
           <div className='smiling_Top_header_div3'>
-       {isMounted &&     <ul className="nav_ul_shop">
+            {isMounted && <ul className="nav_ul_shop">
               {/* <li
                 className="nav_li_smining nav_li_smining_Mobile"
                 style={{ cursor: "pointer" }}
@@ -746,12 +746,12 @@ const [isMounted, setIsMounted] = useState(false);
         >
           <div className='smiling_Top_header_sub' style={{ width: '100%' }}>
             <div className='smiling_Top_header_div2_web'>
-             <a href="/" aria-label="Go to homepage" title="Go to homepage">
+              <a href="/" aria-label="Go to homepage" title="Go to homepage">
                 <img alt='PROCAT_LOGO' src={compnyLogo ? compnyLogo : webLogo} loading='lazy' className='smr_logo_header_Fixed' />
               </a>
             </div>
             <div className='smiling_Top_header_div2_mobile'>
-             <a href="/" aria-label="Go to homepage" title="Go to homepage">
+              <a href="/" aria-label="Go to homepage" title="Go to homepage">
                 <img alt='PROCAT_LOGO' src={compnyLogoM} loading='lazy' className='smr_logo_header_Fixed' />
               </a>
             </div>

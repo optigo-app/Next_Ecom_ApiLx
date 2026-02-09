@@ -14,14 +14,14 @@ import { useNextRouterLikeRR } from "@/app/(core)/hooks/useLocationRd";
 import { useRouter } from "next/navigation";
 
 
-const Header2 = ({ storeinit, logos}) => {
-  console.log("🚀 ~ Header2 ~ logos:", logos)
-  const { islogin, setislogin, cartCountNum, setCartCountNum, wishCountNum, setWishCountNum, setCartOpenStateB2C } = useStore();
+const Header2 = ({ storeinit, logos }) => {
+    console.log("🚀 ~ Header2 ~ logos:", logos)
+    const { islogin, setislogin, cartCountNum, setCartCountNum, wishCountNum, setWishCountNum, setCartOpenStateB2C } = useStore();
     const [isHeaderFixed, setIsHeaderFixed] = useState(false);
     const [isHeaderFixedDropShow, setIsHeaderFixedDropShow] = useState(false);
 
-  const compnyLogo = storeinit?.companylogo;
-  const compnyLogoM = storeinit?.companyMlogo;
+    const compnyLogo = storeinit?.companylogo;
+    const compnyLogoM = storeinit?.companyMlogo;
 
     const [menuData, setMenuData] = useState([]);
     const [menuItems, setMenuItems] = useState([]);
@@ -131,8 +131,7 @@ const Header2 = ({ storeinit, logos}) => {
         sessionStorage.removeItem('remarks');
         sessionStorage.removeItem('registerMobile');
         sessionStorage.removeItem('allproductlist');
-        navigation('/')
-        window.location.reload();
+        window.location.href = "/";
     }
 
 
@@ -485,7 +484,7 @@ const Header2 = ({ storeinit, logos}) => {
 
                     <div className='smiling_Top_header_div3'>
                         <ul className="nav_ul_shop">
-                          
+
 
                             {islogin ? (
                                 <>
@@ -576,7 +575,7 @@ const Header2 = ({ storeinit, logos}) => {
                     className={`Smining-Top-Header-fixed-main ${isHeaderFixed ? "fixed" : ""}  ${serachsShowOverlay ? "searchoverly" : ""}`}
                 >
                     <div className='smiling_Top_header_sub' style={{ width: '100%' }}>
-                    <div className='smiling_Top_header_div2'>
+                        <div className='smiling_Top_header_div2'>
                             <a href="/">
                                 <img src={compnyLogo} loading='lazy' className='smr_logo_header_Fixed' />
                             </a>
@@ -629,7 +628,7 @@ const Header2 = ({ storeinit, logos}) => {
                                     FUN FACT
                                 </li>
 
-  <li
+                                <li
                                     className="nav_li_smining_Fixed nav_li_smining_Mobile"
                                     style={{ cursor: "pointer" }}
                                     onClick={() => navigation("/aboutUs")}
@@ -647,10 +646,10 @@ const Header2 = ({ storeinit, logos}) => {
                                 {/* } */}
                             </ul>
                         </div>
-                        
+
                         <div className='smiling_Top_header_div3'>
                             <ul className="nav_ul_shop">
-                              
+
                                 {islogin ? (
                                     <>
                                         <li

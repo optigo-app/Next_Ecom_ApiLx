@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { Button, CircularProgress, TextField } from '@mui/material';
 import './LoginWithMobileCode.modul.scss';
 import { ContimueWithMobileAPI } from '@/app/(core)/utils/API/Auth/ContimueWithMobileAPI';
-import {  toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 import { LoginWithEmailAPI } from '@/app/(core)/utils/API/Auth/LoginWithEmailAPI';
 import Cookies from 'js-cookie';
 import { useNextRouterLikeRR } from '@/app/(core)/hooks/useLocationRd';
@@ -26,7 +26,7 @@ export default function LoginWithMobileCode({ params, searchParams }) {
 
 
     useEffect(() => {
-        const storedMobile = sessionStorage?.getItem('registerMobile')?? '';
+        const storedMobile = sessionStorage?.getItem('registerMobile') ?? '';
         if (storedMobile) setMobileNo(storedMobile);
     }, []);
 
@@ -64,7 +64,7 @@ export default function LoginWithMobileCode({ params, searchParams }) {
             errors.otp = 'Code is required';
             return;
         }
-        LoginWithEmailAPI('', mobileNo, enterOTP, 'otp_mobile_login', '',visiterId).then((response) => {
+        LoginWithEmailAPI('', mobileNo, enterOTP, 'otp_mobile_login', '', visiterId).then((response) => {
             if (response.Data.rd[0].stat === 1) {
                 Cookies.set('LoginUser', true)
                 sessionStorage.setItem('LoginUser', true)
@@ -72,9 +72,9 @@ export default function LoginWithMobileCode({ params, searchParams }) {
                 sessionStorage.setItem('loginUserDetail', JSON.stringify(response.Data.rd[0]));
                 sessionStorage.setItem('registerMobile', mobileNo);
 
-                if(redirectMobileUrl){
+                if (redirectMobileUrl) {
                     window.location.href = redirectMobileUrl;
-                }else{
+                } else {
                     window.location.href = '/';
                 }
 
@@ -113,7 +113,7 @@ export default function LoginWithMobileCode({ params, searchParams }) {
                         marginTop: '0px',
                         fontSize: '40px',
                         color: '#7d7f85',
-                       
+
                     }}
                         className='AuthScreenMainTitle'
                     >Login With Code</p>
@@ -122,7 +122,7 @@ export default function LoginWithMobileCode({ params, searchParams }) {
                         marginTop: '-80px',
                         fontSize: '15px',
                         color: '#7d7f85',
-                       
+
                     }}
                         className='AuthScreenSubTitle'
                     >Last step! To secure your account, enter the code we just sent to {mobileNo}.</p>
@@ -139,7 +139,7 @@ export default function LoginWithMobileCode({ params, searchParams }) {
                     </div>
                 </div>
             </div>
-          
+
         </div>
     );
 }

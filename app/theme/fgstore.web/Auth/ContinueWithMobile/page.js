@@ -8,8 +8,8 @@ import { WebSignUpOTPVerify } from "@/app/(core)/utils/API/Auth/WebSignUpOTPVeri
 import OTPContainer from "@/app/(core)/utils/Glob_Functions/Otpflow/App";
 import { useNextRouterLikeRR } from "@/app/(core)/hooks/useLocationRd";
 
-export default function ContinueWithMobile({  params, searchParams, storeInit }) {
-      const location = useNextRouterLikeRR();
+export default function ContinueWithMobile({ params, searchParams, storeInit }) {
+  const location = useNextRouterLikeRR();
   const [mobileNo, setMobileNo] = useState("");
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
@@ -18,12 +18,12 @@ export default function ContinueWithMobile({  params, searchParams, storeInit })
   const navigation = location?.push;
   const [isOpen, setIsOpen] = useState(false);
 
-   const search = searchParams?.LoginRedirect || searchParams?.loginRedirect || searchParams?.search || "";
+  const search = searchParams?.LoginRedirect || searchParams?.loginRedirect || searchParams?.search || "";
 
-    const updatedSearch = search?.replace('?LoginRedirect=', '');
-    const redirectMobileUrl = `/LoginWithMobileCode?${updatedSearch}`;
-    const redirectSignUpUrl = `/register?${updatedSearch}`;
-    const cancelRedireactUrl = `/LoginOption?${search}`;
+  const redirectMobileUrl = `/LoginWithMobileCode${search ? `?LoginRedirect=${encodeURIComponent(search)}` : ""}`;
+  const redirectSignUpUrl = `/register${search ? `?LoginRedirect=${encodeURIComponent(search)}` : ""}`;
+  const cancelRedireactUrl = `/LoginOption${search ? `?LoginRedirect=${encodeURIComponent(search)}` : ""}`;
+
 
 
   const handleInputChange = (e, setter, fieldName) => {
@@ -75,9 +75,9 @@ export default function ContinueWithMobile({  params, searchParams, storeInit })
     setIsLoading(true);
     ContimueWithMobileAPI(mobileNo)
       .then((response) => {
-            if (response?.Data?.rd[0]?.stat === 1 && response?.Data?.rd[0]?.islead === 1) {
+        if (response?.Data?.rd[0]?.stat === 1 && response?.Data?.rd[0]?.islead === 1) {
           toast.error("You are not a customer, contact to admin");
-            } else if (response?.Data?.rd[0]?.stat === 1 && response?.Data?.rd[0]?.islead === 0) {
+        } else if (response?.Data?.rd[0]?.stat === 1 && response?.Data?.rd[0]?.islead === 0) {
           toast.success("OTP send Sucssessfully");
           navigation(redirectMobileUrl);
           sessionStorage.setItem("registerMobile", mobileNo);

@@ -121,11 +121,9 @@ export default function Account({ Storeinit }) {
                     <Tab label="ORDER HISTORY" {...a11yProps(1)} />
                     <Tab label="MANAGE ADDRESSES" {...a11yProps(2)} />
                     {accountValidation() &&
-                     <Tab label="ACCOUNT" {...a11yProps(3)} />
+                      <Tab label="ACCOUNT" {...a11yProps(3)} />
                     }
                     <Tab label="CHANGE PASSWORD" {...a11yProps(accountValidation() ? 4 : 3)} />
-                    <Tab label="TICKET SYSTEM" {...a11yProps(5)} />
-                    <Tab label="CALL LOG" {...a11yProps(6)} />
                     {/* <Tab label="PLM" {...a11yProps(7)} /> */}
                     {loginUserDetail?.IsPLWOn && <Tab label="PLM" {...a11yProps(1)} />}
                     <Tab label="Log Out" onClick={handleLogout} />
@@ -143,8 +141,6 @@ export default function Account({ Storeinit }) {
                     <Tab label="MANAGE ADDRESSES" {...a11yProps(2)} />
                     {accountValidation() && <Tab label="ACCOUNT" {...a11yProps(3)} />}
                     <Tab label="CHANGE PASSWORD" {...a11yProps(accountValidation() ? 4 : 3)} />
-                    <Tab label="TICKET SYSTEM" {...a11yProps(5)} />
-                    <Tab label="CALL LOG" {...a11yProps(6)} />
                     {/* <Tab label="PLM" {...a11yProps(7)} /> */}
                     {loginUserDetail?.IsPLWOn && <Tab label="PLM" {...a11yProps(1)} />}
                     0 <Tab label="Log Out" onClick={handleLogout} />
@@ -239,20 +235,7 @@ export default function Account({ Storeinit }) {
                     <ChangePassword />
                   </div>
                 </CustomTabPanel>
-                {
-                  <CustomTabPanel value={value} index={5}>
-                    <div>
-                      <TicketSystem />
-                    </div>
-                  </CustomTabPanel>
-                }
-                {
-                  <CustomTabPanel value={value} index={6}>
-                    <div>
-                      <Calllog />
-                    </div>
-                  </CustomTabPanel>
-                }
+
                 {
                   <CustomTabPanel value={value} index={7}>
                     <div>

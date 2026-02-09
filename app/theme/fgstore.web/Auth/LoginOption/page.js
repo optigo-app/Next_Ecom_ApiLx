@@ -5,11 +5,11 @@ import { IoMdMail } from "react-icons/io";
 import Link from "next/link";
 
 const LoginOption = ({ params, searchParams }) => {
-  const { LoginRedirect = "", loginRedirect: loginRedirLow = "", search = "" } = searchParams || {};
-  const loginRedirect = LoginRedirect || loginRedirLow || search || "";
+  const loginRedirect = searchParams?.LoginRedirect || searchParams?.loginRedirect || searchParams?.search || "";
 
   const redirectEmailUrl = `/ContinueWithEmail${loginRedirect ? `?LoginRedirect=${encodeURIComponent(loginRedirect)}` : ""}`;
   const redirectMobileUrl = `/ContinueWithMobile${loginRedirect ? `?LoginRedirect=${encodeURIComponent(loginRedirect)}` : ""}`;
+
 
   return (
     <div className="smr_Loginoption">

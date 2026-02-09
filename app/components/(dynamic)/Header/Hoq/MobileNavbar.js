@@ -75,8 +75,7 @@ export default function TemporaryDrawer({
     sessionStorage.removeItem("registerMobile");
     sessionStorage.removeItem("allproductlist");
     sessionStorage.clear();
-    navigate("/");
-    window.location.reload();
+    window.location.href = "/";
   };
 
   const toggleDrawer = () => () => {

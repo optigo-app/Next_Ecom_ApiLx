@@ -334,7 +334,7 @@ const CartItem = ({
                         className="hoq_currencyFont"
                         style={{ paddingRight: "0.2rem" }}
                         dangerouslySetInnerHTML={{
-                          __html: decodeEntities(loginUserDetail?.CurrencyCode),
+                          __html: decodeEntities(loginUserDetail?.CurrencyCode ?? storeInitData?.CurrencyCode),
                         }}
                       />
                       {(item?.UnitCostWithMarkUp).toLocaleString('en-IN')}

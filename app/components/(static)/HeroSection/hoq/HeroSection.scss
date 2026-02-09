@@ -42,16 +42,23 @@
       color: rgba(216, 213, 213, 0.438);
     }
   }
-  .slick-dots {
+  .swiper-pagination {
     bottom: 30px;
     margin: 0;
-    li.slick-active button:before {
-      font-size: 13px;
-    }
-    li button:before {
-      font-size: 8px;
-      color: #fff;
-    }
+  }
+  .swiper-pagination-bullet {
+    width: 8px;
+    height: 8px;
+    background: #fff;
+    opacity: 0.7;
+    border-radius: 50%;
+  }
+  .swiper-pagination-bullet-active {
+    width: 13px;
+    height: 13px;
+    background: #fff;
+    opacity: 1;
+    border-radius: 50%;
   }
   .slide {
     color: white;
@@ -75,7 +82,7 @@
         object-position: center;
       }
     }
-    .slick-dots {
+    .swiper-pagination {
       bottom: 15px;
     }
   }
