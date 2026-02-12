@@ -58,8 +58,6 @@ function Cart({ storeinit, visiterId }) {
     setCartOpenState(false)
   }
 
-  console.log("lpolo", storeinit)
-
   return (
     <div className="Hoq_CartPageMainB2cDiv">
       <Basket
