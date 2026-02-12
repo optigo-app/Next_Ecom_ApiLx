@@ -18,7 +18,27 @@ const poppins = Poppins({
   display: "swap",
 });
 
-export const metadata = generatePageMetadata(pages["/"]);
+const DEFAULT_JEWELRY_DESCRIPTION = "Discover timeless jewelry crafted with precision and elegance. Explore gold, diamond, and silver collections designed for everyday wear and special occasions, with trusted quality and exceptional craftsmanship.";
+const DEFAULT_JEWELRY_KEYWORDS = "jewelry online, gold jewelry, diamond jewelry, silver jewelry, fine jewelry, bridal jewelry, earrings, rings, necklaces, bracelets, luxury jewelry, handcrafted jewelry";
+
+export async function generateMetadata() {
+  const storeInit = await getStoreInit();
+
+  return generatePageMetadata({
+    metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"),
+    title: storeInit?.ufcc,
+    description: DEFAULT_JEWELRY_DESCRIPTION,
+    keywords: DEFAULT_JEWELRY_KEYWORDS,
+    ogImage: storeInit?.ogImage,
+    ufcc: storeInit?.ufcc,
+    websiteName: storeInit?.BrowserTitle,
+    icons: {
+      icon: storeInit?.favicon,
+      shortcut: storeInit?.favicon,
+      apple: storeInit?.favicon,
+    },
+  });
+}
 
 export default async function RootLayout({ children }) {
   const theme = await getActiveTheme();
@@ -26,7 +46,6 @@ export default async function RootLayout({ children }) {
   const Layout = (await import(`@/app/theme/${themeData.page}/layout.jsx`)).default;
   const companyInfo = await getCompanyInfoData();
   const storeInit = await getStoreInit();
-  console.log("🚀 ~ RootLayout ~ storeInit:", storeInit)
   const myAccountFlags = await getMyAccountFlags();
   const VistitorId = await GetVistitorId();
   const UserLoginCookie = await GetUserLoginCookie();
