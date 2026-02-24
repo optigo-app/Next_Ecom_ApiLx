@@ -9,12 +9,9 @@ export const WebLoginWithMobileToken = async (ismobiletoke) => {
         const combinedValue = JSON.stringify({
             userid: '', mobileno: '', pass: '', mobiletoken: `${ismobiletoke}`, FrontEnd_RegNo: '', domainname: domainname
         });
-        const encodedCombinedValue = btoa(combinedValue);
         const body = {
             "con": "{\"id\":\"\",\"mode\":\"WEBLOGINMOBILETOKEN\"}",
             "f": "WEBLOGINMOBILETOKEN (handleSubmit)",
-            // p: encodedCombinedValue,
-            // dp: combinedValue
             "p": combinedValue
         };
         response = await CommonAPI(body);
