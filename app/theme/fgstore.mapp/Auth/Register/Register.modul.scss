@@ -1,0 +1,185 @@
+@use "../../../scss/variable.scss" as *;
+
+input:-webkit-autofill {
+    background-color: #f1f1f1 !important;
+    color: #000 !important;
+  }
+
+.smr_registerMain {
+    background-color: $bgColor;
+    display: grid;
+    align-content: center;
+    margin-bottom: 4rem;
+    font-family: $Pfonts;
+
+    
+    .css-1wc848c-MuiFormHelperText-root {
+        margin-right: 0px !important;
+        margin-left: 0px !important;
+    }
+
+
+    .smling-register-main {
+        margin-inline: 6%;
+        background-color: white;
+    }
+
+    .labgrowRegister {
+        width: 420px;
+        margin: 10px;
+    }
+
+    .mobile-smr{
+        width: 420px !important;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        align-items: flex-start !important;
+        position: relative;
+        gap: 10px;
+           @media screen and (max-width:700px){
+            width: 80% !important;
+        }
+        .county_Dropdown_list{
+            width: 100%;
+            position: absolute;
+            border-radius: 4px;
+            background-color: white;
+            height: auto;
+            top: 70px;
+            z-index: 999;
+
+        }
+        .MOBILE_CODE{
+            margin-top: 10px;
+            flex: 0.2;
+         
+            input{
+                width: 100%;
+                border-radius: 4px;
+                padding: 15px 8px;
+                border: 1px solid rgb(196,196,196);
+                text-align: center;
+                &:hover{
+                border: 1px solid black;
+                }
+            }
+        }
+        .labgrowRegister{
+            margin: unset !important;
+            flex: 1;
+            margin-block: 10px !important;
+        }
+        // @media screen and (max-width:510px){
+        //     width: 80% !important;
+        // }
+        @media screen and (max-width: 510px) {
+            width: 93% !important;
+        }
+    }
+    .AuthScreenRegisterMainTitle{
+            font-family: $Pratafonts;
+    }
+    .createBtnRegister {
+        height: 60px;
+        width: 420px;
+        background-color: $authbtnbg;
+      color: $authbtncolor;
+        border: 0;
+        margin-top: 10px;
+        font-size: 13px;
+        font-weight: 500;
+        letter-spacing: 1;
+        cursor: pointer;
+        transition: all 0.5s ease;
+    }
+
+    .createBtnRegister:hover {
+        background-color: white;
+        color: #7d7f85;
+        border: 1px solid #7d7f85;
+    }
+
+    .SmilingSignInHere {
+        color: #7d7f85;
+        font-size: 12px;
+        margin-top: 10px;
+        font-weight: 500;
+
+        position: relative;
+        text-decoration: none;
+        transition: color 0.3s;
+        cursor: pointer;
+    }
+
+    .SmilingSignInHere::before {
+        content: '';
+        position: absolute;
+        width: 0;
+        height: 1px;
+        bottom: 0;
+        left: 0;
+        background-color: #000;
+        transition: width 0.3s ease;
+    }
+
+    .SmilingSignInHere:hover::before {
+        width: 100%;
+    }
+
+    #outlined-password-input::-ms-reveal {
+        display: none !important;
+    }
+
+    #outlined-confirm-password-input::-ms-reveal {
+        display: none !important;
+    }
+
+
+    @media screen and (max-width: 700px) {
+
+        .AuthScreenRegisterMainTitle {
+            padding-block: 10px !important;
+            padding-bottom: 0px !important;
+            font-size: 25px !important;
+        }
+
+        .labgrowRegister {
+            width: 80% !important;
+            margin: 10px;
+        }
+
+        .createBtnRegister {
+            width: 80% !important;
+            height: 50px !important;
+        }
+
+        .smling-register-main {
+            margin-inline: 2% !important;
+        }
+
+    }
+    @media screen and (max-width: 510px) {
+
+        .AuthScreenRegisterMainTitle {
+            padding-block: 10px !important;
+            padding-bottom: 0px !important;
+            font-size: 25px !important;
+        }
+
+        .labgrowRegister {
+            width: 93% !important;
+            margin: 10px;
+        }
+
+        .createBtnRegister {
+            width: 93% !important;
+            height: 50px !important;
+        }
+
+        .smling-register-main {
+            margin-inline: 2% !important;
+        }
+
+    }
+}

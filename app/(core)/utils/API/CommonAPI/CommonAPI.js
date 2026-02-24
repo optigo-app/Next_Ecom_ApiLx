@@ -8,8 +8,9 @@ const setApiUrl = async () => {
         const localHosts = ["localhost", "nxtsonasons.web", "nxthoq.web", "nxtmobileapp.web"];
         const { hostname } = await getDomainInfo();
         const cleanHost = hostname.split(":")[0];
+    const isNgrok = cleanHost.endsWith(".ngrok-free.app") || cleanHost.endsWith(".ngrok.io");
 
-        if (localHosts.includes(cleanHost)) {
+        if (localHosts.includes(cleanHost) || isNgrok) {
             APIURL = "http://newnextjs.web//api/report";
         } else {
             APIURL = "https://apilx.optigoapps.com/api/report";

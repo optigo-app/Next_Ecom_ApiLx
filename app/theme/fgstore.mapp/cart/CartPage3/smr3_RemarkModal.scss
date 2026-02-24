@@ -1,0 +1,66 @@
+@import '../../../scss/variable.scss';
+
+$cartUpdateBtncolor: #b1b1b1;
+
+
+.smr3_remarkModalBox h2 {
+    color: $titleColor !important;
+}
+
+.smr3_remarkModalBox .smr3_projectRemarkBtn-group {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 10px;
+
+    button {
+        padding: 10px 20px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    .smr3_remarksave-btn {
+        background-color: $cartUpdateBtncolor;
+        color: $btn1hoverFontColor;
+
+        &:hover {
+            background-color: $btn1hoverColor;
+        }
+    }
+
+    .smr3_remarkcancel-btn {
+        background-color: $btn1bgColor;
+        color: $btn1FontColor;
+        border: 1px solid $titleColor;
+
+        &:hover {
+            background-color: #f3f4f6;
+        }
+    }
+}
+
+
+@media(max-width:445px) {
+    .smr3_remarkModalBox {
+        padding: 20px 8px 20px 8px !important;
+        width: 300px;
+
+        h2 {
+            color: $titleColor !important;
+            font-size: $fontSize2 !important;
+        }
+
+        .smr3_projectRemarkBtn-group {
+
+            .smr3_remarksave-btn,
+            .smr3_remarkcancel-btn {
+                font-size: $fontSize0 !important;
+                padding: 5px 10px !important;
+            }
+        }
+        .smr3_RemarkMoalInput textarea{
+            font-size: $fontSize1 !important;
+          }
+    }
+}

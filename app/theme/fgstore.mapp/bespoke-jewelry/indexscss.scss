@@ -1,0 +1,40 @@
+@use '../../fgstore.web/style/variable.scss' as *;
+
+.smr_funfact_FooterTopMain {
+
+    background-color: $bgColor;
+    padding-bottom: 3.5rem;
+
+    .smr_funfact_FooterTopMain_sub {
+        background-color: white;
+        margin-inline: 6%;
+    }
+
+    li {
+        list-style: none;
+    }
+
+    ul {
+        list-style-type: none;
+    }
+
+    .container2 {
+        margin-inline: 15%;
+    }
+
+    @media screen and (max-width: 1200px) {
+        .smr_funfact_FooterTopMain_sub {
+            margin-inline: 2%;
+        }
+
+        .container2 {
+            margin-inline: 5% !important;
+        }
+    }
+
+    @media screen and (max-width: 800px) {
+        .smr_funfact_FooterTopMain_sub {
+            margin-inline: 1%;
+        }
+    }
+}

@@ -6,7 +6,7 @@ const domainMap = {
   localhost: NEXT_APP_WEB,
 };
 
-const authPages = ["loginoption", "continuewithemail", "loginwithemail", "register", "continuewithmobile", "loginwithemailcode", "loginwithmobilecode", "forgotpass"];
+const authPages = ["loginoption", "continuewithemail", "loginwithemail", "register", "continuewithmobile", "loginwithemailcode", "loginwithmobilecode", "forgotPass"];
 
 const B2B_LoginRedirects = ["cartpage", "mywishlist", "custom-orders", "lookbook", "p/", "d/"];
 

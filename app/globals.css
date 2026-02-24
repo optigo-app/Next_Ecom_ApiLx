@@ -135,3 +135,18 @@ input:-moz-placeholder {
 @keyframes spin {
   100% { transform: rotate(360deg); }
 }
+
+
+.FgstoreMapp{
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+
+  -webkit-touch-callout: none;
+
+}
+ *::selection {
+  background: transparent;
+}

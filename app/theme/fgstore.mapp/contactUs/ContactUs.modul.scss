@@ -1,0 +1,167 @@
+@use '../../fgstore.web/style/variable.scss' as *;
+
+
+.smr_contactMain_div {
+    background-color: $bgColor;
+    margin-bottom: 4rem;
+
+    .Fo-contactMain {
+        background-color: white;
+        margin-inline: 6%;
+    }
+
+    .daimondsEveryAbout {
+        background-color: white;
+        margin-inline: 6%;
+    }
+
+    .smr_contactPage_BoxMain {
+        display: flex;
+        margin-inline: 10%;
+    }
+
+    .smr_Fo_contactBox1 {
+        width: 50%;
+        border-right: 1px solid #e1e1e1;
+        display: flex;
+        justify-content: center;
+    }
+
+    .Fo-contactBox1Title {
+        margin: 0px 0px 10px;
+        letter-spacing: 1px;
+        color: #7d7f85;
+        font-weight: 500;
+        font-size: 12px;
+    }
+
+    .Fo-contactBox1InputBox {
+        height: 50px !important;
+        width: 300px;
+        border: 1px solid #e1e1e1;
+        padding: 0px 5px;
+    }
+
+    .smr_Fo_contactBox2_main {
+        width: 50%;
+        margin: 0px;
+    }
+
+    .Fo-contactBox2Title {
+        font-family: 'TTCommons-Regular,Helvetica,sans-serif';
+        font-size: 23px;
+        font-weight: 500;
+        color: #7d7f85;
+        margin: 0;
+    }
+
+    .Fo-contactBox1BtnSub {
+        height: 60px;
+        width: 300px;
+        margin-top: 30px;
+        border: 0;
+        background-color: $btnBg;
+        color:$btncolor;
+        transition: all 0.4s ease;
+    }
+
+    .Fo-contactBox1BtnSub:hover {
+        background-color: white;
+        border: 1px solid #7d7f85;
+        color: #7d7f85;
+    }
+
+    .Fo-contactBox2Desc {
+        color: #7d7f85;
+        font-size: 14px;
+    }
+
+    .error {
+        color: red;
+    }
+
+    .tab-buttons {
+        display: flex;
+        width: 100%;
+        margin-bottom: 20px;
+    }
+
+    .tab-buttons button {
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 10px;
+        margin-right: 10px;
+    }
+
+    .tab-buttons button.active {
+        border-bottom: 2px solid blue;
+    }
+
+    @media screen and (min-width:1441px) {
+        .mobileHeaderSmining {
+            /* display: none; */
+        }
+    }
+
+    @media screen and (max-width:1440px) {
+        .smr_Fo_contactBox1 {
+            padding-left: 0px;
+
+        }
+
+        .smr_Fo_contactBox2_main {
+            width: 40%;
+            margin: 0px;
+            // margin-top: 15%;
+            margin-left: 60px;
+        }
+    }
+
+    @media screen and (max-width:1200px) {
+        .Fo-contactMain {
+            margin-inline: 2% !important;
+        }
+    }
+
+    @media screen and (max-width:800px) {
+        .Fo-contactMain {
+            margin-inline: 1% !important;
+        }
+    }
+
+    @media screen and (max-width:1000px) {
+        padding-top: 10px !important;
+
+        .smr_contactPage_BoxMain {
+            display: flex;
+            margin-inline: 10%;
+            flex-direction: column;
+        }
+
+        .smr_Fo_contactBox1 {
+            width: 100%;
+            padding-left: 0px;
+            margin-top: 50px;
+            border-right: 0;
+        }
+
+        .Fo-contactBox1InputBox {
+            height: 40px;
+            width: 100%;
+            border: 1px solid #e1e1e1;
+        }
+
+        .smr_Fo_contactBox2_main {
+            width: 100%;
+            margin: 10px;
+            margin-top: 30px;
+
+        }
+
+        .mapContact {
+            width: 100% !important;
+        }
+
+    }
+}

@@ -1,0 +1,199 @@
+@use '../../../scss/variable.scss' as *;
+
+.smr_DeliverMainDiv {
+  background-color: $bgColor;
+  margin-bottom: 4rem;
+}
+
+.smr_secondMaindivAdd {
+  margin-inline: 6%;
+  background-color: #fff;
+
+  @media (max-width: 1200px) {
+    margin-inline: 0;
+  }
+}
+
+.smr_addMainDiv {
+  margin-inline: 10%;
+  padding-top: 8%;
+}
+
+.smr_getAddrMainDiv {
+  margin-bottom: 40px;
+  margin-top: 4%;
+}
+
+.smr_TitleDetailMainDiv {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  .smr_ContinueOrderbtn {
+    height: 40px;
+    width: 150px;
+    font-family: $homePageFontFamily !important;
+    font-size: $fontSize3;
+    background-color: $btnBg !important;
+    color: $btncolor !important;
+    border: none;
+    border-radius: 0px !important;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s;
+
+    &:hover {
+      color: $btn1hoverFontColor;
+      background-color: $btn1ActivebgColor;
+    }
+  }
+}
+
+.smr_addressTextFields {
+  margin-bottom: 18px !important;
+  font-family: $homePageFontFamily !important;
+  color: $titleColor !important;
+
+  .css-md26zr-MuiInputBase-root-MuiOutlinedInput-root {
+    border-radius: 0px !important;
+  }
+}
+
+.smr_deliveryTitle {
+  color: $titleColor;
+  font-family: $homePageFontFamily;
+}
+
+.smr_deliverydesc {
+  color: $titleColor;
+  font-family: $homePageFontFamily;
+}
+
+.smr_AddrCard {
+  box-shadow: rgba(0, 0, 0, 0.02) 0px 1px 3px 0px, rgba(27, 31, 35, 0.15) 0px 0px 0px 1px !important;
+  padding: 20px 20px 0px 20px !important;
+  border-radius: 0px !important;
+}
+
+.smr_ActiveAddrCard {
+  padding: 20px 20px 0px 20px !important;
+  box-shadow: rgba(0, 0, 0, 0.02) 0px 1px 3px 0px, rgba(27, 31, 35, 0.15) 0px 0px 0px 1px !important;
+  background: #f5f4f4 !important;
+  border-radius: 0px !important;
+  position: relative;
+}
+
+
+.smr_defualt_addrSelected {
+  padding: 3px 10px;
+  font-family: $homePageFontFamily !important;
+  font-size: $fontSize3;
+  color: #fff;
+  background: blue;
+  border-radius: 0px !important;
+  border: none;
+  cursor: pointer;
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.smr_defualt_addrSelectedHide {
+  display: none !important;
+}
+
+.smr_addrTypoTitle {
+  color: $titleColor;
+  font-family: $homePageFontFamily !important;
+  text-transform: capitalize;
+}
+
+.smr_addrTypo {
+  color: $titleColor;
+  font-family: $homePageFontFamily !important;
+  text-transform: capitalize;
+}
+
+.smr_AddressBtnGroup {
+  .smr_AddNewAddrbtn {
+    margin-right: 20px;
+    height: 40px;
+    font-family: $homePageFontFamily !important;
+    font-size: $fontSize3;
+    color: $btncolor !important;
+    padding: 0 15px;
+    background-color: $btnBg;
+    border: none;
+    border-radius: 0px !important;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s;
+
+    // &:hover {
+    //   color: $btn1hoverFontColor;
+    //   background-color: $btn1ActivebgColor;
+    // }
+  }
+}
+
+.smr_dialogTitle {
+  color: $titleColor;
+  font-weight: 500 !important;
+  text-align: center;
+}
+
+.smr_AddNewAddrModalbtn {
+  margin-right: 20px;
+  height: 40px;
+  width: 150px;
+  font-family: $homePageFontFamily !important;
+  font-size: $fontSize3;
+  color: $btncolor ;
+  background-color: $btnBg;
+  // border: 1px solid $btn1FontColor;
+  border: none;
+  border-radius: 0px !important;
+  cursor: pointer;
+  transition: background-color 0.3s, color 0.3s;
+
+  // &:hover {
+  //   color: $btn1hoverFontColor;
+  //   background-color: $btn1ActivebgColor;
+  // }
+}
+
+.smr_Cancelbtn {
+  margin-right: 20px;
+  height: 40px;
+  width: 150px;
+  font-family: $homePageFontFamily !important;
+  font-size: $fontSize3;
+  color: $btncolor ;
+  background-color: $btnBg;
+  // border: 1px solid $btn1FontColor;
+  border: none;
+  border-radius: 0px !important;
+  cursor: pointer;
+  transition: background-color 0.3s, color 0.3s;
+
+  // &:hover {
+  //   color: $btn1hoverFontColor;
+  //   background-color: $btn1ActivebgColor;
+  // }
+}
+
+.smr_editDeleteBtngroup {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  margin-bottom: 10px;
+
+  .smr_editIcon {
+    font-size: 20px;
+    color: $titleColor;
+  }
+
+  .smr_DeleteIcon {
+    font-size: 20px;
+    color: $titleColor
+  }
+}
