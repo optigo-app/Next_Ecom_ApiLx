@@ -1,0 +1,127 @@
+@use "../../../scss/variable.scss" as *;
+
+.smr_loginEmail {
+
+    background-color: $bgColor;
+    height: 70vh;
+    display: grid;
+    align-content: center;
+    font-family: $Pfonts;
+
+    .go_pass_fg {
+        margin-top: 0.8rem;
+    }
+
+    .AuthScreenMainTitle {
+        font-family: $Pratafonts;
+    }
+
+    #outlined-confirm-password-input::-ms-reveal {
+        display: none !important;
+    }
+
+    .smr_loginEmailD {
+        background-color: white;
+        margin-inline: 6%;
+    }
+
+    .SmilingLoginCodeBtn {
+        height: 60px;
+        width: 420px;
+        background-color: $authbtnbg;
+        color: $authbtncolor;
+        ;
+        border: 0;
+        margin-top: 10px;
+        font-size: 13px;
+        font-weight: 500;
+        letter-spacing: 1;
+        transition: all 0.5s ease;
+    }
+
+
+    .submitBtnForgot {
+        height: 60px;
+        width: 420px;
+        background-color: $authbtnbg;
+        color: $authbtncolor;
+        border: 0;
+        margin-top: 10px;
+        font-size: 13px;
+        cursor: pointer;
+        font-weight: 500;
+        letter-spacing: 1;
+        transition: all 0.5s ease;
+
+        &:hover {
+            background: transparent;
+            color: #7d7f85;
+            border: 1px solid #7d7f85;
+        }
+    }
+
+
+    .SmilingLoginCodeBtn:hover {
+        background-color: white;
+        color: #7d7f85;
+        border: 1px solid #7d7f85;
+    }
+
+    .smr_loginPasswordBox {
+        width: 420px;
+        margin: 10px;
+    }
+
+
+
+    @media screen and (max-width: 950px) {
+        .AuthScreenMainTitle {
+            font-size: 25px !important;
+            padding-bottom: 50px !important;
+        }
+    }
+
+    @media screen and (max-width: 700px) {
+
+        .smr_loginPasswordBox {
+            width: 70%;
+        }
+
+        .submitBtnForgot {
+            width: 70%;
+            height: 50px !important;
+        }
+
+        .SmilingLoginCodeBtn {
+            width: 70%;
+            height: 50px !important;
+
+        }
+    }
+
+    @media screen and (max-width: 500px) {
+        .go_pass_fg {
+            font-size: 13px;
+        }
+
+        .smr_loginPasswordBox {
+            width: 90%;
+        }
+
+        .SmilingLoginCodeBtn {
+            width: 90%;
+            height: 45px !important;
+            font-size: 12px !important;
+
+        }
+
+        .submitBtnForgot {
+            width: 90%;
+            height: 45px !important;
+        }
+
+        .AuthScreenSubTitle {
+            margin-top: -65px !important;
+        }
+    }
+}

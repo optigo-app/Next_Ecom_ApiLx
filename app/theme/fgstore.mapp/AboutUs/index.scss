@@ -1,0 +1,392 @@
+@use '../../fgstore.web/style/variable.scss' as *;
+
+.smr_about_mainDiv {
+  font-family: "Calibri";
+  background-color: $bgColor !important;
+
+  .Head_about_page_smr {
+    font-family: $homePageFontFamily;
+  }
+
+  .smr-banner {
+    position: relative;
+    height: 220px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    text-align: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    margin-bottom: 2rem;
+    opacity: 0.9;
+
+    @media screen and (max-width: 768px) {
+      height: 200px;
+
+      h1 {
+        font-size: 1.5rem;
+      }
+    }
+  }
+
+  .smiling-About-container {
+    height: auto;
+    width: 100%;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    opacity: 0.4;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: -1;
+    position: fixed;
+  }
+
+  .smr_daimondsEveryAbout_sub {
+
+    // kayra needed this
+    margin-inline: 16%;
+    padding-top: 50px;
+  }
+
+  .smiling-About-container2 {
+    background-color: black;
+    opacity: 0.2;
+    height: 100%;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    object-fit: cover;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: -1;
+    position: fixed;
+  }
+
+
+  .stam_about_l {
+    width: 100%;
+    height: 100%;
+
+    .bgimage_banner_stam {
+      width: 100%;
+      height: 70vh;
+
+      @media screen and (max-width: 1382px) {
+        height: 60vh;
+      }
+
+      @media screen and (max-width: 768px) {
+        height: 40vh;
+      }
+
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+    }
+
+    .bgimage_banner_stam_last {
+      width: 100%;
+      margin-top: 2rem;
+
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+    }
+
+    .desc_stam_ford_p {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 25px 0;
+
+      p {
+        width: 50%;
+        margin: 0;
+
+        @media screen and (max-width: 1382px) {
+          width: 80%;
+        }
+
+        @media screen and (max-width: 768px) {
+          width: 95%;
+        }
+      }
+    }
+
+    .grid_layout_stam_about {
+      margin-top: 3rem;
+      width: 83%;
+      height: 100%;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(100%, 1fr));
+      gap: 10px;
+      background-color: #ede6e4;
+
+      @media screen and (max-width: 1382px) {
+        width: 86%;
+      }
+
+      @media screen and (max-width: 992px) {
+        width: 94%;
+      }
+
+      @media screen and (max-width: 768px) {
+        width: 96%;
+      }
+
+      .stam_grid_card {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        &:nth-child(even) {
+          flex-direction: row-reverse;
+
+          @media screen and (max-width: 768px) {
+            flex-direction: column;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+          }
+
+          .right_det_stam {
+            padding-left: 45px;
+
+            @media screen and (max-width: 768px) {
+              padding-left: 0px !important;
+              display: flex;
+              align-items: center;
+              text-align: center;
+            }
+          }
+        }
+
+        &:nth-child(odd) {
+          .right_det_stam {
+            padding-left: 45px;
+
+            @media screen and (max-width: 768px) {
+              padding-left: 0px !important;
+              display: flex;
+              align-items: center;
+              text-align: center;
+            }
+          }
+
+          @media screen and (max-width: 768px) {
+            flex-direction: column;
+          }
+        }
+
+        .left_stam_banner {
+          flex: 1;
+          width: 100%;
+          height: 100%;
+
+          img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+          }
+        }
+
+        .right_det_stam {
+          flex: 1;
+          width: 100%;
+          height: 100%;
+          display: flex;
+          align-items: flex-start;
+          justify-content: center;
+          flex-direction: column;
+
+          h1 {
+            font-size: 32px;
+            line-height: 42px;
+
+            @media screen and (max-width: 1382px) {
+              font-size: 26px;
+            }
+          }
+
+          p {
+            font-size: 17px;
+            line-height: 26px;
+            width: 70%;
+
+            @media screen and (max-width: 1382px) {
+              width: 86%;
+              font-size: 16px;
+            }
+
+            @media screen and (max-width: 992px) {
+              width: 94%;
+              font-size: 15px;
+            }
+          }
+        }
+      }
+    }
+
+    .card_list_stamford {
+      width: 80%;
+      height: 100%;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(22%, 1fr));
+      gap: 2rem;
+      padding: 7rem 0;
+
+      @media screen and (max-width: 1657px) {
+        width: 90%;
+      }
+
+      @media screen and (max-width: 1200px) {
+        width: 80%;
+        grid-template-columns: repeat(auto-fill, minmax(35%, 1fr));
+        gap: 2rem;
+        padding: 5rem 0;
+      }
+
+      @media screen and (max-width: 720px) {
+        width: 89%;
+        padding: 3rem 0;
+        grid-template-columns: repeat(auto-fill, minmax(80%, 1fr));
+        gap: 2rem;
+      }
+
+      .stam_card {
+        width: auto;
+        background-color: #eee3c5;
+        border-radius: 5px;
+        border: 2px solid #ede6e4;
+        padding: 18px 25px;
+
+        @media screen and (max-width: 1261px) {
+          padding: 14px 20px;
+        }
+
+        .details_Stame {
+          width: 100%;
+          height: 100%;
+          display: flex;
+          flex-direction: column;
+
+          ul {
+            display: flex;
+            flex-direction: column;
+            margin: 0;
+            padding: 0;
+          }
+        }
+      }
+    }
+  }
+
+  .smining-about-title {
+    padding: 70px 0 120px;
+  }
+
+  .daimondsEveryAbout {
+    margin-inline: 6%;
+    background-color: white;
+  }
+
+  .about-daimondBoxMain {
+    display: flex;
+    margin-inline: 90px;
+  }
+
+  .about-daimondBox1 {
+    border: 1px solid #e1e1e1;
+    width: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding-inline: 10%;
+  }
+
+  .about-daimondBox2 {
+    height: 550px;
+    width: 50%;
+  }
+
+  .about-daimondBox2-image {
+    height: 100%;
+    width: 100%;
+    object-fit: cover;
+    margin-top: 5px;
+  }
+
+  .about-foundersDesc {
+    display: flex;
+    justify-content: center;
+  }
+
+  .about-foundersImges {
+    width: 50%;
+    margin-block: 50px;
+  }
+
+  @media screen and (max-width: 1200px) {
+    .smr_daimondsEveryAbout_sub {
+      margin-inline: 6%;
+    }
+
+    .about-daimondBoxMain {
+      display: flex;
+      flex-direction: column;
+      margin-inline: 10px;
+    }
+
+    .about-daimondBox1 {
+      width: 100%;
+      order: 2;
+    }
+
+    .about-daimondBox2 {
+      object-fit: cover;
+      width: 100%;
+      order: 1;
+    }
+
+    .daimondsEveryAbout {
+      margin-inline: 2%;
+      word-break: break-word !important;
+    }
+
+    .aboutMain {
+      padding-top: 40px !important;
+    }
+  }
+
+  @media screen and (max-width: 800px) {
+    .daimondsEveryAbout {
+      margin-inline: 1% !important;
+    }
+  }
+
+  @media screen and (max-width: 600px) {
+    .about-daimondBox2-image {
+      height: 290px;
+    }
+
+    .about-daimondBox2 {
+      height: auto;
+    }
+  }
+}

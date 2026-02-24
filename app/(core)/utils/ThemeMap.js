@@ -11,9 +11,10 @@ export const themeMap = {
     page: "fgstore.web",
   },
   "nxtmobileapp.web": {
-    page: "fgstore.web",
+    page: "fgstore.mapp",
   },
   'nxthoq.web': {
     page: "hoq.web",
   },
+
 };

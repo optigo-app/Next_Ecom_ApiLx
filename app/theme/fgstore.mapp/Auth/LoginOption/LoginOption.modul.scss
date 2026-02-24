@@ -1,0 +1,116 @@
+@use '../../../scss/variable.scss' as *;
+
+.smr_Loginoption {
+    height: 70vh;
+    display: grid;
+    align-content: center;
+
+    .loginDailog {
+        margin-inline: 6%;
+        padding: 15px;
+        background-color: #fff;
+    }
+
+    .smilingLoginOptionMain {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+    }
+
+    .loginDiTile {
+        font-size: 30px;
+        font-weight: 600;
+        margin-top: 25px;
+        text-align: center;
+        color: #7d7f85;
+            font-family: $Pratafonts;
+    }
+
+    .loginMail {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+          background-color: $authbtnbg;
+      color: $authbtncolor;
+
+        margin-inline: 7px;
+        height: 55px;
+        cursor: pointer;
+        width: 25%;
+        margin-top: 30px;
+    }
+
+    .loginMobile {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: $authbtnbg;
+        color: $authbtncolor;
+        margin-inline: 7px;
+        height: 55px;
+        cursor: pointer;
+        margin-top: 25px;
+        width: 25%;
+    }
+
+    @media screen and (max-width: 1150px) {
+
+        .loginMail {
+            width: 50% !important;
+        }
+
+        .loginMobile {
+            width: 50% !important;
+        }
+    }
+
+
+
+
+    @media screen and (max-width: 900px) {
+        .loginDailog {
+            margin-inline: 2% !important;
+        }
+
+    }
+
+    @media screen and (max-width: 700px) {
+
+        .loginMail {
+            width: 80% !important;
+        }
+
+        .loginMobile {
+            width: 80% !important;
+        }
+
+        .loginDiTile {
+            font-size: 25px;
+        }
+
+    }
+
+
+    @media screen and (max-width: 500px) {
+
+        .loginMail {
+
+            margin-top: 0px !important;
+        }
+    }
+
+    @media screen and (max-width: 499px) {
+
+        .loginMail {
+            width: 100% !important;
+        }
+
+        .loginMobile {
+            width: 100% !important;
+        }
+
+    }
+
+}

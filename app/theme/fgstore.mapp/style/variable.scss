@@ -1,0 +1,80 @@
+//backgroundcolors
+
+:root {
+  --primary-background-smr: black;
+  --primary-color-smr: black;
+}
+
+$backgroundColor: var(--background-color);
+// $backgroundColor:  storeInit?.IsPLW == 1 ? #c4cfdb :#c0bbb1 ;
+$btn1bgColor: #fff;
+$btn1ActivebgColor: #7d7f85;
+
+@keyframes scaleUpDown {
+  0% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.1);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+//fontcolors
+$primaryfontcolor: #8f8c8be6;
+$primaryfontcolor2: #7d7f85;
+// $primaryfontcolor:#8f8c8b;
+$homePageFontColor: #7d7f85;
+$titleColor: #7d7f85;
+$btn1FontColor: #7d7f85;
+$btn1hoverColor: #7d7f85;
+$btn1hoverFontColor: #fff;
+$primaryfontcolorLight: #7d7f856e;
+
+//fontFamily
+$homePageFontFamily: "Poppins", serif;
+$primaryFontFamily: "Poppins", serif;
+$primaryFontFamilyMedium: "Poppins", serif;
+$Pfonts : "Poppins",
+serif;
+$Pratafonts : "Poppins",
+serif;
+
+
+
+//fontSize
+$fontSize0: 10px;
+$fontSize1: 12px;
+$fontSize2: 14px;
+$fontSize3: 16px;
+$fontSize4: 18px;
+$fontSize5: 22px;
+$fontSize6: 28px;
+$fontSize7: 35px;
+$fontSize8: 40px;
+
+//borderColor
+$primaryBorderColor: #e1e1e1;
+$primaryBorderColor2: #42424233;
+
+// $bgColor: #c0bbb1;  // Light gray background
+$bgColor: white; // Light gray background
+$textColor: #1B1212; // Dark gray text color
+$menuColor : #7D7F85;
+$navbarbg : black;
+$navbarcolor : white;
+$badgecolor : white;
+$badgetxtcolor : black;
+$footerbg: black;
+$footertextcolor: white;
+$sliderbar: #7d7f85;
+$btnBg: black;
+$btncolor: white;
+$authbtnbg: black;
+$authbtncolor :white;
+$footertextcolor : white;
+$menutitle: black;
