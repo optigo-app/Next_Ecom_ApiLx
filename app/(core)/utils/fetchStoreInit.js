@@ -22,14 +22,14 @@ export async function fetchStoreInitData(req) {
     }
 
     const cleanHost = hostname.split(":")[0];
-    const isLocalhost = cleanHost === "localhost" || cleanHost === "127.0.0.1" || cleanHost.endsWith(".localhost");
     const isNgrok = cleanHost.endsWith(".ngrok-free.app") || cleanHost.endsWith(".ngrok.io");
+    const isLocalhost = cleanHost === "localhost" || cleanHost === "127.0.0.1" || cleanHost.endsWith(".localhost") ||isNgrok;
 
     if (!hostname) hostname = NEXT_APP_WEB;
 
     const localHosts = ["localhost", "nzen", "nxtsonasons.web", "nxthoq.web", "nxtmobileapp.web", "nxt10.optigoapps.com"];
 
-    if (localHosts.includes(cleanHost) || isNgrok) {
+    if (localHosts.includes(cleanHost)) {
       if (process.env.NODE_ENV === "development") {
         console.log("development");
         baseUrl = `http://192.168.1.153/R50B3/UFS/StoreInit/${NEXT_APP_WEB}/StoreInit.json`;

@@ -10,7 +10,7 @@ const setApiUrl = async () => {
         const cleanHost = hostname.split(":")[0];
     const isNgrok = cleanHost.endsWith(".ngrok-free.app") || cleanHost.endsWith(".ngrok.io");
 
-        if (localHosts.includes(cleanHost) || isNgrok) {
+        if (localHosts.includes(cleanHost)) {
             APIURL = "http://newnextjs.web//api/report";
         } else {
             APIURL = "https://apilx.optigoapps.com/api/report";
