@@ -47,7 +47,7 @@ export default async function RootLayout({ children }) {
       <EmotionRegistry>
         <body className={`${defaultFont.variable}`}>
           <MasterProvider getCompanyInfoData={companyInfo} getStoreInit={storeInit} getMyAccountFlags={myAccountFlags}>
-            <StoreProvider>
+            <StoreProvider storeInit={storeInit}>
               <AuthProvider storeInit={storeInit}>
                 <Layout>{children}</Layout>
               </AuthProvider>

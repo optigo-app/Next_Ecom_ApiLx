@@ -1,9 +1,13 @@
 "use client";
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { ToastContainer, Zoom } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { getSession } from "../utils/FetchSessionData";
+import Cookies from "js-cookie";
 
-const StoreContext = createContext(null);
+const StoreContext = createContext({
+  finalId: ""
+});
 
 const toastStyle = {
   borderRadius: "6px",
@@ -14,21 +18,30 @@ const toastStyle = {
   borderLeft: `8px solid teal`,
   fontSize: "18px",
 };
-export function StoreProvider({ children }) {
+export function StoreProvider({ children, storeInit }) {
   const [user, setUser] = useState(null);
   const [cartCountNum, setCartCountNum] = useState(0);
   const [wishCountNum, setWishCountNum] = useState(0);
   const [loginUserDetail, setLoginUserDetail] = useState(null);
   const [islogin, setislogin] = useState(false);
   const [cartOpenStateB2C, setCartOpenStateB2C] = useState(false);
-  const [SoketData, setSoketData] = useState([])
+  const [SoketData, setSoketData] = useState([]);
+
+  const finalId = useMemo(() => {
+    const loginUserDetail = getSession("loginUserDetail");
+    const visiterID = Cookies.get("visiterId");
+    if (storeInit?.IsB2BWebsite == 0) {
+      return islogin === false ? visiterID : loginUserDetail?.id || "0";
+    }
+
+    return loginUserDetail?.id || "0";
+  }, [islogin, storeInit]);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
-    const storedDetail = sessionStorage.getItem("loginUserDetail");
+    const storedDetail = getSession("loginUserDetail");
     if (storedDetail) {
-      const parsed = JSON.parse(storedDetail);
-      setLoginUserDetail(parsed);
+      setLoginUserDetail(storedDetail);
       setislogin(true);
     }
   }, []);
@@ -47,7 +60,8 @@ export function StoreProvider({ children }) {
     cartOpenStateB2C,
     setCartOpenStateB2C,
     SoketData,
-    setSoketData
+    setSoketData,
+    finalId
   };
 
   return (

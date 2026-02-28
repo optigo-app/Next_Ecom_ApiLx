@@ -3,7 +3,7 @@ import { Box, Typography } from "@mui/material";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 
 
-const Headers = ({ title = "Untitled" }) => {
+const Headers = ({ title = "Untitled", onViewMore }) => {
     return (
         <Box sx={{
             pr: 1,
@@ -39,6 +39,7 @@ const Headers = ({ title = "Untitled" }) => {
                         fontWeight: 500,
                         "&:hover": { textDecoration: "underline" },
                     }}
+                    onClick={onViewMore}
                 >
                     <Typography variant="body2" sx={{
                         mr: 0.5,

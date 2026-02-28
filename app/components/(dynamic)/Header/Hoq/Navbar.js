@@ -374,35 +374,32 @@ const Navbar = ({ storeinit, logos }) => {
     }
   };
 
+  const executeSearch = () => {
+    const searchValue = searchText?.trim();
+    if (!searchValue) return;
+
+    const loginInfo = JSON.parse(sessionStorage.getItem("loginUserDetail"));
+    const storeInit = JSON.parse(sessionStorage.getItem("storeInit"));
+
+    const obj = {
+      a: "",
+      b: searchValue,
+      m: loginInfo?.MetalId ?? storeInit?.MetalId,
+      d: loginInfo?.cmboDiaQCid ?? storeInit?.cmboDiaQCid,
+      c: loginInfo?.cmboCSQCid ?? storeInit?.cmboCSQCid,
+      f: {},
+    };
+
+    const encodeObj = btoa(JSON.stringify(obj));
+    navigate(`/p/${encodeURIComponent(searchValue)}?S=${encodeObj}`);
+    setSearchText("");
+    setshowSearchBar(false);
+  };
+
   const searchDataFucn = (e) => {
-    if (e.key === "Enter") {
-      if (searchText) {
-        // navigation(`/p/${searchText}/?S=${btoa(JSON.stringify(searchText))}`)
-
-        // const handleMoveToDetail = () => {
-
-        let loginInfo = JSON.parse(sessionStorage.getItem("loginUserDetail"));
-        let storeInit = JSON.parse(sessionStorage.getItem("storeInit"));
-
-        let obj = {
-          a: "",
-          b: searchText,
-          m: loginInfo?.MetalId ?? storeInit?.MetalId,
-          d: loginInfo?.cmboDiaQCid ?? storeInit?.cmboDiaQCid,
-          c: loginInfo?.cmboCSQCid ?? storeInit?.cmboCSQCid,
-          f: {},
-        };
-
-        let encodeObj = btoa(JSON.stringify(obj));
-
-        navigate(`/p/${searchText}?S=${encodeObj}`);
-        // toggleOverlay();
-        setSearchText("");
-        setshowSearchBar(!showSearchBar);
-        // navigate(`/d/${productData?.TitleLine.replace(/\s+/g, `_`)}${productData?.TitleLine?.length > 0 ? "_" : ""}${searchText}?p=${encodeObj}`)
-
-        // }
-      }
+    if (e?.type === "click" || e?.type === "submit" || e?.key === "Enter") {
+      e?.preventDefault?.();
+      executeSearch();
     }
   };
 
@@ -1356,11 +1353,18 @@ const SearchBar = ({
     } else {
       setSearchText("");
     }
-  }, [showSearchBar]);
+  }, [showSearchBar, setSearchText]);
   return (
     <>
-      <div className="SearchBar-hoq">
-        <IoSearchOutline size={28} color="grey" />
+      <form className="SearchBar-hoq" onSubmit={searchDataFucn}>
+        <button
+          type="submit"
+          aria-label="Search"
+          style={{ border: "none", background: "transparent", padding: 0, lineHeight: 0 }}
+          onClick={searchDataFucn}
+        >
+          <IoSearchOutline size={28} color="grey" />
+        </button>
         <input
           type="text"
           ref={searchInputRef}
@@ -1370,11 +1374,11 @@ const SearchBar = ({
           onChange={(e) => setSearchText(e.target.value)}
           onKeyDown={searchDataFucn}
         />
-        <button className="cls_btn_search" onClick={closeSearch}>
+        <button type="button" className="cls_btn_search" onClick={closeSearch}>
           <TfiClose size={20} color="grey" />
         </button>
-      </div>
-      <div className="bg_search_overlay"></div>
+      </form>
+      <div className="bg_search_overlay" onClick={closeSearch}></div>
     </>
   );
 };

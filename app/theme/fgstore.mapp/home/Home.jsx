@@ -11,29 +11,24 @@ import BestSellers from "./components/BestSellers";
 import Trendings from "./components/Trendings";
 import ShowCaseBlock from "./components/ShowCaseBlock";
 
-export default async function Home({storeinit}) {
-    //  localData?.IsHomeBestSeller === 1
-    // localData?.IsHomeAlbum === 1
-    // localData?.IsHomeNewArrival === 1
-    // localData?.IsHomeTrending === 1
-    // localData?.IsHomeDesignSet === 1
+export default async function Home({ storeinit }) {
     return (
         <>
-        <Box sx={{ paddingBottom: 15 }}>
-        <Box sx={{ py: 1.2, px: 1 }}>
-        <Searchbar />
-        <ProductTypeBar />
-        <PromotionCarousel />
-        <Categories />
-        </Box>
-        <AlbumSection />
-        <GiftBlock />
-        <BestSellers />
-        <ShowCaseBlock />
-        <Trendings />
-        <Collection />
-        <NewArrival />
-        </Box>
+            <Box sx={{ paddingBottom: 15 }}>
+                <Box sx={{ py: 1.2, px: 1 }}>
+                    <Searchbar storeinit={storeinit} />
+                    <ProductTypeBar />
+                    <PromotionCarousel />
+                    <Categories storeinit={storeinit} />
+                </Box>
+                {/* <AlbumSection /> */}
+                {storeinit?.IsHomeAlbum === 0 && <GiftBlock storeinit={storeinit} />}
+                {storeinit?.IsHomeBestSeller === 0 && <BestSellers storeinit={storeinit} />}
+                <ShowCaseBlock />
+                {storeinit?.IsHomeTrending === 0 && <Trendings storeinit={storeinit} />}
+                <Collection storeinit={storeinit} />
+                {storeinit?.IsHomeNewArrival === 0 && <NewArrival storeinit={storeinit} />}
+            </Box>
         </>
     );
 }

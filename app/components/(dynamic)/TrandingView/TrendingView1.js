@@ -8,6 +8,7 @@ import Cookies from "js-cookie";
 import { useNextRouterLikeRR } from "@/app/(core)/hooks/useLocationRd";
 import { useStore } from "@/app/(core)/contexts/StoreProvider";
 import cookies from "js-cookie";
+import { compressAndEncode } from "@/app/(core)/utils/Encoder&Decoder";
 
 
 
@@ -215,16 +216,6 @@ const TrendingView1 = ({ data, storeInit }) => {
         validateImageURLs();
     }, [trandingViewData]);
 
-    const compressAndEncode = (inputString) => {
-        try {
-            const uint8Array = new TextEncoder().encode(inputString);
-            const compressed = pako.deflate(uint8Array, { to: "string" });
-            return btoa(String.fromCharCode.apply(null, compressed));
-        } catch (error) {
-            console.error("Error compressing and encoding:", error);
-            return null;
-        }
-    };
     const handleNavigation = (designNo, autoCode, titleLine, index) => {
         const storeInit = JSON.parse(sessionStorage.getItem("storeInit")) ?? "";
         const { IsB2BWebsite } = storeInit;
