@@ -2,18 +2,20 @@ import React from 'react'
 import ImageWithFallback from './ImageWithFallback';
 import { Card, Box, Typography, Stack } from '@mui/material';
 
-const ProductCard = ({product,minWidth,maxWidth}) => {
-    const {id, brand, title, currentPrice, originalPrice, discount, image} = product    
+const ProductCard = ({ onClick, product, minWidth, maxWidth, image, title, designno, price }) => {
+    const { id } = product
     return (
         <Card
+            onClick={onClick}
             key={id}
             elevation={0}
             sx={{
-                minWidth: minWidth || "150px", 
+                minWidth: minWidth || "150px",
                 maxWidth: maxWidth || "150px",
                 flexShrink: 0,
                 backgroundColor: "transparent",
-                scrollSnapAlign: "start", 
+                scrollSnapAlign: "start",
+
             }}
         >
             <ImageWithFallback src={image} alt={title} />
@@ -27,7 +29,7 @@ const ProductCard = ({product,minWidth,maxWidth}) => {
                         letterSpacing: "0.5px",
                     }}
                 >
-                    {brand}
+                    {designno}
                 </Typography>
                 <Typography
                     variant="body2"
@@ -42,28 +44,8 @@ const ProductCard = ({product,minWidth,maxWidth}) => {
                 >
                     {title}
                 </Typography>
-                <Stack direction="row" alignItems="baseline" spacing={0.5} flexWrap="wrap">
-                    <Typography sx={{ fontWeight: 800, fontSize: "14px", color: "#000" }}>₹{currentPrice}</Typography>
-
-                    <Typography
-                        sx={{
-                            fontSize: "11px",
-                            color: "#9e9e9e",
-                            textDecoration: "line-through",
-                        }}
-                    >
-                        ₹{originalPrice}
-                    </Typography>
-
-                    <Typography
-                        sx={{
-                            fontWeight: 700,
-                            fontSize: "11px",
-                            color: "#2e7d32"
-                        }}
-                    >
-                        {discount}
-                    </Typography>
+                <Stack direction="row" alignItems="baseline" spacing={0} flexWrap="wrap">
+                    <Typography sx={{ fontWeight: 800, fontSize: "14px", color: "#000" }}>₹{price}</Typography>
                 </Stack>
             </Box>
         </Card>

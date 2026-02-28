@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import { Box, Typography, Paper } from "@mui/material";
 import { HomeIcon, ShopIcon, CartIcon, ProfileIcon, NecklaceIcon, EarringIcon, DiamondIcon, JewelleryIcon } from './../../../../(core)/assets/Icons'
 import { motion, AnimatePresence } from "framer-motion";
+import Link from "next/link";
 
 
 const icons = [<NecklaceIcon key="necklace" />, <EarringIcon key="earring" />, <DiamondIcon key="diamond" />, <JewelleryIcon key="jewellery" />];
@@ -30,26 +31,28 @@ const BottomNavigation = () => {
                 zIndex: 1000,
             }}
         >
-            <NavItem activeTab={activeTab} setActiveTab={setActiveTab} id="home" icon={HomeIcon} label="Home" />
-            <NavItem activeTab={activeTab} setActiveTab={setActiveTab} id="shop" icon={ShopIcon} label="Shop" />
+            <NavItem NavigateLink="/" activeTab={activeTab} setActiveTab={setActiveTab} id="home" icon={HomeIcon} label="Home" />
+            <NavItem NavigateLink="/menu" activeTab={activeTab} setActiveTab={setActiveTab} id="shop" icon={ShopIcon} label="Shop" />
 
             <AnimatedCenterTab active={activeTab === "now"} onClick={() => setActiveTab("now")} brandName="Sonasons" label="NOW" />
 
-            <NavItem activeTab={activeTab} setActiveTab={setActiveTab} id="Cart" icon={CartIcon} label="Cart" />
-            <NavItem activeTab={activeTab} setActiveTab={setActiveTab} id="Profile" icon={ProfileIcon} label="Profile" />
+            <NavItem NavigateLink="/cart" activeTab={activeTab} setActiveTab={setActiveTab} id="Cart" icon={CartIcon} label="Cart" />
+            <NavItem NavigateLink="/account" activeTab={activeTab} setActiveTab={setActiveTab} id="Profile" icon={ProfileIcon} label="Profile" />
         </Paper>
     );
 }
 
 export default BottomNavigation;
 
-const NavItem = ({ activeTab, setActiveTab, id, icon: Icon, label }) => {
+const NavItem = ({ activeTab, setActiveTab, id, icon: Icon, label ,NavigateLink }) => {
     const isActive = activeTab === id;
     const activeColor = "#1a6bff";
     const inactiveColor = "#8a8a8a";
 
     return (
         <Box
+        component={Link}
+        href={NavigateLink}
             onClick={() => setActiveTab(id)}
             sx={{
                 flex: 1,
@@ -68,6 +71,7 @@ const NavItem = ({ activeTab, setActiveTab, id, icon: Icon, label }) => {
                 WebkitBackdropFilter: isActive ? "blur(8px)" : "none",
                 textAlign: "center",
                 gap: "4px",
+                textDecoration: "none",
             }}
         >
             <Icon sx={{ color: isActive ? activeColor : inactiveColor, fontSize: 26, mb: 0.5 }} />

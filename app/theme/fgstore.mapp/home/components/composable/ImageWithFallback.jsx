@@ -5,7 +5,7 @@ import { Box } from "@mui/material";
 
 const ImageWithFallback = ({ src, alt }) => {
     const [imgSrc, setImgSrc] = useState(src);
-    const fallbackUrl = "https://placehold.co/400x500/1e293b/ffffff?text=No+Image";
+    const fallbackUrl = "./fallback.jpg";
 
     return (
         <Box
@@ -18,7 +18,7 @@ const ImageWithFallback = ({ src, alt }) => {
                 height: "180px",
                 objectFit: "cover",
                 borderRadius: "8px",
-                backgroundColor: "#f5f5f5",
+                backgroundColor: "#fafafa",
             }}
         />
     );

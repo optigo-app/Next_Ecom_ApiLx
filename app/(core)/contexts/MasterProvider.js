@@ -45,6 +45,14 @@ export const MasterProvider = ({ children, getCompanyInfoData, getStoreInit, get
             });
     };
 
+    useEffect(() => {
+        if (token) {
+            handleSubmit();
+        } else {
+            router.push("/");
+        }
+    }, [])
+
     const fetchVisitorId = async () => {
         const storeInitData = getStoreInit;
         const CompanyinfoData = getCompanyInfoData;
@@ -85,7 +93,6 @@ export const MasterProvider = ({ children, getCompanyInfoData, getStoreInit, get
         sessionStorage.setItem("storeInit", JSON.stringify(getStoreInit));
         sessionStorage.setItem("myAccountFlags", JSON.stringify(getMyAccountFlags));
         fetchVisitorId();
-        handleSubmit();
     }, [])
 
     // Paymaster fetch
