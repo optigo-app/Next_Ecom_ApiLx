@@ -8,6 +8,16 @@ body {
   height: 100%;
   width: 100%;
 }
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  -webkit-overflow-scrolling: touch; /* iOS smooth momentum scroll */
+}
+
+
 ::-webkit-scrollbar {
   width: 2.7px;
 }
@@ -149,4 +159,17 @@ input:-moz-placeholder {
 }
  *::selection {
   background: transparent;
+}
+
+
+@media (max-width: 768px) {
+ body {
+    overflow: auto !important;
+    scrollbar-width: none !important;       /* Firefox */
+    -ms-overflow-style: none !important;     /* IE 10+ */
+  }
+
+  ::-webkit-scrollbar {
+    display: none !important;                /* Chrome/Safari */
+  }
 }
