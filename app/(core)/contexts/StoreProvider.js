@@ -61,7 +61,8 @@ export function StoreProvider({ children, storeInit }) {
     setCartOpenStateB2C,
     SoketData,
     setSoketData,
-    finalId
+    finalId ,
+    storeInit
   };
 
   return (

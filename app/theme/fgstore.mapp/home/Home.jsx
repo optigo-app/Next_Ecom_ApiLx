@@ -15,7 +15,7 @@ export default async function Home({ storeinit }) {
     return (
         <>
             <Box sx={{ paddingBottom: 15 }}>
-                <Box sx={{ py: 1.2, px: 1 }}>
+                <Box sx={{ py: 1.2 }}>
                     <Searchbar storeinit={storeinit} />
                     <ProductTypeBar />
                     <PromotionCarousel />

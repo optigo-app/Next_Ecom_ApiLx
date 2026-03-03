@@ -4,6 +4,7 @@ import { Box, Typography, Paper } from "@mui/material";
 import { HomeIcon, ShopIcon, CartIcon, ProfileIcon, NecklaceIcon, EarringIcon, DiamondIcon, JewelleryIcon } from './../../../../(core)/assets/Icons'
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 
 const icons = [<NecklaceIcon key="necklace" />, <EarringIcon key="earring" />, <DiamondIcon key="diamond" />, <JewelleryIcon key="jewellery" />];
@@ -13,6 +14,11 @@ const MotionBox = motion(Box);
 
 const BottomNavigation = () => {
     const [activeTab, setActiveTab] = useState("home");
+    const pathname = usePathname();
+
+    const hideNavbar = pathname.startsWith("/d/") || pathname.startsWith("/p/");
+    if (hideNavbar) return null;
+
     return (
         <Paper
             elevation={0}
@@ -44,15 +50,15 @@ const BottomNavigation = () => {
 
 export default BottomNavigation;
 
-const NavItem = ({ activeTab, setActiveTab, id, icon: Icon, label ,NavigateLink }) => {
+const NavItem = ({ activeTab, setActiveTab, id, icon: Icon, label, NavigateLink }) => {
     const isActive = activeTab === id;
     const activeColor = "#1a6bff";
     const inactiveColor = "#8a8a8a";
 
     return (
         <Box
-        component={Link}
-        href={NavigateLink}
+            component={Link}
+            href={NavigateLink}
             onClick={() => setActiveTab(id)}
             sx={{
                 flex: 1,

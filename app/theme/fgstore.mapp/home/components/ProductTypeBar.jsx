@@ -15,7 +15,7 @@ const categoriesList = [
 
 function ProductTypeBar() {
     return (
-        <Box sx={{ display: "flex", overflowX: "auto", gap: 1, mb: 2, "&::-webkit-scrollbar": { display: "none" } }}>
+        <Box sx={{ display: "flex", overflowX: "auto", gap: 1, mb: 2, "&::-webkit-scrollbar": { display: "none" },px:1 }}>
             {categoriesList.map((item, index) => (
                 <Chip
                     key={index}
