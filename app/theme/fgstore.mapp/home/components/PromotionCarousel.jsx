@@ -101,6 +101,7 @@ const SlideContent = ({ promo }) => (
       overflow: "hidden",
       cursor: "pointer",
       boxShadow: "0 8px 16px rgba(0,0,0,0.1)", // Subtle shadow
+      mx:1
     }}
   >
     {/* TEXT OVERLAY */}

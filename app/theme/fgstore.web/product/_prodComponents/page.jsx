@@ -40,18 +40,19 @@ const Product = ({ params, searchParams, storeinit }) => {
 
     useEffect(() => {
         loginUserDetail = JSON.parse(sessionStorage.getItem("loginUserDetail"));
-
+        
         let mtCombo = JSON.parse(sessionStorage.getItem("metalTypeCombo"));
         setMetalTypeCombo(mtCombo)
-
+        
         let diaQcCombo = JSON.parse(sessionStorage.getItem("diamondQualityColorCombo"));
         setDiaQcCombo(diaQcCombo)
-
+        
         let CsQcCombo = JSON.parse(sessionStorage.getItem("ColorStoneQualityColorCombo"));
         setCsQcCombo(CsQcCombo)
     }, [])
-
-
+    
+    
+    let location = useNextRouterLikeRR();
     let navigate = useNextRouterLikeRR();
     let minwidth1201px = useMediaQuery('(min-width:1201px)')
     let maxwidth590px = useMediaQuery('(max-width:590px)')

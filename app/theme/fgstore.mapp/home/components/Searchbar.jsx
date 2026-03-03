@@ -36,7 +36,7 @@ const Searchbar = ({ storeinit }) => {
     <Box
       component="form"
       onSubmit={handleSearch}
-      sx={{ display: "flex", gap: 1.5, alignItems: "center", mb: 2, mt: 0.5 }}
+      sx={{ display: "flex", gap: 1.5, alignItems: "center", mb: 2, mt: 0.5,px:1 }}
     >
       <Box
         sx={{
