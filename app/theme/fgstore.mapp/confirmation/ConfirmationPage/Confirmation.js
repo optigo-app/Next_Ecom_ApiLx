@@ -7,6 +7,15 @@ import { handelOpenMenu } from '@/app/(core)/utils/Glob_Functions/Cart_Wishlist/
 import { GetCountAPI } from '@/app/(core)/utils/API/GetCount/GetCountAPI';
 import { useNextRouterLikeRR } from '@/app/(core)/hooks/useLocationRd';
 import { useStore } from '@/app/(core)/contexts/StoreProvider';
+import {
+    Container,
+    Paper,
+    Box,
+    Typography,
+    Button,
+    Stack
+} from "@mui/material";
+import PrintIcon from "@mui/icons-material/Print";
 
 const Confirmation = ({ storeinit }) => {
     const location = useNextRouterLikeRR();
@@ -58,6 +67,84 @@ const Confirmation = ({ storeinit }) => {
         }
         sessionStorage.removeItem("TotalPriceData");
     }
+
+    return <>
+        <Container maxWidth="sm"
+            sx={{
+                minHeight: "100svh",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center"
+            }}>
+            <Paper
+                elevation={0}
+                sx={{
+                    p: 4,
+                    borderRadius: 3,
+                    textAlign: "center",
+                }}
+            >
+                <Stack spacing={3} alignItems="center">
+
+                    <Box
+                        component="img"
+                        src={ThankYouImage}
+                        alt="Thank you"
+                        sx={{
+                            width: 250,
+                            height: "auto"
+                        }}
+                    />
+
+                    <Typography variant="h6" fontWeight={600}>
+                        Thank you for your order
+                    </Typography>
+
+                    <Typography variant="body1" color="text.secondary">
+                        Your order number is{" "}
+                        <Box component="span" sx={{ fontWeight: 600 }}>
+                            {orderNo}
+                        </Box>
+                    </Typography>
+
+                    {storeInit?.IsPLW != 0 && (
+                        <Stack spacing={1} alignItems="center">
+                            <Button
+                                variant="outlined"
+                                startIcon={<PrintIcon />}
+                                sx={{
+                                    textTransform: "none",
+                                    borderRadius: 2
+                                }}
+                            >
+                                Print
+                            </Button>
+
+                            <Typography variant="caption" color="text.secondary">
+                                Coming soon...
+                            </Typography>
+                        </Stack>
+                    )}
+
+                    <Button
+                        variant="contained"
+                        size="large"
+                        onClick={handleNavigate}
+                        sx={{
+                            mt: 2,
+                            px: 4,
+                            borderRadius: 2,
+                            textTransform: "none",
+                            fontWeight: 500
+                        }}
+                    >
+                        Continue Shopping
+                    </Button>
+
+                </Stack>
+            </Paper>
+        </Container>
+    </>
 
     return (
         <div className='smr_confirMaindiv'>

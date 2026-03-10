@@ -4,6 +4,7 @@ import { ToastContainer, Zoom } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { getSession } from "../utils/FetchSessionData";
 import Cookies from "js-cookie";
+import { GetCountAPI } from "../utils/API/GetCount/GetCountAPI";
 
 const StoreContext = createContext({
   finalId: ""
@@ -36,6 +37,24 @@ export function StoreProvider({ children, storeInit }) {
 
     return loginUserDetail?.id || "0";
   }, [islogin, storeInit]);
+
+
+  useEffect(()=>{
+  const visiterID = Cookies?.get("visiterId");
+    GetCountAPI(visiterID)
+      .then((res) => {
+        if (res) {
+          setCartCountNum(res?.cartcount);
+          setWishCountNum(res?.wishcount);
+        }
+      })
+      .catch((err) => {
+        if (err) {
+          console.log("getCountApiErr", err);
+        }
+      });
+
+  },[])
 
   useEffect(() => {
     if (typeof window === "undefined") return;

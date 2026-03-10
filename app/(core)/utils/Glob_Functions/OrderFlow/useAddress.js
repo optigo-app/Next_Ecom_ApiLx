@@ -269,19 +269,23 @@ export const useAddress = () => {
         setOpenDelete(false);
     };
 
-    const handleDefaultSelection = async (addressId) => {
-        const address = addressData.find(addr => addr?.id === addressId?.id);
-        if (address && address.isdefault === 1) {
-            return;
-        }
+    const handleDefaultSelection = async (address) => {
+        if (!address?.id) return;
+
+        const current = addressData?.find((a) => a?.id === address?.id);
+        if (current?.isdefault === 1) return;
 
         setIsLoading(true);
 
         try {
-            const updatedAddressData = await setDefaultAddress(addressId, addressData);
-            console.log('updatedAddressData', updatedAddressData);
-            if (updatedAddressData[0]?.stat == 1) {
-                fetchInitialData();
+            const resp = await setDefaultAddress(address);
+            if (resp?.[0]?.stat == 1) {
+                setAddressData((prev) =>
+                    (prev ?? []).map((a) => ({
+                        ...a,
+                        isdefault: a?.id === address?.id ? 1 : 0,
+                    }))
+                );
             }
         } catch (error) {
             console.error('Error setting default address:', error);
