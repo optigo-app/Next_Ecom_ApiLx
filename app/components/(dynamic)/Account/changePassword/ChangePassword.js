@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import CryptoJS from 'crypto-js';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
-import { Box, CircularProgress, IconButton, InputAdornment, Tab, Tabs, TextField, Typography } from '@mui/material'
+import { Box, CircularProgress, IconButton, InputAdornment, Button, Tabs, TextField, Stack } from '@mui/material'
 import './changepassword.scss'
 import { handleChangePassword } from '@/app/(core)/utils/API/AccountTabs/changePassword';
 import {  toast } from 'react-toastify';
@@ -131,6 +131,134 @@ export default function ChangePassword() {
             setErrors(errors);
         }
     };
+
+    return <>
+<Box sx={{ px: 2, py: 3, maxWidth: 420, mx: "auto" }}>
+
+  {isLoading && (
+    <Box
+      sx={{
+        position: "absolute",
+        inset: 0,
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        bgcolor: "rgba(255,255,255,0.6)",
+        zIndex: 10
+      }}
+    >
+      <CircularProgress />
+    </Box>
+  )}
+
+  <Stack spacing={2} alignItems="center">
+
+    <TextField
+      fullWidth
+      label="Old Password"
+      type={showOldPassword ? "text" : "password"}
+      autoComplete="current-password"
+      value={oldPassword}
+      onChange={(e) =>
+        handlePasswordInputChangeAcc(
+          e,
+          "oldPassword",
+          { password, confirmPassword, oldPassword, setPassword, setConfirmPassword, setOldPassword },
+          setErrors
+        )
+      }
+      error={!!errors.oldPassword}
+      helperText={errors.oldPassword}
+      InputProps={{
+        endAdornment: (
+          <InputAdornment position="end">
+            <IconButton
+              onClick={() => handleTogglePasswordVisibility("oldPassword")}
+              onMouseDown={handleMouseDownConfirmPassword}
+              edge="end"
+            >
+              {showOldPassword ? <VisibilityOff /> : <Visibility />}
+            </IconButton>
+          </InputAdornment>
+        )
+      }}
+    />
+
+    <TextField
+      fullWidth
+      label="Password"
+      type={showPassword ? "text" : "password"}
+      autoComplete="current-password"
+      value={password}
+      onChange={(e) =>
+        handlePasswordInputChangeAcc(
+          e,
+          "password",
+          { password, confirmPassword, oldPassword, setPassword, setConfirmPassword, setOldPassword },
+          setErrors
+        )
+      }
+      error={!!errors.password}
+      helperText={errors.password}
+      InputProps={{
+        endAdornment: (
+          <InputAdornment position="end">
+            <IconButton
+              onClick={() => handleTogglePasswordVisibility("password")}
+              onMouseDown={handleMouseDownPassword}
+              edge="end"
+            >
+              {showPassword ? <VisibilityOff /> : <Visibility />}
+            </IconButton>
+          </InputAdornment>
+        )
+      }}
+    />
+
+    <TextField
+      fullWidth
+      label="Confirm Password"
+      type={showConfirmPassword ? "text" : "password"}
+      autoComplete="current-password"
+      value={confirmPassword}
+      onChange={(e) =>
+        handlePasswordInputChangeAcc(
+          e,
+          "confirmPassword",
+          { password, confirmPassword, oldPassword, setPassword, setConfirmPassword, setOldPassword },
+          setErrors
+        )
+      }
+      error={!!errors.confirmPassword}
+      helperText={errors.confirmPassword}
+      InputProps={{
+        endAdornment: (
+          <InputAdornment position="end">
+            <IconButton
+              onClick={() => handleTogglePasswordVisibility("confirmPassword")}
+              onMouseDown={handleMouseDownConfirmPassword}
+              edge="end"
+            >
+              {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
+            </IconButton>
+          </InputAdornment>
+        )
+      }}
+    />
+
+    <Button
+      variant="contained"
+      fullWidth
+      sx={{ mt: 1 }}
+      onClick={handleSubmit}
+    >
+      Change Password
+    </Button>
+
+  </Stack>
+</Box>
+
+    </>
 
     return (
         <div className='changePassword_Account_SMR'>
