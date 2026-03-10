@@ -307,7 +307,11 @@ const NewOrderHistory = () => {
   }, [orderDetails]); 
   
   return (
-    <div className="orderHistory_Account_SMR">
+    <div className="orderHistory_Account_SMR"
+    style={{
+      paddingBottom:'70px'
+    }}
+    >
       <div className=" orderHistory_acc">
         {loaderOH ? (
           <Box
@@ -494,11 +498,13 @@ const NewOrderHistory = () => {
                                     <Grid
                                       item
                                       key={index}
-                                      xs={12}
-                                      sm={orderDetails?.length === 1 ? 6 : 6}
-                                      md={orderDetails?.length === 1 ? 6 : 4}
-                                      lg={orderDetails?.length === 1 ? 3 : 3}
-                                      xl={orderDetails?.length === 1 ? 3 : 3}
+                                     size={{
+                                       xs : 12,
+                                       sm : orderDetails?.length === 1 ? 6 : 6,
+                                       md : orderDetails?.length === 1 ? 6 : 4,
+                                       lg : orderDetails?.length === 1 ? 3 : 3,
+                                       xl : orderDetails?.length === 1 ? 3 : 3
+                                     }}
                                     >
                                       <Card sx={{display:'flex', alignItems:'center'}} >
                                       <img 

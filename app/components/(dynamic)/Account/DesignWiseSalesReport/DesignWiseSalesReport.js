@@ -19,7 +19,7 @@ import DWSRprintComp from '../DWSRprintComp/DWSRprintComp';
 
 const DesignWiseSalesReport = () => {
     const isSmallScreen = useMediaQuery('(max-width:500px)');
-    const imageNotFound = 'Assets/image-not-found.jpg';
+    const imageNotFound = '/fallback.jpg';
 
     const [headerDetailsDWSR, setHeaderDetailsDWSER] = useState('');
 
@@ -1079,7 +1079,10 @@ const DesignWiseSalesReport = () => {
                                                     draggable={true}
                                                     alt="modalimages"
                                                     onContextMenu={(e) => e.preventDefault()}
-                                                    src={products?.imgsrc} onError={(e) => e.target.src = imageNotFound} style={{ objectFit: "contain", height: "100%", minheight: "271px", maxHeight: "271px" }} />
+                                                    src={products?.imgsrc} onError={(e) => {
+                                                        e.target.src = imageNotFound ;
+                                                    
+                                                    }} style={{ objectFit: "contain", height: "100%", minheight: "271px", maxHeight: "271px" }} />
                                             ) : (
                                                 <Skeleton variant="rectangular" width={"100%"} style={{ marginBottom: '76px', height: '310px' }} />
                                             )}
