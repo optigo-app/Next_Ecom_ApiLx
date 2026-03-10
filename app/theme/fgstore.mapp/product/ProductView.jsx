@@ -30,7 +30,8 @@ const ProductView = ({
   location,
   metalColorCombo,
   isProdLoading,
-  filterProdListEmpty
+  filterProdListEmpty ,
+  ImageView
 }) => {
 
   if (isProdLoading) {
@@ -56,7 +57,7 @@ const ProductView = ({
           const isAvailable = imageAvailability[productData?.autocode];
 
           return (
-            <Grid item size={{ xs: 6 }} key={index} className="gridItem">
+            <Grid item size={{ xs: ImageView ? 12 : 6 }} key={index} className="gridItem">
               <ProductCard
                 key={index}
                 productData={productData}

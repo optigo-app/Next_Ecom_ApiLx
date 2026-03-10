@@ -113,7 +113,8 @@ const CartItem = ({
     <Grid
       item
       size={{ xs: 6, sm: itemLength <= 2 ? 6 : 6, md: itemLength <= 2 ? 6 : 6, lg: itemLength <= 2 ? 6 : 4, xxl: itemLength <= 2 ? 6 : 3 }}
-      className='smr_cartListCardGrid'>
+      className='smr_cartListCardGrid'
+      >
       <Card className={itemLength <= 3 ? 'smr_cartListCard' : 'smr_cartListCard'}
         key={item?.id}
         sx={{

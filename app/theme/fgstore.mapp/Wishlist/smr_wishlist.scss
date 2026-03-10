@@ -102,17 +102,11 @@
 .smr_MainWlDiv {
     background-color: $bgColor;
     font-family: $primaryFontFamily;
+    padding-bottom: 120px;
 }
 
 .WlMainPageDiv {
     background-color: #fff;
-    margin-inline: 6%;
-}
-
-@media(max-width:1200px) {
-    .WlMainPageDiv {
-        margin-inline: 1% !important;
-    }
 }
 
 .smr_WlMainPage {
@@ -123,7 +117,6 @@
 
 .WlBtnGroupMainDiv {
     text-align: center;
-    padding-top: 40px;
 
     .smr_Wl-title {
         color: $titleColor;
@@ -205,8 +198,6 @@
 }
 
 .smr_WlListData {
-    padding: 60px 14px 10px 15px;
-    // //margin-bottom: -8% ;;
 
     .smr_wlListGrid {
         display: flex !important;
@@ -267,7 +258,6 @@
     .smr_wlToggleButtonDiv {
         display: flex;
         justify-content: flex-end;
-        padding-bottom: 20px;
     }
 }
 
@@ -562,8 +552,5 @@
     // }
 
     .smr_WlListData {
-        .smr_wlToggleButtonDiv {
-            padding-top: 30px;
-        }
     }
 }

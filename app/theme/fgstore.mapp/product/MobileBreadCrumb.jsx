@@ -131,10 +131,18 @@ const BreadCrumbs = ({
         const bObj = BreadCumsObj();
 
         // If condition "S", we don't show menuname (matching your old logic)
-        if (bObj?.menuname && typeCondition !== "S") {
+        if (bObj?.menuname) {
+            // breadcrumbItems.push({
+            //     label: bObj.menuname,
+            //     onClick: () => handleBreadcums({ [bObj.FilterKey]: bObj.FilterVal }),
+            // });
             breadcrumbItems.push({
-                label: bObj.menuname,
-                onClick: () => handleBreadcums({ [bObj.FilterKey]: bObj.FilterVal }),
+                label: bObj.FilterVal1,
+                onClick: () =>
+                    handleBreadcums({
+                        [bObj.FilterKey]: bObj.FilterVal,
+                        [bObj.FilterKey1]: bObj.FilterVal1,
+                    }),
             });
         }
 
@@ -162,14 +170,13 @@ const BreadCrumbs = ({
         }
     }
 
-    const uniqueBreadcrumbItems = breadcrumbItems.filter((item, index, arr) => {
-        return true;
-    });
+    const uniqueBreadcrumbItems = breadcrumbItems ;
 
     if (uniqueBreadcrumbItems.length === 0) return null;
 
     const currentItem = uniqueBreadcrumbItems[uniqueBreadcrumbItems.length - 1];
-console.log(    afterCountStatus , "    afterCountStatus")
+
+    
     return (
         <Stack spacing={0} sx={{}}>
             <Stack direction="row" alignItems="center" spacing={1}>

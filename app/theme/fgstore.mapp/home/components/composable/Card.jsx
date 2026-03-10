@@ -1,9 +1,12 @@
 import React from 'react'
 import ImageWithFallback from './ImageWithFallback';
 import { Card, Box, Typography, Stack } from '@mui/material';
+import { useStore } from '@/app/(core)/contexts/StoreProvider';
 
 const ProductCard = ({ onClick, product, minWidth, maxWidth, image, title, designno, price }) => {
-    const { id } = product
+    const { id } = product;
+    const {storeInit ,    loginUserDetail} = useStore();
+    const CurrencyCode = loginUserDetail?.CurrencyCode ?? storeInit?.CurrencyCode;
     return (
         <Card
             onClick={onClick}
@@ -45,7 +48,7 @@ const ProductCard = ({ onClick, product, minWidth, maxWidth, image, title, desig
                     {title}
                 </Typography>
                 <Stack direction="row" alignItems="baseline" spacing={0} flexWrap="wrap">
-                    <Typography sx={{ fontWeight: 800, fontSize: "14px", color: "#000" }}>₹{price}</Typography>
+                    <Typography sx={{ fontWeight: 800, fontSize: "14px", color: "#000" }}>{CurrencyCode} {price}</Typography>
                 </Stack>
             </Box>
         </Card>

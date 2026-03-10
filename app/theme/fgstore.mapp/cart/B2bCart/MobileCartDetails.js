@@ -156,7 +156,14 @@ const MobileCartDetails = ({
           {(selectedItem?.StockId == 0 && selectedItem?.IsMrpBase == 0) ? (
             <div className="smrMo_Cart_R-details">
               <p className='smrMo_cart-Titleline'>{formatTitleLine(selectedItem?.TitleLine) && selectedItem?.TitleLine}</p>
-              <Divider />
+              <Divider
+                sx={{
+                  borderColor: "#eeeeee",   // very light line
+                  mb: 2,                    // margin bottom
+                  mt: 1                     // optional top space
+                }}
+              />
+
               {storeInitData?.IsProductWebCustomization == 1 &&
                 <div className="smrMo_Cart-options">
                   {storeInitData?.IsMetalCustomization == 1 &&

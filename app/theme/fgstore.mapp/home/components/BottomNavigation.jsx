@@ -42,7 +42,7 @@ const BottomNavigation = () => {
 
             <AnimatedCenterTab active={activeTab === "now"} onClick={() => setActiveTab("now")} brandName="Sonasons" label="NOW" />
 
-            <NavItem NavigateLink="/cart" activeTab={activeTab} setActiveTab={setActiveTab} id="Cart" icon={CartIcon} label="Cart" />
+            <NavItem NavigateLink="/cartPage" activeTab={activeTab} setActiveTab={setActiveTab} id="Cart" icon={CartIcon} label="Cart" />
             <NavItem NavigateLink="/account" activeTab={activeTab} setActiveTab={setActiveTab} id="Profile" icon={ProfileIcon} label="Profile" />
         </Paper>
     );

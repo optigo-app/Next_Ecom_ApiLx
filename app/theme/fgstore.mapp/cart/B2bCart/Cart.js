@@ -5,7 +5,7 @@ import useCart from '@/app/(core)/utils/Glob_Functions/Cart_Wishlist/Cart';
 import CartDetails from './CartDetails';
 import CartList from './CartList';
 import SelectedItemsModal from './SelectedModal';
-import Button from '@mui/material/Button';
+import { Button, Box, IconButton ,Typography } from '@mui/material';
 import './smr_cartPage.scss';
 import { Checkbox, FormControlLabel, Link, useMediaQuery } from '@mui/material';
 import CartPageSkeleton from './CartSkelton';
@@ -16,6 +16,8 @@ import { handlePaymentAPI } from '@/app/(core)/utils/API/OrderFlow/PlaceOrderAPI
 import { toast } from 'react-toastify';
 import PrintIcon from '@mui/icons-material/Print';
 import { useNextRouterLikeRR } from '@/app/(core)/hooks/useLocationRd';
+import MobileNavbar from './NavigationBar';
+import LocalPrintshopRoundedIcon from '@mui/icons-material/LocalPrintshopRounded';
 
 
 const CartPage = ({ storeinit, visiterId, islogin, setCartCountNum }) => {
@@ -128,87 +130,135 @@ const CartPage = ({ storeinit, visiterId, islogin, setCartCountNum }) => {
   };
 
   return (
-    <div className='smr_MainBGDiv'>
-      <div className='cartMainPageDiv'>
-        <div className="cartBtnGroupMainDiv">
-          {isMobileScreen &&
-            <div className="smr_cart-title">My Cart</div>
-          }
-          <div className='smr_cartmainRowDiv'>
-            {!isloding && finalCartData?.length != 0 &&
-              <div className='smr_cartButton-groups'>
-                <Link
-                  className='smr_ReomoveAllCartbtn'
-                  variant="body2"
-                  onClick={handleRemoveAllDialog}
-                >
-                  Clear All
-                </Link>
-              </div>
-            }
-            {!isMobileScreen &&
-              <div className="smr_cart-title">My Cart</div>
-            }
-            {!isloding && finalCartData?.length != 0 &&
-              <div className='smr_placeOrderMainbtnDivs'>
-                {storeInit?.IsPLW === 1 &&
-                  <Button variant="outlined" sx={{ border: '1px solid grey !important', color: '#7d7f85' }} startIcon={<PrintIcon />} onClick={handlePrint}>
-                    Print
-                  </Button>
-                }
-                <button className="smr_place-order-btn" onClick={handlePlaceOrder}>Place Order</button>
-              </div>
-            }
-          </div>
-        </div>
-        {!isloding ? (
-          <>
-            <div style={{ marginLeft: '35px' }}>
-              {multiSelect &&
-                <FormControlLabel
-                  control={<Checkbox
+    <>
+      <MobileNavbar />
+      {!isloding && finalCartData?.length != 0 && (
+        <Box
+          sx={{
+            p: 1.5,
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            gap: 1.5,
+            background: "#fff"
+          }}
+        >
+          <Button
+            variant="text"
+            onClick={handleRemoveAllDialog}
+            sx={{
+              fontSize: "0.8rem",
+              textTransform: "none",
+              color: "#777"
+            }}
+          >
+            CLEAR ALL
+          </Button>
+
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              gap: 1.5,
+            }}
+          >
+            <Button
+              variant="contained"
+              onClick={handlePlaceOrder}
+              sx={{
+                textTransform: "none",
+                fontSize: "0.85rem",
+                borderRadius: "5px",
+                px: 2.5
+              }}
+            >
+              Place Order
+            </Button>
+            {storeInit?.IsPLW === 1 && <IconButton size="small" variant="outlined" sx={{ border: '1px solid grey !important', color: '#7d7f85' }} onClick={handlePrint}>
+              <LocalPrintshopRoundedIcon fontSize="small" />
+            </IconButton>}
+          </Box>
+        </Box>
+      )}
+      <div className='smr_MainBGDiv'
+      
+      >
+        <div className='cartMainPageDiv'>
+          {!isloding ? (
+            <>
+              <div style={{ marginLeft: '35px' }}>
+                {multiSelect &&
+                  <FormControlLabel
+                    control={<Checkbox
+                      sx={{
+                        color: "rgba(125, 127, 133, 0.4) !important",
+                      }}
+                    />}
+                    label="Select All"
+                    checked={isSelectedAll()}
+                    onChange={handleSelectAll}
                     sx={{
-                      color: "rgba(125, 127, 133, 0.4) !important",
+                      color: "rgba(125, 127, 133, 0.4)",
                     }}
-                  />}
-                  label="Select All"
-                  checked={isSelectedAll()}
-                  onChange={handleSelectAll}
-                  sx={{
-                    color: "rgba(125, 127, 133, 0.4)",
-                  }}
-                />
-              }
-            </div>
-            {finalCartData.length !== 0 ? (
-              <div className="smr_cartMainPage">
-                <div className="smr_cart-left-sides">
-                  <CartList
-                    items={finalCartData}
-                    CartCardImageFunc={CartCardImageFunc}
-                    showRemark={showRemark}
-                    productRemark={productRemark}
-                    CurrencyData={CurrencyData}
-                    decodeEntities={decodeEntities}
-                    onSelect={handleSelectItem}
-                    selectedItem={selectedItem}
-                    selectedItems={selectedItems}
-                    multiSelect={multiSelect}
-                    onRemove={handleRemoveItem}
-                    handleAddReamrk={handleAddReamrk}
-                    handleRemarkChange={handleRemarkChange}
-                    handleSave={handleSave}
-                    handleCancel={handleCancel}
-                    visiterId={visiterId}
-                    storeinit={storeinit}
-                    openHandleUpdateCartModal={handleOpenModal}
                   />
-                </div>
-                <div className="smr_cart-right-side">
-                  {isLargeScreen ? (
-                    <div className='smr_pc-cartDetail'>
-                      {selectedItem && (
-                        <CartDetails
+                }
+              </div>
+              {finalCartData.length !== 0 ? (
+                <div className="smr_cartMainPage">
+                  <div className="smr_cart-left-sides">
+                    <CartList
+                      items={finalCartData}
+                      CartCardImageFunc={CartCardImageFunc}
+                      showRemark={showRemark}
+                      productRemark={productRemark}
+                      CurrencyData={CurrencyData}
+                      decodeEntities={decodeEntities}
+                      onSelect={handleSelectItem}
+                      selectedItem={selectedItem}
+                      selectedItems={selectedItems}
+                      multiSelect={multiSelect}
+                      onRemove={handleRemoveItem}
+                      handleAddReamrk={handleAddReamrk}
+                      handleRemarkChange={handleRemarkChange}
+                      handleSave={handleSave}
+                      handleCancel={handleCancel}
+                      visiterId={visiterId}
+                      storeinit={storeinit}
+                      openHandleUpdateCartModal={handleOpenModal}
+                    />
+                  </div>
+                  <div className="smr_cart-right-side">
+                    {isLargeScreen ? (
+                      <div className='smr_pc-cartDetail'>
+                        {selectedItem && (
+                          <CartDetails
+                            ispriceloding={ispriceloding}
+                            selectedItem={selectedItem}
+                            CartCardImageFunc={CartCardImageFunc}
+                            handleIncrement={handleIncrement}
+                            handleDecrement={handleDecrement}
+                            qtyCount={qtyCount}
+                            multiSelect={multiSelect}
+                            sizeCombo={sizeCombo}
+                            storeinit={storeinit}
+                            CurrencyData={CurrencyData}
+                            mrpbasedPriceFlag={mrpbasedPriceFlag}
+                            handleMetalTypeChange={handleMetalTypeChange}
+                            handleMetalColorChange={handleMetalColorChange}
+                            handleDiamondChange={handleDiamondChange}
+                            handleColorStoneChange={handleColorStoneChange}
+                            handleSizeChange={handleSizeChange}
+                            decodeEntities={decodeEntities}
+                            onUpdateCart={handleUpdateCart}
+                            handleMoveToDetail={handleMoveToDetail}
+                          />
+                        )}
+                      </div>
+                    ) :
+                      <div className='smr_mobile-cartDetails'>
+                        <MobileCartDetails
+                          open={openMobileModal}
+                          handleClose={handlecloseMobileModal}
                           ispriceloding={ispriceloding}
                           selectedItem={selectedItem}
                           CartCardImageFunc={CartCardImageFunc}
@@ -229,75 +279,104 @@ const CartPage = ({ storeinit, visiterId, islogin, setCartCountNum }) => {
                           onUpdateCart={handleUpdateCart}
                           handleMoveToDetail={handleMoveToDetail}
                         />
-                      )}
-                    </div>
-                  ) :
-                    <div className='smr_mobile-cartDetails'>
-                      <MobileCartDetails
-                        open={openMobileModal}
-                        handleClose={handlecloseMobileModal}
-                        ispriceloding={ispriceloding}
-                        selectedItem={selectedItem}
-                        CartCardImageFunc={CartCardImageFunc}
-                        handleIncrement={handleIncrement}
-                        handleDecrement={handleDecrement}
-                        qtyCount={qtyCount}
-                        multiSelect={multiSelect}
-                        sizeCombo={sizeCombo}
-                        storeinit={storeinit}
-                        CurrencyData={CurrencyData}
-                        mrpbasedPriceFlag={mrpbasedPriceFlag}
-                        handleMetalTypeChange={handleMetalTypeChange}
-                        handleMetalColorChange={handleMetalColorChange}
-                        handleDiamondChange={handleDiamondChange}
-                        handleColorStoneChange={handleColorStoneChange}
-                        handleSizeChange={handleSizeChange}
-                        decodeEntities={decodeEntities}
-                        onUpdateCart={handleUpdateCart}
-                        handleMoveToDetail={handleMoveToDetail}
-                      />
-                    </div>
-                  }
+                      </div>
+                    }
+                  </div>
+                  <SelectedItemsModal
+                    open={openModal}
+                    onClose={handleCloseModal}
+                    selectedItems={selectedItems}
+                    onRemove={handleRemoveItem}
+                    onUpdateCart={handleUpdateCart}
+                    onCancelCart={handleCancelUpdateCart}
+                  />
                 </div>
-                <SelectedItemsModal
-                  open={openModal}
-                  onClose={handleCloseModal}
-                  selectedItems={selectedItems}
-                  onRemove={handleRemoveItem}
-                  onUpdateCart={handleUpdateCart}
-                  onCancelCart={handleCancelUpdateCart}
+              ) :
+                <NoResults
+                  onClick={handelMenu}                
                 />
-              </div>
-            ) :
-              <div className='smr_noCartlistData'>
-                <p className='smr_title'>No Data Found!</p>
-                <p className='smr_desc'>Please First Add Product in Cart</p>
-                <button className='smr_browseOurCollectionbtn' onClick={handelMenu}>Browse our collection</button>
-              </div>
-            }
-          </>
-        ) :
-          <CartPageSkeleton />
-        }
+              }
+            </>
+          ) :
+            <CartPageSkeleton />
+          }
 
-        <ConfirmationDialog
-          open={dialogOpen}
-          onClose={handleCloseDialog}
-          onConfirm={handleConfirmRemoveAll}
-          title="Confirm"
-          content="Are you sure you want to remove all Items?"
-        />
+          <ConfirmationDialog
+            open={dialogOpen}
+            onClose={handleCloseDialog}
+            onConfirm={handleConfirmRemoveAll}
+            title="Confirm"
+            content="Are you sure you want to remove all Items?"
+          />
+        </div>
 
-        {/* <Footer /> */}
       </div>
-      {/* <div style={{ display: 'flex', justifyContent: 'center', paddingBlock: '30px' }}>
-        <p
-          className="backtotop_Smr"
-        
-        style={{ margin: '0px', fontWeight: 500, color: 'white', cursor: 'pointer' }} onClick={scrollToTop}>BACK TO TOP</p>
-      </div> */}
-    </div>
+    </>
   );
 };
 
 export default CartPage;
+
+
+
+
+const NoResults = ({ onClick }) => {
+  return (
+    <Box
+      sx={{
+        minHeight: "calc(100vh - 200px)",
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+        alignItems: "center",
+        textAlign: "center",
+        px: 3,
+        backgroundColor: "#fff",
+      }}
+    >
+      <Box
+        component="img"
+        src="/Assets/mepty_cart.svg"
+        alt="No search results"
+        sx={{
+          width: 180,
+          height: 180,
+          mb: 3,
+          opacity: 0.8,
+        }}
+      />
+
+      <Typography
+        variant="h6"
+        sx={{ fontWeight: 600, mb: 1 }}
+      >
+        No Data Found!
+      </Typography>
+
+      <Typography
+        variant="body2"
+        color="text.secondary"
+        sx={{ maxWidth: 260, mb: 3 }}
+      >
+        Please First Add Product in Cart
+      </Typography>
+
+      <Button
+        variant="contained"
+        size="medium"
+
+        sx={{
+          textTransform: "none",
+          px: 4,
+          boxShadow: 'none',
+          bgcolor: '#1a6bff',
+          fontWeight: 600,
+          color: '#fff'
+        }}
+        onClick={onClick}
+      >
+        Browse our collection
+      </Button>
+    </Box>
+  );
+};

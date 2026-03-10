@@ -73,6 +73,7 @@ const Cart = ({
             width: '40%',
           },
         }}
+        
         className='smr_B2ccartDrawer'
       >
         <div className="smr_B2C-container">
