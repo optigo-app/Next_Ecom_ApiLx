@@ -31,6 +31,7 @@ import { useStore } from "@/app/(core)/contexts/StoreProvider";
 import { ParseAndDecodeSearchParams } from "@/app/(core)/utils/GlobalFunctions/Parser";
 import ProductView from "./ProductView";
 import ActionIsland from "./FloatingIsland";
+import FilterDrawerApp from "./FilterDrawer";
 
 const MobileFilter = dynamic(() => import("./_prodComponents/MobileFilter"), { ssr: false });
 
@@ -85,6 +86,7 @@ const Layout = ({ params, searchParams, storeinit }) => {
     const [isRollOverVideo, setIsRollOverVideo] = useState({});
     let cookie = Cookies.get("visiterId");
     const [menuDecode, setMenuDecode] = useState("");
+    const [ImageView, setImageView] = useState(false);
 
     const isEditablePage = 1;
 
@@ -787,6 +789,7 @@ const Layout = ({ params, searchParams, storeinit }) => {
             }
         })();
     }, []);
+    
 
     return (
         <Box
@@ -804,8 +807,58 @@ const Layout = ({ params, searchParams, storeinit }) => {
                 showClearAllButton={showClearAllButton}
                 afterCountStatus={isProdLoading}
             />
+            <FilterDrawerApp
+                isDrawerOpen={isDrawerOpen}
+                setIsDrawerOpen={setIsDrawerOpen}
+                filterData={filterData}
+                storeInit={storeInit}
+                selectedMetalId={selectedMetalId}
+                metalTypeCombo={metalTypeCombo}
+                selectedDiaId={selectedDiaId}
+                setSelectedDiaId={setSelectedDiaId}
+                selectedCsId={selectedCsId}
+                setSelectedCsId={setSelectedCsId}
+                csQcCombo={csQcCombo}
+                diaQcCombo={diaQcCombo}
+                sortBySelect={sortBySelect}
+                handleSortby={handleSortby}
+                afterFilterCount={afterFilterCount}
+                showClearAllButton={showClearAllButton}
+                afterCountStatus={afterCountStatus}
+                handelFilterClearAll={handelFilterClearAll}
+                expandedAccordions={expandedAccordions}
+                handleAccordionChange={handleAccordionChange}
+                FilterValueWithCheckedOnly={FilterValueWithCheckedOnly}
+                handleCheckboxChange={handleCheckboxChange}
+                loginUserDetail={loginUserDetail}
+                filterChecked={filterChecked}
+                sliderValue={sliderValue}
+                setSliderValue={setSliderValue}
+                show={show}
+                setShow={setShow}
+                appliedRange1={appliedRange1}
+                setAppliedRange1={setAppliedRange1}
+                sliderValue1={sliderValue1}
+                setSliderValue1={setSliderValue1}
+                show1={show1}
+                setShow1={setShow1}
+                appliedRange2={appliedRange2}
+                setAppliedRange2={setAppliedRange2}
+                sliderValue2={sliderValue2}
+                setSliderValue2={setSliderValue2}
+                show2={show2}
+                setShow2={setShow2}
+                appliedRange3={appliedRange3}
+                setAppliedRange3={setAppliedRange3}
+                handleRangeFilterApi={handleRangeFilterApi}
+                prodListType={prodListType}
+                cookie={cookie}
+                resetRangeFilter={resetRangeFilter}
+                isMobile={true}
+            />
             <ProductView
-            filterProdListEmpty={filterProdListEmpty}
+                ImageView={ImageView}
+                filterProdListEmpty={filterProdListEmpty}
                 data={finalProductListData}
                 imageAvailability={imageAvailability}
                 imageMap={imageMap}
@@ -832,7 +885,12 @@ const Layout = ({ params, searchParams, storeinit }) => {
                 isProdLoading={isProdLoading}
                 metalColorCombo={JSON.parse(sessionStorage.getItem("MetalColorCombo"))}
             />
-            <ActionIsland/>
+            <ActionIsland
+                ImageView={ImageView}
+                ChangeView={() => setImageView(!ImageView)}
+                OpenFilter={() => setIsDrawerOpen(true)}
+                FilterDrawerOpen={isDrawerOpen}
+            />
         </Box>
     );
 };

@@ -5,7 +5,7 @@ import { Box } from "@mui/material";
 
 const ImageWithFallback = ({ src, alt }) => {
     const [imgSrc, setImgSrc] = useState(src);
-    const fallbackUrl = "./fallback.jpg";
+    const fallbackUrl = "/fallback.jpg";
 
     return (
         <Box

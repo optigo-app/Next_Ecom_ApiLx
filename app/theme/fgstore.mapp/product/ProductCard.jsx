@@ -147,6 +147,7 @@ const ProductCard = ({
                 position: "relative",
                 height: "100%",
             }}
+            onClick={() => handleMoveToDetail(productData)}
         >
             {isLoading === true ?
                 <Card

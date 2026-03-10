@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import React, { useEffect, useState } from "react";
 import "./smr_wishlist.scss";
 import Card from "@mui/material/Card";
@@ -14,29 +14,14 @@ import { formatter, formatTitleLine } from "@/app/(core)/utils/Glob_Functions/Gl
 import { Skeleton } from "@mui/material";
 import { useStore } from "@/app/(core)/contexts/StoreProvider";
 
-const WishlistItems = ({
-  item,
-  index,
-  selectedValue,
-  itemInCart,
-  updateCount,
-  countDataUpdted,
-  itemsLength,
-  currency,
-  decodeEntities,
-  WishCardImageFunc,
-  handleRemoveItem,
-  handleWishlistToCart,
-  handleMoveToDetail,
-  storeInit
-}) => {
+const WishlistItems = ({ item, index, selectedValue, itemInCart, updateCount, countDataUpdted, itemsLength, currency, decodeEntities, WishCardImageFunc, handleRemoveItem, handleWishlistToCart, handleMoveToDetail, storeInit }) => {
   const [imageSrc, setImageSrc] = useState();
   const [isLoading, setisLoading] = useState(true);
-  const { setCartCountNum, setWishCountNum } = useStore()
+  const { setCartCountNum, setWishCountNum } = useStore();
   const visiterId = Cookies.get("visiterId");
   const CDNDesignImageFolThumb = storeInit?.CDNDesignImageFolThumb;
   const fullImagePath = `${CDNDesignImageFolThumb}${item?.designno}~1.jpg`;
-  const noImageFound = '/Assets/image-not-found.jpg'
+  const noImageFound = "/Assets/image-not-found.jpg";
 
   // const isLoading = item?.loading;
 
@@ -86,39 +71,38 @@ const WishlistItems = ({
       {selectedValue == 1 ? (
         <Grid
           item
-          xs={itemsLength <= 2 ? 6 : 6}
-          sm={itemsLength <= 2 ? 4 : 4}
-          md={itemsLength <= 2 ? 4 : 4}
-          lg={itemsLength <= 2 ? 2.4 : 2.4}
+          size={{
+            xs: itemsLength <= 2 ? 6 : 6,
+            sm: itemsLength <= 2 ? 4 : 4,
+            md: itemsLength <= 2 ? 4 : 4,
+            lg: itemsLength <= 2 ? 2.4 : 2.4,
+          }}
           className="smr_wlListGrid"
         >
           <Card className="smr_WlListCard">
             <div className="cardContent">
               {isLoading === true ? (
-                <CardMedia
-                  style={{ width: "100%" }}
-                  className="smr_WlListImage"
-                >
+                <CardMedia style={{ width: "100%" }} className="smr_WlListImage">
                   <Skeleton
                     animation="wave"
                     variant="rectangular"
                     sx={{
                       width: {
-                        xs: '100%',
-                        sm: '260px',      // ~599px
-                        md: '270px',      // ~880px
-                        lg: '300px',      // ~1050px
-                        xl: '365px',      // default
+                        xs: "100%",
+                        sm: "260px", // ~599px
+                        md: "270px", // ~880px
+                        lg: "300px", // ~1050px
+                        xl: "365px", // default
                       },
                       height: {
-                        xs: '100%',
-                        sm: '260px',      // ~599px
-                        md: '270px',      // ~880px
-                        lg: '300px',      // ~1050px
-                        xl: '365px',      // default
+                        xs: "100%",
+                        sm: "260px", // ~599px
+                        md: "270px", // ~880px
+                        lg: "300px", // ~1050px
+                        xl: "365px", // default
                       },
-                      aspectRatio: '1 / 1',
-                      backgroundColor: '#e8e8e86e',
+                      aspectRatio: "1 / 1",
+                      backgroundColor: "#e8e8e86e",
                     }}
                   />
                 </CardMedia>
@@ -133,11 +117,11 @@ const WishlistItems = ({
                   onContextMenu={(e) => e.preventDefault()}
                   onClick={() => handleMoveToDetail(item)}
                   sx={{
-                    border: 'none',
-                    outline: 'none',
-                    boxShadow: 'none',
-                    '&:focus': { outline: 'none' },
-                    '&:active': { outline: 'none' },
+                    border: "none",
+                    outline: "none",
+                    boxShadow: "none",
+                    "&:focus": { outline: "none" },
+                    "&:active": { outline: "none" },
                   }}
                   onError={(e) => {
                     const imgEl = e.target;
@@ -155,10 +139,7 @@ const WishlistItems = ({
               )}
               <CardContent className="smr_cardContent">
                 <div className="cardText">
-                  <Typography
-                    variant="body2"
-                    className="smr_card-ContentData smr_WlTitleline"
-                  >
+                  <Typography variant="body2" className="smr_card-ContentData smr_WlTitleline">
                     {item?.designno != "" && item?.designno}
                     {formatTitleLine(item?.TitleLine) && " - " + item?.TitleLine}
                   </Typography>
@@ -167,18 +148,14 @@ const WishlistItems = ({
                       <>
                         <span className="smr_wishDT">GWT: </span>
                         {/* <span className='smr_wishDT'>{(item?.Gwt || 0).toFixed(3)?.replace(/\.?0+$/, '')}</span> */}
-                        <span className="smr_wishDT">
-                          {(item?.Gwt || 0).toFixed(3)}
-                        </span>
+                        <span className="smr_wishDT">{(item?.Gwt || 0).toFixed(3)}</span>
                       </>
                     )}
                     {storeInit?.IsMetalWeight == 1 && (
                       <>
                         <span className="smr_pipes"> | </span>
                         <span className="smr_wishDT">NWT: </span>
-                        <span className="smr_wishDT">
-                          {(item?.Nwt || 0).toFixed(3)}
-                        </span>
+                        <span className="smr_wishDT">{(item?.Nwt || 0).toFixed(3)}</span>
                       </>
                     )}
                     {storeInit?.IsDiamondWeight == 1 && (
@@ -211,24 +188,16 @@ const WishlistItems = ({
                   <Typography variant="body2" className="smr_card-ContentData">
                     {storeInit?.IsMetalTypeWithColor == 1 && (
                       <>
-                        {item?.metalcolorname !== "" && (
-                          <span>{item.metalcolorname}</span>
-                        )}
-                        {item?.metalcolorname !== "" &&
-                          item?.metaltypename !== "" && <span> - </span>}
-                        {item?.metaltypename !== "" && (
-                          <span>{item?.metaltypename}</span>
-                        )}
+                        {item?.metalcolorname !== "" && <span>{item.metalcolorname}</span>}
+                        {item?.metalcolorname !== "" && item?.metaltypename !== "" && <span> - </span>}
+                        {item?.metaltypename !== "" && <span>{item?.metaltypename}</span>}
                         {" / "}
                       </>
                     )}
                     {/* <span className="smr_currencyFont" dangerouslySetInnerHTML={{ __html: decodeEntities(currency) }} /> */}
                     {storeInit?.IsPriceShow == 1 && (
                       <>
-                        <span className="smr_currencyFont">
-                          {loginInfo?.CurrencyCode ?? storeInit?.CurrencyCode}
-                        </span>{" "}
-                        <span>{formatter(item?.FinalCost)}</span>
+                        <span className="smr_currencyFont">{loginInfo?.CurrencyCode ?? storeInit?.CurrencyCode}</span> <span>{formatter(item?.FinalCost)}</span>
                       </>
                     )}
                   </Typography>
@@ -238,58 +207,49 @@ const WishlistItems = ({
                         </div> */}
               </CardContent>
               <div className="smr_Wl-CartbtnDiv">
-                <button
-                  className="smr_Wl-Cartbtn"
-                  onClick={() => handleWishlistToCartFun(item)}
-                >
+                <button className="smr_Wl-Cartbtn" onClick={() => handleWishlistToCartFun(item)}>
                   {item?.IsInCart != 1 ? "Add to cart +" : "In cart"}
                 </button>
               </div>
             </div>
-            <div
-              className="closeWlIconDiv"
-              onClick={(e) => handleRemoveItemFun(item)}
-            >
+            <div className="closeWlIconDiv" onClick={(e) => handleRemoveItemFun(item)}>
               <CloseIcon className="closeWlIcon" />
             </div>
           </Card>
         </Grid>
       ) : (
-        <Grid
-          item
-          xs={itemsLength <= 2 ? 6 : 6}
-          sm={itemsLength <= 2 ? 4 : 3}
-          md={itemsLength <= 2 ? 4 : 2}
-          lg={itemsLength <= 2 ? 3 : 2}
-          className="smr_wlListGrid"
-        >
+        <Grid item 
+        size={{
+          xs: itemsLength <= 2 ? 6 : 6,
+          sm: itemsLength <= 2 ? 4 : 3,
+          md: itemsLength <= 2 ? 4 : 2,
+          lg: itemsLength <= 2 ? 3 : 2
+        }}
+        className="smr_wlListGrid">
           <Card className="smr_WlListCard">
             <div className="cardContent">
               {isLoading === true ? (
-                <CardMedia
-                  style={{ width: "100%" }}
-                  className="roop_WlListImage"
-                >
+                <CardMedia style={{ width: "100%" }} className="roop_WlListImage">
                   <Skeleton
                     animation="wave"
                     variant="rectangular"
                     sx={{
                       width: {
-                        xs: '100%',
-                        sm: '260px',      // ~599px
-                        md: '270px',      // ~880px
-                        lg: '300px',      // ~1050px
-                        xl: '365px',      // default
+                        xs: "100%",
+                        sm: "260px", // ~599px
+                        md: "270px", // ~880px
+                        lg: "300px", // ~1050px
+                        xl: "365px", // default
                       },
                       height: {
-                        xs: '100%',
-                        sm: '260px',      // ~599px
-                        md: '270px',      // ~880px
-                        lg: '300px',      // ~1050px
-                        xl: '365px',      // default
+                        xs: "100%",
+                        sm: "260px", // ~599px
+                        md: "270px", // ~880px
+                        lg: "300px", // ~1050px
+                        xl: "365px", // default
                       },
-                      aspectRatio: '1 / 1',
-                      backgroundColor: '#e8e8e86e',
+                      aspectRatio: "1 / 1",
+                      backgroundColor: "#e8e8e86e",
                     }}
                   />
                 </CardMedia>
@@ -303,7 +263,7 @@ const WishlistItems = ({
                   onClick={() => handleMoveToDetail(item)}
                   onError={(e) => {
                     if (item?.ImageCount > 0) {
-                      e.target.src = fullImagePath ? fullImagePath : noImageFound
+                      e.target.src = fullImagePath ? fullImagePath : noImageFound;
                     } else {
                       e.target.src = noImageFound;
                     }
@@ -311,18 +271,12 @@ const WishlistItems = ({
                 />
               )}
               <div className="smr_Wl-CartbtnDiv">
-                <button
-                  className="smr_Wl-Cartbtn"
-                  onClick={() => handleWishlistToCartFun(item)}
-                >
+                <button className="smr_Wl-Cartbtn" onClick={() => handleWishlistToCartFun(item)}>
                   {item?.IsInCart != 1 ? "Add to cart +" : "In cart"}
                 </button>
               </div>
             </div>
-            <div
-              className="closeWlIconDiv"
-              onClick={(e) => handleRemoveItemFun(item)}
-            >
+            <div className="closeWlIconDiv" onClick={(e) => handleRemoveItemFun(item)}>
               <CloseIcon className="closeWlIcon" />
             </div>
           </Card>

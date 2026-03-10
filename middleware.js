@@ -8,7 +8,7 @@ const domainMap = {
 
 const authPages = ["loginoption", "continuewithemail", "loginwithemail", "register", "continuewithmobile", "loginwithemailcode", "loginwithmobilecode", "forgotPass"];
 
-const B2B_LoginRedirects = ["cartpage", "mywishlist", "custom-orders", "lookbook", "p/", "d/"];
+const B2B_LoginRedirects = ["cartpage", "mywishlist", "custom-orders", "lookbook", "p/", "d/","/menu"];
 
 const B2B_HomeRedirects = ["account", "delivery", "payment", "confirmation"];
 

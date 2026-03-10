@@ -152,7 +152,7 @@
         display: flex;
         align-items: center;
         font-family: $primaryFontFamily;
-
+   justify-content: space-between;
         .product-price,
         .smrMo_Stockproduct-price {
             font-size: $fontSize4;
@@ -183,7 +183,7 @@
             font-size: 16px;
             height: 40px;
             margin-bottom: 20px;
-            width: 100px;
+            width: 200px;
             font-family: $primaryFontFamily;
 
             &:hover {
