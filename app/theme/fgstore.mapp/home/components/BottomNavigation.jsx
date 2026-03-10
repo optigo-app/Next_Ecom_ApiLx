@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { Box, Typography, Paper } from "@mui/material";
+import { Box, Typography, Paper ,Button  } from "@mui/material";
 import { HomeIcon, ShopIcon, CartIcon, ProfileIcon, NecklaceIcon, EarringIcon, DiamondIcon, JewelleryIcon } from './../../../../(core)/assets/Icons'
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
@@ -16,8 +16,9 @@ const BottomNavigation = () => {
     const [activeTab, setActiveTab] = useState("home");
     const pathname = usePathname();
 
-    const hideNavbar = pathname.startsWith("/d/") || pathname.startsWith("/p/");
+    const hideNavbar = pathname.startsWith("/d/") || pathname.startsWith("/p/")|| pathname.startsWith("/delivery")|| pathname.startsWith("/payment") || pathname.startsWith("/confirmation");
     if (hideNavbar) return null;
+
 
     return (
         <Paper

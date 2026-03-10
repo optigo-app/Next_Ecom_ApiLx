@@ -1,9 +1,13 @@
 import React from 'react'
-import PaymentComponent from '@/app/(core)/utils/PaymentComponent/PaymentComponent'
+import PaymentComponent from '@/app/(core)/utils/PaymentComponent/PaymentComponentMobile'
+import MobileNavbar from './NavigationBar'
 
 const Payment = ({ storeinit }) => {
   return (
-    <div><PaymentComponent bgcolor={"black"} storeinit={storeinit} /></div>
+    <div>
+      <MobileNavbar/>
+      <PaymentComponent bgcolor={"black"} storeinit={storeinit} />
+      </div>
   )
 }
 

@@ -113,10 +113,13 @@ const usePaymentLogic = (storeinit) => {
         }
     };
 
-    // for remark
+   // for remark
     useEffect(() => {
-        const orderRemakdata = sessionStorage.getItem("orderRemark") ?? "";
-        setOrderRemarkData(orderRemakdata);
+        const GetOrderRemark = sessionStorage.getItem('orderRemark')
+        if (GetOrderRemark) {
+            setOrderRemarkData(GetOrderRemark)
+            setOrderRemark(GetOrderRemark)
+        }
     }, [])
 
     // for tax amount
@@ -146,18 +149,31 @@ const usePaymentLogic = (storeinit) => {
     };
 
     // for remark
-    const handleOrderRemarkFun = async (trimmedRemark) => {
+    // const handleOrderRemarkFun = async (trimmedRemark) => {
+    //     try {
+    //         const response = await handleOrderRemark(trimmedRemark);
+    //         const resStatus = response?.Data?.rd[0];
+    //         if (resStatus?.stat === 1) {
+    //             setOrderRemarkData(resStatus?.orderremarks);
+    //             sessionStorage.setItem('orderRemark', trimmedRemark ?? "");
+    //         }
+    //     } catch (error) {
+    //         console.error("Error:", error);
+    //     }
+    // };
+     const handleOrderRemarkFun = async (trimmedRemark) => {
         try {
             const response = await handleOrderRemark(trimmedRemark);
             const resStatus = response?.Data?.rd[0];
             if (resStatus?.stat === 1) {
                 setOrderRemarkData(resStatus?.orderremarks);
-                sessionStorage.setItem('orderRemark', trimmedRemark ?? "");
+                sessionStorage.setItem('orderRemark', resStatus?.orderremarks ?? "");
             }
         } catch (error) {
             console.error("Error:", error);
         }
     };
+
 
     // for remark
     const handleSaveInternal = () => {
