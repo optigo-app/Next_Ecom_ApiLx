@@ -23,7 +23,6 @@ export const MasterProvider = ({ children, getCompanyInfoData, getStoreInit, get
     const token = searchParams.get('token');
     const router = useNextRouterLikeRR();
 
-
     const handleSubmit = async () => {
         WebLoginWithMobileToken(token)
             .then((response) => {
@@ -46,12 +45,14 @@ export const MasterProvider = ({ children, getCompanyInfoData, getStoreInit, get
     };
 
     useEffect(() => {
-        if (token) {
-            handleSubmit();
-        } else {
-            router.push("/");
+        if (getStoreInit?.domain === "nxtmobileapp.web") {
+            if (token) {
+                handleSubmit();
+            } else {
+                router.push("/");
+            }
         }
-    }, [])
+    }, [token, getStoreInit?.domain])
 
     const fetchVisitorId = async () => {
         const storeInitData = getStoreInit;

@@ -1,3 +1,4 @@
+import { localHosts } from "../constants/DomainList";
 import { NEXT_APP_WEB } from "./env";
 import { getDomainInfo } from "./getDomainInfo";
 
@@ -26,8 +27,6 @@ export async function fetchStoreInitData(req) {
     const isLocalhost = cleanHost === "localhost" || cleanHost === "127.0.0.1" || cleanHost.endsWith(".localhost") ||isNgrok;
 
     if (!hostname) hostname = NEXT_APP_WEB;
-
-    const localHosts = ["localhost", "nzen", "nxtsonasons.web", "nxthoq.web", "nxtmobileapp.web", "nxt10.optigoapps.com"];
 
     if (localHosts.includes(cleanHost)) {
       if (process.env.NODE_ENV === "development") {

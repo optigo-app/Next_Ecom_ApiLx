@@ -10,6 +10,7 @@ import Collection from "./components/Collection";
 import BestSellers from "./components/BestSellers";
 import Trendings from "./components/Trendings";
 import ShowCaseBlock from "./components/ShowCaseBlock";
+import OrderBlock from "./CustomOrder/OrderBlock";
 
 export default async function Home({ storeinit }) {
     return (
@@ -17,9 +18,10 @@ export default async function Home({ storeinit }) {
             <Box sx={{ paddingBottom: 15 }}>
                 <Box sx={{ py: 1.2 }}>
                     <Searchbar storeinit={storeinit} />
-                    <ProductTypeBar />
+                    <ProductTypeBar storeinit={storeinit} />
                     <PromotionCarousel />
                     <Categories storeinit={storeinit} />
+                    <OrderBlock/>
                 </Box>
                 {/* <AlbumSection /> */}
                 {storeinit?.IsHomeAlbum === 0 && <GiftBlock storeinit={storeinit} />}

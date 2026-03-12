@@ -48,7 +48,7 @@ const GiftBlock = ({ storeinit }) => {
   }
 
   return (
-    <Box sx={{ mt: 4 }}>
+    <Box sx={{ mt: 0 }}>
       <Headers title="Gifts For You" />
 
       <Box
