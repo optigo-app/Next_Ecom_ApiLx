@@ -1,3 +1,4 @@
+import { isLocalHost, localHosts } from "../constants/DomainList";
 import { NEXT_APP_WEB } from "./env";
 import { getDomainInfo } from "./getDomainInfo";
 
@@ -27,9 +28,7 @@ export async function fetchStoreInitData(req) {
 
     if (!hostname) hostname = NEXT_APP_WEB;
 
-    const localHosts = ["localhost", "nzen", "nxtsonasons.web", "nxthoq.web", "nxtmobileapp.web", "nxt10.optigoapps.com"];
-
-    if (localHosts.includes(cleanHost)) {
+    if (isLocalHost(cleanHost)) {
       if (process.env.NODE_ENV === "development") {
         console.log("development");
         baseUrl = `http://192.168.1.153/R50B3/UFS/StoreInit/${NEXT_APP_WEB}/StoreInit.json`;
@@ -44,6 +43,7 @@ export async function fetchStoreInitData(req) {
     }
 
     const finalUrl = baseUrl;
+    console.log("🚀 ~ fetchStoreInitData ~ baseUrl:", baseUrl)
     const response = await fetch(finalUrl);
     const jsonData = await response.json();
     if (!Boolean(response.ok)) throw new Error(`HTTP error ${response.status}`);

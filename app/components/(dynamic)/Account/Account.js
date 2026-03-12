@@ -79,7 +79,6 @@ export default function Account({ Storeinit }) {
   useGlobalPreventSave();
 
   const handleLogout = () => {
-    return;
     setislogin(false);
     Cookies.remove("userLoginCookie");
     sessionStorage.setItem("LoginUser", false);

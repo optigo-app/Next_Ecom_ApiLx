@@ -10,7 +10,7 @@ export const WebLoginWithMobileToken = async (ismobiletoke) => {
             userid: '', mobileno: '', pass: '', mobiletoken: `${ismobiletoke}`, FrontEnd_RegNo: '', domainname: domainname
         });
         const body = {
-            "con": "{\"id\":\"\",\"mode\":\"WEBLOGINMOBILETOKEN\"}",
+            "con": "{\"id\":\"\",\"mode\":\"WEBLOGINMOBILEAPPTOKEN\"}",
             "f": "WEBLOGINMOBILETOKEN (handleSubmit)",
             "p": combinedValue
         };

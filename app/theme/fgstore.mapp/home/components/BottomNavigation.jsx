@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { Box, Typography, Paper ,Button  } from "@mui/material";
+import { Box, Typography, Paper, Button } from "@mui/material";
 import { HomeIcon, ShopIcon, CartIcon, ProfileIcon, NecklaceIcon, EarringIcon, DiamondIcon, JewelleryIcon } from './../../../../(core)/assets/Icons'
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
@@ -16,7 +16,17 @@ const BottomNavigation = () => {
     const [activeTab, setActiveTab] = useState("home");
     const pathname = usePathname();
 
-    const hideNavbar = pathname.startsWith("/d/") || pathname.startsWith("/p/")|| pathname.startsWith("/delivery")|| pathname.startsWith("/payment") || pathname.startsWith("/confirmation");
+    const hideNavbarRoutes = [
+        "/d/",
+        "/p/",
+        "/delivery",
+        "/payment",
+        "/confirmation",
+        "/profile"
+    ];
+
+    const hideNavbar = hideNavbarRoutes.some(route => pathname.startsWith(route));
+
     if (hideNavbar) return null;
 
 
@@ -28,7 +38,7 @@ const BottomNavigation = () => {
                 bottom: 0,
                 left: 0,
                 right: 0,
-                height: 68,
+                height: 65,
                 display: "flex",
                 justifyContent: "space-between",
                 alignItems: "center",
@@ -41,10 +51,10 @@ const BottomNavigation = () => {
             <NavItem NavigateLink="/" activeTab={activeTab} setActiveTab={setActiveTab} id="home" icon={HomeIcon} label="Home" />
             <NavItem NavigateLink="/menu" activeTab={activeTab} setActiveTab={setActiveTab} id="shop" icon={ShopIcon} label="Shop" />
 
-            <AnimatedCenterTab active={activeTab === "now"} onClick={() => setActiveTab("now")} brandName="Sonasons" label="NOW" />
+            {/* <AnimatedCenterTab active={activeTab === "now"} onClick={() => setActiveTab("now")} brandName="Sonasons" label="NOW" /> */}
 
             <NavItem NavigateLink="/cartPage" activeTab={activeTab} setActiveTab={setActiveTab} id="Cart" icon={CartIcon} label="Cart" />
-            <NavItem NavigateLink="/account" activeTab={activeTab} setActiveTab={setActiveTab} id="Profile" icon={ProfileIcon} label="Profile" />
+            <NavItem NavigateLink="/profile" activeTab={activeTab} setActiveTab={setActiveTab} id="Profile" icon={ProfileIcon} label="Profile" />
         </Paper>
     );
 }
@@ -81,7 +91,7 @@ const NavItem = ({ activeTab, setActiveTab, id, icon: Icon, label, NavigateLink 
                 textDecoration: "none",
             }}
         >
-            <Icon sx={{ color: isActive ? activeColor : inactiveColor, fontSize: 26, mb: 0.5 }} />
+            <Icon sx={{ color: isActive ? activeColor : inactiveColor, fontSize: 24, mb: 0.5 }} />
             <Typography
                 sx={{
                     color: isActive ? activeColor : inactiveColor,

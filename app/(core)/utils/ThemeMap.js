@@ -15,6 +15,5 @@ export const themeMap = {
   },
   'nxthoq.web': {
     page: "hoq.web",
-  },
-
+  }
 };

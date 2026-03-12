@@ -178,6 +178,16 @@ const Menu = ({ storeInit }) => {
         }
     }, [formattedMenu]);
 
+    const gradients = [
+  "linear-gradient(135deg,#ffd1dc,#ffe0f0)",
+  "linear-gradient(135deg,#c9e7ff,#e3f4ff)",
+  "linear-gradient(135deg,#ffe9c6,#fff4dc)",
+  "linear-gradient(135deg,#e6d6ff,#f3ebff)",
+  "linear-gradient(135deg,#d4f5e9,#ecfff8)"
+];
+
+
+
     // ==========================================
     // NEW UI RENDER
     // ==========================================
@@ -224,12 +234,22 @@ const Menu = ({ storeInit }) => {
                         }}
                     >
                         <Box sx={{
-                            width: 38, height: 38, bgcolor: activeTab === idx ? '#1a6bff' : '#eee',
+                            width: 38, height: 38, 
                             borderRadius: '18px', mb: 0.5, display: 'flex', alignItems: 'center', justifyContent: 'center'
                         }}>
-                            <DashboardRoundedIcon fontSize="small" sx={{
-                                color: activeTab === idx ? '#fff' : '#888'
-                            }} />
+                            <Box
+                            sx={{
+                                width: 38,
+                                height: 38,
+                                borderRadius: "50%",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                background: gradients[idx % gradients.length],
+                            }}
+                            >
+                            </Box>
+
                         </Box>
                         <Typography sx={{
                             fontSize: '11px', fontWeight: activeTab === idx ? 700 : 500,

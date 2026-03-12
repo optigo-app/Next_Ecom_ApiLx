@@ -38,6 +38,51 @@ const categoryImages = [
     CategoryName: "Bracelet",
     ImageUrl: "http://max.orail.co.in/WebSiteStaticImage/Category/new-image/BRACELATE2.jpg",
   },
+  {
+    "CategoryName": "Pendant",
+    ImageUrl: "http://max.orail.co.in/WebSiteStaticImage/Category/new-image/pendent.jpg",
+
+  },
+  {
+    "CategoryName": "Bangle",
+    ImageUrl: "http://max.orail.co.in/WebSiteStaticImage/Category/new-image/Bangals1.png",
+  },
+  {
+    "CategoryName": "Necklace Set",
+    ImageUrl: 'https://www.elvee.in/WebSiteStaticImage/images/Category/NecklaceSet.webp',
+  },
+  {
+    "CategoryName": "Necklace",
+    ImageUrl: "http://max.orail.co.in/WebSiteStaticImage/Category/new-image/NECKLACE1.jpg",
+
+  },
+  {
+    "CategoryName": "Ring",
+    ImageUrl: "http://max.orail.co.in/WebSiteStaticImage/Category/new-image/rings.jpg",
+
+  },
+  {
+    "CategoryName": "Bracelet",
+    ImageUrl: "http://max.orail.co.in/WebSiteStaticImage/Category/new-image/BRACELATE2.jpg",
+
+  },
+  {
+    "CategoryName": "Earring",
+    ImageUrl: "http://max.orail.co.in/WebSiteStaticImage/Category/new-image/Earings1.png",
+
+  },
+  {
+    "CategoryName": "Pendant set",
+    ImageUrl: 'https://www.elvee.in/WebSiteStaticImage/images/Category/PendantSet.webp'
+  },
+  {
+    "CategoryName": "Mangalsutra",
+    ImageUrl: "http://max.orail.co.in/WebSiteStaticImage/Category/new-image/Mangalsutra1.jpg",
+  },
+  {
+    "CategoryName": "Mangalsutra Set",
+    ImageUrl: 'https://www.elvee.in/WebSiteStaticImage/images/Category/MangalsutraSet.webp'
+  }
 ];
 
 const Categories = () => {
@@ -97,15 +142,15 @@ const Categories = () => {
               <Box key={index} sx={{ minWidth: "80px", width: "80px" }}>
                 <Skeleton
                   variant="rectangular"
-                  width="70px"
-                  height="70px"
+                  width="90px"
+                  height="90px"
                   sx={{ borderRadius: 50, bgcolor: "rgba(0,0,0,0.05)" }}
                 />
               </Box>
             ))
           ) : (categories.map((cat, index) => (
-            <Box key={index} sx={{ display: "flex", flexDirection: "column", alignItems: "center", minWidth: "70px" }}>
-              <Avatar src={cat.img || cat.ImageUrl} sx={{ width: 70, height: 70, mb: 1, boxShadow: "0 4px 10px rgba(0,0,0,0.08)" }} />
+            <Box key={index} sx={{ display: "flex", flexDirection: "column", alignItems: "center", minWidth: "90px" }}>
+              <Avatar src={cat.img || cat.ImageUrl} sx={{ width: 90, height: 90, mb: 1, boxShadow: "0 4px 10px rgba(0,0,0,0.08)" }} />
               <Typography
                 sx={{
                   fontSize: "13px",
