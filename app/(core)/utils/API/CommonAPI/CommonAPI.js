@@ -1,4 +1,4 @@
-import { localHosts } from "@/app/(core)/constants/DomainList";
+import { isLocalHost, localHosts } from "@/app/(core)/constants/DomainList";
 import { getSession } from "../../FetchSessionData";
 import { getDomainInfo } from "../../getDomainInfo";
 import { fetchAPIUrlFromStoreInit } from "../../Glob_Functions/GlobalFunction";
@@ -10,9 +10,8 @@ const setApiUrl = async () => {
   try {
     const { hostname } = await getDomainInfo();
     const cleanHost = hostname.split(":")[0];
-    const isNgrok = cleanHost.endsWith(".ngrok-free.app") || cleanHost.endsWith(".ngrok.io");
 
-    if (localHosts.includes(cleanHost)) {
+    if (isLocalHost(cleanHost)) {
       APIURL = "http://newnextjs.web//api/report";
     } else {
       APIURL = "https://apilx.optigoapps.com/api/report";

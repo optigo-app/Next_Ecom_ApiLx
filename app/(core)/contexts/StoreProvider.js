@@ -39,8 +39,8 @@ export function StoreProvider({ children, storeInit }) {
   }, [islogin, storeInit]);
 
 
-  useEffect(()=>{
-  const visiterID = Cookies?.get("visiterId");
+  useEffect(() => {
+    const visiterID = Cookies?.get("visiterId");
     GetCountAPI(visiterID)
       .then((res) => {
         if (res) {
@@ -54,7 +54,7 @@ export function StoreProvider({ children, storeInit }) {
         }
       });
 
-  },[])
+  }, [])
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -80,7 +80,7 @@ export function StoreProvider({ children, storeInit }) {
     setCartOpenStateB2C,
     SoketData,
     setSoketData,
-    finalId ,
+    finalId,
     storeInit
   };
 
