@@ -48,7 +48,7 @@ export default async function RootLayout({ children }) {
         <body className={`${defaultFont.variable}`}>
           <MasterProvider getCompanyInfoData={companyInfo} getStoreInit={storeInit} getMyAccountFlags={myAccountFlags}>
             <StoreProvider storeInit={storeInit}>
-              <AuthProvider storeInit={storeInit}>
+              <AuthProvider theme={themeData?.page} storeInit={storeInit}>
                 <Layout>{children}</Layout>
               </AuthProvider>
             </StoreProvider>

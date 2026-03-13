@@ -13,6 +13,9 @@ export const themeMap = {
   "nxtmobileapp.web": {
     page: "fgstore.mapp",
   },
+   "nxt14.optigoapps.com": {
+    page: "fgstore.mapp",
+  },
   'nxthoq.web': {
     page: "hoq.web",
   }

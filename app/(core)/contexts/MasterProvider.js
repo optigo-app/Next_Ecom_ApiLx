@@ -44,15 +44,15 @@ export const MasterProvider = ({ children, getCompanyInfoData, getStoreInit, get
             });
     };
 
-    useEffect(() => {
-        if (getStoreInit?.domain === "nxtmobileapp.web") {
-            if (token) {
-                handleSubmit();
-            } else {
-                router.push("/");
-            }
-        }
-    }, [token, getStoreInit?.domain])
+    // useEffect(() => {
+    //     if (getStoreInit?.domain === "nxtmobileapp.web") {
+    //         if (token) {
+    //             handleSubmit();
+    //         } else {
+    //             router.push("/");
+    //         }
+    //     }
+    // }, [token, getStoreInit?.domain])
 
     const fetchVisitorId = async () => {
         const storeInitData = getStoreInit;

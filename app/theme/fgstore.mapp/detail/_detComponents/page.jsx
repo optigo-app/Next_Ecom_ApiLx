@@ -800,7 +800,7 @@ const ProductPage = ({ params, searchParams, storeInit }) => {
 
     // Run ProdCardImageFunc only when singleProd is available
     useEffect(() => {
-        if (Object.keys(singleProd).length > 0) {
+        if (Object?.keys(singleProd)?.length > 0) {
             setPdImageLoader(true);
             ProdCardImageFunc();
         }
