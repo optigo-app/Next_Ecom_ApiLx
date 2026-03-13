@@ -16,13 +16,20 @@ const BottomNavigation = () => {
     const [activeTab, setActiveTab] = useState("home");
     const pathname = usePathname();
 
+    useEffect(() => {
+        if (pathname === "/") setActiveTab("home");
+        else if (pathname.startsWith("/menu")) setActiveTab("shop");
+        else if (pathname.startsWith("/cartPage")) setActiveTab("Cart");
+        else if (pathname.startsWith("/profile") || pathname.startsWith("/account")) setActiveTab("Profile");
+    }, [pathname]);
+
     const hideNavbarRoutes = [
         "/d/",
         "/p/",
         "/delivery",
         "/payment",
         "/confirmation",
-        "/profile"
+        // "/profile"
     ];
 
     const hideNavbar = hideNavbarRoutes.some(route => pathname.startsWith(route));

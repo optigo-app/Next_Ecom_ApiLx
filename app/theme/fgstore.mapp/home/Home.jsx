@@ -24,12 +24,16 @@ export default async function Home({ storeinit }) {
                     <OrderBlock/>
                 </Box>
                 {/* <AlbumSection /> */}
-                {storeinit?.IsHomeAlbum === 0 && <GiftBlock storeinit={storeinit} />}
-                {storeinit?.IsHomeBestSeller === 0 && <BestSellers storeinit={storeinit} />}
+                <GiftBlock storeinit={storeinit} />
+                {/* storeinit?.IsHomeAlbum === 0 && */}
+                <BestSellers storeinit={storeinit} />
+                {/* storeinit?.IsHomeBestSeller === 0 && */}
                 <ShowCaseBlock />
-                {storeinit?.IsHomeTrending === 0 && <Trendings storeinit={storeinit} />}
+                <Trendings storeinit={storeinit} />
+                {/* storeinit?.IsHomeTrending === 0 && */}
                 <Collection storeinit={storeinit} />
-                {storeinit?.IsHomeNewArrival === 0 && <NewArrival storeinit={storeinit} />}
+                <NewArrival storeinit={storeinit} />
+                {/* storeinit?.IsHomeNewArrival === 0 && */}
             </Box>
         </>
     );

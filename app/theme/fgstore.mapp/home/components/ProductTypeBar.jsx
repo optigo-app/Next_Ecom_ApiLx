@@ -2,15 +2,12 @@
 import { useEffect, useState } from "react";
 import { Box, Chip } from "@mui/material";
 import DiamondOutlinedIcon from "@mui/icons-material/DiamondOutlined";
-import WatchOutlinedIcon from "@mui/icons-material/WatchOutlined";
-import CheckroomOutlinedIcon from "@mui/icons-material/CheckroomOutlined";
-import SpaOutlinedIcon from "@mui/icons-material/SpaOutlined";
 import { GETProductType } from "@/app/(core)/utils/API/GETProductType/GETProductType";
 import { useStore } from "@/app/(core)/contexts/StoreProvider";
 import Cookies from "js-cookie";
 import { Skeleton } from "@mui/material";
 
-export const getProductTypeCached = async (finalID) => {
+const getProductTypeCached = async (finalID) => {
   if (typeof window === "undefined") return null;
 
   const stored = sessionStorage.getItem("productTypes");
@@ -20,32 +17,24 @@ export const getProductTypeCached = async (finalID) => {
   }
 
   const res = await GETProductType(finalID);
+  const data = res?.Data?.rd || [];
 
-  if (res) {
-    sessionStorage.setItem("productTypes", JSON.stringify(res?.Data?.rd));
-  }
+  sessionStorage.setItem("productTypes", JSON.stringify(data));
 
-  return res;
+  return data;
 };
 
-const categoriesList = [
-  { label: "Fashion", icon: <CheckroomOutlinedIcon color="info" fontSize="small" /> },
-  { label: "Silver", icon: <SpaOutlinedIcon color="warning" fontSize="small" /> },
-  { label: "Watch", icon: <WatchOutlinedIcon color="success" fontSize="small" /> },
-  { label: "Gold", icon: <DiamondOutlinedIcon color="secondary" fontSize="small" /> },
-  { label: "Diamond", icon: <DiamondOutlinedIcon color="error" fontSize="small" /> },
-];
 
 function ProductTypeBar({ storeinit }) {
   const { loginUserDetail, islogin } = useStore();
-  const [types, setTypes] = useState(null);
+  const [types, setTypes] = useState([]);
   const visiterID = Cookies.get("visiterId");
 
   useEffect(() => {
     const loadData = async () => {
       const finalID = storeinit?.IsB2BWebsite === 0 ? (islogin === false ? visiterID : loginUserDetail?.id || "0") : loginUserDetail?.id || "0";
       const data = await getProductTypeCached(finalID);
-      setTypes(data);
+      setTypes(data || []);
     };
     loadData();
   }, []);
@@ -65,47 +54,46 @@ function ProductTypeBar({ storeinit }) {
 
   return (
     <Box
-  sx={{
-    display: "flex",
-    overflowX: "auto",
-    gap: 1.2,
-    mb: 2,
-    px: 1,
-    "&::-webkit-scrollbar": { display: "none" },
-  }}
->
-  {!types
-    ? Array.from(new Array(6)).map((_, i) => (
-        <Skeleton
-          key={i}
-          variant="rounded"
-          width={110}
-          height={42}
-          sx={{
-            borderRadius: "999px",
-            flexShrink: 0,
-          }}
-        />
-      ))
-    : types?.map((item) => (
-        <Chip
-          key={item.ProductTypeId}
-          label={item.ProductTypeName}
-          clickable
-          icon={<DiamondOutlinedIcon fontSize="small" />}
-          sx={{
-            borderRadius: "999px",
-            px: 1.6,
-            height: 42,
-            fontWeight: 600,
-            color: "#5a4636",
-            background: chipColors[item.ProductTypeName] || "#fff8e1",
-            transition: "all .25s ease",
-          }}
-        />
-      ))}
-</Box>
-
+      sx={{
+        display: "flex",
+        overflowX: "auto",
+        gap: 1.2,
+        mb: 2,
+        px: 1,
+        "&::-webkit-scrollbar": { display: "none" },
+      }}
+    >
+      {!types
+        ? Array.from(new Array(6)).map((_, i) => (
+          <Skeleton
+            key={i}
+            variant="rounded"
+            width={110}
+            height={42}
+            sx={{
+              borderRadius: "999px",
+              flexShrink: 0,
+            }}
+          />
+        ))
+        : types?.map((item) => (
+          <Chip
+            key={item.ProductTypeId}
+            label={item.ProductTypeName}
+            clickable
+            icon={<DiamondOutlinedIcon fontSize="small" />}
+            sx={{
+              borderRadius: "999px",
+              px: 1.6,
+              height: 42,
+              fontWeight: 600,
+              color: "#5a4636",
+              background: chipColors[item.ProductTypeName] || "#fff8e1",
+              transition: "all .25s ease",
+            }}
+          />
+        ))}
+    </Box>
   );
 }
 export default ProductTypeBar;

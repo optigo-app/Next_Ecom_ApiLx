@@ -25,6 +25,8 @@ import Calllog from "./CallLog/Calllog";
 import useGlobalPreventSave from "@/app/(core)/utils/Glob_Functions/useGlobalPreventSave";
 import { useNextRouterLikeRR } from "@/app/(core)/hooks/useLocationRd";
 import { useStore } from "@/app/(core)/contexts/StoreProvider";
+import LogOutModal from "../../ui/LogOut";
+import { useSearchParams } from "next/navigation";
 
 function CustomTabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -64,17 +66,31 @@ export default function Account({ Storeinit }) {
   const { push } = useNextRouterLikeRR();
   const [value, setValue] = useState(0);
   const [value1, setValue1] = useState(0);
+  const [LogoutModal, setLogoutModal] = useState(false);
+  const searchPrams = useSearchParams();
+  const TabId = atob(searchPrams.get("id"));
+
+
 
   const navigation = push;
   const [accountInner, setAccountInner] = useState(accountDetailPages());
 
   const handleChange = (event, newValue) => {
+    console.log(newValue, "newValue")
     setValue(newValue);
   };
 
   const handleChangeSub = (event, newValue) => {
     setValue1(newValue);
   };
+
+  useEffect(() => {
+    if (TabId) {
+      setValue(Number(TabId));
+    }
+  }, [TabId])
+
+
 
   useGlobalPreventSave();
 
@@ -101,6 +117,11 @@ export default function Account({ Storeinit }) {
 
   return (
     <>
+      <LogOutModal
+        open={LogoutModal}
+        onClose={() => setLogoutModal(false)}
+        onConfirm={handleLogout}
+      />
       <AppBar position="static" color="default" elevation={1}>
         <Toolbar>
           <Typography variant="h6" sx={{ flexGrow: 1 }}>
@@ -114,7 +135,7 @@ export default function Account({ Storeinit }) {
           {accountValidation() && <Tab label="ACCOUNT" {...a11yProps(3)} />}
           <Tab label="CHANGE PASSWORD" {...a11yProps(accountValidation() ? 4 : 3)} />
           {loginUserDetail?.IsPLWOn && <Tab label="PLM" {...a11yProps(1)} />}
-          <Tab label="Log Out" onClick={handleLogout} />
+          <Tab label="Log Out" onClick={() => setLogoutModal(true)} />
         </Tabs>
       </AppBar>
       <div
