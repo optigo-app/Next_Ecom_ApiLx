@@ -8,80 +8,78 @@ import { useStore } from "@/app/(core)/contexts/StoreProvider";
 const categoryImages = [
   {
     CategoryName: "Mangalsutra",
-    ImageUrl: "http://max.orail.co.in/WebSiteStaticImage/Category/new-image/Mangalsutra1.jpg",
+    ImageUrl: "/category/Mangalsutra1.jpg",
   },
   {
     CategoryName: "Pendants",
-    ImageUrl: "http://max.orail.co.in/WebSiteStaticImage/Category/new-image/pendent.jpg",
+    ImageUrl: "/category/pendent.jpg",
   },
   {
     CategoryName: "Men's chain",
-    ImageUrl: "http://max.orail.co.in/WebSiteStaticImage/Category/new-image/Mens'chain.jpg",
+    ImageUrl: "/category/Mens'chain.jpg",
   },
   {
     CategoryName: "Bangles",
-    ImageUrl: "http://max.orail.co.in/WebSiteStaticImage/Category/new-image/Bangals1.png",
+    ImageUrl: "/category/Bangals1.png",
   },
   {
     CategoryName: "Ring",
-    ImageUrl: "http://max.orail.co.in/WebSiteStaticImage/Category/new-image/rings.jpg",
+    ImageUrl: "/category/rings.jpg",
   },
   {
     CategoryName: "EARING",
-    ImageUrl: "http://max.orail.co.in/WebSiteStaticImage/Category/new-image/Earings1.png",
+    ImageUrl: "/category/Earings1.png",
   },
   {
     CategoryName: "NACKLACE",
-    ImageUrl: "http://max.orail.co.in/WebSiteStaticImage/Category/new-image/NECKLACE1.jpg",
+    ImageUrl: "/category/NECKLACE1.jpg",
   },
   {
     CategoryName: "Bracelet",
-    ImageUrl: "http://max.orail.co.in/WebSiteStaticImage/Category/new-image/BRACELATE2.jpg",
+    ImageUrl: "/category/BRACELATE2.jpg",
   },
   {
     "CategoryName": "Pendant",
-    ImageUrl: "http://max.orail.co.in/WebSiteStaticImage/Category/new-image/pendent.jpg",
-
+    ImageUrl: "/category/pendent.jpg",
   },
   {
     "CategoryName": "Bangle",
-    ImageUrl: "http://max.orail.co.in/WebSiteStaticImage/Category/new-image/Bangals1.png",
+    ImageUrl: "/category/Bangals1.png",
   },
   {
     "CategoryName": "Necklace Set",
-    ImageUrl: 'https://www.elvee.in/WebSiteStaticImage/images/Category/NecklaceSet.webp',
+    ImageUrl: '/category/NECKLACE1.webp',
   },
   {
     "CategoryName": "Necklace",
-    ImageUrl: "http://max.orail.co.in/WebSiteStaticImage/Category/new-image/NECKLACE1.jpg",
+    ImageUrl: "/category/NECKLACE1.jpg",
 
   },
   {
     "CategoryName": "Ring",
-    ImageUrl: "http://max.orail.co.in/WebSiteStaticImage/Category/new-image/rings.jpg",
+    ImageUrl: "/category/rings.jpg",
 
   },
   {
     "CategoryName": "Bracelet",
-    ImageUrl: "http://max.orail.co.in/WebSiteStaticImage/Category/new-image/BRACELATE2.jpg",
-
+    ImageUrl: "/category/BRACELATE2.jpg",
   },
   {
     "CategoryName": "Earring",
-    ImageUrl: "http://max.orail.co.in/WebSiteStaticImage/Category/new-image/Earings1.png",
+    ImageUrl: "/category/Earings1.png",
 
   },
   {
     "CategoryName": "Pendant set",
-    ImageUrl: 'https://www.elvee.in/WebSiteStaticImage/images/Category/PendantSet.webp'
+    ImageUrl: "/category/PendantSet.webp",
   },
   {
     "CategoryName": "Mangalsutra",
-    ImageUrl: "http://max.orail.co.in/WebSiteStaticImage/Category/new-image/Mangalsutra1.jpg",
+    ImageUrl: "/category/Mangalsutra1.jpg",
   },
   {
     "CategoryName": "Mangalsutra Set",
-    ImageUrl: 'https://www.elvee.in/WebSiteStaticImage/images/Category/MangalsutraSet.webp'
+    ImageUrl: "/category/MangalsutraSet.webp",
   }
 ];
 

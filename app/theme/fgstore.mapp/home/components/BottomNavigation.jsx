@@ -70,8 +70,8 @@ export default BottomNavigation;
 
 const NavItem = ({ activeTab, setActiveTab, id, icon: Icon, label, NavigateLink }) => {
     const isActive = activeTab === id;
-    const activeColor = "#1a6bff";
-    const inactiveColor = "#8a8a8a";
+    const activeColor = "#000";     // black
+    const inactiveColor = "#9a9a9a"; // light gray
 
     return (
         <Box
@@ -88,9 +88,8 @@ const NavItem = ({ activeTab, setActiveTab, id, icon: Icon, label, NavigateLink 
                 height: "100%",
                 position: "relative",
                 transition: "all 0.3s ease",
-
-                background: isActive ? "linear-gradient(180deg, rgba(26,107,255,0.12) 0%, rgba(255,255,255,0.4) 100%)" : "transparent",
-
+                // background: isActive ? "linear-gradient(180deg, rgba(26,107,255,0.12) 0%, rgba(255,255,255,0.4) 100%)" : "transparent",
+                background: isActive ? "#ffffff" : "#ffffff",
                 backdropFilter: isActive ? "blur(8px)" : "none",
                 WebkitBackdropFilter: isActive ? "blur(8px)" : "none",
                 textAlign: "center",
@@ -98,7 +97,7 @@ const NavItem = ({ activeTab, setActiveTab, id, icon: Icon, label, NavigateLink 
                 textDecoration: "none",
             }}
         >
-            <Icon sx={{ color: isActive ? activeColor : inactiveColor, fontSize: 24, mb: 0.5 }} />
+            <Icon color={isActive ? activeColor : inactiveColor} sx={{ color: isActive ? activeColor : inactiveColor, fontSize: 24, mb: 0.5 }} />
             <Typography
                 sx={{
                     color: isActive ? activeColor : inactiveColor,
