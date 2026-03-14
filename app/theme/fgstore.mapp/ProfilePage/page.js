@@ -30,6 +30,9 @@ const [openPage, setOpenPage] = useState(null);
     router.push("/logout");
   };
 
+const userName = loginUserDetail?.firstname
+  ? `${loginUserDetail.firstname} ${loginUserDetail.lastname}`
+  : null;
   return (
     <>  
     <StaticPage
@@ -40,7 +43,7 @@ const [openPage, setOpenPage] = useState(null);
       <Box sx={{ minHeight: "100vh", backgroundColor: "#f1f3f6", pb: 10 }}>
         <Box
           sx={{
-            backgroundColor: "#2874f0",
+            backgroundColor: "rgb(154, 154, 154)",
             color: "white",
             p: 3,
             display: "flex",
@@ -48,11 +51,17 @@ const [openPage, setOpenPage] = useState(null);
             gap: 2,
           }}
         >
-          <Avatar src="https://via.placeholder.com/150" sx={{ width: 40, height: 40, border: "2px solid white" }} />
+        {userName && <Avatar src="https://via.placeholder.com/150" sx={{ width: 40, height: 40, border: "2px solid white" }} />}
           <Box>
-            <Typography variant="h6" fontWeight="bold">
-              Hey! {loginUserDetail?.firstname} {loginUserDetail?.lastname}
-            </Typography>
+           <Typography variant="h6" fontWeight="bold"
+           sx={{
+            ...(!userName && {
+              fontSize:'18px'
+            })
+           }}
+           >
+  {userName ? `Hey! ${userName}` : "Log in to get exclusive offers"}
+</Typography>
           </Box>
         </Box>
 
@@ -116,9 +125,9 @@ const [openPage, setOpenPage] = useState(null);
           </Box>
         )}
 
-        <Box sx={{ mt: 1, backgroundColor: "white" }}>
+        <Box sx={{ backgroundColor: "white" }}>
           <List disablePadding>
-            <ListItem
+           {isUserAvailable && <ListItem
               disablePadding
               component={Link}
               href={`/account?id=${btoa("0")}`}
@@ -134,10 +143,10 @@ const [openPage, setOpenPage] = useState(null);
                 <ListItemText primary="Account Settings" />
                 <ChevronRightIcon color="action" />
               </ListItemButton>
-            </ListItem>
-            <Divider />
+            </ListItem>}
+           {isUserAvailable && <Divider />}
 
-            <ListItem
+            {isUserAvailable && <ListItem
               disablePadding
               component={Link}
               href={`/account?id=${btoa("2")}`}
@@ -153,8 +162,8 @@ const [openPage, setOpenPage] = useState(null);
                 <ListItemText primary="Saved Addresses" />
                 <ChevronRightIcon color="action" />
               </ListItemButton>
-            </ListItem>
-            <Divider />
+            </ListItem>}
+       {isUserAvailable &&     <Divider />}
           </List>
         </Box>
         <Box sx={{ backgroundColor: "white" }}>

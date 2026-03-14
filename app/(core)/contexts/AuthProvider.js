@@ -1,5 +1,5 @@
 "use client";
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, { createContext, useContext, useEffect, useState, useRef } from "react";
 import { LoginWithEmailAPI } from "../utils/API/Auth/LoginWithEmailAPI";
 import { useStore } from "./StoreProvider";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
@@ -17,8 +17,6 @@ const protectedPages = ["/account", "/delivery", "/payment", "/confirmation", "/
 
 const AuthContext = createContext(null);
 export function AuthProvider({ children, storeInit, theme }) {
-  console.log(theme, "theme");
-  // "fgstore.mapp"
   const { islogin, setislogin, setLoginUserDetail } = useStore();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -31,14 +29,43 @@ export function AuthProvider({ children, storeInit, theme }) {
 
   const isMobileApp = storeInit?.domain === "nxt14.optigoapps.com" || storeInit?.domain === "nxtmobileapp.web" || storeInit?.domain === "fgstore.mapp";
 
+  // Ref guard: prevents re-running auth initialization when islogin changes
+  const hasInitializedAuth = useRef(false);
+  // Track previous token to detect new tokens from Flutter URL
+  const prevTokenRef = useRef(token);
+
   useEffect(() => {
+    // If a NEW token arrives via URL (mobile app), reset the guard so we re-authenticate
+    if (token && token !== prevTokenRef.current) {
+      hasInitializedAuth.current = false;
+      prevTokenRef.current = token;
+    }
+
+    // Only run auth initialization once (unless a new URL token resets the guard)
+    if (hasInitializedAuth.current) {
+      setLocalData(storeInit);
+      return;
+    }
+
     if (token) {
       setSession("token", token);
     }
+
+    // Synchronous check: if session already has login data (StoreProvider will restore it),
+    // skip the redundant API call to prevent the race condition
+    const existingLoginUser = sessionStorage.getItem("LoginUser");
+    if (existingLoginUser === "true" && !token) {
+      setIsLoading(false);
+      hasInitializedAuth.current = true;
+      setLocalData(storeInit);
+      return;
+    }
+
     const cookieValue = Cookies.get("userLoginCookie");
 
     if (!isMobileApp) {
-      if (cookieValue && islogin === false) {
+      if (cookieValue) {
+        hasInitializedAuth.current = true;
         setIsLoading(true);
         LoginWithEmailAPI("", "", "", "", cookieValue)
           .then((response) => {
@@ -62,10 +89,13 @@ export function AuthProvider({ children, storeInit, theme }) {
           .finally(() => setIsLoading(false));
       } else {
         setIsLoading(false);
+        hasInitializedAuth.current = true;
       }
     } else {
+      // Mobile app: Flutter passes token via URL, always process it
       const ExistingToken = token || getSession("token");
       if (ExistingToken) {
+        hasInitializedAuth.current = true;
         setIsLoading(true);
         WebLoginWithMobileToken(ExistingToken)
           .then((response) => {
@@ -93,10 +123,11 @@ export function AuthProvider({ children, storeInit, theme }) {
           .finally(() => setIsLoading(false));
       } else {
         setIsLoading(false);
+        hasInitializedAuth.current = true;
       }
     }
     setLocalData(storeInit);
-  }, [islogin, redirectEmailUrl, token, storeInit, isMobileApp]);
+  }, [token, storeInit, isMobileApp]);
 
   // useEffect(() => {
   //   const timeout = setTimeout(() => {
