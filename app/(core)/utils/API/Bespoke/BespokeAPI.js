@@ -41,7 +41,6 @@ export const BespokeAPI = async (obj = {}, fileMeta = {},ukey) => {
 };
 
 export const BespokeFileUploadAPI = async (file, ukey) => {
-  console.log("🚀 ~ BespokeFileUploadAPI ~ file:", file)
   try {
     if (!file) {
       throw new Error("No file provided for upload");

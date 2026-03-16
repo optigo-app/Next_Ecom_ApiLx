@@ -15,10 +15,6 @@ const categoryImages = [
     ImageUrl: "/category/pendent.jpg",
   },
   {
-    CategoryName: "Men's chain",
-    ImageUrl: "/category/Mens'chain.jpg",
-  },
-  {
     CategoryName: "Bangles",
     ImageUrl: "/category/Bangals1.png",
   },
@@ -45,10 +41,6 @@ const categoryImages = [
   {
     "CategoryName": "Bangle",
     ImageUrl: "/category/Bangals1.png",
-  },
-  {
-    "CategoryName": "Necklace Set",
-    ImageUrl: '/category/NECKLACE1.webp',
   },
   {
     "CategoryName": "Necklace",
@@ -132,17 +124,19 @@ const Categories = () => {
 
   return (
     <>
-      <Headers title={"Categories"} />
+      <Headers title={"Categories"}
+      showViewMoreBtn={false}
+      />
       <Box sx={{ display: "flex", overflowX: "auto", gap: 2, px: 1.5, py: 1.5, "&::-webkit-scrollbar": { display: "none" } }}>
         {
           loading ? (
-            Array.from(new Array(4)).map((_, index) => (
+            Array.from(new Array(8)).map((_, index) => (
               <Box key={index} sx={{ minWidth: "80px", width: "80px" }}>
                 <Skeleton
                   variant="rectangular"
                   width="90px"
                   height="90px"
-                  sx={{ borderRadius: 50, bgcolor: "rgba(0,0,0,0.05)" }}
+                  sx={{ borderRadius: 50, bgcolor: "rgba(0,0,0,0.06)" }}
                 />
               </Box>
             ))

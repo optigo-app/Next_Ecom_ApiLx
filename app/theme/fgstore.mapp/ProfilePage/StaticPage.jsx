@@ -17,10 +17,7 @@ export default function StaticPage({ open, onClose, title = "Page" }) {
         },
       }}
     >
-      <MobileNavbar 
-       title={title}
-       onClose={onClose}
-      />
+      <MobileNavbar title={title} onClose={onClose} />
       <Box
         sx={{
           p: 2,
@@ -35,9 +32,7 @@ export default function StaticPage({ open, onClose, title = "Page" }) {
             mb: 2,
           }}
         >
-          This is a dummy static page for mobile view. Here you can place
-          information such as privacy policy, support details, copyright
-          information, or feedback instructions.
+          This is a dummy static page for mobile view. Here you can place information such as privacy policy, support details, copyright information, or feedback instructions.
         </Typography>
 
         <Typography
@@ -48,8 +43,7 @@ export default function StaticPage({ open, onClose, title = "Page" }) {
             mb: 2,
           }}
         >
-          Our platform values user privacy and ensures that personal
-          information is handled securely.
+          Our platform values user privacy and ensures that personal information is handled securely.
         </Typography>
 
         <Typography
@@ -59,8 +53,7 @@ export default function StaticPage({ open, onClose, title = "Page" }) {
             color: "text.secondary",
           }}
         >
-          For support or feedback please contact our team through the support
-          section available in the profile page.
+          For support or feedback please contact our team through the support section available in the profile page.
         </Typography>
       </Box>
     </Drawer>
