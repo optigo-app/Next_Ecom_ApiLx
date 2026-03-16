@@ -27,6 +27,9 @@ import { useNextRouterLikeRR } from "@/app/(core)/hooks/useLocationRd";
 import { useStore } from "@/app/(core)/contexts/StoreProvider";
 import LogOutModal from "../../ui/LogOut";
 import { useSearchParams } from "next/navigation";
+import AccountLedger2 from "./AccountLeger2/AccountLedger";
+import AccountLedger3 from "./AccountLeger3/AccountLedger";
+
 
 function CustomTabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -215,7 +218,8 @@ export default function Account({ Storeinit }) {
                     )}
                     {Storeinit?.IsPriceShow == 1 && e?.id === 1159 && (
                       <CustomTabPanel value={value1} index={i}>
-                        <AccountLedger />
+                        {/* <AccountLedger /> */}
+                        <AccountLedger3/>
                       </CustomTabPanel>
                     )}
                   </React.Fragment>

@@ -11,30 +11,33 @@ import BestSellers from "./components/BestSellers";
 import Trendings from "./components/Trendings";
 import ShowCaseBlock from "./components/ShowCaseBlock";
 import OrderBlock from "./CustomOrder/OrderBlock";
+import TokenWrapper from "./TokenWrapper";
 
-export default async function Home({ storeinit }) {
+export default function Home({ storeinit }) {
     return (
         <>
-            <Box sx={{ paddingBottom: 15 }}>
-                <Box sx={{ py: 1.2 }}>
-                    <Searchbar storeinit={storeinit} />
-                    <ProductTypeBar storeinit={storeinit} />
-                    <PromotionCarousel />
-                    <Categories storeinit={storeinit} />
-                    <OrderBlock/>
+            <TokenWrapper>
+                <Box sx={{ paddingBottom: 15 }}>
+                    <Box sx={{ py: 1.2 }}>
+                        <Searchbar storeinit={storeinit} />
+                        <ProductTypeBar storeinit={storeinit} />
+                        <PromotionCarousel />
+                        <Categories storeinit={storeinit} />
+                        <OrderBlock />
+                    </Box>
+                    {/* <AlbumSection /> */}
+                    <GiftBlock storeinit={storeinit} />
+                    {/* storeinit?.IsHomeAlbum === 0 && */}
+                    <BestSellers storeinit={storeinit} />
+                    {/* storeinit?.IsHomeBestSeller === 0 && */}
+                    <ShowCaseBlock />
+                    <Trendings storeinit={storeinit} />
+                    {/* storeinit?.IsHomeTrending === 0 && */}
+                    <Collection storeinit={storeinit} />
+                    <NewArrival storeinit={storeinit} />
+                    {/* storeinit?.IsHomeNewArrival === 0 && */}
                 </Box>
-                {/* <AlbumSection /> */}
-                <GiftBlock storeinit={storeinit} />
-                {/* storeinit?.IsHomeAlbum === 0 && */}
-                <BestSellers storeinit={storeinit} />
-                {/* storeinit?.IsHomeBestSeller === 0 && */}
-                <ShowCaseBlock />
-                <Trendings storeinit={storeinit} />
-                {/* storeinit?.IsHomeTrending === 0 && */}
-                <Collection storeinit={storeinit} />
-                <NewArrival storeinit={storeinit} />
-                {/* storeinit?.IsHomeNewArrival === 0 && */}
-            </Box>
+            </TokenWrapper>
         </>
     );
 }

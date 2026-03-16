@@ -126,13 +126,13 @@ function Collection({ storeinit }) {
             >
                 {
                     loading ? (
-                        Array.from(new Array(4)).map((_, index) => (
+                        Array.from(new Array(8)).map((_, index) => (
                             <Box key={index} sx={{ minWidth: "320px", width: "100%" }}>
                                 <Skeleton
                                     variant="rectangular"
                                     width="320px"
                                     height="420px"
-                                    sx={{ borderRadius: 3, bgcolor: "rgba(0,0,0,0.05)" }}
+                                    sx={{ borderRadius: 3, bgcolor: "rgba(0,0,0,0.06)" }}
                                 />
                             </Box>
                         ))

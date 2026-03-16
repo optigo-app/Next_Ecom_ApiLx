@@ -14,6 +14,7 @@ import Cookies from 'js-cookie';
 import { WebLoginWithMobileToken } from "../utils/API/Auth/WebLoginWithMobileToken";
 import { useSearchParams } from "next/navigation";
 import { useNextRouterLikeRR } from "../hooks/useLocationRd";
+import { getSession, setSession } from "../utils/FetchSessionData";
 
 
 const masterContext = createContext(null);
@@ -26,17 +27,10 @@ export const MasterProvider = ({ children, getCompanyInfoData, getStoreInit, get
     const handleSubmit = async () => {
         WebLoginWithMobileToken(token)
             .then((response) => {
+                console.log(response, "response")
                 if (response.Data.rd[0].stat === 1) {
                     sessionStorage.setItem("LoginUser", true);
                     sessionStorage.setItem("loginUserDetail", JSON.stringify(response.Data.rd[0]));
-                    let redirectLookBook = localStorage?.getItem("redirectLookBook");
-                    setTimeout(() => {
-                        if (redirectLookBook) {
-                            router.push(redirectLookBook);
-                        } else {
-                            router.push("/");
-                        }
-                    }, 0);
                 }
             })
             .catch((error) => {
@@ -44,15 +38,21 @@ export const MasterProvider = ({ children, getCompanyInfoData, getStoreInit, get
             });
     };
 
-    // useEffect(() => {
-    //     if (getStoreInit?.domain === "nxtmobileapp.web") {
-    //         if (token) {
-    //             handleSubmit();
-    //         } else {
-    //             router.push("/");
-    //         }
-    //     }
-    // }, [token, getStoreInit?.domain])
+    useEffect(() => {
+        if (token) {
+            setSession("token", token);
+        }
+        const isMobileApp = getStoreInit?.domain === "nxt14.optigoapps.com" || getStoreInit?.domain === "nxtmobileapp.web" || getStoreInit?.domain === "fgstore.mapp";
+        if (isMobileApp) {
+            const ExistingToken = token || getSession("token");
+            console.log(ExistingToken, "ExistingToken")
+            if (ExistingToken) {
+                handleSubmit();
+            } else {
+                router.push("/");
+            }
+        }
+    }, [token, getStoreInit?.domain])
 
     const fetchVisitorId = async () => {
         const storeInitData = getStoreInit;

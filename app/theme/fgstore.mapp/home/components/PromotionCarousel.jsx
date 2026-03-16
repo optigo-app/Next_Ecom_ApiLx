@@ -12,22 +12,22 @@ import "swiper/css/navigation";
 const mockPromotions = [
   {
     id: 1,
-    imageUrl: `https://i.pinimg.com/originals/28/ab/11/28ab11b28c7565c6c8e61e6b1d2e3d49.jpg`,
+    imageUrl:'/banner/2.jpg',
     color: "#FFD700", // Gold accent
   },
   {
     id: 2,
-    imageUrl: `https://faithfulplatform.com/hs-fs/hubfs/Various%20Yellow%20Gold%20Accented%20Wedding%20Bands.png?width=900&height=473&name=Various%20Yellow%20Gold%20Accented%20Wedding%20Bands.png`,
+    imageUrl:'/banner/3.jpg',
     color: "#3F88C5", // Blue accent
   },
   {
     id: 3,
-    imageUrl: `https://www.angara.com/blog/wp-content/uploads/2023/08/The-Evolution-of-Gold-Jewelry.jpg`,
+    imageUrl:'/banner/4.jpg',
     color: "#B03A2E", // Red accent
   },
   {
     id: 4,
-    imageUrl: `https://oviyajeweller.com/img/bg3.jpg`,
+    imageUrl:'/banner/5.jpg',
     color: "#B03A2E", // Red accent
   },
 ];

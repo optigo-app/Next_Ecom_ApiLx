@@ -49,7 +49,9 @@ const GiftBlock = ({ storeinit }) => {
 
   return (
     <Box sx={{ mt: 0 }}>
-      <Headers title="Gifts For You" />
+      <Headers title="Latest Albums"
+      showViewMoreBtn={false}
+      />
 
       <Box
         sx={{
@@ -64,13 +66,13 @@ const GiftBlock = ({ storeinit }) => {
         }}
       >
         {loading ? (
-          Array.from(new Array(4)).map((_, index) => (
+          Array.from(new Array(8)).map((_, index) => (
             <Box key={index} sx={{ minWidth: 160, width: "100%" }}>
               <Skeleton
                 variant="rectangular"
                 width="100%"
                 height={160}
-                sx={{ borderRadius: 3, bgcolor: "rgba(0,0,0,0.05)" }}
+                sx={{ borderRadius: 3, bgcolor: "rgba(0,0,0,0.06)" }}
               />
             </Box>
           ))
@@ -81,7 +83,7 @@ const GiftBlock = ({ storeinit }) => {
               sx={{
                 display: "flex",
                 flexDirection: "column",
-                alignItems: "center",
+                alignItems: "flex-start",
                 minWidth: "160px",
                 width: "100%",
               }}
@@ -92,14 +94,15 @@ const GiftBlock = ({ storeinit }) => {
                 prefetch={false}
                 elevation={0}
                 sx={{
+                  minWidth: "160px",  
                   borderRadius: 3,
-                  bgcolor: "#fce(4ec", // Kept the subtle pinkish background if it was intentional, but softened it
+                  bgcolor: "#fce(4ec",
                   boxShadow: "0 4px 12px rgba(0,0,0,0.05)",
                   width: "100%",
                   transition: "transform 0.2s ease-in-out",
                   "&:hover": {
                     transform: "scale(1.02)",
-                  }
+                  } ,
                 }}
               >
                 <CardMedia

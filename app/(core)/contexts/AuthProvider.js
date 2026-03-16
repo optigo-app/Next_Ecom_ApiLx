@@ -29,35 +29,32 @@ export function AuthProvider({ children, storeInit, theme }) {
 
   const isMobileApp = storeInit?.domain === "nxt14.optigoapps.com" || storeInit?.domain === "nxtmobileapp.web" || storeInit?.domain === "fgstore.mapp";
 
-  // Ref guard: prevents re-running auth initialization when islogin changes
   const hasInitializedAuth = useRef(false);
-  // Track previous token to detect new tokens from Flutter URL
   const prevTokenRef = useRef(token);
 
   useEffect(() => {
-    // If a NEW token arrives via URL (mobile app), reset the guard so we re-authenticate
     if (token && token !== prevTokenRef.current) {
       hasInitializedAuth.current = false;
       prevTokenRef.current = token;
     }
 
-    // Only run auth initialization once (unless a new URL token resets the guard)
     if (hasInitializedAuth.current) {
+      console.log(hasInitializedAuth, "hasInitializedAuth")
       setLocalData(storeInit);
       return;
     }
 
     if (token) {
       setSession("token", token);
+      localStorage.setItem('token', token)
     }
-
-    // Synchronous check: if session already has login data (StoreProvider will restore it),
-    // skip the redundant API call to prevent the race condition
     const existingLoginUser = sessionStorage.getItem("LoginUser");
     if (existingLoginUser === "true" && !token) {
       setIsLoading(false);
       hasInitializedAuth.current = true;
       setLocalData(storeInit);
+      console.log(hasInitializedAuth, "hasInitializedAuth")
+
       return;
     }
 
@@ -85,56 +82,51 @@ export function AuthProvider({ children, storeInit, theme }) {
               }
             }
           })
-          .catch((err) => console.log(err))
-          .finally(() => setIsLoading(false));
-      } else {
-        setIsLoading(false);
-        hasInitializedAuth.current = true;
-      }
-    } else {
-      // Mobile app: Flutter passes token via URL, always process it
-      const ExistingToken = token || getSession("token");
-      if (ExistingToken) {
-        hasInitializedAuth.current = true;
-        setIsLoading(true);
-        WebLoginWithMobileToken(ExistingToken)
-          .then((response) => {
-            if (token) {
-              setSession("token", token);
-            }
-            if (response.Data.rd[0].stat === 1) {
-              sessionStorage.setItem("LoginUser", true);
-              sessionStorage.setItem("loginUserDetail", JSON.stringify(response.Data.rd[0]));
-              setislogin(true);
-              setLoginUserDetail(response.Data.rd[0]);
-              let redirectLookBook = localStorage?.getItem("redirectLookBook");
-              setTimeout(() => {
-                if (redirectLookBook) {
-                  router.push(redirectLookBook);
-                } else {
-                  // router.push("/");
-                }
-              }, 0);
-            }
-          })
-          .catch((error) => {
-            console.error("Error:", error);
-          })
+          .catch((err) => alert(`err`))
           .finally(() => setIsLoading(false));
       } else {
         setIsLoading(false);
         hasInitializedAuth.current = true;
       }
     }
+    // else {
+    //   // Mobile app: Flutter passes token via URL, always process it
+    //   const ExistingToken = localStorage.getItem('token') || token || getSession("token");
+    //   if (ExistingToken) {
+    //     hasInitializedAuth.current = true;
+    //     setIsLoading(true);
+    //     WebLoginWithMobileToken(ExistingToken)
+    //       .then((response) => {
+    //         if (token) {
+    //           setSession("token", token);
+    //         }
+    //         if (response.Data.rd[0].stat === 1) {
+    //           sessionStorage.setItem("LoginUser", true);
+    //           sessionStorage.setItem("loginUserDetail", JSON.stringify(response.Data.rd[0]));
+    //           setislogin(true);
+    //           setLoginUserDetail(response.Data.rd[0]);
+    //           // let redirectLookBook = localStorage?.getItem("redirectLookBook");
+    //           // setTimeout(() => {
+    //           //   if (redirectLookBook) {
+    //           //     router.push(redirectLookBook);
+    //           //   } else {
+    //           router.push("/");
+    //           //   }
+    //           // }, 0);
+    //         }
+    //       })
+    //       .catch((error) => {
+    //         console.error("Error:", error);
+    //       })
+    //       .finally(() => setIsLoading(false));
+    //   } else {
+    //     setIsLoading(false);
+    //     hasInitializedAuth.current = true;
+    //   }
+    // }
     setLocalData(storeInit);
   }, [token, storeInit, isMobileApp]);
 
-  // useEffect(() => {
-  //   const timeout = setTimeout(() => {
-  //     setIsLoading(false);
-  //   }, 500);
-  //   return () => clearTimeout(timeout);
-  // }, [islogin]);
 
   useEffect(() => {
     if (isLoading) return;
@@ -166,6 +158,8 @@ export function AuthProvider({ children, storeInit, theme }) {
         if (decodeError || (albumSecurityId !== null && albumSecurityId > 0)) {
           const redirectUrl = `/LoginOption?LoginRedirect=${encodeURIComponent(fullPath)}`;
           router.replace(redirectUrl);
+          console.log(hasInitializedAuth, "hasInitializedAuth")
+
           return;
         }
       }
@@ -176,6 +170,8 @@ export function AuthProvider({ children, storeInit, theme }) {
       if (isProtectedPage) {
         const redirectUrl = `/LoginOption?LoginRedirect=${encodeURIComponent(fullPath)}`;
         router.replace(redirectUrl);
+        console.log(hasInitializedAuth, "hasInitializedAuth")
+
         return;
       }
     }
@@ -187,9 +183,13 @@ export function AuthProvider({ children, storeInit, theme }) {
         if (isShopPage) {
           const redirectUrl = `/LoginOption?LoginRedirect=${encodeURIComponent(fullPath)}`;
           router.replace(redirectUrl);
+          console.log(hasInitializedAuth, "hasInitializedAuth")
+
           return;
         } else if (!isPublicPage) {
           router.replace("/");
+          console.log(hasInitializedAuth, "hasInitializedAuth")
+
           return;
         }
       }
@@ -201,6 +201,8 @@ export function AuthProvider({ children, storeInit, theme }) {
     if (isMobileApp) {
       if (restrictedPaths?.some((path) => pathname.startsWith(path))) {
         router.replace(MOBILE_APP_REDIRECT_PATH);
+        console.log(hasInitializedAuth, "hasInitializedAuth")
+
         return;
       }
     }
@@ -216,45 +218,34 @@ export function AuthProvider({ children, storeInit, theme }) {
     }
   }, [islogin, isLoading, pathname, redirectEmailUrl, router, storeInit?.domain, isMobileApp]);
 
-  if (isLoading) {
-    return <div></div>;
-  }
+  // if (islogin !== true) {
+  //   const pathSegments = pathname?.split("/") || [];
+  //   const kSegment = pathSegments.find((s) => s.includes("K="));
+  //   const pathKey = kSegment?.split("?")[0]?.split("K=")[1];
+  //   let albumSecurityId = null;
+  //   let decodeError = false;
+  //   try {
+  //     if (pathKey) {
+  //       albumSecurityId = atob(decodeURIComponent(pathKey));
+  //     } else if (searchParams.get("SK")) {
+  //       albumSecurityId = searchParams.get("SK");
+  //     } else if (searchParams.get("SecurityKey")) {
+  //       albumSecurityId = searchParams.get("SecurityKey");
+  //     }
+  //   } catch (e) {
+  //     decodeError = true;
+  //   }
 
-  if (islogin !== true) {
-    const pathSegments = pathname?.split("/") || [];
-    const kSegment = pathSegments.find((s) => s.includes("K="));
-    const pathKey = kSegment?.split("?")[0]?.split("K=")[1];
-    let albumSecurityId = null;
-    let decodeError = false;
-    try {
-      if (pathKey) {
-        albumSecurityId = atob(decodeURIComponent(pathKey));
-      } else if (searchParams.get("SK")) {
-        albumSecurityId = searchParams.get("SK");
-      } else if (searchParams.get("SecurityKey")) {
-        albumSecurityId = searchParams.get("SecurityKey");
-      }
-    } catch (e) {
-      decodeError = true;
-    }
+  //   if (pathname === "/p" || pathname.startsWith("/p/")) {
+  //     if (decodeError || (albumSecurityId !== null && albumSecurityId > 0)) {
+  //       return <div></div>;
+  //     }
+  //   }
 
-    if (pathname === "/p" || pathname.startsWith("/p/")) {
-      if (decodeError || (albumSecurityId !== null && albumSecurityId > 0)) {
-        return <div></div>;
-      }
-    }
-
-    if (storeInit?.IsB2BWebsite === 1) {
-      if (pathname === "/p" || pathname.startsWith("/p/") || pathname === "/d" || pathname.startsWith("/d/") || pathname === "/cartPage" || pathname.startsWith("/cartPage/")) {
-        return <div></div>;
-      }
-    }
-  }
-
-  // if (islogin === true) {
-  //   if (restrictedPaths?.some((path) => pathname.startsWith(path))) {
-  //     router.push("/");
-  //     return <div></div>;
+  //   if (storeInit?.IsB2BWebsite === 1) {
+  //     if (pathname === "/p" || pathname.startsWith("/p/") || pathname === "/d" || pathname.startsWith("/d/") || pathname === "/cartPage" || pathname.startsWith("/cartPage/")) {
+  //       return <div></div>;
+  //     }
   //   }
   // }
 

@@ -74,6 +74,7 @@ const CartPage = ({ storeinit, visiterId, islogin, setCartCountNum }) => {
   const isMobileScreen = useMediaQuery('(max-width:768px)');
 
   const redirectUrl = `/LoginOption/?LoginRedirect=/delivery`;
+  
   const handlePlaceOrder = () => {
     if (storeInit?.IsPLW == 0) {
       let priceData = finalCartData?.reduce(
