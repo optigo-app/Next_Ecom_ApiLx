@@ -34,6 +34,8 @@ import { getSalesReportData } from "@/app/(core)/utils/API/AccountTabs/salesRepo
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
 import { headCells_SalesReport as headCells } from "@/app/(core)/utils/Glob_Functions/AccountPages/AccountPageColumns";
+import { getSession } from "@/app/(core)/utils/FetchSessionData";
+import { useStore } from "@/app/(core)/contexts/StoreProvider";
 
 function createData(
   SrNo,
@@ -197,6 +199,9 @@ function EnhancedTableHead(props) {
     onRequestSort(event, property);
   };
 
+  const { IsPriceShow } = getSession('storeInit') ?? {};
+
+
   return (
     <TableHead className="salesReporttabelHead">
       <TableRow>
@@ -209,7 +214,6 @@ function EnhancedTableHead(props) {
             'OtherAmount',
             'UnitCost'
           ];
-          const { IsPriceShow } = JSON?.parse(sessionStorage?.getItem('storeInit')) ?? {};
           if (IsPriceShow === 0 && headCellsLits.includes(headCell?.id)) {
             return null;
           }
@@ -257,9 +261,9 @@ EnhancedTableHead.propTypes = {
 };
 
 const SalesReport = () => {
+  const { loginUserDetail, storeInit } = useStore();
 
-  const storedData = sessionStorage.getItem('loginUserDetail');
-  const loginDetails = JSON.parse(storedData);
+  const loginDetails = loginUserDetail
 
   const isSmallScreen = useMediaQuery('(max-width:500px)');
   const [searchVal, setSearchVal] = useState("");
@@ -615,14 +619,11 @@ const SalesReport = () => {
   const fetchData = async () => {
     try {
       setIsLoading(true);
-      const storedData = sessionStorage.getItem("loginUserDetail");
-      const data = JSON.parse(storedData);
-      const customerid = data.id;
-      const storeInit = JSON.parse(sessionStorage.getItem("storeInit"));
+      const customerid = loginUserDetail.id;
       const { FrontEnd_RegNo } = storeInit;
       let currencyRate = storeInit?.CurrencyRate;
 
-      const response = await getSalesReportData(currencyRate, FrontEnd_RegNo, customerid, data);
+      const response = await getSalesReportData(currencyRate, FrontEnd_RegNo, customerid, loginUserDetail);
       if (response.Data?.rd) {
         let datass = [];
         let totals = { ...total };
@@ -728,11 +729,15 @@ const SalesReport = () => {
       tableContainer.scrollTop = 0;
     }
   };
-  const { IsPriceShow } = JSON?.parse(sessionStorage?.getItem('storeInit')) ?? {};
+  const { IsPriceShow } = getSession('storeInit') ?? {};
 
   return (
     <div className="salesReport_Account_SMR">
-      <Box>
+      <Box
+        sx={{
+          p: 1
+        }}
+      >
         {IsPriceShow == 1 && <Box
           sx={{
             display: "flex",

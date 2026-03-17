@@ -26,6 +26,7 @@ import { getQuotationQuoteData } from "@/app/(core)/utils/API/AccountTabs/quotat
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
 import { headCells_Quotation as headCells } from "@/app/(core)/utils/Glob_Functions/AccountPages/AccountPageColumns";
+import { useStore } from "@/app/(core)/contexts/StoreProvider";
 
 
 const descendingComparator = (a, b, orderBy) => {
@@ -71,7 +72,7 @@ const getComparator = (order, orderBy) => {
 }
 
 function EnhancedTableHead(props) {
-    const { onSelectAllClick, order, orderBy, numSelected, rowCount, onRequestSort } =
+    const { onSelectAllClick, order, orderBy, numSelected, rowCount, onRequestSort, storeInit } =
         props;
     const createSortHandler = (property) => (event) => {
         onRequestSort(event, property);
@@ -83,13 +84,14 @@ function EnhancedTableHead(props) {
         order: PropTypes.oneOf(['asc', 'desc']).isRequired,
         orderBy: PropTypes.string.isRequired,
         rowCount: PropTypes.number.isRequired,
+        storeInit: PropTypes.object.isRequired,
     };
 
     return (
         <TableHead>
             <TableRow>
                 {headCells.map((headCell) => {
-                    const { IsPriceShow } = JSON?.parse(sessionStorage?.getItem('storeInit')) ?? {};
+                    const { IsPriceShow } = storeInit;
                     if (IsPriceShow == 0 && headCell?.label == 'Total Amount') {
                         return null;
                     }
@@ -144,12 +146,11 @@ const QuotationQuote = () => {
     const [isLoading, setIsLoading] = useState(false);
     const maxYear = addYears(new Date(), 1); // Set maximum year to the next year
     const minYear = subYears(new Date(), 1);
-
+    const { loginUserDetail, storeInit } = useStore();
     const fromDateRef = useRef(null);
     const toDateRef = useRef(null);
 
-    const storedData = sessionStorage.getItem('loginUserDetail');
-    const loginDetails = JSON.parse(storedData);
+    const loginDetails = loginUserDetail
     const isSmallScreen = useMediaQuery('(max-width:500px)');
 
     const handleRequestSort = (event, property) => {
@@ -315,10 +316,7 @@ const QuotationQuote = () => {
     const fetchData = async () => {
         try {
             setIsLoading(true);
-            const storedData = sessionStorage.getItem('loginUserDetail');
-            const data = JSON.parse(storedData);
-            const customerid = data.id;
-            const storeInit = JSON.parse(sessionStorage.getItem('storeInit'));
+            const customerid = loginUserDetail.id;
             const { FrontEnd_RegNo } = storeInit;
             // const combinedValue = JSON.stringify({
             //     CurrencyRate: "1", FrontEnd_RegNo: `${FrontEnd_RegNo}`, Customerid: `${customerid}`
@@ -593,12 +591,13 @@ const QuotationQuote = () => {
                                         orderBy={orderBy}
                                         onRequestSort={handleRequestSort}
                                         rowCount={filterData.length}
+                                        storeInit={storeInit}
                                     />
                                     <TableBody>
                                         {filterData?.length > 0 ? visibleRows?.map((row, index) => {
 
                                             const labelId = `enhanced-table-checkbox-${index}`;
-                                            const { IsPriceShow } = JSON?.parse(sessionStorage?.getItem('storeInit')) ?? {};
+                                            const { IsPriceShow } = storeInit;
 
                                             return (
                                                 <TableRow
