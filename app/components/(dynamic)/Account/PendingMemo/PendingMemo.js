@@ -637,7 +637,11 @@ const PendingMemo = () => {
 
   return (
     <div className="memo_Account_SMR">
-      <Box>
+      <Box
+      sx={{
+        p:1
+      }}
+      >
         <Box
           sx={{
             display: "flex",

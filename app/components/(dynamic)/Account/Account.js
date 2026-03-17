@@ -29,6 +29,7 @@ import LogOutModal from "../../ui/LogOut";
 import { useSearchParams } from "next/navigation";
 import AccountLedger2 from "./AccountLeger2/AccountLedger";
 import AccountLedger3 from "./AccountLeger3/AccountLedger";
+import AccountLedgerX2 from "@/app/theme/fgstore.mapp/AccountLeger/AccountLedger";
 
 
 function CustomTabPanel(props) {
@@ -40,7 +41,11 @@ function CustomTabPanel(props) {
   return (
     <div role="tabpanel" hidden={value !== index} id={`simple-tabpanel-${index}`} aria-labelledby={`simple-tab-${index}`} {...other}>
       {value === index && (
-        <Box >
+        <Box
+        sx={{
+          paddingBottom:'5rem'
+        }}
+        >
           <Typography>{children}</Typography>
         </Box>
       )}
@@ -219,7 +224,8 @@ export default function Account({ Storeinit }) {
                     {Storeinit?.IsPriceShow == 1 && e?.id === 1159 && (
                       <CustomTabPanel value={value1} index={i}>
                         {/* <AccountLedger /> */}
-                        <AccountLedger3/>
+                        {/* <AccountLedger2 /> */}
+                        <AccountLedgerX2 />
                       </CustomTabPanel>
                     )}
                   </React.Fragment>

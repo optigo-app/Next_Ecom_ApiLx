@@ -3,6 +3,7 @@ import ReactHTMLTableToExcel from 'react-html-table-to-excel';
 import { formatAmount } from '@/app/(core)/utils/Glob_Functions/AccountPages/AccountPage';
 import DoneIcon from '@mui/icons-material/Done';
 import CloseIcon from '@mui/icons-material/Close';
+import "./accountledger.scss"
 
 
 const AccountLedgerExcel = ({ filterArray, credit_curr_diff, credit_amt_diff, credit_mg_diff, credit_dia_diff, debit_curr_diff, debit_amt_diff, debit_mg_diff, debit_dia_diff, resultTotal, currencySymbol, currencyRate }) => {
@@ -57,7 +58,7 @@ const AccountLedgerExcel = ({ filterArray, credit_curr_diff, credit_amt_diff, cr
         sheet="tablexls"
         buttonText="Download as XLS"
       />
-      <div className='d-none'>
+      <div style={{ display: 'none' }}>
         <table id='table-to-xls'>
           <tr></tr>
           <tr>

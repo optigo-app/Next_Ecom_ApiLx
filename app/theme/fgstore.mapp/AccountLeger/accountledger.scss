@@ -1,12 +1,4 @@
-.ledger_Account_SMR {
-  padding-bottom: 10rem;
-  padding-inline: 0.5rem;
-  padding-top: 1rem;
-
-  .border_Acc {
-    border: 1px solid #999999; /* Default border color */
-  }
-
+.ledger_Account_RPJ {
   .fs_al {
     font-size: 15px;
   }
@@ -59,22 +51,22 @@
   }
 
   .bal_Amt_ac {
-    padding: 8px;
-    border: 1px solid #989898;
-    border-radius: 8px;
-    font-size: 18px;
-    font-weight: bold;
+    padding: 4px 16px;
+    border: 1px solid #dee2e6;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 500;
+    min-width: 100px;
+    text-align: center;
+    color: #4a4a4a;
   }
-  /* .header_al{
-    display: none;
-} */
-
-  /* @media print {
-    .header_al{
-        display: normal;
-    }   
-    
-} */
+  table.w_100_acc {
+    border-collapse: collapse;
+    border: 1px solid #dee2e6;
+    td {
+      border: 1px solid #dee2e6;
+    }
+  }
   .ledger_title {
     /* height: 40px; */
     margin: 1rem;
@@ -188,7 +180,7 @@
     cursor: not-allowed;
   }
   .border_Acc {
-    border: 1px solid #999999; /* Default border color */
+    border: 1px solid #dee2e6; /* Default border color */
   }
 
   .mx_1_acc {
@@ -295,6 +287,31 @@
   .fw_bold_acc {
     font-weight: bold;
   }
+  table.w_100_acc {
+    border-collapse: collapse;
+    border: 1px solid #dee2e6;
+    td {
+      border: 1px solid #dee2e6;
+    }
+  }
+  thead.w_100_acc.border_Acc {
+    font-weight: 600;
+  }
+  thead.w_100_acc.border_Acc tr:nth-child(1) td {
+    padding: 8px !important;
+    background-color: #fff;
+    vertical-align: middle;
+  }
+  thead.w_100_acc.border_Acc tr:nth-child(2) td {
+    padding: 8px !important;
+    background-color: #f8f9fa;
+    vertical-align: middle;
+    color: #4a4a4a;
+  }
+  table.w_100_acc tbody tr td {
+    padding: 8px 4px !important;
+    vertical-align: top;
+  }
 
   @media (max-width: 320px), (max-width: 360px), (max-width: 390px), (max-width: 430px), (max-width: 576px), (max-width: 650px) {
     .css-19kzrtu {
@@ -311,28 +328,6 @@
     }
     .balance_none {
       display: none !important;
-    }
-    .min_width_acc_elvee2 {
-      min-width: 150px !important;
-    }
-    .min_width_acc_elvee {
-      min-width: 100px !important;
-    }
-  }
-  @media (max-width: 320px), (max-width: 360px), (max-width: 400px), (max-width: 425px) {
-    .elvee_Acc_Led_inp {
-      padding: 0px !important;
-      padding-left: 4px !important;
-      font-size: 12px !important;
-    }
-    .elvee_Acc_led_fs_label {
-      font-size: 12px !important;
-    }
-    .min_width_acc_elvee {
-      min-width: 100px !important;
-    }
-    .min_width_acc_elvee2 {
-      min-width: 150px !important;
     }
   }
 }

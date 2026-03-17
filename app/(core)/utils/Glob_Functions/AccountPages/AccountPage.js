@@ -1,3 +1,6 @@
+import { getSession } from "../../FetchSessionData";
+
+
 
 export const accountDetailPages = () => {
     let arr = [
@@ -11,8 +14,9 @@ export const accountDetailPages = () => {
     ];
 
     let getValArr = [];
+    const AccountFlag = getSession('myAccountFlags');
     arr?.forEach((e, i) => {
-        let getVal = JSON?.parse(sessionStorage?.getItem("myAccountFlags"))?.find(ele => ele?.pageid === e?.id);
+        let getVal = AccountFlag?.find(ele => ele?.pageid === e?.id);
         getVal !== undefined && (getVal?.isvisible === 1 && getValArr?.push(e))
         // getValArr?.push({ label: e?.tabLabel,id: e?.id, comp: e?.tabComp, value: false }))  
         // getValArr?.push({ label: e?.tabLabel,id: e?.id, comp: e?.tabComp, value: false });
@@ -21,11 +25,12 @@ export const accountDetailPages = () => {
 }
 
 export const accountValidation = () => {
-    let getVal = JSON?.parse(sessionStorage.getItem("storeInit"))?.["IsMyaccount"];
+    let getVal = getSession("storeInit")?.["IsMyaccount"];
+        const AccountFlag = getSession('myAccountFlags');
     let getVals = [1163, 1164, 1157, 1314, 17020, 1159, 18129];
     let pageIsOn = false;
     getVals?.forEach((e, i) => {
-        let getValss = JSON?.parse(sessionStorage?.getItem("myAccountFlags"))?.find(ele => ele?.pageid === e);
+        let getValss = AccountFlag?.find(ele => ele?.pageid === e);
         if (getValss !== undefined) {
             if (getValss?.isvisible === 1) {
                 pageIsOn = true;
