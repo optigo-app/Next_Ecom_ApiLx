@@ -86,9 +86,16 @@ export default function MobileNavbar() {
                   height: "18px",
                   minWidth: "18px",
                   borderRadius: "50%",
-                  paddingBottom: "5px",
+
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+
+                  padding: 0,            // ❌ remove paddingBottom
+                  lineHeight: 1,         // 🔥 important
+
                   bgcolor: COLORS.primary,
-                  color: COLORS.white
+                  color: COLORS.white,
                 },
               }}
             >
@@ -114,9 +121,16 @@ export default function MobileNavbar() {
                   height: "18px",
                   minWidth: "18px",
                   borderRadius: "50%",
-                  paddingBottom: "5px",
+
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+
+                  padding: 0,            // ❌ remove paddingBottom
+                  lineHeight: 1,         // 🔥 important
+
                   bgcolor: COLORS.primary,
-                  color: COLORS.white
+                  color: COLORS.white,
                 },
               }}
             >

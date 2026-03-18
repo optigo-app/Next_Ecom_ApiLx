@@ -77,7 +77,6 @@ export default function Account({ Storeinit }) {
   const [value1, setValue1] = useState(0);
   const [LogoutModal, setLogoutModal] = useState(false);
   const searchPrams = useSearchParams();
-  const TabId = atob(searchPrams.get("id"));
 
 
 
@@ -85,19 +84,51 @@ export default function Account({ Storeinit }) {
   const [accountInner, setAccountInner] = useState(accountDetailPages());
 
   const handleChange = (event, newValue) => {
-    console.log(newValue, "newValue")
     setValue(newValue);
+
+    const encodedMain = btoa(String(newValue));
+    const encodedSub = btoa(String(value1 || 0));
+
+    push(`/account?id=${encodedMain}&sub=${encodedSub}`);
   };
+
 
   const handleChangeSub = (event, newValue) => {
     setValue1(newValue);
+
+    const encodedMain = btoa(String(value));
+    const encodedSub = btoa(String(newValue));
+
+    push(`/account?id=${encodedMain}&sub=${encodedSub}`);
   };
 
+
   useEffect(() => {
-    if (TabId) {
-      setValue(Number(TabId));
+    const id = searchPrams.get("id");
+    const sub = searchPrams.get("sub");
+
+    // 🔹 main tab
+    if (id) {
+      try {
+        const decodedMain = atob(id);
+        setValue(Number(decodedMain));
+      } catch {
+        setValue(0);
+      }
     }
-  }, [TabId])
+
+    // 🔹 sub tab
+    if (sub) {
+      try {
+        const decodedSub = atob(sub);
+        setValue1(Number(decodedSub));
+      } catch {
+        setValue1(0);
+      }
+    }
+  }, [searchPrams]);
+
+
 
 
 

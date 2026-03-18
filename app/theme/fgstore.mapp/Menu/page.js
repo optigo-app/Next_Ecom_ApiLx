@@ -215,7 +215,7 @@ const Menu = ({ storeInit }) => {
     return (
         <Box sx={{ display: 'flex', height: 'calc(100vh - 60px)', bgcolor: '#fff', overflow: 'hidden' }}>
             {/* LEFT SIDEBAR AREA */}
-            <Box sx={{ width: '100px', bgcolor: '#fff', height: '100%', overflowY: 'auto', borderRight: '1px solid #e0e0e0' }}>
+            <Box sx={{ width: '120px', bgcolor: '#fff', height: '100%', overflowY: 'auto', borderRight: '1px solid #e0e0e0' }}>
                 {formattedMenu.map((item, idx) => (
                     <ButtonBase
                         key={item.menuid}
@@ -224,14 +224,14 @@ const Menu = ({ storeInit }) => {
                             width: '100%',
                             flexDirection: 'column',
                             py: 1.5,
-                            px: 0.5,
+                            px: 0.8,
                             position: 'relative',
                             transition: 'all 0.2s',
                             bgcolor: activeTab === idx ? COLORS.primary : 'transparent',
                             borderLeft: activeTab === idx ? `4px solid ${COLORS.primary}` : '4px solid transparent' ,
                         }}
                     >
-                        <Box sx={{
+                        {/* <Box sx={{
                             width: 38, height: 38, 
                             borderRadius: '18px', mb: 0.5, display: 'flex', alignItems: 'center', justifyContent: 'center'
                         }}>
@@ -248,9 +248,9 @@ const Menu = ({ storeInit }) => {
                             >
                             </Box>
 
-                        </Box>
+                        </Box> */}
                         <Typography sx={{
-                            fontSize: '11px', fontWeight: activeTab === idx ? 700 : 500,
+                            fontSize: '14px', fontWeight: activeTab === idx ? 700 : 500,
                             textAlign: 'center', color: activeTab === idx ? COLORS.white : '#666',
                             lineHeight: 1.2
                         }}>

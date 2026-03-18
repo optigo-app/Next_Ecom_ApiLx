@@ -137,14 +137,21 @@ const BreadCrumbs = ({
             //     label: bObj.menuname,
             //     onClick: () => handleBreadcums({ [bObj.FilterKey]: bObj.FilterVal }),
             // });
+
+            // Edited Start 2026-03-18
+            // breadcrumbItems.push({
+            //     label: bObj.FilterVal1,
+            //     onClick: () =>
+            //         handleBreadcums({
+            //             [bObj.FilterKey]: bObj.FilterVal,
+            //             [bObj.FilterKey1]: bObj.FilterVal1,
+            //         }),
+            // });
             breadcrumbItems.push({
-                label: bObj.FilterVal1,
-                onClick: () =>
-                    handleBreadcums({
-                        [bObj.FilterKey]: bObj.FilterVal,
-                        [bObj.FilterKey1]: bObj.FilterVal1,
-                    }),
+                label: bObj.menuname,
+                onClick: () => handleBreadcums({ [bObj.FilterKey]: bObj.FilterVal }),
             });
+            // Edited End 2026-03-18
         }
 
         if (bObj?.FilterVal1) {

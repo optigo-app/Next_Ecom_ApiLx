@@ -49,7 +49,7 @@ const ProfilePage = () => {
       <Box sx={{ minHeight: "100vh", backgroundColor: "#f1f3f6", pb: 10 }}>
         <Box
           sx={{
-            backgroundColor: "rgb(154, 154, 154)",
+            backgroundColor: COLORS.primary,
             color: "white",
             p: 3,
             display: "flex",
