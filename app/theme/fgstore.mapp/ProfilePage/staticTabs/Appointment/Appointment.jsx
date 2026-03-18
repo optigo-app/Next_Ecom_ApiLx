@@ -4,6 +4,7 @@ import { Drawer, Box, Typography, Button, IconButton } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import AppointmentInquiry from "./AppointmentInquiry";
 import { useState } from "react";
+import { getButtonStyle } from "@/app/(core)/constants/MobileAppTheme";
 
 export default function AppointmentTab({
   open,
@@ -107,12 +108,20 @@ export default function AppointmentTab({
           {/* Button */}
           <Button
             variant="contained"
-            sx={{
+            // sx={{
+            // px: 3,
+            // py: 1.2,
+            // fontSize: 12.5,
+            // letterSpacing: 1,
+            // }}
+            sx={getButtonStyle(true, {
               px: 3,
               py: 1.2,
               fontSize: 12.5,
               letterSpacing: 1,
-            }}
+              justifyContent: 'center',
+              mx: 'auto'
+            })}
             onClick={() => setInquiryModal(true)}
           >
             BOOK NOW

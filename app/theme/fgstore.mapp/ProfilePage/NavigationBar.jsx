@@ -3,7 +3,7 @@ import { AppBar, Toolbar, IconButton, Typography, Box, Badge } from "@mui/materi
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
 export default function MobileNavbar({
-  title ,
+  title,
   onClose
 }) {
   return (
@@ -31,7 +31,7 @@ export default function MobileNavbar({
         >
           <ArrowBackIcon />
         </IconButton>
-  {/* Center Logo */}
+        {/* Center Logo */}
         <Typography
           variant="subtitle1"
           sx={{
@@ -45,7 +45,7 @@ export default function MobileNavbar({
           {title}
         </Typography>
         <Box>
-          
+
         </Box>
       </Toolbar>
     </AppBar>

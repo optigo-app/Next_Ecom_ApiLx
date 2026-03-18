@@ -13,6 +13,7 @@ import { toast } from "react-toastify";
 import { useStore } from "@/app/(core)/contexts/StoreProvider";
 import MobileNavbar from './NavigationBar'
 import { Box, Button, Typography } from "@mui/material";
+import { getButtonStyle } from "@/app/(core)/constants/MobileAppTheme";
 
 
 const Wishlist = ({ storeInit }) => {
@@ -110,12 +111,10 @@ const Wishlist = ({ storeInit }) => {
           <Button
             variant="contained"
             onClick={handleAddtoCartAllfun}
-            sx={{
-              textTransform: "none",
-              fontSize: "0.85rem",
-              borderRadius: "5px",
-              px: 2.5
-            }}
+            sx={getButtonStyle(true, {
+              py: 0.8,
+              borderRadius: "8px"
+            })}
           >
             ADD ALL TO CART
           </Button>

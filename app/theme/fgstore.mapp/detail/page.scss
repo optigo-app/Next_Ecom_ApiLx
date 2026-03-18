@@ -239,6 +239,31 @@
 
           margin-top: 5vh;
         }
+
+        .slick-dots {
+          bottom: -35px;
+          li {
+            margin: 0 4px;
+            width: 10px;
+            height: 10px;
+            button {
+              width: 10px;
+              height: 10px;
+              padding: 0;
+              &:before {
+                font-size: 8px;
+                color: #000;
+                opacity: 0.25;
+              }
+            }
+            &.slick-active {
+              button:before {
+                opacity: 0.75;
+                color: #000;
+              }
+            }
+          }
+        }
       }
     }
 

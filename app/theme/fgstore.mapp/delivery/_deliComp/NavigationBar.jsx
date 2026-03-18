@@ -6,6 +6,7 @@ import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import ShoppingBagOutlinedIcon from "@mui/icons-material/ShoppingBagOutlined";
 import { useNextRouterLikeRR } from "@/app/(core)/hooks/useLocationRd";
 import { useStore } from "@/app/(core)/contexts/StoreProvider";
+import { COLORS } from "@/app/(core)/constants/MobileAppTheme";
 
 
 export default function MobileNavbar() {
@@ -86,6 +87,8 @@ export default function MobileNavbar() {
                   minWidth: "18px",
                   borderRadius: "50%",
                   paddingBottom: "5px",
+                  bgcolor: COLORS.primary,
+                  color: COLORS.white
                 },
               }}
             >
@@ -112,6 +115,8 @@ export default function MobileNavbar() {
                   minWidth: "18px",
                   borderRadius: "50%",
                   paddingBottom: "5px",
+                  bgcolor: COLORS.primary,
+                  color: COLORS.white
                 },
               }}
             >

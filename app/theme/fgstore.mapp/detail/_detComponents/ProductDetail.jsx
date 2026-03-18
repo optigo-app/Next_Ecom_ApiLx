@@ -15,6 +15,7 @@ import {
     Button
 } from "@mui/material";
 import SwipeableBottomDrawer from "@/app/components/ui/SwipeableDrawer";
+import { getButtonStyle } from "@/app/(core)/constants/MobileAppTheme";
 
 
 const ProductDetailsSection = ({
@@ -33,12 +34,11 @@ const ProductDetailsSection = ({
                     <Button
                         variant="outlined"
                         onClick={() => setOpen(true)}
-                        sx={{
-                            borderRadius: "30px",
-                            textTransform: "none",
-                            px: 3,
-                            fontSize: "0.9rem"
-                        }}
+                        sx={getButtonStyle(true, {
+                            borderRadius: '24px',
+                            py: '8px',
+                            px: '10px'
+                        })}
                     >
                         View Product Details
                     </Button>
@@ -46,7 +46,7 @@ const ProductDetailsSection = ({
             )}
             <SwipeableBottomDrawer
                 open={open}
-                onClose={()=>setOpen((prev)=>!prev)}
+                onClose={() => setOpen((prev) => !prev)}
             >
                 <Box
                     sx={{
@@ -340,207 +340,207 @@ const MiscTable = ({ list, details }) => {
 
 
 
-                    //         {(diaList?.length > 0 || csList?.filter((ele) => ele?.D !== "MISC")?.length > 0) && (
-                    //             <Accordion
-                    //                 className="accordian"
-                    //                 sx={{
-                    //                     border: "none", // Remove default border
-                    //                     boxShadow: "none", // Remove default shadow
-                    //                     "&:before": {
-                    //                         // Remove the border-top pseudo-element
-                    //                         display: "none",
-                    //                     },
-                    //                 }}
-                    //                 key={2}
-                    //                 expanded={expandedIndex === 2}
-                    //                 onChange={handleChange(2)}
-                    //             >
-                    //                 <AccordionSummary
-                    //                     expandIcon={expandedIndex === 2 ? <RemoveIcon style={{ fontSize: "1.2rem", color: "black" }} /> : <AddIcon style={{ fontSize: "1.2rem", color: "black" }} />}
-                    //                     aria-controls="panel1-content"
-                    //                     id="panel1-header"
-                    //                     className="summary"
-                    //                     sx={{
-                    //                         padding: "0 5px",
-                    //                     }}
-                    //                 >
-                    //                     <Typography
-                    //                         className="title"
-                    //                         sx={{
-                    //                             textAlign: "center",
-                    //                             width: "100%",
-                    //                         }}
-                    //                         style={{
-                    //                             fontSize: "0.9rem",
-                    //                             textTransform: "uppercase",
-                    //                             marginLeft: "3.4px",
-                    //                         }}
-                    //                     >
-                    //                         PRODUCT DETAILS
-                    //                     </Typography>
-                    //                 </AccordionSummary>
-                    //                 <AccordionDetails>
-                    //                     <div className="details_d_C">
-                    //                         <div className="fgstore_mapp_material_details_portion">
-                    //                             {/* {diaList?.length > 0 && (
-                    //   <p className="fgstore_mapp_details_title"> Product Details</p>
-                    // )} */}
-                    //                             {/* {diaList?.length > 0 && (
-                    //   <div className="fgstore_mapp_material_details_portion_inner">
-                    //     <ul
-                    //       style={{
-                    //         margin: "0px 0px 3px 0px",
-                    //         listStyle: "none",
-                    //       }}
-                    //     >
-                    //       <li
-                    //         className="dia-title"
-                    //         style={{ fontWeight: 600 }}
-                    //       >{`Diamond Detail(${diaList?.reduce(
-                    //         (accumulator, data) => accumulator + data.M,
-                    //         0
-                    //       )}   ${diaList
-                    //         ?.reduce(
-                    //           (accumulator, data) => accumulator + data?.N,
-                    //           0
-                    //         )
-                    //         .toFixed(3)}ct)`}</li>
-                    //     </ul>
-                    //     <ul className="fgstore_mapp_mt_detail_title_ul">
-                    //       <li className="fgstore_mapp_proDeatilList">Shape</li>
-                    //       <li className="fgstore_mapp_proDeatilList">Clarity</li>
-                    //       <li className="fgstore_mapp_proDeatilList">Color</li>
-                    //       <li className="fgstore_mapp_proDeatilList">Pcs &nbsp; Wt</li>
-                    //     </ul>
-                    //     {diaList?.map((data) => (
-                    //       <ul className="fgstore_mapp_mt_detail_title_ul">
-                    //         <li className="fgstore_mapp_proDeatilList1">{data?.F}</li>
-                    //         <li className="fgstore_mapp_proDeatilList1">{data?.H}</li>
-                    //         <li className="fgstore_mapp_proDeatilList1">{data?.J}</li>
-                    //         <li className="fgstore_mapp_proDeatilList1">
-                    //           {data.M}&nbsp;&nbsp;{data?.N?.toFixed(3)}
-                    //         </li>
-                    //       </ul>
-                    //     ))}
-                    //   </div>
-                    // )}
+//         {(diaList?.length > 0 || csList?.filter((ele) => ele?.D !== "MISC")?.length > 0) && (
+//             <Accordion
+//                 className="accordian"
+//                 sx={{
+//                     border: "none", // Remove default border
+//                     boxShadow: "none", // Remove default shadow
+//                     "&:before": {
+//                         // Remove the border-top pseudo-element
+//                         display: "none",
+//                     },
+//                 }}
+//                 key={2}
+//                 expanded={expandedIndex === 2}
+//                 onChange={handleChange(2)}
+//             >
+//                 <AccordionSummary
+//                     expandIcon={expandedIndex === 2 ? <RemoveIcon style={{ fontSize: "1.2rem", color: "black" }} /> : <AddIcon style={{ fontSize: "1.2rem", color: "black" }} />}
+//                     aria-controls="panel1-content"
+//                     id="panel1-header"
+//                     className="summary"
+//                     sx={{
+//                         padding: "0 5px",
+//                     }}
+//                 >
+//                     <Typography
+//                         className="title"
+//                         sx={{
+//                             textAlign: "center",
+//                             width: "100%",
+//                         }}
+//                         style={{
+//                             fontSize: "0.9rem",
+//                             textTransform: "uppercase",
+//                             marginLeft: "3.4px",
+//                         }}
+//                     >
+//                         PRODUCT DETAILS
+//                     </Typography>
+//                 </AccordionSummary>
+//                 <AccordionDetails>
+//                     <div className="details_d_C">
+//                         <div className="fgstore_mapp_material_details_portion">
+//                             {/* {diaList?.length > 0 && (
+//   <p className="fgstore_mapp_details_title"> Product Details</p>
+// )} */}
+//                             {/* {diaList?.length > 0 && (
+//   <div className="fgstore_mapp_material_details_portion_inner">
+//     <ul
+//       style={{
+//         margin: "0px 0px 3px 0px",
+//         listStyle: "none",
+//       }}
+//     >
+//       <li
+//         className="dia-title"
+//         style={{ fontWeight: 600 }}
+//       >{`Diamond Detail(${diaList?.reduce(
+//         (accumulator, data) => accumulator + data.M,
+//         0
+//       )}   ${diaList
+//         ?.reduce(
+//           (accumulator, data) => accumulator + data?.N,
+//           0
+//         )
+//         .toFixed(3)}ct)`}</li>
+//     </ul>
+//     <ul className="fgstore_mapp_mt_detail_title_ul">
+//       <li className="fgstore_mapp_proDeatilList">Shape</li>
+//       <li className="fgstore_mapp_proDeatilList">Clarity</li>
+//       <li className="fgstore_mapp_proDeatilList">Color</li>
+//       <li className="fgstore_mapp_proDeatilList">Pcs &nbsp; Wt</li>
+//     </ul>
+//     {diaList?.map((data) => (
+//       <ul className="fgstore_mapp_mt_detail_title_ul">
+//         <li className="fgstore_mapp_proDeatilList1">{data?.F}</li>
+//         <li className="fgstore_mapp_proDeatilList1">{data?.H}</li>
+//         <li className="fgstore_mapp_proDeatilList1">{data?.J}</li>
+//         <li className="fgstore_mapp_proDeatilList1">
+//           {data.M}&nbsp;&nbsp;{data?.N?.toFixed(3)}
+//         </li>
+//       </ul>
+//     ))}
+//   </div>
+// )}
 
-                    // {csList?.length > 0 && (
-                    //   <div className="fgstore_mapp_material_details_portion_inner">
-                    //     <ul style={{ margin: "10px 0px 3px 0px" }}>
-                    //       <li
-                    //         style={{ fontWeight: 600 }}
-                    //       >{`ColorStone Detail(${csList?.reduce(
-                    //         (accumulator, data) => accumulator + data.M,
-                    //         0
-                    //       )}/${csList
-                    //         ?.reduce(
-                    //           (accumulator, data) => accumulator + data?.N,
-                    //           0
-                    //         )
-                    //         .toFixed(2)}ct)`}</li>
-                    //     </ul>
-                    //     <ul className="fgstore_mapp_mt_detail_title_ul">
-                    //       <li className="fgstore_mapp_proDeatilList">Shape</li>
-                    //       <li className="fgstore_mapp_proDeatilList">Clarity</li>
-                    //       <li className="fgstore_mapp_proDeatilList">Color</li>
-                    //       <li className="fgstore_mapp_proDeatilList">Pcs/Wt</li>
-                    //     </ul>
-                    //     {csList?.map((data) => (
-                    //       <ul className="fgstore_mapp_mt_detail_title_ul">
-                    //         <li className="fgstore_mapp_proDeatilList1">{data?.F}</li>
-                    //         <li className="fgstore_mapp_proDeatilList1">{data?.H}</li>
-                    //         <li className="fgstore_mapp_proDeatilList1">{data?.J}</li>
-                    //         <li className="fgstore_mapp_proDeatilList1">
-                    //           {data.M}/{data?.N?.toFixed(3)}
-                    //         </li>
-                    //       </ul>
-                    //     ))}
-                    //   </div>
-                    // )} */}
-                    //                             {diaList?.length > 0 && (
-                    //                                 <div className="fgstore_mapp_material_details_portion_inner">
-                    //                                     <ul style={{ margin: "0px 0px 3px 0px" }}>
-                    //                                         <li style={{ fontWeight: 600 }}>{`Diamond Detail (${diaList?.reduce((accumulator, data) => accumulator + data.M, 0)}   ${diaList?.reduce((accumulator, data) => accumulator + data?.N, 0).toFixed(3)}ct)`}</li>
-                    //                                     </ul>
-                    //                                     <ul className="fgstore_mapp_mt_detail_title_ul">
-                    //                                         <li className="fgstore_mapp_proDeatilList">Shape</li>
-                    //                                         <li className="fgstore_mapp_proDeatilList">Clarity</li>
-                    //                                         <li className="fgstore_mapp_proDeatilList">Color</li>
-                    //                                         <li className="fgstore_mapp_proDeatilList">Pcs&nbsp;&nbsp;Wt</li>
-                    //                                     </ul>
-                    //                                     {diaList?.map((data) => (
-                    //                                         <ul className="fgstore_mapp_mt_detail_title_ul">
-                    //                                             <li className="fgstore_mapp_proDeatilList1">{data?.F}</li>
-                    //                                             <li className="fgstore_mapp_proDeatilList1">{data?.H}</li>
-                    //                                             <li className="fgstore_mapp_proDeatilList1">{data?.J}</li>
-                    //                                             <li className="fgstore_mapp_proDeatilList1">
-                    //                                                 {data.M}&nbsp;&nbsp;{data?.N?.toFixed(3)}
-                    //                                             </li>
-                    //                                         </ul>
-                    //                                     ))}
-                    //                                 </div>
-                    //                             )}
-                    //                             {/* {console.log("csListcsList",csList?.filter((ele)=>ele?.D === "MISC"))} */}
-                    //                             {csList?.filter((ele) => ele?.D !== "MISC")?.length > 0 && (
-                    //                                 <div className="fgstore_mapp_material_details_portion_inner">
-                    //                                     <ul style={{ margin: "10px 0px 3px 0px" }}>
-                    //                                         <li style={{ fontWeight: 600 }}>{`ColorStone Detail (${csList?.filter((ele) => ele?.D !== "MISC")?.reduce((accumulator, data) => accumulator + data.M, 0)} ${csList
-                    //                                             ?.filter((ele) => ele?.D !== "MISC")
-                    //                                             ?.reduce((accumulator, data) => accumulator + data?.N, 0)
-                    //                                             .toFixed(3)}ct)`}</li>
-                    //                                     </ul>
-                    //                                     <ul className="fgstore_mapp_mt_detail_title_ul">
-                    //                                         <li className="fgstore_mapp_proDeatilList">Shape</li>
-                    //                                         <li className="fgstore_mapp_proDeatilList">Clarity</li>
-                    //                                         <li className="fgstore_mapp_proDeatilList">Color</li>
-                    //                                         <li className="fgstore_mapp_proDeatilList">Pcs&nbsp;&nbsp;Wt</li>
-                    //                                     </ul>
-                    //                                     {csList
-                    //                                         ?.filter((ele) => ele?.D !== "MISC")
-                    //                                         ?.map((data) => (
-                    //                                             <ul className="fgstore_mapp_mt_detail_title_ul">
-                    //                                                 <li className="fgstore_mapp_proDeatilList1">{data?.F}</li>
-                    //                                                 <li className="fgstore_mapp_proDeatilList1">{data?.H}</li>
-                    //                                                 <li className="fgstore_mapp_proDeatilList1">{data?.J}</li>
-                    //                                                 <li className="fgstore_mapp_proDeatilList1">
-                    //                                                     {data.M}&nbsp;&nbsp;{data?.N?.toFixed(3)}
-                    //                                                 </li>
-                    //                                             </ul>
-                    //                                         ))}
-                    //                                 </div>
-                    //                             )}
+// {csList?.length > 0 && (
+//   <div className="fgstore_mapp_material_details_portion_inner">
+//     <ul style={{ margin: "10px 0px 3px 0px" }}>
+//       <li
+//         style={{ fontWeight: 600 }}
+//       >{`ColorStone Detail(${csList?.reduce(
+//         (accumulator, data) => accumulator + data.M,
+//         0
+//       )}/${csList
+//         ?.reduce(
+//           (accumulator, data) => accumulator + data?.N,
+//           0
+//         )
+//         .toFixed(2)}ct)`}</li>
+//     </ul>
+//     <ul className="fgstore_mapp_mt_detail_title_ul">
+//       <li className="fgstore_mapp_proDeatilList">Shape</li>
+//       <li className="fgstore_mapp_proDeatilList">Clarity</li>
+//       <li className="fgstore_mapp_proDeatilList">Color</li>
+//       <li className="fgstore_mapp_proDeatilList">Pcs/Wt</li>
+//     </ul>
+//     {csList?.map((data) => (
+//       <ul className="fgstore_mapp_mt_detail_title_ul">
+//         <li className="fgstore_mapp_proDeatilList1">{data?.F}</li>
+//         <li className="fgstore_mapp_proDeatilList1">{data?.H}</li>
+//         <li className="fgstore_mapp_proDeatilList1">{data?.J}</li>
+//         <li className="fgstore_mapp_proDeatilList1">
+//           {data.M}/{data?.N?.toFixed(3)}
+//         </li>
+//       </ul>
+//     ))}
+//   </div>
+// )} */}
+//                             {diaList?.length > 0 && (
+//                                 <div className="fgstore_mapp_material_details_portion_inner">
+//                                     <ul style={{ margin: "0px 0px 3px 0px" }}>
+//                                         <li style={{ fontWeight: 600 }}>{`Diamond Detail (${diaList?.reduce((accumulator, data) => accumulator + data.M, 0)}   ${diaList?.reduce((accumulator, data) => accumulator + data?.N, 0).toFixed(3)}ct)`}</li>
+//                                     </ul>
+//                                     <ul className="fgstore_mapp_mt_detail_title_ul">
+//                                         <li className="fgstore_mapp_proDeatilList">Shape</li>
+//                                         <li className="fgstore_mapp_proDeatilList">Clarity</li>
+//                                         <li className="fgstore_mapp_proDeatilList">Color</li>
+//                                         <li className="fgstore_mapp_proDeatilList">Pcs&nbsp;&nbsp;Wt</li>
+//                                     </ul>
+//                                     {diaList?.map((data) => (
+//                                         <ul className="fgstore_mapp_mt_detail_title_ul">
+//                                             <li className="fgstore_mapp_proDeatilList1">{data?.F}</li>
+//                                             <li className="fgstore_mapp_proDeatilList1">{data?.H}</li>
+//                                             <li className="fgstore_mapp_proDeatilList1">{data?.J}</li>
+//                                             <li className="fgstore_mapp_proDeatilList1">
+//                                                 {data.M}&nbsp;&nbsp;{data?.N?.toFixed(3)}
+//                                             </li>
+//                                         </ul>
+//                                     ))}
+//                                 </div>
+//                             )}
+//                             {/* {console.log("csListcsList",csList?.filter((ele)=>ele?.D === "MISC"))} */}
+//                             {csList?.filter((ele) => ele?.D !== "MISC")?.length > 0 && (
+//                                 <div className="fgstore_mapp_material_details_portion_inner">
+//                                     <ul style={{ margin: "10px 0px 3px 0px" }}>
+//                                         <li style={{ fontWeight: 600 }}>{`ColorStone Detail (${csList?.filter((ele) => ele?.D !== "MISC")?.reduce((accumulator, data) => accumulator + data.M, 0)} ${csList
+//                                             ?.filter((ele) => ele?.D !== "MISC")
+//                                             ?.reduce((accumulator, data) => accumulator + data?.N, 0)
+//                                             .toFixed(3)}ct)`}</li>
+//                                     </ul>
+//                                     <ul className="fgstore_mapp_mt_detail_title_ul">
+//                                         <li className="fgstore_mapp_proDeatilList">Shape</li>
+//                                         <li className="fgstore_mapp_proDeatilList">Clarity</li>
+//                                         <li className="fgstore_mapp_proDeatilList">Color</li>
+//                                         <li className="fgstore_mapp_proDeatilList">Pcs&nbsp;&nbsp;Wt</li>
+//                                     </ul>
+//                                     {csList
+//                                         ?.filter((ele) => ele?.D !== "MISC")
+//                                         ?.map((data) => (
+//                                             <ul className="fgstore_mapp_mt_detail_title_ul">
+//                                                 <li className="fgstore_mapp_proDeatilList1">{data?.F}</li>
+//                                                 <li className="fgstore_mapp_proDeatilList1">{data?.H}</li>
+//                                                 <li className="fgstore_mapp_proDeatilList1">{data?.J}</li>
+//                                                 <li className="fgstore_mapp_proDeatilList1">
+//                                                     {data.M}&nbsp;&nbsp;{data?.N?.toFixed(3)}
+//                                                 </li>
+//                                             </ul>
+//                                         ))}
+//                                 </div>
+//                             )}
 
-                    //                             {csList?.filter((ele) => ele?.D === "MISC")?.length > 0 && (
-                    //                                 <div className="fgstore_mapp_material_details_portion_inner">
-                    //                                     <ul style={{ margin: "10px 0px 3px 0px" }}>
-                    //                                         <li style={{ fontWeight: 600 }}>{`MISC Detail(${csList?.filter((ele) => ele?.D === "MISC")?.reduce((accumulator, data) => accumulator + data.M, 0)}  ${csList
-                    //                                             ?.filter((ele) => ele?.D === "MISC")
-                    //                                             ?.reduce((accumulator, data) => accumulator + data?.N, 0)
-                    //                                             .toFixed(3)}gm)`}</li>
-                    //                                     </ul>
-                    //                                     <ul className="fgstore_mapp_mt_detail_title_ul">
-                    //                                         <li className="fgstore_mapp_proDeatilList">Shape</li>
-                    //                                         <li className="fgstore_mapp_proDeatilList">Clarity</li>
-                    //                                         <li className="fgstore_mapp_proDeatilList">Color</li>
-                    //                                         <li className="fgstore_mapp_proDeatilList">Pcs&nbsp;&nbsp;Wt</li>
-                    //                                     </ul>
-                    //                                     {csList
-                    //                                         ?.filter((ele) => ele?.D === "MISC")
-                    //                                         ?.map((data) => (
-                    //                                             <ul className="fgstore_mapp_mt_detail_title_ul">
-                    //                                                 <li className="fgstore_mapp_proDeatilList1">{data?.F}</li>
-                    //                                                 <li className="fgstore_mapp_proDeatilList1">{data?.H}</li>
-                    //                                                 <li className="fgstore_mapp_proDeatilList1">{data?.J}</li>
-                    //                                                 <li className="fgstore_mapp_proDeatilList1">
-                    //                                                     {data.M}&nbsp;&nbsp;{data?.N?.toFixed(3)}
-                    //                                                 </li>
-                    //                                             </ul>
-                    //                                         ))}
-                    //                                 </div>
-                    //                             )}
-                    //                         </div>
-                    //                     </div>
-                    //                 </AccordionDetails>
-                    //             </Accordion>
-                    //         )}
+//                             {csList?.filter((ele) => ele?.D === "MISC")?.length > 0 && (
+//                                 <div className="fgstore_mapp_material_details_portion_inner">
+//                                     <ul style={{ margin: "10px 0px 3px 0px" }}>
+//                                         <li style={{ fontWeight: 600 }}>{`MISC Detail(${csList?.filter((ele) => ele?.D === "MISC")?.reduce((accumulator, data) => accumulator + data.M, 0)}  ${csList
+//                                             ?.filter((ele) => ele?.D === "MISC")
+//                                             ?.reduce((accumulator, data) => accumulator + data?.N, 0)
+//                                             .toFixed(3)}gm)`}</li>
+//                                     </ul>
+//                                     <ul className="fgstore_mapp_mt_detail_title_ul">
+//                                         <li className="fgstore_mapp_proDeatilList">Shape</li>
+//                                         <li className="fgstore_mapp_proDeatilList">Clarity</li>
+//                                         <li className="fgstore_mapp_proDeatilList">Color</li>
+//                                         <li className="fgstore_mapp_proDeatilList">Pcs&nbsp;&nbsp;Wt</li>
+//                                     </ul>
+//                                     {csList
+//                                         ?.filter((ele) => ele?.D === "MISC")
+//                                         ?.map((data) => (
+//                                             <ul className="fgstore_mapp_mt_detail_title_ul">
+//                                                 <li className="fgstore_mapp_proDeatilList1">{data?.F}</li>
+//                                                 <li className="fgstore_mapp_proDeatilList1">{data?.H}</li>
+//                                                 <li className="fgstore_mapp_proDeatilList1">{data?.J}</li>
+//                                                 <li className="fgstore_mapp_proDeatilList1">
+//                                                     {data.M}&nbsp;&nbsp;{data?.N?.toFixed(3)}
+//                                                 </li>
+//                                             </ul>
+//                                         ))}
+//                                 </div>
+//                             )}
+//                         </div>
+//                     </div>
+//                 </AccordionDetails>
+//             </Accordion>
+//         )}

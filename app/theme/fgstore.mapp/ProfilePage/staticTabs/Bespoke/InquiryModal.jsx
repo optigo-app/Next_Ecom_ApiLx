@@ -13,6 +13,7 @@ import {
   Toolbar
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
+import { COLORS, getButtonStyle } from "@/app/(core)/constants/MobileAppTheme";
 
 const InquiryModal = ({
   open,
@@ -32,7 +33,7 @@ const InquiryModal = ({
       sx={{
         "& .MuiDrawer-paper": {
           width: "100%",
-          maxWidth: 480,
+          // maxWidth: 480,
         },
       }}
     >
@@ -40,7 +41,7 @@ const InquiryModal = ({
       <AppBar
         position="sticky"
         elevation={0}
-        sx={{ bgcolor: "primary.main" }}
+        sx={{ bgcolor: COLORS.primary }}
       >
         <Toolbar
           sx={{
@@ -146,7 +147,16 @@ const InquiryModal = ({
                 fullWidth
                 variant="outlined"
                 component="label"
-                sx={{ py: 1.4 }}
+                sx={getButtonStyle(true, {
+                  py: 1.2,
+                  backgroundColor: 'transparent',
+                  color: 'black',
+                  "&:hover": {
+                    backgroundColor: "#f5f5f5",
+                    boxShadow: 'none',
+                    color: 'black',
+                  },
+                })}
               >
                 ATTACH FILE
                 <input
@@ -172,7 +182,10 @@ const InquiryModal = ({
                 variant="contained"
                 type="submit"
                 disabled={loading}
-                sx={{ py: 1.6 }}
+                // sx={{ py: 1.6 }}
+                sx={getButtonStyle(true, {
+                  py: 1.2
+                })}
               >
                 {loading ? "SUBMITTING..." : "SUBMIT"}
               </Button>

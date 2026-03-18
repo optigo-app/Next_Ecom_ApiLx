@@ -17,6 +17,7 @@ import {
 import CloseIcon from "@mui/icons-material/Close";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
+import { COLORS, getButtonStyle } from "@/app/(core)/constants/MobileAppTheme";
 
 const jewelryItems = [
   { id: 1, title: 'Engagement Ring', image: '/WebSiteStaticImage/Appointment/appointment-jewel-1.png' },
@@ -48,12 +49,12 @@ const InquiryModal = ({
       sx={{
         "& .MuiDrawer-paper": {
           width: "100%",
-          maxWidth: 480,
+          // maxWidth: 480,
         },
       }}
     >
       {/* Header */}
-      <AppBar position="sticky" elevation={0} sx={{ bgcolor: "primary.main" }}>
+      <AppBar position="sticky" elevation={0} sx={{ bgcolor: COLORS.primary }}>
         <Toolbar sx={{ py: 1 }}>
           <Box sx={{ display: 'flex', alignItems: 'center', flex: 1 }}>
             {step === 2 && (
@@ -89,10 +90,10 @@ const InquiryModal = ({
                       textAlign: 'center',
                       display: 'block',
                       overflow: 'hidden',
-                      border: formData.JewelleryType === item.title ? '2px solid primary.main' : '1px solid #eee',
+                      border: formData.JewelleryType === item.title ? `2px solid ${COLORS.primary}` : '1px solid #eee',
                       transition: '0.3s',
                       '&:hover': {
-                        borderColor: 'primary.main',
+                        borderColor: COLORS.primary,
                         bgcolor: 'rgba(0,0,0,0.02)'
                       }
                     }}
@@ -200,7 +201,9 @@ const InquiryModal = ({
                   variant="contained"
                   type="submit"
                   disabled={loading}
-                  sx={{ py: 1.5 }}
+                  sx={getButtonStyle(true, {
+                    py: 1.2
+                  })}
                 >
                   {loading ? "BOOKING..." : "BOOK APPOINTMENT"}
                 </Button>

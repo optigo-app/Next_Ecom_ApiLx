@@ -6,6 +6,7 @@ import BreadCrumbs from "./MobileBreadCrumb";
 import { useNextRouterLikeRR } from "@/app/(core)/hooks/useLocationRd";
 import { Search as SearchIcon } from "lucide-react";
 import { useStore } from "@/app/(core)/contexts/StoreProvider";
+import { COLORS } from "@/app/(core)/constants/MobileAppTheme";
 
 const MobileHeader = ({ result, afterFilterCount, showClearAllButton, afterCountStatus, IsBreadCumShow, menuDecode }) => {
   const GoBack = useNextRouterLikeRR().back;
@@ -78,7 +79,7 @@ const MobileHeader = ({ result, afterFilterCount, showClearAllButton, afterCount
 
           <Typography sx={{ fontWeight: 600, fontSize: 16 }}>
             <BreadCrumbs
-             showClearAllButton={showClearAllButton} afterCountStatus={afterCountStatus} count={afterFilterCount} result={result} IsBreadCumShow={IsBreadCumShow} menuDecode={menuDecode} />
+              showClearAllButton={showClearAllButton} afterCountStatus={afterCountStatus} count={afterFilterCount} result={result} IsBreadCumShow={IsBreadCumShow} menuDecode={menuDecode} />
           </Typography>
         </Box>
         <Box
@@ -129,6 +130,25 @@ const MobileHeader = ({ result, afterFilterCount, showClearAllButton, afterCount
                 borderRadius: "50px",
                 height: "38px",
                 pr: 0.5,
+                "& fieldset": {
+                  borderColor: COLORS.border,
+                },
+
+                // 🔥 hover border (optional light)
+                "&:hover fieldset": {
+                  borderColor: COLORS.border,
+                },
+
+                // ❌ REMOVE BLUE FOCUS BORDER
+                "&.Mui-focused fieldset": {
+                  borderColor: COLORS.border,
+                  borderWidth: "1px",
+                },
+              },
+
+              // ❌ remove browser outline
+              "& input": {
+                outline: "none",
               },
             }}
             InputProps={{

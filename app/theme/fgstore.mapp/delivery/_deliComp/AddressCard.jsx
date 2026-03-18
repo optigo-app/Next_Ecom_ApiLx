@@ -1,10 +1,11 @@
 "use client";
 
 import React from "react";
-import { Grid, Card, CardContent, Typography, Box, IconButton } from "@mui/material";
+import { Grid, Card, CardContent, Typography, Box, IconButton, colors } from "@mui/material";
 import { MdModeEditOutline, MdDelete } from "react-icons/md";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import RadioButtonUncheckedIcon from "@mui/icons-material/RadioButtonUnchecked";
+import { COLORS } from "@/app/(core)/constants/MobileAppTheme";
 
 const AddressCard = ({ address, handleOpen, handleDeleteClick, handleDefaultSelection }) => {
   const {
@@ -20,13 +21,13 @@ const AddressCard = ({ address, handleOpen, handleDeleteClick, handleDefaultSele
   } = address;
 
   return (
-        <Grid item size={{ xs: 12, sm: 6, md: 4, lg: 3 }} >
+    <Grid item size={{ xs: 12, sm: 6, md: 4, lg: 3 }} >
       <Card
         onClick={() => handleDefaultSelection(address)}
         sx={{
           borderRadius: 2,
           cursor: "pointer",
-          border: isdefault ? "2px solid #635bff" : "1px solid #e5e5e5",
+          border: isdefault ? `2px solid ${COLORS.primary} ` : `1px solid ${COLORS.border} `,
           transition: "all .2s ease",
           "&:hover": {
             boxShadow: "0 6px 18px rgba(0,0,0,0.08)"
@@ -34,7 +35,7 @@ const AddressCard = ({ address, handleOpen, handleDeleteClick, handleDefaultSele
         }}
       >
         <CardContent sx={{ p: 2 }}>
-          
+
           {/* Top Row */}
           <Box
             sx={{
@@ -46,13 +47,13 @@ const AddressCard = ({ address, handleOpen, handleDeleteClick, handleDefaultSele
           >
             {/* Left Selection + Address */}
             <Box sx={{ display: "flex", gap: 1.2 }}>
-              
+
               {/* Radio */}
               <Box sx={{ mt: "3px" }}>
                 {isdefault ? (
-                  <CheckCircleIcon sx={{ color: "#635bff", fontSize: 20 }} />
+                  <CheckCircleIcon sx={{ color: COLORS.primary, fontSize: 20 }} />
                 ) : (
-                  <RadioButtonUncheckedIcon sx={{ fontSize: 20, color: "#aaa" }} />
+                  <RadioButtonUncheckedIcon sx={{ fontSize: 20, color: COLORS.border }} />
                 )}
               </Box>
 
