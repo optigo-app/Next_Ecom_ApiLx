@@ -2318,7 +2318,7 @@ const ProductPage = () => {
                 </button>
                 <button onClick={() => handleWishList(!wishListFlag)}>
                   <span className="hoq_addtocart_btn_txt">
-                    {!wishListFlag ? "ADD TO Wislist" : "Remove from wishlist"}
+                    {!wishListFlag ? "ADD TO wishlist" : "Remove from wishlist"}
                   </span>
                   <FaHeart />
                 </button>

@@ -2072,7 +2072,7 @@ const ProductPage = ({ params, searchParams, storeInit }) => {
                                     </span>
                                 </button>
                                 <button onClick={() => handleWishList(!wishListFlag)}>
-                                    <span className="hoq_addtocart_btn_txt">{!wishListFlag ? "ADD TO Wislist" : "Remove from wishlist"}</span>
+                                    <span className="hoq_addtocart_btn_txt">{!wishListFlag ? "ADD TO Wishlist" : "Remove from wishlist"}</span>
                                     <FaHeart />
                                 </button>
                                 <div className="delivery_hoq">
@@ -2111,7 +2111,7 @@ const NotFoundProduct = ({ navigate }) => {
         <div className="not-found-product">
             <h2>Product Not Found</h2>
             <p>We couldn't find the product you're looking for.</p>
-            <button onClick={() => navigate.push(-1)}>
+            <button onClick={() => navigate.back()}>
                 <IoMdArrowBack size={18} /> Go Back To Previous Page
             </button>
         </div>

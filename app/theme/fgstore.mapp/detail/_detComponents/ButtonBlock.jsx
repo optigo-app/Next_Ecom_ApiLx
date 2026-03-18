@@ -22,10 +22,10 @@ const ButtonBlock = ({ addToCartFlag, wishListFlag, handleCart, handleWishList }
                 sx={{
                     borderRadius: "30px",
                     textTransform: "none",
-                    fontSize: "0.8rem" ,
-                         display:'flex',
-                    alignItem:'center',
-                    gap:1
+                    fontSize: "0.8rem",
+                    display: 'flex',
+                    alignItem: 'center',
+                    gap: 1
                 }}
             >
                 {!addToCartFlag ? "Add to Cart" : "Remove from Cart"}
@@ -40,13 +40,13 @@ const ButtonBlock = ({ addToCartFlag, wishListFlag, handleCart, handleWishList }
                     borderRadius: "30px",
                     textTransform: "none",
                     fontSize: "0.8rem",
-                    display:'flex',
-                    alignItem:'center',
-                    gap:1
+                    display: 'flex',
+                    alignItem: 'center',
+                    gap: 1
                 }}
             >
-              <FaHeart /> 
-               {!wishListFlag ? "Add To Wislist" : "Remove from Wishlist"}
+                <FaHeart />
+                {!wishListFlag ? "Add To Wishlist" : "Remove from Wishlist"}
             </Button>
 
         </Box>
@@ -71,7 +71,7 @@ export default ButtonBlock;
 //                                     </span>
 //                                 </button>
 //                                 <button onClick={() => handleWishList(!wishListFlag)}>
-//                                     <span className="fgstore_mapp_addtocart_btn_txt">{!wishListFlag ? "ADD TO Wislist" : "Remove from wishlist"}</span>
+//                                     <span className="fgstore_mapp_addtocart_btn_txt">{!wishListFlag ? "ADD TO Wishlist" : "Remove from wishlist"}</span>
 //                                     <FaHeart />
 //                                 </button>
 
@@ -88,6 +88,6 @@ export default ButtonBlock;
 //                                     </span>
 //                                 </button>
 //                                 <button onClick={() => handleWishList(!wishListFlag)}>
-//                                     <span className="fgstore_mapp_addtocart_btn_txt">{!wishListFlag ? "ADD TO Wislist" : "Remove from wishlist"}</span>
+//                                     <span className="fgstore_mapp_addtocart_btn_txt">{!wishListFlag ? "ADD TO Wishlist" : "Remove from wishlist"}</span>
 //                                     <FaHeart />
 //                                 </button>

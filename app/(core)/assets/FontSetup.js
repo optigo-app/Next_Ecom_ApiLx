@@ -1,4 +1,4 @@
-import { Poppins, Raleway } from "next/font/google";
+import { Poppins, Raleway, Outfit, Urbanist } from "next/font/google";
 
 export const poppins = Poppins({
   subsets: ["latin"],
@@ -14,4 +14,18 @@ export const raleway = Raleway({
   display: "swap",
 });
 
-export const defaultFont = raleway;
+export const outfit = Outfit({
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700"],
+  variable: "--font-poppins",
+  display: "swap",
+});
+
+
+export const urbanist = Urbanist({
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700"],
+  variable: "--font-poppins",
+  display: "swap",
+});
+export const defaultFont = urbanist;

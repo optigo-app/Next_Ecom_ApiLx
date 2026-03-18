@@ -23,16 +23,12 @@ const BottomNavigation = () => {
         else if (pathname.startsWith("/profile") || pathname.startsWith("/account")) setActiveTab("Profile");
     }, [pathname]);
 
-    const hideNavbarRoutes = [
-        "/d/",
-        "/p/",
-        "/delivery",
-        "/payment",
-        "/confirmation",
-        // "/profile"
-    ];
-
-    const hideNavbar = hideNavbarRoutes.some(route => pathname.startsWith(route));
+    const hideNavbar =
+        pathname.startsWith("/d/") ||
+        pathname.startsWith("/p") ||   // ✅ covers /p?query and /p/anything
+        pathname.startsWith("/delivery") ||
+        pathname.startsWith("/payment") ||
+        pathname.startsWith("/confirmation");
 
     if (hideNavbar) return null;
 

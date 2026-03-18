@@ -87,6 +87,8 @@ const Layout = ({ params, searchParams, storeinit }) => {
     let cookie = Cookies.get("visiterId");
     const [menuDecode, setMenuDecode] = useState("");
     const [ImageView, setImageView] = useState(false);
+    const location = useNextRouterLikeRR();
+
 
     const isEditablePage = 1;
 
@@ -789,7 +791,7 @@ const Layout = ({ params, searchParams, storeinit }) => {
             }
         })();
     }, []);
-    
+
 
     return (
         <Box
