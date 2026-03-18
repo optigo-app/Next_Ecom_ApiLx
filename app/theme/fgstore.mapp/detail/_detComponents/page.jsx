@@ -48,10 +48,10 @@ import { SearchParamsParser } from "@/app/(core)/utils/GlobalFunctions/Parser";
 import InfoDetail from "./InfoDetail";
 import MaterialCustomization from "./MaterialCustomization";
 import StaticMaterial from "./StaticMaterial";
-import  ProductDetailsSection from './ProductDetail';
+import ProductDetailsSection from './ProductDetail';
 import PriceBreakUp from './PriceBreakUp';
 import ButtonBlock from './ButtonBlock'
-import  DeliveryInfo from './DeliveryInfo'
+import DeliveryInfo from './DeliveryInfo'
 import NewStockitem from './InstockProduct/NewStockitem'
 
 
@@ -757,7 +757,7 @@ const ProductPage = ({ params, searchParams, storeInit }) => {
 
             const defaultImg = pdImgList[0];
 
-            if (Object.keys(defaultImg).length > 0) {
+            if (defaultImg && Object.keys(defaultImg).length > 0) {
                 setSelectedThumbImg({
                     link: {
                         imageUrl: defaultImg?.imageUrl,
@@ -800,7 +800,7 @@ const ProductPage = ({ params, searchParams, storeInit }) => {
 
     // Run ProdCardImageFunc only when singleProd is available
     useEffect(() => {
-        if (Object?.keys(singleProd)?.length > 0) {
+        if (singleProd && Object.keys(singleProd).length > 0) {
             setPdImageLoader(true);
             ProdCardImageFunc();
         }
@@ -863,6 +863,8 @@ const ProductPage = ({ params, searchParams, storeInit }) => {
         await SingleProdListAPI(prod, size, obj, cookie)
             .then((res) => {
                 setSingleProd1(res?.pdList[0]);
+                console.log(res?.pdList[0], "rajan?.pdList[0]")
+
 
                 if (res?.pdList?.length > 0) {
                     setisPriceLoading(false);
@@ -1370,11 +1372,12 @@ const ProductPage = ({ params, searchParams, storeInit }) => {
                             decodeEntities={decodeEntities}
                             storeInit={storeInit}
                             singleProd={singleProd}
+                            singleProd1={singleProd1}
                             isPriceloading={isPriceloading}
                             loginInfo={loginInfo}
                             Currency={loginUserDetail?.CurrencyCode ?? storeInit?.CurrencyCode}
                         />
-                       
+
                         <MaterialCustomization
                             storeInit={storeInit}
                             metalTypeCombo={metalTypeCombo}
@@ -1395,51 +1398,51 @@ const ProductPage = ({ params, searchParams, storeInit }) => {
                             SizeSorting={SizeSorting}
                         />
                         <ButtonBlock
-                        addToCartFlag={addToCartFlag}
-                        wishListFlag={wishListFlag}
-                        handleCart={handleCart}
-                        handleWishList={handleWishList}
+                            addToCartFlag={addToCartFlag}
+                            wishListFlag={wishListFlag}
+                            handleCart={handleCart}
+                            handleWishList={handleWishList}
                         />
-                         <StaticMaterial
-                         singleProd={singleProd}
-                        singleProd1={singleProd1}
-                        selectMtType={selectMtType}
-                        selectMtColor={selectMtColor}
-                        selectDiaQc={selectDiaQc}
-                        storeInit={storeInit}
-                        diaQcCombo={diaQcCombo}
-                        diaList={diaList}
+                        <StaticMaterial
+                            singleProd={singleProd}
+                            singleProd1={singleProd1}
+                            selectMtType={selectMtType}
+                            selectMtColor={selectMtColor}
+                            selectDiaQc={selectDiaQc}
+                            storeInit={storeInit}
+                            diaQcCombo={diaQcCombo}
+                            diaList={diaList}
                         />
-                       <PriceBreakUp
-                        storeInit={storeInit}
-                        singleProd={singleProd}
-                        singleProd1={singleProd1}
-                        loginInfo={loginInfo}
+                        <PriceBreakUp
+                            storeInit={storeInit}
+                            singleProd={singleProd}
+                            singleProd1={singleProd1}
+                            loginInfo={loginInfo}
                         />
                         <DeliveryInfo
-                         singleProd={singleProd ?? singleProd1}
+                            singleProd={singleProd ?? singleProd1}
                         />
 
-                        
+
                         <ProductDetailsSection
-                        diaList={diaList}
-                        csList={csList}
+                            diaList={diaList}
+                            csList={csList}
                         />
                     </Box>
                 </main>
-                 {stockItemArr?.length > 0 && stockItemArr?.[0]?.stat_code != 1005 && storeInit?.IsStockWebsite === 1 && (
-              <NewStockitem
-                stockItemArr={stockItemArr}
-                storeInit={storeInit}
-                loginInfo={loginInfo}
-                cartArr={cartArr}
-                check={storeInit?.IsPriceShow === 1}
-                handleCartandWish={handleCartandWish}
-              />
-            )}
+                {stockItemArr?.length > 0 && stockItemArr?.[0]?.stat_code != 1005 && storeInit?.IsStockWebsite === 1 && (
+                    <NewStockitem
+                        stockItemArr={stockItemArr}
+                        storeInit={storeInit}
+                        loginInfo={loginInfo}
+                        cartArr={cartArr}
+                        check={storeInit?.IsPriceShow === 1}
+                        handleCartandWish={handleCartandWish}
+                    />
+                )}
                 {/* {stockItemArr?.length > 0 && storeInit?.IsStockWebsite === 1 && stockItemArr?.[0]?.stat_code != 1005 && <Stockitems stockItemArr={stockItemArr} storeInit={storeInit} loginInfo={loginInfo} cartArr={cartArr} handleCartandWish={handleCartandWish} check={storeInit?.IsPriceShow === 1} />} */}
                 {storeInit?.IsProductDetailSimilarDesign == 1 && SimilarBrandArr?.length > 0 && SimilarBrandArr?.[0]?.stat_code != 1005 && <RelatedProduct SimilarBrandArr={SimilarBrandArr} handleMoveToDetail={handleMoveToDetail} storeInit={storeInit} loginInfo={loginInfo} check={storeInit?.IsPriceShow === 1} />}
-                {storeInit?.IsProductDetailDesignSet === 1 && designSetList?.length > 0 && designSetList?.[0]?.stat_code != 1005 && <DesignSet designSetList={designSetList} handleMoveToDetail={handleMoveToDetail}  loginInfo={loginInfo} storeInit={storeInit} check={storeInit?.IsPriceShow === 1} />}
+                {storeInit?.IsProductDetailDesignSet === 1 && designSetList?.length > 0 && designSetList?.[0]?.stat_code != 1005 && <DesignSet designSetList={designSetList} handleMoveToDetail={handleMoveToDetail} loginInfo={loginInfo} storeInit={storeInit} check={storeInit?.IsPriceShow === 1} />}
 
                 {/* <RecentlyViewd /> hold on */}
             </div>
@@ -1454,7 +1457,7 @@ const NotFoundProduct = ({ navigate }) => {
         <div className="not-found-product">
             <h2>Product Not Found</h2>
             <p>We couldn't find the product you're looking for.</p>
-            <button onClick={() => navigate.push(-1)}>
+            <button onClick={() => navigate.back()}>
                 <IoMdArrowBack size={18} /> Go Back To Previous Page
             </button>
         </div>

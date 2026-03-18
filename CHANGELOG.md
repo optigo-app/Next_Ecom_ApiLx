@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### [2026-03-18]
+
+#### Fixed
+
+- `app/theme/fgstore.mapp/detail/_detComponents/page.jsx`: **Fixed Uncaught TypeError in ProductPage** — Added defensive checks before calling `Object.keys()` on `singleProd` and `defaultImg` to prevent "Cannot convert undefined or null to object" crashes when data is not yet available.
+- `app/theme/fgstore.mapp/detail/_detComponents/Select.jsx`: **Fixed CustomSelect default value matching** — Updated the strict equality check in `CustomSelect` to do a loose equality fallback so that values like `"14K WHITE"` successfully match. Added a fallback to `options[0]` if no matching option is found to mirror native select behavior.
+- `app/theme/fgstore.mapp/detail/_detComponents/MaterialCustomization.jsx`: **Fixed Optional Chaining in CustomSelect properties** — Updated `getOptionLabel` and `getOptionValue` references to `opt.metaltype`, `opt.Quality`, etc. to use `opt?.` optional chaining. This prevents `Cannot read properties of undefined` UI crashes when CustomSelect loads options asynchronously.
+- `app/theme/fgstore.mapp/detail/_detComponents/page.jsx` + `InfoDetail.jsx`: **Fixed price not updating in UI after customization change** — `singleProd1` (updated from `SingleProdListAPI` on every customization change) was never passed as a prop to `InfoDetail`, so the price always showed the stale `singleProd` value. Added `singleProd1={singleProd1}` prop. Also fixed price formatting to apply `toLocaleString("en-IN")` to both `singleProd1` and `singleProd` consistently.
+
 ### [2026-03-16]
 
 #### Added
