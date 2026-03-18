@@ -62,7 +62,6 @@ const ProductPage = ({ params, searchParams, storeInit }) => {
     const [pdVideoArr, setPdVideoArr] = useState([]);
     const [metalTypeCombo, setMetalTypeCombo] = useState([]);
     const [diaQcCombo, setDiaQcCombo] = useState([]);
-    useNextRouterLikeRR;
     const [csQcCombo, setCsQcCombo] = useState([]);
     const [metalColorCombo, setMetalColorCombo] = useState([]);
     const [singleProd, setSingleProd] = useState({});
@@ -1178,7 +1177,7 @@ const ProductPage = ({ params, searchParams, storeInit }) => {
                                     <Skeleton
                                         variant="rectangular"
                                         width={"100%"}
-                                        height={"60vh"}
+                                        height={"55vh"}
                                         sx={{
                                             backgroundColor: "#f0ededb4 !important",
                                         }}
