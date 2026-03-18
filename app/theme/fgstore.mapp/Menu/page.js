@@ -9,6 +9,7 @@ import { useStore } from '@/app/(core)/contexts/StoreProvider';
 import { useNextRouterLikeRR } from '@/app/(core)/hooks/useLocationRd';
 import { getSession } from '@/app/(core)/utils/FetchSessionData';
 import DashboardRoundedIcon from '@mui/icons-material/DashboardRounded';
+import { COLORS } from '@/app/(core)/constants/MobileAppTheme';
 
 const Menu = ({ storeInit }) => {
     const { islogin, loginUserDetail } = useStore();
@@ -18,9 +19,6 @@ const Menu = ({ storeInit }) => {
     const [loading, setLoading] = useState(true);
     const [activeTab, setActiveTab] = useState(0);
 
-    // ==========================================
-    // 1. EXACT OLD API FETCHING LOGIC
-    // ==========================================
     useEffect(() => {
         const fetchMenu = async () => {
             const isB2B = storeInit?.IsB2BWebsite === 1;
@@ -193,7 +191,7 @@ const Menu = ({ storeInit }) => {
     // ==========================================
     if (loading) return (
         <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '80vh' }}>
-            <CircularProgress sx={{ color: '#1a6bff' }} />
+            <CircularProgress sx={{ color: COLORS.primary }} />
         </Box>
     );
 
@@ -206,7 +204,7 @@ const Menu = ({ storeInit }) => {
                 <Typography sx={{ color: 'text.secondary', mt: 1, mb: 3 }}>Please sign in to view our exclusive B2B collection.</Typography>
                 <ButtonBase
                     onClick={() => navigation('/signin')}
-                    sx={{ bgcolor: '#1a6bff', color: 'white', px: 6, py: 1.5, borderRadius: '8px', fontWeight: 600, boxShadow: '0 4px 12px rgba(214,176,139,0.3)' }}
+                    sx={{ bgcolor: COLORS.primary, color: 'white', px: 6, py: 1.5, borderRadius: '8px', fontWeight: 600, boxShadow: '0 4px 12px rgba(214,176,139,0.3)' }}
                 >
                     Sign In
                 </ButtonBase>
@@ -229,8 +227,8 @@ const Menu = ({ storeInit }) => {
                             px: 0.5,
                             position: 'relative',
                             transition: 'all 0.2s',
-                            bgcolor: activeTab === idx ? '#fff' : 'transparent',
-                            borderLeft: activeTab === idx ? '4px solid #1a6bff' : '4px solid transparent'
+                            bgcolor: activeTab === idx ? COLORS.primary : 'transparent',
+                            borderLeft: activeTab === idx ? `4px solid ${COLORS.primary}` : '4px solid transparent' ,
                         }}
                     >
                         <Box sx={{
@@ -253,7 +251,7 @@ const Menu = ({ storeInit }) => {
                         </Box>
                         <Typography sx={{
                             fontSize: '11px', fontWeight: activeTab === idx ? 700 : 500,
-                            textAlign: 'center', color: activeTab === idx ? '#000' : '#666',
+                            textAlign: 'center', color: activeTab === idx ? COLORS.white : '#666',
                             lineHeight: 1.2
                         }}>
                             {item.menuname}
@@ -279,7 +277,7 @@ const Menu = ({ storeInit }) => {
                             </Typography>
                             <ButtonBase
                                 onClick={() => handleNavigate(formattedMenu[activeTab])}
-                                sx={{ color: '#1a6bff', fontWeight: 600, fontSize: '14px' }}
+                                sx={{ color: COLORS.primary, fontWeight: 600, fontSize: '14px' }}
                             >
                                 View All <ChevronRight size={16} />
                             </ButtonBase>
@@ -452,7 +450,7 @@ export default Menu;
 
 //     if (loading) return (
 //         <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '80vh' }}>
-//             <CircularProgress sx={{ color: '#1a6bff' }} />
+//             <CircularProgress sx={{ color: COLORS.primary }} />
 //         </Box>
 //     );
 
@@ -465,7 +463,7 @@ export default Menu;
 //                 <Typography sx={{ color: 'text.secondary', mt: 1, mb: 3 }}>Please sign in to view our exclusive B2B collection.</Typography>
 //                 <ButtonBase 
 //                     onClick={() => navigation('/signin')}
-//                     sx={{ bgcolor: '#1a6bff', color: 'white', px: 6, py: 1.5, borderRadius: '8px', fontWeight: 600, boxShadow: '0 4px 12px rgba(214,176,139,0.3)' }}
+//                     sx={{ bgcolor: COLORS.primary, color: 'white', px: 6, py: 1.5, borderRadius: '8px', fontWeight: 600, boxShadow: '0 4px 12px rgba(214,176,139,0.3)' }}
 //                 >
 //                     Sign In
 //                 </ButtonBase>
@@ -488,11 +486,11 @@ export default Menu;
 //                             position: 'relative',
 //                             transition: 'all 0.2s',
 //                             bgcolor: activeTab === idx ? '#fff' : 'transparent',
-//                             borderLeft: activeTab === idx ? '4px solid #1a6bff' : '4px solid transparent'
+//                             borderLeft: activeTab === idx ? '4px solidCOLORS.primary : '4px solid transparent'
 //                         }}
 //                     >
 //                         <Box sx={{ 
-//                             width: 38, height: 38, bgcolor: activeTab === idx ? '#1a6bff' : '#eee', 
+//                             width: 38, height: 38, bgcolor: activeTab === idx ? COLORS.primary : '#eee', 
 //                             borderRadius: '18px', mb: 0.5, display: 'flex', alignItems: 'center', justifyContent: 'center' 
 //                         }}>
 //                             <DashboardRoundedIcon size={16} sx={{
@@ -527,7 +525,7 @@ export default Menu;
 //                             </Typography>
 //                             <ButtonBase 
 //                                 onClick={() => handleNavigate(formattedMenu[activeTab])}
-//                                 sx={{ color: '#1a6bff', fontWeight: 600, fontSize: '14px' }}
+//                                 sx={{ color: COLORS.primary, fontWeight: 600, fontSize: '14px' }}
 //                             >
 //                                 View All <ChevronRight size={16} />
 //                             </ButtonBase>

@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import './YourProfile.scss';
-import { TextField, Modal, CircularProgress, Box, Button ,Typography } from '@mui/material';
+import { TextField, Modal, CircularProgress, Box, Button, Typography } from '@mui/material';
 import { toast } from 'react-toastify';
 import { saveEditProfile } from '@/app/(core)/utils/API/AccountTabs/YourProfile';
 import { getAddressData } from '@/app/(core)/utils/API/AccountTabs/manageAddress';
 import { validateChangeYPAccount, validateUserDataYPAccount } from '@/app/(core)/utils/Glob_Functions/AccountPages/AccountPage';
+import { getButtonStyle } from '@/app/(core)/constants/MobileAppTheme';
 
 export default function YourProfile() {
 
@@ -190,123 +191,139 @@ export default function YourProfile() {
                             variant="contained"
                             color="primary"
                             onClick={handleEdit}
+                            sx={getButtonStyle(true, {
+                                width: '100%'
+                            })}
+                            fullWidth
                         >
                             Edit Profile
                         </Button>
                     </Box>
                 </div>
 
-             <Modal open={editMode} onClose={handleClose}>
-  <Box
-    sx={{
-      position: "absolute",
-      top: "50%",
-      left: "50%",
-      transform: "translate(-50%, -50%)",
-      width: { xs: "80%", sm: 400 },
-      bgcolor: "background.paper",
-      borderRadius: 2,
-      boxShadow: 24,
-      p: 2
-    }}
-  >
-    <form onSubmit={(event) => handleSubmit(event)}>
-      
-      <Typography
-        variant="h6"
-        sx={{ textAlign: "center", mb: 2 }}
-      >
-        Edit Profile
-      </Typography>
+                <Modal open={editMode} onClose={handleClose}>
+                    <Box
+                        sx={{
+                            position: "absolute",
+                            top: "50%",
+                            left: "50%",
+                            transform: "translate(-50%, -50%)",
+                            width: { xs: "80%", sm: 400 },
+                            bgcolor: "background.paper",
+                            borderRadius: 2,
+                            boxShadow: 24,
+                            p: 2
+                        }}
+                    >
+                        <form onSubmit={(event) => handleSubmit(event)}>
 
-      {editedUserData && (
-        <>
-          <TextField
-            fullWidth
-            id="firstname"
-            label="First Name"
-            margin="normal"
-            value={editedUserData.firstname || ""}
-            onChange={handleInputChange}
-            error={!!errors.firstname}
-            helperText={errors.firstname}
-          />
+                            <Typography
+                                variant="h6"
+                                sx={{ textAlign: "center", mb: 2 }}
+                            >
+                                Edit Profile
+                            </Typography>
 
-          <TextField
-            fullWidth
-            id="lastname"
-            label="Last Name"
-            margin="normal"
-            value={editedUserData.lastname || ""}
-            onChange={handleInputChange}
-            error={!!errors.lastname}
-            helperText={errors.lastname}
-          />
+                            {editedUserData && (
+                                <>
+                                    <TextField
+                                        fullWidth
+                                        id="firstname"
+                                        label="First Name"
+                                        margin="normal"
+                                        value={editedUserData.firstname || ""}
+                                        onChange={handleInputChange}
+                                        error={!!errors.firstname}
+                                        helperText={errors.firstname}
+                                    />
 
-          <TextField
-            fullWidth
-            id="userid"
-            label="Email"
-            margin="normal"
-            value={editedUserData.userid || ""}
-            disabled
-          />
+                                    <TextField
+                                        fullWidth
+                                        id="lastname"
+                                        label="Last Name"
+                                        margin="normal"
+                                        value={editedUserData.lastname || ""}
+                                        onChange={handleInputChange}
+                                        error={!!errors.lastname}
+                                        helperText={errors.lastname}
+                                    />
 
-          <TextField
-            fullWidth
-            id="mobileno"
-            label="Mobile No"
-            margin="normal"
-            value={editedUserData.mobileno || ""}
-            onChange={handleInputChange}
-            error={!!errors.mobileno}
-            helperText={errors.mobileno}
-          />
+                                    <TextField
+                                        fullWidth
+                                        id="userid"
+                                        label="Email"
+                                        margin="normal"
+                                        value={editedUserData.userid || ""}
+                                        disabled
+                                    />
 
-          <TextField
-            fullWidth
-            id="street"
-            label="Address"
-            margin="normal"
-            multiline
-            rows={3}
-            value={editedUserData.street || ""}
-            onChange={handleInputChange}
-            error={!!errors.street}
-            helperText={errors.street}
-          />
-        </>
-      )}
+                                    <TextField
+                                        fullWidth
+                                        id="mobileno"
+                                        label="Mobile No"
+                                        margin="normal"
+                                        value={editedUserData.mobileno || ""}
+                                        onChange={handleInputChange}
+                                        error={!!errors.mobileno}
+                                        helperText={errors.mobileno}
+                                    />
 
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "space-between",
-          mt: 3
-        }}
-      >
-        <Button
-          type="submit"
-          variant="contained"
-          fullWidth
-          sx={{ mr: 1 }}
-        >
-          Save
-        </Button>
+                                    <TextField
+                                        fullWidth
+                                        id="street"
+                                        label="Address"
+                                        margin="normal"
+                                        multiline
+                                        rows={3}
+                                        value={editedUserData.street || ""}
+                                        onChange={handleInputChange}
+                                        error={!!errors.street}
+                                        helperText={errors.street}
+                                    />
+                                </>
+                            )}
 
-        <Button
-          variant="outlined"
-          fullWidth
-          sx={{ ml: 1 }}
-          onClick={handleCancel}
-        >
-          Cancel
-        </Button>
-      </Box>
+                            <Box
+                                sx={{
+                                    display: "flex",
+                                    justifyContent: "space-between",
+                                    mt: 3
+                                }}
+                            >
+                                <Button
+                                    type="submit"
+                                    variant="contained"
+                                    fullWidth
+                                    sx={getButtonStyle(true, {
+                                        width: '100%',
+                                        mr: 1,
+                                        bgcolor: 'transparent',
+                                        color: 'black',
+                                        "&:hover": {
+                                            backgroundColor: 'transparent',
+                                            boxShadow: 'none',
+                                        },
+                                    })}
+                                >
+                                    Save
+                                </Button>
 
-    </form>
-  </Box>
-</Modal>
+                                <Button
+                                    variant="outlined"
+                                    fullWidth
+                                    sx={getButtonStyle(true, {
+                                        width: '100%',
+                                        ml: 1
+                                    })}
+                                    onClick={handleCancel}
+                                >
+                                    Cancel
+                                </Button>
+                            </Box>
+
+                        </form>
+                    </Box>
+                </Modal>
 
             </div>
         </Box>

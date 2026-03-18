@@ -1,7 +1,8 @@
 import { Box, Typography } from "@mui/material";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
+import { COLORS } from "@/app/(core)/constants/MobileAppTheme";
 
-const Headers = ({ title = "Untitled", onViewMore = () => {}, showViewMoreBtn = true }) => {
+const Headers = ({ title = "Untitled", onViewMore = () => { }, showViewMoreBtn = true }) => {
   return (
     <Box
       sx={{
@@ -37,7 +38,7 @@ const Headers = ({ title = "Untitled", onViewMore = () => {}, showViewMoreBtn = 
                 display: "flex",
                 alignItems: "center",
                 cursor: "pointer",
-                color: "#1976d2",
+                color: COLORS.primary,
                 fontWeight: 500,
                 "&:hover": { textDecoration: "underline" },
               }}

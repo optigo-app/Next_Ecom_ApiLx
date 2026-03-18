@@ -22,6 +22,8 @@ import StaticPage from "./StaticPage";
 import Newsletter from "./staticTabs/Newsletter/Newsletter";
 import AboutUs from "./staticTabs/AboutUs/AboutUs";
 import ContactUs from "./staticTabs/ContactUs/ContactUs";
+import { COLORS } from "@/app/(core)/constants/MobileAppTheme";
+
 
 const ProfilePage = () => {
   const { loginUserDetail } = useStore();
@@ -85,7 +87,11 @@ const ProfilePage = () => {
                 }}
               >
                 <Paper elevation={0} sx={{ p: 2, display: "flex", alignItems: "center", gap: 1.5, borderRadius: 2, cursor: "pointer" }}>
-                  <Inventory2OutlinedIcon color="primary" />
+                  <Inventory2OutlinedIcon
+                    sx={{
+                      color: COLORS.primary
+                    }}
+                  />
                   <Typography variant="subtitle2" fontWeight="bold">
                     Orders
                   </Typography>
@@ -103,7 +109,9 @@ const ProfilePage = () => {
                 }}
               >
                 <Paper elevation={0} sx={{ p: 2, display: "flex", alignItems: "center", gap: 1.5, borderRadius: 2, cursor: "pointer" }}>
-                  <FavoriteBorderOutlinedIcon color="primary" />
+                  <FavoriteBorderOutlinedIcon sx={{
+                    color: COLORS.primary
+                  }} />
                   <Typography variant="subtitle2" fontWeight="bold">
                     Wishlist
                   </Typography>
@@ -121,7 +129,9 @@ const ProfilePage = () => {
                 }}
               >
                 <Paper elevation={0} sx={{ p: 2, display: "flex", alignItems: "center", gap: 1.5, borderRadius: 2, cursor: "pointer" }}>
-                  <CardGiftcardOutlinedIcon color="primary" />
+                  <CardGiftcardOutlinedIcon sx={{
+                    color: COLORS.primary
+                  }} />
                   <Typography variant="subtitle2" fontWeight="bold">
                     Cart
                   </Typography>
@@ -144,7 +154,9 @@ const ProfilePage = () => {
                 }}
               >
                 <ListItemButton sx={{ py: 1.5 }}>
-                  <ListItemIcon sx={{ color: "#2874f0" }}>
+                  <ListItemIcon sx={{
+                    color: COLORS.primary
+                  }}>
                     <PersonOutlineOutlinedIcon />
                   </ListItemIcon>
                   <ListItemText primary="Account Settings" />
@@ -165,7 +177,9 @@ const ProfilePage = () => {
                 }}
               >
                 <ListItemButton sx={{ py: 1.5 }}>
-                  <ListItemIcon sx={{ color: "#2874f0" }}>
+                  <ListItemIcon sx={{
+                    color: COLORS.primary
+                  }}>
                     <LocationOnOutlinedIcon />
                   </ListItemIcon>
                   <ListItemText primary="Saved Addresses" />

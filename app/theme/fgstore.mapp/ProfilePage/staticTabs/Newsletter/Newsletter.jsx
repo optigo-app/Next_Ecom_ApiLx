@@ -7,6 +7,7 @@ import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 import { useState } from "react";
 import { useStore } from "@/app/(core)/contexts/StoreProvider";
 import { toast } from "react-toastify";
+import { COLORS } from "@/app/(core)/constants/MobileAppTheme";
 
 export default function Newsletter({ open, onClose }) {
     const { storeInit } = useStore();
@@ -176,8 +177,28 @@ export default function Newsletter({ open, onClose }) {
                                         mb: 2,
                                         "& .MuiOutlinedInput-root": {
                                             bgcolor: "#fff",
-                                            borderRadius: "12px"
-                                        }
+                                            borderRadius: "12px",
+                                            "& fieldset": {
+                                                borderColor: COLORS.border,
+                                            },
+
+                                            // 🔥 hover border (optional light)
+                                            "&:hover fieldset": {
+                                                borderColor: COLORS.border,
+                                            },
+
+                                            // ❌ REMOVE BLUE FOCUS BORDER
+                                            "&.Mui-focused fieldset": {
+                                                borderColor: COLORS.border,
+                                                borderWidth: "1px",
+                                            },
+                                        },
+
+                                        // ❌ remove browser outline
+                                        "& input": {
+                                            outline: "none",
+                                        },
+
                                     }}
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
@@ -194,6 +215,8 @@ export default function Newsletter({ open, onClose }) {
                                         py: 1.8,
                                         borderRadius: "12px",
                                         fontWeight: 700,
+                                        bgcolor: COLORS.primary,
+                                        color: COLORS.white,
                                         fontSize: 15,
                                         textTransform: "none",
                                         boxShadow: "0 4px 12px rgba(var(--primary-rgb, 0, 0, 0), 0.2)",

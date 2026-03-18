@@ -128,7 +128,7 @@ const ProductPage = ({ params, searchParams, storeInit }) => {
     }, [singleProd]);
 
     const settings = {
-        dots: false,
+        dots: true,
         arrows: false,
         infinite: false,
         loop: true,
@@ -1143,25 +1143,26 @@ const ProductPage = ({ params, searchParams, storeInit }) => {
                         {imageLoaded ? (
                             <>
                                 <div className="slider">
-                                    {Array.from({ length: 3 })?.map((val, i) => {
+                                    {Array.from({ length: 4 })?.map((val, i) => {
                                         return (
-                                            <div
+                                            <Box
                                                 key={i}
-                                                onClick={() => handleThumbnailClick(i)}
                                                 className="box"
-                                                style={{
+                                                sx={{
                                                     backgroundColor: "transparent",
-                                                    marginTop: "-5px",
+                                                    mb: 1
                                                 }}
                                             >
                                                 <Skeleton
-                                                    width={100}
-                                                    height={250}
+                                                    variant="rectangular"
+                                                    width="100%"
+                                                    height={150}
                                                     sx={{
+                                                        borderRadius: "4px",
                                                         backgroundColor: "#f0ededb4 !important",
                                                     }}
                                                 />
-                                            </div>
+                                            </Box>
                                         );
                                     })}
                                 </div>
@@ -1170,18 +1171,15 @@ const ProductPage = ({ params, searchParams, storeInit }) => {
                                     style={{
                                         height: "100%",
                                         width: "100%",
-                                        marginTop: "3rem",
-                                        marginLeft: "1rem",
                                         borderRadius: "4px",
+                                        overflow: "hidden"
                                     }}
                                 >
                                     <Skeleton
+                                        variant="rectangular"
                                         width={"100%"}
+                                        height={"60vh"}
                                         sx={{
-                                            padding: "0",
-                                            marginTop: "-16rem",
-                                            marginLeft: "-8px",
-                                            height: "55vh",
                                             backgroundColor: "#f0ededb4 !important",
                                         }}
                                     />
@@ -1241,7 +1239,9 @@ const ProductPage = ({ params, searchParams, storeInit }) => {
                                         );
                                     })}
                                 </div>
-                                <div className="main_image" onClick={() => setShowMangifier(!ShowMangifier)}>
+                                <div className="main_image"
+                                // onClick={() => setShowMangifier(!ShowMangifier)}
+                                >
                                     {[...PdImageArr, ...filteredVideos]?.length > 1 ? (
                                         <>
                                             <Slider {...settings} ref={sliderRef} lazyLoad="progressive">

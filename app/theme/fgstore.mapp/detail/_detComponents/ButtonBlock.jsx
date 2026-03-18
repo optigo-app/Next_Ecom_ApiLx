@@ -1,5 +1,9 @@
+import { COLORS, getButtonStyle } from "@/app/(core)/constants/MobileAppTheme";
 import { Box, Button } from "@mui/material";
 import { FaHeart } from "react-icons/fa";
+
+
+
 
 const ButtonBlock = ({ addToCartFlag, wishListFlag, handleCart, handleWishList }) => {
     return <>
@@ -19,14 +23,8 @@ const ButtonBlock = ({ addToCartFlag, wishListFlag, handleCart, handleWishList }
                 fullWidth
                 variant={!addToCartFlag ? "outlined" : "contained"}
                 onClick={() => handleCart(!addToCartFlag)}
-                sx={{
-                    borderRadius: "30px",
-                    textTransform: "none",
-                    fontSize: "0.8rem",
-                    display: 'flex',
-                    alignItem: 'center',
-                    gap: 1
-                }}
+                sx={getButtonStyle(addToCartFlag)}
+
             >
                 {!addToCartFlag ? "Add to Cart" : "Remove from Cart"}
             </Button>
@@ -36,14 +34,7 @@ const ButtonBlock = ({ addToCartFlag, wishListFlag, handleCart, handleWishList }
                 fullWidth
                 variant={!wishListFlag ? "outlined" : "contained"}
                 onClick={() => handleWishList(!wishListFlag)}
-                sx={{
-                    borderRadius: "30px",
-                    textTransform: "none",
-                    fontSize: "0.8rem",
-                    display: 'flex',
-                    alignItem: 'center',
-                    gap: 1
-                }}
+                sx={getButtonStyle(wishListFlag)}
             >
                 <FaHeart />
                 {!wishListFlag ? "Add To Wishlist" : "Remove from Wishlist"}

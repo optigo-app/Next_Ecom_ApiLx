@@ -10,6 +10,7 @@ import SkeletonLoader from "./AddressSkelton";
 import ConfirmationDialog from "@/app/(core)/utils/Glob_Functions/ConfirmationDialog/ConfirmationDialog";
 import { useNextRouterLikeRR } from "@/app/(core)/hooks/useLocationRd";
 import AddIcon from "@mui/icons-material/Add";
+import { COLORS } from "@/app/(core)/constants/MobileAppTheme";
 
 const AddressManagement = () => {
   const { addressData, open, openDelete, formData, errors, isEditMode, isLoading, handleOpen, handleClose, handleCancel, handleInputChange, handleSubmit, handleDelete, handleDeleteClick, handleDeleteClose, handleDefaultSelection, proceedToOrder } = useAddress();
@@ -52,6 +53,8 @@ const AddressManagement = () => {
               py: 1,
               borderStyle: "dashed",
               fontSize: "14px",
+              borderColor: COLORS.border,
+              color: COLORS.primary
             }}
           >
             Add New Address
@@ -83,7 +86,7 @@ function BottomFloatingButton({ onContinue }) {
     >
       <Box
         sx={{
-          maxWidth: 420,
+          maxWidth: "100%",
           margin: "0 auto",
         }}
       >
@@ -98,6 +101,10 @@ function BottomFloatingButton({ onContinue }) {
             fontWeight: 600,
             textTransform: "none",
             boxShadow: "0 6px 18px rgba(0,0,0,0.18)",
+            bgcolor: COLORS.primary,
+            ':hover': {
+              bgcolor: COLORS.hover,
+            }
           }}
         >
           Continue to Payment

@@ -30,6 +30,7 @@ import { useSearchParams } from "next/navigation";
 import AccountLedger2 from "./AccountLeger2/AccountLedger";
 import AccountLedger3 from "./AccountLeger3/AccountLedger";
 import AccountLedgerX2 from "@/app/theme/fgstore.mapp/AccountLeger/AccountLedger";
+import { COLORS } from "@/app/(core)/constants/MobileAppTheme";
 
 
 function CustomTabPanel(props) {
@@ -42,9 +43,9 @@ function CustomTabPanel(props) {
     <div role="tabpanel" hidden={value !== index} id={`simple-tabpanel-${index}`} aria-labelledby={`simple-tab-${index}`} {...other}>
       {value === index && (
         <Box
-        sx={{
-          paddingBottom:'5rem'
-        }}
+          sx={{
+            paddingBottom: '5rem'
+          }}
         >
           <Typography>{children}</Typography>
         </Box>
@@ -130,13 +131,44 @@ export default function Account({ Storeinit }) {
         onClose={() => setLogoutModal(false)}
         onConfirm={handleLogout}
       />
-      <AppBar position="static" color="default" elevation={1}>
+      <AppBar position="static" color="default" elevation={1}
+
+      >
         <Toolbar>
           <Typography variant="h6" sx={{ flexGrow: 1 }}>
             Account
           </Typography>
         </Toolbar>
-        <Tabs value={value} onChange={handleChange} variant="scrollable" scrollButtons="auto" allowScrollButtonsMobile>
+        <Tabs
+          sx={{
+            px: 1,
+            // 🔥 Indicator
+            "& .MuiTabs-indicator": {
+              backgroundColor: COLORS.primary,
+              height: "3px",
+              borderRadius: "3px",
+            },
+
+            // 🔥 All Tabs (default/inactive)
+            "& .MuiTab-root": {
+              textTransform: "none",
+              fontWeight: 500,
+              color: "#6B6B6B",
+            },
+
+            // 🔥 Active Tab
+            "& .Mui-selected": {
+              color: "#0F0F0F",
+              fontWeight: 600,
+            },
+
+            // 🔥 Hover Effect
+            "& .MuiTab-root:hover": {
+              color: "#0F0F0F",
+              opacity: 1,
+            },
+          }}
+          value={value} onChange={handleChange} variant="scrollable" scrollButtons="auto" allowScrollButtonsMobile>
           <Tab label="Your Profile" {...a11yProps(0)} />
           <Tab label="ORDER HISTORY" {...a11yProps(1)} />
           <Tab label="MANAGE ADDRESSES" {...a11yProps(2)} />

@@ -9,14 +9,15 @@ import {
 } from "@mui/material";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import { useNextRouterLikeRR } from '@/app/(core)/hooks/useLocationRd';
+import { COLORS } from "@/app/(core)/constants/MobileAppTheme";
 
 const BreadCrumbs = ({
     result,
     IsBreadCumShow,
     menuDecode,
     count,
-    afterCountStatus ,
-    
+    afterCountStatus,
+
 }) => {
     const [anchorEl, setAnchorEl] = useState(null);
     const open = Boolean(anchorEl);
@@ -170,13 +171,13 @@ const BreadCrumbs = ({
         }
     }
 
-    const uniqueBreadcrumbItems = breadcrumbItems ;
+    const uniqueBreadcrumbItems = breadcrumbItems;
 
     if (uniqueBreadcrumbItems.length === 0) return null;
 
     const currentItem = uniqueBreadcrumbItems[uniqueBreadcrumbItems.length - 1];
 
-    
+
     return (
         <Stack spacing={0} sx={{}}>
             <Stack direction="row" alignItems="center" spacing={1}>
@@ -207,10 +208,10 @@ const BreadCrumbs = ({
                     "&:hover": { opacity: 0.8 }
                 }}
             >
-                <Typography sx={{ fontSize: 14, color: "#1a6bff", fontWeight: 600 }}>
+                <Typography sx={{ fontSize: 14, color: COLORS.primary, fontWeight: 600 }}>
                     All Categories
                 </Typography>
-                <KeyboardArrowDownIcon sx={{ fontSize: 18, color: "#1a6bff", ml: 0.2 }} />
+                <KeyboardArrowDownIcon sx={{ fontSize: 18, color: COLORS.primary, ml: 0.2 }} />
             </Box>
 
             <Menu
@@ -241,7 +242,7 @@ const BreadCrumbs = ({
                             }}
                             sx={{
                                 backgroundColor: isCurrent ? '#F0F7FF' : 'transparent',
-                                color: isCurrent ? '#1a6bff' : '#3E5060', 
+                                color: isCurrent ? COLORS.primary : '#3E5060',
                                 '&:hover': {
                                     backgroundColor: isCurrent ? '#E0F0FF' : '#F3F6F9'
                                 },

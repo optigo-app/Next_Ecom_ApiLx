@@ -5,7 +5,7 @@ import useCart from '@/app/(core)/utils/Glob_Functions/Cart_Wishlist/Cart';
 import CartDetails from './CartDetails';
 import CartList from './CartList';
 import SelectedItemsModal from './SelectedModal';
-import { Button, Box, IconButton ,Typography } from '@mui/material';
+import { Button, Box, IconButton, Typography } from '@mui/material';
 import './smr_cartPage.scss';
 import { Checkbox, FormControlLabel, Link, useMediaQuery } from '@mui/material';
 import CartPageSkeleton from './CartSkelton';
@@ -18,6 +18,7 @@ import PrintIcon from '@mui/icons-material/Print';
 import { useNextRouterLikeRR } from '@/app/(core)/hooks/useLocationRd';
 import MobileNavbar from './NavigationBar';
 import LocalPrintshopRoundedIcon from '@mui/icons-material/LocalPrintshopRounded';
+import { getButtonStyle } from '@/app/(core)/constants/MobileAppTheme';
 
 
 const CartPage = ({ storeinit, visiterId, islogin, setCartCountNum }) => {
@@ -74,7 +75,7 @@ const CartPage = ({ storeinit, visiterId, islogin, setCartCountNum }) => {
   const isMobileScreen = useMediaQuery('(max-width:768px)');
 
   const redirectUrl = `/LoginOption/?LoginRedirect=/delivery`;
-  
+
   const handlePlaceOrder = () => {
     if (storeInit?.IsPLW == 0) {
       let priceData = finalCartData?.reduce(
@@ -166,12 +167,10 @@ const CartPage = ({ storeinit, visiterId, islogin, setCartCountNum }) => {
             <Button
               variant="contained"
               onClick={handlePlaceOrder}
-              sx={{
-                textTransform: "none",
-                fontSize: "0.85rem",
-                borderRadius: "5px",
-                px: 2.5
-              }}
+              sx={getButtonStyle(true, {
+                py: 0.8,
+                borderRadius: "8px"
+              })}
             >
               Place Order
             </Button>
@@ -182,7 +181,7 @@ const CartPage = ({ storeinit, visiterId, islogin, setCartCountNum }) => {
         </Box>
       )}
       <div className='smr_MainBGDiv'
-      
+
       >
         <div className='cartMainPageDiv'>
           {!isloding ? (
@@ -294,7 +293,7 @@ const CartPage = ({ storeinit, visiterId, islogin, setCartCountNum }) => {
                 </div>
               ) :
                 <NoResults
-                  onClick={handelMenu}                
+                  onClick={handelMenu}
                 />
               }
             </>

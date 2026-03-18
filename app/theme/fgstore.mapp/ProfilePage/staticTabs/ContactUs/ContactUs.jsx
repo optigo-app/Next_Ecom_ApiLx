@@ -21,6 +21,7 @@ import LocationOnIcon from "@mui/icons-material/LocationOn";
 import { toast } from "react-toastify";
 import { wesbiteDomainName } from "@/app/(core)/utils/Glob_Functions/GlobalFunction";
 import { ContactUsAPI } from "@/app/(core)/utils/API/ContactUs/ContactUsAPI";
+import { COLORS, getButtonStyle } from "@/app/(core)/constants/MobileAppTheme";
 
 const ContactUs = ({ open, onClose }) => {
   const [formData, setFormData] = useState({
@@ -146,7 +147,9 @@ const ContactUs = ({ open, onClose }) => {
             <Grid container spacing={2}>
               <Grid item size={{ xs: 12 }} sx={{ display: "flex", alignItems: "center", gap: 2 }}>
                 <Box sx={{ bgcolor: "rgba(0,0,0,0.05)", p: 1, borderRadius: "50%", display: "flex" }}>
-                  <LocationOnIcon fontSize="small" color="primary" />
+                  <LocationOnIcon fontSize="small" sx={{
+                    color: COLORS.primary
+                  }} />
                 </Box>
                 <Typography variant="body2" color="text.secondary">
                   D-Block G20, ITC( International Trade Centre), Majura Gate, Ring Road
@@ -154,7 +157,9 @@ const ContactUs = ({ open, onClose }) => {
               </Grid>
               <Grid item size={{ xs: 12 }} sx={{ display: "flex", alignItems: "center", gap: 2 }}>
                 <Box sx={{ bgcolor: "rgba(0,0,0,0.05)", p: 1, borderRadius: "50%", display: "flex" }}>
-                  <PhoneIcon fontSize="small" color="primary" />
+                  <PhoneIcon fontSize="small" sx={{
+                    color: COLORS.primary
+                  }} />
                 </Box>
                 <Typography variant="body2" color="text.secondary">
                   +919099887762
@@ -162,7 +167,9 @@ const ContactUs = ({ open, onClose }) => {
               </Grid>
               <Grid item size={{ xs: 12 }} sx={{ display: "flex", alignItems: "center", gap: 2 }}>
                 <Box sx={{ bgcolor: "rgba(0,0,0,0.05)", p: 1, borderRadius: "50%", display: "flex" }}>
-                  <EmailIcon fontSize="small" color="primary" />
+                  <EmailIcon fontSize="small" sx={{
+                    color: COLORS.primary
+                  }} />
                 </Box>
                 <Typography variant="body2" color="text.secondary">
                   hello@optigoapps.com
@@ -259,7 +266,12 @@ const ContactUs = ({ open, onClose }) => {
                   variant="contained"
                   type="submit"
                   disabled={loading}
-                  sx={{ py: 1.5, fontWeight: 700, borderRadius: 2 }}
+                  // sx={{ py: 1.5, fontWeight: 700, borderRadius: 2 }}
+                  sx={
+                    getButtonStyle(true, {
+                      py: 1.3, fontWeight: 700, borderRadius: 2
+                    })
+                  }
                 >
                   {loading ? <CircularProgress size={24} color="inherit" /> : "SUBMIT"}
                 </Button>

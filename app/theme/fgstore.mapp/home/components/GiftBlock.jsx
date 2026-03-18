@@ -50,7 +50,7 @@ const GiftBlock = ({ storeinit }) => {
   return (
     <Box sx={{ mt: 0 }}>
       <Headers title="Latest Albums"
-      showViewMoreBtn={false}
+        showViewMoreBtn={false}
       />
 
       <Box
@@ -94,7 +94,7 @@ const GiftBlock = ({ storeinit }) => {
                 prefetch={false}
                 elevation={0}
                 sx={{
-                  minWidth: "160px",  
+                  minWidth: "160px",
                   borderRadius: 3,
                   bgcolor: "#fce(4ec",
                   boxShadow: "0 4px 12px rgba(0,0,0,0.05)",
@@ -102,7 +102,8 @@ const GiftBlock = ({ storeinit }) => {
                   transition: "transform 0.2s ease-in-out",
                   "&:hover": {
                     transform: "scale(1.02)",
-                  } ,
+                  },
+                  textDecoration: 'none',
                 }}
               >
                 <CardMedia
@@ -120,7 +121,24 @@ const GiftBlock = ({ storeinit }) => {
                     e.target.src = fallbackImage;
                   }}
                 />
+
               </Card>
+              <Typography
+                variant="body2"
+                sx={{
+                  color: "#757575",
+                  fontSize: "14px",
+                  whiteSpace: "nowrap",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                  mb: 0.5,
+                  textDecoration: 'none',
+                  mt: 1,
+                  px: 1,
+                }}
+              >
+                {album?.AlbumName}
+              </Typography>
             </Box>
           ))
         )}

@@ -4,6 +4,7 @@ import React from "react";
 import "./Delivery.scss";
 import { Dialog, DialogActions, DialogContent, DialogTitle, Button, TextField, Divider, Grid, useMediaQuery } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
+import { COLORS } from "@/app/(core)/constants/MobileAppTheme";
 
 export default function AddressForm({ open, handleClose, handleCancel, handleInputChange, handleSubmit, formData, errors, isEditMode }) {
   const theme = useTheme();
@@ -99,28 +100,32 @@ export default function AddressForm({ open, handleClose, handleCancel, handleInp
           </Grid>
         </DialogContent>
 
-      <DialogActions
-        sx={{
-          display: "flex",
-          gap: 1,
-          position: "sticky",
-          bottom: 0,
-          left: 0,
-          right: 0,
-          bgcolor: "background.paper",
-          borderTop: "1px solid rgba(0,0,0,0.12)",
-          p: 2,
-          zIndex: 2,
-        }}
-      >
-        <Button variant="outlined" fullWidth onClick={handleCancel} sx={{ textTransform: "none" }}>
-          Cancel
-        </Button>
+        <DialogActions
+          sx={{
+            display: "flex",
+            gap: 1,
+            position: "sticky",
+            bottom: 0,
+            left: 0,
+            right: 0,
+            bgcolor: "background.paper",
+            borderTop: "1px solid rgba(0,0,0,0.12)",
+            p: 2,
+            zIndex: 2,
+          }}
+        >
+          <Button variant="outlined" fullWidth onClick={handleCancel} sx={{ textTransform: "none", borderColor: COLORS.border, color: COLORS.primary }}>
+            Cancel
+          </Button>
 
-        <Button variant="contained" fullWidth type="submit" sx={{ textTransform: "none" }}>
-          {isEditMode ? "Save Changes" : "Add Address"}
-        </Button>
-      </DialogActions>
+          <Button variant="contained" fullWidth type="submit" sx={{
+            textTransform: "none", bgcolor: COLORS.primary, ':hover': {
+              bgcolor: COLORS.hover,
+            }
+          }}>
+            {isEditMode ? "Save Changes" : "Add Address"}
+          </Button>
+        </DialogActions>
       </form>
     </Dialog>
   );

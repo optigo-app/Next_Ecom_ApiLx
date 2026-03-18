@@ -4,6 +4,7 @@ import FilterListIcon from "@mui/icons-material/FilterList";
 import SortIcon from "@mui/icons-material/Sort";
 import ViewModuleIcon from "@mui/icons-material/ViewModule";
 import PhotoRoundedIcon from '@mui/icons-material/PhotoRounded';
+import { getButtonStyle } from "@/app/(core)/constants/MobileAppTheme";
 
 const ActionIsland = ({
   ImageView,
@@ -37,7 +38,12 @@ const ActionIsland = ({
             onClick={OpenFilter}
             startIcon={<FilterListIcon fontSize="medium" />}
             size="small"
-            sx={{ textTransform: "none", borderRadius: 999, px: 2, py: 1 }}
+            // sx={{ textTransform: "none", borderRadius: 999, px: 2, py: 1 }}
+            sx={getButtonStyle('', {
+              borderRadius: 999, px: 2, py: 1,
+              border: 'none',
+              textTransform: "none",
+            })}
           >
             Filter
           </Button>
@@ -53,9 +59,14 @@ const ActionIsland = ({
 
           <Button
             onClick={ChangeView}
-            startIcon={ImageView ? <PhotoRoundedIcon fontSize="medium"  /> : <ViewModuleIcon fontSize="medium"  />}
+            startIcon={ImageView ? <PhotoRoundedIcon fontSize="medium" /> : <ViewModuleIcon fontSize="medium" />}
             size="small"
-            sx={{ textTransform: "none", borderRadius: 999, px: 2, py: 1 }}
+            // sx={{ textTransform: "none", borderRadius: 999, px: 2, py: 1 }}
+            sx={getButtonStyle(ImageView, {
+              borderRadius: 999, px: 2, py: 1,
+              border: 'none',
+              textTransform: "none",
+            })}
           >
             View
           </Button>
