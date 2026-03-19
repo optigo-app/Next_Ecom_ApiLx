@@ -1,11 +1,14 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Box, Chip } from "@mui/material";
 import DiamondOutlinedIcon from "@mui/icons-material/DiamondOutlined";
 import { GETProductType } from "@/app/(core)/utils/API/GETProductType/GETProductType";
 import { useStore } from "@/app/(core)/contexts/StoreProvider";
 import Cookies from "js-cookie";
 import { Skeleton } from "@mui/material";
+// import { GetCacheList, BookCache } from "@/app/(core)/utils/API/Cache/CacheApi";
+// import { normalizeALC, buildAlbumCacheKey, findMatchingCacheEntry, getPricingContext, processAlbumImages } from "@/app/(core)/cache_utility/CacheBuilder";
+// import { getSession } from "@/app/(core)/utils/FetchSessionData";
 
 const getProductTypeCached = async (finalID) => {
   if (typeof window === "undefined") return null;
@@ -24,7 +27,6 @@ const getProductTypeCached = async (finalID) => {
   return data;
 };
 
-
 function ProductTypeBar({ storeinit }) {
   const { loginUserDetail, islogin } = useStore();
   const [types, setTypes] = useState([]);
@@ -39,7 +41,6 @@ function ProductTypeBar({ storeinit }) {
     loadData();
   }, []);
 
-  console.log(types, "types");
 
   const chipColors = {
     "Diamond Jewellery": "linear-gradient(135deg,#e3f2fd,#bbdefb)",

@@ -6,6 +6,6 @@ export default async function Page() {
   const theme = await getActiveTheme();
   const themeData = themeMap[theme];
   const storeInit = await getStoreInit();
-  const Lookbook = (await import(`@/app/theme/${themeData.page}/Menu/page.js`)).default;
-  return <Lookbook storeInit={storeInit} />;
+  const Menu = (await import(`@/app/theme/${themeData.page}/Menu/page.js`)).default;
+  return <Menu storeInit={storeInit} />;
 }

@@ -46,7 +46,7 @@ const SonasonsHome = async () => {
           {storeData?.IsHomeTrending === 1 && <TrendingView data={trendingBanner} storeInit={storeData} />}
           <AppointmentBanner />
           {storeData?.IsHomeDesignSet === 1 && <DesignSet data={lookbookBanner} storeInit={storeData} />}
-          <BrandsComponent/>
+          <BrandsComponent />
           <NewsletterSignup storeData={storeData} />
         </>
       )}
@@ -61,7 +61,7 @@ const SonasonsHome = async () => {
           {storeData?.IsHomeTrending === 1 && <TrendingView2 data={trendingBanner} storeInit={storeData} />}
           <AppointmentBanner />
           {storeData?.IsHomeDesignSet === 1 && <DesignSet2 data={lookbookBanner} storeInit={storeData} />}
-          <BrandsComponent/>
+          <BrandsComponent />
           <NewsletterSignup storeData={storeData} />
         </>
       )}

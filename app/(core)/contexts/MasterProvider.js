@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useEffect, createContext } from "react";
+import React, { useEffect, createContext, useState, useContext } from "react";
 import { CurrencyComboAPI } from "@/app/(core)/utils/API/Combo/CurrencyComboAPI";
 import { MetalColorCombo } from "@/app/(core)/utils/API/Combo/MetalColorCombo";
 import { ColorStoneQualityColorComboAPI } from "@/app/(core)/utils/API/Combo/ColorStoneQualityColorComboAPI";
@@ -15,11 +15,16 @@ import { WebLoginWithMobileToken } from "../utils/API/Auth/WebLoginWithMobileTok
 import { useSearchParams } from "next/navigation";
 import { useNextRouterLikeRR } from "../hooks/useLocationRd";
 import { getSession, setSession } from "../utils/FetchSessionData";
+import { GetCacheList } from "../utils/API/Cache/CacheApi";
 
 
-const masterContext = createContext(null);
+const masterContext = createContext({
+    cacheList: null,
+    setCacheList: () => { },
+});
 
 export const MasterProvider = ({ children, getCompanyInfoData, getStoreInit, getMyAccountFlags }) => {
+    const [cacheList, setCacheList] = useState(null);
     const searchParams = useSearchParams()
     const token = searchParams.get('token');
     const router = useNextRouterLikeRR();
@@ -126,6 +131,9 @@ export const MasterProvider = ({ children, getCompanyInfoData, getStoreInit, get
     const callApiAndStore = (apiFunction, storageKey, finalID) => {
         apiFunction(finalID)
             .then((response) => {
+                if (storageKey === "GetCacheList") {
+                    setCacheList(response);
+                }
                 if (response?.Data?.rd) {
                     sessionStorage.setItem(storageKey, JSON.stringify(response.Data.rd));
                 }
@@ -148,7 +156,8 @@ export const MasterProvider = ({ children, getCompanyInfoData, getStoreInit, get
             callApiAndStore(MetalColorCombo, "MetalColorCombo", finalID),
             callApiAndStore(ColorStoneQualityColorComboAPI, "ColorStoneQualityColorCombo", finalID),
             callApiAndStore(CurrencyComboAPI, "CurrencyCombo", finalID),
-            callApiAndStore(CountryCodeListApi, "CountryCodeListApi", finalID)
+            callApiAndStore(CountryCodeListApi, "CountryCodeListApi", finalID),
+            callApiAndStore(GetCacheList, "GetCacheList", finalID)
         ]).then(() => {
             console.log("All combo APIs completed");
         }).catch((error) => {
@@ -156,7 +165,21 @@ export const MasterProvider = ({ children, getCompanyInfoData, getStoreInit, get
         });
     };
 
-    return <masterContext.Provider value={{}}>
+    const value = {
+        cacheList,
+        setCacheList
+    }
+
+    return <masterContext.Provider value={value}>
         {children}
     </masterContext.Provider>
+}
+
+
+export const useMaster = () => {
+    const context = useContext(masterContext);
+    if (!context) {
+        throw new Error("useMaster must be used within MasterProvider");
+    }
+    return context;
 }

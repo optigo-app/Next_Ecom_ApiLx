@@ -24,7 +24,7 @@ const CartList = ({
 }) => {
   return (
     <div className="smr_RightCartList">
-      <Grid container spacing={1}>
+      <Grid container >
         {items.map((item, index) => (
           <CartItem
             key={item.id}
