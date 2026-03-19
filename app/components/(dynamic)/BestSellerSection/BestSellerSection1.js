@@ -7,19 +7,20 @@ import Pako from "pako";
 import cookies from "js-cookie";
 import { useNextRouterLikeRR } from "@/app/(core)/hooks/useLocationRd";
 import { useStore } from "@/app/(core)/contexts/StoreProvider";
+import SonaHeader from "@/app/theme/fgstore.web/home/Header";
 
 
 
-const buildAlbumCacheKey = ( type ,storeData, pricing, id) => {
+const buildAlbumCacheKey = (type, storeData, pricing, id) => {
   const meta = {
-  type,
-  PackageId: pricing?.PackageId ?? "",
-  Laboursetid: pricing?.Laboursetid ?? "",
-  diamondpricelistname: pricing?.diamondpricelistname ?? "",
-  colorstonepricelistname: pricing?.colorstonepricelistname ?? "",
-};
+    type,
+    PackageId: pricing?.PackageId ?? "",
+    Laboursetid: pricing?.Laboursetid ?? "",
+    diamondpricelistname: pricing?.diamondpricelistname ?? "",
+    colorstonepricelistname: pricing?.colorstonepricelistname ?? "",
+  };
 
-const key = [
+  const key = [
     type,
     pricing?.PackageId,
     pricing?.Laboursetid,
@@ -91,32 +92,32 @@ const BestSellerSection1 = ({ data, storeData }) => {
     return uid;
   }, [mounted, loginUserDetail, islogin, storeData?.IsB2BWebsite]);
 
-   const pricingContext = useMemo(() => {
+  const pricingContext = useMemo(() => {
     if (!mounted) return null;
     const loginInfo = loginUserDetail;
-  
+
     return {
       PackageId: (loginInfo?.PackageId ?? storeData?.PackageId) ?? "",
       Laboursetid:
-           !islogin 
+        !islogin
           ? storeData?.pricemanagement_laboursetid
           : loginInfo?.pricemanagement_laboursetid ?? "",
       diamondpricelistname:
-           !islogin 
+        !islogin
           ? storeData?.diamondpricelistname
           : loginInfo?.diamondpricelistname ?? "",
       colorstonepricelistname:
-           !islogin 
+        !islogin
           ? storeData?.colorstonepricelistname
           : loginInfo?.colorstonepricelistname ?? "",
     };
   }, [mounted, loginUserDetail, storeData, islogin]);
-  
-  
+
+
 
   const callAllApi = async (id) => {
     console.log("🚀 ~ callAllApi ~ pricingContext:", pricingContext)
-      const {key ,meta} = buildAlbumCacheKey("bestseller_" ,storeData, pricingContext, id);
+    const { key, meta } = buildAlbumCacheKey("bestseller_", storeData, pricingContext, id);
 
 
     try {
@@ -124,7 +125,7 @@ const BestSellerSection1 = ({ data, storeData }) => {
       const cachedRes = await fetch(`/api/cache?key=${key}`);
       const cached = await cachedRes.json();
       if (cached.cached && Array.isArray(cached.data)) {
-         setBestSellerData(cached?.data);
+        setBestSellerData(cached?.data);
         return cached?.data;
       }
       const res = await Get_Tren_BestS_NewAr_DesigSet_Album(storeData, "GETBestSeller", id);
@@ -134,7 +135,7 @@ const BestSellerSection1 = ({ data, storeData }) => {
         fetch("/api/cache", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ key, data: rows ,meta }),
+          body: JSON.stringify({ key, data: rows, meta }),
         }).catch(console.error);
       } else {
         setBestSellerData([]);
@@ -256,9 +257,11 @@ const BestSellerSection1 = ({ data, storeData }) => {
       <div>
         {bestSellerData?.length != 0 && (
           <div className="smr_mainBestSeler1Div">
-            <div className="smr_bestseler1TitleDiv">
+            {/* <div className="smr_bestseler1TitleDiv">
               <span className="smr_bestseler1Title">BEST SELLER</span>
-            </div>
+            </div> */}
+            <SonaHeader title="Best Seller" isShowViewMore={true} />
+
             <div className="product-grid">
               <div className="smr_leftSideBestSeler">
                 {validatedData?.slice(0, 4).map((data, index) => (

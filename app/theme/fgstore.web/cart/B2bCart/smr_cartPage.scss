@@ -1,4 +1,4 @@
-@use '../../style/variable.scss' as *;
+@use "../../style/variable.scss" as *;
 
 $cartUpdateBtncolor: #b1b1b1;
 
@@ -7,7 +7,7 @@ $cartUpdateBtncolor: #b1b1b1;
 
   .cartMainPageDiv {
     background-color: #fff;
-    margin-inline: 6%;
+    margin-inline: 5%;
     min-height: 79.6vh;
   }
 
@@ -43,8 +43,6 @@ $cartUpdateBtncolor: #b1b1b1;
     display: flex;
     gap: 15px !important;
     // margin-bottom: -8%;
-    padding: 0px 15px 0px 10px;
-
   }
 
   .cartBtnGroupMainDiv {
@@ -57,13 +55,12 @@ $cartUpdateBtncolor: #b1b1b1;
       font-size: $fontSize8;
       font-family: $primaryFontFamily !important;
 
-      @media screen and (max-width:500px) {
+      @media screen and (max-width: 500px) {
         margin-bottom: 2rem;
       }
     }
 
     .smr_cartButton-groups {
-
       .smr_ReomoveAllCartbtn {
         text-transform: capitalize !important;
         color: $titleColor !important;
@@ -84,7 +81,9 @@ $cartUpdateBtncolor: #b1b1b1;
         background-color: $btn1bgColor;
         border: 1px solid $btn1FontColor;
         cursor: pointer;
-        transition: background-color 0.3s, color 0.3s;
+        transition:
+          background-color 0.3s,
+          color 0.3s;
 
         &.smr_cartActivebtn {
           background-color: $btn1ActivebgColor;
@@ -249,7 +248,9 @@ $cartUpdateBtncolor: #b1b1b1;
     .smr_cartListCard1 {
       width: 390px;
       position: relative;
-      box-shadow: rgba(0, 0, 0, 0.02) 0px 1px 3px 0px, rgba(27, 31, 35, 0.15) 0px 0px 0px 1px;
+      box-shadow:
+        rgba(0, 0, 0, 0.02) 0px 1px 3px 0px,
+        rgba(27, 31, 35, 0.15) 0px 0px 0px 1px;
 
       .smr_card-ContentsData {
         padding: 2px 0px 2px 0px !important;
@@ -324,7 +325,6 @@ $cartUpdateBtncolor: #b1b1b1;
       // text-overflow: ellipsis;
     }
 
-
     .smr_Cart-options {
       display: flex;
       flex-wrap: wrap;
@@ -352,14 +352,9 @@ $cartUpdateBtncolor: #b1b1b1;
           color: $titleColor;
         }
       }
-
     }
 
     .smr_StockCart-options {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: space-between;
-      gap: 10px;
       margin-top: 20px;
 
       .option {
@@ -367,9 +362,7 @@ $cartUpdateBtncolor: #b1b1b1;
         background-color: #f7f7f7;
         padding: 10px;
         border-radius: 0px;
-        width: 48.5%;
-        // max-width: 550px;
-        // width: 200px;
+        height: 100%;
 
         label {
           display: block;
@@ -378,7 +371,6 @@ $cartUpdateBtncolor: #b1b1b1;
           color: $titleColor;
           font-size: $fontSize2;
           font-family: $primaryFontFamily !important;
-
         }
 
         span {
@@ -386,11 +378,10 @@ $cartUpdateBtncolor: #b1b1b1;
           color: $titleColor;
           font-size: $fontSize2;
           font-family: $primaryFontFamily !important;
-
         }
       }
 
-      @media(max-width: 1560px) {
+      @media (max-width: 1560px) {
         .option {
           width: 48%;
 
@@ -401,7 +392,7 @@ $cartUpdateBtncolor: #b1b1b1;
         }
       }
 
-      @media(max-width: 1490px) {
+      @media (max-width: 1490px) {
         .option {
           width: 47%;
 
@@ -414,28 +405,20 @@ $cartUpdateBtncolor: #b1b1b1;
     }
 
     .smr_stockPriceQtyDiv {
-      display: flex;
-      justify-content: space-around;
-      align-items: center;
-      margin-top: 10px;
+      margin-top: 20px;
 
       .smr_Stockproduct-price {
         font-size: $fontSize6;
         color: $titleColor;
-        width: 100%;
       }
 
       .option {
-        display: flex;
-        justify-content: center;
-        align-items: center;
         font-family: $primaryFontFamily !important;
 
         label {
           font-weight: bold;
           font-size: $fontSize2;
           color: $titleColor;
-          margin-right: 10px;
         }
 
         span {
@@ -497,8 +480,8 @@ $cartUpdateBtncolor: #b1b1b1;
       }
     }
 
-    input[type=number]::-webkit-inner-spin-button,
-    input[type=number]::-webkit-outer-spin-button {
+    input[type="number"]::-webkit-inner-spin-button,
+    input[type="number"]::-webkit-outer-spin-button {
       -webkit-appearance: none;
       margin: 0;
     }
@@ -540,7 +523,9 @@ $cartUpdateBtncolor: #b1b1b1;
   // cart list item css(left side)
 
   .smr_cartListCard {
-    box-shadow: rgba(0, 0, 0, 0.02) 0px 1px 3px 0px, rgba(27, 31, 35, 0.15) 0px 0px 0px 1px;
+    box-shadow:
+      rgba(0, 0, 0, 0.02) 0px 1px 3px 0px,
+      rgba(27, 31, 35, 0.15) 0px 0px 0px 1px;
     display: flex !important;
     justify-content: space-between !important;
     flex-direction: column !important;
@@ -595,15 +580,20 @@ $cartUpdateBtncolor: #b1b1b1;
     .smr_ReomoveCartbtn {
       color: #c1c1c1 !important;
       font-size: $fontSize1;
-    }
 
+      @media (max-width: 673px) {
+        font-size: 9px !important;
+      }
+      @media (max-width: 540px) {
+        font-size: 10px !important;
+      }
+    }
 
     .smr_ItemRemarkbtn {
       // margin-right: 20px;
       margin-right: 8px;
     }
   }
-
 
   // update cart modal
 
@@ -635,7 +625,6 @@ $cartUpdateBtncolor: #b1b1b1;
     border-radius: 8px;
     box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.16) !important;
     padding: 16px 32px;
-
   }
 
   .smr_Modal_Title {
@@ -660,11 +649,15 @@ $cartUpdateBtncolor: #b1b1b1;
   }
 
   .smr_cart-Accordian {
-    box-shadow: rgba(0, 0, 0, 0.02) 0px 1px 3px 0px, rgba(27, 31, 35, 0.15) 0px 0px 0px 1px !important;
+    box-shadow:
+      rgba(0, 0, 0, 0.02) 0px 1px 3px 0px,
+      rgba(27, 31, 35, 0.15) 0px 0px 0px 1px !important;
   }
 
   .smr_Cart-prCard {
-    box-shadow: rgba(0, 0, 0, 0.02) 0px 1px 3px 0px, rgba(27, 31, 35, 0.15) 0px 0px 0px 1px !important;
+    box-shadow:
+      rgba(0, 0, 0, 0.02) 0px 1px 3px 0px,
+      rgba(27, 31, 35, 0.15) 0px 0px 0px 1px !important;
   }
 
   .smr_ShortCutCombo-section {
@@ -808,7 +801,6 @@ $cartUpdateBtncolor: #b1b1b1;
     background-color: #f6f6f6 !important;
   }
 
-
   .smr_remarkModalBox {
     width: 90%;
     max-width: 500px;
@@ -816,7 +808,7 @@ $cartUpdateBtncolor: #b1b1b1;
     margin: 0 auto;
   }
 
-  @media(max-width:1200px) {
+  @media (max-width: 1200px) {
     .cartMainPageDiv {
       margin-inline: 1%;
     }
@@ -843,7 +835,7 @@ $cartUpdateBtncolor: #b1b1b1;
     }
   }
 
-  @media(max-width: 770px) {
+  @media (max-width: 770px) {
     .smr_cartmainRowDiv {
       margin-bottom: 30px;
     }
@@ -856,7 +848,7 @@ $cartUpdateBtncolor: #b1b1b1;
     }
   }
 
-  @media(max-width: 474px) {
+  @media (max-width: 474px) {
     .smr_place-order-btn {
       width: 120px;
       font-size: $fontSize2;
@@ -874,7 +866,7 @@ $cartUpdateBtncolor: #b1b1b1;
     }
   }
 
-  @media(max-width: 1500px) and (min-width:1440px) {
+  @media (max-width: 1500px) and (min-width: 1440px) {
     .cartMainPageDiv {
       .smr_cartMainPage {
         .smr_cart-left-sides {
@@ -901,7 +893,7 @@ $cartUpdateBtncolor: #b1b1b1;
     }
   }
 
-  @media(max-width: 1439px) and (min-width:1360px) {
+  @media (max-width: 1439px) and (min-width: 1360px) {
     .cartMainPageDiv {
       .smr_cartMainPage {
         .smr_cart-left-sides {
@@ -934,7 +926,7 @@ $cartUpdateBtncolor: #b1b1b1;
     }
   }
 
-  @media(max-width: 1359px) and (min-width:1000px) {
+  @media (max-width: 1359px) and (min-width: 1000px) {
     .cartMainPageDiv {
       .smr_cartMainPage {
         .smr_cart-left-sides {
@@ -967,7 +959,7 @@ $cartUpdateBtncolor: #b1b1b1;
     }
   }
 
-  @media(max-width: 999px) {
+  @media (max-width: 999px) {
     .cartMainPageDiv {
       .smr_cartMainPage {
         .smr_cart-left-sides {
@@ -998,7 +990,7 @@ $cartUpdateBtncolor: #b1b1b1;
     }
   }
 
-  @media(max-width: 849px) {
+  @media (max-width: 849px) {
     .cartMainPageDiv {
       .smr_cartMainPage {
         .smr_cart-left-sides {
@@ -1020,7 +1012,7 @@ $cartUpdateBtncolor: #b1b1b1;
     }
   }
 
-  @media(max-width: 570px) {
+  @media (max-width: 570px) {
     .cartMainPageDiv {
       .smr_cartMainPage {
         padding: 0;
@@ -1078,7 +1070,7 @@ $cartUpdateBtncolor: #b1b1b1;
     }
   }
 
-  @media(max-width: 570px) {
+  @media (max-width: 570px) {
     .cartMainPageDiv {
       .smr_cartMainPage {
         padding: 0;
@@ -1153,5 +1145,4 @@ $cartUpdateBtncolor: #b1b1b1;
       }
     }
   }
-
 }

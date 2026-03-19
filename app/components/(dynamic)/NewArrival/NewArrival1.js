@@ -9,17 +9,18 @@ import { formatRedirectTitleLine, formatter, formatTitleLine, storImagePath } fr
 import { useStore } from "@/app/(core)/contexts/StoreProvider";
 import { useNextRouterLikeRR } from "@/app/(core)/hooks/useLocationRd";
 import cookies from "js-cookie";
+import SonaHeader from "@/app/theme/fgstore.web/home/Header";
 
-const buildAlbumCacheKey = ( type ,storeData, pricing, id) => {
+const buildAlbumCacheKey = (type, storeData, pricing, id) => {
   const meta = {
-  type,
-  PackageId: pricing?.PackageId ?? "",
-  Laboursetid: pricing?.Laboursetid ?? "",
-  diamondpricelistname: pricing?.diamondpricelistname ?? "",
-  colorstonepricelistname: pricing?.colorstonepricelistname ?? "",
-};
+    type,
+    PackageId: pricing?.PackageId ?? "",
+    Laboursetid: pricing?.Laboursetid ?? "",
+    diamondpricelistname: pricing?.diamondpricelistname ?? "",
+    colorstonepricelistname: pricing?.colorstonepricelistname ?? "",
+  };
 
-const key = [
+  const key = [
     type,
     pricing?.PackageId,
     pricing?.Laboursetid,
@@ -75,76 +76,76 @@ const NewArrival = ({ data, storeInit }) => {
     return uid;
   }, [mounted, loginUserDetail, islogin, storeInit?.IsB2BWebsite]);
 
-     const pricingContext = useMemo(() => {
-      if (!mounted) return null;
-      const loginInfo = loginUserDetail;
-     return {
+  const pricingContext = useMemo(() => {
+    if (!mounted) return null;
+    const loginInfo = loginUserDetail;
+    return {
       PackageId: (loginInfo?.PackageId ?? storeInit?.PackageId) ?? "",
       Laboursetid:
-         (!islogin
+        (!islogin
           ? storeInit?.pricemanagement_laboursetid
-          : loginInfo?.pricemanagement_laboursetid ) ?? "",
+          : loginInfo?.pricemanagement_laboursetid) ?? "",
       diamondpricelistname:
-         (!islogin
+        (!islogin
           ? storeInit?.diamondpricelistname
           : loginInfo?.diamondpricelistname) ?? "",
       colorstonepricelistname:
-         (!islogin
+        (!islogin
           ? storeInit?.colorstonepricelistname
           : loginInfo?.colorstonepricelistname) ?? "",
     };
-    }, [mounted, loginUserDetail, storeInit, islogin]);
-    
+  }, [mounted, loginUserDetail, storeInit, islogin]);
 
-const callAPI = async (id) => {
-  try {
-    const { key, meta } = buildAlbumCacheKey(
-      "newArrival_",
-      storeInit,
-      pricingContext,
-      id
-    );
 
-    // 1️⃣ Check cache
-    const cachedRes = await fetch(
-      `/api/cache?key=${encodeURIComponent(key)}`
-    );
-    const cached = await cachedRes.json();
+  const callAPI = async (id) => {
+    try {
+      const { key, meta } = buildAlbumCacheKey(
+        "newArrival_",
+        storeInit,
+        pricingContext,
+        id
+      );
 
-    if (cached.cached && Array.isArray(cached.data)) {
-      console.log("🔥 Using cached data", cached.data);
-      setNewArrivalData(cached.data);
+      // 1️⃣ Check cache
+      const cachedRes = await fetch(
+        `/api/cache?key=${encodeURIComponent(key)}`
+      );
+      const cached = await cachedRes.json();
+
+      if (cached.cached && Array.isArray(cached.data)) {
+        console.log("🔥 Using cached data", cached.data);
+        setNewArrivalData(cached.data);
+        setLoadingHome(false);
+        return;
+      }
+
+      // 2️⃣ Fetch fresh
+      const res = await Get_Tren_BestS_NewAr_DesigSet_Album(
+        storeInit,
+        "GETNewArrival",
+        id
+      );
+
+      const rows = res?.Data?.rd || [];
+
+      fetch("/api/cache", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ key, data: rows, meta }),
+      }).catch(console.error);
+
+      // 4️⃣ Update UI
+      setNewArrivalData(rows);
       setLoadingHome(false);
-      return;
+    } catch (error) {
+      console.error("❌ NewArrival error:", error);
+      setNewArrivalData([]);
+      setLoadingHome(false);
     }
-
-    // 2️⃣ Fetch fresh
-    const res = await Get_Tren_BestS_NewAr_DesigSet_Album(
-      storeInit,
-      "GETNewArrival",
-      id
-    );
-
-    const rows = res?.Data?.rd || [];
-
-    fetch("/api/cache", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ key, data: rows, meta }),
-    }).catch(console.error);
-
-    // 4️⃣ Update UI
-    setNewArrivalData(rows);
-    setLoadingHome(false);
-  } catch (error) {
-    console.error("❌ NewArrival error:", error);
-    setNewArrivalData([]);
-    setLoadingHome(false);
-  }
-};
+  };
 
   // const callAPI = async (id) => {
-    
+
   //      const {key ,meta} = buildAlbumCacheKey("newArrival_" ,storeInit, pricingContext, id);
   //   try {
   //     let rows = [];
@@ -285,15 +286,21 @@ const callAPI = async (id) => {
       onContextMenu={(e) => {
         e.preventDefault();
       }}
+      style={{
+        marginBottom: "2rem",
+        marginTop: "2rem"
+      }}
     >
       {validatedData?.length != 0 && (
         <div className="smr_newwArr1MainDiv">
-          <Typography variant="h5" className="smrN_NewArr1Title">
+          {/* <Typography variant="h5" className="smrN_NewArr1Title">
             NEW ARRIVAL
             <Link sx={{ marginLeft: "10px !important", fontSize: "18px", color: "gray" }} onClick={() => navigation(`/p/NewArrival/?N=${btoa("NewArrival")}`)}>
               View more
             </Link>
-          </Typography>
+          </Typography> */}
+          <SonaHeader title="New Arrival" isShowViewMore={false} viewAll={() => navigation(`/p/NewArrival/?N=${btoa("NewArrival")}`)} />
+
           <Grid container spacing={1} className="smr_NewArrival1product-list">
             {validatedData?.slice(0, 4)?.map((product, index) => (
               <Grid size={{ xs: 6, sm: 4, md: 3, lg: 3 }} key={index}>
@@ -307,7 +314,7 @@ const callAPI = async (id) => {
                         product?.ImageCount >= 1
                           ? product?.validatedImageURL
                           : // `${imageUrl}${newArrivalData && product?.designno}~1.${newArrivalData && product?.ImageExtension}`
-                            imageNotFound
+                          imageNotFound
                       }
                       alt={product?.TitleLine}
                       id={`product-${index}`}

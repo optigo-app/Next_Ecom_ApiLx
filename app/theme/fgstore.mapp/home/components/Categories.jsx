@@ -1,10 +1,15 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import Headers from "./composable/Headers";
 import { Avatar, Box, Skeleton, Typography } from "@mui/material";
 import { HomeCategoryApi } from "@/app/(core)/utils/API/Home/HomeCategoryApi/HomeCategoryApi";
 import { useStore } from "@/app/(core)/contexts/StoreProvider";
 import { useNextRouterLikeRR } from "@/app/(core)/hooks/useLocationRd";
+import { BookCache } from "@/app/(core)/utils/API/Cache/CacheApi";
+import { normalizeALC, buildAlbumCacheKey, findMatchingCacheEntry, getPricingContext } from "@/app/(core)/cache_utility/CacheBuilder";
+import Cookies from "js-cookie";
+import { useMaster } from "@/app/(core)/contexts/MasterProvider";
+
 
 const categoryImages = [
   {
@@ -46,12 +51,10 @@ const categoryImages = [
   {
     "CategoryName": "Necklace",
     ImageUrl: "/category/NECKLACE1.jpg",
-
   },
   {
     "CategoryName": "Ring",
     ImageUrl: "/category/rings.jpg",
-
   },
   {
     "CategoryName": "Bracelet",
@@ -60,7 +63,6 @@ const categoryImages = [
   {
     "CategoryName": "Earring",
     ImageUrl: "/category/Earings1.png",
-
   },
   {
     "CategoryName": "Pendant set",
@@ -76,49 +78,166 @@ const categoryImages = [
   }
 ];
 
-const Categories = () => {
-  const { finalId } = useStore();
+/** Maps API category data with local fallback images */
+const mapCategoryImages = (apiData) => {
+  return apiData.map((item) => ({
+    ...item,
+    img: categoryImages.find(
+      (cat) =>
+        cat.CategoryName.toLowerCase() ===
+        item.CategoryName?.toLowerCase()
+    )?.ImageUrl,
+  }));
+};
+
+const Categories = ({ storeinit }) => {
+  const { loginUserDetail, islogin } = useStore();
+  const { cacheList, setCacheList } = useMaster();
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNextRouterLikeRR().push;
+  const pricingContext = useMemo(() => getPricingContext(loginUserDetail, storeinit, islogin), [loginUserDetail, storeinit, islogin]);
 
-  const fetchCategories = async () => {
-    try {
+  const isFetchingRef = useRef(false);
+  const lastRequestKeyRef = useRef("");
+
+  const fetchAndSetCategories = useCallback(
+    async (finalID, precomputedKey) => {
+      if (!pricingContext || isFetchingRef.current) return;
+
+      const apiALC = "";
+      const keyALC = normalizeALC("");
+      const eventName = "home_category";
+
+      const { key, meta } = buildAlbumCacheKey(eventName, storeinit, pricingContext, finalID, keyALC);
+      const effectiveKey = precomputedKey || key;
+
+      isFetchingRef.current = true;
       setLoading(true);
 
-      const res = await HomeCategoryApi(finalId);
+      try {
+        // Step 1: Check server cache + local cache in parallel
+        const localCacheRes = await fetch(`/api/v1/cache?mode=meta&key=${effectiveKey}`)
+          .then((res) => res.json())
+          .catch(() => ({ cached: false }));
 
-      const apiData = res?.Data?.rd || [];
+        const serverCacheEntries = cacheList?.Data?.rd ?? [];
+        const matchingServerEntry = findMatchingCacheEntry(serverCacheEntries, pricingContext, eventName, apiALC);
+        const serverCacheRebuildDate = matchingServerEntry?.CacheRebuildDate ?? null;
 
-      if (apiData.length > 0) {
-        const mappedData = apiData.map((item) => ({
-          ...item,
-          img: categoryImages.find(
-            (cat) =>
-              cat.CategoryName.toLowerCase() ===
-              item.CategoryName?.toLowerCase()
-          )?.ImageUrl,
-        }));
+        const localCacheMeta = localCacheRes;
+        const localCacheRebuildDate = localCacheMeta?.CacheRebuildDate ?? null;
 
-        setCategories(mappedData);
-      } else {
-        // ✅ fallback to local data
+        console.log("[Categories] Cache meta checked: localCacheMeta.cached =", localCacheMeta?.cached, "server entries count =", serverCacheEntries?.length);
+
+        if (localCacheMeta?.cached) {
+          const canValidate = Boolean(matchingServerEntry && serverCacheRebuildDate);
+          const datesMatch = localCacheRebuildDate === serverCacheRebuildDate;
+
+          if (canValidate && datesMatch) {
+            const cachedRes = await fetch(`/api/v1/cache?key=${effectiveKey}`);
+            const cached = await cachedRes.json();
+            console.log("[Categories] Using cache, skipping API");
+            if (cached.cached && Array.isArray(cached.data)) {
+              console.log("[Categories] Setting categories from cache");
+              const mappedData = mapCategoryImages(cached.data);
+              setCategories(mappedData.length > 0 ? mappedData : categoryImages);
+              setLoading(false);
+              isFetchingRef.current = false;
+              return cached.data;
+            }
+          }
+          fetch(`/api/v1/cache?key=${effectiveKey}`, { method: "DELETE" }).catch(() => { });
+        }
+
+        if (!storeinit) {
+          setTimeout(() => {
+            isFetchingRef.current = false;
+            fetchAndSetCategories(finalID, effectiveKey);
+          }, 500);
+          return;
+        }
+
+        console.log("[Categories] Making API call for finalID:", finalID);
+        const response = await HomeCategoryApi(finalID);
+        const apiData = response?.Data?.rd || [];
+        console.log("[Categories] API response received, count:", apiData.length);
+
+        if (apiData.length > 0) {
+          const mappedData = mapCategoryImages(apiData);
+          setCategories(mappedData);
+        } else {
+          setCategories(categoryImages);
+        }
+
+        setLoading(false);
+        isFetchingRef.current = false;
+
+        // Step 5: Book cache + store to local cache
+        try {
+          const bookCacheResult = await BookCache(finalID, eventName, pricingContext, apiALC);
+          const newCacheRebuildDate = bookCacheResult?.CacheRebuildDate ?? null;
+
+          if (newCacheRebuildDate) {
+            // Update global cacheList in context
+            const newEntry = {
+              EventName: eventName,
+              PackageId: pricingContext.PackageId,
+              LabourSetId: pricingContext.Laboursetid,
+              diamondpricelistname: pricingContext.diamondpricelistname,
+              colorstonepricelistname: pricingContext.colorstonepricelistname,
+              ALC: normalizeALC(apiALC),
+              CacheRebuildDate: newCacheRebuildDate,
+            };
+            if (cacheList?.Data?.rd) {
+              const updatedRd = [...cacheList.Data.rd];
+              const idx = updatedRd.findIndex(e => e.EventName === eventName && e.PackageId == pricingContext.PackageId && e.LabourSetId == pricingContext.Laboursetid);
+              if (idx > -1) updatedRd[idx] = newEntry; else updatedRd.push(newEntry);
+              setCacheList({ ...cacheList, Data: { ...cacheList.Data, rd: updatedRd } });
+            }
+          }
+
+          const updatedMeta = { ...meta, CacheRebuildDate: newCacheRebuildDate };
+          fetch("/api/v1/cache", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ key: effectiveKey, data: apiData, meta: updatedMeta }),
+          }).catch(console.error);
+        } catch (cacheErr) {
+          console.error("[Categories] Cache update failed:", cacheErr);
+        }
+      } catch (err) {
+        console.log("[Categories] Error in fetch:", err);
+        console.error(err);
+        // ✅ fallback on error
         setCategories(categoryImages);
+        isFetchingRef.current = false;
+      } finally {
+        setLoading(false);
       }
-
-    } catch (err) {
-      console.log(err);
-
-      // ✅ fallback on error
-      setCategories(categoryImages);
-    } finally {
-      setLoading(false);
-    }
-  };
+    },
+    [pricingContext, storeinit, cacheList, setCacheList],
+  );
 
   useEffect(() => {
-    fetchCategories();
-  }, []);
+    if (!pricingContext || !storeinit || cacheList === null) return;
+
+    const fetchData = async () => {
+      const visiterID = Cookies.get("visiterId");
+      const userId = loginUserDetail?.id;
+      const finalID = storeinit?.IsB2BWebsite === 0 ? (islogin ? userId || "" : visiterID) : userId || "";
+
+      const keyALC = normalizeALC("");
+      const { key } = buildAlbumCacheKey("home_category", storeinit, pricingContext, finalID, keyALC);
+
+      if (isFetchingRef.current || lastRequestKeyRef.current === key) return;
+      lastRequestKeyRef.current = key;
+
+      await fetchAndSetCategories(finalID, key);
+    };
+
+    fetchData();
+  }, [islogin, pricingContext, storeinit, fetchAndSetCategories, loginUserDetail?.id, cacheList]);
 
 
   const handleNavigate = (name) => {
@@ -143,7 +262,6 @@ const Categories = () => {
       .map(([key, value]) => value)
       .filter(Boolean)
       .join(",");
-    const paginationParam = [`page=${finalData.page ?? 1}`, `size=${finalData.size ?? 50}`].join("&");
     let menuEncoded = `${queryParameters}/${otherparamUrl}`;
     const url = `/p/${finalData?.menuname}/${queryParameters1}/?M=${btoa(menuEncoded)}`;
     navigate(url);

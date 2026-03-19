@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import './smr_cartPage.scss';
-import { Divider, Skeleton } from '@mui/material';
+import { Divider, Skeleton, Grid, Box } from '@mui/material';
 import QuantitySelector from './QuantitySelector';
 import { toast } from 'react-toastify';
 import { formatter, formatTitleLine } from '@/app/(core)/utils/Glob_Functions/GlobalFunction';
@@ -168,6 +168,16 @@ const Customization = ({
           }
           <div className='smr_cartQtyPricemainDev'>
             <QuantitySelector selectedItem={selectedItem} handleIncrement={handleIncrement} handleDecrement={handleDecrement} qtyCount={qtyCount} />
+
+          </div>
+          <Box className='smr_UpdateCartBtn'
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              flexDirection: 'row-reverse',
+              mt: 2
+            }}
+          >
             {storeInitData?.IsPriceShow == 1 &&
               <div className="product-price">
                 {!ispriceloding ? (
@@ -188,75 +198,65 @@ const Customization = ({
                 }
               </div>
             }
-          </div>
-          <div className='smr_UpdateCartBtn'>
             <button className="smr_cartUpdate-button" onClick={() => handleUpdateCart(selectedItem)}>Save</button>
-          </div>
+          </Box>
         </div>
       ) :
         <div className="smr_CartCusto_R-details">
           <p className='smr_cart-Titleline'>{formatTitleLine(selectedItem?.TitleLine) && selectedItem?.TitleLine}</p>
           <Divider />
-          <div className="smr_StockCart-options">
+          <Grid container spacing={1.5} className="smr_StockCart-options">
             {selectedItem?.metaltypename != "" &&
-              <div className="option">
+              <Grid size={6} className="option">
                 <label htmlFor="metal-type">Metal Type:</label>
                 <span>{selectedItem?.metaltypename}</span>
-              </div>
+              </Grid>
             }
-            {selectedItem?.metaltypename != "" &&
-              <div className="option">
+            {selectedItem?.metalcolorname != "" &&
+              <Grid size={6} className="option">
                 <label htmlFor="metal-color">Metal Color:</label>
                 <span>{selectedItem?.metalcolorname}</span>
-              </div>
+              </Grid>
             }
             {(selectedItem?.Dwt !== "0" || selectedItem?.Dpcs !== "0") && (
-              <div className="option">
+              <Grid size={6} className="option">
                 <label htmlFor="diamond">Diamond:</label>
                 <span>
                   {combineDiamondInfo(selectedItem?.diamondquality, selectedItem?.diamondcolor)}
                 </span>
-              </div>
+              </Grid>
             )}
             {(selectedItem?.CSwt != "0" || selectedItem?.CSpcs != "0") &&
-              <div className="option">
+              <Grid size={6} className="option">
                 <label htmlFor="diamond">Color Stone:</label>
                 <span>
-                  {combineDiamondInfo(selectedItem?.diamondquality, selectedItem?.diamondcolor)}
+                  {combineDiamondInfo(selectedItem?.colorstonequality, selectedItem?.colorstonecolor)}
                 </span>
-              </div>
+              </Grid>
             }
             {selectedItem?.Size != "" &&
-              <div className="option">
+              <Grid size={6} className="option">
                 <label htmlFor="size">Size:</label>
                 <span>{selectedItem?.Size}</span>
-              </div>
+              </Grid>
             }
-          </div>
+          </Grid>
           <div className="smr_stockPriceQtyDiv">
-            {selectedItem?.IsMrpBase == 0 ? (
-              <div className="option">
-                <label htmlFor="qty">Qty:</label>
-                <span>{selectedItem?.Quantity}</span>
-              </div>
-            ) :
-              <div>
-                <QuantitySelector selectedItem={selectedItem} handleIncrement={handleIncrement} handleDecrement={handleDecrement} qtyCount={qtyCount} />
-              </div>
-            }
-            <div className=''>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', width: '100%' }}>
+              {selectedItem?.IsMrpBase == 0 ? (
+                <div className="option" style={{ display: 'flex', alignItems: 'center', marginBottom: '8px' }}>
+                  <label htmlFor="qty" style={{ marginRight: '10px', fontWeight: 'bold' }}>Qty:</label>
+                  <span>{selectedItem?.Quantity}</span>
+                </div>
+              ) :
+                <div style={{ marginBottom: '8px' }}>
+                  <QuantitySelector selectedItem={selectedItem} handleIncrement={handleIncrement} handleDecrement={handleDecrement} qtyCount={qtyCount} />
+                </div>
+              }
               {storeInitData?.IsPriceShow == 1 &&
                 <div className="smr_Stockproduct-price">
                   {!ispriceloding ? (
                     <span>
-                      {/* <span
-                        className="smr_currencyFont"
-                        dangerouslySetInnerHTML={{
-                          __html: decodeEntities(
-                            CurrencyData?.Currencysymbol
-                          ),
-                        }}
-                      /> */}
                       <span className="smr_currencyFont">{loginInfo?.CurrencyCode ?? storeInitData?.CurrencyCode}</span>&nbsp;
                       {formatter(selectedItem?.FinalCost)}
                     </span>

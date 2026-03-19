@@ -17,7 +17,6 @@ body {
   -webkit-overflow-scrolling: touch; /* iOS smooth momentum scroll */
 }
 
-
 ::-webkit-scrollbar {
   width: 2.7px;
 }
@@ -35,14 +34,14 @@ body {
   background-color: #888;
 }
 
-.backtotop_Smr{
+.backtotop_Smr {
   color: #585858 !important;
   font-weight: 600 !important;
 }
 
-
-.MobileAppPay, .css-1qd6nut{
-      padding-top: 5px !important;
+.MobileAppPay,
+.css-1qd6nut {
+  padding-top: 5px !important;
 }
 
 ::-ms-reveal,
@@ -66,18 +65,18 @@ body {
 input:-webkit-autofill,
 input:-webkit-autofill:hover,
 input:-webkit-autofill:focus {
-    background-color: transparent !important;
-    transition: background-color 9999s ease-out 0s !important;
+  background-color: transparent !important;
+  transition: background-color 9999s ease-out 0s !important;
 }
 
 /* Disable autofill suggestions dropdown in Firefox */
 input:-moz-autofill {
-    background-color: transparent !important;
+  background-color: transparent !important;
 }
 
 /* For Firefox input fields */
 input:-moz-placeholder {
-    color: transparent !important;
+  color: transparent !important;
 }
 
 .otp-verification-modal {
@@ -85,30 +84,29 @@ input:-moz-placeholder {
   align-items: center;
   justify-content: center;
   /* Hide autocomplete dropdown in WebKit-based browsers */
-input:-webkit-autofill,
-input:-webkit-autofill:hover,
-input:-webkit-autofill:focus {
+  input:-webkit-autofill,
+  input:-webkit-autofill:hover,
+  input:-webkit-autofill:focus {
     background-color: transparent !important;
     transition: background-color 9999s ease-out 0s !important;
-}
+  }
 
-/* Disable autofill suggestions dropdown in Firefox */
-input:-moz-autofill {
+  /* Disable autofill suggestions dropdown in Firefox */
+  input:-moz-autofill {
     background-color: transparent !important;
-}
+  }
 
-/* For Firefox input fields */
-input:-moz-placeholder {
+  /* For Firefox input fields */
+  input:-moz-placeholder {
     color: transparent !important;
-}
-
+  }
 }
 
 .headroom {
   top: 0;
   left: 0;
   right: 0;
-  zIndex: 1;
+  zindex: 1;
 }
 .headroom--unfixed {
   position: relative;
@@ -125,29 +123,30 @@ input:-moz-placeholder {
   position: fixed;
   transform: translateY(0%);
 }
-#loader_main_container{
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
+#loader_main_container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
 }
 .loader_main {
   width: 50px;
   height: 50px;
   border-radius: 50%;
   background:
-    radial-gradient(farthest-side,#030303 94%,#0000) top/8px 8px no-repeat,
-    conic-gradient(#0000 30%,#000000);
-  -webkit-mask: radial-gradient(farthest-side,#0000 calc(100% - 8px),#000 0);
+    radial-gradient(farthest-side, #030303 94%, #0000) top/8px 8px no-repeat,
+    conic-gradient(#0000 30%, #000000);
+  -webkit-mask: radial-gradient(farthest-side, #0000 calc(100% - 8px), #000 0);
   animation: spin 1s infinite linear;
 }
 
 @keyframes spin {
-  100% { transform: rotate(360deg); }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
-
-.FgstoreMapp{
+.FgstoreMapp {
   -webkit-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;
@@ -155,21 +154,20 @@ input:-moz-placeholder {
   -webkit-tap-highlight-color: transparent;
 
   -webkit-touch-callout: none;
-
 }
+/* 
  *::selection {
   background: transparent;
-}
-
+} */
 
 @media (max-width: 768px) {
- body {
+  body {
     overflow: auto !important;
-    scrollbar-width: none !important;       /* Firefox */
-    -ms-overflow-style: none !important;     /* IE 10+ */
+    scrollbar-width: none !important; /* Firefox */
+    -ms-overflow-style: none !important; /* IE 10+ */
   }
 
   ::-webkit-scrollbar {
-    display: none !important;                /* Chrome/Safari */
+    display: none !important; /* Chrome/Safari */
   }
 }
