@@ -439,7 +439,7 @@ const Usewishlist = () => {
 
       let encodeObj = compressAndEncode(JSON.stringify(obj));
 
-      let navigateUrl = `/d/${wishtData?.stockno}/det345/?p=${encodeObj}`;
+      let navigateUrl = `/d/${wishtData?.stockno}/det345/?p=${encodeURIComponent(encodeObj)}`;
       navigate(navigateUrl);
     } else {
       let obj = {
@@ -457,7 +457,7 @@ const Usewishlist = () => {
       compressAndEncode(JSON.stringify(obj))
       let encodeObj = compressAndEncode(JSON.stringify(obj))
       // navigate(`/d/${?.replace(/\s+/g, `_`)}${wishtData?.TitleLine?.length > 0 ? "_" : ""}${}?p=${encodeObj}`)
-      navigate(`/d/${formatRedirectTitleLine(wishtData?.TitleLine)}${wishtData?.designno}?p=${encodeObj}`);
+      navigate(`/d/${formatRedirectTitleLine(wishtData?.TitleLine)}${wishtData?.designno}?p=${encodeURIComponent(encodeObj)}`);
     }
   }
 

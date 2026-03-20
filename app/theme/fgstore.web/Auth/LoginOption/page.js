@@ -16,7 +16,7 @@ const LoginOption = ({ params, searchParams }) => {
       <div className="loginDailog">
         <div style={{ display: "flex", alignItems: "center", flexDirection: "column" }}>
           <p className="loginDiTile">Log in or sign up in seconds</p>
-          <p style={{ textAlign: "center", color: "#7d7f85" }}>Use your email or mobile number to continue with the organization.</p>
+          <p style={{ textAlign: "center", color: "#7d7f85", marginBottom: '15px' }}>Use your email or mobile number to continue with the organization.</p>
 
           <div className="smilingLoginOptionMain">
             <Box sx={{ textDecoration: "none", width: "25% !important" }} component={Link} href={redirectEmailUrl} className="loginMail">

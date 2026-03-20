@@ -1,6 +1,6 @@
 @use "../../../scss/variable.scss" as *;
 
-.smr_loginmobileCodeMain {
+.fg_smr_loginmobileCodeMain {
   background-color: $bgColor;
   height: 70vh;
   display: grid;
@@ -11,7 +11,7 @@
     font-family: $Pratafonts;
   }
 
-    .fg_opt_div {
+  .fg_opt_div {
     .MuiBox-root {
       @media screen and (max-width: 500px) {
         gap: 3px;
@@ -50,7 +50,7 @@
     height: 60px;
     width: 420px;
     background-color: $authbtnbg;
-      color: $authbtncolor;
+    color: $authbtncolor;
     border: 0;
     margin-top: 10px;
     font-size: 13px;
@@ -96,7 +96,7 @@
     height: 60px;
     width: 420px;
     background-color: $authbtnbg;
-      color: $authbtncolor;
+    color: $authbtncolor;
     border: 0;
     margin-top: 10px;
     font-size: 13px;
@@ -115,11 +115,9 @@
   @media screen and (max-width: 950px) {
     .AuthScreenMainTitle {
       font-size: 25px !important;
-      padding-bottom: 50px !important;
     }
 
     .AuthScreenSubTitle {
-      margin-top: -60px !important;
     }
   }
 
@@ -153,9 +151,9 @@
       height: 50px !important;
     }
   }
-  @media screen and (max-width : 316px) {
-   .resend_msg{
-    font-size: 13px !important;
-   } 
+  @media screen and (max-width: 316px) {
+    .resend_msg {
+      font-size: 13px !important;
+    }
   }
 }

@@ -1,6 +1,6 @@
 @use "../../../scss/variable.scss" as *;
 
-.smr_continuMobile {
+.fg_smr_continuMobile {
   background-color: $bgColor;
   height: 70vh;
   display: grid;
@@ -85,7 +85,6 @@
   @media screen and (max-width: 950px) {
     .AuthScreenMainTitle {
       font-size: 25px !important;
-      padding-bottom: 50px !important;
       font-family: $Pratafonts;
     }
 
@@ -120,7 +119,6 @@
     }
 
     .AuthScreenSubTitle {
-      margin-top: -65px !important;
     }
   }
 }

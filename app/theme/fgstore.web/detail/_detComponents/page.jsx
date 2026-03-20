@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useEffect } from "react";
+import React, { useEffect, useMemo } from "react";
 import '@/app/theme/fgstore.web/detail/page.scss'
 
 // Import custom hooks
@@ -14,9 +14,43 @@ import { useNavigation } from './hooks/useNavigation';
 import ProductImageGallery from './components/ProductImageGallery';
 import ProductInfo from './components/ProductInfo';
 import ProductSections from './components/ProductSections';
+import { ParseAndDecodeSearchParams } from "@/app/(core)/utils/GlobalFunctions/Parser";
+import Pako from "pako";
+
+const decodeAndDecompress = (encodedString) => {
+    try {
+        if (!encodedString) return null;
+
+        const base64 = encodedString.replace(/-/g, '+').replace(/_/g, '/');
+
+        const padded = base64.padEnd(base64.length + (4 - (base64.length % 4)) % 4, '=');
+
+        const binaryString = atob(padded);
+
+        const uint8Array = new Uint8Array(binaryString.length);
+        for (let i = 0; i < binaryString.length; i++) {
+            uint8Array[i] = binaryString.charCodeAt(i);
+        }
+
+        const decompressed = Pako.inflate(uint8Array, { to: 'string' });
+
+        const jsonObject = JSON.parse(decompressed);
+
+        return jsonObject;
+    } catch (error) {
+        console.error("Error decoding and decompressing:", error);
+        return null;
+    }
+};
 
 const ProductDetail = ({ params, searchParams, storeInit }) => {
-    const productData = useProductDetail(searchParams, storeInit);
+    const initialDecodeUrl = useMemo(() => {
+        const result = ParseAndDecodeSearchParams(searchParams);
+        const navVal = result[0]?.split("=")[1];
+        return decodeAndDecompress(navVal);
+    }, [searchParams]);
+
+    const productData = useProductDetail(searchParams, storeInit, initialDecodeUrl);
     const {
         singleProd,
         setSingleProd,
@@ -43,7 +77,8 @@ const ProductDetail = ({ params, searchParams, storeInit }) => {
         SimilarBrandArr,
         designSetList,
         loginInfo,
-        handleCustomChange
+        handleCustomChange,
+        decodeUrl
     } = productData;
 
     const cartWishlistData = useCartWishlist(
@@ -75,7 +110,8 @@ const ProductDetail = ({ params, searchParams, storeInit }) => {
         singleProd1,
         selectMtColor,
         storeInit,
-        prodLoading
+        prodLoading,
+        initialDecodeUrl || decodeUrl
     );
 
     const {

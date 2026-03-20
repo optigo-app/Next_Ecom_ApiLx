@@ -35,7 +35,8 @@ export default function LoginWithEmailCode({ params, searchParams }) {
                 if (value === 'true') {
                     sessionStorage.setItem('LoginCodeEmail', 'false');
                     LoginWithEmailCodeAPI(storedEmail).then((response) => {
-                        if (response.Data.rd[0].stat === '1') {
+                        console.log(response , "response")
+                        if (response.Data.rd[0].stat == 1) {
                             toast.success('OTP sent successfully');
                         } else {
                             toast.error('OTP send error');
@@ -99,7 +100,7 @@ export default function LoginWithEmailCode({ params, searchParams }) {
     const handleResendCode = async () => {
         setResendTimer(120);
         LoginWithEmailCodeAPI(email).then((response) => {
-            if (response.Data.rd[0].stat === '1') {
+            if (response.Data.rd[0].stat  == 1) {
                 sessionStorage.setItem('LoginCodeEmail', 'false');
                 toast.success('OTP sent successfully');
             } else {
@@ -109,7 +110,7 @@ export default function LoginWithEmailCode({ params, searchParams }) {
     };
 
     return (
-        <div className='smr_loginwithemailCode' style={{  paddingTop: '10px' }}>
+        <div className='fg_smr_loginwithemailCode' style={{  paddingTop: '10px' }}>
             {isLoading && (
                 <div className="loader-overlay">
                     <CircularProgress className='loadingBarManage' />
@@ -119,7 +120,7 @@ export default function LoginWithEmailCode({ params, searchParams }) {
                 <div className='smling-forgot-main' >
                     <p style={{
                         textAlign: 'center',
-                        paddingBlock: '60px',
+                        paddingBlock: '10px',
                         marginTop: '15px',
                         fontSize: '40px',
                         color: '#7d7f85',
@@ -129,7 +130,6 @@ export default function LoginWithEmailCode({ params, searchParams }) {
                     >Login With Code</p>
                     <p style={{
                         textAlign: 'center',
-                        marginTop: '-80px',
                         fontSize: '15px',
                         color: '#7d7f85',
                         
@@ -197,7 +197,7 @@ export default function LoginWithEmailCode({ params, searchParams }) {
 //                 if (value === 'true') {
 //                     sessionStorage.setItem('LoginCodeEmail', 'false');
 //                     LoginWithEmailCodeAPI(storedEmail).then((response) => {
-//                         if (response.Data.Table1[0].stat === '1') {
+//                         if (response.Data.rd[0].stat  == 1) {
 //                             toast.success('OTP send Sucssessfully');
 //                         } else {
 //                             toast.error('OTP send Error');
@@ -266,7 +266,7 @@ export default function LoginWithEmailCode({ params, searchParams }) {
 //     const handleResendCode = async () => {
 //         setResendTimer(120);
 //         LoginWithEmailCodeAPI(email).then((response) => {
-//             if (response.Data.Table1[0].stat === '1') {
+//             if (response.Data.rd[0].stat  == 1) {
 //                 sessionStorage.setItem('LoginCodeEmail', 'false');
 //                 toast.success('OTP send Sucssessfully');
 //             } else {

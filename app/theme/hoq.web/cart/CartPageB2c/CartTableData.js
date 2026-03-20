@@ -41,10 +41,6 @@ const ExampleComponent = ({
 
     const isLoading = cartData?.loading;
 
-    useEffect(() => {
-        console.log("koko", cartData)
-        console.log("koko1", fullImagePath)
-    }, [cartData])
 
 
     // useEffect(() => {

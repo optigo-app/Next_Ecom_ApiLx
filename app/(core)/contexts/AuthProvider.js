@@ -73,11 +73,11 @@ export function AuthProvider({ children, storeInit, theme }) {
               sessionStorage.setItem("loginUserDetail", JSON.stringify(response.Data.rd[0]));
               setLoginUserDetail(response.Data.rd[0]);
               if (redirectEmailUrl) {
-                router.push(redirectEmailUrl);
+                router.replace(redirectEmailUrl);
               } else if (pathname.startsWith("/accountdwsr")) {
-                router.push("/accountdwsr");
+                router.replace("/accountdwsr");
               } else if (pathname === sessionStorage.getItem("previousUrl")) {
-                router.push(sessionStorage.getItem("previousUrl"));
+                router.replace(sessionStorage.getItem("previousUrl"));
               } else {
               }
             }
@@ -210,9 +210,9 @@ export function AuthProvider({ children, storeInit, theme }) {
     if (islogin === true && !isLoading) {
       if (restrictedPaths?.some((path) => pathname.startsWith(path))) {
         if (redirectEmailUrl) {
-          router.push(redirectEmailUrl);
+          router.replace(redirectEmailUrl);
         } else {
-          router.push(MOBILE_APP_REDIRECT_PATH);
+          router.replace(MOBILE_APP_REDIRECT_PATH);
         }
       }
     }

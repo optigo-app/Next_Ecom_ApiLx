@@ -3,6 +3,15 @@ import './AppointmentForm.scss';
 import { storImagePath } from '@/app/(core)/utils/Glob_Functions/GlobalFunction';
 import { BookAppointment } from '@/app/(core)/utils/API/BookAppointment/BookAppointment';
 import { toast } from 'react-toastify';
+import {
+    TextField,
+    Button,
+    Box,
+    Typography,
+    Grid,
+    InputLabel,
+    CircularProgress
+} from '@mui/material';
 
 const AppointmentForm = ({ selectedItem, setSelectedItem }) => {
     const [loginDetail, setLoginDetail] = useState(null);
@@ -19,7 +28,7 @@ const AppointmentForm = ({ selectedItem, setSelectedItem }) => {
         mobileno: '',
         AppointmentMessage: '',
         AppointmentDateTime: '',
-        JewelleryType: selectedItem?.title,
+        JewelleryType: selectedItem?.title || '',
         RequestId: '',
     });
     const [errors, setErrors] = useState({});
@@ -27,13 +36,10 @@ const AppointmentForm = ({ selectedItem, setSelectedItem }) => {
 
     const handleRequestTypeChange = (requestType) => {
         setSelectRequest(requestType);
-        setFormData(prevData => {
-            const newData = {
-                ...prevData,
-                RequestId: requestType
-            };
-            return newData;
-        });
+        setFormData(prevData => ({
+            ...prevData,
+            RequestId: requestType
+        }));
     };
 
     const formatDateTime = (dateTimeString) => {
@@ -58,7 +64,6 @@ const AppointmentForm = ({ selectedItem, setSelectedItem }) => {
         setMinDateTime(formatDate(threeDaysFromNow));
     }, []);
 
-
     useEffect(() => {
         if (loginDetail) {
             setFormData({
@@ -68,22 +73,22 @@ const AppointmentForm = ({ selectedItem, setSelectedItem }) => {
                 mobileno: loginDetail.mobileno ?? '',
                 AppointmentMessage: '',
                 AppointmentDateTime: '',
-                JewelleryType: '',
+                JewelleryType: selectedItem?.title || '',
                 RequestId: '',
             });
         }
-    }, [loginDetail]);
+    }, [loginDetail, selectedItem]);
 
     const handleChange = (event) => {
-        const { id, value } = event.target;
+        const { name, value } = event.target;
         setFormData(prevData => ({
             ...prevData,
-            [id]: value,
+            [name]: value,
         }));
         if (value) {
             setErrors(prevErrors => ({
                 ...prevErrors,
-                [id]: '',
+                [name]: '',
             }));
         }
     };
@@ -104,22 +109,26 @@ const AppointmentForm = ({ selectedItem, setSelectedItem }) => {
         const formErrors = validate();
         if (Object.keys(formErrors).length === 0) {
             setIsSubmitting(true);
-            setLoading({ load: true, index })
+            setLoading({ load: true, index });
             const formattedData = {
                 ...formData,
                 AppointmentDateTime: formatDateTime(formData?.AppointmentDateTime)
-            }
-            await BookAppointment(formattedData).then((res) => {
-                if (res?.stat_msg === 'success') {
+            };
+            try {
+                const res = await BookAppointment(formattedData);
+                if (res?.stat == 1 || res?.stat_msg === 'success') {
                     setSelectedItem({});
                     toast.success("Appointment Booked Successfully");
-                    setLoading({ load: false, index })
                 } else {
                     toast.error("Something went wrong");
-                    setLoading({ load: false, index });
                 }
-            })
-            setIsSubmitting(false);
+            } catch (error) {
+                console.error("Booking error:", error);
+                toast.error("Failed to book appointment");
+            } finally {
+                setLoading({ load: false, index: 0 });
+                setIsSubmitting(false);
+            }
         } else {
             setErrors(formErrors);
         }
@@ -127,109 +136,146 @@ const AppointmentForm = ({ selectedItem, setSelectedItem }) => {
 
     const handleEdit = () => {
         setSelectedItem({});
-    }
+    };
 
     useEffect(() => {
         window.scrollTo({
             top: 250,
             behavior: "smooth"
-        })
-    }, [])
+        });
+    }, []);
 
     return (
-        <div className="form-container">
-            <h2>Share details</h2>
-            <div className="for_product-detail">
-                <img src={`${storImagePath()}${selectedItem?.image}`} alt={selectedItem?.title} />
-                <div className="for_product-info">
-                    <a>{selectedItem?.title}</a>
-                    <button className="for_edit-btn" onClick={handleEdit}>Edit</button>
-                </div>
-            </div>
+        <Box className="form-container" sx={{ maxWidth: 800, margin: 'auto', p: 3, bgcolor: 'background.paper', boxShadow: 3, borderRadius: 2 }}>
+            <Typography variant="h4" align="center" gutterBottom sx={{ fontWeight: 600, mb: 4 }}>
+                Share details
+            </Typography>
+
+            <Box sx={{ display: 'flex', alignItems: 'center', mb: 4, p: 2, border: '1px solid', borderColor: 'divider', borderRadius: 2 }}>
+                <Box
+                    component="img"
+                    src={`${storImagePath()}${selectedItem?.image}`}
+                    alt={selectedItem?.title}
+                    sx={{ width: 100, height: 100, objectFit: 'cover', borderRadius: 1, mr: 3 }}
+                />
+                <Box sx={{ flexGrow: 1 }}>
+                    <Typography variant="h6" sx={{ fontWeight: 500 }}>{selectedItem?.title}</Typography>
+                    <Button variant="outlined" size="small" onClick={handleEdit} sx={{ mt: 1 }}>
+                        Edit
+                    </Button>
+                </Box>
+            </Box>
+
             <form onSubmit={(e) => handleSubmit(e, formData?.RequestId)}>
-                <div className='for_leftside'>
-                    <div className="for_input-group">
-                        <div className="for_input-field">
-                            <label htmlFor="firstname">First Name*</label>
-                            <input
-                                type="text"
-                                id="firstname"
-                                placeholder="First Name"
-                                value={formData.firstname}
-                                onChange={handleChange}
-                            />
-                            {errors.firstname && <div className="for_error-message">{errors.firstname}</div>}
-                        </div>
-                        <div className="for_input-field">
-                            <label htmlFor="lastname">Last Name*</label>
-                            <input
-                                type="text"
-                                id="lastname"
-                                placeholder="Last Name"
-                                value={formData.lastname}
-                                onChange={handleChange}
-                            />
-                            {errors.lastname && <div className="for_error-message">{errors.lastname}</div>}
-                        </div>
-                    </div>
-                    <div className="for_input-group">
-                        <div className="for_input-field">
-                            <label htmlFor="EmailId">Email*</label>
-                            <input
-                                type="email"
-                                id="EmailId"
-                                placeholder="Email"
-                                value={formData.EmailId}
-                                onChange={handleChange}
-                            />
-                            {errors.EmailId && <div className="for_error-message">{errors.EmailId}</div>}
-                        </div>
-                        <div className="for_input-field">
-                            <label htmlFor="mobileno">Phone*</label>
-                            <input
-                                type="tel"
-                                id="mobileno"
-                                placeholder="Phone"
-                                value={formData.mobileno}
-                                onChange={handleChange}
-                            />
-                            {errors.mobileno && <div className="for_error-message">{errors.mobileno}</div>}
-                        </div>
-                    </div>
-                    <div className="for_input-group">
-                        <div className="for_input-field">
-                            <label htmlFor="AppointmentMessage">Message (Optional)</label>
-                            <textarea
-                                id="AppointmentMessage"
-                                placeholder="Message"
-                                value={formData.AppointmentMessage}
-                                onChange={handleChange}
-                            ></textarea>
-                        </div>
-                    </div>
-                </div>
-                <div className='for_rightside'>
-                    <div className="for_input-group">
-                        <div className="for_input-field">
-                            <label htmlFor="AppointmentDateTime">Select a Date & Time*</label>
-                            <input
-                                type="datetime-local"
-                                id="AppointmentDateTime"
-                                value={formData.AppointmentDateTime}
-                                min={minDateTime}
-                                onChange={handleChange}
-                            />
-                            {errors.AppointmentDateTime && <div className="for_error-message">{errors.AppointmentDateTime}</div>}
-                        </div>
-                    </div>
-                    <div className="for_button-group">
-                        <button type="submit" className="for_primary-btn" disabled={isSubmitting} onClick={() => handleRequestTypeChange('1')}>{loading?.index === '1' ? 'Booking Appointment' : 'Book Appointment'}</button>
-                        <button type="button" className="for_secondary-btn" onClick={() => handleRequestTypeChange('2')}>{loading?.index === '2' ? 'Requesting A Callback' : 'Request A Callback'}</button>
-                    </div>
-                </div>
-            </form>
-        </div>
+                <Grid container spacing={3}>
+                    <Grid item size={{ xs: 12, sm: 6 }}>
+                        <TextField
+                            fullWidth
+                            label="First Name*"
+                            name="firstname"
+                            value={formData.firstname}
+                            onChange={handleChange}
+                            error={!!errors.firstname}
+                            helperText={errors.firstname}
+                            variant="outlined"
+                        />
+                    </Grid>
+                    <Grid item size={{ xs: 12, sm: 6 }}>
+                        <TextField
+                            fullWidth
+                            label="Last Name*"
+                            name="lastname"
+                            value={formData.lastname}
+                            onChange={handleChange}
+                            error={!!errors.lastname}
+                            helperText={errors.lastname}
+                            variant="outlined"
+                        />
+                    </Grid>
+                    <Grid item size={{ xs: 12, sm: 6 }}>
+                        <TextField
+                            fullWidth
+                            label="Email*"
+                            name="EmailId"
+                            type="email"
+                            value={formData.EmailId}
+                            onChange={handleChange}
+                            error={!!errors.EmailId}
+                            helperText={errors.EmailId}
+                            variant="outlined"
+                        />
+                    </Grid>
+                    <Grid item size={{ xs: 12, sm: 6 }}>
+                        <TextField
+                            fullWidth
+                            label="Phone*"
+                            name="mobileno"
+                            type="tel"
+                            value={formData.mobileno}
+                            onChange={handleChange}
+                            error={!!errors.mobileno}
+                            helperText={errors.mobileno}
+                            variant="outlined"
+                        />
+                    </Grid>
+                    <Grid item size={{ xs: 12 }}>
+                        <TextField
+                            fullWidth
+                            label="Message (Optional)"
+                            name="AppointmentMessage"
+                            multiline
+                            rows={4}
+                            value={formData.AppointmentMessage}
+                            onChange={handleChange}
+                            variant="outlined"
+                        />
+                    </Grid>
+                    <Grid item size={{ xs: 12 }}>
+                        <TextField
+                            fullWidth
+                            label="Select a Date & Time*"
+                            name="AppointmentDateTime"
+                            type="datetime-local"
+                            value={formData.AppointmentDateTime}
+                            onChange={handleChange}
+                            error={!!errors.AppointmentDateTime}
+                            helperText={errors.AppointmentDateTime}
+                            InputLabelProps={{ shrink: true }}
+                            inputProps={{ min: minDateTime }}
+                            variant="outlined"
+                        />
+                    </Grid>
+                    <Grid item size={{ xs: 12 }}>
+                        <Box sx={{ display: 'flex', gap: 2, mt: 2, flexWrap: 'wrap' }}>
+                            <Button
+                                type="submit"
+                                variant="contained"
+                                color="primary"
+                                size="large"
+                                disabled={isSubmitting}
+                                onClick={() => handleRequestTypeChange('1')}
+                                sx={{ flexGrow: 1, minHeight: 50 }}
+                            >
+                                {loading?.load && loading?.index === '1' ? <CircularProgress size={24} color="inherit" /> : 'Book Appointment'}
+                            </Button>
+                            <Button
+                                type="submit"
+                                variant="outlined"
+                                color="primary"
+                                size="large"
+                                disabled={isSubmitting}
+                                onClick={() => handleRequestTypeChange('2')}
+                                sx={{ flexGrow: 1, minHeight: 50 }}
+                            >
+                                {loading?.load && loading?.index === '2' ? <CircularProgress size={24} color="inherit" /> : 'Request A Callback'}
+                            </Button>
+                        </Box>
+                    </Grid>
+                </Grid >
+            </form >
+        </Box >
     );
 };
+
 
 export default AppointmentForm;

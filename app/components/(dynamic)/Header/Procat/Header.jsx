@@ -41,17 +41,6 @@ const Header = ({ storeinit, logos }) => {
   const [serachsShowOverlay, setSerachShowOverlay] = useState(false);
   const navigation = useNextRouterLikeRR().push;
 
-  useEffect(() => {
-    GetCountAPI(cookie)
-      .then((res) => {
-        if (res) {
-          console.log("🚀 ~ Header ~ res:", res);
-          setCartCountNum(res.cartcount ?? 0);
-          setWishCountNum(res.wishcount ?? 0);
-        }
-      })
-      .catch((err) => console.error("getCountApiErr", err));
-  }, [islogin, isMounted, storeinit]); //
 
   // for rember me
   // }, [location.key])

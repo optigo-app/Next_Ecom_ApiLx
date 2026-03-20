@@ -10,7 +10,7 @@ export const BookCache = async (visiterId, type, pricingContext, alc) => {
   const ACL = alc;
 
   let response;
-  const storeInit = getSession("storeInit");
+  const storeInit = (typeof window !== 'undefined' && window.__STORE_INIT__) ? window.__STORE_INIT__ : getSession('storeInit');
   const FrontEnd_RegNo = storeInit?.FrontEnd_RegNo;
   const loginUserDetail = getSession("loginUserDetail") || {};
   const islogin = getSession("LoginUser") ?? false;
@@ -51,7 +51,7 @@ export const BookCache = async (visiterId, type, pricingContext, alc) => {
 export const GetCacheList = async (visiterId) => {
   let response;
 
-  const storeInit = getSession("storeInit");
+  const storeInit = (typeof window !== 'undefined' && window.__STORE_INIT__) ? window.__STORE_INIT__ : getSession('storeInit');
   const FrontEnd_RegNo = storeInit?.FrontEnd_RegNo;
   const loginInfo = getSession("loginUserDetail") || {};
   const islogin = getSession("LoginUser") ?? false;

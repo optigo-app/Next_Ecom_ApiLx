@@ -21,9 +21,11 @@ export default function ContinueWithEmail({ params, searchParams, storeInit }) {
     const cancelRedireactUrl = `/LoginOption${search ? `?LoginRedirect=${encodeURIComponent(search)}` : ""}`;
 
 
-    useEffect(() => {
-        setCSSVariable();
-    }, [])
+    // useEffect(() => {
+    //     setCSSVariable();
+    // }, [])
+
+
     const validateEmail = (email) => {
         const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         return regex.test(email);
@@ -88,36 +90,10 @@ export default function ContinueWithEmail({ params, searchParams, storeInit }) {
         }).catch((err) => console.log(err))
 
 
-        // const storeInit = JSON.parse(sessionStorage.getItem('storeInit'));
-        // const { FrontEnd_RegNo } = storeInit;
-
-        // const combinedValue = JSON.stringify({
-        //     userid: `${(trimmedEmail).toLocaleLowerCase()}`, FrontEnd_RegNo: `${FrontEnd_RegNo}`
-        // });
-        // const encodedCombinedValue = btoa(combinedValue);
-        // const body = {
-        //     "con": "{\"id\":\"\",\"mode\":\"WEBVALDNEMAIL\"}",
-        //     "f": "emilValid (handleEmail)",
-        //     p: encodedCombinedValue
-        // };
-        // const response = await CommonAPI(body);
-        // console.log('ressssssss', response);
-        // if (response.Data.rd[0].stat == 1 && response.Data.rd[0].islead == 1) {
-        //     toast.error('You are not a customer, contact to admin')
-        // } else if (response.Data.rd[0].stat == 1 && response.Data.rd[0].islead == 0) {
-        //     navigation('/LoginWithEmail', { state: { email: trimmedEmail } });
-        //     if (trimmedEmail) {
-        //         sessionStorage.setItem("userEmailForPdList", trimmedEmail);
-        //     }
-        // } else {
-        //     navigation('/register', { state: { email: trimmedEmail } });
-        // }
-
-        // setIsLoading(false);
     };
 
     return (
-        <div className='smr_continuemail' >
+        <div className='fg_smr_continuemail' >
             {isLoading && (
                 <div className="loader-overlay">
                     <CircularProgress className='loadingBarManage' />
@@ -132,7 +108,7 @@ export default function ContinueWithEmail({ params, searchParams, storeInit }) {
                 <div className='smling-forgot-main'>
                     <p style={{
                         textAlign: 'center',
-                        paddingBlock: '60px',
+                        paddingBlock: '10px',
                         marginTop: '0px',
                         fontSize: '40px',
                         color: '#7d7f85',
@@ -141,7 +117,6 @@ export default function ContinueWithEmail({ params, searchParams, storeInit }) {
                     >Continue With Email</p>
                     <p style={{
                         textAlign: 'center',
-                        marginTop: '-60px',
                         fontSize: '15px',
                         color: '#7d7f85',
                     }}

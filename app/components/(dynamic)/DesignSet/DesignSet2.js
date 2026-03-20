@@ -15,20 +15,21 @@ import {
 import { useNextRouterLikeRR } from "@/app/(core)/hooks/useLocationRd";
 import { useStore } from "@/app/(core)/contexts/StoreProvider";
 import cookies from "js-cookie";
+import SonaHeader from "@/app/theme/fgstore.web/home/Header";
 
 
 
 
-const buildAlbumCacheKey = ( type ,storeData, pricing, id) => {
+const buildAlbumCacheKey = (type, storeData, pricing, id) => {
   const meta = {
-  type,
-  PackageId: pricing?.PackageId ?? "",
-  Laboursetid: pricing?.Laboursetid ?? "",
-  diamondpricelistname: pricing?.diamondpricelistname ?? "",
-  colorstonepricelistname: pricing?.colorstonepricelistname ?? "",
-};
+    type,
+    PackageId: pricing?.PackageId ?? "",
+    Laboursetid: pricing?.Laboursetid ?? "",
+    diamondpricelistname: pricing?.diamondpricelistname ?? "",
+    colorstonepricelistname: pricing?.colorstonepricelistname ?? "",
+  };
 
-const key = [
+  const key = [
     type,
     pricing?.PackageId,
     pricing?.Laboursetid,
@@ -80,7 +81,7 @@ const DesignSet2 = ({ data, storeInit }) => {
 
   const finalID = useMemo(() => {
     if (!mounted) return null;
-    const visitorId = cookies.get("visitorId") ?? "0";
+    const visitorId = cookies.get("visiterId") ?? "0";
     const IsB2BWebsite = storeInit?.IsB2BWebsite ?? 0;
     const uid = loginUserDetail?.id || "0";
     if (IsB2BWebsite == 0) {
@@ -90,34 +91,34 @@ const DesignSet2 = ({ data, storeInit }) => {
   }, [mounted, loginUserDetail, islogin, storeInit?.IsB2BWebsite]);
 
 
-     const pricingContext = useMemo(() => {
-      if (!mounted) return null;
-    
-     
-      const loginInfo = loginUserDetail;
-    
+  const pricingContext = useMemo(() => {
+    if (!mounted) return null;
+
+
+    const loginInfo = loginUserDetail;
+
     return {
       PackageId: (loginInfo?.PackageId ?? storeInit?.PackageId) ?? "",
       Laboursetid:
-          !islogin 
+        !islogin
           ? storeInit?.pricemanagement_laboursetid
           : loginInfo?.pricemanagement_laboursetid ?? "",
       diamondpricelistname:
-          !islogin 
+        !islogin
           ? storeInit?.diamondpricelistname
           : loginInfo?.diamondpricelistname ?? "",
       colorstonepricelistname:
-          !islogin 
+        !islogin
           ? storeInit?.colorstonepricelistname
           : loginInfo?.colorstonepricelistname ?? "",
     };
-    }, [mounted, loginUserDetail, storeInit, islogin]);
-    
-    
+  }, [mounted, loginUserDetail, storeInit, islogin]);
+
+
 
 
   const callAPI = async (id) => {
-  const {key ,meta} = buildAlbumCacheKey("designset_" ,storeInit, pricingContext, id);
+    const { key, meta } = buildAlbumCacheKey("designset_", storeInit, pricingContext, id);
 
     try {
       const cachedRes = await fetch(`/api/cache?key=${key}`);
@@ -126,7 +127,7 @@ const DesignSet2 = ({ data, storeInit }) => {
       if (cached.cached && Array.isArray(cached.data)) {
         console.log("🔥 Using cached data", cached.data);
         setDesignSetList(cached.data);
-        return cached.data; 
+        return cached.data;
       }
       const res = await Get_Tren_BestS_NewAr_DesigSet_Album(storeInit, "GETDesignSet_List", id)
       const rows = res?.Data?.rd || [];
@@ -135,7 +136,7 @@ const DesignSet2 = ({ data, storeInit }) => {
         fetch("/api/cache", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ key, data: rows ,meta }),
+          body: JSON.stringify({ key, data: rows, meta }),
         }).catch(console.error);
       } else {
         setDesignSetList([]);
@@ -189,18 +190,20 @@ const DesignSet2 = ({ data, storeInit }) => {
     }
   };
 
-  const handleNavigation = (designNo, autoCode, titleLine, index) => {
+  const handleNavigation = (item, index) => {
     let obj = {
-      a: autoCode,
-      b: designNo,
+      a: item?.autocode,
+      b: item?.designno,
       m: loginUserDetail?.MetalId ?? storeInit?.MetalId,
       d: loginUserDetail?.cmboDiaQCid ?? storeInit?.cmboDiaQCid,
       c: loginUserDetail?.cmboCSQCid ?? storeInit?.cmboCSQCid,
       f: {},
+      l: item?.ImageExtension,
+      count: item?.ImageCount,
     };
     sessionStorage.setItem('scrollToProduct4', `product-${index}`);
     let encodeObj = compressAndEncode(JSON.stringify(obj));
-    navigate(`/d/${formatRedirectTitleLine(titleLine)}${designNo}?p=${encodeURIComponent(encodeObj)}`);
+    navigate(`/d/${formatRedirectTitleLine(item?.TitleLine)}${item?.designno}?p=${encodeURIComponent(encodeObj)}`);
   };
 
   useEffect(() => {
@@ -288,7 +291,12 @@ const DesignSet2 = ({ data, storeInit }) => {
       <div className="smr_DesignSet2MainDiv" ref={designSetRef} onContextMenu={(e) => { e.preventDefault() }}>
         {designSetList?.length !== 0 && (
           <>
-            <div className="smr_DesignSetTitleDiv">
+            <SonaHeader
+              title="Complete Your Look"
+              isShowViewMore={false}
+              viewAll={(e) => handleNavigate(e)}
+            />
+            {/* <div className="smr_DesignSetTitleDiv">
               <p className="smr1_desognSetTitle">
                 COMPLETE YOUR LOOK
                 {((storeInit?.IsB2BWebsite !== 1) || (storeInit?.IsB2BWebsite === 1 && islogin)) && (
@@ -298,8 +306,10 @@ const DesignSet2 = ({ data, storeInit }) => {
                     </a>
                   </span>
                 )}
+            
+
               </p>
-            </div>
+            </div> */}
             {/* <Swiper
               className="mySwiper"
               spaceBetween={5}
@@ -373,18 +383,14 @@ const DesignSet2 = ({ data, storeInit }) => {
                                   <div className="smr_ds2ImageDiv">
                                     <img
                                       loading="lazy"
-                                      
+
                                       // src={`${imageUrlDesignSet}${detail?.designno}~1.${detail?.ImageExtension}`}
                                       src={`${imageUrlDesignSet}${detail?.designno}~1.jpg`}
                                       alt={`Sub image ${subIndex} for slide ${index}`}
                                       name={`product-${index}`}
                                       onClick={() =>
                                         handleNavigation(
-                                          detail?.designno,
-                                          detail?.autocode,
-                                          detail?.TitleLine
-                                            ? detail?.TitleLine
-                                            : "",
+                                          detail,
                                           index
                                         )
                                       }

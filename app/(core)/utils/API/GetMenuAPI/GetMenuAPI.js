@@ -4,8 +4,12 @@ import { CommonAPI } from "../CommonAPI/CommonAPI";
 export const GetMenuAPI = async (finalID) => {
     let response;
     try {
-        const storeInit = getSession("storeInit") ?? "";
+        const { getStoreInitData } = await import("../CommonAPI/CommonAPI");
+        const storeInit = getStoreInitData();
+
+        const { getSession } = await import("../../FetchSessionData");
         const email = getSession("registerEmail") ?? "";
+
         const body = {
             con: `{\"id\":\"\",\"mode\":\"GETMENU\",\"appuserid\":\"${email}\"}`,
             f: "onload (GETMENU)",

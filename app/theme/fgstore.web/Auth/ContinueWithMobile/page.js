@@ -102,7 +102,7 @@ export default function ContinueWithMobile({ params, searchParams, storeInit }) 
   };
 
   return (
-    <div className="smr_continuMobile">
+    <div className="fg_smr_continuMobile">
       {isLoading && (
         <div className="loader-overlay">
           <CircularProgress className="loadingBarManage" />
@@ -115,8 +115,7 @@ export default function ContinueWithMobile({ params, searchParams, storeInit }) 
           <p
             style={{
               textAlign: "center",
-              paddingBlock: "60px",
-              marginTop: "0px",
+              paddingBlock: "10px",
               fontSize: "40px",
               color: "#7d7f85",
             }}
@@ -127,7 +126,6 @@ export default function ContinueWithMobile({ params, searchParams, storeInit }) 
           <p
             style={{
               textAlign: "center",
-              marginTop: "-60px",
               fontSize: "15px",
               color: "#7d7f85",
             }}

@@ -182,36 +182,54 @@ const grey = {
     900: '#1C2025',
 };
 
-const InputElement = styled('input')(
-    ({ theme }) => `
-  width: 45px;
-  font-family: 'IBM Plex Sans', sans-serif;
-  font-size: 0.875rem;
-  font-weight: 400;
-  line-height: 3;
-  padding: 8px 0px;
-  border-radius: 3px;
-  text-align: center;
-  color: ${theme.palette.mode === 'dark' ? grey[300] : grey[900]};
-  background: ${theme.palette.mode === 'dark' ? grey[900] : '#fff'};
-  border: 1px solid ${theme.palette.mode === 'dark' ? grey[700] : grey[200]};
-  box-shadow: 0px 2px 4px ${theme.palette.mode === 'dark' ? 'rgba(0,0,0, 0.5)' : 'rgba(0,0,0, 0.05)'
-        };
+const InputElement = styled('input')(({ theme }) => ({
+    width: '100%',
+    maxWidth: 60, // desktop max width
+    minWidth: 36, // prevent too small on mobile
+    fontFamily: '"IBM Plex Sans", sans-serif',
+    fontSize: '0.875rem',
+    fontWeight: 400,
+    lineHeight: 3,
+    padding: '8px 4px',
+    borderRadius: 4,
+    textAlign: 'center',
+    boxSizing: 'border-box',
 
-  &:hover {
-    border-color: ${blue[400]};
-  }
+    color: theme.palette.mode === 'dark' ? grey[300] : grey[900],
+    backgroundColor: theme.palette.mode === 'dark' ? grey[900] : '#fff',
+    border: `1px solid ${theme.palette.mode === 'dark' ? grey[700] : grey[200]
+        }`,
+    boxShadow:
+        theme.palette.mode === 'dark'
+            ? '0px 2px 4px rgba(0,0,0,0.5)'
+            : '0px 2px 4px rgba(0,0,0,0.05)',
 
-  &:focus {
-    border-color: ${blue[400]};
-    box-shadow: 0 0 0 3px ${theme.palette.mode === 'dark' ? blue[600] : blue[200]};
-  }
+    transition: 'all 0.2s ease',
 
-  // firefox
-  &:focus-visible {
-    outline: 0;
-  }
-`,
-);
+    '&:hover': {
+        borderColor: blue[400],
+    },
+
+    '&:focus': {
+        borderColor: blue[400],
+        boxShadow:
+            theme.palette.mode === 'dark'
+                ? `0 0 0 3px ${blue[600]}`
+                : `0 0 0 3px ${blue[200]}`,
+        outline: 'none',
+    },
+
+    // 🔥 Responsive Breakpoints
+    [theme.breakpoints.down('sm')]: {
+        maxWidth: 45,
+        fontSize: '0.8rem',
+        padding: '6px 2px',
+    },
+
+    [theme.breakpoints.up('md')]: {
+        maxWidth: 60,
+    },
+}));
+
 
 export default OTP;

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 
-export const useImageHandler = (singleProd, singleProd1, selectMtColor, storeInit, prodLoading) => {
+export const useImageHandler = (singleProd, singleProd1, selectMtColor, storeInit, prodLoading, decodeUrl) => {
 
     // Image and video states
     const [pdThumbImg, setPdThumbImg] = useState([]);
@@ -141,6 +141,14 @@ export const useImageHandler = (singleProd, singleProd1, selectMtColor, storeIni
             setPdThumbImg(thumbImagePath);
             setThumbImgIndex(0);
         } else {
+            // Only show "no image" after we've confirmed there truly are none
+            setSelectedThumbImg({
+                link: {
+                    imageUrl: "",
+                    extension: "jpg"
+                },
+                type: 'img'
+            });
             setThumbImgIndex();
         }
 
@@ -295,25 +303,57 @@ export const useImageHandler = (singleProd, singleProd1, selectMtColor, storeIni
         }
     };
 
-    // Initialize images when product changes
+    // Initialize images: prioritize API data (singleProd), fallback to pre-loaded URL data
     useEffect(() => {
         if (singleProd && Object.keys(singleProd).length > 0) {
             ProdCardImageFunc();
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [singleProd, singleProd1]);
 
-    // Set fallback image when no images are available
+    // Pre-load images from URL metadata with correct color (runs once on mount)
     useEffect(() => {
-        if (!(pdThumbImg?.length !== 0 || pdVideoArr?.length !== 0)) {
-            setSelectedThumbImg({
-                link: {
-                    imageUrl: "",
-                    extension: "jpg"
-                },
-                type: 'img'
-            });
+        if (decodeUrl && Object.keys(decodeUrl).length > 0 && (!singleProd || Object.keys(singleProd).length === 0)) {
+            const { b, l, count } = decodeUrl;
+
+            // Use storeInit from props or window fallback for refresh stability
+            const sInit = storeInit?.CDNDesignImageFol ? storeInit : (typeof window !== 'undefined' ? window.__STORE_INIT__ : null);
+
+            if (b && l && count && sInit?.CDNDesignImageFol) {
+                // Get the user's default metal color from sessionStorage (same source as ProdCardImageFunc)
+                const mtColorLocal = JSON.parse(sessionStorage.getItem("MetalColorCombo")) || [];
+                const loginInfo = JSON.parse(sessionStorage.getItem("loginUserDetail"));
+                const defaultColorObj = mtColorLocal.find(ele => ele.id === loginInfo?.MetalColorId);
+                const colorCode = defaultColorObj?.colorcode;
+
+                // Build the correct color-specific URL (matches ProdCardImageFunc output)
+                const mainImageUrl = colorCode
+                    ? `${sInit?.CDNDesignImageFol}${b}~1~${colorCode}.${l}`
+                    : `${sInit?.CDNDesignImageFol}${b}~1.${l}`;
+
+                const thumbImagePath = Array.from({ length: Number(count) }, (_, i) => {
+                    const suffix = colorCode ? `${b}~${i + 1}~${colorCode}` : `${b}~${i + 1}`;
+                    const thumbImageUrl = `${sInit?.CDNDesignImageFolThumb}${suffix}.jpg`;
+                    return { thumbImageUrl, originalImageExtension: l };
+                });
+
+                setPdThumbImg(thumbImagePath);
+                setThumbImgIndex(0);
+                if (colorCode) setSelectedMetalColor(colorCode);
+
+                setSelectedThumbImg({
+                    link: {
+                        imageUrl: mainImageUrl,
+                        extension: l
+                    },
+                    type: 'img'
+                });
+                setImagePromise(false);
+            }
         }
-    }, [pdThumbImg, pdVideoArr]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
 
     return {
         // States

@@ -12,7 +12,7 @@ import { SaveLastViewDesign } from "@/app/(core)/utils/API/SaveLastViewDesign/Sa
 import Cookies from "js-cookie";
 import { ParseAndDecodeSearchParams } from "@/app/(core)/utils/GlobalFunctions/Parser";
 
-export const useProductDetail = (searchParams, storeInit) => {
+export const useProductDetail = (searchParams, storeInit, initialDecodeUrl) => {
     const [singleProd, setSingleProd] = useState({});
     const [singleProd1, setSingleProd1] = useState({});
     const [prodLoading, setProdLoading] = useState(true);
@@ -40,7 +40,7 @@ export const useProductDetail = (searchParams, storeInit) => {
     const [SimilarBrandArr, setSimilarBrandArr] = useState([]);
     const [designSetList, setDesignSetList] = useState();
     const [saveLastView, setSaveLastView] = useState();
-    const [decodeUrl, setDecodeUrl] = useState({});
+    const [decodeUrl, setDecodeUrl] = useState(initialDecodeUrl || {});
     const [loginInfo, setLoginInfo] = useState();
 
     const cookie = Cookies.get("visiterId");
@@ -308,15 +308,9 @@ export const useProductDetail = (searchParams, storeInit) => {
         callAllApi();
     }, [storeInit]);
 
-    // Handle URL parameters and initial product load
+    // Handle initial product load (runs once on mount)
     useEffect(() => {
-        const result = ParseAndDecodeSearchParams(searchParams);
-        let navVal = result[0]?.split("=")[1];
-        let decodeobj = decodeAndDecompress(navVal);
-
-        if (decodeobj) {
-            setDecodeUrl(decodeobj);
-
+        if (decodeUrl && Object.keys(decodeUrl).length > 0) {
             let storeinitInside = JSON.parse(sessionStorage.getItem("storeInit"));
             let logininfoInside = JSON.parse(sessionStorage.getItem("loginUserDetail"));
 
@@ -327,20 +321,20 @@ export const useProductDetail = (searchParams, storeInit) => {
             let metalArr, diaArr, csArr;
 
             if (mtTypeLocal?.length) {
-                metalArr = mtTypeLocal?.filter((ele) => ele?.Metalid == decodeobj?.m)[0]?.Metalid;
+                metalArr = mtTypeLocal?.filter((ele) => ele?.Metalid == decodeUrl?.m)[0]?.Metalid;
             }
             if (diaQcLocal) {
                 diaArr = diaQcLocal?.filter(
                     (ele) =>
-                        ele?.QualityId == decodeobj?.d?.split(",")[0] &&
-                        ele?.ColorId == decodeobj?.d?.split(",")[1]
+                        ele?.QualityId == decodeUrl?.d?.split(",")[0] &&
+                        ele?.ColorId == decodeUrl?.d?.split(",")[1]
                 )[0];
             }
             if (csQcLocal) {
                 csArr = csQcLocal?.filter(
                     (ele) =>
-                        ele?.QualityId == decodeobj?.c?.split(",")[0] &&
-                        ele?.ColorId == decodeobj?.c?.split(",")[1]
+                        ele?.QualityId == decodeUrl?.c?.split(",")[0] &&
+                        ele?.ColorId == decodeUrl?.c?.split(",")[1]
                 )[0];
             }
 
@@ -354,10 +348,11 @@ export const useProductDetail = (searchParams, storeInit) => {
                     : logininfoInside?.cmboCSQCid ?? storeinitInside?.cmboCSQCid,
             };
 
-            fetchProductData(decodeobj, sizeData, obj);
+            fetchProductData(decodeUrl, sizeData, obj);
         }
 
         window.scroll({ top: 0, behavior: "smooth" });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     // Set initial selections when product data is loaded

@@ -65,7 +65,7 @@ export default function LoginWithMobileCode({ params, searchParams }) {
             return;
         }
         LoginWithEmailAPI('', mobileNo, enterOTP, 'otp_mobile_login', '', visiterId).then((response) => {
-            if (response.Data.rd[0].stat === 1) {
+            if (response.Data.rd[0].stat == 1) {
                 Cookies.set('LoginUser', true)
                 sessionStorage.setItem('LoginUser', true)
                 setIsLoginState(true)
@@ -90,7 +90,7 @@ export default function LoginWithMobileCode({ params, searchParams }) {
         setIsLoading(true);
         ContimueWithMobileAPI(mobileNo).then((response) => {
             setIsLoading(false);
-            if (response.Data.Table1[0].stat === '1') {
+            if (response.Data.rd[0].stat == 1) {
                 toast.success('OTP send Sucssessfully');
             } else {
                 alert('Error..')
@@ -99,7 +99,7 @@ export default function LoginWithMobileCode({ params, searchParams }) {
     };
 
     return (
-        <div className='smr_loginmobileCodeMain'>
+        <div className='fg_smr_loginmobileCodeMain'>
             {isLoading && (
                 <div className="loader-overlay">
                     <CircularProgress className='loadingBarManage' />
@@ -109,8 +109,7 @@ export default function LoginWithMobileCode({ params, searchParams }) {
                 <div className='smling-forgot-main'>
                     <p style={{
                         textAlign: 'center',
-                        paddingBlock: '60px',
-                        marginTop: '0px',
+                        paddingBlock: '10px',
                         fontSize: '40px',
                         color: '#7d7f85',
 
@@ -119,7 +118,6 @@ export default function LoginWithMobileCode({ params, searchParams }) {
                     >Login With Code</p>
                     <p style={{
                         textAlign: 'center',
-                        marginTop: '-80px',
                         fontSize: '15px',
                         color: '#7d7f85',
 

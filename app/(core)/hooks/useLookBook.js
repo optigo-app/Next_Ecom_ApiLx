@@ -138,6 +138,7 @@ const useLookBook = ({ storeInit }) => {
     const output = FilterValueWithCheckedOnly();
 
     if (Object?.keys(filterChecked)?.length >= 0) {
+      setThumbsSwiper(null);
       setIsProdLoading(true);
       setIsPgLoading(true);
       Get_Tren_BestS_NewAr_DesigSet_Album(storeInit, "GETDesignSet_List", finalID, output, isFilterChanged ? 1 : currentPage, itemsPerPage)
@@ -373,9 +374,8 @@ const useLookBook = ({ storeInit }) => {
       l: productData?.ImageExtension,
       count: productData?.ImageCount,
     };
-    };
     let encodeObj = compressAndEncode(JSON?.stringify(obj));
-    navigate(`/d/${formatRedirectTitleLine(titleLine)}${designNo}?p=${encodeObj}`);
+    navigate(`/d/${formatRedirectTitleLine(titleLine)}${designNo}?p=${encodeURIComponent(encodeObj)}`);
   };
 
   const [selectedCategories, setSelectedCategories] = useState([]);
@@ -668,5 +668,6 @@ const useLookBook = ({ storeInit }) => {
     sortDesignDetailsBySrNo,
     checkImageAvailability,
   };
-  
+};
+
 export default useLookBook;

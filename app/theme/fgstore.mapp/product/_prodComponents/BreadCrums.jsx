@@ -75,7 +75,7 @@ const BreadCrumbs = ({
 
 
         if (result) {
-            result.menuname = decodeURI(location?.pathname)?.slice(3)?.slice(0, -1)?.split("/")[0]
+            result.menuname = decodeURI(location?.pathname)?.slice(3)?.split("/")[0]
         } else {
             result = {}
         }

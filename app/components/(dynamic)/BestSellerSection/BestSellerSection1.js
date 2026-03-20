@@ -83,7 +83,7 @@ const BestSellerSection1 = ({ data, storeData }) => {
 
   const finalID = useMemo(() => {
     if (!mounted) return null;
-    const visitorId = cookies.get("visitorId") ?? "0";
+    const visitorId = cookies.get("visiterId") ?? "0";
     const IsB2BWebsite = storeData?.IsB2BWebsite ?? 0;
     const uid = loginUserDetail?.id || "0";
     if (IsB2BWebsite == 0) {

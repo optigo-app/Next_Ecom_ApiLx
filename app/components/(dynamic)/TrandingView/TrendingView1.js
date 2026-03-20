@@ -87,7 +87,7 @@ const TrendingView1 = ({ data, storeInit }) => {
 
     const finalID = useMemo(() => {
         if (!mounted) return null;
-        const visitorId = cookies.get("visitorId") ?? "0";
+        const visitorId = cookies.get("visiterId") ?? "0";
         const IsB2BWebsite = storeInit?.IsB2BWebsite ?? 0;
         const uid = loginUserDetail?.id || "0";
         if (IsB2BWebsite == 0) {
@@ -216,22 +216,20 @@ const TrendingView1 = ({ data, storeInit }) => {
         validateImageURLs();
     }, [trandingViewData]);
 
-    const handleNavigation = (designNo, autoCode, titleLine, index) => {
-        const storeInit = JSON.parse(sessionStorage.getItem("storeInit")) ?? "";
-        const { IsB2BWebsite } = storeInit;
-
+    const handleNavigation = (item, index) => {
         let obj = {
-            a: autoCode,
-            b: designNo,
+            a: item?.autocode,
+            b: item?.designno,
             m: loginUserDetail?.MetalId,
             d: loginUserDetail?.cmboDiaQCid,
             c: loginUserDetail?.cmboCSQCid,
             f: {},
+            l: item?.ImageExtension,
+            count: item?.ImageCount,
         };
         sessionStorage.setItem("scrollToProduct3", `product-${index}`);
         let encodeObj = compressAndEncode(JSON.stringify(obj));
-        // navigation(`/d/${titleLine.replace(/\s+/g, `_`)}${titleLine?.length > 0 ? "_" : ""}${designNo}?p=${encodeObj}`)
-        navigation(`/d/${formatRedirectTitleLine(titleLine)}${designNo}?p=${encodeURIComponent(encodeObj)}`);
+        navigation(`/d/${formatRedirectTitleLine(item?.TitleLine)}${item?.designno}?p=${encodeURIComponent(encodeObj)}`);
     };
 
     useEffect(() => {
@@ -292,7 +290,7 @@ const TrendingView1 = ({ data, storeInit }) => {
                                     key={index}
                                     className="product-card"
                                 >
-                                    <div className="smr_btimageDiv" onClick={() => handleNavigation(data?.designno, data?.autocode, data?.TitleLine, index)}>
+                                    <div className="smr_btimageDiv" onClick={() => handleNavigation(data, index)}>
                                         <img
                                             src={
                                                 data?.ImageCount >= 1

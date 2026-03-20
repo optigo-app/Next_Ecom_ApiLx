@@ -43,8 +43,6 @@ const ProductInfo = ({
     const descriptionText = singleProd1?.description ?? singleProd?.description;
 
     useEffect(() => {
-        setIsClamped(false);
-
         const checkOverflow = () => {
             checkTextOverflow(descriptionRef);
         };
@@ -54,7 +52,7 @@ const ProductInfo = ({
         return () => {
             window.removeEventListener('resize', checkOverflow);
         };
-    }, [descriptionText, descriptionRef, checkTextOverflow]);
+    }, [descriptionText, checkTextOverflow]);
 
     if (prodLoading) {
         return (

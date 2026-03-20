@@ -252,18 +252,6 @@ const Header2 = ({ storeinit, logos }) => {
         // }
         sessionStorage.setItem('menuparams', JSON.stringify(finalData));
     };
-    useEffect(() => {
-        GetCountAPI().then((res) => {
-            if (res) {
-                setCartCountNum(res?.cartcount)
-                setWishCountNum(res?.wishcount)
-            }
-        }).catch((err) => {
-            if (err) {
-                console.log("getCountApiErr", err);
-            }
-        })
-    }, [])
 
 
     return (

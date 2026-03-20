@@ -2,9 +2,14 @@ import Link from "next/link";
 import "./FooterNew.scss";
 
 const FooterNew = ({ companyInfoData, storeData, extraFlag, logos }) => {
-  const htmlContent = extraFlag;
-  // const parsedSocialLinks = JSON?.parse(companyInfoData?.SocialLinkObj);
-  const parsedSocialLinks = [];
+  const parsedSocialLinks = (() => {
+    try {
+      return companyInfoData?.SocialLinkObj ? JSON.parse(companyInfoData.SocialLinkObj) : [];
+    } catch (error) {
+      console.error("Error parsing SocialLinkObj:", error);
+      return [];
+    }
+  })();
 
 
   return (
@@ -37,7 +42,7 @@ const FooterNew = ({ companyInfoData, storeData, extraFlag, logos }) => {
         <div className="fg-footer__social">
           {parsedSocialLinks?.map((social, idx) => (
             <Link key={idx} href={social.SLink} target="_blank" rel="noopener noreferrer" className="fg-footer__social-link">
-            <img src={social.SImgPath} alt={social.SName} className="fg-footer__social-img" />
+              <img src={social.SImgPath} alt={social.SName} className="fg-footer__social-img" />
             </Link>
           ))}
         </div>

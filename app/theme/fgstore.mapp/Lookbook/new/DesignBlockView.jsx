@@ -425,7 +425,7 @@ const DesignBlockView = ({
                                 </div>
                             ) : (
                                 <>
-                                    <Swiper initialSlide={0} slidesPerView={1} spaceBetween={10} navigation={true} loop={true} thumbs={{ swiper: thumbsSwiper }} modules={[Keyboard, FreeMode, Navigation, Thumbs, Scrollbar]} keyboard={{ enabled: true }} mousewheel={true} className="smr_LookBookmySwiper mySwiper2">
+                                    <Swiper initialSlide={0} slidesPerView={1} spaceBetween={10} navigation={true} loop={true} thumbs={{ swiper: thumbsSwiper && !thumbsSwiper.destroyed ? thumbsSwiper : null }} modules={[Keyboard, FreeMode, Navigation, Thumbs, Scrollbar]} keyboard={{ enabled: true }} mousewheel={true} className="smr_LookBookmySwiper mySwiper2">
                                         {filteredDesignSetLstData?.map((slide, index) => (
                                             <SwiperSlide key={index}>
                                                 <div>

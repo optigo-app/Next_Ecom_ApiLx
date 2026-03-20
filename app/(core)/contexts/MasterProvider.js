@@ -24,10 +24,14 @@ const masterContext = createContext({
 });
 
 export const MasterProvider = ({ children, getCompanyInfoData, getStoreInit, getMyAccountFlags }) => {
+    if (typeof window !== "undefined") {
+        window.__STORE_INIT__ = getStoreInit;
+    }
     const [cacheList, setCacheList] = useState(null);
-    const searchParams = useSearchParams()
+    const searchParams = useSearchParams();
     const token = searchParams.get('token');
     const router = useNextRouterLikeRR();
+
 
     const handleSubmit = async () => {
         WebLoginWithMobileToken(token)
@@ -65,27 +69,28 @@ export const MasterProvider = ({ children, getCompanyInfoData, getStoreInit, get
         if (CompanyinfoData) {
             const visitorId = CompanyinfoData?.VisitorId;
             const cookieStore = Cookies
-            const existingVisitorId = cookieStore.get("visitorId") ?? "";
+            const existingVisitorId = cookieStore.get("visiterId") ?? "";
 
             if (!existingVisitorId) {
-                cookieStore.set("visitorId", visitorId, {
+                cookieStore.set("visiterId", visitorId, {
                     path: "/",
                     expires: 60 * 60 * 24 * 30,
                 });
             } else {
                 try {
-                    // parse stored cookie (if you stored JSON earlier)
-                    const visitorIdCookie = JSON.parse(existingVisitorId);
-                    const expirationDate =
-                        visitorIdCookie?.expires && new Date(visitorIdCookie.expires);
+                    // parse stored cookie (if it's JSON)
+                    const visitorIdCookie = existingVisitorId.startsWith('{') ? JSON.parse(existingVisitorId) : null;
+                    if (visitorIdCookie) {
+                        const expirationDate =
+                            visitorIdCookie?.expires && new Date(visitorIdCookie.expires);
 
-                    if (expirationDate && expirationDate <= new Date()) {
-                        // remove expired cookie
-                        cookieStore.delete("visitorId");
+                        if (expirationDate && expirationDate <= new Date()) {
+                            // remove expired cookie
+                            cookieStore.remove("visiterId");
+                        }
                     }
                 } catch (e) {
-                    console.error("Error parsing visitorId cookie:", e);
-                    cookieStore.delete("visitorId");
+                    console.error("Error parsing visiterId cookie:", e);
                 }
             }
         }
