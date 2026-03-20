@@ -1,6 +1,43 @@
-# Changelog
+## [2026-03-20]
 
-All notable changes to this project will be documented in this file.
+### Updated
+
+- `app/theme/fgstore.web/appointment/page.js`: Implemented URL synchronization for appointment selection using `service` query parameter.
+- `app/theme/fgstore.web/appointment/AppointmentForm.jsx`: Refactored form UI using Material UI components (`TextField`, `Button`, `Grid`, etc.) and implemented native `datetime-local` picker for better mobile support and responsiveness.
+- `app/components/(static)/SubscribeNewsLater/NewsletterSignup.scss`: Fixed horizontal overflow on mobile devices by replacing fixed widths with responsive constraints and ensuring proper stacking of form elements.
+- `app/components/(dynamic)/Account/Account.js`: Centered the Account page layout, including the title and tabs, to match the requested design.
+- `app/components/(dynamic)/Header/Hoq/Navbar.js`, `MobileNavbar.js` & `Header.jsx`: Added logout confirmation dialog (reusing `LogOutModal`) and implemented `ClickAwayListener` in the search overlay for improved UX.
+- Authentication Flow: Updated `AuthProvider.js`, Header components, and theme-specific login pages to use `router.replace` and `window.location.replace` instead of `push/href`. This prevents the browser back button from accessing unauthorized or redundant auth pages after login/logout.
+- `app/components/(static)/Footer/FooterNew.js`: Implemented server-side parsing of social media links from `companyInfoData.SocialLinkObj` to ensure proper rendering without hydration errors.
+- `app/theme/fgstore.web/product/page.scss`: Fixed the UI of metal color selection dots.
+  - **Old behavior**: Dots appeared as ovals due to a mismatch between fixed height (20px) and relative width (28%).
+  - **New behavior**: Dots are now perfectly rounded with a fixed size (responsive via `clamp`) and the selected state is much more distinct with a double-ring effect and enhanced shadow.
+  - **Reason for change**: Improve UI/UX, visual consistency, and accessibility of the selected state.
+- `app/theme/fgstore.web/product/_prodComponents/page.jsx`: Fixed persistent loading skeletons in the filter header when no products are found.
+  - **Old behavior**: `afterCountStatus` remained `true` if the product list was empty, keeping skeletons visible in the filter labels.
+  - **New behavior**: `afterCountStatus` is explicitly set to `false` whenever the product list updates, ensuring skeletons are cleared.
+- `app/theme/fgstore.web/product/page.scss`: Restored visibility of long product titles on mobile devices.
+  - **Old behavior**: Titles longer than 30 characters were hidden (`display: none`) on screens narrower than 560px.
+  - **New behavior**: All titles are now visible and properly truncated with ellipsis if they exceed the available width.
+- `app/theme/fgstore.web/Lookbook/new/DesignBlockView.jsx`: Fixed malformed JSX in `case 2` (Two-column view).
+  - **Old behavior**: A syntax error in the conditional rendering caused literal characters `):(` and extra skeletons to be displayed at the bottom of the page.
+  - **New behavior**: Corrected the conditional logic for `isPgLoading`, ensuring clean rendering and no extra characters or redundant skeletons.
+- Improved overall responsiveness and layout of the appointment booking flow, newsletter signup, account page, and product listing breadcrumbs.
+- **Image Pre-loading Optimization (fgstore.web)**: Implemented compressed metadata passing via URL query parameters (`p`) to enable immediate image rendering on the product detail page.
+  - **Navigation Components Updated**: `NewArrival1.js`, `TrendingView1.js`, `DesignSet2.js`, `_prodComponents/page.jsx`, `useNavigation.js`, `Cart.js`, `Wishlist.js`, and `useLookBook.js`.
+  - **Metadata Included**: `l` (ImageExtension) and `count` (ImageCount) are now passed in the compressed object.
+  - **Safety Enhancement**: Added `encodeURIComponent` to all navigation URLs involving the compressed `p` parameter.
+  - **Instant Rendering Implementation**: Refactored `ProductDetail` component to decode URL parameters synchronously and updated `useProductDetail` and `useImageHandler` hooks to initialize states during the first render. This achieves zero-delay image display, matching the premium performance of the `hoq.web` theme.
+  - **NO IMAGE Flash Fix**: Removed a fallback `useEffect` in `useImageHandler.js` that was prematurely setting an empty image URL on mount, causing a "NO IMAGE" placeholder to flash before real data loaded. The skeleton now stays visible until images are ready.
+  - **Old behavior**: Product detail page showed "NO IMAGE" placeholder briefly before images loaded due to a fallback effect firing before data was available.
+  - **New behavior**: Skeleton loading state persists until images are ready. Images then appear instantly without any "NO IMAGE" flash.
+
+### Fixed
+
+- **Breadcrumb Spelling Fix**: Resolved issue where "category" was displayed as "categor" by fixing the `menuname` calculation in `BreadCrums.jsx` across all themes. This fix was applied across `fgstore.web`, `hoq.web`, and `fgstore.mapp`.
+- **StoreInit Availability & Logout Fix**: Fixed a crash occurring after logout by implementing a robust synchronization mechanism in `Header.jsx` that re-hydrates `sessionStorage` from server props.
+- **API Robustness**: Updated `CommonAPI.js` and `GetMenuAPI.js` with multi-layered fallbacks (sessionStorage -> window object) to ensure store configuration is always available without breaking Next.js server component rules.
+- **Lookbook Hook Fix**: Fixed an "Invalid hook call" in `useLookBook.js` caused by a brace imbalance that prematurely closed the hook function, leaving subsequent hooks at the top level.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
@@ -66,6 +103,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 #### Modified
 
 - `app/(core)/contexts/AuthProvider.js`: Enhanced post-login redirect fix to be case-insensitive and move logic to `useEffect`. Added domain-specific restriction for the `nxtmobileapp.web` domain to prevent access to login/register pages.
+- 2026-03-20: [FGSTORE.WEB/PRODUCT] Fixed Diamond Weight filter logic to use flexible matching for varying API filter names (e.g. DiamondWt).
+- 2026-03-20: [CORE/CONTEXTS] Fixed Guest Session Isolation issue where all guest users shared the same wishlist/cart. Now generating unique `visiterId` for each guest.
+- 2026-03-20: [HEADER/PRODUCT/WISHLIST] Fixed crash on logout and improved StoreInit data availability using robust fallbacks.
 - `app/(core)/contexts/MasterProvider.js`: Restored and refined token-based login logic for the `nxtmobileapp.web` domain, ensuring correct redirection to the home page or intended destination in mobile webview mode.
 
 ### [2026-02-27]

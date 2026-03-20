@@ -1,3 +1,4 @@
+import { getSession } from "../../FetchSessionData";
 import { wesbiteDomainName } from "../../Glob_Functions/GlobalFunction";
 import { CommonAPI } from "../CommonAPI/CommonAPI";
 
@@ -6,10 +7,10 @@ export const CountryCodeListApi = async (finalID) => {
     let response;
     const domainname = wesbiteDomainName;
     try {
-        const storeInit = JSON.parse(sessionStorage.getItem('storeInit'));
-        const loginUserDetail = JSON.parse(sessionStorage.getItem('loginUserDetail')) || '0';
+        const storeInit = (typeof window !== 'undefined' && window.__STORE_INIT__) ? window.__STORE_INIT__ : getSession('storeInit');
+        const loginUserDetail = getSession('loginUserDetail') || '0';
 
-        const islogin = JSON.parse(sessionStorage.getItem("LoginUser")) ?? false;
+        const islogin = getSession("LoginUser") ?? false;
 
 
         const customerId = storeInit?.IsB2BWebsite == 0 && islogin == false || islogin == null ? finalID : loginUserDetail?.id ?? 0;

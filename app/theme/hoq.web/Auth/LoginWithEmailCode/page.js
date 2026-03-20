@@ -37,7 +37,7 @@ export default function LoginWithEmailCode({ params, searchParams }) {
                     sessionStorage.setItem("LoginCodeEmail", "false");
                     LoginWithEmailCodeAPI(storedEmail)
                         .then((response) => {
-                            if (response.Data.Table1[0].stat === "1") {
+                            if (response.Data.rd[0].stat === "1") {
                                 toast.success("OTP send Sucssessfully");
                             } else {
                                 toast.error("OTP send Error");
@@ -161,7 +161,7 @@ export default function LoginWithEmailCode({ params, searchParams }) {
 
         LoginWithEmailCodeAPI(email)
             .then((response) => {
-                if (response.Data.Table1[0].stat === "1") {
+                if (response.Data.rd[0].stat === "1") {
                     sessionStorage.setItem("LoginCodeEmail", "false");
                     toast.success("OTP send Sucssessfully");
                 } else {

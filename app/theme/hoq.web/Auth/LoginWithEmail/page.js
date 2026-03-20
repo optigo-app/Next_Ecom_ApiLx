@@ -173,11 +173,9 @@ export default function LoginWithEmail({ params, searchParams }) {
             .catch((err) => console.log(err));
 
           if (redirectEmailUrl) {
-            // navigation(redirectEmailUrl);
-            window.location.href = redirectEmailUrl;
+            window.location.replace(redirectEmailUrl);
           } else {
-            // navigation('/')
-            window.location.href = "/";
+            window.location.replace("/");
           }
 
           // pdDataCalling()

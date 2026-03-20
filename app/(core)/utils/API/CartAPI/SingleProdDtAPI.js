@@ -1,7 +1,8 @@
+import { getSession } from "../../FetchSessionData";
 import { CommonAPI } from "../CommonAPI/CommonAPI";
 
 export const fetchSingleProdDT = async (selectedItem, sizedata, diaId, csQid, selectedMetalId, visiterId) => {
-    let storeInit = JSON.parse(sessionStorage.getItem("storeInit"));
+    const storeInit = (typeof window !== 'undefined' && window.__STORE_INIT__) ? window.__STORE_INIT__ : getSession('storeInit');
     const storedData = sessionStorage.getItem("loginUserDetail");
     const islogin = JSON.parse(sessionStorage.getItem("LoginUser"));
     const data = JSON.parse(storedData);

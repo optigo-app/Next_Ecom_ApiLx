@@ -10,5 +10,5 @@ export const WEBSITE_DOMAINS = {
   NXT10: "nxt10.optigoapps.com",
 };
 
-export const NEXT_APP_WEB = WEBSITE_DOMAINS.FGSTOREMAPP;
+export const NEXT_APP_WEB = WEBSITE_DOMAINS.FGSTORE;
 export const NEXT_PUBLIC_SITE_URL = NEXT_APP_WEB;

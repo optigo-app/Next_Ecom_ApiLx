@@ -32,7 +32,7 @@ export const getCompanyInfoData = async () => {
 
 export const GetVistitorId = async () => {
   const cookieStore = await cookies();
-  const visitorId = cookieStore.get("visitorId")?.value ?? null;
+  const visitorId = cookieStore.get("visiterId")?.value || cookieStore.get("visiterId")?.value || null;
   return visitorId;
 };
 

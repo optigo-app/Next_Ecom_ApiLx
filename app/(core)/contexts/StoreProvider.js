@@ -40,21 +40,21 @@ export function StoreProvider({ children, storeInit }) {
 
 
   useEffect(() => {
-    const visiterID = Cookies?.get("visiterId");
-    GetCountAPI(visiterID)
-      .then((res) => {
-        if (res) {
-          setCartCountNum(res?.cartcount);
-          setWishCountNum(res?.wishcount);
-        }
-      })
-      .catch((err) => {
-        if (err) {
-          console.log("getCountApiErr", err);
-        }
-      });
-
-  }, [])
+    if (finalId) {
+      GetCountAPI(finalId)
+        .then((res) => {
+          if (res) {
+            setCartCountNum(res?.cartcount);
+            setWishCountNum(res?.wishcount);
+          }
+        })
+        .catch((err) => {
+          if (err) {
+            console.log("getCountApiErr", err);
+          }
+        });
+    }
+  }, [finalId])
 
   useEffect(() => {
     if (typeof window === "undefined") return;

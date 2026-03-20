@@ -1,17 +1,17 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 
 export const useProductCustomization = (singleProd, singleProd1, storeInit) => {
     const [isExpanded, setIsExpanded] = useState(false);
     const [isClamped, setIsClamped] = useState(false);
 
     // Toggle description expand/collapse
-    const toggleExpand = () => {
+    const toggleExpand = useCallback(() => {
         setIsExpanded(!isExpanded);
-    };
+    }, [isExpanded]);
 
-    const toggleText = () => {
+    const toggleText = useCallback(() => {
         setIsExpanded((prevState) => !prevState);
-    };
+    }, []);
 
     // Sort size array
     const SizeSorting = (SizeArr) => {
@@ -24,7 +24,7 @@ export const useProductCustomization = (singleProd, singleProd1, storeInit) => {
     };
 
     // Handle metal color change without image update
-    const handleMetalWiseColorImgWithFlag = async (e, setSelectMtColor) => {
+    const handleMetalWiseColorImgWithFlag = useCallback(async (e, setSelectMtColor) => {
         let mtColorLocal = JSON.parse(sessionStorage.getItem("MetalColorCombo"));
         let mcArr;
 
@@ -35,7 +35,7 @@ export const useProductCustomization = (singleProd, singleProd1, storeInit) => {
         }
 
         setSelectMtColor(e.target.value);
-    };
+    }, []);
 
     // Format number with Indian formatting
     const formatter = new Intl.NumberFormat("en-IN");
@@ -48,24 +48,24 @@ export const useProductCustomization = (singleProd, singleProd1, storeInit) => {
     };
 
     // CSS variable setter
-    const setCSSVariable = () => {
+    const setCSSVariable = useCallback(() => {
         const storeInit = JSON.parse(sessionStorage.getItem("storeInit"));
         const backgroundColor = storeInit?.IsPLW == 1 ? "#c4cfdb" : "#c0bbb1";
         document.documentElement.style.setProperty(
             "--background-color",
             backgroundColor
         );
-    };
+    }, []);
 
     // Check text overflow for description
-    const checkTextOverflow = (descriptionRef) => {
+    const checkTextOverflow = useCallback((descriptionRef) => {
         const descriptionElement = descriptionRef.current;
         if (descriptionElement) {
             const isOverflowing =
                 descriptionElement.scrollHeight > descriptionElement.clientHeight;
             setIsClamped(isOverflowing);
         }
-    };
+    }, []);
 
     // Reset expand state when product changes
     useEffect(() => {
@@ -76,17 +76,17 @@ export const useProductCustomization = (singleProd, singleProd1, storeInit) => {
     // Initialize CSS variables
     useEffect(() => {
         setCSSVariable();
-    }, []);
+    }, [setCSSVariable]);
 
     return {
         // States
         isExpanded,
         isClamped,
-        
+
         // Setters
         setIsExpanded,
         setIsClamped,
-        
+
         // Functions
         toggleExpand,
         toggleText,

@@ -1,6 +1,6 @@
 @use "../../../scss/variable.scss" as *;
 
-.smr_forgotMain {
+.fg_smr_forgotMain {
   background-color: $bgColor;
   height: 70vh;
   display: grid;
@@ -81,7 +81,7 @@
     height: 60px;
     width: 420px;
     color: white;
-    background-color: #7d7f85;
+    background-color: #000000;
     border: 0;
     margin-top: 10px;
     font-size: 13px;
@@ -105,11 +105,9 @@
   @media screen and (max-width: 950px) {
     .AuthScreenMainTitle {
       font-size: 25px !important;
-      padding-bottom: 50px !important;
     }
 
     .AuthScreenSubTitle {
-      margin-top: -60px !important;
     }
   }
 

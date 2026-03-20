@@ -1,15 +1,13 @@
 "use client";
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import "./Header.modul.scss";
-import { Badge, ButtonBase, List, ListItem, Tooltip } from "@mui/material";
+import { Badge, ButtonBase, ClickAwayListener, List, ListItem, Tooltip } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
 import ShoppingCartOutlinedIcon from "@mui/icons-material/ShoppingCartOutlined";
 import StarBorderRoundedIcon from "@mui/icons-material/StarBorderRounded";
 import { GetMenuAPI } from "@/app/(core)/utils/API/GetMenuAPI/GetMenuAPI";
-import { NEXT_APP_WEB } from "@/app/(core)/utils/env";
 import CartDrawer from "@/app/theme/fgstore.web/cart/CartPageB2c/Cart";
-import { GetCountAPI } from "@/app/(core)/utils/API/GetCount/GetCountAPI";
 import Cookies from "js-cookie";
 import { IoClose } from "react-icons/io5";
 import Link from "next/link";
@@ -17,18 +15,21 @@ import { useStore } from "@/app/(core)/contexts/StoreProvider";
 import { useNextRouterLikeRR } from "@/app/(core)/hooks/useLocationRd";
 import { useRouter } from "next/navigation";
 import { Search, Star } from "lucide-react";
+import { getSession } from "@/app/(core)/utils/FetchSessionData";
+import LogOutModal from "@/app/components/ui/LogOut";
 
 
-const buildAlbumCacheKey = ( type ,storeData, pricing, id) => {
+
+const buildAlbumCacheKey = (type, storeData, pricing, id) => {
   const meta = {
-  type,
-  PackageId: pricing?.PackageId ?? "",
-  Laboursetid: pricing?.Laboursetid ?? "",
-  diamondpricelistname: pricing?.diamondpricelistname ?? "",
-  colorstonepricelistname: pricing?.colorstonepricelistname ?? "",
-};
+    type,
+    PackageId: pricing?.PackageId ?? "",
+    Laboursetid: pricing?.Laboursetid ?? "",
+    diamondpricelistname: pricing?.diamondpricelistname ?? "",
+    colorstonepricelistname: pricing?.colorstonepricelistname ?? "",
+  };
 
-const key = [
+  const key = [
     type,
     pricing?.PackageId,
     pricing?.Laboursetid,
@@ -58,20 +59,33 @@ const Header = ({ storeinit, logos }) => {
   const router = useRouter();
   const [isMounted, setIsMounted] = useState(false);
   const [loginUserDetail, setLoginUserDetail] = useState({});
+  const [storeInitData, setStoreInitData] = useState(storeinit);
+  const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
 
 
-    useEffect(() => {
-      setIsMounted(true);
-      if (typeof window !== "undefined") {
-        try {
-          const stored = sessionStorage.getItem("loginUserDetail");
-          setLoginUserDetail(stored ? JSON.parse(stored) : null);
-        } catch (err) {
-          console.error("Failed to parse loginUserDetail:", err);
-          setLoginUserDetail(null);
-        }
+  useEffect(() => {
+    if (storeinit && typeof window !== "undefined") {
+      window.__STORE_INIT__ = storeinit; // Last resort fallback
+      const stored = getSession("storeInit");
+      if (!stored || JSON.stringify(stored) !== JSON.stringify(storeinit)) {
+        sessionStorage.setItem("storeInit", JSON.stringify(storeinit));
       }
-    }, []);
+    }
+  }, [storeinit]);
+
+
+  useEffect(() => {
+    setIsMounted(true);
+    if (typeof window !== "undefined") {
+      try {
+        const stored = getSession("loginUserDetail");
+        setLoginUserDetail(stored);
+      } catch (err) {
+        console.error("Failed to parse loginUserDetail:", err);
+        setLoginUserDetail(null);
+      }
+    }
+  }, []);
 
   // const IsCartNo = 2;
   const [serachsShowOverlay, setSerachShowOverlay] = useState(false);
@@ -82,28 +96,13 @@ const Header = ({ storeinit, logos }) => {
     navigation.push(link);
   };
 
-  
-    useEffect(() => {
-    const value = JSON.parse(sessionStorage.getItem('LoginUser'));
+
+  useEffect(() => {
+    const value = getSession('LoginUser');
     setislogin(value);
     setIsMounted(true);
   }, []);
 
-  useEffect(() => {
-    const visiterID = Cookies.get("visiterId");
-    GetCountAPI(visiterID)
-      .then((res) => {
-        if (res) {
-          setCartCountNum(res?.cartcount);
-          setWishCountNum(res?.wishcount);
-        }
-      })
-      .catch((err) => {
-        if (err) {
-          console.log("getCountApiErr", err);
-        }
-      });
-  }, []);
 
   useEffect(() => {
     const uniqueMenuIds = [...new Set(menuData?.map((item) => item?.menuid))];
@@ -163,15 +162,14 @@ const Header = ({ storeinit, logos }) => {
         },
       ],
     };
-    // Append static menu to dynamic ones
-    const finalMenuItems = [...uniqueMenuItems, searchByStockMenu];
+    // const finalMenuItems = [...uniqueMenuItems, searchByStockMenu];
+    const finalMenuItems = [...uniqueMenuItems];
 
     setMenuItems(finalMenuItems);
   }, [menuData]);
 
   useEffect(() => {
-    let storeinit = JSON.parse(sessionStorage.getItem("storeInit"));
-    let isUserLogin = JSON.parse(sessionStorage.getItem("LoginUser"));
+    let isUserLogin = getSession("LoginUser");
     if (storeinit?.IsB2BWebsite === 0 || (storeinit?.IsB2BWebsite === 1 && isUserLogin === true)) {
       getMenuApi();
     }
@@ -194,36 +192,34 @@ const Header = ({ storeinit, logos }) => {
   }, []);
 
   const fetchData = () => {
-    const value = JSON.parse(sessionStorage.getItem("LoginUser"));
+    const value = getSession("LoginUser");
     setislogin(value);
   };
 
-     const pricingContext = useMemo(() => {
-      if (!isMounted) return null;
-      const loginInfo = loginUserDetail;
-      return {
-      PackageId: (loginInfo?.PackageId ?? storeinit?.PackageId) ?? "",
-      Laboursetid:
-           !islogin 
-          ? storeinit?.pricemanagement_laboursetid
-          : loginInfo?.pricemanagement_laboursetid ?? "",
-      diamondpricelistname:
-           !islogin 
-          ? storeinit?.diamondpricelistname
-          : loginInfo?.diamondpricelistname ?? "",
-      colorstonepricelistname:
-           !islogin 
-          ? storeinit?.colorstonepricelistname
-          : loginInfo?.colorstonepricelistname ?? "",
-    };
-    }, [isMounted, loginUserDetail, storeinit, islogin]);
-     console.log("🚀 ~ Header ~ pricingContext:", pricingContext)
-    
-    
+  // const pricingContext = useMemo(() => {
+  //   if (!isMounted) return null;
+  //   const loginInfo = loginUserDetail;
+  //   return {
+  //     PackageId: (loginInfo?.PackageId ?? storeinit?.PackageId) ?? "",
+  //     Laboursetid:
+  //       !islogin
+  //         ? storeinit?.pricemanagement_laboursetid
+  //         : loginInfo?.pricemanagement_laboursetid ?? "",
+  //     diamondpricelistname:
+  //       !islogin
+  //         ? storeinit?.diamondpricelistname
+  //         : loginInfo?.diamondpricelistname ?? "",
+  //     colorstonepricelistname:
+  //       !islogin
+  //         ? storeinit?.colorstonepricelistname
+  //         : loginInfo?.colorstonepricelistname ?? "",
+  //   };
+  // }, [isMounted, loginUserDetail, storeinit, islogin]);
+
+
 
   const getMenuApi = async () => {
-    const storeInit = JSON.parse(sessionStorage.getItem("storeInit"));
-    const { IsB2BWebsite } = storeInit;
+    const { IsB2BWebsite } = storeinit;
     const visiterID = Cookies.get("visiterId");
     let finalID;
     if (IsB2BWebsite == 0) {
@@ -232,20 +228,20 @@ const Header = ({ storeinit, logos }) => {
       finalID = loginUserDetail?.id || "0";
     }
     const id = finalID;
-    const {key ,meta} = buildAlbumCacheKey("header_menu_" ,storeinit, pricingContext, id);
-    const cachedRes = await fetch(`/api/cache?key=${key}`);
-      const cached = await cachedRes.json();
-      if (cached.cached && Array.isArray(cached.data)) {
-           setMenuData(cached?.data);
-        return cached?.data;
-      }
+    // const { key, meta } = buildAlbumCacheKey("header_menu_", storeinit, pricingContext, id);
+    // const cachedRes = await fetch(`/api/cache?key=${key}`);
+    // const cached = await cachedRes.json();
+    // if (cached.cached && Array.isArray(cached.data)) {
+    //   setMenuData(cached?.data);
+    //   return cached?.data;
+    // }
     await GetMenuAPI(finalID)
       .then((response) => {
-         fetch("/api/cache", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ key, data: response?.Data?.rd ,meta }),
-        }).catch(console.error);
+        // fetch("/api/cache", {
+        //   method: "POST",
+        //   headers: { "Content-Type": "application/json" },
+        //   body: JSON.stringify({ key, data: response?.Data?.rd, meta }),
+        // }).catch(console.error);
         setMenuData(response?.Data?.rd);
       })
       .catch((err) => console.log(err));
@@ -254,9 +250,7 @@ const Header = ({ storeinit, logos }) => {
   const handleLogout = () => {
     setislogin(false);
     Cookies.remove("userLoginCookie");
-    Cookies.remove("userLoginCookie");
-    Cookies.remove('LoginUser')
-    window.location.reload();
+    Cookies.remove("LoginUser");
     sessionStorage.setItem("LoginUser", false);
     sessionStorage.removeItem("storeInit");
     sessionStorage.removeItem("loginUserDetail");
@@ -268,7 +262,7 @@ const Header = ({ storeinit, logos }) => {
     sessionStorage.removeItem("registerMobile");
     sessionStorage.removeItem("allproductlist");
     sessionStorage.clear();
-    window.location.href = "/"
+    window.location.replace("/");
   };
 
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -452,35 +446,39 @@ const Header = ({ storeinit, logos }) => {
         {serachsShowOverlay && (
           <>
             <div className="smr_smlingSearchoverlay">
-              <div className="smr_smlingTopSerachOver">
-                <Search onClick={() => clickSearch()} style={{ height: "15px", width: "15px", marginRight: "10px" }} />
-                <input type="text" placeholder="Search..." value={searchText} autoFocus onChange={(e) => setSearchText(e.target.value)} className="smr_serachinputBoxOverly" onKeyDown={searchDataFucn} />
-                <IoClose
-                  style={{
-                    height: "30px",
-                    width: "30px",
-                    color: "#7d7f85",
-                    cursor: "pointer",
-                  }}
-                  onClick={toggleOverlay}
-                />
-              </div>
+              <ClickAwayListener onClickAway={() => setSerachShowOverlay(false)}>
+                <div className="smr_smlingTopSerachOver">
+                  <Search onClick={() => clickSearch()} style={{ height: "15px", width: "15px", marginRight: "10px" }} />
+                  <input type="text" placeholder="Search..." value={searchText} autoFocus onChange={(e) => setSearchText(e.target.value)} className="smr_serachinputBoxOverly" onKeyDown={searchDataFucn} />
+                  <IoClose
+                    style={{
+                      height: "30px",
+                      width: "30px",
+                      color: "#7d7f85",
+                      cursor: "pointer",
+                    }}
+                    onClick={toggleOverlay}
+                  />
+                </div>
+              </ClickAwayListener>
             </div>
 
             <div className={`smr_smlingSearchoverlayNew ${isHeaderFixedDropShow ? "fixed" : ""}`}>
-              <div className="smr_smlingTopSerachOver-Fixed">
-                <Search style={{ height: "15px", width: "15px", marginRight: "10px" }} />
-                <input type="text" placeholder="Search..." value={searchText} autoFocus onChange={(e) => setSearchText(e.target.value)} className="smr_serachinputBoxOverly" onKeyDown={searchDataFucn} />
-                <IoClose
-                  style={{
-                    height: "30px",
-                    width: "30px",
-                    color: "#7d7f85",
-                    cursor: "pointer",
-                  }}
-                  onClick={toggleOverlay}
-                />
-              </div>
+              <ClickAwayListener onClickAway={() => setSerachShowOverlay(false)}>
+                <div className="smr_smlingTopSerachOver-Fixed">
+                  <Search style={{ height: "15px", width: "15px", marginRight: "10px" }} />
+                  <input type="text" placeholder="Search..." value={searchText} autoFocus onChange={(e) => setSearchText(e.target.value)} className="smr_serachinputBoxOverly" onKeyDown={searchDataFucn} />
+                  <IoClose
+                    style={{
+                      height: "30px",
+                      width: "30px",
+                      color: "#7d7f85",
+                      cursor: "pointer",
+                    }}
+                    onClick={toggleOverlay}
+                  />
+                </div>
+              </ClickAwayListener>
             </div>
           </>
         )}
@@ -785,7 +783,7 @@ const Header = ({ storeinit, logos }) => {
                   <Link href="/" className="smr_menuStaicMobilePageLink" style={{ cursor: "pointer" }}>
                     <span onClick={() => {
                       setDrawerShowOverlay(false);
-                      handleLogout();
+                      setIsLogoutModalOpen(true);
                     }}
                     >
                       LOG OUT
@@ -882,7 +880,7 @@ const Header = ({ storeinit, logos }) => {
                 {isMounted && islogin ? (
                   <li>
                     <Link href="/" className="nav_li_smining nav_li_smining_Mobile" style={{ cursor: "pointer" }}>
-                      <span onClick={handleLogout}>
+                      <span onClick={() => setIsLogoutModalOpen(true)}>
                         LOG OUT
                       </span>
                     </Link>
@@ -915,7 +913,7 @@ const Header = ({ storeinit, logos }) => {
                       </Badge>
                     </li>
                     <li className="nav_li_smining_Icone smr_mobileHideIcone" onClick={toggleOverlay} >
-                    <Search 
+                      <Search
                         style={{
                           height: "20px",
                           cursor: "pointer",
@@ -1038,8 +1036,11 @@ const Header = ({ storeinit, logos }) => {
               </div>
               <div className="smiling_Top_header_div3">
                 <ul className="nav_ul_shop">
-                  <li className="nav_li_smining_Fixed nav_li_smining_Mobile" style={{ cursor: "pointer" }}>
-                    <Link href="/aboutUs" className="smr_A_linkFixed">
+                  <li>
+                    <Link href="/aboutUs"
+                      className="nav_li_smining_Fixed nav_li_smining_Mobile"
+                      style={{ cursor: "pointer" }}
+                    >
                       ABOUT US
                     </Link>
                   </li>
@@ -1083,7 +1084,7 @@ const Header = ({ storeinit, logos }) => {
                   {isMounted && islogin ? (
                     <li>
                       <Link href="/" className="nav_li_smining nav_li_smining_Mobile" style={{ cursor: "pointer" }}>
-                        <span onClick={handleLogout}>LOG OUT</span>
+                        <span onClick={() => setIsLogoutModalOpen(true)}>LOG OUT</span>
                       </Link>
                     </li>
                   ) : (
@@ -1208,6 +1209,11 @@ const Header = ({ storeinit, logos }) => {
         </div>
         <TopNavBar key={menuItems?.length} menuItems={menuItems} handelMenu={handelMenu} />
         {IsCartNo == 2 && <CartDrawer open={isCartOpen} />}
+        <LogOutModal
+          open={isLogoutModalOpen}
+          onClose={() => setIsLogoutModalOpen(false)}
+          onConfirm={handleLogout}
+        />
       </div >
     </>
   );

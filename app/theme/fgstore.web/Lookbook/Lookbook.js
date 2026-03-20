@@ -115,7 +115,7 @@ const Lookbook = ({ storeInit }) => {
   } = useLookBook({ storeInit });
 
   return (
-    <div className="smr_LookBookMain">
+    <div className="fg_smr_LookBookMain">
       <Drawer
         open={isDrawerOpen}
         onClose={() => {
@@ -156,8 +156,8 @@ const Lookbook = ({ storeInit }) => {
                           background: "none",
                         },
                       }}
-                      // expanded={accExpanded}
-                      // defaultExpanded={}
+                    // expanded={accExpanded}
+                    // defaultExpanded={}
                     >
                       <AccordionSummary
                         expandIcon={<ExpandMoreIcon sx={{ width: "20px" }} />}
@@ -171,7 +171,7 @@ const Lookbook = ({ storeInit }) => {
                             padding: 0,
                           },
                         }}
-                        // className="filtercategoryLable"
+                      // className="filtercategoryLable"
                       >
                         {/* <span> */}
                         {ele.Name}
@@ -213,6 +213,13 @@ const Lookbook = ({ storeInit }) => {
                               }
                               className="smr_mui_checkbox_label"
                               label={opt.Name}
+                              sx={{
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "space-between",
+                                width: "100%",
+                                flexDirection: "row-reverse",
+                              }}
                             />
                           </div>
                         ))}
@@ -233,8 +240,8 @@ const Lookbook = ({ storeInit }) => {
                           background: "none",
                         },
                       }}
-                      // expanded={accExpanded}
-                      // defaultExpanded={}
+                    // expanded={accExpanded}
+                    // defaultExpanded={}
                     >
                       <AccordionSummary
                         expandIcon={<ExpandMoreIcon sx={{ width: "20px" }} />}
@@ -287,6 +294,13 @@ const Lookbook = ({ storeInit }) => {
                               }
                               className="smr_mui_checkbox_label"
                               label={opt?.Minval == 0 ? `Under ${loginUserDetail?.CurrencyCode ?? storeInit?.CurrencyCode}${opt?.Maxval}` : opt?.Maxval == 0 ? `Over ${loginUserDetail?.CurrencyCode ?? storeInit?.CurrencyCode}${opt?.Minval}` : `${loginUserDetail?.CurrencyCode ?? storeInit?.CurrencyCode}${opt?.Minval} - ${loginUserDetail?.CurrencyCode ?? storeInit?.CurrencyCode}${opt?.Maxval}`}
+                              sx={{
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "space-between",
+                                width: "100%",
+                                flexDirection: "row-reverse",
+                              }}
                             />
                           </div>
                         ))}
@@ -379,6 +393,13 @@ const Lookbook = ({ storeInit }) => {
                           }
                           className="smr_mui_checkbox_label"
                           label={opt.Name}
+                          sx={{
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "space-between",
+                            width: "100%",
+                            flexDirection: "row-reverse",
+                          }}
                         />
                       </div>
                     ))}
@@ -403,32 +424,43 @@ const Lookbook = ({ storeInit }) => {
               {isShowfilter ? "HIDE FILTER" : "SHOW FILTER"}
               <FilterListIcon style={{ color: "white" }} />
             </div>
-            <div className="smr_filetr_right_menu">
-              <FilterAltIcon fontSize="large" style={{ color: "#c0bbb1" }} className="smr_lookBookMobileFilter" onClick={() => setIsDrawerOpen(true)} />
-              <HtmlTooltip title={<CustomTooltipContent categories={selectedCategories} />}>
-                <button
-                  onClick={handleOpen}
-                  className="smr_lookBookSelectViewBtn"
-                  style={{
-                    background: selectedCategories.length !== 0 ? "#7d7f85" : "#ffff",
-                    color: selectedCategories.length !== 0 ? "#fff" : "#7d7f85",
-                    marginRight: "30px",
-                  }}
-                >
-                  Set View
-                </button>
-              </HtmlTooltip>
-              <div className="lb-switch-field">
-                <input type="radio" id="lb-radio-three" name="switch-two" value={1} checked={selectedValue === 1} onChange={handleChange} />
-                <label htmlFor="lb-radio-three">|</label>
+            <Box className="smr_filetr_right_menu"
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+              }}
+            >
+              <Box sx={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                <FilterAltIcon fontSize="large" style={{ color: "#c0bbb1" }} className="smr_lookBookMobileFilter" onClick={() => setIsDrawerOpen(true)} />
 
-                <input type="radio" id="lb-radio-four" name="switch-two" value={2} checked={selectedValue === 2} onChange={handleChange} />
-                <label htmlFor="lb-radio-four">||</label>
+              </Box>
+              <Box sx={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                <HtmlTooltip title={<CustomTooltipContent categories={selectedCategories} />}>
+                  <button
+                    onClick={handleOpen}
+                    className="smr_lookBookSelectViewBtn"
+                    style={{
+                      background: selectedCategories.length !== 0 ? "#7d7f85" : "#ffff",
+                      color: selectedCategories.length !== 0 ? "#fff" : "#7d7f85",
+                    }}
+                  >
+                    Set View
+                  </button>
+                </HtmlTooltip>
+                <div className="lb-switch-field">
+                  <input type="radio" id="lb-radio-three" name="switch-two" value={1} checked={selectedValue === 1} onChange={handleChange} />
+                  <label htmlFor="lb-radio-three">|</label>
 
-                <input type="radio" id="lb-radio-five" name="switch-two" value={3} checked={selectedValue === 3} onChange={handleChange} />
-                <label htmlFor="lb-radio-five">|||</label>
-              </div>
-            </div>
+                  <input type="radio" id="lb-radio-four" name="switch-two" value={2} checked={selectedValue === 2} onChange={handleChange} />
+                  <label htmlFor="lb-radio-four">||</label>
+
+                  <input type="radio" id="lb-radio-five" name="switch-two" value={3} checked={selectedValue === 3} onChange={handleChange} />
+                  <label htmlFor="lb-radio-five">|||</label>
+                </div>
+              </Box>
+
+            </Box>
           </div>
           <div className="smr_SubDiv_LookBookSubMainDiv">
             <div className="smr_lookbookFilterMain" style={{ zIndex: 100, transition: "1s ease", backgroundColor: "white", width: `19%`, left: `${isShowfilter ? "0" : "-500%"}`, position: "absolute", top: "100px", display: isShowfilter ? "block" : "none" }}>
@@ -507,6 +539,13 @@ const Lookbook = ({ storeInit }) => {
                                     }
                                     className="smr_mui_checkbox_label"
                                     label={opt.Name}
+                                    sx={{
+                                      display: "flex",
+                                      alignItems: "center",
+                                      justifyContent: "space-between",
+                                      width: "100%",
+                                      flexDirection: "row-reverse",
+                                    }}
                                   />
                                 </div>
                               ))}
@@ -579,6 +618,13 @@ const Lookbook = ({ storeInit }) => {
                                     }
                                     className="smr_mui_checkbox_label"
                                     label={opt?.Minval == 0 ? `Under ${loginUserDetail?.CurrencyCode ?? storeInit?.CurrencyCode}${opt?.Maxval}` : opt?.Maxval == 0 ? `Over ${loginUserDetail?.CurrencyCode ?? storeInit?.CurrencyCode}${opt?.Minval}` : `${loginUserDetail?.CurrencyCode ?? storeInit?.CurrencyCode}${opt?.Minval} - ${loginUserDetail?.CurrencyCode ?? storeInit?.CurrencyCode}${opt?.Maxval}`}
+                                    sx={{
+                                      display: "flex",
+                                      alignItems: "center",
+                                      justifyContent: "space-between",
+                                      width: "100%",
+                                      flexDirection: "row-reverse",
+                                    }}
                                   />
                                 </div>
                               ))}
@@ -631,8 +677,9 @@ const Lookbook = ({ storeInit }) => {
           </div>
           <PaginationBlock isEditablePage={isEditablePage} storeInit={storeInit} dstCount={dstCount} itemsPerPage={itemsPerPage} handelPageChange={handelPageChange} inputPage={inputPage} setInputPage={setInputPage} handlePageInputChange={handlePageInputChange} maxwidth464px={maxwidth464px} totalPages={totalPages} currentPage={currentPage} />
         </div>
-      )}
-    </div>
+      )
+      }
+    </div >
   );
 };
 

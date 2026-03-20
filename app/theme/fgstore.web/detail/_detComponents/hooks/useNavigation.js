@@ -28,6 +28,8 @@ export const useNavigation = (setSingleProd1, setSingleProd, setProdLoading, set
             d: loginInfo?.cmboDiaQCid,
             c: loginInfo?.cmboCSQCid,
             f: {},
+            l: productData?.ImageExtension,
+            count: productData?.ImageCount
         };
 
         let encodeObj = compressAndEncode(JSON.stringify(obj));

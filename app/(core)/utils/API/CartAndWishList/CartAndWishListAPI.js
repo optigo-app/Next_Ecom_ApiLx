@@ -1,3 +1,4 @@
+import { getSession } from "../../FetchSessionData";
 import { CommonAPI } from "../CommonAPI/CommonAPI";
 
 export const CartAndWishListAPI = async (type, obj, visiterId, type2 = "", stockno, isPair) => {
@@ -6,7 +7,7 @@ export const CartAndWishListAPI = async (type, obj, visiterId, type2 = "", stock
 
     const islogin = JSON.parse(sessionStorage.getItem("LoginUser")) ?? false;
     const UserEmail = sessionStorage.getItem("registerEmail");
-    const storeInit = JSON.parse(sessionStorage.getItem("storeInit"));
+    const storeInit = (typeof window !== 'undefined' && window.__STORE_INIT__) ? window.__STORE_INIT__ : getSession('storeInit');
     const loginUserDetail = JSON.parse(sessionStorage.getItem("loginUserDetail"));
 
     const customerId = storeInit?.IsB2BWebsite == 0 && islogin == false || islogin == null ? visiterId : loginUserDetail.id ?? 0;

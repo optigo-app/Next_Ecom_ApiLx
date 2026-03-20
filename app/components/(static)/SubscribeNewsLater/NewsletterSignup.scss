@@ -1,5 +1,4 @@
-@use '../../../theme/fgstore.web/style/variable.scss' as *;
-
+@use "../../../theme/fgstore.web/style/variable.scss" as *;
 
 .smr_newsletter-signup {
   display: flex;
@@ -7,11 +6,15 @@
   justify-content: center;
   align-items: center;
   width: 100%;
-  padding-inline: 15px;
   font-family: $primaryFontFamily;
-  margin: 40px 0px 20px 0px;
   text-align: center;
-  padding-top: 1rem;
+  padding: 1.5rem 10px;
+  box-sizing: border-box;
+  overflow: hidden; // Prevent accidental overflow
+
+  * {
+    box-sizing: border-box;
+  }
 
   .icon {
     margin-bottom: 4px;
@@ -21,6 +24,7 @@
   h2 {
     font-size: 1.5rem;
     margin-bottom: 10px;
+    padding-inline: 10px;
   }
 
   p {
@@ -28,6 +32,7 @@
     font-size: 1rem;
     margin-bottom: 20px;
     padding-inline: 10px;
+    max-width: 100%;
 
     a {
       text-decoration: none;
@@ -39,20 +44,23 @@
     display: flex;
     justify-content: center;
     margin-bottom: 15px;
+    width: 100%;
+    max-width: 600px;
+    gap: 10px;
 
     .email-input-with-error {
       display: flex;
       flex-direction: column;
-   
+      flex-grow: 1;
+      max-width: 350px;
 
       input {
         padding: 8.2px 12px;
         font-size: $fontSize2;
         border: 1px solid #ccc;
-        margin-right: 20px;
         outline: none;
         color: $primaryfontcolor;
-        width: 250px;
+        width: 100%;
 
         &:focus {
           border-color: #000;
@@ -61,21 +69,26 @@
 
       .for-error-message-news {
         display: flex;
-        width: 15.5rem;
-        text-align: justify;
+        font-size: 0.8rem;
+        text-align: left;
+        margin-top: 4px;
       }
     }
 
     button {
       padding: 8px 20px;
       font-size: $fontSize2;
-      height: 2.4rem;
+      height: 2.45rem;
+      white-space: nowrap;
     }
-    .btn_for_new{
-      background: $btnBg ;
+
+    .btn_for_new {
+      background: $btnBg;
       color: $btncolor;
       border: none;
-      &:hover{
+      cursor: pointer;
+      &:hover {
+        opacity: 0.9;
         transition: 0.2s ease-in-out;
       }
     }
@@ -85,9 +98,9 @@
     font-size: $fontSize1;
     color: $primaryfontcolor2;
     margin-top: 20px;
-    width: 500px;
-    padding: 0;
-    margin: 0;
+    max-width: 500px;
+    width: 100%;
+    padding-inline: 10px;
     text-wrap: pretty;
   }
 
@@ -99,43 +112,52 @@
     }
   }
 
+  @media (max-width: 768px) {
+    .email-input {
+      flex-direction: column;
+      align-items: center;
+      
+      .email-input-with-error {
+        width: 100%;
+        max-width: 100%;
+      }
+
+      button {
+        width: 100%;
+      }
+    }
+  }
+
   @media (max-width: 600px) {
     .sub-text {
-      font-size: 12px;
-      margin-left: -10px;
-      font-weight: 400;
-      text-align: left;
-      color: black;
+      font-size: 13px;
+      padding-inline: 15px;
+      text-align: center;
+    }
+
+    h2 {
+      font-size: 1.3rem;
     }
 
     .email-input {
-      flex-direction: column;
       width: 100%;
+      padding-inline: 10px;
 
       .email-input-with-error {
-        width: 100%;
-
         input {
-          border-radius: 1px;
-          margin-bottom: 2px;
-          width: 100%;
-        }
-
-        .for-error-message-news{
-          width: 100%;
-          margin-bottom: 2px;
+          border-radius: 2px;
+          margin-bottom: 10px;
         }
       }
 
       button {
-        border-radius: 1px;
-        width: 100%;
+        border-radius: 2px;
       }
     }
 
     .disclaimer {
-      width: 100%;
-      text-align: left;
+      font-size: 0.75rem;
+      text-align: center;
     }
   }
 }

@@ -1,8 +1,9 @@
+import { getSession } from "../../FetchSessionData";
 import { CommonAPI } from "../CommonAPI/CommonAPI";
 
 export const updateQuantity = async (num, lastEnteredQuantity, visiterId) => {
   try {
-    const storeInit = JSON.parse(sessionStorage.getItem("storeInit"));
+    const storeInit = (typeof window !== 'undefined' && window.__STORE_INIT__) ? window.__STORE_INIT__ : getSession('storeInit');
     const { FrontEnd_RegNo } = storeInit;
     const storedData = sessionStorage.getItem("loginUserDetail");
     const islogin = JSON.parse(sessionStorage.getItem("LoginUser"));

@@ -1,62 +1,107 @@
 import { isLocalHost, localHosts } from "@/app/(core)/constants/DomainList";
 import { getSession } from "../../FetchSessionData";
 import { getDomainInfo } from "../../getDomainInfo";
-import { fetchAPIUrlFromStoreInit } from "../../Glob_Functions/GlobalFunction";
 import axios from "axios";
 
 let APIURL = "";
+let apiUrlPromise = null;
 
 const setApiUrl = async () => {
-  try {
-    const { hostname } = await getDomainInfo();
-    const cleanHost = hostname.split(":")[0];
+    if (apiUrlPromise) return apiUrlPromise;
 
-    if (isLocalHost(cleanHost)) {
-      APIURL = "http://newnextjs.web//api/report";
-      // APIURL = "https://apilx.optigoapps.com/api/report";
+    apiUrlPromise = (async () => {
+        try {
+            const domainInfo = await getDomainInfo();
+            const hostname = domainInfo?.hostname || "";
+            const cleanHost = hostname.split(":")[0];
 
-    } else {
-      APIURL = "https://apilx.optigoapps.com/api/report";
-    }
+            if (isLocalHost(cleanHost)) {
+                APIURL = "http://newnextjs.web//api/report";
+            } else {
+                APIURL = "https://apilx.optigoapps.com/api/report";
+            }
+            if (!APIURL) {
+                APIURL = "https://apilx.optigoapps.com/api/report";
+            }
+            return APIURL;
+        } catch (error) {
+            console.error("Failed to fetch API URL:", error);
+            APIURL = "https://apilx.optigoapps.com/api/report";
+            return APIURL;
+        }
+    })();
 
-    if (APIURL) {
-      APIURL = APIURL;
-    } else {
-      throw new Error("API URL not found");
-    }
-  } catch (error) {
-    console.error("Failed to fetch API URL:", error);
-  }
+    return apiUrlPromise;
 };
 
+// Initial call
 setApiUrl();
+
+export const getStoreInitData = () => {
+    if (typeof window !== "undefined") {
+        return window.__STORE_INIT__ || getSession("storeInit");
+    }
+    return null;
+};
+
+const waitForStoreInit = async (maxRetries = 50, interval = 100) => {
+    return new Promise((resolve) => {
+        let retries = 0;
+        const check = () => {
+            const data = getStoreInitData();
+            if (data || retries >= maxRetries) {
+                if (!data && typeof window !== "undefined") {
+                   console.warn("CommonAPI: Proceeding without storeInit after timeout");
+                }
+                resolve(data);
+            } else {
+                retries++;
+                setTimeout(check, interval);
+            }
+        };
+        check();
+    });
+};
+
 export const CommonAPI = async (body) => {
-  if (!APIURL) {
-    await setApiUrl();
-  }
+    try {
+        if (!APIURL) {
+            await setApiUrl();
+        }
 
-  const storeInit = getSession("storeInit");
+        let storeInit = getStoreInitData();
+        
+        if (!storeInit && typeof window !== 'undefined') {
+            storeInit = await waitForStoreInit();
+        }
 
-  if (!storeInit) {
-    throw new Error("StoreInit data not found in sessionStorage");
-  }
-  try {
-    const YearCode = storeInit?.YearCode ?? "";
-    const Version = "NXT" || (storeInit?.version ?? "");
-    const token = storeInit?.token ?? "";
-    const sp = "54";
-    const sv = storeInit?.sv ?? "";
+        const YearCode = storeInit?.YearCode || "e3tsaXZlLm9wdGlnb2FwcHMuY29tfX17ezIxfX17e3NvbmFzb25zfX17e3NvbmFzb25zfX0=";
+        const Version = "NXT" || (storeInit?.version ?? "");
+        const token = storeInit?.token ?? "";
+        const sp = "54";
+        const sv = storeInit?.sv ? 0 : 1;
 
-    const header = {
-      Authorization: `Bearer ${token}`,
-      Yearcode: !!YearCode ? YearCode : "e3tsaXZlLm9wdGlnb2FwcHMuY29tfX17ezIxfX17e3NvbmFzb25zfX17e3NvbmFzb25zfX0=",
-      Version,
-      sp,
-      sv: !!sv ? 0 : 1,
-    };
-    const response = await axios.post(APIURL, body, { headers: header });
-    return response?.data;
-  } catch (error) {
-    console.error("error is..", error);
-  }
+        const header = {
+            Authorization: `Bearer ${token}`,
+            Yearcode: YearCode,
+            Version,
+            sp,
+            sv: sv,
+        };
+
+        const response = await axios.post(APIURL, body, {
+            headers: header,
+            timeout: 30000 // 30 seconds timeout for robustness
+        });
+
+        return response?.data || { Data: { rd: [] } };
+    } catch (error) {
+        console.error("CommonAPI Error:", error);
+        // Return a predictable structure even on failure
+        return {
+            Data: {
+                rd: [{ stat: 0, stat_msg: "Network error or API failure" }]
+            }
+        };
+    }
 };

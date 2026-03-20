@@ -67,7 +67,7 @@ const NewArrival = ({ data, storeInit }) => {
 
   const finalID = useMemo(() => {
     if (!mounted) return null;
-    const visitorId = cookies.get("visitorId") ?? "0";
+    const visitorId = cookies.get("visiterId") ?? "0";
     const IsB2BWebsite = storeInit?.IsB2BWebsite ?? 0;
     const uid = loginUserDetail?.id || "0";
     if (IsB2BWebsite == 0) {
@@ -218,18 +218,20 @@ const NewArrival = ({ data, storeInit }) => {
     }
   };
 
-  const handleNavigation = (designNo, autoCode, titleLine, index) => {
+  const handleNavigation = (item, index) => {
     let obj = {
-      a: autoCode,
-      b: designNo,
+      a: item?.autocode,
+      b: item?.designno,
       m: loginUserDetail?.MetalId,
       d: loginUserDetail?.cmboDiaQCid,
       c: loginUserDetail?.cmboCSQCid,
       f: {},
+      l: item?.ImageExtension,
+      count: item?.ImageCount,
     };
     sessionStorage.setItem("scrollToProduct2", `product-${index}`);
     let encodeObj = compressAndEncode(JSON.stringify(obj));
-    navigation(`/d/${formatRedirectTitleLine(titleLine)}${designNo}?p=${encodeURIComponent(encodeObj)}`);
+    navigation(`/d/${formatRedirectTitleLine(item?.TitleLine)}${item?.designno}?p=${encodeURIComponent(encodeObj)}`);
   };
 
   useEffect(() => {
@@ -304,7 +306,7 @@ const NewArrival = ({ data, storeInit }) => {
           <Grid container spacing={1} className="smr_NewArrival1product-list">
             {validatedData?.slice(0, 4)?.map((product, index) => (
               <Grid size={{ xs: 6, sm: 4, md: 3, lg: 3 }} key={index}>
-                <Card className="smr_NewArrproduct-card" onClick={() => handleNavigation(product?.designno, product?.autocode, product?.TitleLine, index)}>
+                <Card className="smr_NewArrproduct-card" onClick={() => handleNavigation(product, index)}>
                   <div className="smr_newArr1Image">
                     <CardMedia
                       component="img"

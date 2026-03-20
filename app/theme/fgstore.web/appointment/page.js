@@ -1,7 +1,8 @@
 "use client";
-import React, { useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import './AppointmentPage.scss';
 import AppointmentForm from './AppointmentForm';
+import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 
 export const services = [
     {
@@ -41,8 +42,12 @@ export const services = [
     }
 ];
 
-const AppointmentPage = ({assetBase}) => {
+const AppointmentPage = ({ assetBase }) => {
+    const searchParams = useSearchParams();
+    const router = useRouter();
+    const pathname = usePathname();
     const [selectedItem, setSelectedItem] = useState({});
+
     const items = [
         { id: 1, title: 'Engagement Ring', image: '/Appointment/appointment-jewel-1.png' },
         { id: 2, title: 'Wedding Ring', image: '/Appointment/appointment-jewel-2.png' },
@@ -52,8 +57,37 @@ const AppointmentPage = ({assetBase}) => {
         { id: 6, title: 'Letter Diamonds', image: '/Appointment/appointment-jewel-6.png' }
     ];
 
+    const createQueryString = useCallback(
+        (name, value) => {
+            const params = new URLSearchParams(searchParams);
+            if (value) {
+                params.set(name, value);
+            } else {
+                params.delete(name);
+            }
+            return params.toString();
+        },
+        [searchParams]
+    );
+
+    useEffect(() => {
+        const serviceId = searchParams.get('service');
+        if (serviceId) {
+            const item = items.find(i => i.id === parseInt(serviceId));
+            if (item) {
+                setSelectedItem(item);
+            }
+        } else {
+            setSelectedItem({});
+        }
+    }, [searchParams]);
+
     const hanldeBook = (item) => {
-        setSelectedItem(item);
+        router.push(pathname + '?' + createQueryString('service', item.id.toString()));
+    }
+
+    const handleClearSelection = () => {
+        router.push(pathname);
     }
 
     return (
@@ -82,27 +116,27 @@ const AppointmentPage = ({assetBase}) => {
                 Book an appointment now to view our exquisite collection and discover the sustainable and ethical beauty of labgrown diamonds.
             </p>
             <div className="smr_itemsMainDiv">
-                {Object.keys(selectedItem).length === 0 && selectedItem.constructor === Object &&
+                {Object.keys(selectedItem).length === 0 &&
                     <div className="smr_itemsSubDiv">
                         <h3>The kind of jewelry you are interested in?</h3>
                         <div className="smr_items-grid">
                             {items.map(item => {
                                 const image = `${assetBase}${item?.image}`;
-                                 return <div className="smr_item-card" key={item.id}>
+                                return <div className="smr_item-card" key={item.id}>
                                     <div className="smr_imageDiv">
                                         <img src={image} alt={item?.title} />
                                     </div>
                                     <div className="smr_item-content">
                                         <h2>{item?.title}</h2>
-                                        <button className='smr_btn_a'  onClick={() => hanldeBook(item)}>BOOK NOW</button>
+                                        <button className='smr_btn_a' onClick={() => hanldeBook(item)}>BOOK NOW</button>
                                     </div>
                                 </div>
                             })}
                         </div>
                     </div>
                 }
-                {Object.keys(selectedItem).length !== 0 && selectedItem.constructor === Object &&
-                    <AppointmentForm selectedItem={selectedItem}  setSelectedItem={setSelectedItem}/>
+                {Object.keys(selectedItem).length !== 0 &&
+                    <AppointmentForm selectedItem={selectedItem} setSelectedItem={handleClearSelection} />
                 }
             </div>
         </div>

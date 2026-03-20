@@ -1,9 +1,10 @@
+import { getSession } from "../../FetchSessionData";
 import { CommonAPI } from "../CommonAPI/CommonAPI";
 
 export const updateCartAPI = async (updatedItems, metalID, metalCOLORID, diaIDData, colorStoneID, sizeId, markupData, finalPrice, finalPriceWithMarkup) => {
     try {
         const islogin = JSON.parse(sessionStorage.getItem("LoginUser"));
-        const storeInit = JSON.parse(sessionStorage.getItem("storeInit"));
+        const storeInit = (typeof window !== 'undefined' && window.__STORE_INIT__) ? window.__STORE_INIT__ : getSession('storeInit');
         const { FrontEnd_RegNo } = storeInit;
         const loginUserDetail = JSON.parse(sessionStorage.getItem("loginUserDetail"))
         const UserEmail = sessionStorage.getItem("registerEmail")

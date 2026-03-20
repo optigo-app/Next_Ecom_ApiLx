@@ -672,8 +672,8 @@ const Product = ({ params, searchParams, storeinit }) => {
             setFilterProdListEmpty(true)
         } else {
             setFilterProdListEmpty(false)
-            setAfterCountStatus(false);
         }
+        setAfterCountStatus(false);
     }, [productListData])
 
     const handelCustomCombo = (obj) => {
@@ -803,7 +803,9 @@ const Product = ({ params, searchParams, storeinit }) => {
             m: selectedMetalId,
             d: selectedDiaId,
             c: selectedCsId,
-            f: output
+            f: output,
+            l: productData?.ImageExtension,
+            count: productData?.ImageCount
         }
 
         decodeAndDecompress()

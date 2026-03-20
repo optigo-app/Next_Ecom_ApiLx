@@ -15,7 +15,7 @@ import { GetCountAPI } from "@/app/(core)/utils/API/GetCount/GetCountAPI";
 import { useNextRouterLikeRR } from "@/app/(core)/hooks/useLocationRd";
 import { useStore } from "@/app/(core)/contexts/StoreProvider";
 
-export default function LoginWithEmail({ params, searchParams }) {
+export default function LoginWithEmail({ params, searchParams, storeInit }) {
   const { islogin, setislogin, setCartCountNum, setWishCountNum } = useStore();
   const [email, setEmail] = useState("");
 
@@ -32,7 +32,6 @@ export default function LoginWithEmail({ params, searchParams }) {
   const cancelRedireactUrl = `/LoginOption?LoginRedirect=${search}`;
 
   useEffect(() => {
-    setCSSVariable();
     const storedEmail = (() => {
       const raw = sessionStorage.getItem("registerEmail");
       if (!raw) return "";
@@ -47,11 +46,7 @@ export default function LoginWithEmail({ params, searchParams }) {
     if (storedEmail) setEmail(storedEmail);
   }, []);
 
-  const setCSSVariable = () => {
-    const storeInit = JSON.parse(sessionStorage.getItem("storeInit"));
-    const backgroundColor = storeInit?.IsPLW == 1 ? "#c4cfdb" : "#c0bbb1";
-    document.documentElement.style.setProperty("--background-color", backgroundColor);
-  };
+
 
   const handleInputChange = (e, setter, fieldName) => {
     const { value } = e.target;
@@ -73,7 +68,7 @@ export default function LoginWithEmail({ params, searchParams }) {
     return hashedPassword;
   }
 
- 
+
 
   const handleSubmit = async () => {
     const visiterId = Cookies.get("visiterId");
@@ -138,15 +133,14 @@ export default function LoginWithEmail({ params, searchParams }) {
             .catch((err) => console.log(err));
 
           if (redirectEmailUrl) {
-            window.location.href = redirectEmailUrl;
+            window.location.replace(redirectEmailUrl);
           } else {
-        
-            window.location.href = "/";
+            window.location.replace("/");
           }
 
-       
+
         } else {
-          errors.confirmPassword = "Password is Invalid";
+          errors.confirmPassword = response.Data.rd[0].stat_msg;
         }
       })
       .catch((err) => console.log(err));
@@ -159,12 +153,11 @@ export default function LoginWithEmail({ params, searchParams }) {
 
   const handleNavigation = () => {
     sessionStorage.setItem("LoginCodeEmail", "true");
-    navigation("/LoginWithEmailCode", { state: { email: location.state?.email } });
+    navigation(`/LoginWithEmailCode?LoginRedirect=${search}`);
+    sessionStorage.setItem('email', JSON.stringify(location.state?.email))
   };
 
   const handleForgotPassword = async () => {
-    // try {
-    const storeInit = JSON.parse(sessionStorage.getItem("storeInit"));
     let Domian = `${window?.location?.protocol}//${storeInit?.domain}`;
     setIsLoading(true);
     ForgotPasswordEmailAPI(Domian, email)
@@ -177,20 +170,14 @@ export default function LoginWithEmail({ params, searchParams }) {
         }
       })
       .catch((err) => console.log(err));
-
-    // } catch (error) {
-    //     console.error('Error:', error);
-    // } finally {
-    //     setIsLoading(false);
-    // }
   };
 
-    const HandleCancel = () => {
+  const HandleCancel = () => {
     navigation(`/LoginOption?LoginRedirect=${search}`)
   }
 
   return (
-    <div className="smr_loginEmail">
+    <div className="fg_smr_loginEmail">
       {isLoading && (
         <div className="loader-overlay">
           <CircularProgress className="loadingBarManage" />
@@ -201,8 +188,6 @@ export default function LoginWithEmail({ params, searchParams }) {
           <p
             style={{
               textAlign: "center",
-              paddingBlock: "60px",
-              marginTop: "0px",
               fontSize: "40px",
               color: "#7d7f85",
             }}
@@ -213,7 +198,6 @@ export default function LoginWithEmail({ params, searchParams }) {
           <p
             style={{
               textAlign: "center",
-              marginTop: "-80px",
               fontSize: "15px",
               color: "#7d7f85",
             }}

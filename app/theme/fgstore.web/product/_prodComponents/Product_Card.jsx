@@ -237,12 +237,7 @@ const Product_Card = ({
                         }
                     />
                 </div>
-                <div className="smrWeb_app_product_label">
-                    {productData?.IsInReadyStock == 1 && <span className="smrWeb_app_instock">In Stock</span>}
-                    {productData?.IsBestSeller == 1 && <span className="smrWeb_app_bestSeller">Best Seller</span>}
-                    {productData?.IsTrending == 1 && <span className="smrWeb_app_intrending">Trending</span>}
-                    {productData?.IsNewArrival == 1 && <span className="smrWeb_app_newarrival">New</span>}
-                </div>
+
 
                 <div
                     onMouseMove={() => setIsHover(true)}
@@ -332,8 +327,15 @@ const Product_Card = ({
                             />
                         </>
                     }
+                    <div className="smrWeb_app_product_label">
+                        {productData?.IsInReadyStock == 1 && <span className="smrWeb_app_instock">In Stock</span>}
+                        {productData?.IsBestSeller == 1 && <span className="smrWeb_app_bestSeller">Best Seller</span>}
+                        {productData?.IsTrending == 1 && <span className="smrWeb_app_intrending">Trending</span>}
+                        {productData?.IsNewArrival == 1 && <span className="smrWeb_app_newarrival">New</span>}
+                    </div>
                 </div>
-                <div className="smr_prod_card_info" style={{ height: !isshowDots ? "106px" : "90px" }}>
+                <div className="smr_prod_card_info" style={{ height: "auto", padding: '10px 0' }}>
+                    {/* !isshowDots ? "106px" : "90px" */}
                     <div className="smr_prodCard_1"
                     >
                         {!isshowDots &&
@@ -439,7 +441,11 @@ const Product_Card = ({
                                     )}
                             </div>
                         </div>
-                        <div className="smr_prod_mtcolr_price">
+                        <div className="smr_prod_mtcolr_price"
+                            style={{
+                                marginTop: '5px'
+                            }}
+                        >
                             <span className="smr_prod_metal_col">
                                 {findMetalColor(
                                     productData?.MetalColorid

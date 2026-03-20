@@ -23,6 +23,7 @@ import useGlobalPreventSave from "@/app/(core)/utils/Glob_Functions/useGlobalPre
 import { useStore } from "@/app/(core)/contexts/StoreProvider";
 import Link from "next/link";
 import { useNextRouterLikeRR } from "@/app/(core)/hooks/useLocationRd";
+import LogOutModal from "@/app/components/ui/LogOut";
 
 export default function TemporaryDrawer({
   menuItems,
@@ -33,6 +34,7 @@ export default function TemporaryDrawer({
   const { islogin, setislogin, cartCountNum, setCartCountNum, wishCountNum, setWishCountNum, setCartOpenStateB2C } = useStore();
 
   const [open, setOpen] = React.useState(false);
+  const [isLogoutModalOpen, setIsLogoutModalOpen] = React.useState(false);
   const navigate = useNextRouterLikeRR().push;
   const fetchData = () => {
     const value = JSON.parse(sessionStorage?.getItem("LoginUser"));
@@ -75,7 +77,7 @@ export default function TemporaryDrawer({
     sessionStorage.removeItem("registerMobile");
     sessionStorage.removeItem("allproductlist");
     sessionStorage.clear();
-    window.location.href = "/";
+    window.location.replace("/");
   };
 
   const toggleDrawer = () => () => {
@@ -306,7 +308,7 @@ export default function TemporaryDrawer({
             {islogin && (
               <Tooltip title="Logout">
                 <span
-                  onClick={() => handleLogout()}
+                  onClick={() => setIsLogoutModalOpen(true)}
                   style={{
                     color: "black",
                     borderRadius: 0,
@@ -396,6 +398,11 @@ export default function TemporaryDrawer({
       >
         {DrawerList}
       </Drawer>
+      <LogOutModal
+        open={isLogoutModalOpen}
+        onClose={() => setIsLogoutModalOpen(false)}
+        onConfirm={handleLogout}
+      />
     </div>
   );
 }

@@ -37,6 +37,7 @@ import useGlobalPreventSave from "@/app/(core)/utils/Glob_Functions/useGlobalPre
 import { useStore } from "@/app/(core)/contexts/StoreProvider";
 import Link from "next/link";
 import { useNextRouterLikeRR } from "@/app/(core)/hooks/useLocationRd";
+import LogOutModal from "@/app/components/ui/LogOut";
 
 const Navbar = ({ storeinit, logos }) => {
 
@@ -59,6 +60,7 @@ const Navbar = ({ storeinit, logos }) => {
   const [menuItems, setMenuItems] = useState([]);
   const [selectedData, setSelectedData] = useState([]);
   const [LoggedUserDetails, setLoggedUserDetails] = useState();
+  const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
 
   const [searchText, setSearchText] = useState("");
   // const [titleImg, setCompanyTitleLogo] = useRecoilState(Hoq_companyLogo);
@@ -198,7 +200,7 @@ const Navbar = ({ storeinit, logos }) => {
     sessionStorage.removeItem("registerMobile");
     sessionStorage.removeItem("allproductlist");
     sessionStorage.clear();
-    window.location.href = "/";
+    window.location.replace("/");
   };
 
   useEffect(() => {
@@ -718,7 +720,7 @@ const Navbar = ({ storeinit, logos }) => {
                 {islogin ? (
                   <Tooltip title="Logout" className="tooltip-logout">
                     <button
-                      onClick={handleLogout}
+                      onClick={() => setIsLogoutModalOpen(true)}
                       className="logout_btn_hoq icons"
                       style={{ border: "none", backgroundColor: "transparent" }}
                     >
@@ -1336,6 +1338,11 @@ const NavbarCenter = ({
           )}
         </div>
       </div>
+      <LogOutModal
+        open={isLogoutModalOpen}
+        onClose={() => setIsLogoutModalOpen(false)}
+        onConfirm={handleLogout}
+      />
     </>
   );
 };

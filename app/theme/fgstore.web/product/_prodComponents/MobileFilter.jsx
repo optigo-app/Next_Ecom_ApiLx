@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react'
 
-import { Drawer, Typography, Skeleton } from "@mui/material";
+import { Drawer, Typography, Skeleton, Box } from "@mui/material";
 import FilterSection from './FilterSection';
 import CloseIcon from "@mui/icons-material/Close";
 
@@ -64,21 +64,25 @@ const MobileFilter = ({
             }}
             className="smr_filterDrawer"
         >
-            <div
-                style={{
-                    display: "flex",
-                    width: "100%",
-                    alignItems: "center",
-                    justifyContent: "end",
-                    padding: "8px 8px 0px 0px",
+            <Box
+                sx={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    width: '100%',
+                    boxSizing: 'border-box',
+                    px: 2,
+                    py: 1
                 }}
             >
+                <div>
+                </div>
                 <CloseIcon
                     onClick={() => {
                         setIsDrawerOpen(false);
                     }}
                 />
-            </div>
+            </Box>
             <div
                 style={{
                     marginLeft: "15px",

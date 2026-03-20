@@ -744,7 +744,7 @@ const useCart = () => {
     const createAndNavigate = (obj) => {
       const encodedObj = compressAndEncode(JSON.stringify(obj));
       // navigate(`/d/${ ? cartData?.TitleLine.replace(/\s+/g, `_`) + (cartData?.TitleLine?.length > 0 ? "_" : "") : ""}${}?p=${}`);
-      navigate(`/d/${formatRedirectTitleLine(cartData?.TitleLine)}${cartData?.designno}?p=${encodedObj}`);
+      navigate(`/d/${formatRedirectTitleLine(cartData?.TitleLine)}${cartData?.designno}?p=${encodeURIComponent(encodedObj)}`);
     }
 
     if (cartData?.StockNo !== "") {

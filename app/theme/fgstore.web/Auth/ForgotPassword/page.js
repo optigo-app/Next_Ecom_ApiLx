@@ -8,7 +8,7 @@ import { ResetPasswordAPI } from "@/app/(core)/utils/API/Auth/ResetPasswordAPI";
 import { useNextRouterLikeRR } from "@/app/(core)/hooks/useLocationRd";
 import { useSearchParams } from "next/navigation";
 
-export default function ForgotPassword({params ,storeInit}) {
+export default function ForgotPassword({ params, storeInit }) {
   const location = useNextRouterLikeRR();
   const navigation = location?.push;
   const [password, setPassword] = useState("");
@@ -20,15 +20,25 @@ export default function ForgotPassword({params ,storeInit}) {
   const [passwordError, setPasswordError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const searchParams = useSearchParams()
-  const userid = searchParams.get('userid')
-
+  const [userId, setUserId] = useState(null);
 
   useEffect(() => {
+    const idFromUrl = searchParams.get("userid");
+
+    if (!idFromUrl) {
+      navigation("/");
+      return;
+    }
+    setUserId(idFromUrl);
+
+    window.history.replaceState({}, "", window.location.pathname);
+
     const storedEmail = sessionStorage.getItem("userEmailForPdList");
     if (storedEmail) {
       setEmail(storedEmail);
     }
-  }, []); //
+
+  }, []);
 
   const handleInputChange = (e, setter, fieldName) => {
     const { value } = e.target;
@@ -95,9 +105,9 @@ export default function ForgotPassword({params ,storeInit}) {
     if (Object.keys(errors).length === 0) {
       const hashedPassword = hashPasswordSHA1(password);
       setIsLoading(true);
-      ResetPasswordAPI(userid, hashedPassword)
+      ResetPasswordAPI(userId, hashedPassword)
         .then((response) => {
-          if (response.Data.rd[0].stat === 1) {
+          if (response.Data.rd[0].stat == 1) {
             navigation("/ContinueWithEmail");
           } else {
             setIsLoading(false);
@@ -111,7 +121,7 @@ export default function ForgotPassword({params ,storeInit}) {
   };
 
   return (
-    <div className="smr_forgotMain">
+    <div className="fg_smr_forgotMain">
       {isLoading && (
         <div className="loader-overlay">
           <CircularProgress className="loadingBarManage" />
@@ -123,8 +133,7 @@ export default function ForgotPassword({params ,storeInit}) {
           <p
             style={{
               textAlign: "center",
-              padding: "60px",
-              margin: "0px",
+              padding: "10px",
               fontSize: "40px",
               color: "#7d7f85",
             }}
@@ -135,13 +144,12 @@ export default function ForgotPassword({params ,storeInit}) {
           <p
             style={{
               textAlign: "center",
-              marginTop: "-60px",
               fontSize: "15px",
               color: "#7d7f85",
             }}
             className="AuthScreenSubTitle"
           >
-            {}
+            { }
           </p>
 
           <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
