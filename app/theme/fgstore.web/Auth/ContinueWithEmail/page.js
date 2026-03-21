@@ -21,9 +21,11 @@ export default function ContinueWithEmail({ params, searchParams, storeInit }) {
     const cancelRedireactUrl = `/LoginOption${search ? `?LoginRedirect=${encodeURIComponent(search)}` : ""}`;
 
 
-    // useEffect(() => {
-    //     setCSSVariable();
-    // }, [])
+    useEffect(() => {
+        // Clearing stale email/mobile on mount to ensure a fresh login flow
+        sessionStorage.removeItem("registerEmail");
+        sessionStorage.removeItem("registerMobile");
+    }, [])
 
 
     const validateEmail = (email) => {

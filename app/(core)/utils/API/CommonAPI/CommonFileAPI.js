@@ -36,7 +36,8 @@ export const CommonFileAPI = async (body, isUpload = false) => {
         await setApiUrl();
     }
 
-    const storeInit = getSession('storeInit');
+    const storeInit = (typeof window !== 'undefined' && window.__STORE_INIT__) ? window.__STORE_INIT__ : getSession('storeInit');
+
 
     if (!storeInit) {
         throw new Error('StoreInit data not found in sessionStorage');

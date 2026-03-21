@@ -1,4 +1,46 @@
+## [2026-03-21]
+
+### Modified
+
+- **Authentication Flow (Session Data Cleanup)**: Implemented automatic clearing of stale `registerEmail` and `registerMobile` from `sessionStorage` to prevent old data from being displayed when a new user attempts to log in.
+  - **Files modified**: 
+    - `app/theme/fgstore.web/Auth/ContinueWithEmail/page.js`
+    - `app/theme/fgstore.web/Auth/ContinueWithMobile/page.js`
+    - `app/theme/hoq.web/Auth/ContinueWithEmail/page.js`
+    - `app/theme/fgstore.mapp/Auth/ContinueWithEmail/page.js`
+  - **Old behavior**: `registerEmail` and `registerMobile` persisted in `sessionStorage` across login attempts, showing the previous user's email/mobile when starting a new flow.
+  - **New behavior**: These session tokens are now cleared on mount in the "Continue With" (entry) pages to ensure every new login attempt starts fresh.
+  - **Reason for change**: Fix reported issue where new users saw old registered emails while preserving "carry forward" and page refresh reliability for the current user.
+
+- **Header (Search Overlay Fix)**: Replaced `ClickAwayListener` with manual click-outside detection using `useRef` and a global event listener.
+  - **Files modified**: `app/components/(dynamic)/Header/Header.jsx`
+  - **Old behavior**: Conflicting `ClickAwayListener` instances caused the search overlay to close unexpectedly when clicking the input field, and previous unification attempts broke the CSS layout during scrolling.
+  - **New behavior**: The search overlay now uses a robust manual check that detects clicks outside *both* the normal and fixed search containers. This keeps the bar open when clicking the input and maintains perfect CSS consistency across all scroll states.
+  - **Reason for change**: Fix reported bug while ensuring the design and layout remain exactly as intended by the user.
+
+### Added
+
+- `app/(core)/utils/GlobalFunctions/GlobalFunctions.js`: Added `IsUserLoggedIn` helper function.
+  - **New behavior**: Provides a centralized, server-side (SSR) way to check if a user is authenticated by verifying `LoginUser` and `userLoginCookie` cookies.
+
+### Modified
+
+- Authentication Flow (SSR Validation): Implemented server-side redirects in all authentication-related page components to prevent logged-in users from accessing them.
+  - **Files modified**: 
+    - `app/(auth)/LoginOption/page.js`
+    - `app/(auth)/ContinueWithEmail/[[...slug]]/page.js`
+    - `app/(auth)/ContinueWithMobile/[[...slug]]/page.js`
+    - `app/(auth)/LoginWithEmail/[[...search]]/page.js`
+    - `app/(auth)/LoginWithEmailCode/[[...search]]/page.js`
+    - `app/(auth)/LoginWithMobileCode/[[...search]]/page.js`
+    - `app/(auth)/register/page.js`
+    - `app/(auth)/forgotPass/[[...slug]]/page.js`
+  - **Old behavior**: Logged-in users could access these pages via the browser back button or direct URL entry, sometimes causing a flash of the login screen before client-side logic kicked in.
+  - **New behavior**: Page-level SSR validation immediately redirects authenticated users to the home page (`/`) before any content is sent to the browser.
+  - **Reason for change**: Improved security and user experience by ensuring robust, flicker-free protection of authentication routes without relying on middleware.
+
 ## [2026-03-20]
+
 
 ### Updated
 

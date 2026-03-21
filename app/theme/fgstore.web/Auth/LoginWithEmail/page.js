@@ -158,7 +158,8 @@ export default function LoginWithEmail({ params, searchParams, storeInit }) {
   };
 
   const handleForgotPassword = async () => {
-    let Domian = `${window?.location?.protocol}//${storeInit?.domain}`;
+    // let Domian = `${window?.location?.protocol}//${storeInit?.domain}`;
+    let Domian = `https://nxt29.optigoapps.com`;
     setIsLoading(true);
     ForgotPasswordEmailAPI(Domian, email)
       .then((response) => {

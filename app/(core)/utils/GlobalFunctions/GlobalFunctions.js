@@ -1,5 +1,4 @@
 import { cookies } from "next/headers";
-import { assetBase } from "../../lib/ServerHelper";
 import fs from "fs";
 import path from "path";
 
@@ -41,6 +40,14 @@ export const GetUserLoginCookie = async () => {
   const userToken = cookieStore.get("userLoginCookie")?.value ?? null;
   return userToken;
 };
+
+export const IsUserLoggedIn = async () => {
+  const cookieStore = await cookies();
+  const loginUser = cookieStore.get("LoginUser")?.value;
+  const userLoginCookie = cookieStore.get("userLoginCookie")?.value;
+  return !!(loginUser && userLoginCookie);
+};
+
 
 export const getAboutUsContent = async () => {
   try {

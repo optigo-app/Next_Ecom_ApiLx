@@ -3,7 +3,8 @@ import { CommonAPI } from "../../CommonAPI/CommonAPI";
 
 export const HomeCategoryApi = async (visiterId) => {
     try {
-        const storeInit = getSession("storeInit");
+        const storeInit = (typeof window !== 'undefined' && window.__STORE_INIT__) ? window.__STORE_INIT__ : getSession('storeInit');
+
         const loginUserDetail = getSession("loginUserDetail");
         const isLogin = getSession("LoginUser", false);
         const userLogin = getSession('LoginUser');

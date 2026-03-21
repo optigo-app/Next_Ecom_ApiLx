@@ -13,10 +13,13 @@ export const themeMap = {
   "nxtmobileapp.web": {
     page: "fgstore.mapp",
   },
-   "nxt14.optigoapps.com": {
+  "nxt14.optigoapps.com": {
     page: "fgstore.mapp",
   },
   'nxthoq.web': {
     page: "hoq.web",
-  }
+  },
+  "nxt29.optigoapps.com": {
+    page: "fgstore.web",
+  },
 };

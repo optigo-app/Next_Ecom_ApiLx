@@ -4,7 +4,8 @@ import { CommonAPI } from "../CommonAPI/CommonAPI";
 export const GETProductType = async (finalID) => {
   let response;
   try {
-    const storeInit = getSession("storeInit") ?? "";
+    const storeInit = (typeof window !== 'undefined' && window.__STORE_INIT__) ? window.__STORE_INIT__ : getSession('storeInit');
+
     const email = getSession("registerEmail") ?? "";
     const islogin = getSession("LoginUser");
     const loginUserDetail = getSession("loginUserDetail");
