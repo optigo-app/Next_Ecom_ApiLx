@@ -4,9 +4,9 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "next dev -p 5007 --turbo",
+    "dev": "next dev -p 5005 --turbo",
     "build": "npx fix-react2shell-next --force --yes && next build --turbo",
-    "start": "next start -p 5007",
+    "start": "next start -p 5005",
     "lint": "eslint",
     "ng": "next build && next start",
     "dev:watch": "nodemon --watch \"app/(core)/utils/env.js\" --exec \"next dev -p 5007 --turbo\""

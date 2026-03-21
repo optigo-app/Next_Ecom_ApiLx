@@ -61,6 +61,8 @@ const Header = ({ storeinit, logos }) => {
   const [loginUserDetail, setLoginUserDetail] = useState({});
   const [storeInitData, setStoreInitData] = useState(storeinit);
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
+  const searchRef = useRef(null);
+  const searchRefFixed = useRef(null);
 
 
   useEffect(() => {
@@ -190,6 +192,21 @@ const Header = ({ storeinit, logos }) => {
       window.removeEventListener("scroll", handleScroll);
     };
   }, []);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (serachsShowOverlay) {
+        if (
+          searchRef.current && !searchRef.current.contains(event.target) &&
+          searchRefFixed.current && !searchRefFixed.current.contains(event.target)
+        ) {
+          setSerachShowOverlay(false);
+        }
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [serachsShowOverlay]);
 
   const fetchData = () => {
     const value = getSession("LoginUser");
@@ -446,39 +463,35 @@ const Header = ({ storeinit, logos }) => {
         {serachsShowOverlay && (
           <>
             <div className="smr_smlingSearchoverlay">
-              <ClickAwayListener onClickAway={() => setSerachShowOverlay(false)}>
-                <div className="smr_smlingTopSerachOver">
-                  <Search onClick={() => clickSearch()} style={{ height: "15px", width: "15px", marginRight: "10px" }} />
-                  <input type="text" placeholder="Search..." value={searchText} autoFocus onChange={(e) => setSearchText(e.target.value)} className="smr_serachinputBoxOverly" onKeyDown={searchDataFucn} />
-                  <IoClose
-                    style={{
-                      height: "30px",
-                      width: "30px",
-                      color: "#7d7f85",
-                      cursor: "pointer",
-                    }}
-                    onClick={toggleOverlay}
-                  />
-                </div>
-              </ClickAwayListener>
+              <div className="smr_smlingTopSerachOver" ref={searchRef}>
+                <Search onClick={() => clickSearch()} style={{ height: "15px", width: "15px", marginRight: "10px", cursor: "pointer" }} />
+                <input type="text" placeholder="Search..." value={searchText} autoFocus onChange={(e) => setSearchText(e.target.value)} className="smr_serachinputBoxOverly" onKeyDown={searchDataFucn} />
+                <IoClose
+                  style={{
+                    height: "30px",
+                    width: "30px",
+                    color: "#7d7f85",
+                    cursor: "pointer",
+                  }}
+                  onClick={toggleOverlay}
+                />
+              </div>
             </div>
 
             <div className={`smr_smlingSearchoverlayNew ${isHeaderFixedDropShow ? "fixed" : ""}`}>
-              <ClickAwayListener onClickAway={() => setSerachShowOverlay(false)}>
-                <div className="smr_smlingTopSerachOver-Fixed">
-                  <Search style={{ height: "15px", width: "15px", marginRight: "10px" }} />
-                  <input type="text" placeholder="Search..." value={searchText} autoFocus onChange={(e) => setSearchText(e.target.value)} className="smr_serachinputBoxOverly" onKeyDown={searchDataFucn} />
-                  <IoClose
-                    style={{
-                      height: "30px",
-                      width: "30px",
-                      color: "#7d7f85",
-                      cursor: "pointer",
-                    }}
-                    onClick={toggleOverlay}
-                  />
-                </div>
-              </ClickAwayListener>
+              <div className="smr_smlingTopSerachOver-Fixed" ref={searchRefFixed}>
+                <Search onClick={() => clickSearch()} style={{ height: "15px", width: "15px", marginRight: "10px", cursor: "pointer" }} />
+                <input type="text" placeholder="Search..." value={searchText} autoFocus onChange={(e) => setSearchText(e.target.value)} className="smr_serachinputBoxOverly" onKeyDown={searchDataFucn} />
+                <IoClose
+                  style={{
+                    height: "30px",
+                    width: "30px",
+                    color: "#7d7f85",
+                    cursor: "pointer",
+                  }}
+                  onClick={toggleOverlay}
+                />
+              </div>
             </div>
           </>
         )}

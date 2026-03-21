@@ -23,6 +23,12 @@ export default function ContinueWithMobile({ params, searchParams, storeInit }) 
   const redirectMobileUrl = `/LoginWithMobileCode${search ? `?LoginRedirect=${encodeURIComponent(search)}` : ""}`;
   const redirectSignUpUrl = `/register${search ? `?LoginRedirect=${encodeURIComponent(search)}` : ""}`;
   const cancelRedireactUrl = `/LoginOption${search ? `?LoginRedirect=${encodeURIComponent(search)}` : ""}`;
+  
+  useEffect(() => {
+    // Clearing stale email/mobile on mount to ensure a fresh login flow
+    sessionStorage.removeItem("registerEmail");
+    sessionStorage.removeItem("registerMobile");
+  }, [])
 
 
 

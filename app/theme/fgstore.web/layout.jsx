@@ -1,6 +1,6 @@
 import { getCompanyInfoData, getExtraFlag, getStoreInit } from "@/app/(core)/utils/GlobalFunctions/GlobalFunctions";
 import Header from "@/app/components/(dynamic)/Header/Header";
-import React from "react";
+import React, { Suspense } from "react";
 import { getLogos } from "@/app/(core)/lib/ServerHelper";
 import FooterNew from "@/app/components/(static)/Footer/FooterNew";
 import { Box } from "@mui/material";
@@ -15,11 +15,16 @@ const layout = async ({ children }) => {
   return (
     <Box sx={{ display: "flex", flexDirection: "column", minHeight: "100vh", width: "100%", overflow: "hidden" }}>
       <Header logos={logos} storeinit={storeData} />
-      {children}
+      <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+        <Suspense fallback={<Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', flex: 1, minHeight: '90vh' }}></Box>}>
+          {children}
+        </Suspense>
+      </Box>
       <FooterNew companyInfoData={companyInfoData} storeData={storeData} extraFlag={extraFlag} logos={logos} />
       <ChatMenu />
     </Box>
   );
 };
+
 
 export default layout;
