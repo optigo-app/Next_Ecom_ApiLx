@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState, useCallback } from "react";
 import "./TrendingView1.scss";
 import { formatRedirectTitleLine, formatter, formatTitleLine, storImagePath } from "@/app/(core)/utils/Glob_Functions/GlobalFunction";
 import { Get_Tren_BestS_NewAr_DesigSet_Album } from "@/app/(core)/utils/API/Home/Get_Tren_BestS_NewAr_DesigSet_Album/Get_Tren_BestS_NewAr_DesigSet_Album";
@@ -9,37 +9,19 @@ import { useNextRouterLikeRR } from "@/app/(core)/hooks/useLocationRd";
 import { useStore } from "@/app/(core)/contexts/StoreProvider";
 import cookies from "js-cookie";
 import { compressAndEncode } from "@/app/(core)/utils/Encoder&Decoder";
+import { useMaster } from "@/app/(core)/contexts/MasterProvider";
+import { BookCache } from "@/app/(core)/utils/API/Cache/CacheApi";
+import { normalizeALC, buildAlbumCacheKey, findMatchingCacheEntry, getPricingContext } from "@/app/(core)/cache_utility/CacheBuilder";
 
 
 
-const buildAlbumCacheKey = (type, storeData, pricing, id) => {
-    const meta = {
-        type,
-        PackageId: pricing?.PackageId ?? "",
-        Laboursetid: pricing?.Laboursetid ?? "",
-        diamondpricelistname: pricing?.diamondpricelistname ?? "",
-        colorstonepricelistname: pricing?.colorstonepricelistname ?? "",
-    };
-
-    const key = [
-        type,
-        pricing?.PackageId,
-        pricing?.Laboursetid,
-        pricing?.diamondpricelistname,
-        pricing?.colorstonepricelistname,
-    ].join("_");
-
-    return {
-        key,
-        meta,
-    }
-};
 
 
 
 const TrendingView1 = ({ data, storeInit }) => {
-    const { islogin } = useStore();
+    const { islogin, loginUserDetail } = useStore();
     const { push } = useNextRouterLikeRR();
+    const { cacheList, setCacheList } = useMaster();
     const trendingRef = useRef(null);
     const [trandingViewData, setTrandingViewData] = useState([]);
     const [imageUrl, setImageUrl] = useState();
@@ -48,12 +30,13 @@ const TrendingView1 = ({ data, storeInit }) => {
 
     const [oddNumberObjects, setOddNumberObjects] = useState([]);
     const [evenNumberObjects, setEvenNumberObjects] = useState([]);
-    const [hoveredItem, setHoveredItem] = useState(null);
-    const [loadingHome, setLoadingHome] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
     const [validatedData, setValidatedData] = useState([]);
     const productRefs = useRef({});
-    const [loginUserDetail, setLoginUserDetail] = useState({});
     const [mounted, setMounted] = useState(false);
+
+    const isFetchingRef = useRef(false);
+    const lastRequestKeyRef = useRef("");
 
     const isOdd = (num) => num % 2 !== 0;
 
@@ -74,84 +57,67 @@ const TrendingView1 = ({ data, storeInit }) => {
     useEffect(() => {
         setImageUrl(storeInit?.CDNDesignImageFolThumb);
         setMounted(true);
-        if (typeof window !== "undefined") {
-            try {
-                const stored = sessionStorage.getItem("loginUserDetail");
-                setLoginUserDetail(stored ? JSON.parse(stored) : null);
-            } catch (err) {
-                console.error("Failed to parse loginUserDetail:", err);
-                setLoginUserDetail(null);
-            }
-        }
-    }, []);
+    }, [storeInit?.CDNDesignImageFolThumb]);
 
-    const finalID = useMemo(() => {
-        if (!mounted) return null;
-        const visitorId = cookies.get("visiterId") ?? "0";
-        const IsB2BWebsite = storeInit?.IsB2BWebsite ?? 0;
-        const uid = loginUserDetail?.id || "0";
-        if (IsB2BWebsite == 0) {
-            return islogin === false ? visitorId : uid;
-        }
-        return uid;
-    }, [mounted, loginUserDetail, islogin, storeInit?.IsB2BWebsite]);
+    const pricingContext = useMemo(() => getPricingContext(loginUserDetail, storeInit, islogin), [loginUserDetail, storeInit, islogin]);
 
-    const pricingContext = useMemo(() => {
-        if (!mounted) return null;
+    const fetchAndSetTrending = useCallback(async (finalID, precomputedKey) => {
+        if (!pricingContext || isFetchingRef.current) return;
 
-        const loginInfo = loginUserDetail;
+        const apiALC = "";
+        const keyALC = normalizeALC("");
+        const eventName = "fg_trending";
 
-        return {
-            PackageId: (loginInfo?.PackageId ?? storeInit?.PackageId) ?? "",
-            Laboursetid:
-                !islogin
-                    ? storeInit?.pricemanagement_laboursetid
-                    : loginInfo?.pricemanagement_laboursetid ?? "",
-            diamondpricelistname:
-                !islogin
-                    ? storeInit?.diamondpricelistname
-                    : loginInfo?.diamondpricelistname ?? "",
-            colorstonepricelistname:
-                !islogin
-                    ? storeInit?.colorstonepricelistname
-                    : loginInfo?.colorstonepricelistname ?? "",
-        };
-    }, [mounted, loginUserDetail, storeInit, islogin]);
+        const { key, meta } = buildAlbumCacheKey(eventName, storeInit, pricingContext, finalID, keyALC);
+        const effectiveKey = precomputedKey || key;
 
-
-
-    useEffect(() => {
-        if (!mounted) return;
-        const storeInit = typeof window !== "undefined" ? sessionStorage.getItem("StoreInit") : null;
-        if (!finalID) return;
-        callAPI(finalID);
-    }, [mounted, finalID]);
-
-
-    const callAPI = async (id) => {
-        const { key, meta } = buildAlbumCacheKey("trending_", storeInit, pricingContext, id);
-        setLoadingHome(true);
+        isFetchingRef.current = true;
+        setIsLoading(true);
 
         try {
-            const cachedRes = await fetch(`/api/cache?key=${key}`);
-            const cached = await cachedRes.json();
+            // Step 1: Check server cache + local cache in parallel
+            const localCacheRes = await fetch(`/api/v1/cache?mode=meta&key=${effectiveKey}`)
+                .then((res) => res.json())
+                .catch(() => ({ cached: false }));
 
-            if (cached?.cached && Array.isArray(cached.data) && cached.data.length > 0) {
-                console.log("🔥 Using cached data", cached.data.length);
-                const records = cached.data;
-                const oddNumbers = records.filter((obj) => isOdd(obj.SrNo));
-                const evenNumbers = records.filter((obj) => !isOdd(obj.SrNo));
+            const serverCacheEntries = cacheList?.Data?.rd ?? [];
+            const matchingServerEntry = findMatchingCacheEntry(serverCacheEntries, pricingContext, eventName, apiALC);
+            const serverCacheRebuildDate = matchingServerEntry?.CacheRebuildDate ?? null;
 
-                setTrandingViewData(records);
-                setOddNumberObjects(oddNumbers);
-                setEvenNumberObjects(evenNumbers);
-                return; // ✅ stop here, no API call needed
+            const localCacheMeta = localCacheRes;
+            const localCacheRebuildDate = localCacheMeta?.CacheRebuildDate ?? null;
+
+            console.log("[TrendingView1] Cache check:", { key: effectiveKey, localCached: localCacheMeta?.cached, serverRebuild: serverCacheRebuildDate, localRebuild: localCacheRebuildDate });
+
+            // Step 2: Use cache if valid
+            if (localCacheMeta?.cached) {
+                const canValidate = Boolean(matchingServerEntry && serverCacheRebuildDate);
+                const datesMatch = localCacheRebuildDate === serverCacheRebuildDate;
+
+                if (canValidate && datesMatch) {
+                    const cachedRes = await fetch(`/api/v1/cache?key=${effectiveKey}`);
+                    const cached = await cachedRes.json();
+                    if (cached.cached && Array.isArray(cached.data)) {
+                        console.log("[TrendingView1] Serving from cache");
+                        const records = cached.data;
+                        const oddNumbers = records.filter((obj) => isOdd(obj.SrNo));
+                        const evenNumbers = records.filter((obj) => !isOdd(obj.SrNo));
+                        setTrandingViewData(records);
+                        setOddNumberObjects(oddNumbers);
+                        setEvenNumberObjects(evenNumbers);
+                        setIsLoading(false);
+                        isFetchingRef.current = false;
+                        return;
+                    }
+                }
+                fetch(`/api/v1/cache?key=${effectiveKey}`, { method: "DELETE" }).catch(() => { });
             }
 
-            console.log("🌐 No cache — fetching trending data from API");
-            const response = await Get_Tren_BestS_NewAr_DesigSet_Album(storeInit, "GETTrending", id);
-
+            // Step 3: API Fallback
+            console.log("[TrendingView1] Calling API...");
+            const response = await Get_Tren_BestS_NewAr_DesigSet_Album(storeInit, "GETTrending", finalID);
             const records = response?.Data?.rd ?? [];
+
             const oddNumbers = records.filter((obj) => isOdd(obj.SrNo));
             const evenNumbers = records.filter((obj) => !isOdd(obj.SrNo));
 
@@ -159,23 +125,71 @@ const TrendingView1 = ({ data, storeInit }) => {
             setOddNumberObjects(oddNumbers);
             setEvenNumberObjects(evenNumbers);
 
-            // 3️⃣ Write to cache (fire-and-forget)
+            setIsLoading(false);
+            isFetchingRef.current = false;
+
+            // Step 4: Book cache + store local cache
             if (records.length > 0) {
-                fetch("/api/cache", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ key, data: records, meta }),
-                }).catch((err) => console.warn("⚠️ Cache write failed:", err));
+                try {
+                    const bookCacheResult = await BookCache(finalID, eventName, pricingContext, apiALC);
+                    const newCacheRebuildDate = bookCacheResult?.CacheRebuildDate ?? null;
+
+                    if (newCacheRebuildDate) {
+                        const newEntry = {
+                            EventName: eventName,
+                            PackageId: pricingContext.PackageId,
+                            LabourSetId: pricingContext.Laboursetid,
+                            diamondpricelistname: pricingContext.diamondpricelistname,
+                            colorstonepricelistname: pricingContext.colorstonepricelistname,
+                            ALC: keyALC,
+                            CacheRebuildDate: newCacheRebuildDate,
+                        };
+
+                        if (cacheList?.Data?.rd) {
+                            const updatedRd = [...cacheList.Data.rd];
+                            const idx = updatedRd.findIndex(e => e.EventName === eventName && e.PackageId == pricingContext.PackageId && e.LabourSetId == pricingContext.Laboursetid);
+                            if (idx > -1) updatedRd[idx] = newEntry; else updatedRd.push(newEntry);
+                            setCacheList({ ...cacheList, Data: { ...cacheList.Data, rd: updatedRd } });
+                        }
+                    }
+
+                    const updatedMeta = { ...meta, CacheRebuildDate: newCacheRebuildDate };
+                    fetch("/api/v1/cache", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ key: effectiveKey, data: records, meta: updatedMeta }),
+                    }).catch(console.error);
+                } catch (cacheErr) {
+                    console.error("[TrendingView1] Cache update failed:", cacheErr);
+                }
             }
         } catch (error) {
-            console.error("❌ callAPI error:", error);
-            setTrandingViewData([]);
-            setOddNumberObjects([]);
-            setEvenNumberObjects([]);
-        } finally {
-            setLoadingHome(false);
+            console.error("[TrendingView1] Error fetching trending:", error);
+            isFetchingRef.current = false;
+            setIsLoading(false);
         }
-    };
+    }, [pricingContext, storeInit, cacheList, setCacheList]);
+
+    useEffect(() => {
+        if (!mounted || !pricingContext || !storeInit || cacheList === null) return;
+
+        const fetchData = async () => {
+            const visitorId = cookies.get("visiterId") ?? "0";
+            const IsB2BWebsite = storeInit?.IsB2BWebsite ?? 0;
+            const uid = loginUserDetail?.id || "0";
+            const finalID = IsB2BWebsite == 0 ? (islogin === false ? visitorId : uid) : uid;
+
+            const keyALC = normalizeALC("");
+            const { key } = buildAlbumCacheKey("fg_trending", storeInit, pricingContext, finalID, keyALC);
+
+            if (isFetchingRef.current || lastRequestKeyRef.current === key) return;
+            lastRequestKeyRef.current = key;
+
+            await fetchAndSetTrending(finalID, key);
+        };
+
+        fetchData();
+    }, [mounted, islogin, pricingContext, storeInit, fetchAndSetTrending, loginUserDetail?.id, cacheList]);
 
 
 

@@ -492,7 +492,7 @@ const DesignBlockView = ({
                                                                                     }
                                                                                     alt=""
                                                                                     className="smr_lb3srthelook_img"
-                                                                                    onClick={() => handleNavigation(ele?.designno, ele?.autocode, ele?.TitleLine ? ele?.TitleLine : "", detail)}
+                                                                                    onClick={() => handleNavigation(ele?.designno, ele?.autocode, ele?.TitleLine ? ele?.TitleLine : "", slide?.Designdetail)}
                                                                                     draggable={true}
                                                                                     onContextMenu={(e) => e.preventDefault()}
                                                                                     onError={(e) => {

@@ -1,5 +1,6 @@
 
 
+import { getSession } from "../../FetchSessionData";
 import { CommonAPI } from "../CommonAPI/CommonAPI";
 
 
@@ -7,11 +8,11 @@ import { CommonAPI } from "../CommonAPI/CommonAPI";
 export const ColorStoneQualityColorComboAPI = async () => {
     let response;
     try {
-        const storedEmail = sessionStorage.getItem('registerEmail') || '';
-        const storeInit = JSON.parse(sessionStorage.getItem('storeInit'));
-        const loginUserDetail = JSON.parse(sessionStorage.getItem('loginUserDetail')) || '0';
-        
-        const { FrontEnd_RegNo } = storeInit;
+        const storedEmail = getSession('registerEmail') || '';
+        const storeInit = typeof window !== "undefined" && window.__STORE_INIT__ ? window.__STORE_INIT__ : getSession("storeInit");
+        if (!storeInit) return null;
+        const loginUserDetail = getSession("loginUserDetail") || "0";
+        const FrontEnd_RegNo = storeInit?.FrontEnd_RegNo;
         const combinedValue = JSON.stringify({
             FrontEnd_RegNo: `${FrontEnd_RegNo}`, colorstonepricelistname: `${loginUserDetail?.colorstonepricelistname ?? storeInit?.colorstonepricelistname}`
         });
