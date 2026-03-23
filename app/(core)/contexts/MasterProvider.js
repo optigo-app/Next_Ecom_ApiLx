@@ -16,6 +16,7 @@ import { useSearchParams } from "next/navigation";
 import { useNextRouterLikeRR } from "../hooks/useLocationRd";
 import { getSession, setSession } from "../utils/FetchSessionData";
 import { GetCacheList } from "../utils/API/Cache/CacheApi";
+import { fetchStoreInitData } from "../utils/fetchStoreInit";
 
 
 const masterContext = createContext({
@@ -26,6 +27,8 @@ const masterContext = createContext({
 export const MasterProvider = ({ children, getCompanyInfoData, getStoreInit, getMyAccountFlags }) => {
     if (typeof window !== "undefined") {
         window.__STORE_INIT__ = getStoreInit;
+        window.__LOGIN_USER__ = window.__LOGIN_USER__ ?? getSession("LoginUser") ?? false;
+        window.__LOGIN_USER_DETAIL__ = window.__LOGIN_USER_DETAIL__ ?? getSession("loginUserDetail") ?? null;
     }
     const [cacheList, setCacheList] = useState(null);
     const searchParams = useSearchParams();
@@ -38,8 +41,8 @@ export const MasterProvider = ({ children, getCompanyInfoData, getStoreInit, get
             .then((response) => {
                 console.log(response, "response")
                 if (response.Data.rd[0].stat === 1) {
-                    sessionStorage.setItem("LoginUser", true);
-                    sessionStorage.setItem("loginUserDetail", JSON.stringify(response.Data.rd[0]));
+                    setSession("LoginUser", true);
+                    setSession("loginUserDetail", response.Data.rd[0]);
                 }
             })
             .catch((error) => {
@@ -78,14 +81,12 @@ export const MasterProvider = ({ children, getCompanyInfoData, getStoreInit, get
                 });
             } else {
                 try {
-                    // parse stored cookie (if it's JSON)
                     const visitorIdCookie = existingVisitorId.startsWith('{') ? JSON.parse(existingVisitorId) : null;
                     if (visitorIdCookie) {
                         const expirationDate =
                             visitorIdCookie?.expires && new Date(visitorIdCookie.expires);
 
                         if (expirationDate && expirationDate <= new Date()) {
-                            // remove expired cookie
                             cookieStore.remove("visiterId");
                         }
                     }
@@ -101,21 +102,39 @@ export const MasterProvider = ({ children, getCompanyInfoData, getStoreInit, get
     };
 
     useEffect(() => {
-        sessionStorage.setItem("storeInit", JSON.stringify(getStoreInit));
-        sessionStorage.setItem("myAccountFlags", JSON.stringify(getMyAccountFlags));
-        fetchVisitorId();
-    }, [])
+        const initializeStore = async () => {
+            let currentStoreInit = getStoreInit;
+            if (!currentStoreInit || Object.keys(currentStoreInit).length === 0) {
+                console.log("%c⚠️ StoreInit missing, attempting client-side recovery...", "color: orange; font-weight: bold;");
+                const refetchedData = await fetchStoreInitData();
+                if (refetchedData?.rd?.[0]) {
+                    currentStoreInit = refetchedData.rd[0];
+                    if (typeof window !== "undefined") {
+                        window.__STORE_INIT__ = currentStoreInit;
+                    }
+                }
+            }
+
+            if (currentStoreInit) {
+                setSession("storeInit", currentStoreInit);
+            }
+            setSession("myAccountFlags", getMyAccountFlags);
+            fetchVisitorId();
+        };
+
+        initializeStore();
+    }, [getStoreInit]);
 
     // Paymaster fetch
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const storedPayMaster = sessionStorage.getItem("payMaster");
+                const storedPayMaster = getSession("payMaster");
                 if (!storedPayMaster) {
                     const payMaster = await fetchPayMaster();
                     const res = payMaster?.Data?.rd;
                     if (res?.[0]?.stat != 0 && res?.[0]?.stat_msg != 'Sorry for invonvenient') {
-                        sessionStorage.setItem("payMaster", JSON.stringify(res));
+                        setSession("payMaster", res);
                     } else {
                         console.log(
                             "%c❌ ERROR: Payment Master API returned nothing! \n%cSorry for inconvenience — please contact your administrator.",
@@ -129,7 +148,7 @@ export const MasterProvider = ({ children, getCompanyInfoData, getStoreInit, get
             }
         };
 
-        const timer = setTimeout(fetchData, 2000); // Reduced delay
+        const timer = setTimeout(fetchData, 2000);
         return () => clearTimeout(timer);
     }, []);
 
@@ -140,21 +159,30 @@ export const MasterProvider = ({ children, getCompanyInfoData, getStoreInit, get
                     setCacheList(response);
                 }
                 if (response?.Data?.rd) {
-                    sessionStorage.setItem(storageKey, JSON.stringify(response.Data.rd));
+                    setSession(storageKey, response.Data.rd);
                 }
             })
             .catch((err) => console.log(err));
     };
 
     const callAllApi = async () => {
-        const storeInit = getStoreInit;
-        const loginUserDetail = JSON?.parse(sessionStorage.getItem("loginUserDetail"));
-        const LoginUser = JSON?.parse(sessionStorage.getItem("LoginUser"));
+        const storeInit = getStoreInit || window.__STORE_INIT__;
+        const loginUserDetail = getSession("loginUserDetail");
+        const LoginUser = getSession("LoginUser");
         const visiterID = Cookies.get("visiterId");
+        console.log(window.__STORE_INIT__, "__STORE_INIT__")
+        console.log(loginUserDetail, "loginUserDetail")
+        console.log(LoginUser, "LoginUser")
+        console.log(visiterID, "visiterId")
+
+
+        if (typeof window !== "undefined") {
+            if (!window.__LOGIN_USER_DETAIL__ && loginUserDetail) window.__LOGIN_USER_DETAIL__ = loginUserDetail;
+            if (typeof window.__LOGIN_USER__ === "undefined" && typeof LoginUser !== "undefined") window.__LOGIN_USER__ = LoginUser;
+        }
 
         const finalID = storeInit?.IsB2BWebsite === 0 ? (LoginUser === false ? visiterID : loginUserDetail?.id || "0") : loginUserDetail?.id || "0";
 
-        // Call all APIs in parallel
         Promise.all([
             callApiAndStore(MetalTypeComboAPI, "metalTypeCombo", finalID),
             callApiAndStore(DiamondQualityColorComboAPI, "diamondQualityColorCombo", finalID),

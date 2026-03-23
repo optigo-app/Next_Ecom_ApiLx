@@ -1,7 +1,7 @@
 "use client";
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState, useCallback } from "react";
 import "./NewArrival1.scss";
-import { Grid, Typography, Card, CardContent, CardMedia, Link } from "@mui/material";
+import { Grid, Typography, Card, CardContent, CardMedia } from "@mui/material";
 import { Get_Tren_BestS_NewAr_DesigSet_Album } from "@/app/(core)/utils/API/Home/Get_Tren_BestS_NewAr_DesigSet_Album/Get_Tren_BestS_NewAr_DesigSet_Album";
 import Pako from "pako";
 import Cookies from "js-cookie";
@@ -10,178 +10,160 @@ import { useStore } from "@/app/(core)/contexts/StoreProvider";
 import { useNextRouterLikeRR } from "@/app/(core)/hooks/useLocationRd";
 import cookies from "js-cookie";
 import SonaHeader from "@/app/theme/fgstore.web/home/Header";
+import { useMaster } from "@/app/(core)/contexts/MasterProvider";
+import { BookCache } from "@/app/(core)/utils/API/Cache/CacheApi";
+import { normalizeALC, buildAlbumCacheKey, findMatchingCacheEntry, getPricingContext } from "@/app/(core)/cache_utility/CacheBuilder";
+import Link from 'next/link';
 
-const buildAlbumCacheKey = (type, storeData, pricing, id) => {
-  const meta = {
-    type,
-    PackageId: pricing?.PackageId ?? "",
-    Laboursetid: pricing?.Laboursetid ?? "",
-    diamondpricelistname: pricing?.diamondpricelistname ?? "",
-    colorstonepricelistname: pricing?.colorstonepricelistname ?? "",
-  };
-
-  const key = [
-    type,
-    pricing?.PackageId,
-    pricing?.Laboursetid,
-    pricing?.diamondpricelistname,
-    pricing?.colorstonepricelistname,
-  ].join("_");
-
-  return {
-    key,
-    meta,
-  }
-};
 
 
 const NewArrival = ({ data, storeInit }) => {
-  const { islogin } = useStore();
+  const { islogin, loginUserDetail } = useStore();
   const { push } = useNextRouterLikeRR();
+  const { cacheList, setCacheList } = useMaster();
   const newArrivalRef = useRef(null);
-  const [newArrivalData, setNewArrivalData] = useState("");
+  const [newArrivalData, setNewArrivalData] = useState([]);
   const [imageUrl, setImageUrl] = useState();
   const navigation = push;
-  const [ring1ImageChange, setRing1ImageChange] = useState(false);
-  const [ring2ImageChange, setRing2ImageChange] = useState(false);
-  const [loadingHome, setLoadingHome] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
   const [validatedData, setValidatedData] = useState([]);
   const productRefs = useRef({});
-  const imageNotFound = `./image-not-found.jpg`;
-  const [loginUserDetail, setLoginUserDetail] = useState({});
+  const imageNotFound = `/image-not-found.jpg`;
   const [mounted, setMounted] = useState(false);
+
+  const isFetchingRef = useRef(false);
+  const lastRequestKeyRef = useRef("");
 
   useEffect(() => {
     setImageUrl(storeInit?.CDNDesignImageFolThumb);
     setMounted(true);
-    if (typeof window !== "undefined") {
-      try {
-        const stored = sessionStorage.getItem("loginUserDetail");
-        setLoginUserDetail(stored ? JSON.parse(stored) : null);
-      } catch (err) {
-        console.error("Failed to parse loginUserDetail:", err);
-        setLoginUserDetail(null);
-      }
-    }
-  }, []);
+  }, [storeInit?.CDNDesignImageFolThumb]);
 
-  const finalID = useMemo(() => {
-    if (!mounted) return null;
-    const visitorId = cookies.get("visiterId") ?? "0";
-    const IsB2BWebsite = storeInit?.IsB2BWebsite ?? 0;
-    const uid = loginUserDetail?.id || "0";
-    if (IsB2BWebsite == 0) {
-      return islogin === false ? visitorId : uid;
-    }
-    return uid;
-  }, [mounted, loginUserDetail, islogin, storeInit?.IsB2BWebsite]);
+  const pricingContext = useMemo(() => getPricingContext(loginUserDetail, storeInit, islogin), [loginUserDetail, storeInit, islogin]);
 
-  const pricingContext = useMemo(() => {
-    if (!mounted) return null;
-    const loginInfo = loginUserDetail;
-    return {
-      PackageId: (loginInfo?.PackageId ?? storeInit?.PackageId) ?? "",
-      Laboursetid:
-        (!islogin
-          ? storeInit?.pricemanagement_laboursetid
-          : loginInfo?.pricemanagement_laboursetid) ?? "",
-      diamondpricelistname:
-        (!islogin
-          ? storeInit?.diamondpricelistname
-          : loginInfo?.diamondpricelistname) ?? "",
-      colorstonepricelistname:
-        (!islogin
-          ? storeInit?.colorstonepricelistname
-          : loginInfo?.colorstonepricelistname) ?? "",
-    };
-  }, [mounted, loginUserDetail, storeInit, islogin]);
+  const fetchAndSetNewArrivals = useCallback(async (finalID, precomputedKey) => {
+    if (!pricingContext || isFetchingRef.current) return;
 
+    const apiALC = "";
+    const keyALC = normalizeALC("");
+    const eventName = "fg_newarrival";
 
-  const callAPI = async (id) => {
+    const { key, meta } = buildAlbumCacheKey(eventName, storeInit, pricingContext, finalID, keyALC);
+    const effectiveKey = precomputedKey || key;
+
+    isFetchingRef.current = true;
+    setIsLoading(true);
+
     try {
-      const { key, meta } = buildAlbumCacheKey(
-        "newArrival_",
-        storeInit,
-        pricingContext,
-        id
-      );
+      // Step 1: Check server cache + local cache in parallel
+      const localCacheRes = await fetch(`/api/v1/cache?mode=meta&key=${effectiveKey}`)
+        .then((res) => res.json())
+        .catch(() => ({ cached: false }));
 
-      // 1️⃣ Check cache
-      const cachedRes = await fetch(
-        `/api/cache?key=${encodeURIComponent(key)}`
-      );
-      const cached = await cachedRes.json();
+      const serverCacheEntries = cacheList?.Data?.rd ?? [];
+      const matchingServerEntry = findMatchingCacheEntry(serverCacheEntries, pricingContext, eventName, apiALC);
+      const serverCacheRebuildDate = matchingServerEntry?.CacheRebuildDate ?? null;
 
-      if (cached.cached && Array.isArray(cached.data)) {
-        console.log("🔥 Using cached data", cached.data);
-        setNewArrivalData(cached.data);
-        setLoadingHome(false);
-        return;
+      const localCacheMeta = localCacheRes;
+      const localCacheRebuildDate = localCacheMeta?.CacheRebuildDate ?? null;
+
+      console.log("[NewArrival] Cache check:", { key: effectiveKey, localCached: localCacheMeta?.cached, serverRebuild: serverCacheRebuildDate, localRebuild: localCacheRebuildDate });
+
+      // Step 2: Use cache if valid
+      if (localCacheMeta?.cached) {
+        const canValidate = Boolean(matchingServerEntry && serverCacheRebuildDate);
+        const datesMatch = localCacheRebuildDate === serverCacheRebuildDate;
+
+        if (canValidate && datesMatch) {
+          const cachedRes = await fetch(`/api/v1/cache?key=${effectiveKey}`);
+          const cached = await cachedRes.json();
+          if (cached.cached && Array.isArray(cached.data)) {
+            console.log("[NewArrival] Serving from cache");
+            setNewArrivalData(cached.data);
+            setIsLoading(false);
+            isFetchingRef.current = false;
+            return;
+          }
+        }
+        fetch(`/api/v1/cache?key=${effectiveKey}`, { method: "DELETE" }).catch(() => { });
       }
 
-      // 2️⃣ Fetch fresh
-      const res = await Get_Tren_BestS_NewAr_DesigSet_Album(
-        storeInit,
-        "GETNewArrival",
-        id
-      );
+      // Step 3: API Fallback
+      console.log("[NewArrival] Calling API...");
+      const res = await Get_Tren_BestS_NewAr_DesigSet_Album(storeInit, "GETNewArrival", finalID);
+      const apiData = res?.Data?.rd || [];
 
-      const rows = res?.Data?.rd || [];
+      if (Array.isArray(apiData) && apiData.length > 0) {
+        setNewArrivalData(apiData);
+      } else {
+        setNewArrivalData([]);
+      }
 
-      fetch("/api/cache", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ key, data: rows, meta }),
-      }).catch(console.error);
+      setIsLoading(false);
+      isFetchingRef.current = false;
 
-      // 4️⃣ Update UI
-      setNewArrivalData(rows);
-      setLoadingHome(false);
+      // Step 4: Book cache + store local cache
+      if (apiData.length > 0) {
+        try {
+          const bookCacheResult = await BookCache(finalID, eventName, pricingContext, apiALC);
+          const newCacheRebuildDate = bookCacheResult?.CacheRebuildDate ?? null;
+
+          if (newCacheRebuildDate) {
+            const newEntry = {
+              EventName: eventName,
+              PackageId: pricingContext.PackageId,
+              LabourSetId: pricingContext.Laboursetid,
+              diamondpricelistname: pricingContext.diamondpricelistname,
+              colorstonepricelistname: pricingContext.colorstonepricelistname,
+              ALC: keyALC,
+              CacheRebuildDate: newCacheRebuildDate,
+            };
+
+            if (cacheList?.Data?.rd) {
+              const updatedRd = [...cacheList.Data.rd];
+              const idx = updatedRd.findIndex(e => e.EventName === eventName && e.PackageId == pricingContext.PackageId && e.LabourSetId == pricingContext.Laboursetid);
+              if (idx > -1) updatedRd[idx] = newEntry; else updatedRd.push(newEntry);
+              setCacheList({ ...cacheList, Data: { ...cacheList.Data, rd: updatedRd } });
+            }
+          }
+
+          const updatedMeta = { ...meta, CacheRebuildDate: newCacheRebuildDate };
+          fetch("/api/v1/cache", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ key: effectiveKey, data: apiData, meta: updatedMeta }),
+          }).catch(console.error);
+        } catch (cacheErr) {
+          console.error("[NewArrival] Cache update failed:", cacheErr);
+        }
+      }
     } catch (error) {
-      console.error("❌ NewArrival error:", error);
-      setNewArrivalData([]);
-      setLoadingHome(false);
+      console.error("[NewArrival] Error fetching new arrivals:", error);
+      isFetchingRef.current = false;
+      setIsLoading(false);
     }
-  };
-
-  // const callAPI = async (id) => {
-
-  //      const {key ,meta} = buildAlbumCacheKey("newArrival_" ,storeInit, pricingContext, id);
-  //   try {
-  //     let rows = [];
-  //      const cachedRes = await fetch(`/api/cache?key=${key}`);
-  //     const cached = await cachedRes.json();
-  //     if (cached.cached && Array.isArray(cached.data)) {
-  //       console.log("🔥 Using cached data", cached.data);
-  //       return cached.data;
-  //     }else{
-  //     const res = await Get_Tren_BestS_NewAr_DesigSet_Album(storeInit, "GETNewArrival", id);
-  //     fetch("/api/cache", {
-  //         method: "POST",
-  //         headers: { "Content-Type": "application/json" },
-  //         body: JSON.stringify({ key, data: rows ,meta }),
-  //       }).catch(console.error);
-  //     rows = res?.Data?.rd || [];
-  //     }
-  //     if (Array.isArray(rows) && rows.length > 0) {
-  //       setNewArrivalData(rows);
-  //       setLoadingHome(false);
-  //     } else {
-  //       setNewArrivalData([]);
-  //       setLoadingHome(false);
-  //     }
-  //   } catch (error) {
-  //     console.log(error);
-  //     setLoadingHome(false);
-  //   }
-  // };
+  }, [pricingContext, storeInit, cacheList, setCacheList]);
 
   useEffect(() => {
-    if (!mounted) return;
-    const storeInit = typeof window !== "undefined" ? sessionStorage.getItem("StoreInit") : null;
-    if (!finalID) return;
-    callAPI(finalID);
-  }, [mounted, finalID]);
+    if (!mounted || !pricingContext || !storeInit || cacheList === null) return;
+
+    const fetchData = async () => {
+      const visitorId = cookies.get("visiterId") ?? "0";
+      const IsB2BWebsite = storeInit?.IsB2BWebsite ?? 0;
+      const uid = loginUserDetail?.id || "0";
+      const finalID = IsB2BWebsite == 0 ? (islogin === false ? visitorId : uid) : uid;
+
+      const keyALC = normalizeALC("");
+      const { key } = buildAlbumCacheKey("fg_newarrival", storeInit, pricingContext, finalID, keyALC);
+
+      if (isFetchingRef.current || lastRequestKeyRef.current === key) return;
+      lastRequestKeyRef.current = key;
+
+      await fetchAndSetNewArrivals(finalID, key);
+    };
+
+    fetchData();
+  }, [mounted, islogin, pricingContext, storeInit, fetchAndSetNewArrivals, loginUserDetail?.id, cacheList]);
 
   const checkImageAvailability = (url) => {
     return new Promise((resolve) => {
@@ -264,23 +246,6 @@ const NewArrival = ({ data, storeInit }) => {
     return txt.value;
   };
 
-  const handleMouseEnterRing1 = (data) => {
-    if (data?.ImageCount > 1) {
-      setRing1ImageChange(true);
-    }
-  };
-  const handleMouseLeaveRing1 = () => {
-    setRing1ImageChange(false);
-  };
-
-  const handleMouseEnterRing2 = (data) => {
-    if (data?.ImageCount > 1) {
-      setRing2ImageChange(true);
-    }
-  };
-  const handleMouseLeaveRing2 = () => {
-    setRing2ImageChange(false);
-  };
 
   return (
     <div

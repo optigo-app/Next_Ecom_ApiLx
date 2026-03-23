@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState, useCallback } from "react";
 import "./BestSellerSection1.scss";
 import { formatRedirectTitleLine, formatter, formatTitleLine, storImagePath } from "@/app/(core)/utils/Glob_Functions/GlobalFunction";
 import { Get_Tren_BestS_NewAr_DesigSet_Album } from "@/app/(core)/utils/API/Home/Get_Tren_BestS_NewAr_DesigSet_Album/Get_Tren_BestS_NewAr_DesigSet_Album";
@@ -8,54 +8,33 @@ import cookies from "js-cookie";
 import { useNextRouterLikeRR } from "@/app/(core)/hooks/useLocationRd";
 import { useStore } from "@/app/(core)/contexts/StoreProvider";
 import SonaHeader from "@/app/theme/fgstore.web/home/Header";
+import { useMaster } from "@/app/(core)/contexts/MasterProvider";
+import { BookCache } from "@/app/(core)/utils/API/Cache/CacheApi";
+import { normalizeALC, buildAlbumCacheKey, findMatchingCacheEntry, getPricingContext } from "@/app/(core)/cache_utility/CacheBuilder";
 
 
 
-const buildAlbumCacheKey = (type, storeData, pricing, id) => {
-  const meta = {
-    type,
-    PackageId: pricing?.PackageId ?? "",
-    Laboursetid: pricing?.Laboursetid ?? "",
-    diamondpricelistname: pricing?.diamondpricelistname ?? "",
-    colorstonepricelistname: pricing?.colorstonepricelistname ?? "",
-  };
-
-  const key = [
-    type,
-    pricing?.PackageId,
-    pricing?.Laboursetid,
-    pricing?.diamondpricelistname,
-    pricing?.colorstonepricelistname,
-  ].join("_");
-
-  return {
-    key,
-    meta,
-  }
-};
 
 
 const BestSellerSection1 = ({ data, storeData }) => {
   const { push } = useNextRouterLikeRR();
-  const { islogin } = useStore();
+  const { islogin, loginUserDetail } = useStore();
+  const { cacheList, setCacheList } = useMaster();
   const bestSallerRef = useRef(null);
   const [imageUrl, setImageUrl] = useState();
-  const [bestSellerData, setBestSellerData] = useState("");
-  const [storeInit, setStoreInit] = useState({});
-  const [isLoding, setIsLoding] = useState(true);
+  const [bestSellerData, setBestSellerData] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
   const navigation = push;
   const [hoveredItem, setHoveredItem] = useState(null);
-  const [loadingHome, setLoadingHome] = useState(true);
   const [validatedData, setValidatedData] = useState([]);
   const [mounted, setMounted] = useState(false);
-  const [loginUserDetail, setLoginUserDetail] = useState({});
+
+  const isFetchingRef = useRef(false);
+  const lastRequestKeyRef = useRef("");
 
   const productRefs = useRef({});
   const imageNotFound = "./Assets/image-not-found.jpg";
 
-  useEffect(() => {
-    setStoreInit(storeData);
-  }, []);
 
   const settings = {
     dots: true,
@@ -69,92 +48,134 @@ const BestSellerSection1 = ({ data, storeData }) => {
   useEffect(() => {
     setMounted(true);
     setImageUrl(storeData?.CDNDesignImageFolThumb);
-    if (typeof window !== "undefined") {
-      try {
-        const stored = sessionStorage.getItem("loginUserDetail");
-        setLoginUserDetail(stored ? JSON.parse(stored) : null);
-      } catch (err) {
-        console.error("Failed to parse loginUserDetail:", err);
-        setLoginUserDetail(null);
-      }
-    }
-  }, []);
+  }, [storeData?.CDNDesignImageFolThumb]);
+
+  const pricingContext = useMemo(() => getPricingContext(loginUserDetail, storeData, islogin), [loginUserDetail, storeData, islogin]);
 
 
-  const finalID = useMemo(() => {
-    if (!mounted) return null;
-    const visitorId = cookies.get("visiterId") ?? "0";
-    const IsB2BWebsite = storeData?.IsB2BWebsite ?? 0;
-    const uid = loginUserDetail?.id || "0";
-    if (IsB2BWebsite == 0) {
-      return islogin === false ? visitorId : uid;
-    }
-    return uid;
-  }, [mounted, loginUserDetail, islogin, storeData?.IsB2BWebsite]);
+  const fetchAndSetBestSellers = useCallback(async (finalID, precomputedKey) => {
+    if (!pricingContext || isFetchingRef.current) return;
 
-  const pricingContext = useMemo(() => {
-    if (!mounted) return null;
-    const loginInfo = loginUserDetail;
+    const apiALC = "";
+    const keyALC = normalizeALC("");
+    const eventName = "fg_bestseller";
 
-    return {
-      PackageId: (loginInfo?.PackageId ?? storeData?.PackageId) ?? "",
-      Laboursetid:
-        !islogin
-          ? storeData?.pricemanagement_laboursetid
-          : loginInfo?.pricemanagement_laboursetid ?? "",
-      diamondpricelistname:
-        !islogin
-          ? storeData?.diamondpricelistname
-          : loginInfo?.diamondpricelistname ?? "",
-      colorstonepricelistname:
-        !islogin
-          ? storeData?.colorstonepricelistname
-          : loginInfo?.colorstonepricelistname ?? "",
-    };
-  }, [mounted, loginUserDetail, storeData, islogin]);
+    const { key, meta } = buildAlbumCacheKey(eventName, storeData, pricingContext, finalID, keyALC);
+    const effectiveKey = precomputedKey || key;
 
-
-
-  const callAllApi = async (id) => {
-    console.log("🚀 ~ callAllApi ~ pricingContext:", pricingContext)
-    const { key, meta } = buildAlbumCacheKey("bestseller_", storeData, pricingContext, id);
-
+    isFetchingRef.current = true;
+    setIsLoading(true);
 
     try {
-      setLoadingHome(false);
-      const cachedRes = await fetch(`/api/cache?key=${key}`);
-      const cached = await cachedRes.json();
-      if (cached.cached && Array.isArray(cached.data)) {
-        setBestSellerData(cached?.data);
-        return cached?.data;
+      // Step 1: Check server cache + local cache in parallel
+      const localCacheRes = await fetch(`/api/v1/cache?mode=meta&key=${effectiveKey}`)
+        .then((res) => res.json())
+        .catch(() => ({ cached: false }));
+
+      const serverCacheEntries = cacheList?.Data?.rd ?? [];
+      const matchingServerEntry = findMatchingCacheEntry(serverCacheEntries, pricingContext, eventName, apiALC);
+      const serverCacheRebuildDate = matchingServerEntry?.CacheRebuildDate ?? null;
+
+      const localCacheMeta = localCacheRes;
+      const localCacheRebuildDate = localCacheMeta?.CacheRebuildDate ?? null;
+
+      console.log("[BestSellerSection1] Cache check:", { key: effectiveKey, localCached: localCacheMeta?.cached, serverRebuild: serverCacheRebuildDate, localRebuild: localCacheRebuildDate });
+
+      // Step 2: Use cache if valid
+      if (localCacheMeta?.cached) {
+        const canValidate = Boolean(matchingServerEntry && serverCacheRebuildDate);
+        const datesMatch = localCacheRebuildDate === serverCacheRebuildDate;
+
+        if (canValidate && datesMatch) {
+          const cachedRes = await fetch(`/api/v1/cache?key=${effectiveKey}`);
+          const cached = await cachedRes.json();
+          if (cached.cached && Array.isArray(cached.data)) {
+            console.log("[BestSellerSection1] Serving from cache");
+            setBestSellerData(cached.data);
+            setIsLoading(false);
+            isFetchingRef.current = false;
+            return;
+          }
+        }
+        fetch(`/api/v1/cache?key=${effectiveKey}`, { method: "DELETE" }).catch(() => { });
       }
-      const res = await Get_Tren_BestS_NewAr_DesigSet_Album(storeData, "GETBestSeller", id);
-      const rows = res?.Data?.rd || [];
-      if (Array.isArray(rows) && rows.length > 0) {
-        setBestSellerData(rows);
-        fetch("/api/cache", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ key, data: rows, meta }),
-        }).catch(console.error);
+
+      // Step 3: API Fallback
+      console.log("[BestSellerSection1] Calling API...");
+      const res = await Get_Tren_BestS_NewAr_DesigSet_Album(storeData, "GETBestSeller", finalID);
+      const apiData = res?.Data?.rd || [];
+
+      if (Array.isArray(apiData) && apiData.length > 0) {
+        setBestSellerData(apiData);
       } else {
         setBestSellerData([]);
       }
-    } catch (error) {
-      console.log("🚀 ~ callAllApi ~ error:", error);
-      setBestSellerData([]);
-    } finally {
-      setLoadingHome(false);
-    }
 
-  };
+      setIsLoading(false);
+      isFetchingRef.current = false;
+
+      // Step 4: Book cache + store local cache
+      if (apiData.length > 0) {
+        try {
+          const bookCacheResult = await BookCache(finalID, eventName, pricingContext, apiALC);
+          const newCacheRebuildDate = bookCacheResult?.CacheRebuildDate ?? null;
+
+          if (newCacheRebuildDate) {
+            const newEntry = {
+              EventName: eventName,
+              PackageId: pricingContext.PackageId,
+              LabourSetId: pricingContext.Laboursetid,
+              diamondpricelistname: pricingContext.diamondpricelistname,
+              colorstonepricelistname: pricingContext.colorstonepricelistname,
+              ALC: keyALC,
+              CacheRebuildDate: newCacheRebuildDate,
+            };
+
+            if (cacheList?.Data?.rd) {
+              const updatedRd = [...cacheList.Data.rd];
+              const idx = updatedRd.findIndex(e => e.EventName === eventName && e.PackageId == pricingContext.PackageId && e.LabourSetId == pricingContext.Laboursetid);
+              if (idx > -1) updatedRd[idx] = newEntry; else updatedRd.push(newEntry);
+              setCacheList({ ...cacheList, Data: { ...cacheList.Data, rd: updatedRd } });
+            }
+          }
+
+          const updatedMeta = { ...meta, CacheRebuildDate: newCacheRebuildDate };
+          fetch("/api/v1/cache", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ key: effectiveKey, data: apiData, meta: updatedMeta }),
+          }).catch(console.error);
+        } catch (cacheErr) {
+          console.error("[BestSellerSection1] Cache update failed:", cacheErr);
+        }
+      }
+    } catch (error) {
+      console.error("[BestSellerSection1] Error fetching best sellers:", error);
+      isFetchingRef.current = false;
+      setIsLoading(false);
+    }
+  }, [pricingContext, storeData, cacheList, setCacheList]);
 
   useEffect(() => {
-    if (!mounted) return;
-    const storeInit = typeof window !== "undefined" ? sessionStorage.getItem("StoreInit") : null;
-    if (!finalID) return;
-    callAllApi(finalID);
-  }, [finalID, mounted]);
+    if (!mounted || !pricingContext || !storeData || cacheList === null) return;
+
+    const fetchData = async () => {
+      const visitorId = cookies.get("visiterId") ?? "0";
+      const IsB2BWebsite = storeData?.IsB2BWebsite ?? 0;
+      const uid = loginUserDetail?.id || "0";
+      const finalID = IsB2BWebsite == 0 ? (islogin === false ? visitorId : uid) : uid;
+
+      const keyALC = normalizeALC("");
+      const { key } = buildAlbumCacheKey("fg_bestseller", storeData, pricingContext, finalID, keyALC);
+
+      if (isFetchingRef.current || lastRequestKeyRef.current === key) return;
+      lastRequestKeyRef.current = key;
+
+      await fetchAndSetBestSellers(finalID, key);
+    };
+
+    fetchData();
+  }, [mounted, islogin, pricingContext, storeData, fetchAndSetBestSellers, loginUserDetail?.id, cacheList]);
 
   const compressAndEncode = (inputString) => {
     try {
@@ -290,7 +311,7 @@ const BestSellerSection1 = ({ data, storeData }) => {
                       <h3>
                         {data?.designno !== "" && data?.designno} {formatTitleLine(data?.TitleLine) && " - " + data?.TitleLine}
                       </h3>
-                      {storeInit?.IsGrossWeight == 1 && (
+                      {storeData?.IsGrossWeight == 1 && (
                         <>
                           <span className="smr_btdetailDT">GWT: </span>
                           <span className="smr_btdetailDT">{(data?.Gwt || 0)?.toFixed(3)}</span>
@@ -303,7 +324,7 @@ const BestSellerSection1 = ({ data, storeData }) => {
                           <span className="smr_btdetailDT">{(data?.Nwt || 0)?.toFixed(3)}</span>
                         </>
                       )}
-                      {storeInit?.IsDiamondWeight == 1 && (
+                      {storeData?.IsDiamondWeight == 1 && (
                         <>
                           {(data?.Dwt != "0" || data?.Dpcs != "0") && (
                             <>
@@ -316,7 +337,7 @@ const BestSellerSection1 = ({ data, storeData }) => {
                           )}
                         </>
                       )}
-                      {storeInit?.IsStoneWeight == 1 && (
+                      {storeData?.IsStoneWeight == 1 && (
                         <>
                           {(data?.CSwt != "0" || data?.CSpcs != "0") && (
                             <>
@@ -329,9 +350,9 @@ const BestSellerSection1 = ({ data, storeData }) => {
                           )}
                         </>
                       )}
-                      {storeInit?.IsPriceShow == 1 && (
+                      {storeData?.IsPriceShow == 1 && (
                         <p>
-                          <span className="smr_currencyFont">{islogin ? loginUserDetail?.CurrencyCode : storeInit?.CurrencyCode}</span>&nbsp;
+                          <span className="smr_currencyFont">{islogin ? loginUserDetail?.CurrencyCode : storeData?.CurrencyCode}</span>&nbsp;
                           <span>{formatter(data?.UnitCostWithMarkUp)}</span>
                         </p>
                       )}

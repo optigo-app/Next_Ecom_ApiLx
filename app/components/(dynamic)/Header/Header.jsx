@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useMemo, useCallback } from "react";
 import "./Header.modul.scss";
 import { Badge, ButtonBase, ClickAwayListener, List, ListItem, Tooltip } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
@@ -15,33 +15,12 @@ import { useStore } from "@/app/(core)/contexts/StoreProvider";
 import { useNextRouterLikeRR } from "@/app/(core)/hooks/useLocationRd";
 import { useRouter } from "next/navigation";
 import { Search, Star } from "lucide-react";
-import { getSession } from "@/app/(core)/utils/FetchSessionData";
+import { getSession, setSession, clearSession } from "@/app/(core)/utils/FetchSessionData";
 import LogOutModal from "@/app/components/ui/LogOut";
+import { useMaster } from "@/app/(core)/contexts/MasterProvider";
+import { BookCache } from "@/app/(core)/utils/API/Cache/CacheApi";
+import { getPricingContext, buildMenuCacheKey, findMatchingMenuCacheEntry } from "@/app/(core)/cache_utility/CacheBuilder";
 
-
-
-const buildAlbumCacheKey = (type, storeData, pricing, id) => {
-  const meta = {
-    type,
-    PackageId: pricing?.PackageId ?? "",
-    Laboursetid: pricing?.Laboursetid ?? "",
-    diamondpricelistname: pricing?.diamondpricelistname ?? "",
-    colorstonepricelistname: pricing?.colorstonepricelistname ?? "",
-  };
-
-  const key = [
-    type,
-    pricing?.PackageId,
-    pricing?.Laboursetid,
-    pricing?.diamondpricelistname,
-    pricing?.colorstonepricelistname,
-  ].join("_");
-
-  return {
-    key,
-    meta,
-  }
-};
 
 const Header = ({ storeinit, logos }) => {
   const { islogin, setislogin, cartCountNum, setCartCountNum, wishCountNum, setWishCountNum, setCartOpenStateB2C } = useStore();
@@ -63,14 +42,123 @@ const Header = ({ storeinit, logos }) => {
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
   const searchRef = useRef(null);
   const searchRefFixed = useRef(null);
+  const { cacheList, setCacheList } = useMaster();
+  const pricingContext = useMemo(() => getPricingContext(loginUserDetail, storeinit, islogin), [loginUserDetail, storeinit, islogin]);
+  const isFetchingRef = useRef(false);
+
+  const fetchData = useCallback(() => {
+    const value = window.__LOGIN_USER__ || getSession("LoginUser");
+    setislogin(value);
+  }, [setislogin]);
+
+  const fetchEcomMenu = useCallback(async () => {
+    const isB2B = storeinit?.IsB2BWebsite === 1;
+    const isUserLoggedIn = (typeof window !== "undefined" && window.__LOGIN_USER__) || getSession("LoginUser") === true;
+    if (isB2B && !isUserLoggedIn) {
+      return;
+    }
+    if (!pricingContext || cacheList === null || isFetchingRef.current) return;
+
+    isFetchingRef.current = true;
+
+    try {
+      const visiterID = Cookies.get("visiterId");
+      let finalID;
+      if (storeinit?.IsB2BWebsite === 0) {
+        finalID = islogin === false ? visiterID : loginUserDetail?.id || "0";
+      } else {
+        finalID = loginUserDetail?.id || "0";
+      }
+
+      const eventName = "fg_home_menu";
+      const menuPricing = { PackageId: pricingContext.PackageId };
+      const { key, meta } = buildMenuCacheKey(eventName, storeinit, menuPricing, finalID);
+      const localCacheRes = await fetch(`/api/v1/cache?mode=meta&key=${key}`)
+        .then(res => res.json())
+        .catch(() => ({ cached: false }));
+
+      const serverCacheEntries = cacheList?.Data?.rd ?? [];
+      const matchingServerEntry = findMatchingMenuCacheEntry(serverCacheEntries, menuPricing, eventName);
+      const serverCacheRebuildDate = matchingServerEntry?.CacheRebuildDate ?? null;
+
+      const localCacheMeta = localCacheRes;
+      const localCacheRebuildDate = localCacheMeta?.CacheRebuildDate ?? null;
+
+      console.log("[Header Menu] Cache check:", { key, localCached: localCacheMeta?.cached, serverRebuild: serverCacheRebuildDate, localRebuild: localCacheRebuildDate });
+
+      if (localCacheMeta?.cached) {
+        const canValidate = Boolean(matchingServerEntry && serverCacheRebuildDate);
+        const datesMatch = localCacheRebuildDate === serverCacheRebuildDate;
+
+        if (canValidate && datesMatch) {
+          const cachedRes = await fetch(`/api/v1/cache?key=${key}`);
+          const cached = await cachedRes.json();
+          if (cached.cached && Array.isArray(cached.data)) {
+            console.log("[Header Menu] Serving from cache");
+            setMenuData(cached.data);
+            isFetchingRef.current = false;
+            return;
+          }
+        }
+        console.log("[Header Menu] Cache invalid or mismatch, deleting");
+        fetch(`/api/v1/cache?key=${key}`, { method: 'DELETE' }).catch(() => { });
+      }
+
+      console.log("[Header Menu] Calling GetMenuAPI...");
+      const response = await GetMenuAPI(finalID);
+      const apiData = response?.Data?.rd || [];
+
+      if (apiData.length > 0) {
+        setMenuData(apiData);
+      }
+
+      isFetchingRef.current = false;
+
+      if (apiData.length > 0) {
+        try {
+          // Send PackageId only as requested
+          const bookCacheResult = await BookCache(finalID, eventName, menuPricing, "");
+          const newCacheRebuildDate = bookCacheResult?.CacheRebuildDate ?? null;
+
+          if (newCacheRebuildDate) {
+            const newEntry = {
+              EventName: eventName,
+              PackageId: menuPricing.PackageId,
+              CacheRebuildDate: newCacheRebuildDate,
+            };
+
+            if (cacheList?.Data?.rd) {
+              const updatedRd = [...cacheList.Data.rd];
+              const idx = updatedRd.findIndex(e => e.EventName === eventName && e.PackageId == menuPricing.PackageId);
+              if (idx > -1) updatedRd[idx] = newEntry; else updatedRd.push(newEntry);
+              setCacheList({ ...cacheList, Data: { ...cacheList.Data, rd: updatedRd } });
+              console.log("[Header Menu] Global cacheList updated");
+            }
+          }
+
+          const updatedMeta = { ...meta, CacheRebuildDate: newCacheRebuildDate };
+          fetch("/api/v1/cache", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ key, data: apiData, meta: updatedMeta }),
+          }).catch(console.error);
+        } catch (cacheErr) {
+          console.error("[Header Menu] Cache update failed:", cacheErr);
+        }
+      }
+    } catch (err) {
+      console.error("[Header Menu] Error in fetchEcomMenu:", err);
+      isFetchingRef.current = false;
+    }
+  }, [islogin, storeinit, loginUserDetail, pricingContext, cacheList, setCacheList, islogin]);
 
 
   useEffect(() => {
     if (storeinit && typeof window !== "undefined") {
-      window.__STORE_INIT__ = storeinit; // Last resort fallback
+      window.__STORE_INIT__ = storeinit;
       const stored = getSession("storeInit");
       if (!stored || JSON.stringify(stored) !== JSON.stringify(storeinit)) {
-        sessionStorage.setItem("storeInit", JSON.stringify(storeinit));
+        setSession("storeInit", storeinit);
       }
     }
   }, [storeinit]);
@@ -80,7 +168,7 @@ const Header = ({ storeinit, logos }) => {
     setIsMounted(true);
     if (typeof window !== "undefined") {
       try {
-        const stored = getSession("loginUserDetail");
+        const stored = window.__LOGIN_USER_DETAIL__ || getSession("loginUserDetail");
         setLoginUserDetail(stored);
       } catch (err) {
         console.error("Failed to parse loginUserDetail:", err);
@@ -100,7 +188,7 @@ const Header = ({ storeinit, logos }) => {
 
 
   useEffect(() => {
-    const value = getSession('LoginUser');
+    const value = window.__LOGIN_USER__ || getSession('LoginUser');
     setislogin(value);
     setIsMounted(true);
   }, []);
@@ -171,11 +259,11 @@ const Header = ({ storeinit, logos }) => {
   }, [menuData]);
 
   useEffect(() => {
-    let isUserLogin = getSession("LoginUser");
+    let isUserLogin = (typeof window !== "undefined" && window.__LOGIN_USER__) || getSession("LoginUser");
     if (storeinit?.IsB2BWebsite === 0 || (storeinit?.IsB2BWebsite === 1 && isUserLogin === true)) {
-      getMenuApi();
+      fetchEcomMenu();
     }
-  }, []);
+  }, [fetchEcomMenu, storeinit]);
 
   useEffect(() => {
     fetchData();
@@ -208,61 +296,8 @@ const Header = ({ storeinit, logos }) => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [serachsShowOverlay]);
 
-  const fetchData = () => {
-    const value = getSession("LoginUser");
-    setislogin(value);
-  };
-
-  // const pricingContext = useMemo(() => {
-  //   if (!isMounted) return null;
-  //   const loginInfo = loginUserDetail;
-  //   return {
-  //     PackageId: (loginInfo?.PackageId ?? storeinit?.PackageId) ?? "",
-  //     Laboursetid:
-  //       !islogin
-  //         ? storeinit?.pricemanagement_laboursetid
-  //         : loginInfo?.pricemanagement_laboursetid ?? "",
-  //     diamondpricelistname:
-  //       !islogin
-  //         ? storeinit?.diamondpricelistname
-  //         : loginInfo?.diamondpricelistname ?? "",
-  //     colorstonepricelistname:
-  //       !islogin
-  //         ? storeinit?.colorstonepricelistname
-  //         : loginInfo?.colorstonepricelistname ?? "",
-  //   };
-  // }, [isMounted, loginUserDetail, storeinit, islogin]);
 
 
-
-  const getMenuApi = async () => {
-    const { IsB2BWebsite } = storeinit;
-    const visiterID = Cookies.get("visiterId");
-    let finalID;
-    if (IsB2BWebsite == 0) {
-      finalID = islogin === false ? visiterID : loginUserDetail?.id || "0";
-    } else {
-      finalID = loginUserDetail?.id || "0";
-    }
-    const id = finalID;
-    // const { key, meta } = buildAlbumCacheKey("header_menu_", storeinit, pricingContext, id);
-    // const cachedRes = await fetch(`/api/cache?key=${key}`);
-    // const cached = await cachedRes.json();
-    // if (cached.cached && Array.isArray(cached.data)) {
-    //   setMenuData(cached?.data);
-    //   return cached?.data;
-    // }
-    await GetMenuAPI(finalID)
-      .then((response) => {
-        // fetch("/api/cache", {
-        //   method: "POST",
-        //   headers: { "Content-Type": "application/json" },
-        //   body: JSON.stringify({ key, data: response?.Data?.rd, meta }),
-        // }).catch(console.error);
-        setMenuData(response?.Data?.rd);
-      })
-      .catch((err) => console.log(err));
-  };
 
   const handleLogout = () => {
     setislogin(false);
@@ -280,6 +315,7 @@ const Header = ({ storeinit, logos }) => {
     sessionStorage.removeItem("allproductlist");
     sessionStorage.clear();
     window.location.replace("/");
+    clearSession();
   };
 
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);

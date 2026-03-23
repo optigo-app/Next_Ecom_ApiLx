@@ -24,8 +24,13 @@
 .DS_Store
 *.pem
 
-zip
-.zip
+# compressed and encrypted files
+*.zip
+*.tar
+*.gz
+*.7z
+*.rar
+*.enc
 
 
 # debug
@@ -53,3 +58,6 @@ next-env.d.ts
 .next
 next
 next-auth
+
+# large files
+procatdwd.zip

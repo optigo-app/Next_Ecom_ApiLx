@@ -33,14 +33,14 @@ const SonasonsHome = async () => {
       sx={{
         width: "100%",
         height: "100%",
-        minHeight: '100vh'
+        minHeight: "100vh",
       }}
     >
+      <TopSection />
+      <TheDifference />
+      <BespokeBanner />
       {storeData?.Blockno === 1 && (
         <>
-          <TopSection />
-          <TheDifference />
-          <BespokeBanner />
           {storeData?.IsHomeAlbum === 1 && <AlbumSection storeData={storeData} />}
           {storeData?.IsHomeBestSeller === 1 && <BestSellerSection2 data={bestsellerBanner} storeData={storeData} />}
           {storeData?.IsHomeBestSeller === 1 && <NewArrival data={newArrivalBanner} storeData={storeData} />}
@@ -53,9 +53,6 @@ const SonasonsHome = async () => {
       )}
       {storeData?.Blockno === 2 && (
         <>
-          <TopSection />
-          <TheDifference />
-          <BespokeBanner />
           {storeData?.IsHomeAlbum === 1 && <AlbumSection storeData={storeData} />}
           {storeData?.IsHomeBestSeller === 1 && <BestSellerSection1 data={bestsellerBanner} storeData={storeData} />}
           {storeData?.IsHomeNewArrival === 1 && <NewArrival2 data={newArrivalBanner} storeInit={storeData} />}

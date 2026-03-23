@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState, useCallback } from "react";
 import "./DesignSet2.scss";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
@@ -16,142 +16,173 @@ import { useNextRouterLikeRR } from "@/app/(core)/hooks/useLocationRd";
 import { useStore } from "@/app/(core)/contexts/StoreProvider";
 import cookies from "js-cookie";
 import SonaHeader from "@/app/theme/fgstore.web/home/Header";
+import { useMaster } from "@/app/(core)/contexts/MasterProvider";
+import { BookCache } from "@/app/(core)/utils/API/Cache/CacheApi";
+import { normalizeALC, buildAlbumCacheKey, findMatchingCacheEntry, getPricingContext } from "@/app/(core)/cache_utility/CacheBuilder";
 
 
 
 
-const buildAlbumCacheKey = (type, storeData, pricing, id) => {
-  const meta = {
-    type,
-    PackageId: pricing?.PackageId ?? "",
-    Laboursetid: pricing?.Laboursetid ?? "",
-    diamondpricelistname: pricing?.diamondpricelistname ?? "",
-    colorstonepricelistname: pricing?.colorstonepricelistname ?? "",
-  };
-
-  const key = [
-    type,
-    pricing?.PackageId,
-    pricing?.Laboursetid,
-    pricing?.diamondpricelistname,
-    pricing?.colorstonepricelistname,
-  ].join("_");
-
-  return {
-    key,
-    meta,
-  }
-};
 
 
 
 
 const DesignSet2 = ({ data, storeInit }) => {
   const location = useNextRouterLikeRR();
-  const { islogin } = useStore()
+  const { islogin, loginUserDetail } = useStore();
+  const { cacheList, setCacheList } = useMaster();
   const designSetRef = useRef(null);
   const navigate = location.push;
   const [imageUrl, setImageUrl] = useState();
   const [designSetList, setDesignSetList] = useState([]);
   const [swiper, setSwiper] = useState(null);
   const [imageUrlDesignSet, setImageUrlDesignSet] = useState();
-  const [loadingHome, setLoadingHome] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
   const productRefs = useRef({});
   const scrollRetries = useRef(0);
   const maxRetries = 10;
-  const imageNotFound = `./Assets/image-not-found.jpg`
-  const [loginUserDetail, setLoginUserDetail] = useState({});
+  const imageNotFound = `/Assets/image-not-found.jpg`;
   const [mounted, setMounted] = useState(false);
+
+  const isFetchingRef = useRef(false);
+  const lastRequestKeyRef = useRef("");
 
 
   useEffect(() => {
     setImageUrl(storeInit?.CDNDesignImageFol);
     setImageUrlDesignSet(storeInit?.CDNDesignImageFolThumb);
     setMounted(true);
-    if (typeof window !== "undefined") {
-      try {
-        const stored = sessionStorage.getItem("loginUserDetail");
-        setLoginUserDetail(stored ? JSON.parse(stored) : null);
-      } catch (err) {
-        console.error("Failed to parse loginUserDetail:", err);
-        setLoginUserDetail(null);
-      }
-    }
-  }, []);
+  }, [storeInit?.CDNDesignImageFol, storeInit?.CDNDesignImageFolThumb]);
 
-  const finalID = useMemo(() => {
-    if (!mounted) return null;
-    const visitorId = cookies.get("visiterId") ?? "0";
-    const IsB2BWebsite = storeInit?.IsB2BWebsite ?? 0;
-    const uid = loginUserDetail?.id || "0";
-    if (IsB2BWebsite == 0) {
-      return islogin === false ? visitorId : uid;
-    }
-    return uid;
-  }, [mounted, loginUserDetail, islogin, storeInit?.IsB2BWebsite]);
-
-
-  const pricingContext = useMemo(() => {
-    if (!mounted) return null;
-
-
-    const loginInfo = loginUserDetail;
-
-    return {
-      PackageId: (loginInfo?.PackageId ?? storeInit?.PackageId) ?? "",
-      Laboursetid:
-        !islogin
-          ? storeInit?.pricemanagement_laboursetid
-          : loginInfo?.pricemanagement_laboursetid ?? "",
-      diamondpricelistname:
-        !islogin
-          ? storeInit?.diamondpricelistname
-          : loginInfo?.diamondpricelistname ?? "",
-      colorstonepricelistname:
-        !islogin
-          ? storeInit?.colorstonepricelistname
-          : loginInfo?.colorstonepricelistname ?? "",
-    };
-  }, [mounted, loginUserDetail, storeInit, islogin]);
+  const pricingContext = useMemo(() => getPricingContext(loginUserDetail, storeInit, islogin), [loginUserDetail, storeInit, islogin]);
 
 
 
 
-  const callAPI = async (id) => {
-    const { key, meta } = buildAlbumCacheKey("designset_", storeInit, pricingContext, id);
+
+  const fetchAndSetDesignSets = useCallback(async (finalID, precomputedKey) => {
+    if (!pricingContext || isFetchingRef.current) return;
+
+    const apiALC = "";
+    const keyALC = normalizeALC("");
+    const eventName = "fg_designset";
+
+    const { key, meta } = buildAlbumCacheKey(eventName, storeInit, pricingContext, finalID, keyALC);
+    const effectiveKey = precomputedKey || key;
+
+    isFetchingRef.current = true;
+    setIsLoading(true);
 
     try {
-      const cachedRes = await fetch(`/api/cache?key=${key}`);
-      const cached = await cachedRes.json();
+      // Step 1: Check server cache + local cache in parallel
+      const localCacheRes = await fetch(`/api/v1/cache?mode=meta&key=${effectiveKey}`)
+        .then((res) => res.json())
+        .catch(() => ({ cached: false }));
 
-      if (cached.cached && Array.isArray(cached.data)) {
-        console.log("🔥 Using cached data", cached.data);
-        setDesignSetList(cached.data);
-        return cached.data;
+      const serverCacheEntries = cacheList?.Data?.rd ?? [];
+      const matchingServerEntry = findMatchingCacheEntry(serverCacheEntries, pricingContext, eventName, apiALC);
+      const serverCacheRebuildDate = matchingServerEntry?.CacheRebuildDate ?? null;
+
+      const localCacheMeta = localCacheRes;
+      const localCacheRebuildDate = localCacheMeta?.CacheRebuildDate ?? null;
+
+      console.log("[DesignSet2] Cache check:", { key: effectiveKey, localCached: localCacheMeta?.cached, serverRebuild: serverCacheRebuildDate, localRebuild: localCacheRebuildDate });
+
+      // Step 2: Use cache if valid
+      if (localCacheMeta?.cached) {
+        const canValidate = Boolean(matchingServerEntry && serverCacheRebuildDate);
+        const datesMatch = localCacheRebuildDate === serverCacheRebuildDate;
+
+        if (canValidate && datesMatch) {
+          const cachedRes = await fetch(`/api/v1/cache?key=${effectiveKey}`);
+          const cached = await cachedRes.json();
+          if (cached.cached && Array.isArray(cached.data)) {
+            console.log("[DesignSet2] Serving from cache");
+            setDesignSetList(cached.data);
+            setIsLoading(false);
+            isFetchingRef.current = false;
+            return;
+          }
+        }
+        fetch(`/api/v1/cache?key=${effectiveKey}`, { method: "DELETE" }).catch(() => { });
       }
-      const res = await Get_Tren_BestS_NewAr_DesigSet_Album(storeInit, "GETDesignSet_List", id)
-      const rows = res?.Data?.rd || [];
-      if (Array.isArray(rows) && rows.length > 0) {
-        setDesignSetList(rows);
-        fetch("/api/cache", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ key, data: rows, meta }),
-        }).catch(console.error);
+
+      // Step 3: API Fallback
+      console.log("[DesignSet2] Calling API...");
+      const res = await Get_Tren_BestS_NewAr_DesigSet_Album(storeInit, "GETDesignSet_List", finalID);
+      const apiData = res?.Data?.rd || [];
+
+      if (Array.isArray(apiData) && apiData.length > 0) {
+        setDesignSetList(apiData);
       } else {
         setDesignSetList([]);
       }
+
+      setIsLoading(false);
+      isFetchingRef.current = false;
+
+      // Step 4: Book cache + store local cache
+      if (apiData.length > 0) {
+        try {
+          const bookCacheResult = await BookCache(finalID, eventName, pricingContext, apiALC);
+          const newCacheRebuildDate = bookCacheResult?.CacheRebuildDate ?? null;
+
+          if (newCacheRebuildDate) {
+            const newEntry = {
+              EventName: eventName,
+              PackageId: pricingContext.PackageId,
+              LabourSetId: pricingContext.Laboursetid,
+              diamondpricelistname: pricingContext.diamondpricelistname,
+              colorstonepricelistname: pricingContext.colorstonepricelistname,
+              ALC: keyALC,
+              CacheRebuildDate: newCacheRebuildDate,
+            };
+
+            if (cacheList?.Data?.rd) {
+              const updatedRd = [...cacheList.Data.rd];
+              const idx = updatedRd.findIndex(e => e.EventName === eventName && e.PackageId == pricingContext.PackageId && e.LabourSetId == pricingContext.Laboursetid);
+              if (idx > -1) updatedRd[idx] = newEntry; else updatedRd.push(newEntry);
+              setCacheList({ ...cacheList, Data: { ...cacheList.Data, rd: updatedRd } });
+            }
+          }
+
+          const updatedMeta = { ...meta, CacheRebuildDate: newCacheRebuildDate };
+          fetch("/api/v1/cache", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ key: effectiveKey, data: apiData, meta: updatedMeta }),
+          }).catch(console.error);
+        } catch (cacheErr) {
+          console.error("[DesignSet2] Cache update failed:", cacheErr);
+        }
+      }
     } catch (error) {
-      console.log(error);
+      console.error("[DesignSet2] Error fetching design sets:", error);
+      isFetchingRef.current = false;
+      setIsLoading(false);
     }
-  };
+  }, [pricingContext, storeInit, cacheList, setCacheList]);
 
   useEffect(() => {
-    if (!mounted) return;
-    const storeInit = typeof window !== "undefined" ? sessionStorage.getItem("StoreInit") : null;
-    if (!finalID) return;
-    callAPI(finalID);
-  }, [mounted, finalID]);
+    if (!mounted || !pricingContext || !storeInit || cacheList === null) return;
+
+    const fetchData = async () => {
+      const visitorId = cookies.get("visiterId") ?? "0";
+      const IsB2BWebsite = storeInit?.IsB2BWebsite ?? 0;
+      const uid = loginUserDetail?.id || "0";
+      const finalID = IsB2BWebsite == 0 ? (islogin === false ? visitorId : uid) : uid;
+
+      const keyALC = normalizeALC("");
+      const { key } = buildAlbumCacheKey("fg_designset", storeInit, pricingContext, finalID, keyALC);
+
+      if (isFetchingRef.current || lastRequestKeyRef.current === key) return;
+      lastRequestKeyRef.current = key;
+
+      await fetchAndSetDesignSets(finalID, key);
+    };
+
+    fetchData();
+  }, [mounted, islogin, pricingContext, storeInit, fetchAndSetDesignSets, loginUserDetail?.id, cacheList]);
 
   const ProdCardImageFunc = (pd) => {
     let finalprodListimg;
@@ -194,9 +225,9 @@ const DesignSet2 = ({ data, storeInit }) => {
     let obj = {
       a: item?.autocode,
       b: item?.designno,
-      m: loginUserDetail?.MetalId ?? storeInit?.MetalId,
-      d: loginUserDetail?.cmboDiaQCid ?? storeInit?.cmboDiaQCid,
-      c: loginUserDetail?.cmboCSQCid ?? storeInit?.cmboCSQCid,
+      m: loginUserDetail?.MetalId,
+      d: loginUserDetail?.cmboDiaQCid,
+      c: loginUserDetail?.cmboCSQCid,
       f: {},
       l: item?.ImageExtension,
       count: item?.ImageCount,

@@ -1,36 +1,31 @@
-
-
-
-
+import { getSession, getSessionAsync } from "../../FetchSessionData";
 import { CommonAPI } from "../CommonAPI/CommonAPI";
-
 
 export const CurrencyComboAPI = async (finalID) => {
     let response;
     try {
-        const storedEmail = sessionStorage.getItem('registerEmail') || '';
-        const storeInit = JSON.parse(sessionStorage.getItem('storeInit'));
-        const loginUserDetail = JSON.parse(sessionStorage.getItem('loginUserDetail')) || '0';
-        const { FrontEnd_RegNo } = storeInit;
+        const storedEmail = await getSessionAsync("registerEmail") || "";
+        const storeInit = typeof window !== "undefined" && window.__STORE_INIT__ ? window.__STORE_INIT__ : getSession("storeInit"); if (!storeInit) return null;
+        const loginUserDetail = await getSessionAsync("loginUserDetail") || "0";
+        const FrontEnd_RegNo = storeInit?.FrontEnd_RegNo;
+
         const combinedValue = JSON.stringify({
-            FrontEnd_RegNo: `${FrontEnd_RegNo}`, Customerid: `${finalID}`
+            FrontEnd_RegNo: `${FrontEnd_RegNo}`,
+            Customerid: `${finalID}`,
         });
 
         const encodedCombinedValue = btoa(combinedValue);
         let body = {
-            "con": `{\"id\":\"Store\",\"mode\":\"CURRENCYCOMBO\",\"appuserid\":\"${storedEmail}\"}`,
-            "f": "on-index(home)-call (CURRENCYCOMBO)",
-            "p": combinedValue, 
+            con: `{\"id\":\"Store\",\"mode\":\"CURRENCYCOMBO\",\"appuserid\":\"${storedEmail}\"}`,
+            f: "on-index(home)-call (CURRENCYCOMBO)",
+            p: combinedValue,
             // "p": encodedCombinedValue,
             // "dp": combinedValue,
+        };
 
-        }
-        
         response = await CommonAPI(body);
-
     } catch (error) {
-        console.error('Error:', error);
+        console.error("Error:", error);
     }
     return response;
-
-}
+};

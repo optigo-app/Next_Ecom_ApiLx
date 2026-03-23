@@ -1,3 +1,16 @@
+## [2026-03-23]
+
+### Modified
+
+- **Session & Global Management**: Implemented robust session storage and global `window` access for critical store and user data. Added an **Auto-Refetch Fallback** and **Async Robust Getters**.
+  - **Files modified**:
+    - `app/(core)/utils/FetchSessionData.js`: Added `getSessionAsync` for async waiting and automatic sync to `window` globals.
+    - `app/(core)/contexts/MasterProvider.js`: Implemented client-side re-fetch logic for `storeInit` using `fetchStoreInitData`.
+    - `app/(core)/utils/API/Combo/*.js`: Refactored all combo APIs to use `getSessionAsync` to wait for configuration data.
+  - **Old behavior**: Inconsistent access to session data; potential crashes if `sessionStorage` was accessed too early or if `storeInit` was null, leading to "FrontEnd Registration Error".
+  - **New behavior**: Centralized, robust access via `getSession/setSession` with automatic `window` global sync (`__STORE_INIT__`, `__LOGIN_USER__`, `__LOGIN_USER_DETAIL__`) and async retry logic via `getSessionAsync`.
+  - **Reason for change**: Fix reported "FrontEnd Registration Error" and provide reliable, easy-to-access global data for both client components and utility functions.
+
 ## [2026-03-21]
 
 ### Modified
@@ -102,12 +115,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `app/theme/fgstore.mapp/home/components/GiftBlock.jsx`: **Integrated cache system** — Added the same cache pattern used in `Categories.jsx` and `ref.js` to the Latest Albums block. Old behavior: fetched albums directly from `Get_Tren_BestS_NewAr_DesigSet_Album` on every page load with no caching. New behavior: checks server cache (`GetCacheList`) and local cache (`/api/v1/cache`) in parallel; serves cached data when valid; falls back to API call and stores result in cache via `BookCache` + POST to `/api/v1/cache`. Event name: `home_album`. All existing image validation and fallback behaviors preserved.
 - `app/theme/fgstore.mapp/home/components/Categories.jsx`: **Integrated cache system** — Added the same cache pattern used in the Album component (`ref.js`) to the Categories block. Old behavior: fetched categories directly from `HomeCategoryApi` on every page load with no caching. New behavior: checks server cache (`GetCacheList`) and local cache (`/api/v1/cache`) in parallel; serves cached data when valid; falls back to API call and stores result in cache via `BookCache` + POST to `/api/v1/cache`. Event name: `home_category`. All existing fallbacks to `categoryImages` and image mapping preserved. Removed unused imports (`processAlbumImages`, `getSession`); added `Cookies`, `useCallback`, `useRef`.
 
-### [2026-03-18]
+### [2026-03-23]
+
+#### Added
+- Fixed malformed code in `Header.jsx` caused by manual edits (resolved syntax errors like `valugetMenuApi`).
+- Re-implemented standardized Menu Caching in `Header.jsx` mirroring the mobile app's menu logic with `PackageId` focus.
+- Restored original B2B/B2C conditional guard for menu fetching in `Header.jsx`.
+- Implemented Home Page Caching Demo in `SonasonsHome` using Next.js 15 `unstable_cache`.
+- Upgraded `AlbumSection/Main.jsx` with robust 5-step caching validation (local vs server metadata) and global `cacheList` sync.
+- Upgraded `BestSellerSection1.js` with robust 5-step caching validation (local vs server metadata) and global `cacheList` sync using `fg_bestseller` prefix.
+- Upgraded `NewArrival1.js` with robust 5-step caching validation (local vs server metadata) and global `cacheList` sync using `fg_newarrival` prefix.
+- Upgraded `TrendingView1.js` with robust 5-step caching validation (local vs server metadata) and global `cacheList` sync using `fg_trending` prefix.
+- Upgraded `DesignSet2.js` with robust 5-step caching validation (local vs server metadata) and global `cacheList` sync using `fg_designset` prefix.
 
 #### Fixed
-
-- `app/theme/fgstore.mapp/detail/_detComponents/page.jsx`: **Fixed Uncaught TypeError in ProductPage** — Added defensive checks before calling `Object.keys()` on `singleProd` and `defaultImg` to prevent "Cannot convert undefined or null to object" crashes when data is not yet available.
-- `app/theme/fgstore.mapp/detail/_detComponents/Select.jsx`: **Fixed CustomSelect default value matching** — Updated the strict equality check in `CustomSelect` to do a loose equality fallback so that values like `"14K WHITE"` successfully match. Added a fallback to `options[0]` if no matching option is found to mirror native select behavior.
+- Updated Combo APIs (`MetalType`, `DiamondQualityColor`, `MetalColor`, `ColorStoneQualityColor`, `Currency`) to use `getSessionAsync` for robust data fetching.
 - `app/theme/fgstore.mapp/detail/_detComponents/MaterialCustomization.jsx`: **Fixed Optional Chaining in CustomSelect properties** — Updated `getOptionLabel` and `getOptionValue` references to `opt.metaltype`, `opt.Quality`, etc. to use `opt?.` optional chaining. This prevents `Cannot read properties of undefined` UI crashes when CustomSelect loads options asynchronously.
 - `app/theme/fgstore.mapp/detail/_detComponents/page.jsx` + `InfoDetail.jsx`: **Fixed price not updating in UI after customization change** — `singleProd1` (updated from `SingleProdListAPI` on every customization change) was never passed as a prop to `InfoDetail`, so the price always showed the stale `singleProd` value. Added `singleProd1={singleProd1}` prop. Also fixed price formatting to apply `toLocaleString("en-IN")` to both `singleProd1` and `singleProd` consistently.
 - `app/theme/fgstore.mapp/detail/_detComponents/page.jsx` + `page.scss`: **Added product image slider dots and fixed skeleton UI** — Enabled pagination dots in the image slider for better navigation. Fixed the "uneven" loading skeleton by matching skeleton dimensions to actual UI heights (150px thumbnails, 60vh main image) and removing incorrect offsets. Styled dots in SCSS for a premium look.

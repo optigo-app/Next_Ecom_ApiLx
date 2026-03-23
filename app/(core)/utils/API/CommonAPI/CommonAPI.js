@@ -51,7 +51,7 @@ const waitForStoreInit = async (maxRetries = 50, interval = 100) => {
             const data = getStoreInitData();
             if (data || retries >= maxRetries) {
                 if (!data && typeof window !== "undefined") {
-                   console.warn("CommonAPI: Proceeding without storeInit after timeout");
+                    console.warn("CommonAPI: Proceeding without storeInit after timeout");
                 }
                 resolve(data);
             } else {
@@ -70,9 +70,9 @@ export const CommonAPI = async (body) => {
         }
 
         let storeInit = getStoreInitData();
-        
+
         if (!storeInit && typeof window !== 'undefined') {
-            storeInit = await waitForStoreInit();
+            storeInit = window.__STORE_INIT__ || await waitForStoreInit();
         }
 
         const YearCode = storeInit?.YearCode || "e3tsaXZlLm9wdGlnb2FwcHMuY29tfX17ezIxfX17e3NvbmFzb25zfX17e3NvbmFzb25zfX0=";
@@ -97,7 +97,6 @@ export const CommonAPI = async (body) => {
         return response?.data || { Data: { rd: [] } };
     } catch (error) {
         console.error("CommonAPI Error:", error);
-        // Return a predictable structure even on failure
         return {
             Data: {
                 rd: [{ stat: 0, stat_msg: "Network error or API failure" }]
