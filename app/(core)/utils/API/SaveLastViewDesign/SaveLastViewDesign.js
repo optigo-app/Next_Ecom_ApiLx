@@ -1,14 +1,15 @@
+import { getSession } from "../../FetchSessionData";
 import { CommonAPI } from '../CommonAPI/CommonAPI'
 
 export const SaveLastViewDesign = async (visiterId, autocode, designno) => {
 
-  let storeInit = JSON.parse(sessionStorage.getItem("storeInit"))
-  let loginInfo = JSON.parse(sessionStorage.getItem("loginUserDetail"))
-  let userEmail = sessionStorage.getItem("registerEmail")
-  const islogin = JSON.parse(sessionStorage.getItem("LoginUser")) ?? false;
+  let storeInit = getSession('storeInit');
+  let loginInfo = getSession("loginUserDetail");
+  let userEmail = getSession("registerEmail");
+  const islogin = getSession("LoginUser");
 
-  const customerId = storeInit?.IsB2BWebsite == 0 && islogin == false || islogin == null ? visiterId : loginInfo.id ?? 0;
-  const customerEmail = storeInit?.IsB2BWebsite == 0 && islogin == false || islogin == null ? visiterId : loginInfo?.userid ?? 0;
+  const customerId = (storeInit?.IsB2BWebsite == 0 && (islogin == false || islogin == null)) ? visiterId : (loginInfo?.id ?? 0);
+  const customerEmail = (storeInit?.IsB2BWebsite == 0 && (islogin == false || islogin == null)) ? visiterId : (loginInfo?.userid ?? 0);
 
   let data = {
     "FrontEnd_RegNo": `${storeInit?.FrontEnd_RegNo ?? 0}`,

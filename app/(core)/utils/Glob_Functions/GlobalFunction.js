@@ -1,4 +1,5 @@
 import { NEXT_APP_WEB } from "../env";
+import { getSession } from "../FetchSessionData";
 
 
 export function storImagePath() {
@@ -7,11 +8,10 @@ export function storImagePath() {
     return `${NEXT_APP_WEB}/WebSiteStaticImage`;
   }
 
-  let statiPath = `${window?.location?.protocol}//${
-    window.location.hostname === "localhost" || window.location.hostname === "zen"
+  let statiPath = `${window?.location?.protocol}//${window.location.hostname === "localhost" || window.location.hostname === "zen"
       ? NEXT_APP_WEB
       : window.location.hostname
-  }`;
+    }`;
 
   return `${statiPath}/WebSiteStaticImage`;
 }
@@ -70,26 +70,26 @@ export function storInitDataPath() {
 // }
 
 export function findMetalColor(paramId) {
-  let metalColorArr = JSON.parse(sessionStorage.getItem("MetalColorCombo"));
+  let metalColorArr = getSession("MetalColorCombo") || [];
   let item = metalColorArr.filter((item) => item?.id === paramId);
   return item;
 }
 
 export function findMetalType(paramId) {
-  let metalTypeArr = JSON.parse(sessionStorage.getItem("metalTypeCombo"));
+  let metalTypeArr = getSession("metalTypeCombo") || [];
   let item = metalTypeArr.filter((item) => item?.Metalid == paramId);
   // console.log("findMetal pro",paramId,item);
   return item;
 }
 
 export function findMetal(param) {
-  let metalTypeArr = JSON.parse(sessionStorage.getItem("metalTypeCombo"));
+  let metalTypeArr = getSession("metalTypeCombo") || [];
   let item = metalTypeArr.filter((item) => item?.metaltype === param);
   return item;
 }
 
 export function findDiaQcId(param) {
-  let diaQCArr = JSON.parse(sessionStorage.getItem("diamondQualityColorCombo"));
+  let diaQCArr = getSession("diamondQualityColorCombo") || [];
   let quality = param.split(",")[0];
   let color = param.split(",")[1];
 
@@ -102,9 +102,7 @@ export function findDiaQcId(param) {
 }
 
 export function findCsQcId(param) {
-  let CsQCArr = JSON.parse(
-    sessionStorage.getItem("ColorStoneQualityColorCombo")
-  );
+  let CsQCArr = getSession("ColorStoneQualityColorCombo") || [];
   let quality = param.split(",")[0];
   let color = param.split(",")[1];
 

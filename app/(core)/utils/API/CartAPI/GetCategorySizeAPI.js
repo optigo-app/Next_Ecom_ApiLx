@@ -5,13 +5,11 @@ export const getSizeData = async (item, visiterId) => {
   try {
     const storeInit = (typeof window !== 'undefined' && window.__STORE_INIT__) ? window.__STORE_INIT__ : getSession('storeInit');
     const { FrontEnd_RegNo } = storeInit;
-    const storedData = sessionStorage.getItem("loginUserDetail") || "0";
-    const islogin = JSON.parse(sessionStorage.getItem("LoginUser"));
-    const data = JSON.parse(storedData);
-    // const islogin = JSON.parse(sessionStorage.getItem("LoginUser")) ?? false;
+    const data = (typeof window !== 'undefined' && window.__LOGIN_USER_DETAIL__) ? window.__LOGIN_USER_DETAIL__ : getSession("loginUserDetail");
+    const islogin = (typeof window !== 'undefined' && window.__LOGIN_USER__) ? window.__LOGIN_USER__ : getSession("LoginUser");
 
-    const customerId = storeInit?.IsB2BWebsite == 0 && islogin == false || islogin == null ? visiterId : data.id ?? 0;
-    const customerEmail = storeInit?.IsB2BWebsite == 0 && islogin == false || islogin == null ? visiterId : data?.userid ?? "";
+    const customerId = (storeInit?.IsB2BWebsite == 0 && (islogin == false || islogin == null)) ? visiterId : (data?.id ?? 0);
+    const customerEmail = (storeInit?.IsB2BWebsite == 0 && (islogin == false || islogin == null)) ? visiterId : (data?.userid ?? "");
 
     const combinedValue = JSON.stringify({
       autocode: `${item?.autocode}`,

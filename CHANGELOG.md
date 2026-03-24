@@ -1,3 +1,22 @@
+## [2026-03-24]
+
+### Modified
+
+- **Product Description Handling (fgstore.web)**: Fixed an issue where the product description "Show More" button was missing or not functioning correctly on certain screen sizes.
+  - **Files modified**:
+    - `app/theme/fgstore.web/detail/page.scss`: Fixed invalid CSS `height: none` to `height: auto` and added standard `line-clamp` properties for better browser compatibility.
+    - `app/theme/fgstore.web/detail/_detComponents/components/ProductInfo.jsx`: Implemented a simplified character-length based toggle (~160 chars) and enabled `dangerouslySetInnerHTML` for description rendering. Removed complex ref-based overflow detection.
+    - `app/theme/fgstore.web/detail/_detComponents/hooks/useProductCustomization.js`: Removed `checkTextOverflow` and `isClamped` state in favor of the simplified length-based approach.
+  - **Old behavior**: Description was rendered as plain text, "Show More" logic relied on fragile `scrollHeight` vs `clientHeight` comparisons which failed on high-resolution screens.
+  - **New behavior**: Robust description toggle based on content length, full HTML support, and simplified logic for better stability across all devices.
+  - **Reason for change**: Fix reported UI bug where "Show More" was missing on large screens and align with "Simple" implementation request for production reliability.
+
+- **Session Data & API Reliability**: Resolved `SyntaxError` and potential `TypeError` in multiple API utils caused by redundant `JSON.parse` calls on already-parsed session objects.
+  - **Files modified**: `GetCategorySizeAPI.js`, `CartAndWishListAPI.js`, `RemoveCartAndWishAPI.js`, `SaveLastViewDesign.js`, `DesignSetListAPI.js`, `StockItemApi.js`, `SingleProdListAPI.js`.
+  - **Old behavior**: `JSON.parse` was incorrectly called on objects returned by the new `getSession` helper, causing runtime crashes. Missing optional chaining on `loginUserDetail.id` could lead to further crashes.
+  - **New behavior**: Simplified session data retrieval using the `getSession` helper directly and implemented robust optional chaining.
+  - **Reason for change**: Fix critical runtime errors after refactoring to a safer session management system.
+
 ## [2026-03-23]
 
 ### Modified
@@ -10,6 +29,13 @@
   - **Old behavior**: Inconsistent access to session data; potential crashes if `sessionStorage` was accessed too early or if `storeInit` was null, leading to "FrontEnd Registration Error".
   - **New behavior**: Centralized, robust access via `getSession/setSession` with automatic `window` global sync (`__STORE_INIT__`, `__LOGIN_USER__`, `__LOGIN_USER_DETAIL__`) and async retry logic via `getSessionAsync`.
   - **Reason for change**: Fix reported "FrontEnd Registration Error" and provide reliable, easy-to-access global data for both client components and utility functions.
+
+- **TypeError Fix (GlobalFunction.js)**: Added defensive null checks to utility functions that access `sessionStorage`.
+  - **Files modified**: `app/(core)/utils/Glob_Functions/GlobalFunction.js`
+  - **Old behavior**: `findMetalColor`, `findMetalType`, etc., would crash if the required data was not yet available in `sessionStorage` (calling `.filter()` on `null`).
+  - **New behavior**: These functions now use the `getSession` helper and provide a default empty array `[]` if data is missing, preventing crashes.
+  - **Reason for change**: Resolve reported "Cannot read properties of null (reading 'filter')" error during initial page load.
+  - **Date**: 2026-03-23
 
 ## [2026-03-21]
 

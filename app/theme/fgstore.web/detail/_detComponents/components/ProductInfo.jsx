@@ -24,10 +24,7 @@ const ProductInfo = ({
     handleCart,
     handleWishList,
     isExpanded,
-    isClamped,
-    setIsClamped,
     toggleText,
-    checkTextOverflow,
     metalTypeCombo,
     handleCustomChange,
     metalColorCombo,
@@ -39,20 +36,7 @@ const ProductInfo = ({
     SizeCombo,
     SizeSorting,
 }) => {
-    const descriptionRef = useRef(null);
     const descriptionText = singleProd1?.description ?? singleProd?.description;
-
-    useEffect(() => {
-        const checkOverflow = () => {
-            checkTextOverflow(descriptionRef);
-        };
-
-        checkOverflow();
-        window.addEventListener('resize', checkOverflow);
-        return () => {
-            window.removeEventListener('resize', checkOverflow);
-        };
-    }, [descriptionText, checkTextOverflow]);
 
     if (prodLoading) {
         return (
@@ -133,11 +117,12 @@ const ProductInfo = ({
 
                     {descriptionText?.length > 0 && (
                         <div className={`smrt_prod_description ${isExpanded ? 'smrt_show-more' : ''}`}>
-                            <p className="smrt_description-text" ref={descriptionRef}>
-                                {descriptionText}
-                            </p>
+                            <p 
+                                className="smrt_description-text" 
+                                dangerouslySetInnerHTML={{ __html: descriptionText }}
+                            />
 
-                            {(isClamped && !isExpanded) && (
+                            {(descriptionText.replace(/<[^>]*>?/gm, '').length > 160 && !isExpanded) && (
                                 <span className="smrt_toggle-text" onClick={toggleText}>
                                     Show More
                                 </span>

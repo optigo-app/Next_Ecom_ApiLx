@@ -30,6 +30,7 @@ import FilterSection from './FilterSection';
 import BreadCrumbs from './BreadCrums';
 import { useStore } from '@/app/(core)/contexts/StoreProvider';
 import { ParseAndDecodeSearchParams } from '@/app/(core)/utils/GlobalFunctions/Parser';
+import { getSession } from '@/app/(core)/utils/FetchSessionData';
 
 const MobileFilter = dynamic(() => import('./MobileFilter'), { ssr: false });
 
@@ -40,18 +41,18 @@ const Product = ({ params, searchParams, storeinit }) => {
 
     useEffect(() => {
         loginUserDetail = JSON.parse(sessionStorage.getItem("loginUserDetail"));
-        
+
         let mtCombo = JSON.parse(sessionStorage.getItem("metalTypeCombo"));
         setMetalTypeCombo(mtCombo)
-        
+
         let diaQcCombo = JSON.parse(sessionStorage.getItem("diamondQualityColorCombo"));
         setDiaQcCombo(diaQcCombo)
-        
+
         let CsQcCombo = JSON.parse(sessionStorage.getItem("ColorStoneQualityColorCombo"));
         setCsQcCombo(CsQcCombo)
     }, [])
-    
-    
+
+
     let location = useNextRouterLikeRR();
     let navigate = useNextRouterLikeRR();
     let minwidth1201px = useMediaQuery('(min-width:1201px)')
@@ -208,10 +209,10 @@ const Product = ({ params, searchParams, storeinit }) => {
     });
 
     const callAllApi = () => {
-        let mtTypeLocal = JSON.parse(sessionStorage.getItem("metalTypeCombo"));
-        let diaQcLocal = JSON.parse(sessionStorage.getItem("diamondQualityColorCombo"));
-        let csQcLocal = JSON.parse(sessionStorage.getItem("ColorStoneQualityColorCombo"));
-        let mtColorLocal = JSON.parse(sessionStorage.getItem("MetalColorCombo"));
+        let mtTypeLocal = getSession("metalTypeCombo");
+        let diaQcLocal = getSession("diamondQualityColorCombo");
+        let csQcLocal = getSession("ColorStoneQualityColorCombo");
+        let mtColorLocal = getSession("MetalColorCombo");
 
         if (!mtTypeLocal || mtTypeLocal?.length === 0) {
             MetalTypeComboAPI(cookie)

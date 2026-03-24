@@ -134,13 +134,10 @@ const ProductDetail = ({ params, searchParams, storeInit }) => {
     const customizationData = useProductCustomization(singleProd, singleProd1, storeInit);
     const {
         isExpanded,
-        isClamped,
-        setIsClamped,
         toggleText,
         SizeSorting,
         handleMetalWiseColorImgWithFlag,
-        formatter,
-        checkTextOverflow
+        formatter
     } = customizationData;
 
     const navigationData = useNavigation(
@@ -213,10 +210,7 @@ const ProductDetail = ({ params, searchParams, storeInit }) => {
                                                 handleCart={handleCart}
                                                 handleWishList={handleWishList}
                                                 isExpanded={isExpanded}
-                                                isClamped={isClamped}
-                                                setIsClamped={setIsClamped}
                                                 toggleText={toggleText}
-                                                checkTextOverflow={checkTextOverflow}
                                                 metalTypeCombo={metalTypeCombo}
                                                 handleCustomChange={handleCustomChange}
                                                 metalColorCombo={metalColorCombo}
