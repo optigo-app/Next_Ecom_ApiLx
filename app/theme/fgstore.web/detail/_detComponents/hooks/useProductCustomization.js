@@ -1,8 +1,8 @@
+import { getSession } from "@/app/(core)/utils/FetchSessionData";
 import { useState, useEffect, useCallback } from "react";
 
 export const useProductCustomization = (singleProd, singleProd1, storeInit) => {
     const [isExpanded, setIsExpanded] = useState(false);
-    const [isClamped, setIsClamped] = useState(false);
 
     // Toggle description expand/collapse
     const toggleExpand = useCallback(() => {
@@ -25,7 +25,9 @@ export const useProductCustomization = (singleProd, singleProd1, storeInit) => {
 
     // Handle metal color change without image update
     const handleMetalWiseColorImgWithFlag = useCallback(async (e, setSelectMtColor) => {
-        let mtColorLocal = JSON.parse(sessionStorage.getItem("MetalColorCombo"));
+        // let mtColorLocal = JSON.parse(sessionStorage.getItem("MetalColorCombo"));
+        const mtColorLocal = getSession("MetalColorCombo") || [];
+
         let mcArr;
 
         if (mtColorLocal?.length) {
@@ -49,7 +51,7 @@ export const useProductCustomization = (singleProd, singleProd1, storeInit) => {
 
     // CSS variable setter
     const setCSSVariable = useCallback(() => {
-        const storeInit = JSON.parse(sessionStorage.getItem("storeInit"));
+        const storeInit = window.__STORE_INIT__ || getSession("storeInit");
         const backgroundColor = storeInit?.IsPLW == 1 ? "#c4cfdb" : "#c0bbb1";
         document.documentElement.style.setProperty(
             "--background-color",
@@ -57,19 +59,8 @@ export const useProductCustomization = (singleProd, singleProd1, storeInit) => {
         );
     }, []);
 
-    // Check text overflow for description
-    const checkTextOverflow = useCallback((descriptionRef) => {
-        const descriptionElement = descriptionRef.current;
-        if (descriptionElement) {
-            const isOverflowing =
-                descriptionElement.scrollHeight > descriptionElement.clientHeight;
-            setIsClamped(isOverflowing);
-        }
-    }, []);
-
     // Reset expand state when product changes
     useEffect(() => {
-        setIsClamped(false);
         setIsExpanded(false);
     }, [singleProd?.autocode]);
 
@@ -81,20 +72,16 @@ export const useProductCustomization = (singleProd, singleProd1, storeInit) => {
     return {
         // States
         isExpanded,
-        isClamped,
 
         // Setters
         setIsExpanded,
-        setIsClamped,
 
         // Functions
-        toggleExpand,
         toggleText,
         SizeSorting,
         handleMetalWiseColorImgWithFlag,
         formatter,
         decodeEntities,
-        setCSSVariable,
-        checkTextOverflow
+        setCSSVariable
     };
 };

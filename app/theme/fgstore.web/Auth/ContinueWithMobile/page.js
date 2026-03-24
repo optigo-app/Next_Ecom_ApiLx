@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button, CircularProgress, TextField } from "@mui/material";
 import { toast } from "react-toastify";
 import { ContimueWithMobileAPI } from "@/app/(core)/utils/API/Auth/ContimueWithMobileAPI";
@@ -23,7 +23,7 @@ export default function ContinueWithMobile({ params, searchParams, storeInit }) 
   const redirectMobileUrl = `/LoginWithMobileCode${search ? `?LoginRedirect=${encodeURIComponent(search)}` : ""}`;
   const redirectSignUpUrl = `/register${search ? `?LoginRedirect=${encodeURIComponent(search)}` : ""}`;
   const cancelRedireactUrl = `/LoginOption${search ? `?LoginRedirect=${encodeURIComponent(search)}` : ""}`;
-  
+
   useEffect(() => {
     // Clearing stale email/mobile on mount to ensure a fresh login flow
     sessionStorage.removeItem("registerEmail");

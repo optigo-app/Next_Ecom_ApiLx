@@ -814,6 +814,7 @@
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 3;
+  line-clamp: 3;
   overflow: hidden;
   text-align: justify;
   transition: height 0.3s ease;
@@ -826,7 +827,8 @@
 
 .smrt_show-more .smrt_description-text {
   -webkit-line-clamp: unset;
-  height: none;
+  line-clamp: unset;
+  height: auto;
 }
 
 .smrt_toggle-text {

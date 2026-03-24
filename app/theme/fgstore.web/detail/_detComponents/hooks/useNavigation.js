@@ -1,6 +1,7 @@
 import Pako from "pako";
 import { formatRedirectTitleLine } from "@/app/(core)/utils/Glob_Functions/GlobalFunction";
 import { useNextRouterLikeRR } from "@/app/(core)/hooks/useLocationRd";
+import { getSession } from "@/app/(core)/utils/FetchSessionData";
 
 export const useNavigation = (setSingleProd1, setSingleProd, setProdLoading, setImagePromise, setWishListFlag) => {
     const navigate = useNextRouterLikeRR();
@@ -19,7 +20,7 @@ export const useNavigation = (setSingleProd1, setSingleProd, setProdLoading, set
 
     // Handle move to detail page
     const handleMoveToDetail = (productData) => {
-        let loginInfo = JSON.parse(sessionStorage.getItem("loginUserDetail"));
+        const loginInfo = window.__LOGIN_USER_DETAIL__ || getSession("loginUserDetail");
 
         let obj = {
             a: productData?.autocode,

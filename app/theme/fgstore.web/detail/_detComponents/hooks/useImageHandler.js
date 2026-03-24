@@ -1,3 +1,4 @@
+import { getSession } from "@/app/(core)/utils/FetchSessionData";
 import { useState, useEffect } from "react";
 
 export const useImageHandler = (singleProd, singleProd1, selectMtColor, storeInit, prodLoading, decodeUrl) => {
@@ -48,7 +49,7 @@ export const useImageHandler = (singleProd, singleProd1, selectMtColor, storeIni
 
     // Main function to process product card images
     const ProdCardImageFunc = async () => {
-        const mtColorLocal = JSON.parse(sessionStorage.getItem("MetalColorCombo")) || [];
+        const mtColorLocal = getSession("MetalColorCombo") || [];
         const imageVideoDetail = singleProd?.ImageVideoDetail;
         const pd = singleProd;
 
@@ -171,7 +172,7 @@ export const useImageHandler = (singleProd, singleProd1, selectMtColor, storeIni
     // Handle metal color change with image update
     const handleMetalWiseColorImg = async (e) => {
         const selectedColorCode = e.target.value;
-        const mtColorLocal = JSON.parse(sessionStorage.getItem("MetalColorCombo") || "[]");
+        const mtColorLocal = getSession("MetalColorCombo") || [];
         const mcArr = mtColorLocal.find(ele => ele?.colorcode === selectedColorCode);
 
         const prod = singleProd ?? singleProd1;
@@ -321,8 +322,8 @@ export const useImageHandler = (singleProd, singleProd1, selectMtColor, storeIni
 
             if (b && l && count && sInit?.CDNDesignImageFol) {
                 // Get the user's default metal color from sessionStorage (same source as ProdCardImageFunc)
-                const mtColorLocal = JSON.parse(sessionStorage.getItem("MetalColorCombo")) || [];
-                const loginInfo = JSON.parse(sessionStorage.getItem("loginUserDetail"));
+                const mtColorLocal = getSession("MetalColorCombo") || [];
+                const loginInfo = window.__LOGIN_USER_DETAIL__ || getSession("loginUserDetail");
                 const defaultColorObj = mtColorLocal.find(ele => ele.id === loginInfo?.MetalColorId);
                 const colorCode = defaultColorObj?.colorcode;
 

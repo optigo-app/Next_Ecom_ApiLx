@@ -3,16 +3,16 @@ import { CartAndWishListAPI } from "@/app/(core)/utils/API/CartAndWishList/CartA
 import { RemoveCartAndWishAPI } from "@/app/(core)/utils/API/RemoveCartandWishAPI/RemoveCartAndWishAPI";
 import { useStore } from "@/app/(core)/contexts/StoreProvider";
 import Cookies from "js-cookie";
+import { getSession } from "@/app/(core)/utils/FetchSessionData";
 
 export const useCartWishlist = (singleProd, singleProd1, metalTypeCombo, diaQcCombo, csQcCombo, metalColorCombo, selectMtType, selectDiaQc, selectCsQc, selectMtColor, sizeData) => {
     const { setCartCountNum, setWishCountNum } = useStore();
     const [addToCartFlag, setAddToCartFlag] = useState(null);
     const [wishListFlag, setWishListFlag] = useState(null);
     const [cartArr, setCartArr] = useState({});
-    
+
     const cookie = Cookies.get("visiterId");
 
-    // Update cart flag when product changes
     useEffect(() => {
         let isincart = singleProd?.IsInCart == 0 ? false : true;
         setAddToCartFlag(isincart);
@@ -20,8 +20,8 @@ export const useCartWishlist = (singleProd, singleProd1, metalTypeCombo, diaQcCo
 
     // Create product object for cart/wishlist operations
     const createProductObject = () => {
-        let storeinitInside = JSON.parse(sessionStorage.getItem("storeInit"));
-        let logininfoInside = JSON.parse(sessionStorage.getItem("loginUserDetail"));
+        let storeinitInside = window.__STORE_INIT__ || getSession("storeInit");
+        let logininfoInside = window.__LOGIN_USER_DETAIL__ || getSession("loginUserDetail");
 
         let metal = metalTypeCombo?.filter((ele) => ele?.metaltype == selectMtType);
         let dia = diaQcCombo?.filter(
