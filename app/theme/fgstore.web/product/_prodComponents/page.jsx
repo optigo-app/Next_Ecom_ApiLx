@@ -30,26 +30,17 @@ import FilterSection from './FilterSection';
 import BreadCrumbs from './BreadCrums';
 import { useStore } from '@/app/(core)/contexts/StoreProvider';
 import { ParseAndDecodeSearchParams } from '@/app/(core)/utils/GlobalFunctions/Parser';
-import { getSession } from '@/app/(core)/utils/FetchSessionData';
+import { getSession, setSession } from '@/app/(core)/utils/FetchSessionData';
 
 const MobileFilter = dynamic(() => import('./MobileFilter'), { ssr: false });
 
 const Product = ({ params, searchParams, storeinit }) => {
 
-    let loginUserDetail;
     const storeInit = storeinit;
+    const [loginInfo, setLoginInfo] = useState(getSession("loginUserDetail"));
 
     useEffect(() => {
-        loginUserDetail = JSON.parse(sessionStorage.getItem("loginUserDetail"));
-
-        let mtCombo = JSON.parse(sessionStorage.getItem("metalTypeCombo"));
-        setMetalTypeCombo(mtCombo)
-
-        let diaQcCombo = JSON.parse(sessionStorage.getItem("diamondQualityColorCombo"));
-        setDiaQcCombo(diaQcCombo)
-
-        let CsQcCombo = JSON.parse(sessionStorage.getItem("ColorStoneQualityColorCombo"));
-        setCsQcCombo(CsQcCombo)
+        setCSSVariable();
     }, [])
 
 
@@ -73,14 +64,13 @@ const Product = ({ params, searchParams, storeinit }) => {
     const [wishArr, setWishArr] = useState({})
     const [menuParams, setMenuParams] = useState({})
     const [filterProdListEmpty, setFilterProdListEmpty] = useState(false)
-    const [metalTypeCombo, setMetalTypeCombo] = useState([]);
-    const [diaQcCombo, setDiaQcCombo] = useState([]);
-    const [csQcCombo, setCsQcCombo] = useState([]);
-    const [selectedMetalId, setSelectedMetalId] = useState();
-    const [selectedDiaId, setSelectedDiaId] = useState();
+    const [metalTypeCombo, setMetalTypeCombo] = useState(getSession("metalTypeCombo") || []);
+    const [diaQcCombo, setDiaQcCombo] = useState(getSession("diamondQualityColorCombo") || []);
+    const [csQcCombo, setCsQcCombo] = useState(getSession("ColorStoneQualityColorCombo") || []);
+    const [selectedMetalId, setSelectedMetalId] = useState(loginInfo?.MetalId ?? storeInit?.MetalId);
+    const [selectedDiaId, setSelectedDiaId] = useState(loginInfo?.cmboDiaQCid ?? storeInit?.cmboDiaQCid);
     const [selectedCsId, setSelectedCsId] = useState();
     const [IsBreadCumShow, setIsBreadcumShow] = useState(false);
-    const [loginInfo, setLoginInfo] = useState();
     const [isDrawerOpen, setIsDrawerOpen] = useState(false)
     const [rollOverImgPd, setRolloverImgPd] = useState({})
     const [prodListType, setprodListType] = useState();
@@ -108,23 +98,10 @@ const Product = ({ params, searchParams, storeinit }) => {
     };
 
     useEffect(() => {
-        setCSSVariable();
-        const storeInitInside = storeinit;
-        const loginUserDetailInside = JSON.parse(sessionStorage.getItem("loginUserDetail"));
-
-        let mtid = loginUserDetailInside?.MetalId ?? storeInitInside?.MetalId
-        setSelectedMetalId(mtid)
-
-        let diaid = loginUserDetailInside?.cmboDiaQCid ?? storeInitInside?.cmboDiaQCid
-        setSelectedDiaId(diaid)
-
-    }, [])
-
-    useEffect(() => {
-        setSelectedMetalId(loginUserDetail?.MetalId ?? storeInit?.MetalId);
-        setSelectedDiaId(loginUserDetail?.cmboDiaQCid ?? storeInit?.cmboDiaQCid);
+        setSelectedMetalId(loginInfo?.MetalId ?? storeInit?.MetalId);
+        setSelectedDiaId(loginInfo?.cmboDiaQCid ?? storeInit?.cmboDiaQCid);
         setSortBySelect('Recommended')
-    }, [params])
+    }, [params, loginInfo])
 
     const [imageColor, setImageColor] = useState("");
 
@@ -219,7 +196,7 @@ const Product = ({ params, searchParams, storeinit }) => {
                 .then((response) => {
                     if (response?.Data?.rd) {
                         let data = response?.Data?.rd;
-                        sessionStorage.setItem("metalTypeCombo", JSON.stringify(data));
+                        setSession("metalTypeCombo", data);
                         setMetalTypeCombo(data);
 
                     }
@@ -235,7 +212,7 @@ const Product = ({ params, searchParams, storeinit }) => {
                 .then((response) => {
                     if (response?.Data?.rd) {
                         let data = response?.Data?.rd;
-                        sessionStorage.setItem("diamondQualityColorCombo", JSON.stringify(data));
+                        setSession("diamondQualityColorCombo", data);
                         setDiaQcCombo(data);
                     }
                 })
@@ -250,7 +227,7 @@ const Product = ({ params, searchParams, storeinit }) => {
                 .then((response) => {
                     if (response?.Data?.rd) {
                         let data = response?.Data?.rd;
-                        sessionStorage.setItem("ColorStoneQualityColorCombo", JSON.stringify(data));
+                        setSession("ColorStoneQualityColorCombo", data);
                         setCsQcCombo(data);
                     }
                 })
@@ -265,7 +242,7 @@ const Product = ({ params, searchParams, storeinit }) => {
                 .then((response) => {
                     if (response?.Data?.rd) {
                         let data = response?.Data?.rd;
-                        sessionStorage.setItem("MetalColorCombo", JSON.stringify(data));
+                        setSession("MetalColorCombo", data);
                     }
                 })
                 .catch((err) => console.log(err));
@@ -273,8 +250,7 @@ const Product = ({ params, searchParams, storeinit }) => {
     };
 
     useEffect(() => {
-        const logininfo = JSON.parse(sessionStorage.getItem("loginUserDetail"));
-        setLoginInfo(logininfo);
+        setLoginInfo(getSession("loginUserDetail"));
     }, []);
 
     useEffect(() => {
@@ -289,7 +265,7 @@ const Product = ({ params, searchParams, storeinit }) => {
     }, [])
 
     useEffect(() => {
-        let param = JSON?.parse(sessionStorage.getItem("menuparams"))
+        let param = getSession("menuparams")
         if (location?.state?.SearchVal === undefined) {
             setMenuParams(param)
         }
@@ -621,7 +597,7 @@ const Product = ({ params, searchParams, storeinit }) => {
     }
 
     const handleCartandWish = (e, ele, type) => {
-        let loginInfo = JSON.parse(sessionStorage.getItem("loginUserDetail"));
+        let loginInfo = getSession("loginUserDetail");
 
         let prodObj = {
             "autocode": ele?.autocode,
@@ -723,7 +699,7 @@ const Product = ({ params, searchParams, storeinit }) => {
                 .catch((err) => console.log("err", err))
                 .finally(() => {
                     setTimeout(() => {
-                        sessionStorage.setItem("short_cutCombo_val", JSON?.stringify(obj))
+                        setSession("short_cutCombo_val", obj)
                         setIsOnlyProdLoading(false)
                     }, 100);
                 })
@@ -732,13 +708,13 @@ const Product = ({ params, searchParams, storeinit }) => {
 
     useEffect(() => {
         const obj = { mt: selectedMetalId, dia: selectedDiaId, cs: selectedCsId };
-        const loginInfo = JSON.parse(sessionStorage.getItem("loginUserDetail"));
+        const loginInfoVal = getSession("loginUserDetail");
 
-        sessionStorage.setItem("short_cutCombo_val", JSON.stringify(obj));
+        setSession("short_cutCombo_val", obj);
 
-        if (loginInfo && Object.keys(loginInfo).length > 0) {
+        if (loginInfoVal && Object.keys(loginInfoVal).length > 0) {
             if (selectedMetalId != undefined || selectedDiaId != undefined || selectedCsId != undefined) {
-                if (loginInfo.MetalId !== selectedMetalId || loginInfo.cmboDiaQCid !== selectedDiaId) {
+                if (loginInfoVal.MetalId !== selectedMetalId || loginInfoVal.cmboDiaQCid !== selectedDiaId) {
                     handelCustomCombo(obj);
                 }
             }
@@ -968,7 +944,7 @@ const Product = ({ params, searchParams, storeinit }) => {
                     handleAccordionChange={handleAccordionChange}
                     FilterValueWithCheckedOnly={FilterValueWithCheckedOnly}
                     handleCheckboxChange={handleCheckboxChange}
-                    loginUserDetail={loginUserDetail}
+                    loginUserDetail={loginInfo}
                     filterChecked={filterChecked}
                     sliderValue={sliderValue}
                     setSliderValue={setSliderValue}
@@ -1077,7 +1053,7 @@ const Product = ({ params, searchParams, storeinit }) => {
                                                                 FilterValueWithCheckedOnly={FilterValueWithCheckedOnly}
                                                                 handleCheckboxChange={handleCheckboxChange}
                                                                 storeInit={storeInit}
-                                                                loginUserDetail={loginUserDetail}
+                                                                loginUserDetail={loginInfo}
                                                                 filterChecked={filterChecked}
                                                                 sliderValue={sliderValue}
                                                                 setSliderValue={setSliderValue}
@@ -1273,7 +1249,7 @@ const Product = ({ params, searchParams, storeinit }) => {
                                                                                     imageUrl={getDynamicImages(productData.designno, productData.ImageExtension)}
                                                                                     metalColorType={metalColorType}
                                                                                     maxwidth590px={maxwidth590px}
-                                                                                    loginUserDetail={loginUserDetail}
+                                                                                    loginUserDetail={loginInfo}
                                                                                     selectedMetalId={selectedMetalId}
                                                                                     productIndex={i}
                                                                                     yellowImage={yellowImage}
@@ -1283,7 +1259,7 @@ const Product = ({ params, searchParams, storeinit }) => {
                                                                                     whiteRollImage={whiteRollImage}
                                                                                     roseRollImage={roseRollImage}
                                                                                     location={location}
-                                                                                    metalColorCombo={JSON.parse(sessionStorage.getItem("MetalColorCombo"))}
+                                                                                    metalColorCombo={getSession("MetalColorCombo")}
                                                                                 />
                                                                             )
                                                                         })}

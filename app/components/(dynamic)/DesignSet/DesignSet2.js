@@ -61,7 +61,7 @@ const DesignSet2 = ({ data, storeInit }) => {
 
 
   const fetchAndSetDesignSets = useCallback(async (finalID, precomputedKey) => {
-    if (!pricingContext || isFetchingRef.current) return;
+    if (!pricingContext || !pricingContext.PackageId || isFetchingRef.current) return;
 
     const apiALC = "";
     const keyALC = normalizeALC("");

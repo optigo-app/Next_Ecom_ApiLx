@@ -54,7 +54,7 @@ const BestSellerSection1 = ({ data, storeData }) => {
 
 
   const fetchAndSetBestSellers = useCallback(async (finalID, precomputedKey) => {
-    if (!pricingContext || isFetchingRef.current) return;
+    if (!pricingContext || !pricingContext.PackageId || isFetchingRef.current) return;
 
     const apiALC = "";
     const keyALC = normalizeALC("");

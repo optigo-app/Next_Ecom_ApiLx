@@ -23,7 +23,7 @@ const Main = ({ storeData }) => {
   const pricingContext = useMemo(() => getPricingContext(loginUserDetail, storeData, islogin), [loginUserDetail, storeData, islogin]);
 
   const fetchAndSetAlbums = useCallback(async (finalID, precomputedKey) => {
-    if (!pricingContext || isFetchingRef.current) return;
+    if (!pricingContext || !pricingContext.PackageId || isFetchingRef.current) return;
 
     const apiALC = "";
     const keyALC = normalizeALC("");
