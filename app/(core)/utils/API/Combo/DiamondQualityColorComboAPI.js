@@ -7,8 +7,8 @@ export const DiamondQualityColorComboAPI = async (finalID) => {
     try {
         const storedEmail = getSession("registerEmail") || "";
         const storeInit = typeof window !== "undefined" && window.__STORE_INIT__ ? window.__STORE_INIT__ : getSession("storeInit");
-        
-        const loginUserDetail = await getSessionAsync("loginUserDetail") || "0";
+
+        const loginUserDetail = getSession("loginUserDetail") || "0";
         const { FrontEnd_RegNo } = storeInit;
         const combinedValue = JSON.stringify({
             FrontEnd_RegNo: `${FrontEnd_RegNo}`,

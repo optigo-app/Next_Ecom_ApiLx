@@ -22,6 +22,7 @@ import { fetchStoreInitData } from "../utils/fetchStoreInit";
 const masterContext = createContext({
     cacheList: null,
     setCacheList: () => { },
+    isMasterReady: false,
 });
 
 export const MasterProvider = ({ children, getCompanyInfoData, getStoreInit, getMyAccountFlags }) => {
@@ -31,6 +32,7 @@ export const MasterProvider = ({ children, getCompanyInfoData, getStoreInit, get
         window.__LOGIN_USER_DETAIL__ = window.__LOGIN_USER_DETAIL__ ?? getSession("loginUserDetail") ?? null;
     }
     const [cacheList, setCacheList] = useState(null);
+    const [isMasterReady, setIsMasterReady] = useState(false);
     const searchParams = useSearchParams();
     const token = searchParams.get('token');
     const router = useNextRouterLikeRR();
@@ -102,28 +104,12 @@ export const MasterProvider = ({ children, getCompanyInfoData, getStoreInit, get
     };
 
     useEffect(() => {
-        const initializeStore = async () => {
-            let currentStoreInit = getStoreInit;
-            if (!currentStoreInit || Object.keys(currentStoreInit).length === 0) {
-                console.log("%c⚠️ StoreInit missing, attempting client-side recovery...", "color: orange; font-weight: bold;");
-                const refetchedData = await fetchStoreInitData();
-                if (refetchedData?.rd?.[0]) {
-                    currentStoreInit = refetchedData.rd[0];
-                    if (typeof window !== "undefined") {
-                        window.__STORE_INIT__ = currentStoreInit;
-                    }
-                }
-            }
-
-            if (currentStoreInit) {
-                setSession("storeInit", currentStoreInit);
-            }
+        if (getStoreInit) {
+            setSession("storeInit", getStoreInit);
             setSession("myAccountFlags", getMyAccountFlags);
             fetchVisitorId();
-        };
-
-        initializeStore();
-    }, [getStoreInit]);
+        }
+    }, [getStoreInit, getMyAccountFlags]);
 
     // Paymaster fetch
     useEffect(() => {
@@ -148,12 +134,20 @@ export const MasterProvider = ({ children, getCompanyInfoData, getStoreInit, get
             }
         };
 
-        const timer = setTimeout(fetchData, 2000);
+        const timer = setTimeout(fetchData, 100); // Reduced from 2000 to 100
         return () => clearTimeout(timer);
     }, []);
 
     const callApiAndStore = (apiFunction, storageKey, finalID) => {
-        apiFunction(finalID)
+        const existingData = getSession(storageKey);
+        if (existingData && existingData.length > 0) {
+            if (storageKey === "GetCacheList") {
+                setCacheList({ Data: { rd: existingData } });
+            }
+            return Promise.resolve({ Data: { rd: existingData } });
+        }
+
+        return apiFunction(finalID)
             .then((response) => {
                 if (storageKey === "GetCacheList") {
                     setCacheList(response);
@@ -161,20 +155,20 @@ export const MasterProvider = ({ children, getCompanyInfoData, getStoreInit, get
                 if (response?.Data?.rd) {
                     setSession(storageKey, response.Data.rd);
                 }
+                return response;
             })
-            .catch((err) => console.log(err));
+            .catch((err) => {
+                console.log(err);
+                return null;
+            });
     };
 
+    console.log(typeof window !== "undefined")
     const callAllApi = async () => {
         const storeInit = getStoreInit || window.__STORE_INIT__;
         const loginUserDetail = getSession("loginUserDetail");
         const LoginUser = getSession("LoginUser");
         const visiterID = Cookies.get("visiterId");
-        console.log(window.__STORE_INIT__, "__STORE_INIT__")
-        console.log(loginUserDetail, "loginUserDetail")
-        console.log(LoginUser, "LoginUser")
-        console.log(visiterID, "visiterId")
-
 
         if (typeof window !== "undefined") {
             if (!window.__LOGIN_USER_DETAIL__ && loginUserDetail) window.__LOGIN_USER_DETAIL__ = loginUserDetail;
@@ -183,24 +177,29 @@ export const MasterProvider = ({ children, getCompanyInfoData, getStoreInit, get
 
         const finalID = storeInit?.IsB2BWebsite === 0 ? (LoginUser === false ? visiterID : loginUserDetail?.id || "0") : loginUserDetail?.id || "0";
 
-        Promise.all([
-            callApiAndStore(MetalTypeComboAPI, "metalTypeCombo", finalID),
-            callApiAndStore(DiamondQualityColorComboAPI, "diamondQualityColorCombo", finalID),
-            callApiAndStore(MetalColorCombo, "MetalColorCombo", finalID),
-            callApiAndStore(ColorStoneQualityColorComboAPI, "ColorStoneQualityColorCombo", finalID),
-            callApiAndStore(CurrencyComboAPI, "CurrencyCombo", finalID),
-            callApiAndStore(CountryCodeListApi, "CountryCodeListApi", finalID),
-            callApiAndStore(GetCacheList, "GetCacheList", finalID)
-        ]).then(() => {
+        // Prioritize the 5 important APIs mentioned by user, but keep country and cache list for completeness
+        try {
+            await Promise.all([
+                callApiAndStore(MetalTypeComboAPI, "metalTypeCombo", finalID),
+                callApiAndStore(DiamondQualityColorComboAPI, "diamondQualityColorCombo", finalID),
+                callApiAndStore(MetalColorCombo, "MetalColorCombo", finalID),
+                callApiAndStore(ColorStoneQualityColorComboAPI, "ColorStoneQualityColorCombo", finalID),
+                callApiAndStore(CurrencyComboAPI, "CurrencyCombo", finalID),
+                callApiAndStore(CountryCodeListApi, "CountryCodeListApi", finalID),
+                callApiAndStore(GetCacheList, "GetCacheList", finalID)
+            ]);
             console.log("All combo APIs completed");
-        }).catch((error) => {
+            setIsMasterReady(true);
+        } catch (error) {
             console.error("Error in API calls:", error);
-        });
+            setIsMasterReady(true); // Still set to ready to avoid blocking UI forever
+        }
     };
 
     const value = {
         cacheList,
-        setCacheList
+        setCacheList,
+        isMasterReady
     }
 
     return <masterContext.Provider value={value}>

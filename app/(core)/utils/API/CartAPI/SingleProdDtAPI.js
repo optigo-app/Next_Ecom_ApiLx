@@ -3,9 +3,8 @@ import { CommonAPI } from "../CommonAPI/CommonAPI";
 
 export const fetchSingleProdDT = async (selectedItem, sizedata, diaId, csQid, selectedMetalId, visiterId) => {
     const storeInit = (typeof window !== 'undefined' && window.__STORE_INIT__) ? window.__STORE_INIT__ : getSession('storeInit');
-    const storedData = sessionStorage.getItem("loginUserDetail");
-    const islogin = JSON.parse(sessionStorage.getItem("LoginUser"));
-    const data = JSON.parse(storedData);
+    const islogin = getSession("LoginUser") ?? false;
+    const data = getSession("loginUserDetail");
     const customerId = storeInit?.IsB2BWebsite == 0 && islogin == false || islogin == null ? visiterId : data?.id ?? 0;
     const customerEmail = storeInit?.IsB2BWebsite == 0 && islogin == false || islogin == null ? visiterId : data?.userid ?? "";
     const { FrontEnd_RegNo } = storeInit;
@@ -27,25 +26,25 @@ export const fetchSingleProdDT = async (selectedItem, sizedata, diaId, csQid, se
             PageNo: "1",
             PageSize: "1000",
             CurrRate: "1",
-            autocode: `${selectedItem?.autocode}`,
-            designno: `${selectedItem?.designno}`,
-            FrontEnd_RegNo: `${FrontEnd_RegNo}`,
-            Customerid: `${customerId}`,
-            PackageId: packageId,
-            Laboursetid: laboursetid,
-            diamondpricelistname: diamondpricelistname,
-            colorstonepricelistname: colorstonepricelistname,
-            SettingPriceUniqueNo: SettingPriceUniqueNo,
-            Metalid: mtID,
-            DiaQCid: diaID,
-            CsQCid: csQID,
-            Size: size,
+            autocode: selectedItem?.autocode ?? "",
+            designno: selectedItem?.designno ?? "",
+            FrontEnd_RegNo: FrontEnd_RegNo ?? "",
+            Customerid: customerId ?? 0,
+            PackageId: packageId ?? "",
+            Laboursetid: laboursetid ?? "",
+            diamondpricelistname: diamondpricelistname ?? "",
+            colorstonepricelistname: colorstonepricelistname ?? "",
+            SettingPriceUniqueNo: SettingPriceUniqueNo ?? "",
+            Metalid: mtID ?? "",
+            DiaQCid: diaID ?? "",
+            CsQCid: csQID ?? "",
+            Size: size ?? "",
             IsFromDesDet: "1",
-            CurrencyRate: `${data?.CurrencyRate ?? storeInit?.CurrencyRate}`,
-            DomainForNo: `${storeInit?.DomainForNo ?? ""}`,
-            WebDiscount: islogin ? `${data?.WebDiscount ?? 0}` : `${0}`,
-            IsZeroPriceProductShow: `${storeInit?.IsZeroPriceProductShow ?? 0}`,
-            IsSolitaireWebsite: `${storeInit?.IsSolitaireWebsite ?? 0}`,
+            CurrencyRate: data?.CurrencyRate ?? storeInit?.CurrencyRate ?? "",
+            DomainForNo: storeInit?.DomainForNo ?? "",
+            WebDiscount: islogin ? (data?.WebDiscount ?? 0) : 0,
+            IsZeroPriceProductShow: storeInit?.IsZeroPriceProductShow ?? 0,
+            IsSolitaireWebsite: storeInit?.IsSolitaireWebsite ?? 0,
         });
 
 

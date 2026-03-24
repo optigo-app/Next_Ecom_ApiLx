@@ -5,8 +5,8 @@ export const MetalTypeComboAPI = async (finalID) => {
     let response;
     try {
         const storeInit = typeof window !== "undefined" && window.__STORE_INIT__ ? window.__STORE_INIT__ : getSession("storeInit");
-        const loginUserDetail = await getSessionAsync("loginUserDetail") || "0";
-        const islogin = await getSessionAsync("LoginUser") ?? false;
+        const loginUserDetail = getSession("loginUserDetail") || "0";
+        const islogin = getSession("LoginUser") ?? false;
 
         const customerId = (storeInit?.IsB2BWebsite == 0 && islogin == false) || islogin == null ? finalID : (loginUserDetail?.id ?? 0);
         const customerEmail = (storeInit?.IsB2BWebsite == 0 && islogin == false) || islogin == null ? finalID : (loginUserDetail?.userid ?? "");
