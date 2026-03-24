@@ -6,10 +6,10 @@ export const MetalColorCombo = async (visiterId) => {
 
     const storeInit = typeof window !== "undefined" && window.__STORE_INIT__ ? window.__STORE_INIT__ : getSession("storeInit");
     if (!storeInit) return null;
-    const loginUserDetail = await getSessionAsync("loginUserDetail") || "0";
+    const loginUserDetail = getSession("loginUserDetail") || "0";
     const FrontEnd_RegNo = storeInit?.FrontEnd_RegNo;
-    const loginInfo = await getSessionAsync("loginUserDetail") || "0";
-    const islogin = await getSessionAsync("LoginUser") ?? false;
+    const loginInfo = getSession("loginUserDetail") || "0";
+    const islogin = getSession("LoginUser") ?? false;
 
     const isB2B = storeInit?.IsB2BWebsite === 0;
     const isGuest = !islogin;

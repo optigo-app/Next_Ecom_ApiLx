@@ -15,7 +15,6 @@ const parseValue = (value) => {
 // ✅ Get value
 export const getSession = (key, defaultValue = null) => {
     if (!isBrowser()) return defaultValue;
-
     try {
         // First priority: Window Globals (for specific high-priority keys)
         if (key === "storeInit" && window.__STORE_INIT__) return window.__STORE_INIT__;

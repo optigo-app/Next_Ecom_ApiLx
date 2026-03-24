@@ -1,4 +1,13 @@
 ## [2026-03-24]
+- **MasterProvider Performance Optimization**: Improved initial load speed and data availability.
+  - **Files modified**: `app/(core)/contexts/MasterProvider.js`.
+  - **Old behavior**: Artificial 2-second delay for `payMaster` fetch; broken asynchrony in combo API calls (not waited for); redundant API calls even if data was in session.
+  - **New behavior**: Parallelized and properly awaited combo API calls; reduced `payMaster` delay to 100ms; implemented session caching to skip redundant fetches; added `isMasterReady` state for better synchronization.
+  - **Reason for change**: Resolve user report of "mastre is loading too slwo and very late".
+
+- **MasterProvider Initialization Simplification**: Removed redundant client-side `storeInit` recovery logic (refetching) as it is already provided via middleware.
+  - **Files modified**: `app/(core)/contexts/MasterProvider.js`.
+  - **Improvement**: Streamlined the `useEffect` hook to focus on session persistence and visitor ID initialization, reducing unnecessary client-side execution and potential race conditions.
 
 ### Modified
 
@@ -42,7 +51,25 @@ Strengthened the data fetching and caching logic for dynamic home page sections 
   - **Files modified**:
     - `app/(core)/utils/FetchSessionData.js`: Added `getSessionAsync` for async waiting and automatic sync to `window` globals.
     - `app/(core)/contexts/MasterProvider.js`: Implemented client-side re-fetch logic for `storeInit` using `fetchStoreInitData`.
+
+### 8. API Parameter Normalization
+Resolved an issue where `undefined` variables were being incorrectly transmitted as the string `"undefined"` in API request bodies.
+- Refactored `FilterListAPI.js` and `ProductListApi.js` to remove problematic template literals.
+- Implemented consistent defaulting to empty strings for missing metadata.
+- Verified that `PackageId` and `FrontEnd_RegNo` are correctly transmitted even when session state is partially initialized.
+
     - `app/(core)/utils/API/Combo/*.js`: Refactored all combo APIs to use `getSessionAsync` to wait for configuration data.
+
+### 9. MasterProvider Performance Optimization
+Significantly improved the application's perceived performance by optimizing the initial configuration load.
+- Replaced 7 individual API calls with a single aggregated `/api/v1/combos` request.
+- Implemented server-side parallel fetching and 30-minute caching.
+- Added a client-side session-persistence layer to eliminate redundant fetches on page refreshes.
+- Result: Drastically faster "skeleton-to-data" transition for all dynamic sections.### 10. MasterProvider Simplification
+Streamlined the initialization process by removing redundant client-side recovery logic.
+- Relies on middleware-provided `getStoreInit` instead of manual refetching.
+- Simplified `useEffect` hook for better maintenance and slightly faster startup.
+
   - **Old behavior**: Inconsistent access to session data; potential crashes if `sessionStorage` was accessed too early or if `storeInit` was null, leading to "FrontEnd Registration Error".
   - **New behavior**: Centralized, robust access via `getSession/setSession` with automatic `window` global sync (`__STORE_INIT__`, `__LOGIN_USER__`, `__LOGIN_USER_DETAIL__`) and async retry logic via `getSessionAsync`.
   - **Reason for change**: Fix reported "FrontEnd Registration Error" and provide reliable, easy-to-access global data for both client components and utility functions.
