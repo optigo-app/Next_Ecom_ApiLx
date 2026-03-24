@@ -39,12 +39,8 @@ $primaryfontcolorLight: #7d7f856e;
 $homePageFontFamily: "Poppins", serif;
 $primaryFontFamily: "Poppins", serif;
 $primaryFontFamilyMedium: "Poppins", serif;
-$Pfonts : "Poppins",
-serif;
-$Pratafonts : "Poppins",
-serif;
-
-
+$Pfonts: "Poppins", serif;
+$Pratafonts: "Poppins", serif;
 
 //fontSize
 $fontSize0: 10px;
@@ -57,24 +53,45 @@ $fontSize6: 28px;
 $fontSize7: 35px;
 $fontSize8: 40px;
 
-//borderColor
+// Sonasons theme
+// $primaryBorderColor: #e1e1e1;
+// $primaryBorderColor2: #42424233;
+// $bgColor: white; // Light gray background
+// $textColor: #1b1212; // Dark gray text color
+// $menuColor: #7d7f85;
+// $navbarbg: black;
+// $navbarcolor: white;
+// $badgecolor: white;
+// $badgetxtcolor: black;
+// $footerbg: black;
+// $footertextcolor: white;
+// $sliderbar: #7d7f85;
+// $btnBg: black;
+// $btncolor: white;
+// $authbtnbg: black;
+// $authbtncolor: white;
+// $footertextcolor: white;
+// $menutitle: black;
+
+// sonasons themes ends
+
+// omjiyas theme
 $primaryBorderColor: #e1e1e1;
 $primaryBorderColor2: #42424233;
-
-// $bgColor: #c0bbb1;  // Light gray background
-$bgColor: white; // Light gray background
-$textColor: #1B1212; // Dark gray text color
-$menuColor : #7D7F85;
-$navbarbg : black;
-$navbarcolor : white;
-$badgecolor : white;
-$badgetxtcolor : black;
+$bgColor: #103cb4; // Light gray background
+$textColor: #1b1212; // Dark gray text color
+$menuColor: #fff;
+$navbarbg: #103cb4;
+$navbarcolor: white;
+$badgecolor: white;
+$badgetxtcolor: black;
 $footerbg: black;
 $footertextcolor: white;
-$sliderbar: #7d7f85;
-$btnBg: black;
+$sliderbar: #1e3a8a;
+$btnBg: linear-gradient(135deg, #2563eb, #1e3a8a);
 $btncolor: white;
-$authbtnbg: black;
-$authbtncolor :white;
-$footertextcolor : white;
+$authbtnbg: #103cb4;
+$authbtncolor: white;
+$footertextcolor: white;
 $menutitle: black;
+$defaultbtncolor: black;

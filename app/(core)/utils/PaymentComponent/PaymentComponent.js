@@ -254,7 +254,7 @@ export default function PaymentComponent({ bgcolor, textColor, top, storeinit })
                                                 className='btnColorProCat'
                                                 onClick={handleChangeAddr}
                                                 sx={{
-                                                    // bgcolor: bgcolor ? bgcolor : '',
+                                                    bgcolor: bgcolor ? bgcolor : '',
                                                     fontSize: {
                                                         sm: '10px !important',
                                                         md: '14px !important',
@@ -334,7 +334,7 @@ export default function PaymentComponent({ bgcolor, textColor, top, storeinit })
                                     sx={{
                                         py: 1.5, fontSize: '1.1rem'
                                         ,
-                                        // bgcolor: bgcolor ? bgcolor : '',
+                                        bgcolor: bgcolor ? bgcolor : '',
                                         // color: textColor,
                                         // '&:hover': {
                                         //     backgroundColor: bgcolor,

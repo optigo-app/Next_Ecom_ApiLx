@@ -79,7 +79,7 @@ export default function ContactForm() {
   };
 
   return (
-    <div className="smr_Fo_contactBox1">
+    <div className="fg_smr_Fo_contactBox1">
       <form onSubmit={handleSubmit}>
         <div>
           <p className="Fo-contactBox1Title">FULL NAME</p>

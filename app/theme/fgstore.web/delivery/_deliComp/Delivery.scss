@@ -1,4 +1,4 @@
-@use '../../../scss/variable.scss' as *;
+@use "../../../scss/variable.scss" as *;
 
 .smr_DeliverMainDiv {
   background-color: $bgColor;
@@ -34,12 +34,14 @@
     width: 150px;
     font-family: $homePageFontFamily !important;
     font-size: $fontSize3;
-    background-color: $btnBg !important;
-    color: $btncolor !important;
+    background-color: $elecbtnbg !important;
+    color: $elebtncolor !important;
     border: none;
     border-radius: 0px !important;
     cursor: pointer;
-    transition: background-color 0.3s, color 0.3s;
+    transition:
+      background-color 0.3s,
+      color 0.3s;
 
     &:hover {
       color: $btn1hoverFontColor;
@@ -69,33 +71,38 @@
 }
 
 .smr_AddrCard {
-  box-shadow: rgba(0, 0, 0, 0.02) 0px 1px 3px 0px, rgba(27, 31, 35, 0.15) 0px 0px 0px 1px !important;
+  box-shadow:
+    rgba(0, 0, 0, 0.02) 0px 1px 3px 0px,
+    rgba(27, 31, 35, 0.15) 0px 0px 0px 1px !important;
   padding: 20px 20px 0px 20px !important;
   border-radius: 0px !important;
 }
 
 .smr_ActiveAddrCard {
   padding: 20px 20px 0px 20px !important;
-  box-shadow: rgba(0, 0, 0, 0.02) 0px 1px 3px 0px, rgba(27, 31, 35, 0.15) 0px 0px 0px 1px !important;
+  box-shadow:
+    rgba(0, 0, 0, 0.02) 0px 1px 3px 0px,
+    rgba(27, 31, 35, 0.15) 0px 0px 0px 1px !important;
   background: #f5f4f4 !important;
   border-radius: 0px !important;
   position: relative;
 }
 
-
 .smr_defualt_addrSelected {
   padding: 3px 10px;
   font-family: $homePageFontFamily !important;
   font-size: $fontSize3;
-  color: #fff;
-  background: blue;
+  color: $elebtncolor;
+  background: $elecbtnbg;
   border-radius: 0px !important;
   border: none;
   cursor: pointer;
   position: absolute;
   top: 8px;
   right: 8px;
-  transition: background-color 0.3s, color 0.3s;
+  transition:
+    background-color 0.3s,
+    color 0.3s;
 }
 
 .smr_defualt_addrSelectedHide {
@@ -120,13 +127,15 @@
     height: 40px;
     font-family: $homePageFontFamily !important;
     font-size: $fontSize3;
-    color: $btncolor !important;
     padding: 0 15px;
-    background-color: $btnBg;
+    color: $elebtncolor;
+    background: $elecbtnbg;
     border: none;
     border-radius: 0px !important;
     cursor: pointer;
-    transition: background-color 0.3s, color 0.3s;
+    transition:
+      background-color 0.3s,
+      color 0.3s;
 
     // &:hover {
     //   color: $btn1hoverFontColor;
@@ -147,13 +156,15 @@
   width: 150px;
   font-family: $homePageFontFamily !important;
   font-size: $fontSize3;
-  color: $btncolor ;
-  background-color: $btnBg;
+  color: $elebtncolor;
+  background: $elecbtnbg;
   // border: 1px solid $btn1FontColor;
   border: none;
   border-radius: 0px !important;
   cursor: pointer;
-  transition: background-color 0.3s, color 0.3s;
+  transition:
+    background-color 0.3s,
+    color 0.3s;
 
   // &:hover {
   //   color: $btn1hoverFontColor;
@@ -167,13 +178,15 @@
   width: 150px;
   font-family: $homePageFontFamily !important;
   font-size: $fontSize3;
-  color: $btncolor ;
-  background-color: $btnBg;
+  color: $elebtncolor;
+  background: $elecbtnbg;
   // border: 1px solid $btn1FontColor;
   border: none;
   border-radius: 0px !important;
   cursor: pointer;
-  transition: background-color 0.3s, color 0.3s;
+  transition:
+    background-color 0.3s,
+    color 0.3s;
 
   // &:hover {
   //   color: $btn1hoverFontColor;
@@ -194,6 +207,6 @@
 
   .smr_DeleteIcon {
     font-size: 20px;
-    color: $titleColor
+    color: $titleColor;
   }
 }

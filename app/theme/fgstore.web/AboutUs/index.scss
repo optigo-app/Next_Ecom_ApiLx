@@ -1,8 +1,7 @@
-@use '../../fgstore.web/style/variable.scss' as *;
+@use "../../fgstore.web/style/variable.scss" as *;
 
-.smr_about_mainDiv {
+.fg_smr_about_mainDiv {
   font-family: "Calibri";
-  background-color: $bgColor !important;
 
   .Head_about_page_smr {
     font-family: $homePageFontFamily;
@@ -47,7 +46,6 @@
   }
 
   .smr_daimondsEveryAbout_sub {
-
     // kayra needed this
     margin-inline: 16%;
     padding-top: 50px;
@@ -68,7 +66,6 @@
     z-index: -1;
     position: fixed;
   }
-
 
   .stam_about_l {
     width: 100%;

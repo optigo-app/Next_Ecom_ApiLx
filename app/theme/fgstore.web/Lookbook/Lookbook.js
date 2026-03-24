@@ -441,8 +441,8 @@ const Lookbook = ({ storeInit }) => {
                     onClick={handleOpen}
                     className="smr_lookBookSelectViewBtn"
                     style={{
-                      background: selectedCategories.length !== 0 ? "#7d7f85" : "#ffff",
-                      color: selectedCategories.length !== 0 ? "#fff" : "#7d7f85",
+                      background: selectedCategories.length !== 0 ? "" : "#ffff",
+                      color: selectedCategories.length !== 0 ? "" : "#7d7f85",
                     }}
                   >
                     Set View
