@@ -17,8 +17,25 @@
   - **New behavior**: Simplified session data retrieval using the `getSession` helper directly and implemented robust optional chaining.
   - **Reason for change**: Fix critical runtime errors after refactoring to a safer session management system.
 
-## [2026-03-23]
+- **Product Detail Initialization**: Resolved a race condition where customization dropdowns (Metal Type, Color, etc.) would not appear on initial load.
+  - **Files modified**: `app/theme/fgstore.web/detail/_detComponents/hooks/useProductDetail.js`.
+  - **Old behavior**: Initial selections were set once on mount, often before combo data was fetched, leading to hidden UI elements.
+  - **New behavior**: Selection state is now reactive to combo data updates, ensuring UI populates as soon as data is ready.
 
+- **Product Listing Initialization**: Resolved a race condition where the listing page showed "Products Not found" or incomplete filters on the first load.
+  - **Files modified**: `app/theme/fgstore.web/product/_prodComponents/page.jsx`.
+  - **Old behavior**: Fragmented initialization in multiple `useEffect` hooks caused the initial fetch to run with stale or missing filter IDs.
+  - **New behavior**: Synchronous state initialization from session data and props ensures correct parameters for the first render and API call.
+### 6. Product Card Metal Display Robustness
+Resolved a UI issue in `Product_Card.jsx` where the metal color and type display would show a leading hyphen if the metal color was missing.
+- Implemented conditional rendering for the hyphen to ensure it only appears when both values are present.
+- Improved metadata display fallback for a cleaner product card UI.
+## [2026-03-23]
+### 7. Home Page Data Robustness
+Strengthened the data fetching and caching logic for dynamic home page sections to handle missing or incomplete store metadata gracefully.
+- Modified `getPricingContext` to return `null` if a `PackageId` cannot be resolved.
+- Added explicit guards in `AlbumSection`, `BestSellerSection1`, `NewArrival1`, `TrendingView1`, and `DesignSet2` to wait for a valid pricing context.
+- Ensured that sections display skeletons instead of "Empty" messages or invalid data during the initial metadata recovery phase.
 ### Modified
 
 - **Session & Global Management**: Implemented robust session storage and global `window` access for critical store and user data. Added an **Auto-Refetch Fallback** and **Async Robust Getters**.

@@ -11,7 +11,7 @@ import { DesignSetListAPI } from "@/app/(core)/utils/API/DesignSetListAPI/Design
 import { SaveLastViewDesign } from "@/app/(core)/utils/API/SaveLastViewDesign/SaveLastViewDesign";
 import Cookies from "js-cookie";
 import { ParseAndDecodeSearchParams } from "@/app/(core)/utils/GlobalFunctions/Parser";
-import { getSession } from "@/app/(core)/utils/FetchSessionData";
+import { getSession, setSession } from "@/app/(core)/utils/FetchSessionData";
 
 export const useProductDetail = (searchParams, storeInit, initialDecodeUrl) => {
     const [singleProd, setSingleProd] = useState({});
@@ -85,7 +85,7 @@ export const useProductDetail = (searchParams, storeInit, initialDecodeUrl) => {
                 .then((response) => {
                     if (response?.Data?.rd) {
                         let data = response?.Data?.rd;
-                        sessionStorage.setItem("metalTypeCombo", JSON.stringify(data));
+                        setSession("metalTypeCombo", data);
                         setMetalTypeCombo(data);
                     }
                 })
@@ -99,7 +99,7 @@ export const useProductDetail = (searchParams, storeInit, initialDecodeUrl) => {
                 .then((response) => {
                     if (response?.Data?.rd) {
                         let data = response?.Data?.rd;
-                        sessionStorage.setItem("diamondQualityColorCombo", JSON.stringify(data));
+                        setSession("diamondQualityColorCombo", data);
                         setDiaQcCombo(data);
                     }
                 })
@@ -113,7 +113,7 @@ export const useProductDetail = (searchParams, storeInit, initialDecodeUrl) => {
                 .then((response) => {
                     if (response?.Data?.rd) {
                         let data = response?.Data?.rd;
-                        sessionStorage.setItem("ColorStoneQualityColorCombo", JSON.stringify(data));
+                        setSession("ColorStoneQualityColorCombo", data);
                         setCsQcCombo(data);
                     }
                 })
@@ -127,7 +127,7 @@ export const useProductDetail = (searchParams, storeInit, initialDecodeUrl) => {
                 .then((response) => {
                     if (response?.Data?.rd) {
                         let data = response?.Data?.rd;
-                        sessionStorage.setItem("MetalColorCombo", JSON.stringify(data));
+                        setSession("MetalColorCombo", data);
                         setMetalColorCombo(data);
                     }
                 })
@@ -358,11 +358,11 @@ export const useProductDetail = (searchParams, storeInit, initialDecodeUrl) => {
 
     // Set initial selections when product data is loaded
     useEffect(() => {
-        if (singleProd && Object.keys(singleProd).length > 0) {
-            let mtTypeLocal = getSession("metalTypeCombo");
-            let diaQcLocal = getSession("diamondQualityColorCombo");
-            let csQcLocal = getSession("ColorStoneQualityColorCombo");
-            let mtColorLocal = getSession("MetalColorCombo");
+        if (singleProd && Object.keys(singleProd).length > 0 && metalTypeCombo?.length > 0) {
+            let mtTypeLocal = metalTypeCombo;
+            let diaQcLocal = diaQcCombo;
+            let csQcLocal = csQcCombo;
+            let mtColorLocal = metalColorCombo;
 
             let storeinitInside = window.__STORE_INIT__ || getSession("storeInit");
             let logininfoInside = window.__LOGIN_USER_DETAIL__ || getSession("loginUserDetail");
@@ -391,8 +391,8 @@ export const useProductDetail = (searchParams, storeInit, initialDecodeUrl) => {
                 }
 
                 setSelectMtType(metalArr?.metaltype);
-                setSelectDiaQc(`${diaArr?.Quality},${diaArr?.color}`);
-                setSelectCsQc(`${csArr?.Quality},${csArr?.color}`);
+                setSelectDiaQc(diaArr ? `${diaArr?.Quality},${diaArr?.color}` : "");
+                setSelectCsQc(csArr ? `${csArr?.Quality},${csArr?.color}` : "");
             }
 
             // Set metal color
@@ -403,7 +403,7 @@ export const useProductDetail = (searchParams, storeInit, initialDecodeUrl) => {
                 setSelectMtColor(mcArr?.colorcode);
             }
         }
-    }, [singleProd, decodeUrl]);
+    }, [singleProd, decodeUrl, metalTypeCombo, diaQcCombo, csQcCombo, metalColorCombo]);
 
     return {
         // Product data

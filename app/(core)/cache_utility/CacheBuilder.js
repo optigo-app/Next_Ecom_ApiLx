@@ -79,8 +79,12 @@ const findMatchingMenuCacheEntry = (serverEntries, pricingContext, eventName) =>
 const getPricingContext = (loginUserDetail, storeinit, islogin) => {
   if (!storeinit) return null;
   const loginInfo = loginUserDetail;
+  const PackageId = loginInfo?.PackageId ?? storeinit?.PackageId ?? "";
+
+  if (!PackageId) return null;
+
   return {
-    PackageId: loginInfo?.PackageId ?? storeinit?.PackageId ?? "",
+    PackageId: PackageId,
     Laboursetid: !islogin ? storeinit?.pricemanagement_laboursetid : loginInfo?.pricemanagement_laboursetid ?? "",
     diamondpricelistname: !islogin ? storeinit?.diamondpricelistname : loginInfo?.diamondpricelistname ?? "",
     colorstonepricelistname: !islogin ? storeinit?.colorstonepricelistname : loginInfo?.colorstonepricelistname ?? "",

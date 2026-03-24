@@ -8,6 +8,7 @@ import LocalMallOutlinedIcon from '@mui/icons-material/LocalMallOutlined';
 import LocalMallIcon from '@mui/icons-material/LocalMall';
 import StarBorderIcon from "@mui/icons-material/StarBorder";
 import StarIcon from "@mui/icons-material/Star";
+import { getSession } from '@/app/(core)/utils/FetchSessionData';
 
 const Product_Card = ({
     productData,
@@ -36,10 +37,10 @@ const Product_Card = ({
     storeInit
 }) => {
     const [imageColor, setImageColor] = useState("");
-    const getSessImgColor = JSON.parse(sessionStorage.getItem('imgColorCode'));
+    const getSessImgColor = getSession('imgColorCode');
     const [selectedMetalColor, setSelectedMetalColor] = useState(null);
     const [metalColorTitle, setMetalColorTitle] = useState();
-    const getSessCartWishImgColor = JSON?.parse(sessionStorage.getItem('cartWishImgColor')) ?? undefined;
+    const getSessCartWishImgColor = getSession('cartWishImgColor');
 
     const activeColorCode = getSessImgColor || getSessCartWishImgColor;
 
@@ -447,15 +448,21 @@ const Product_Card = ({
                             }}
                         >
                             <span className="smr_prod_metal_col">
-                                {findMetalColor(
-                                    productData?.MetalColorid
-                                )?.[0]?.metalcolorname.toUpperCase()}
-                                -
-                                {
-                                    findMetalType(
+                                {(() => {
+                                    const colorName = findMetalColor(productData?.MetalColorid)?.[0]?.metalcolorname;
+                                    const typeName = findMetalType(
                                         productData?.IsMrpBase == 1 ? productData?.MetalPurityid : (selectedMetalId ?? productData?.MetalPurityid)
-                                    )[0]?.metaltype
-                                }
+                                    )?.[0]?.metaltype;
+
+                                    if (colorName && typeName) {
+                                        return `${colorName.toUpperCase()} - ${typeName}`;
+                                    } else if (colorName) {
+                                        return colorName.toUpperCase();
+                                    } else if (typeName) {
+                                        return typeName;
+                                    }
+                                    return "";
+                                })()}
                             </span>
                             {storeInit?.IsPriceShow == 1 && <>
                                 <span>/</span>
