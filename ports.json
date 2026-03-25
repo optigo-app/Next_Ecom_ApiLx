@@ -1,0 +1,8 @@
+{
+  "activePort": "7001",
+  "ports": {
+    "dev": "7001",
+    "staging": "7002",
+    "prod": "7003"
+  }
+}

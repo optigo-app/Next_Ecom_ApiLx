@@ -15,6 +15,14 @@ import {
 import CloseIcon from "@mui/icons-material/Close";
 import { COLORS, getButtonStyle } from "@/app/(core)/constants/MobileAppTheme";
 
+export const TheDifferenceData = {
+  sonasons: {
+    title: "www.sonasons.one",
+  },
+  omjiyansh: {
+    title: "omjiyanshjewels.com/",
+  },
+};
 const InquiryModal = ({
   open,
   onClose,
@@ -25,6 +33,9 @@ const InquiryModal = ({
   error,
   loading
 }) => {
+
+
+
   return (
     <Drawer
       anchor="right"
@@ -121,7 +132,7 @@ const InquiryModal = ({
                 fullWidth
                 label="Website URL (Optional)"
                 name="WebSite"
-                placeholder="www.sonasons.one"
+                placeholder={TheDifferenceData.omjiyansh.title}
                 value={formData?.WebSite || ""}
                 onChange={handleChange}
               />

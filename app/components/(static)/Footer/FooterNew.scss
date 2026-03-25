@@ -1,6 +1,5 @@
 @use "../../../theme/fgstore.web/style/variable.scss" as *;
 
-
 .fg-footer {
   position: relative;
   padding: 40px 20px;
@@ -9,9 +8,11 @@
   align-items: center;
   font-family: $Pfonts;
   background-color: $navbarbg;
-  color: $navbarcolor;
+  color: black !important;
   text-align: center;
-  box-shadow: inset 0px 11px 8px -10px #9b9b9b3f, inset 0px -8px 8px -10px #ccc;
+  box-shadow:
+    inset 0px 11px 8px -10px #9b9b9b3f,
+    inset 0px -8px 8px -10px #ccc;
   &__inner {
     width: 100%;
     max-width: 1200px;
@@ -31,7 +32,6 @@
 
   &__logo-img {
     width: auto;
-    height: 40px;
     object-fit: contain;
   }
 
@@ -45,10 +45,10 @@
   }
 
   &__nav-link {
+    color: currentColor;
     font-size: 16px;
     cursor: pointer;
     text-decoration: none;
-    color: $footertextcolor;
     position: relative;
     transition: color 0.3s ease;
 

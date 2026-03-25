@@ -317,6 +317,9 @@ const DesignSet2 = ({ data, storeInit }) => {
     });
     return results[0]?.length > 1;
   };
+
+  if (designSetList?.length === 0) return null;
+
   return (
     <>
       <div className="smr_DesignSet2MainDiv" ref={designSetRef} onContextMenu={(e) => { e.preventDefault() }}>

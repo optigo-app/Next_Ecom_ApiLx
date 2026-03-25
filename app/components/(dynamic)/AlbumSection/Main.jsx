@@ -160,6 +160,13 @@ const Main = ({ storeData }) => {
     </Grid>
   ));
 
+
+
+
+
+  if (albumData.length === 0) return null;
+
+
   return (
     <Grid container spacing={3} justifyContent="center" alignContent="start" mt={2}>
       {isLoading

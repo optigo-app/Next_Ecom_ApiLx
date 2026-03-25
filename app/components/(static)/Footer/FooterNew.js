@@ -27,9 +27,7 @@ const FooterNew = ({ companyInfoData, storeData, extraFlag, logos }) => {
           <Link href="/terms-and-conditions" className="fg-footer__nav-link">
             Terms & Conditions
           </Link>
-          <Link href="/privacyPolicy" className="fg-footer__nav-link">
-            Privacy Policy
-          </Link>
+
           <Link href="/aboutUs" className="fg-footer__nav-link">
             About Us
           </Link>
@@ -57,3 +55,8 @@ const FooterNew = ({ companyInfoData, storeData, extraFlag, logos }) => {
 };
 
 export default FooterNew;
+
+
+{/* <Link href="/privacyPolicy" className="fg-footer__nav-link">
+            Privacy Policy
+          </Link> */}

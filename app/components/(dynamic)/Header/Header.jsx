@@ -559,11 +559,11 @@ const Header = ({ storeinit, logos }) => {
                   </Link>
                 </div>
 
-                <div className="smr_mobileHeader_top_div2_mobile" draggable={false} onContextMenu={(e) => e.preventDefault()}>
+                {/* <div className="smr_mobileHeader_top_div2_mobile" draggable={false} onContextMenu={(e) => e.preventDefault()}>
                   <Link href="/" draggable={false} onContextMenu={(e) => e.preventDefault()}>
                     <img src={compnyLogoM} loading="lazy" alt="Company Logo" className="smr_logo_header" draggable={false} onContextMenu={(e) => e.preventDefault()} />
                   </Link>
-                </div>
+                </div> */}
 
                 <div className="smr_mobileHeader_top_div3">
                   {islogin && (

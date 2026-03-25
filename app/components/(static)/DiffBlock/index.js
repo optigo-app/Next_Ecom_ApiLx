@@ -3,12 +3,22 @@ import './TheDifference.modul.scss'
 import { assetBase } from '@/app/(core)/lib/ServerHelper'
 
 const TheDifference = () => {
+
+  const TheDifferenceData = {
+    sonasons: {
+      title: "The Sonasons Difference",
+    },
+    omjiyansh: {
+      title: "The omjiyanshjewels Difference",
+    }
+
+  }
   return (
     <div className="smilingPAgeMain" style={{ paddingBlock: '8%' }}>
       <p
         className="smilingTitle"
       >
-        The Sonasons Difference
+        {TheDifferenceData.omjiyansh.title}
       </p>
 
       <div className="smr_smilingRock">
@@ -58,7 +68,7 @@ const TheDifference = () => {
             />
           </div>
           <div className="smr_diffrence_box2_main">
-            <p className="smr_smilingBoxName">Laser inscribed diamonds with Sonasons logo</p>
+            <p className="smr_smilingBoxName">Laser inscribed diamonds with omjiyansh logo</p>
           </div>
         </div>
 

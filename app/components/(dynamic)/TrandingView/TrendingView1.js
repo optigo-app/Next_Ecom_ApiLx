@@ -274,6 +274,12 @@ const TrendingView1 = ({ data, storeInit }) => {
     for (let i = 0; i < validatedData?.length; i += 3) {
         chunkedData.push(validatedData?.slice(i, i + 3));
     }
+
+
+    if (validatedData?.length === 0) return null;
+
+
+
     return (
         <div
             ref={trendingRef}

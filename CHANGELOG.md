@@ -1,3 +1,35 @@
+## [2026-03-25]
+
+- **Terms and Conditions Data Update**: Integrated OmJiyansh Jewels content and added a theme switcher.
+  - **Files modified**: `app/theme/fgstore.web/TermsAndConditions/page.js`.
+  - **New behavior**: The page now dynamically renders content for either Sonasons or Omjiyansh based on the active theme setting.
+  - **Reason for change**: Request to add OmJiyansh content with a structured data approach.
+
+- **Header Shadow Visibility Fix**: Resolved the issue where the header's box-shadow was not visible.
+  - **Files modified**: `app/components/(dynamic)/Header/Header.modul.scss`.
+  - **New behavior**: Added `position: relative`, `z-index: 100`, and a stronger `box-shadow` to the header wrapper. Fixed a border typo (`1xp`).
+  - **Reason for change**: User feedback that the shadow was not visible.
+
+- **Logo Size and Scaling Fix**: Optimized the logo alignment and size in the header.
+  - **Files modified**: `app/components/(dynamic)/Header/Header.modul.scss`.
+  - **New behavior**: Increased the logo container width from 30% to 50% and replaced restrictive `max-width` with `max-height: 90px` to allow the logo to fill more space while maintaining aspect ratio.
+  - **Reason for change**: User reported the logo was too small.
+
+- **Dynamic Port Management**: Implemented a system to manage the application port via a configuration file.
+  - **Files modified**: `package.json`, `ports.json` [NEW], `scripts/sync-port.js` [NEW].
+  - **New behavior**: The port number is read from `ports.json` and automatically updated in `package.json` scripts (`dev`, `start`, `dev:watch`) via `predev` and `prestart` hooks.
+  - **Reason for change**: Request for dynamic port passing from a file.
+
+- **Favicon Fix**: Resolved the issue where the favicon was not displaying.
+  - **Files modified**: `app/layout.js`.
+  - **New behavior**: Moved favicon to `public/` and updated metadata to use a relative URL `/om-jiyansh-favicon.ico`.
+  - **Reason for change**: Favicon was in the wrong directory and had spaces in the filename.
+
+- **About Us Content Update**: Updated the About Us page for OmJiyansh Jewels.
+  - **Files modified**: `public/WebSiteStaticImage/html/OmAbout.html`.
+  - **New behavior**: Replaced old content with new information about Ajay Shah and Kalpesh Mangukiya. Added modern, responsive styling.
+  - **Reason for change**: User request to update company information and branding.
+
 ## [2026-03-24]
 - **MasterProvider Performance Optimization**: Improved initial load speed and data availability.
   - **Files modified**: `app/(core)/contexts/MasterProvider.js`.

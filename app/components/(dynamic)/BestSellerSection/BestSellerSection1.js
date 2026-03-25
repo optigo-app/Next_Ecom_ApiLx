@@ -273,6 +273,10 @@ const BestSellerSection1 = ({ data, storeData }) => {
     chunkedData.push(bestSellerData?.slice(i, i + 3));
   }
 
+
+  if (bestSellerData.length === 0) return null;
+
+
   return (
     <div>
       <div>
