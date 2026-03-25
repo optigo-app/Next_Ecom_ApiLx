@@ -6,7 +6,7 @@ export default async function ContactUsPage() {
   const htmlContent = await getContactUsContent();
 
   return (
-    <div className="smr_contactMain_div">
+    <div className="fg_smr_contactMain_div">
       <div className="Fo-contactMain">
         <div>
           <p
@@ -15,7 +15,6 @@ export default async function ContactUsPage() {
               margin: "0px",
               paddingTop: "30px",
               textAlign: "center",
-              fontFamily: "FreightDispProBook-Regular,Times New Roman,serif",
             }}
           >
             Contact Us

@@ -1,279 +1,278 @@
-@use '../../../theme/fgstore.web/style/variable.scss' as *;
+@use "../../../theme/fgstore.web/style/variable.scss" as *;
 
 .smr_mainBestSeler1Div {
-    .smr_bestseler1TitleDiv {
-        text-align: center;
-        padding-block: 2%;
+  .smr_bestseler1TitleDiv {
+    text-align: center;
+    padding-block: 2%;
 
-        .smr_bestseler1Title {
-            color: $textColor;
-            font-size: 27px;
-            font-family: $Pratafonts;
-            font-weight: 500 !important;
+    .smr_bestseler1Title {
+      color: $textColor;
+      font-size: 27px;
+      font-family: $Pratafonts;
+      font-weight: 500 !important;
+    }
+  }
+
+  @media (max-width: 1200px) {
+    .smr_bestseler1TitleDiv {
+      padding: 4% 0px 0px 0px !important;
+
+      .smr_bestseler1Title {
+        font-size: 18px !important;
+        margin-top: 10px;
+      }
+    }
+  }
+
+  .product-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    padding: 0px 10px;
+
+    .smr_leftSideBestSeler {
+      width: 50%;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+
+      .product-card {
+        width: calc(50% - 10px);
+        box-sizing: border-box;
+
+        .smr_btimageDiv {
+          padding: 50px;
+          background-color: #f1f1f1;
+
+          img {
+            width: 100%;
+            height: 100%;
+            display: block;
+            object-fit: contain;
+            max-height: 450px;
+          }
         }
+
+        .product-info {
+          padding: 5px;
+          background-color: #fff;
+
+          h3 {
+            font-size: $fontSize1;
+            color: $titleColor;
+            font-family: $primaryFontFamily;
+            margin: 0;
+            letter-spacing: 0.5px;
+          }
+
+          p {
+            margin: 5px 0;
+            font-size: $fontSize2;
+            color: $titleColor;
+            font-family: $primaryFontFamily;
+            font-weight: bold;
+            letter-spacing: 0.5px;
+          }
+
+          span {
+            font-size: $fontSize1;
+            font-family: $primaryFontFamily;
+            color: $titleColor;
+            letter-spacing: 0.5px;
+          }
+
+          .smr_btpipe {
+            margin: 0px 3px;
+          }
+        }
+      }
+    }
+
+    .smr_rightSideBestSeler {
+      width: 50%;
+      position: relative;
+
+      img {
+        width: 100%;
+        height: 100%;
+        display: block;
+        object-fit: cover;
+      }
+
+      .smr_lookbookImageRightDT {
+        position: absolute;
+        // top: 50%;    kayra default
+        top: 87%; /* maiora chnages*/
+        // left: 40%; kayra default
+        left: 45%; /* maiora chnages*/
+        transform: translate(-30%, -70%);
+        font-size: $fontSize6;
+        color: #fff;
+        text-transform: capitalize;
+        font-family: $homePageFontFamily;
+        text-align: center;
+
+        h2 {
+          font-size: $fontSize7;
+          font-family: $homePageFontFamily;
+          left: 0.8px;
+        }
+
+        p {
+          font-size: $fontSize3;
+          font-family: $primaryFontFamily;
+          left: 0.5px;
+        }
+
+        button {
+          height: 35px;
+          font-size: $fontSize2;
+          font-family: $primaryFontFamily;
+          background-color: $authbtnbg;
+          color: $btncolor;
+          letter-spacing: 0.5px;
+          border: none;
+          cursor: pointer;
+          padding-inline: 10px;
+        }
+      }
     }
 
     @media (max-width: 1200px) {
-        .smr_bestseler1TitleDiv {
-            padding: 4% 0px 0px 0px !important;
+      .smr_bestseler1Title {
+        font-size: 18px !important;
+      }
 
-            .smr_bestseler1Title {
-                font-size: 18px !important;
-                margin-top: 10px;
-            }
+      .smr_leftSideBestSeler {
+        width: 100%;
+
+        .product-card {
+          width: calc(50% - 10px);
         }
+      }
+
+      .smr_rightSideBestSeler {
+        width: 100%;
+        margin-top: 20px;
+      }
     }
 
-    .product-grid {
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: space-between;
-        padding: 0px 10px;
+    @media (max-width: 768px) {
+      .smr_leftSideBestSeler {
+        width: 100%;
 
-        .smr_leftSideBestSeler {
-            width: 50%;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-
-            .product-card {
-                width: calc(50% - 10px);
-                box-sizing: border-box;
-
-                .smr_btimageDiv {
-                    padding: 50px;
-                    background-color: #f1f1f1;
-
-                    img {
-                        width: 100%;
-                        height: 100%;
-                        display: block;
-                        object-fit: contain;
-                        max-height: 450px;
-                    }
-                }
-
-                .product-info {
-                    padding: 5px;
-                    background-color: #fff;
-
-                    h3 {
-                        font-size: $fontSize1;
-                        color: $titleColor;
-                        font-family: $primaryFontFamily;
-                        margin: 0;
-                        letter-spacing: .5px;
-                    }
-
-                    p {
-                        margin: 5px 0;
-                        font-size: $fontSize2;
-                        color: $titleColor;
-                        font-family: $primaryFontFamily;
-                        font-weight: bold;
-                        letter-spacing: .5px;
-                    }
-
-                    span {
-                        font-size: $fontSize1;
-                        font-family: $primaryFontFamily;
-                        color: $titleColor;
-                        letter-spacing: .5px;
-                    }
-
-                    .smr_btpipe {
-                        margin: 0px 3px;
-                    }
-                }
-            }
+        .product-card {
+          width: calc(50% - 10px);
         }
+      }
 
-        .smr_rightSideBestSeler {
-            width: 50%;
-            position: relative;
+      .smr_rightSideBestSeler {
+        width: 100%;
+        margin-top: 20px;
 
-            img {
-                width: 100%;
-                height: 100%;
-                display: block;
-                object-fit: cover;
-            }
+        .smr_lookbookImageRightDT {
+          font-size: $fontSize5;
 
-            .smr_lookbookImageRightDT {
-                position: absolute;
-                // top: 50%;    kayra default
-                top: 87%;  /* maiora chnages*/
-                // left: 40%; kayra default
-                left: 45%;  /* maiora chnages*/
-                transform: translate(-30%, -70%);
-                font-size: $fontSize6;
-                color: #fff;
-                text-transform: capitalize;
-                font-family: $homePageFontFamily;
-                text-align: center;
+          h2 {
+            font-size: $fontSize6;
+          }
 
-                h2 {
-                    font-size: $fontSize7;
-                    font-family: $homePageFontFamily;
-                    left: .8px;
-                }
+          p {
+            font-size: $fontSize2;
+          }
 
-                p {
-                    font-size: $fontSize3;
-                    font-family: $primaryFontFamily;
-                    left: .5px;
-                }
-
-                button {
-                    height: 35px;
-                    font-size: $fontSize2;
-                    font-family: $primaryFontFamily;
-                    background-color: #fff;
-                    color: $titleColor;
-                    letter-spacing: .5px;
-                    border: none;
-                    cursor: pointer;
-                }
-            }
+          button {
+            height: 30px;
+            font-size: $fontSize2;
+          }
         }
-
-        @media (max-width: 1200px) {
-
-            .smr_bestseler1Title {
-                font-size: 18px !important;
-            }
-
-
-            .smr_leftSideBestSeler {
-                width: 100%;
-
-                .product-card {
-                    width: calc(50% - 10px);
-                }
-            }
-
-            .smr_rightSideBestSeler {
-                width: 100%;
-                margin-top: 20px;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .smr_leftSideBestSeler {
-                width: 100%;
-
-                .product-card {
-                    width: calc(50% - 10px);
-                }
-            }
-
-            .smr_rightSideBestSeler {
-                width: 100%;
-                margin-top: 20px;
-
-                .smr_lookbookImageRightDT {
-                    font-size: $fontSize5;
-
-                    h2 {
-                        font-size: $fontSize6;
-                    }
-
-                    p {
-                        font-size: $fontSize2;
-                    }
-
-                    button {
-                        height: 30px;
-                        font-size: $fontSize2;
-                    }
-                }
-            }
-        }
-
-        @media (max-width: 576px) {
-            .smr_mainBestSeler1Div {
-                .product-grid {
-                    padding: 0px 10px !important;
-                }
-            }
-
-            .smr_leftSideBestSeler,
-            .smr_rightSideBestSeler {
-                width: 100%;
-                margin-top: 10px;
-
-                .product-card {
-                    width: calc(50% - 10px) !important;
-                }
-
-                .smr_btimageDiv {
-                    padding: 10px !important;
-                }
-
-                .smr_lookbookImageRightDT {
-                    font-size: $fontSize4;
-
-                    h2 {
-                        font-size: $fontSize5;
-                    }
-
-                    p {
-                        font-size: $fontSize2;
-                    }
-
-                    button {
-                        height: 35px;
-                        font-size: $fontSize1;
-                    }
-                }
-            }
-        }
-
-        @media (max-width: 400px) {
-            .smr_leftSideBestSeler {
-                .product-card {
-                    width: 100%;
-                }
-
-                .smr_btimageDiv {
-                    padding: 10px !important;
-                }
-
-                .product-info {
-                    h3 {
-                        font-size: $fontSize1 !important;
-                    }
-
-                    p {
-                        span {
-                            font-size: $fontSize2 !important;
-                        }
-                    }
-
-                    span {
-                        font-size: $fontSize0 !important;
-                    }
-                }
-            }
-
-            .smr_rightSideBestSeler {
-                .smr_lookbookImageRightDT {
-                    font-size: $fontSize4;
-
-                    h2 {
-                        font-size: $fontSize5;
-                    }
-
-                    p {
-                        font-size: $fontSize1;
-                    }
-
-                    button {
-                        height: 34px;
-                        font-size: $fontSize1;
-                    }
-                }
-            }
-        }
+      }
     }
+
+    @media (max-width: 576px) {
+      .smr_mainBestSeler1Div {
+        .product-grid {
+          padding: 0px 10px !important;
+        }
+      }
+
+      .smr_leftSideBestSeler,
+      .smr_rightSideBestSeler {
+        width: 100%;
+        margin-top: 10px;
+
+        .product-card {
+          width: calc(50% - 10px) !important;
+        }
+
+        .smr_btimageDiv {
+          padding: 10px !important;
+        }
+
+        .smr_lookbookImageRightDT {
+          font-size: $fontSize4;
+
+          h2 {
+            font-size: $fontSize5;
+          }
+
+          p {
+            font-size: $fontSize2;
+          }
+
+          button {
+            height: 35px;
+            font-size: $fontSize1;
+          }
+        }
+      }
+    }
+
+    @media (max-width: 400px) {
+      .smr_leftSideBestSeler {
+        .product-card {
+          width: 100%;
+        }
+
+        .smr_btimageDiv {
+          padding: 10px !important;
+        }
+
+        .product-info {
+          h3 {
+            font-size: $fontSize1 !important;
+          }
+
+          p {
+            span {
+              font-size: $fontSize2 !important;
+            }
+          }
+
+          span {
+            font-size: $fontSize0 !important;
+          }
+        }
+      }
+
+      .smr_rightSideBestSeler {
+        .smr_lookbookImageRightDT {
+          font-size: $fontSize4;
+
+          h2 {
+            font-size: $fontSize5;
+          }
+
+          p {
+            font-size: $fontSize1;
+          }
+
+          button {
+            height: 34px;
+            font-size: $fontSize1;
+          }
+        }
+      }
+    }
+  }
 }

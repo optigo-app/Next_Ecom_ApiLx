@@ -160,7 +160,7 @@ const SonasonstermsData = {
 export default function TermsAndConditions() {
   const termsData = SonasonstermsData;
   return (
-    <div className="smr_about_mainDiv">
+    <div className="fg_smr_about_mainDiv">
       <div className="daimondsEveryAbout">
         <div className="smr_daimondsEveryAbout_sub" style={{ paddingBottom: "80px", minHeight: "400px" }}>
           <div className="smr-terms">

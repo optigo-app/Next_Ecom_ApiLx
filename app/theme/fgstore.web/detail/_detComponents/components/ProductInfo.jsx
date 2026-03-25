@@ -117,8 +117,8 @@ const ProductInfo = ({
 
                     {descriptionText?.length > 0 && (
                         <div className={`smrt_prod_description ${isExpanded ? 'smrt_show-more' : ''}`}>
-                            <p 
-                                className="smrt_description-text" 
+                            <p
+                                className="smrt_description-text"
                                 dangerouslySetInnerHTML={{ __html: descriptionText }}
                             />
 
@@ -202,9 +202,9 @@ const ProductInfo = ({
                         >
                             <span
                                 className="smr_addtocart_btn_txt"
-                                style={{
-                                    color: !addToCartFlag ? "white" : "white",
-                                }}
+                            // style={{
+                            //     color: !addToCartFlag ? "white" : "white",
+                            // }}
                             >
                                 {!addToCartFlag
                                     ? "ADD TO CART"

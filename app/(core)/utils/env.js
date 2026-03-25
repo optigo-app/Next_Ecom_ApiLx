@@ -7,7 +7,7 @@ export const WEBSITE_DOMAINS = {
   FGSTORE: "nxtsonasons.web",
   HOQ: "nxthoq.web",
   FGSTOREMAPP: "nxtmobileapp.web",
-  NXT10: "nxt10.optigoapps.com",
+  NXT10: "nxt10.optigoapps.com"
 };
 
 export const NEXT_APP_WEB = WEBSITE_DOMAINS.FGSTORE;

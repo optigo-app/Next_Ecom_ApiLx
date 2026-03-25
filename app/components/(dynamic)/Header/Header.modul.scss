@@ -1,5 +1,9 @@
 @use "../../../theme/fgstore.web/style/variable.scss" as *;
 
+li {
+  list-style: none;
+}
+
 .smr_headerMain_div {
   .TopNavBar {
     width: 100%;
@@ -881,7 +885,7 @@
       margin: 0px !important;
 
       .muIconeMobileHeader {
-        color: $menuColor;
+        color: $navbarcolor;
       }
     }
 

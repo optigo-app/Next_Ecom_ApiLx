@@ -14,7 +14,7 @@ import { useMediaQuery } from "@mui/material";
 import { toast } from "react-toastify";
 import { useStore } from "@/app/(core)/contexts/StoreProvider";
 
-const Wishlist = ({storeInit}) => {
+const Wishlist = ({ storeInit }) => {
   const {
     isWLLoading,
     wishlistData,
@@ -32,7 +32,7 @@ const Wishlist = ({storeInit}) => {
     handleMoveToDetail,
     handelMenu
   } = Usewishlist();
-const {setCartCountNum ,  setWishCountNum} = useStore()
+  const { setCartCountNum, setWishCountNum } = useStore()
   const [dialogOpen, setDialogOpen] = useState(false);
   const visiterId = Cookies.get('visiterId');
   const isMobileScreen = useMediaQuery('(max-width:768px)');
@@ -81,7 +81,7 @@ const {setCartCountNum ,  setWishCountNum} = useStore()
   };
 
   return (
-    <div className="smr_MainWlDiv" style={{
+    <div className="fg_smr_MainWlDiv" style={{
       paddingBottom: "4rem"
     }}>
       <div className="WlMainPageDiv">

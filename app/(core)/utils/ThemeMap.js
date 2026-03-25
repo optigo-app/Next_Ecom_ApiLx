@@ -22,4 +22,7 @@ export const themeMap = {
   "nxt29.optigoapps.com": {
     page: "fgstore.web",
   },
+  "omjiyanshjewels.com": {
+    page: "fgstore.web",
+  }
 };

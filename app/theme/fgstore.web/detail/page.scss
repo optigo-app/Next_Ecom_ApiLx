@@ -1,4 +1,4 @@
-@use "../style/variable.scss" as *;
+@use "../../fgstore.web/style/variable.scss" as *;
 
 .smr_prodDetail_bodyContain {
   background-color: $bgColor;
@@ -232,7 +232,7 @@
   align-items: center;
   min-height: 49px;
   cursor: pointer;
-  color: $btncolor;
+  color: $defaultbtncolor;
   background-color: $btnBg;
 }
 
@@ -246,7 +246,7 @@
   min-height: 49px;
   cursor: pointer;
   color: $btncolor;
-  background-color: $btnBg;
+  background: $authbtnbg;
 }
 
 .smr_addtocart_btn_txt {
@@ -254,18 +254,19 @@
   font-size: 15px;
   letter-spacing: 1.5px;
   position: relative;
-  color: $primaryfontcolor2;
+  // color: $primaryfontcolor2;
+  color: $btncolor;
 }
 
 .Smr_wishlistcont {
-  border: 1px solid $btnBg;
+  border: 1px solid $menutitle;
   width: 20%;
   display: flex;
   justify-content: center;
   align-items: center;
   padding: 0.4%;
   border-radius: 2px;
-  background-color: $btnBg;
+  background: $authbtnbg;
 }
 
 .smr_proDeatilList {
