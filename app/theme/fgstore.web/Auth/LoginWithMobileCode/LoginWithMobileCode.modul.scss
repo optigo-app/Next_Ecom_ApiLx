@@ -1,7 +1,7 @@
 @use "../../../fgstore.web/style/variable.scss" as *;
 
 .fg_smr_loginmobileCodeMain {
-  background-color: $bgColor;
+  background-color: $authbg;
   height: 70vh;
   display: grid;
   align-content: center;
