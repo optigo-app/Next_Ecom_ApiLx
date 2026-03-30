@@ -19,7 +19,7 @@ export default async function ContactUsPage() {
           >
             Contact Us
           </p>
-          <div style={{ display: "flex", justifyContent: "center" }}>
+          <div style={{ display: "flex", justifyContent: "center", width: '100%' }}>
             <p style={{ width: "300px", textAlign: "center", fontSize: "15px" }}>
               Have a comment, suggestion or question? Feel free to reach out to us and we’ll get
               back to you as soon as possible.

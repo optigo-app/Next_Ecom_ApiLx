@@ -1,6 +1,7 @@
 import React from "react";
 import "./InquiryModal.scss";
 import { VscClose } from "react-icons/vsc";
+import { TheDifferenceData } from "@/app/theme/fgstore.mapp/ProfilePage/staticTabs/Bespoke/InquiryModal";
 
 const InquiryModal = ({ open, setOpen, handleSubmit, formData,
   handleChange, handleFileChange, error, loading }) => {
@@ -17,7 +18,7 @@ const InquiryModal = ({ open, setOpen, handleSubmit, formData,
               <VscClose size={17} />
             </button>
           </div>
-                   <form onSubmit={handleSubmit} className="smr-modal-form">
+          <form onSubmit={handleSubmit} className="smr-modal-form">
             <div className="smr-form-group">
               <label htmlFor="FullName">Full Name*</label>
               <input
@@ -60,7 +61,7 @@ const InquiryModal = ({ open, setOpen, handleSubmit, formData,
               <input
                 id="WebSite"
                 name="WebSite"
-                placeholder="www.sonasons.one"
+                placeholder={TheDifferenceData.omjiyansh.title}
                 value={formData.WebSite}
                 onChange={handleChange}
               />

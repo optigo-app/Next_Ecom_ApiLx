@@ -13,6 +13,22 @@ import { defaultFont } from "./(core)/assets/FontSetup";
 const DEFAULT_JEWELRY_DESCRIPTION = "Discover timeless jewelry crafted with precision and elegance. Explore gold, diamond, and silver collections designed for everyday wear and special occasions, with trusted quality and exceptional craftsmanship.";
 const DEFAULT_JEWELRY_KEYWORDS = "jewelry online, gold jewelry, diamond jewelry, silver jewelry, fine jewelry, bridal jewelry, earrings, rings, necklaces, bracelets, luxury jewelry, handcrafted jewelry";
 
+const Favicon = {
+  Sonasons: {
+    ico: '/optigo_favicon.ico',
+  },
+  omjiyas: {
+    ico: '/WebSiteStaticImage/logoIcon/om/new/32 x 32.png',
+  }
+}
+
+const activeBrand = 'omjiyas'; // dynamic later
+
+const ActiveFavicon = Favicon[activeBrand].ico;
+
+const isOmJiyansh = activeBrand === 'omjiyas';
+
+
 export async function generateMetadata() {
   const storeInit = await getStoreInit();
 
@@ -25,11 +41,11 @@ export async function generateMetadata() {
     ufcc: storeInit?.ufcc,
     websiteName: storeInit?.BrowserTitle,
     icons: {
-      icon: storeInit?.favicon,
-      shortcut: storeInit?.favicon,
-      apple: storeInit?.favicon,
+      icon: ActiveFavicon,
+      shortcut: ActiveFavicon,
+      apple: ActiveFavicon,
     },
-  });
+  }, isOmJiyansh);
 }
 
 export default async function RootLayout({ children }) {

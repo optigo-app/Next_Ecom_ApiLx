@@ -247,6 +247,9 @@ const NewArrival = ({ data, storeInit }) => {
   };
 
 
+  if (newArrivalData.length === 0) return null;
+
+
   return (
     <div
       ref={newArrivalRef}

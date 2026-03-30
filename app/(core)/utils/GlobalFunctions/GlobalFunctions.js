@@ -2,6 +2,18 @@ import { cookies } from "next/headers";
 import fs from "fs";
 import path from "path";
 
+const ActiveTheme = {
+  contactuse: {
+    Sonasons: "SonasonsContactPage.html",
+    omjiyas: "OmcontactPage.html",
+  },
+  aboutus: {
+    Sonasons: "SonasonsAbout.html",
+    omjiyas: "OmAbout.html",
+  }
+}
+
+
 function safeParse(value) {
   if (!value) return {};
   try {
@@ -51,7 +63,7 @@ export const IsUserLoggedIn = async () => {
 
 export const getAboutUsContent = async () => {
   try {
-    const filePath = path.join(process.cwd(), "public", "WebSiteStaticImage", "html", "sonasonsAbout.html");
+    const filePath = path.join(process.cwd(), "public", "WebSiteStaticImage", "html", ActiveTheme.aboutus.omjiyas);
     const htmlContent = await fs.promises.readFile(filePath, "utf-8");
     return htmlContent;
   } catch (error) {
@@ -115,9 +127,10 @@ export const getCustomHoqContent = async () => {
   }
 };
 
+
 export const getContactUsContent = async () => {
   try {
-    const filePath = path.join(process.cwd(), "public", "WebSiteStaticImage", "html", "SonasonsContactPage.html");
+    const filePath = path.join(process.cwd(), "public", "WebSiteStaticImage", "html", ActiveTheme.contactuse.omjiyas);
     const htmlContent = await fs.promises.readFile(filePath, "utf-8");
     return htmlContent;
   } catch (error) {

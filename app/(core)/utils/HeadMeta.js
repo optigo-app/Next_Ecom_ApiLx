@@ -15,10 +15,12 @@ export function getValidUrl(website) {
 }
 
 
-export function generatePageMetadata(pageData) {
+export function generatePageMetadata(pageData, isOmJiyansh) {
     if (!pageData) return {};
+
+    const Title_Suffix = isOmJiyansh ? pageData.websiteName : `${pageData.title} | ${pageData.websiteName}`
     const baseMetadata = {
-        title: `${pageData.title} | ${pageData.websiteName}`,
+        title: Title_Suffix,
         description: pageData.description || "",
         keywords: pageData.keywords || "",
         authors: [{ name: pageData.ufcc }],

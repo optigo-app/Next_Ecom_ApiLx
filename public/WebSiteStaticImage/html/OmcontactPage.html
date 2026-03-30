@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Contact information for Kayra Creation Limited, including address, phone number, and map location." />
+    <style>
+      .smr_Fo_contactBox2 {
+        width: 100%;
+        margin: 0px;
+        display: flex;
+        justify-content: center;
+      }
+
+      .tab-buttons {
+        display: flex;
+        width: 100%;
+        margin-bottom: 20px;
+      }
+
+      .tab-buttons button {
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 10px;
+        margin-right: 10px;
+        font-size: 16px;
+        /* Added for consistent styling */
+      }
+
+      .tab-buttons button.active {
+        border-bottom: 2px solid blue;
+      }
+
+      .address {
+        margin-top: 20px;
+        /* Add some space between the tabs and address section */
+      }
+
+      .map-container {
+        margin-top: 20px;
+        /* Add some space between address and map */
+      }
+
+      .mapContact {
+        width: 100%;
+        /* Make map responsive */
+        height: 450px;
+        /* Keep the height as specified */
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="smr_Fo_contactBox2">
+      <div>
+        <div class="tab-buttons">
+          <button class="active" onClick="handleTabClick('M1')">Main Office Address</button>
+        </div>
+        <div class="address">
+          <p></p>
+          <p>
+            303,AL SAHWA BUILDING , BEHIND GOLD LAND BUILDING,<br />
+            GOLD SOUQ,DEIRA,DUBAI-UNITED ARAB EMIRATES,
+          </p>
+          <p>+971 569954344</p>
+          <p>omjiyanshpvtltd@gmail.com</p>
+        </div>
+        <div class="map-container">
+          <!-- <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3720.2828242419437!2d72.8191344!3d21.1809209!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3be04e438cc948fb%3A0x5712a989b70ef3a2!2sOrail%20Services%20-%20OptigoApps!5e0!3m2!1sen!2sin!4v1734596370112!5m2!1sen!2sin" width="100%" height="450" allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade" class="mapContact"></iframe> -->
+        </div>
+      </div>
+    </div>
+
+    <script>
+      function handleTabClick(tab) {
+        console.log("Tab clicked:", tab);
+        // Implement tab change logic here
+      }
+    </script>
+  </body>
+</html>

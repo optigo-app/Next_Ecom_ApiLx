@@ -7,8 +7,10 @@ const ChatMenu = ({
   message = "Hello, Talk to a Jewellery expert now!",
 }) => {
 
-  const whatsappUrl = `https://web.whatsapp.com/send?phone=9099889962&text=${encodeURIComponent(message)}`;
-  const whatsappMobileUrl = `https://api.whatsapp.com/send?phone=9099889962&text=${encodeURIComponent(message)}`;
+  const ActiveNumber = `971569954344`;
+  // 9099889962
+  const whatsappUrl = `https://web.whatsapp.com/send?phone=${ActiveNumber}&text=${encodeURIComponent(message)}`;
+  const whatsappMobileUrl = `https://api.whatsapp.com/send?phone=${ActiveNumber}&text=${encodeURIComponent(message)}`;
 
   function detectOS() {
     if (typeof window === 'undefined') {

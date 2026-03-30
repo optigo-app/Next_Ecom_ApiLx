@@ -56,7 +56,7 @@ export const MasterProvider = ({ children, getCompanyInfoData, getStoreInit, get
         if (token) {
             setSession("token", token);
         }
-        const isMobileApp = getStoreInit?.domain === "nxt14.optigoapps.com" || getStoreInit?.domain === "nxtmobileapp.web" || getStoreInit?.domain === "fgstore.mapp";
+        const isMobileApp = getStoreInit?.domain == "nxt14.optigoapps.com" || getStoreInit?.domain == "nxtmobileapp.web" || getStoreInit?.domain == "fgstore.mapp";
         if (isMobileApp) {
             const ExistingToken = token || getSession("token");
             console.log(ExistingToken, "ExistingToken")

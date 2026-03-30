@@ -5,6 +5,12 @@ li {
 }
 
 .smr_headerMain_div {
+  background-color: #fff;
+  position: relative;
+  z-index: 100;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border-bottom: 1px solid #eee;
+
   .TopNavBar {
     width: 100%;
     transition: 0.3s ease-in-out;
@@ -146,7 +152,8 @@ li {
         .menu_list_Smr_0_title {
           font-size: 16px;
           font-weight: 600;
-          color: white;
+          // color: white;
+          color: $navbarcolor;
           text-transform: uppercase;
           text-decoration: none;
           position: relative;
@@ -290,13 +297,14 @@ li {
   }
 
   .smiling_Top_header_div1 {
-    width: 35%;
+    width: 25%;
     display: flex;
     align-items: center;
   }
 
-  .smiling_Top_header_div2_web {
-    width: 30%;
+  .smiling_Top_header_div2_web,
+  .smiling_Top_header_div2_Mobile {
+    width: 50%;
     display: flex;
     justify-content: center;
     user-select: none;
@@ -305,11 +313,16 @@ li {
 
   .smr_logo_header {
     object-fit: contain;
-    max-width: 1000px;
+    max-width: 100%;
+    max-height: 80px;
+
+    @media screen and (max-width: 1200px) {
+      max-height: 60px;
+    }
   }
 
   .smiling_Top_header_div3 {
-    width: 35%;
+    width: 25%;
     justify-content: flex-end;
     display: flex;
     align-items: center;
@@ -332,7 +345,7 @@ li {
   }
 
   .nav_li_smining_Icone {
-    color: white;
+    color: $navbarcolor;
     font-size: $fontSize1;
     font-weight: 500;
     position: relative;
@@ -340,7 +353,7 @@ li {
   }
 
   .nav_li_smining {
-    color: white;
+    color: $navbarcolor;
     font-size: $fontSize2;
     font-weight: 500;
     letter-spacing: 1px;
@@ -405,7 +418,8 @@ li {
 
   .smr_logo_header_Fixed {
     object-fit: contain;
-    max-width: 500px;
+    max-width: 100%;
+    max-height: 50px;
   }
 
   .Smining-Top-Header-fixed-main {
@@ -430,7 +444,7 @@ li {
   .Smining-Top-Header-fixed-main.fixed {
     position: fixed;
     top: 0;
-    box-shadow: 0 2px 5px rgba(20, 19, 19, 0.1);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
     z-index: 1000;
     transform: translateY(0px);
     transition: all 0.4s ease;
@@ -745,13 +759,14 @@ li {
   }
 
   .badgeColor .MuiBadge-badge {
-    background-color: $badgecolor !important;
-    color: $badgetxtcolor !important;
+    background-color: $btnBg !important;
+    color: $btncolor !important;
+    margin-left: 10px !important;
   }
 
   .badgeColorFix .MuiBadge-badge {
-    background-color: $badgecolor !important;
-    color: $badgetxtcolor !important;
+    background-color: $btnBg !important;
+    color: $btncolor !important;
     margin-left: 10px !important;
   }
 
@@ -779,15 +794,15 @@ li {
 
   @media screen and (max-width: 1700px) {
     .smiling_Top_header_div1 {
-      width: 40% !important;
+      width: 30% !important;
     }
 
     .smiling_Top_header_div2_web {
-      width: 20% !important;
+      width: 40% !important;
     }
 
     .smiling_Top_header_div3 {
-      width: 40% !important;
+      width: 30% !important;
     }
   }
 
@@ -806,8 +821,9 @@ li {
       width: 45% !important;
     }
 
-    .smiling_Top_header_div2_web {
-      width: 10% !important;
+    .smiling_Top_header_div2_web,
+    .smiling_Top_header_div2_Mobile {
+      width: 20% !important;
     }
 
     .smiling_Top_header_div3 {
@@ -916,6 +932,17 @@ li {
 
     .smiling_Top_header_div3 {
       padding-right: 5px;
+    }
+
+    .smiling_Top_header_div1,
+    .smiling_Top_header_div3 {
+      width: 80px !important;
+    }
+
+    .smiling_Top_header_div2_web,
+    .smiling_Top_header_div2_Mobile {
+      flex: 1 !important;
+      width: auto !important;
     }
   }
 
