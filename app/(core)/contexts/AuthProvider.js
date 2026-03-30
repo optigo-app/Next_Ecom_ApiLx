@@ -11,7 +11,7 @@ const MOBILE_APP_REDIRECT_PATH = "/";
 
 const restrictedPaths = ["/LoginOption", "/ContinueWithEmail", "/ContinueWithMobile", "/LoginWithEmailCode", "/LoginWithMobileCode", "/forgotPass", "/ForgotPass", "/LoginWithEmail", "/register"];
 
-const publicPages = ["/", "/LoginOption", "/forgotPass", "/privacyPolicy", "/aboutUs", "/contactUs", "/appointment", "/bespoke-jewelry", "/refund-policy", "/shipping-policy", "/terms-and-conditions", "/debug-internal-config-manager-v2", "contactus", "aboutus", "privacypolicy", "servicepolicy", "expertadvice", "bespoke-jewelry", "appointment", "terms-and-conditions", "searchbystock", "funfact", "termspolicy", "natural-diamond"];
+const publicPages = ["/", "/LoginOption", "/forgotPass", "/privacyPolicy", "/aboutUs", "/contactUs", "/appointment", "/bespoke-jewelry", "/refund-policy", "/shipping-policy", "/terms-and-conditions", "/debug-internal-config-manager-v2", "contactus", "aboutus", "privacypolicy", "servicepolicy", "expertadvice", "bespoke-jewelry", "appointment", "terms-and-conditions", "searchbystock", "funfact", "termspolicy", "natural-diamond", ...restrictedPaths];
 
 const protectedPages = ["/account", "/delivery", "/payment", "/confirmation", "/accountdwsr", "account", "delivery", "payment", "confirmation"];
 
@@ -39,21 +39,21 @@ export function AuthProvider({ children, storeInit, theme }) {
     }
 
     if (hasInitializedAuth.current) {
-      console.log(hasInitializedAuth, "hasInitializedAuth")
+      console.log(hasInitializedAuth, "hasInitializedAuth");
       setLocalData(storeInit);
       return;
     }
 
     if (token) {
       setSession("token", token);
-      localStorage.setItem('token', token)
+      localStorage.setItem("token", token);
     }
     const existingLoginUser = sessionStorage.getItem("LoginUser");
     if (existingLoginUser === "true" && !token) {
       setIsLoading(false);
       hasInitializedAuth.current = true;
       setLocalData(storeInit);
-      console.log(hasInitializedAuth, "hasInitializedAuth")
+      console.log(hasInitializedAuth, "hasInitializedAuth");
 
       return;
     }
@@ -89,44 +89,9 @@ export function AuthProvider({ children, storeInit, theme }) {
         hasInitializedAuth.current = true;
       }
     }
-    // else {
-    //   // Mobile app: Flutter passes token via URL, always process it
-    //   const ExistingToken = localStorage.getItem('token') || token || getSession("token");
-    //   if (ExistingToken) {
-    //     hasInitializedAuth.current = true;
-    //     setIsLoading(true);
-    //     WebLoginWithMobileToken(ExistingToken)
-    //       .then((response) => {
-    //         if (token) {
-    //           setSession("token", token);
-    //         }
-    //         if (response.Data.rd[0].stat === 1) {
-    //           sessionStorage.setItem("LoginUser", true);
-    //           sessionStorage.setItem("loginUserDetail", JSON.stringify(response.Data.rd[0]));
-    //           setislogin(true);
-    //           setLoginUserDetail(response.Data.rd[0]);
-    //           // let redirectLookBook = localStorage?.getItem("redirectLookBook");
-    //           // setTimeout(() => {
-    //           //   if (redirectLookBook) {
-    //           //     router.push(redirectLookBook);
-    //           //   } else {
-    //           router.push("/");
-    //           //   }
-    //           // }, 0);
-    //         }
-    //       })
-    //       .catch((error) => {
-    //         console.error("Error:", error);
-    //       })
-    //       .finally(() => setIsLoading(false));
-    //   } else {
-    //     setIsLoading(false);
-    //     hasInitializedAuth.current = true;
-    //   }
-    // }
+
     setLocalData(storeInit);
   }, [token, storeInit, isMobileApp]);
-
 
   useEffect(() => {
     if (isLoading) return;
@@ -158,7 +123,7 @@ export function AuthProvider({ children, storeInit, theme }) {
         if (decodeError || (albumSecurityId !== null && albumSecurityId > 0)) {
           const redirectUrl = `/LoginOption?LoginRedirect=${encodeURIComponent(fullPath)}`;
           router.replace(redirectUrl);
-          console.log(hasInitializedAuth, "hasInitializedAuth")
+          console.log(hasInitializedAuth, "hasInitializedAuth");
 
           return;
         }
@@ -170,7 +135,7 @@ export function AuthProvider({ children, storeInit, theme }) {
       if (isProtectedPage) {
         const redirectUrl = `/LoginOption?LoginRedirect=${encodeURIComponent(fullPath)}`;
         router.replace(redirectUrl);
-        console.log(hasInitializedAuth, "hasInitializedAuth")
+        console.log(hasInitializedAuth, "hasInitializedAuth");
 
         return;
       }
@@ -183,12 +148,13 @@ export function AuthProvider({ children, storeInit, theme }) {
         if (isShopPage) {
           const redirectUrl = `/LoginOption?LoginRedirect=${encodeURIComponent(fullPath)}`;
           router.replace(redirectUrl);
-          console.log(hasInitializedAuth, "hasInitializedAuth")
+          console.log(hasInitializedAuth, "hasInitializedAuth");
 
           return;
         } else if (!isPublicPage) {
+          console.log(islogin, "islogin 190")
           router.replace("/");
-          console.log(hasInitializedAuth, "hasInitializedAuth")
+          console.log(hasInitializedAuth, "hasInitializedAuth");
 
           return;
         }
@@ -201,8 +167,7 @@ export function AuthProvider({ children, storeInit, theme }) {
     if (isMobileApp) {
       if (restrictedPaths?.some((path) => pathname.startsWith(path))) {
         router.replace(MOBILE_APP_REDIRECT_PATH);
-        console.log(hasInitializedAuth, "hasInitializedAuth")
-
+        console.log(hasInitializedAuth, "hasInitializedAuth");
         return;
       }
     }
@@ -210,8 +175,12 @@ export function AuthProvider({ children, storeInit, theme }) {
     if (islogin === true && !isLoading) {
       if (restrictedPaths?.some((path) => pathname.startsWith(path))) {
         if (redirectEmailUrl) {
+          console.log(islogin, "islogin 212")
+          console.log(hasInitializedAuth, "hasInitializedAuth");
           router.replace(redirectEmailUrl);
         } else {
+          console.log(islogin, "islogin 216")
+          console.log(hasInitializedAuth, "hasInitializedAuth");
           router.replace(MOBILE_APP_REDIRECT_PATH);
         }
       }

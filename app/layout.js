@@ -18,11 +18,16 @@ const Favicon = {
     ico: '/optigo_favicon.ico',
   },
   omjiyas: {
-    ico: '/om-jiyansh-favicon.ico',
+    ico: '/WebSiteStaticImage/logoIcon/om/new/32 x 32.png',
   }
 }
 
-const ActiveFavicon = Favicon.omjiyas.ico;
+const activeBrand = 'omjiyas'; // dynamic later
+
+const ActiveFavicon = Favicon[activeBrand].ico;
+
+const isOmJiyansh = activeBrand === 'omjiyas';
+
 
 export async function generateMetadata() {
   const storeInit = await getStoreInit();
@@ -40,7 +45,7 @@ export async function generateMetadata() {
       shortcut: ActiveFavicon,
       apple: ActiveFavicon,
     },
-  });
+  }, isOmJiyansh);
 }
 
 export default async function RootLayout({ children }) {

@@ -45,19 +45,24 @@ const Theme = {
     web: "/WebSiteStaticImage/logoIcon/webLogo.png",
     mobile: "/WebSiteStaticImage/logoIcon/mobileLogo.png",
   },
+  // omjiyansh: {
+  //   web: "/WebSiteStaticImage/logoIcon/om/webLogo.png",
+  //   mobile: "/WebSiteStaticImage/logoIcon/om/mobileLogo.png",
+  // },
   omjiyansh: {
-    web: "/WebSiteStaticImage/logoIcon/om/webLogo.png",
-    mobile: "/WebSiteStaticImage/logoIcon/om/mobileLogo.png",
+    web: "/WebSiteStaticImage/logoIcon/om/new/om-jiyansh-jewel pvt ltd final logo.png",
+    mobile: "/WebSiteStaticImage/logoIcon/om/new/om-jiyansh-jewel pvt ltd final logo.png",
+  },
+  hoq: {
+    web: "/WebSiteStaticImage/logoIcon/webLogo1.png",
+    mobile: "/WebSiteStaticImage/logoIcon/mobileLogo2.png",
   }
 }
 
 export function getLogos() {
-  return Theme.omjiyansh
+  return Theme.omjiyansh;
 }
 
 export function getHoqLogos() {
-  return {
-    web: "/WebSiteStaticImage/logoIcon/webLogo1.png",
-    mobile: "/WebSiteStaticImage/logoIcon/mobileLogo2.png",
-  };
+  return Theme.hoq;
 }

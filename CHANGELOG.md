@@ -1,3 +1,20 @@
+## [2026-03-30]
+
+- **Header Logo Size and Responsiveness Fix**: Optimized the logo alignment and size in the header across all devices.
+  - **Files modified**: `app/components/(dynamic)/Header/Header.modul.scss`.
+  - **New behavior**: Re-adjusted container widths for `smiling_Top_header_div1`, `smiling_Top_header_div2_web`, `smiling_Top_header_div2_Mobile`, and `smiling_Top_header_div3` to give more space (20%-flex) to the logo. Added specific styles for the mobile logo container and balanced `max-height` constraints. 
+  - **Reason for change**: User reported the logo was too small on various devices.
+
+- **Footer Logo Size Fix**: Balanced the footer logo size to match the overall design.
+  - **Files modified**: `app/components/(static)/Footer/FooterNew.scss`.
+  - **New behavior**: Implemented `max-height: 140px` (Desktop) and `max-height: 100px` (Mobile) for the footer logo to prevent it from overwhelming other footer elements.
+  - **Reason for change**: User requested to fix the footer logo to look "proper."
+
+- **Updated Logo Assets**: Updated logo paths for the OmJiyansh brand.
+  - **Files modified**: `app/(core)/lib/ServerHelper.js`.
+  - **New behavior**: Pointed to the new "final logo" image for both web and mobile.
+  - **Reason for change**: Branding update with new assets.
+
 ## [2026-03-25]
 
 - **Terms and Conditions Data Update**: Integrated OmJiyansh Jewels content and added a theme switcher.
