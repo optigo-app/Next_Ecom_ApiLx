@@ -291,11 +291,11 @@ const CartPage = ({ storeinit, visiterId, islogin, setCartCountNum }) => {
                     onCancelCart={handleCancelUpdateCart}
                   />
                 </div>
-              ) :
+              ) : (
                 <NoResults
                   onClick={handelMenu}
                 />
-              }
+              )}
             </>
           ) :
             <CartPageSkeleton />

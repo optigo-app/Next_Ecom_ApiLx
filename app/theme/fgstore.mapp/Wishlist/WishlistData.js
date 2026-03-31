@@ -112,7 +112,7 @@ const WishlistData = ({
               />
             ))}
           </Grid>
-          {items.length == 0 &&
+          {!isloding && items.length == 0 &&
             <>
               <NoResults
                 onClick={handelMenu}

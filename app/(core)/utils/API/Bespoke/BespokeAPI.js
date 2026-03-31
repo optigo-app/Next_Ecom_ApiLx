@@ -1,7 +1,7 @@
 import { wesbiteDomainName } from "../../Glob_Functions/GlobalFunction";
 import { CommonFileAPI } from "../CommonAPI/CommonFileAPI";
 
-export const BespokeAPI = async (obj = {}, fileMeta = {},ukey) => {
+export const BespokeAPI = async (obj = {}, fileMeta = {}, ukey) => {
 
   const domainname = wesbiteDomainName;
 
@@ -55,7 +55,6 @@ export const BespokeFileUploadAPI = async (file, ukey) => {
 
     const res = await CommonFileAPI(formData, true);
 
-    console.log("🚀 ~ BespokeFileUploadAPI ~ response:", res);
     return res;
   } catch (error) {
     console.error("BespokeFileUploadErr:", error);

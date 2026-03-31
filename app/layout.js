@@ -18,11 +18,11 @@ const Favicon = {
     ico: '/optigo_favicon.ico',
   },
   omjiyas: {
-    ico: '/WebSiteStaticImage/logoIcon/om/new/32 x 32.png',
+    ico: '/WebSiteStaticImage/logoIcon/om/new/favicon.ico',
   }
 }
 
-const activeBrand = 'omjiyas'; // dynamic later
+const activeBrand = 'omjiyas';
 
 const ActiveFavicon = Favicon[activeBrand].ico;
 

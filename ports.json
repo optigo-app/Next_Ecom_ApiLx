@@ -1,8 +1,4 @@
 {
-  "activePort": "7001",
-  "ports": {
-    "dev": "7001",
-    "staging": "7002",
-    "prod": "7003"
-  }
+  "https://omjiyanshjewels.com/": "7001",
+  "https://nxtsonasons.web/": "5009"
 }

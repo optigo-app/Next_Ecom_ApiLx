@@ -56,6 +56,10 @@ const MobileHeader = ({ result, afterFilterCount, showClearAllButton, afterCount
         borderBottom: "1px solid #e9e9e9e3",
         px: 1,
         py: 1.2,
+        boxSizing: "border-box",
+        width: '100%',
+        maxWidth: '100%',
+        overflow: 'hidden'
       }}
     >
       <Box sx={{ position: "relative", width: "100%", height: "40px", display: "flex", alignItems: "center" }}>
@@ -77,10 +81,16 @@ const MobileHeader = ({ result, afterFilterCount, showClearAllButton, afterCount
             <ArrowBackIcon />
           </IconButton>
 
-          <Typography sx={{ fontWeight: 600, fontSize: 16 }}>
+          <Box sx={{ flexGrow: 1, overflow: "hidden" }}>
             <BreadCrumbs
-              showClearAllButton={showClearAllButton} afterCountStatus={afterCountStatus} count={afterFilterCount} result={result} IsBreadCumShow={IsBreadCumShow} menuDecode={menuDecode} />
-          </Typography>
+              showClearAllButton={showClearAllButton}
+              afterCountStatus={afterCountStatus}
+              count={afterFilterCount}
+              result={result}
+              IsBreadCumShow={IsBreadCumShow}
+              menuDecode={menuDecode}
+            />
+          </Box>
         </Box>
         <Box
           sx={{

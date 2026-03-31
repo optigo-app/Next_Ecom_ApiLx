@@ -66,6 +66,14 @@ const Usewishlist = () => {
       if (response?.Data?.rd[0]?.stat != 0) {
         let diamondData = response?.Data?.rd1;
         setWishlistData(response?.Data?.rd);
+        const initialProducts = response?.Data?.rd?.map(data => ({
+          ...data,
+          images: [],
+          loading: true
+        }));
+        setFinalWishData(initialProducts);
+        setLoadingIndex(0);
+
         if (diamondData?.length != 0) {
           const solStockNos = diamondData?.map(item => item?.Sol_StockNo);
           const commaSeparatedString = solStockNos?.join(',');
@@ -76,6 +84,7 @@ const Usewishlist = () => {
       } else {
         setIsWlLoading(false);
         setWishlistData([]);
+        setFinalWishData([]);
         setDiamondWishData([]);
       }
     } catch (error) {

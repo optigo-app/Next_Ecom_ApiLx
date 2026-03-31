@@ -1,5 +1,26 @@
 ## [2026-03-31]
 
+- **Cart & Wishlist Loading Optimization**: Resolved "flash of empty state" issue where "No Items Found" would appear briefly before products loaded.
+  - **Files modified**:
+    - `app/(core)/utils/Glob_Functions/Cart_Wishlist/Cart.js`: Initialized `isloding` to `true` and populated `finalCartData` immediately on API response.
+    - `app/(core)/utils/Glob_Functions/Cart_Wishlist/Wishlist.js`: Populated `finalWishData` immediately on API response to eliminate the processing gap.
+    - `app/theme/fgstore.mapp/cart/B2bCart/Cart.js`: Hardened empty state check to ensure `isloding` is false and list is truly empty.
+    - `app/theme/fgstore.mapp/Wishlist/WishlistData.js`: Hardened empty state check with `!isloding` guard.
+  - **Reason for change**: Improve perceived performance and eliminate jarring UI flickering on initial load.
+
+- **Product Listing Layout Fix**: Resolved "extra padding on right side" issue by correcting Grid props and ensuring full-width containers.
+  - **Files modified**: 
+    - `app/theme/fgstore.mapp/product/ProductView.jsx`: Changed `size` to `xs` and added `sx={{ width: "100%", margin: 0 }}` to the container.
+    - `app/theme/fgstore.mapp/product/ProductListSkeleton.jsx`: Changed `size` to `xs` and added `sx={{ width: "100%", m: 0 }}` to the container.
+    - `app/theme/fgstore.mapp/product/ProductCard.jsx`: Changed internal Grid items from `size={6}` to `item xs={6}` and ensured container has `width: "100%"`.
+  - **Reason for change**: The use of the `size` prop on the old MUI Grid component (instead of `xs`) caused items to shrink to content width instead of filling their 50% (xs:6) slot, leading to large gaps/padding on the right.
+
+- **Mobile Breadcrumb Performance & Reliability**: Improved breadcrumb menu responsiveness and added safety guards.
+  - **Files modified**: 
+    - `app/theme/fgstore.mapp/product/MobileBreadCrumb.jsx`: Added `menuDecode` guards, optimized `BreadCumsObj` calculation, and ensured menu closes before navigation.
+    - `app/theme/fgstore.mapp/product/MobileHeader.jsx`: Fixed invalid HTML (Stack inside Typography) which could cause layout/event issues.
+  - **Reason for change**: User reported "sluggish" menu behavior. Closing the menu before triggering route changes improves perceived latency.
+
 - **Custom Order Link Integration**: Added a "CUSTOM ORDER" link to all header variations.
   - **Files modified**: `app/components/(dynamic)/Header/Header.jsx`.
   - **New behavior**: A "CUSTOM ORDER" link is now visible immediately after the Lookbook link.

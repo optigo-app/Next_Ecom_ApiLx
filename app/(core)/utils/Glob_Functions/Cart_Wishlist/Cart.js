@@ -15,7 +15,7 @@ import { useNextRouterLikeRR } from '@/app/(core)/hooks/useLocationRd';
 const useCart = () => {
   const location = useNextRouterLikeRR();
   const navigate = location.push;
-  const [isloding, setIsLoading] = useState(false);
+  const [isloding, setIsLoading] = useState(true);
   const [ispriceloding, setIsPriceLoding] = useState(false);
   const [countData, setCountData] = useState();
   const [storeInit, setStoreInit] = useState();
@@ -102,7 +102,14 @@ const useCart = () => {
 
       if (response?.Data?.rd[0]?.stat != 0) {
         setCartData(response?.Data?.rd);
-        setFinalCartData(response.Data?.rd);
+        const initialProducts = response?.Data?.rd?.map(data => ({
+          ...data,
+          images: [],
+          loading: true
+        }))
+        setFinalCartData(initialProducts);
+        setLoadingIndex(0);
+
         if (response?.Data?.rd?.length > 0) {
           setSelectedItem(response?.Data?.rd[0]);
           let item = response?.Data?.rd[0]
@@ -113,6 +120,9 @@ const useCart = () => {
           setdiaID(response?.Data?.rd[0]?.diamondqualityid + ',' + response?.Data?.rd[0]?.diamondcolorid)
           setColorStoneID(response?.Data?.rd[0]?.colorstonequalityid + ',' + response?.Data?.rd[0]?.colorstonecolorid)
         }
+      } else {
+        setCartData([]);
+        setFinalCartData([]);
       }
     } catch (error) {
       console.error("Error:", error);
