@@ -790,6 +790,16 @@ const Header = ({ storeinit, logos }) => {
                         {/* LOOKBOOK */}
                       </Link>
                     )}
+                    <Link
+                      href="/custom-orders"
+                      className="smr_menuStaicMobilePageLink"
+                      onClick={() => {
+                        setDrawerShowOverlay(false);
+                        navigate("/custom-orders");
+                      }}
+                    >
+                      CUSTOM ORDER
+                    </Link>
                   </>
                 ) : (
                   ""
@@ -809,6 +819,16 @@ const Header = ({ storeinit, logos }) => {
                       {/* LOOKBOOK */}
                     </Link>
                   )}
+                  <Link
+                    href="/custom-orders"
+                    className="smr_menuStaicMobilePageLink"
+                    onClick={() => {
+                      setDrawerShowOverlay(false);
+                      navigate("/custom-orders");
+                    }}
+                  >
+                    CUSTOM ORDER
+                  </Link>
                 </>
               )}
 
@@ -860,6 +880,11 @@ const Header = ({ storeinit, logos }) => {
                           </Link>
                         </li>
                       )}
+                      <li>
+                        <Link href="/custom-orders" className="nav_li_smining nav_li_smining_Mobile" style={{ cursor: "pointer" }} >
+                          CUSTOM ORDER
+                        </Link>
+                      </li>
                     </>
                   ) : (
                     ""
@@ -873,6 +898,11 @@ const Header = ({ storeinit, logos }) => {
                         </Link>
                       </li>
                     )}
+                    <li>
+                      <Link href="/custom-orders" className="nav_li_smining nav_li_smining_Mobile" style={{ cursor: "pointer" }} >
+                        CUSTOM ORDER
+                      </Link>
+                    </li>
                   </>
                 )}
               </ul>
@@ -1049,6 +1079,11 @@ const Header = ({ storeinit, logos }) => {
                             </Link>
                           </li>
                         )}
+                        <li className="nav_li_smining_Fixed nav_li_smining_Mobile" style={{ cursor: "pointer" }}>
+                          <Link href="/custom-orders" className="smr_A_linkFixed">
+                            CUSTOM ORDER
+                          </Link>
+                        </li>
                       </>
                     ) : (
                       ""
@@ -1063,6 +1098,11 @@ const Header = ({ storeinit, logos }) => {
                           </Link>
                         </li>
                       )}
+                      <li className="nav_li_smining_Fixed nav_li_smining_Mobile" style={{ cursor: "pointer" }} >
+                        <Link href="/custom-orders" className="smr_A_linkFixed">
+                          CUSTOM ORDER
+                        </Link>
+                      </li>
                     </>
                   )}
 

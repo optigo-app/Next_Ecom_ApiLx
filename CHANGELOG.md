@@ -1,3 +1,14 @@
+## [2026-03-31]
+
+- **Custom Order Link Integration**: Added a "CUSTOM ORDER" link to all header variations.
+  - **Files modified**: `app/components/(dynamic)/Header/Header.jsx`.
+  - **New behavior**: A "CUSTOM ORDER" link is now visible immediately after the Lookbook link.
+- **Custom Order Page UI Enhancement**: Migrated the page to use the web-optimized theme and refined the UI.
+  - **Files modified**: `app/custom-orders/page.js`, `app/theme/fgstore.web/CustomOrder/index.js`.
+  - **Old behavior**: Used the mobile app theme (`fgstore.mapp`) which was too narrow and lacked proper responsive structure for web.
+  - **New behavior**: Switched to `fgstore.web` theme. Refactored the UI using a centered MUI `Container` with `maxWidth="md"`, improved contrast and spacing. Replaced hardcoded brand mentions with dynamic store data (Om Jiyansh).
+  - **Reason for change**: User request to make it look like a "proper website" page.
+
 ## [2026-03-30]
 
 - **Header Logo Size and Responsiveness Fix**: Optimized the logo alignment and size in the header across all devices.
