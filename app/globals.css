@@ -171,3 +171,11 @@ input:-moz-placeholder {
     display: none !important; /* Chrome/Safari */
   }
 }
+
+/* globals.css or any global stylesheet */
+.Toastify__toast-container--bottom-center {
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  bottom: 72px !important;
+  width: auto !important;
+}

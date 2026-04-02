@@ -311,10 +311,9 @@
   padding-bottom: 6px;
 }
 
-.smr_WlTitleline {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+.fg_smr_WlTitleline {
+  white-space: normal;
+  word-wrap: break-word;
   width: 100%;
 }
 

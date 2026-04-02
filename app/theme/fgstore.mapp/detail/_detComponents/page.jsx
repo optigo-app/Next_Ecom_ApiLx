@@ -110,8 +110,8 @@ const ProductPage = ({ params, searchParams, storeInit }) => {
     const [proThumImgCount, setProThumImgCount] = useState("");
     const [imageLoaded, setIsImageLoaded] = useState(true);
 
-    const noimage = "./image-not-found.jpg";
-    const imageNotFound = "./image-not-found.jpg";
+    const noimage = "/image-not-found.jpg";
+    const imageNotFound = "/image-not-found.jpg";
 
     useEffect(() => {
         if (singleProd?.IsInWish == 1) {
@@ -334,7 +334,8 @@ const ProductPage = ({ params, searchParams, storeInit }) => {
                 setPdImageArr(thumbs);
             }
         }
-        setIsImageLoaded(false);
+        // NOTE: Do NOT set imageLoaded=false here.
+        // Keep the skeleton visible until ProdCardImageFunc completes.
     }, []); // Empty dependency array to run only once on mount
 
     useEffect(() => {
@@ -668,6 +669,8 @@ const ProductPage = ({ params, searchParams, storeInit }) => {
     }, [singleProd]);
 
     const ProdCardImageFunc = async () => {
+        // Show skeleton loader while we validate images
+        setIsImageLoaded(true);
         const storeInit = JSON.parse(sessionStorage.getItem("storeInit"));
         const mtColorLocal = JSON.parse(sessionStorage.getItem("MetalColorCombo")) || [];
         const pd = singleProd;
@@ -793,6 +796,9 @@ const ProductPage = ({ params, searchParams, storeInit }) => {
 
         setPdVideoArr(pdvideoList.length > 0 ? pdvideoList : []);
         setPdImageLoader(false);
+
+        // Images are now validated — hide the skeleton and show real content
+        setIsImageLoaded(false);
 
         return pdImgList[0] || imageNotFound;
     };
@@ -1014,14 +1020,13 @@ const ProductPage = ({ params, searchParams, storeInit }) => {
         const pdvideoList = [...colorVideos.map((v) => buildVideoURL(v, true)), ...normalVideos.map((v) => buildVideoURL(v))];
         setPdVideoArr(pdvideoList.length > 0 ? pdvideoList : []);
 
+        // Images are now validated — hide skeleton and show real content
         setIsImageLoaded(false);
         setPdImageLoader(false);
     };
 
     const handleMoveToDetail = (productData) => {
-        console.log("TCL: handleMoveToDetail -> productData", productData);
         let loginInfo = loginUserDetail;
-        console.log("TCL: handleMoveToDetail -> loginInfo", loginInfo);
 
         let obj = {
             a: productData?.autocode,
@@ -1044,6 +1049,7 @@ const ProductPage = ({ params, searchParams, storeInit }) => {
         setSingleProd1({});
         setSingleProd({});
         setIsImageLoad(true);
+        setIsImageLoaded(true); // Show skeleton while new design's images load
     };
 
     const handleCartandWish = (e, ele, type) => {
@@ -1134,7 +1140,7 @@ const ProductPage = ({ params, searchParams, storeInit }) => {
     return (
         <>
             <title>{formatTitleLine(singleProd?.TitleLine) ? `${singleProd.TitleLine} - ${singleProd?.designno ?? ""}` : singleProd?.TitleLine || singleProd?.designno ? `${singleProd?.designno ?? ""}` : "loading..."}</title>
-            <div className="fgstore_mapp_main_Product" style={{ marginBottom: "25px" }}>
+            <div className="fgstore_mapp_main_Product" style={{ paddingBottom: "100px" }}>
                 {ShowMangifier && <MagnifierSlider product={Product} close={() => setShowMangifier(!ShowMangifier)} list={PdImageArr} currentIndex={currentSlide} />}
                 <main>
                     <div className="images_slider">
@@ -1395,6 +1401,7 @@ const ProductPage = ({ params, searchParams, storeInit }) => {
                             handleCustomChange={handleCustomChange}
                             handleMetalWiseColorImg={handleMetalWiseColorImg}
                             SizeSorting={SizeSorting}
+                            loadingdata={loadingdata}
                         />
                         <ButtonBlock
                             addToCartFlag={addToCartFlag}

@@ -32,6 +32,7 @@ import { ParseAndDecodeSearchParams } from "@/app/(core)/utils/GlobalFunctions/P
 import ProductView from "./ProductView";
 import ActionIsland from "./FloatingIsland";
 import FilterDrawerApp from "./FilterDrawer";
+import { getSession } from "@/app/(core)/utils/FetchSessionData";
 
 const MobileFilter = dynamic(() => import("./_prodComponents/MobileFilter"), { ssr: false });
 
@@ -781,6 +782,48 @@ const Layout = ({ params, searchParams, storeinit }) => {
         }
     }, [finalProductListData]);
 
+
+    const handelMenu = () => {
+        let menudata = getSession('menuparams');
+        if (menudata) {
+            const queryParameters1 = [
+                menudata?.FilterKey && `${menudata?.FilterVal}`,
+                menudata?.FilterKey1 && `${menudata?.FilterVal1}`,
+                menudata?.FilterKey2 && `${menudata?.FilterVal2}`,
+            ].filter(Boolean).join('/');
+
+            const queryParameters = [
+                menudata?.FilterKey && `${menudata?.FilterVal}`,
+                menudata?.FilterKey1 && `${menudata?.FilterVal1}`,
+                menudata?.FilterKey2 && `${menudata?.FilterVal2}`,
+            ].filter(Boolean).join(',');
+
+            const otherparamUrl = Object.entries({
+                b: menudata?.FilterKey,
+                g: menudata?.FilterKey1,
+                c: menudata?.FilterKey2,
+            })
+                .filter(([key, value]) => value !== undefined)
+                .map(([key, value]) => value)
+                .filter(Boolean)
+                .join(',');
+
+            // const paginationParam = [
+            //   `page=${menudata.page ?? 1}`,
+            //   `size=${menudata.size ?? 50}`
+            // ].join('&');
+
+            let menuEncoded = `${queryParameters}/${otherparamUrl}`;
+            const url = `/p/${menudata?.menuname}/${queryParameters1}/?M=${btoa(
+                menuEncoded
+            )}`;
+            navigate.push(url)
+        } else {
+            navigate.push("/")
+        }
+    }
+
+
     useEffect(() => {
         (async () => {
             try {
@@ -799,6 +842,7 @@ const Layout = ({ params, searchParams, storeinit }) => {
                 height: "100svh",
                 overflowY: "auto",
                 backgroundColor: "#fff",
+                paddingBottom: '150px'
             }}
         >
             <MobileHeader
@@ -815,6 +859,7 @@ const Layout = ({ params, searchParams, storeinit }) => {
                 filterData={filterData}
                 storeInit={storeInit}
                 selectedMetalId={selectedMetalId}
+                setSelectedMetalId={setSelectedMetalId}
                 metalTypeCombo={metalTypeCombo}
                 selectedDiaId={selectedDiaId}
                 setSelectedDiaId={setSelectedDiaId}
@@ -859,6 +904,7 @@ const Layout = ({ params, searchParams, storeinit }) => {
                 isMobile={true}
             />
             <ProductView
+                handelMenu={handelMenu}
                 ImageView={ImageView}
                 filterProdListEmpty={filterProdListEmpty}
                 data={finalProductListData}
@@ -885,7 +931,7 @@ const Layout = ({ params, searchParams, storeinit }) => {
                 selectedMetalId={selectedMetalId}
                 location={location}
                 isProdLoading={isProdLoading}
-                metalColorCombo={JSON.parse(sessionStorage.getItem("MetalColorCombo"))}
+                metalColorCombo={getSession("MetalColorCombo")}
             />
             <ActionIsland
                 ImageView={ImageView}

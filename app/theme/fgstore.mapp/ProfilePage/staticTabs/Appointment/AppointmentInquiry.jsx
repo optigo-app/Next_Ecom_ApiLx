@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import { BookAppointment } from "@/app/(core)/utils/API/BookAppointment/BookAppointment";
 import { toast } from "react-toastify";
 import InquiryModal from "./InquiryModal";
+import { getSession } from "@/app/(core)/utils/FetchSessionData";
 
 const AppointmentInquiry = ({ open, onClose }) => {
   const [step, setStep] = useState(1);
@@ -22,7 +23,7 @@ const AppointmentInquiry = ({ open, onClose }) => {
   });
 
   useEffect(() => {
-    const loginDetail = JSON.parse(sessionStorage.getItem("loginUserDetail"));
+    const loginDetail = getSession("loginUserDetail");
     if (loginDetail) {
       setFormData((prev) => ({
         ...prev,

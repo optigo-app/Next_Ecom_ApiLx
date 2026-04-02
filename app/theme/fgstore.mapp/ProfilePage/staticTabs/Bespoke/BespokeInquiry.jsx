@@ -20,10 +20,18 @@ const BespokeInquiry = ({ open, onClose }) => {
 
   const handleChange = (event) => {
     const { name, value } = event.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
+    if (name === "mobileno") {
+      const numericValue = value.replace(/\D/g, ""); // Filter to allow only digits
+      setFormData((prevData) => ({
+        ...prevData,
+        [name]: numericValue,
+      }));
+    } else {
+      setFormData((prevData) => ({
+        ...prevData,
+        [name]: value,
+      }));
+    }
   };
 
   const validate = (file) => {
@@ -106,7 +114,16 @@ const BespokeInquiry = ({ open, onClose }) => {
   return (
     <>
       <InquiryModal
-        open={open} onClose={onClose} formData={formData} handleChange={handleChange} handleFileChange={handleFileChange} handleSubmit={handleSubmit} error={error} loading={loading} />
+        open={open} 
+        onClose={onClose} 
+        formData={formData} 
+        handleChange={handleChange} 
+        handleFileChange={handleFileChange} 
+        handleSubmit={handleSubmit} 
+        error={error} 
+        loading={loading}
+        file={file}
+      />
     </>
   );
 };

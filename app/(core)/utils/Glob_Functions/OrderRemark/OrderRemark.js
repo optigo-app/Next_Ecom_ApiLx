@@ -22,6 +22,7 @@ const OrderRemarkModal = ({ open, onClose, remark, onRemarkChange, onSave }) => 
           left: '50%',
           transform: 'translate(-50%, -50%)',
           maxWidth: 500,
+          width: "90%",
           bgcolor: 'background.paper',
           boxShadow: 24,
           p: 4,

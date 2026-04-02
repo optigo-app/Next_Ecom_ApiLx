@@ -208,12 +208,15 @@ export default function YourProfile() {
                             top: "50%",
                             left: "50%",
                             transform: "translate(-50%, -50%)",
-                            width: { xs: "80%", sm: 400 },
+                            width: { xs: "90%", sm: 450 },
+                            maxHeight: "90vh",
+                            overflowY: "auto",
                             bgcolor: "background.paper",
                             borderRadius: 2,
                             boxShadow: 24,
-                            p: 2
+                            p: 3
                         }}
+                        className="smr_editProfileModal"
                     >
                         <form onSubmit={(event) => handleSubmit(event)}>
 

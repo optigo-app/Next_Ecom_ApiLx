@@ -9,7 +9,7 @@ const ProductList = async ({ params, searchParams }) => {
 
     return (
         <>
-        <MobileNavbar/>
+            <MobileNavbar />
             <ProductPage params={params} searchParams={searchParams} storeInit={storeinit} />
         </>
     );

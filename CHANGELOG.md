@@ -1,3 +1,65 @@
+## [2026-04-02]
+
+- **Mobile UI Stability & iOS Zoom Prevention**:
+  - **Files modified**: `app/layout.js`, `app/components/(dynamic)/Account/changePassword/ChangePassword.js`, `app/components/(dynamic)/Account/YourProfile/YourProfile.js`, `app/theme/fgstore.mapp/ProfilePage/staticTabs/Appointment/InquiryModal.jsx`, `app/theme/fgstore.mapp/ProfilePage/staticTabs/Bespoke/InquiryModal.jsx`, `app/theme/fgstore.mapp/ProfilePage/staticTabs/ContactUs/ContactUs.jsx`.
+  - **Old behavior**: Interactive inputs often had small font sizes (<16px), causing iOS Safari to aggressively zoom in on focus, breaking the layout. Some mobile drawers were cut off or unscrollable due to static height calculations.
+  - **New behavior**: Standardized `16px` font-size for all inputs and implemented `100dvh` for drawers. The viewport meta-tag was hardened to prevent unwanted scaling. This ensures a stable, premium mobile experience.
+  
+- **Strict Form Validation & Numeric Inputs**:
+  - **Files modified**: `app/theme/fgstore.mapp/ProfilePage/staticTabs/Bespoke/BespokeInquiry.jsx`, `app/theme/fgstore.mapp/ProfilePage/staticTabs/ContactUs/ContactUs.jsx`, `app/theme/fgstore.mapp/ProfilePage/staticTabs/Appointment/InquiryModal.jsx`.
+  - **Old behavior**: Phone fields allowed alphabetic characters and didn't automatically trigger the number pad on mobile.
+  - **New behavior**: Added real-time numeric filtering and `inputMode="numeric"`. Users can now only type digits in phone fields, and the mobile keyboard defaults to the number pad.
+
+- **Product Detail Data & Price Synchronization**:
+  - **Files modified**: `app/theme/fgstore.mapp/detail/_detComponents/PriceBreakUp.jsx`, `app/theme/fgstore.mapp/detail/_detComponents/InfoDetail.jsx`, `app/theme/fgstore.mapp/detail/_detComponents/StaticMaterial.jsx`.
+  - **Old behavior**: After changing metal purity or other customization options, the technical specs (Net Wt) and the Price Breakup stayed stuck on the initial values because the code prioritized the original product state over the updated selection.
+  - **New behavior**: Unified the "Current Product" state mapping. The entire UI now instantly switches to `singleProd1` (updated data) as soon as a customization is made, ensuring accurate pricing and weights.
+
+- **Bespoke Jewellery Enhancements**:
+  - **Files modified**: `app/theme/fgstore.mapp/ProfilePage/page.js`, `app/theme/fgstore.mapp/ProfilePage/staticTabs/Bespoke/Bespoke.jsx`, `app/theme/fgstore.mapp/ProfilePage/staticTabs/Bespoke/InquiryModal.jsx`.
+  - **Improvements**: Corrected "Bespoke Jewelry" spelling to "Bespoke Jewellery" site-wide. Added visual feedback for file attachments; the button now displays the selected filename so the user knows the attachment was successful.
+
+- **Appointment Date Logic**:
+  - **Files modified**: `app/theme/fgstore.mapp/ProfilePage/staticTabs/Appointment/AppointmentInquiry.jsx`.
+  - **Fix**: Updated `minDateTime` to use local time instead of UTC, preventing users from being blocked from selecting the current day's appointments.
+
+## [2026-04-02 - Previous]
+
+- **Profile Page URL-Based Drawer Sync**: Refactored drawer/modal state management on the Profile page from `useState` to URL query params (`?drawer=<key>`) so the mobile back button correctly closes drawers instead of navigating away.
+  - **Files modified**: `app/theme/fgstore.mapp/ProfilePage/page.js`
+  - **Old behavior**: All drawers (About Us, Contact Us, Bespoke, Appointment, Newsletter, static pages, Logout) were toggled via independent `useState` booleans. Each drawer open pushed no history entry, so pressing back would leave the profile page entirely — going to cart or the previous page.
+  - **New behavior**: Opening any drawer calls `router.push('/profile?drawer=<key>')`, adding a real history entry. The drawer's open/close state is derived from reading `searchParams.get("drawer")`. Closing a drawer calls `router.back()`, which pops the entry and restores the profile page. This makes the back button behave natively and correctly for all drawers.
+  - **Reason for change**: User reported that navigating through multiple drawers and pressing back would skip the profile page entirely, jumping to cart or the previous page.
+
+- **Mobile Keyboard iPhone UI Fix (BottomNavigation)**: Solved a visual glitch on iOS Safari/Webviews where the fixed bottom navigation bar overlaps with the content and gets squished above the software keyboard when focusing on an input (like the search bar).
+  - **Files modified**: `app/theme/fgstore.mapp/home/components/BottomNavigation.jsx`
+  - **Old behavior**: The `BottomNavigation` remained `position: "fixed"` at `bottom: 0` during text entry. When the virtual keyboard materialized, iOS Webviews dynamically pushed the whole toolbar up, causing it to awkwardly intersect inputs and page content.
+  - **New behavior**: Implemented an advanced `window.visualViewport` listener. This calculates the physical available height of the screen and hides the BottomNavigation block dynamically when the screen explicitly shrinks by >150px (which strictly designates keyboard presence). This bulletproofs against situations where the keyboard is hidden but the input keeps logic focus.
+  - **Reason for change**: User noted that traditional DOM focus listeners fail when tapping away/scrolling dismisses the iPhone keyboard without removing logical focus from the input.
+
+- **Account Ledger Excel Download Fix**: Fixed an issue where the Excel download button didn't work inside the mobile app (Flutter Webview).
+  - **Files modified**: `app/(core)/utils/Glob_Functions/GlobalFunction.js`
+  - **Old behavior**: The `downloadExcelLedgerData` function clicked a hidden `a` tag generated by `react-html-table-to-excel` using a `data:` URI which mobile webviews typically block or ignore.
+  - **New behavior**: Replaced the implementation with a robust download strategy. It creates a `Blob`, tests if `navigator.share` is available for mobile sharing (allowing users to save to files/Google Drive seamlessly), and falls back to a standard `URL.createObjectURL` approach by dynamically adding and clicking the link in the DOM.
+  - **Reason for change**: User reported that clicking "Download" on the Account Ledger page did not download the Excel file when inside the mobile app.
+
+- **Detail Page Image Loading Fix (fgstore.mapp)**: Fixed "NO IMAGE" flash before real images load on the product detail page.
+  - **Files modified**: `app/theme/fgstore.mapp/detail/_detComponents/page.jsx`
+  - **Old behavior**: `imageLoaded` was set to `false` on mount (in the URL-decode useEffect), which dismissed the skeleton loader before `ProdCardImageFunc` could validate images. This caused users to see "NO IMAGE" placeholder briefly, then the real image appeared — bad UX especially for designs like ANB6, ANB4.
+  - **New behavior**: Skeleton loader stays visible until `ProdCardImageFunc` completes its async image validation. The skeleton is also re-shown when navigating between designs (`handleMoveToDetail`). Flow: skeleton → validated image (or fallback if no valid image exists). No more "NO IMAGE" flash.
+  - **Changes made**:
+    1. Removed premature `setIsImageLoaded(false)` from mount useEffect
+    2. Added `setIsImageLoaded(true)` at start of `ProdCardImageFunc` to show skeleton during validation
+    3. Added `setIsImageLoaded(false)` at end of `ProdCardImageFunc` after images are validated
+    4. Added `setIsImageLoaded(true)` in `handleMoveToDetail` to show skeleton when switching designs
+  - **Reason for change**: User reported poor UX where "NO IMAGE" placeholder flashed before actual images loaded on detail pages.
+
+- **Mobile Address Modal Scroll Fix**: Fixed modal overflowing viewport causing inputs to be unreachable and validation errors to push fields out of view.
+  - **Files modified**: `app/components/(dynamic)/Account/address/ManageAddress.js`
+  - **Old behavior**: The modal had no `maxHeight` or `overflowY` set, so on smaller screens (or when validation errors increased height/keyboard opened), it extended beyond the viewport boundaries and was unscrollable, trapping the user.
+  - **New behavior**: Set `maxHeight: '85vh'` and `overflowY: 'auto'` on the `<Box>` component inside the `<Modal>`, ensuring it always fits within the screen and is scrollable regardless of dynamic error text or keyboard behavior.
+  - **Reason for change**: User reported that when adding/editing an address on mobile and clicking the first name field (or triggering layout-shifting errors), the fields went "too far up" and everything became unreachable since the user couldn't scroll.
+
 ## [2026-03-31]
 
 - **Cart & Wishlist Loading Optimization**: Resolved "flash of empty state" issue where "No Items Found" would appear briefly before products loaded.

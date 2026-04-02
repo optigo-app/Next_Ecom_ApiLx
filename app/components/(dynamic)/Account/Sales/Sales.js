@@ -20,7 +20,7 @@ import moment from "moment";
 import Swal from 'sweetalert2';
 import PrintIcon from '@mui/icons-material/Print';
 import { getSalesData } from '@/app/(core)/utils/API/AccountTabs/sales';
-import { Accordion, AccordionDetails, AccordionSummary, Button, CircularProgress, TextField, useMediaQuery } from "@mui/material";
+import { Accordion, AccordionDetails, AccordionSummary, Button, CircularProgress, TextField, Typography, useMediaQuery } from "@mui/material";
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { headCells_Sales as headCells } from "@/app/(core)/utils/Glob_Functions/AccountPages/AccountPageColumns";
 
@@ -440,98 +440,85 @@ const Sales = () => {
                         <Button variant='contained' className="muiSmilingRocksBtn" sx={{ padding: "7px 10px", minWidth: "max-content", background: "#7d7f85" }} onClick={(eve) => handleSearch(eve, searchVal, fromDate, toDate)}><SearchIcon sx={{ color: "#fff !important" }} /></Button>
                     </Box>
                 </Box>}
-                {
-                    isSmallScreen && <>
-                        <Accordion style={{ padding: '2px', paddingBottom: '10px', marginBottom: '40px', marginTop: '20px' }}>
-                            <AccordionSummary expandIcon={<ExpandMoreIcon />}>More Filters</AccordionSummary>
-                            <AccordionDetails style={{ padding: '0px' }}>
-                                <Button variant="contained" className="muiSmilingRocksBtn fs_elvee_quote" sx={{ background: "#7d7f85", display: "flex", alignItems: "center", marginBottom: '20px', marginLeft: '5px', padding: "6px 0", }} onClick={eve => resetAllFilters(eve)}>
+                {isSmallScreen && <>
+                    <Accordion style={{ padding: '2px', paddingBottom: '10px', marginBottom: '40px', marginTop: '20px', boxShadow: 'none', border: '1px solid #e1e1e1' }}>
+                        <AccordionSummary expandIcon={<ExpandMoreIcon />} sx={{ backgroundColor: '#f5f5f5' }}>
+                            <Typography sx={{ fontWeight: 'bold' }}>More Filters</Typography>
+                        </AccordionSummary>
+                        <AccordionDetails sx={{ padding: '15px 10px' }}>
+                            <Box sx={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                                <Button variant="contained" className="muiSmilingRocksBtn" sx={{ background: "#7d7f85", width: 'fit-content', padding: "6px 20px" }} onClick={eve => resetAllFilters(eve)}>
                                     All
                                 </Button>
-                                <Box sx={{ display: "flex", alignItems: "center", position: "relative", padding: "0 0px 35px 0", minWidth: '100%', maxWidth: "max-content" }} className="searchbox QuotePadSec w_q">
-                                    <TextField id="standard-basic" label="Search" variant="outlined" className="w_q fs_elvee_quote" style={{ minWidth: '100%' }} value={searchVal} onChange={eve => {
+                                <Box sx={{ display: "flex", alignItems: "center", position: "relative", width: '100%' }}>
+                                    <TextField label="Search" variant="outlined" fullWidth value={searchVal} onChange={eve => {
                                         setSearchVal(eve?.target?.value);
                                         handleSearch(eve, eve?.target?.value, fromDate, toDate);
                                     }} />
-                                    <Button sx={{ padding: 0, maxWidth: "max-content", minWidth: "max-content", position: "absolute", right: "8px", color: "#757575" }}
-                                        onClick={eve => handleSearch(eve, searchVal, fromDate, toDate)} className="fs_elvee_quote"><SearchIcon /></Button>
+                                    <Button sx={{ padding: 0, maxWidth: "max-content", minWidth: "max-content", position: "absolute", right: "12px", color: "#757575" }}
+                                        onClick={eve => handleSearch(eve, searchVal, fromDate, toDate)}><SearchIcon /></Button>
                                 </Box>
-                                <Box style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
-                                    <Box style={{ boxSizing: 'border-box' }}>
-                                        {/* <p className='fs-6 w_20_q mb-0 fs_elvee_quote' style={{ paddingRight: "8px", paddingBottom:'10px' }}>Date: </p> */}
-                                        <LocalizationProvider dateAdapter={AdapterDayjs}>
-                                            <DatePicker
-                                                label="Date From"
-                                                value={fromDate}
-                                                format="DD MM YYYY"
-                                                placeholder="DD MM YYYY"
-                                                onChange={(newValue) => {
-                                                    if (newValue === null) {
-                                                        setFromDate(null)
+                                <Box sx={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                        <DatePicker
+                                            label="Date From"
+                                            value={fromDate}
+                                            format="DD MM YYYY"
+                                            slotProps={{ textField: { fullWidth: true } }}
+                                            onChange={(newValue) => {
+                                                if (newValue === null) {
+                                                    setFromDate(null)
+                                                } else {
+                                                    if (((newValue["$y"] <= 2099 && newValue["$y"] >= 1900) || newValue["$y"] < 1000) || isNaN(newValue["$y"])) {
+                                                        setFromDate(newValue)
                                                     } else {
-
-
-                                                        if (((newValue["$y"] <= 2099 && newValue["$y"] >= 1900) || newValue["$y"] < 1000) || isNaN(newValue["$y"])) {
-                                                            setFromDate(newValue)
-                                                        } else {
-
-                                                            Swal.fire({
-                                                                title: "Error !",
-                                                                text: "Enter Valid Date From",
-                                                                icon: "error",
-                                                                confirmButtonText: "ok"
-                                                            });
-                                                            resetAllFilters();
-                                                        }
+                                                        Swal.fire({
+                                                            title: "Error !",
+                                                            text: "Enter Valid Date From",
+                                                            icon: "error",
+                                                            confirmButtonText: "ok"
+                                                        });
+                                                        resetAllFilters();
                                                     }
-
-                                                }}
-                                                className='quotationFilterDates fs_elvee_quote pd_right_elvee_job'
-                                                ref={fromDateRef}
-                                            />
-                                        </LocalizationProvider>
-                                    </Box>
-                                    <Box style={{ boxSizing: 'border-box' }}>
-                                        {/* <p className='fs-6 w_20_q mb-0 fs_elvee_quote' style={{ paddingRight: "8px", paddingBottom:'10px' }}>To: </p> */}
-                                        <LocalizationProvider dateAdapter={AdapterDayjs}>
-                                            <DatePicker
-                                                label="Date To"
-                                                value={toDate}
-
-                                                format="DD MM YYYY"
-                                                placeholder="DD MM YYYY"
-
-                                                className='quotationFilterDates w_q fs_elvee_quote pd_right_elvee_job'
-                                                ref={toDateRef}
-                                                inputProps={{ readOnly: true }}
-                                                onChange={(newValue) => {
-                                                    if (newValue === null) {
-                                                        setToDate(null)
+                                                }
+                                            }}
+                                            ref={fromDateRef}
+                                        />
+                                    </LocalizationProvider>
+                                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                        <DatePicker
+                                            label="Date To"
+                                            value={toDate}
+                                            format="DD MM YYYY"
+                                            slotProps={{ textField: { fullWidth: true } }}
+                                            ref={toDateRef}
+                                            onChange={(newValue) => {
+                                                if (newValue === null) {
+                                                    setToDate(null)
+                                                } else {
+                                                    if (((newValue["$y"] <= 2099 && newValue["$y"] >= 1900) || newValue["$y"] < 1000) || isNaN(newValue["$y"])) {
+                                                        setToDate(newValue)
                                                     } else {
-                                                        if (((newValue["$y"] <= 2099 && newValue["$y"] >= 1900) || newValue["$y"] < 1000) || isNaN(newValue["$y"])) {
-                                                            setToDate(newValue)
-                                                        } else {
-                                                            Swal.fire({
-                                                                title: "Error !",
-                                                                text: "Enter Valid Date To",
-                                                                icon: "error",
-                                                                confirmButtonText: "ok"
-                                                            });
-                                                            resetAllFilters();
-                                                        }
+                                                        Swal.fire({
+                                                            title: "Error !",
+                                                            text: "Enter Valid Date To",
+                                                            icon: "error",
+                                                            confirmButtonText: "ok"
+                                                        });
+                                                        resetAllFilters();
                                                     }
-                                                }}
-                                            />
-                                        </LocalizationProvider>
-                                    </Box>
-                                    <Box sx={{ paddingBottom: '4px', display: "flex", alignItems: "center", }} className="  fs_elvee_quote">
-                                        <Button variant='contained' className="muiSmilingRocksBtn" sx={{ padding: "7px 10px", minWidth: "max-content", background: "#7d7f85" }} onClick={(eve) => handleSearch(eve, searchVal, fromDate, toDate)}><SearchIcon sx={{ color: "#fff !important" }} /></Button>
-                                    </Box>
+                                                }
+                                            }}
+                                        />
+                                    </LocalizationProvider>
+                                    <Button variant='contained' className="muiSmilingRocksBtn" sx={{ padding: "10px", width: "100%", background: "#7d7f85" }} onClick={(eve) => handleSearch(eve, searchVal, fromDate, toDate)}>
+                                        <SearchIcon sx={{ color: "#fff !important", marginRight: '5px' }} /> Search
+                                    </Button>
                                 </Box>
-                            </AccordionDetails>
-                        </Accordion>
-                    </>
-                }
+                            </Box>
+                        </AccordionDetails>
+                    </Accordion>
+                </>}
                 {isLoading ?
                     <Box sx={{ display: "flex", justifyContent: "center", paddingTop: "10px" }}><CircularProgress className='loadingBarManage' /></Box> : <>
                         {<Paper sx={{ width: '100%', mb: 2 }} className="salesApiTable">

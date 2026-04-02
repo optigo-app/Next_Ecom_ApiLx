@@ -1030,177 +1030,113 @@ const QuotationJob = () => {
           </Box>
         }
         {isSmallScreen && <>
-          <Accordion style={{ padding: '2px', paddingBottom: '10px', marginBottom: '40px', marginTop: '20px' }}>
-            <AccordionSummary expandIcon={<ExpandMoreIcon />}>More Filters</AccordionSummary>
-            <AccordionDetails className='acc_Details_elvee_job' style={{ padding: '0px' }}>
-              <Box style={{ marginBottom: '10px', marginTop: '5px' }}>
-                <Box sx={{ width: "135px", height: "135px", paddingBottom: "20px", overflow: "hidden", marginBlock: '20px' }} >
-                  <Box sx={{ border: view === 'list' && "1px solid #d6d6d6", height: "117px" }} >
-                    {(view === 'list' && hoverImg !== "") && (
-                      <img src={hoverImg} alt="quotationJob" style={{ width: "100%", objectFit: "cover", minHeight: "114px", maxHeight: "114px", }} />
-                    )}
-                  </Box>
+          <Accordion style={{ padding: '2px', paddingBottom: '10px', marginBottom: '40px', marginTop: '20px', boxShadow: 'none', border: '1px solid #e1e1e1' }}>
+            <AccordionSummary expandIcon={<ExpandMoreIcon />} sx={{ backgroundColor: '#f5f5f5' }}>
+              <Typography sx={{ fontWeight: 'bold' }}>More Filters</Typography>
+            </AccordionSummary>
+            <AccordionDetails sx={{ padding: '15px 10px' }}>
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: '10px', alignItems: 'center' }}>
+                  <Button variant="contained" sx={{ background: "#7d7f85", padding: '6px 20px' }} className='muiSmilingRocksBtn' onClick={eve => resetAllFilters(eve)} >All</Button>
+                  <Button variant='contained' size='small' className='muiSmilingRocksBtn' sx={{ padding: "7px 10px", minWidth: "max-content", background: "#7d7f85" }} onClick={(eve) => handlePrintJobs(filterData, data)}><PrintIcon sx={{ color: "#fff !important" }} /></Button>
+                  <ToggleButtonGroup
+                    value={view}
+                    exclusive
+                    onChange={handleImageShow}
+                    aria-label="view toggle"
+                    size="small"
+                  >
+                    <ToggleButton value="list">
+                      <ListIcon sx={{ color: view === 'list' ? "#fff !important" : "inherit" }} />
+                    </ToggleButton>
+                    <ToggleButton value="grid">
+                      <CollectionsIcon sx={{ color: view === 'grid' ? "#fff !important" : "inherit" }} />
+                    </ToggleButton>
+                  </ToggleButtonGroup>
                 </Box>
-                <Button variant="contained" sx={{ marginBottom: "35px", background: "#7d7f85" }} className='muiSmilingRocksBtn QuotationJobAllBtn' onClick={eve => resetAllFilters(eve)} >All</Button>
-                <Button variant='contained' size='small' className='muiSmilingRocksBtn' sx={{ padding: "7px 10px", marginLeft: '10px', marginBottom: '20px', minWidth: "max-content", background: "#7d7f85" }} onClick={(eve) => handlePrintJobs(filterData, data)}><PrintIcon size='small' sx={{ color: "#fff !important" }} /></Button>
-                <ToggleButtonGroup
-                  value={view}
-                  exclusive
-                  onChange={handleImageShow}
-                  aria-label="view toggle"
-                  size="large"
-                  sx={{ padding: "7px 8px", marginLeft: '10px', marginBottom: '20px', minWidth: "max-content" }}
-                >
-                  <ToggleButton
-                    value="list"
-                    aria-label="list view"
-                    sx={{
-                      px: 2,
-                      py: 1,
-                      backgroundColor: view === 'list' ? '#7d7f85' : '#fff', // selected bg
-                      color: view === 'list' ? '#fff !important' : 'inherit',           // selected color
-                      '&:hover': {
-                        backgroundColor: view === 'list' ? '#7d7f85' : '#f5f5f5',
-                      },
-                      '&.Mui-selected': {
-                        backgroundColor: '#7d7f85',
-                        color: '#fff !important',
-                        '&:hover': {
-                          backgroundColor: '#7d7f85', // on hover while selected
-                        },
-                      },
-                    }}
-                  >
-                    <ListIcon sx={{ color: view === 'list' ? "#fff !important" : "inherit" }} />
-                  </ToggleButton>
-                  <ToggleButton
-                    value="grid"
-                    aria-label="grid view"
-                    sx={{
-                      px: 2,
-                      py: 1,
-                      backgroundColor: view === 'grid' ? '#7d7f85' : '#fff',
-                      color: view === 'grid' ? '#fff !important' : 'inherit',
-                      '&:hover': {
-                        backgroundColor: view === 'grid' ? '#7d7f85' : '#f5f5f5',
-                      },
-                      '&.Mui-selected': {
-                        backgroundColor: '#7d7f85',
-                        color: '#fff !important',
-                        '&:hover': {
-                          backgroundColor: '#7d7f85',
-                        },
-                      },
-                    }}
-                  >
-                    <CollectionsIcon sx={{ color: view === 'grid' ? "#fff !important" : "inherit" }} />
-                  </ToggleButton>
-                </ToggleButtonGroup>
-                <Box sx={{ padding: "0 20px" }}>
-                  <RadioGroup
-                    aria-labelledby="demo-controlled-radio-buttons-group"
-                    name="controlled-radio-buttons-group"
-                    value={orderProm}
 
+                <Box>
+                  <Typography sx={{ fontWeight: 'bold', marginBottom: '5px' }}>Date Type</Typography>
+                  <RadioGroup
+                    value={orderProm}
                     onChange={handleOrderProms}
-                    sx={{ display: "flex", alignItems: "center", flexDirection: "unset" }}
+                    sx={{ flexDirection: "row", gap: '20px' }}
                   >
-                    <FormControlLabel value="order" className='orderFrom QuotationJobAllBtnSecDate' control={<Radio />} label="Order Date" sx={{ padding: "0 20px 35px 0", marginRight: "0" }} />
-                    <FormControlLabel value="prom" className='orderFrom QuotationJobAllBtnSecDate' control={<Radio />} label="Promise Date" sx={{ padding: "0 10px 35px 0", marginRight: "0" }} />
+                    <FormControlLabel value="order" control={<Radio />} label="Order Date" />
+                    <FormControlLabel value="prom" control={<Radio />} label="Promise Date" />
                   </RadioGroup>
                 </Box>
-                <Box style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                  <Box style={{ marginBottom: '2rem', boxSizing: 'border-box' }}>
-                    <LocalizationProvider dateAdapter={AdapterDayjs}>
-                      <DatePicker
-                        label="Date From"
-                        value={fromDate}
-                        ref={fromDateRef}
 
-                        format="DD MM YYYY"
-                        className='quotationFilterDatesElvee pd_right_elvee_job'
-                        onChange={(newValue) => {
-                          if (newValue === null) {
-                            setFromDate(null)
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                  <LocalizationProvider dateAdapter={AdapterDayjs}>
+                    <DatePicker
+                      label="Date From"
+                      value={fromDate}
+                      ref={fromDateRef}
+                      format="DD MM YYYY"
+                      slotProps={{ textField: { fullWidth: true } }}
+                      onChange={(newValue) => {
+                        if (newValue === null) {
+                          setFromDate(null)
+                        } else {
+                          if (((newValue["$y"] <= 2099 && newValue["$y"] >= 1900) || newValue["$y"] < 1000) || isNaN(newValue["$y"])) {
+                            setFromDate(newValue)
                           } else {
-                            if (((newValue["$y"] <= 2099 && newValue["$y"] >= 1900) || newValue["$y"] < 1000) || isNaN(newValue["$y"])) {
-                              setFromDate(newValue)
-                            } else {
-
-                              Swal.fire({
-                                title: "Error !",
-                                text: "Enter Valid Date From",
-                                icon: "error",
-                                confirmButtonText: "ok"
-                              });
-                              resetAllFilters();
-                            }
+                            Swal.fire({
+                              title: "Error !",
+                              text: "Enter Valid Date From",
+                              icon: "error",
+                              confirmButtonText: "ok"
+                            });
+                            resetAllFilters();
                           }
-                        }}
-                      />
-                    </LocalizationProvider>
-                  </Box>
-                  <Box style={{ marginBottom: '2rem', boxSizing: 'border-box' }}>
-                    <LocalizationProvider dateAdapter={AdapterDayjs}>
-                      <DatePicker
-                        label="Date To"
-                        value={toDate}
-                        ref={toDateRef}
-
-                        format="DD MM YYYY"
-                        className='quotationFilterDatesElvee pd_right_elvee_job'
-                        onChange={(newValue) => {
-                          if (newValue === null) {
-                            setToDate(null)
+                        }
+                      }}
+                    />
+                  </LocalizationProvider>
+                  <LocalizationProvider dateAdapter={AdapterDayjs}>
+                    <DatePicker
+                      label="Date To"
+                      value={toDate}
+                      ref={toDateRef}
+                      format="DD MM YYYY"
+                      slotProps={{ textField: { fullWidth: true } }}
+                      onChange={(newValue) => {
+                        if (newValue === null) {
+                          setToDate(null)
+                        } else {
+                          if (((newValue["$y"] <= 2099 && newValue["$y"] >= 1900) || newValue["$y"] < 1000) || isNaN(newValue["$y"])) {
+                            setToDate(newValue)
                           } else {
-                            if (((newValue["$y"] <= 2099 && newValue["$y"] >= 1900) || newValue["$y"] < 1000) || isNaN(newValue["$y"])) {
-                              setToDate(newValue)
-                            } else {
-                              Swal.fire({
-                                title: "Error !",
-                                text: "Enter Valid Date To",
-                                icon: "error",
-                                confirmButtonText: "ok"
-                              });
-                              resetAllFilters();
-                            }
+                            Swal.fire({
+                              title: "Error !",
+                              text: "Enter Valid Date To",
+                              icon: "error",
+                              confirmButtonText: "ok"
+                            });
+                            resetAllFilters();
                           }
-                        }}
-                      />
-                    </LocalizationProvider>
-                  </Box>
-                  <Box style={{ marginBottom: '2rem', boxSizing: 'border-box' }}>
-                    <Button variant='contained' className='muiSmilingRocksBtn' sx={{ padding: "7px 10px", minWidth: "max-content", background: "#7d7f85" }} onClick={(eve) => handleSearch(eve, searchVal, fromDate, toDate, metalPurity, MetalColor, category, selectedStatus, orderProm)}><SearchIcon sx={{ color: "#fff !important" }} /></Button>
-                  </Box>
+                        }
+                      }}
+                    />
+                  </LocalizationProvider>
+                  <Button variant='contained' className='muiSmilingRocksBtn' sx={{ padding: "10px", width: "100%", background: "#7d7f85" }} onClick={(eve) => handleSearch(eve, searchVal, fromDate, toDate, metalPurity, MetalColor, category, selectedStatus, orderProm)}>
+                    <SearchIcon sx={{ color: "#fff !important", marginRight: '5px' }} /> Search
+                  </Button>
                 </Box>
-                <Box sx={{ position: "relative", padding: "0 0px 40px 0", display: "flex", flexWrap: "wrap", alignitems: "center", justifyContent: "center" }} className="QuotationJobAllBtnSec" >
-                  <label className='lh-1 selectLabel' style={{ marginTop: "-3px", position: "absolute", left: 0, top: "-8px", }}>Status</label>
 
+                <Box>
+                  <Typography sx={{ fontWeight: 'bold', marginBottom: '5px' }}>Status</Typography>
                   <Select
-                    labelId="demo-multiple-checkbox-label"
-                    id="demo-multiple-checkbox"
                     multiple
-                    value={selectedStatus} // Assuming selectedStatus is an array of selected values
-                    onChange={handleStatus} // Assuming handleStatus function receives selected values
+                    value={selectedStatus}
+                    onChange={handleStatus}
                     MenuProps={MenuProps}
                     input={<OutlinedInput />}
-                    style={{ minHeight: '2.9375em', width: '100%' }}
-                    className='statusSelect'
-                    size='small'
-                    label='ALL'
-                    renderValue={(selected) => {
-                      if (selected.length === 0) {
-                        return <em style={{ color: 'black' }}>Placeholder</em>;
-                      }
-
-                      return '';
-                    }}
-                    inputProps={{
-                      placeholder: 'Placeholder', // Set placeholder directly on the inputProps
-                    }}
-
+                    fullWidth
+                    renderValue={(selected) => selected.length === 0 ? <em>All Status</em> : selected.join(', ')}
+                    displayEmpty
                   >
-
                     {statusList?.map((status) => (
                       <MenuItem key={status.id} value={status.value}>
                         <Checkbox checked={selectedStatus?.indexOf(status.value) > -1} />
@@ -1208,63 +1144,42 @@ const QuotationJob = () => {
                       </MenuItem>
                     ))}
                   </Select>
+                </Box>
 
-                </Box>
-                <Box sx={{ position: "relative", padding: "0 0px 35px 0", display: "flex", flexWrap: "wrap", alignitems: "center", justifyContent: "center" }} className="QuotationJobAllBtnSec" >
-                  <label className='lh-1 selectLabel' style={{ marginTop: "-3px", position: "absolute", left: 0, top: "-16px", }}>Category</label>
-                  <Select labelId="demo-simple-select-label" id="demo-simple-select" className='categoryList' style={{ width: '100%' }} value={category} label="Status" onChange={handleCategory} >
-                    {
-                      categoryList?.map((e, i) => {
-                        return <MenuItem value={e?.value} key={i}>{e?.label}</MenuItem>
-                      })
-                    }
+                <Box>
+                  <Typography sx={{ fontWeight: 'bold', marginBottom: '5px' }}>Category</Typography>
+                  <Select fullWidth value={category} onChange={handleCategory} >
+                    {categoryList?.map((e, i) => (
+                      <MenuItem value={e?.value} key={i}>{e?.label}</MenuItem>
+                    ))}
                   </Select>
                 </Box>
-                <Box sx={{ position: "relative", padding: "0 0px 35px 0", display: "flex", flexWrap: "wrap", alignitems: "center", justifyContent: "center" }} className="QuotationJobAllBtnSec" >
-                  <label className='lh-1 selectLabel' style={{ marginTop: "-3px", position: "absolute", left: 0, top: "-16px", }}>Metal Color</label>
-                  <Select
-                    labelId="demo-simple-select-label"
-                    id="demo-simple-select"
-                    value={MetalColor}
-                    label="Status"
-                    className='MetalColorList'
-                    onChange={handleMetalColor}
-                    style={{ width: '100%' }}
-                  >
-                    {
-                      metalColorList?.map((e, i) => {
-                        return <MenuItem value={e?.value} key={i}>{e?.label}</MenuItem>
-                      })
-                    }
+
+                <Box>
+                  <Typography sx={{ fontWeight: 'bold', marginBottom: '5px' }}>Metal Color</Typography>
+                  <Select fullWidth value={MetalColor} onChange={handleMetalColor} >
+                    {metalColorList?.map((e, i) => (
+                      <MenuItem value={e?.value} key={i}>{e?.label}</MenuItem>
+                    ))}
                   </Select>
                 </Box>
-                <Box sx={{ position: "relative", padding: "0 0px 35px 0", display: "flex", flexWrap: "wrap", alignitems: "center", justifyContent: "center" }} className="QuotationJobAllBtnSec" >
-                  <label className='lh-1 selectLabel' style={{ marginTop: "-3px", position: "absolute", left: 0, top: "-16px", }}>Metal Purity</label>
-                  <Select
-                    labelId="demo-simple-select-label"
-                    id="demo-simple-select"
-                    value={metalPurity}
-                    label="Status"
-                    className='MetalPurityList'
-                    onChange={handleMetalPurity}
-                    style={{ width: '100%' }}
-                  >
-                    {
-                      metalPurityList?.map((e, i) => {
-                        return <MenuItem value={e?.value} key={i}>{e?.label}</MenuItem>
-                      })
-                    }
+
+                <Box>
+                  <Typography sx={{ fontWeight: 'bold', marginBottom: '5px' }}>Metal Purity</Typography>
+                  <Select fullWidth value={metalPurity} onChange={handleMetalPurity} >
+                    {metalPurityList?.map((e, i) => (
+                      <MenuItem value={e?.value} key={i}>{e?.label}</MenuItem>
+                    ))}
                   </Select>
                 </Box>
-                <Box sx={{ display: "flex", alignItems: "center", position: "relative", padding: "0px 0px 20px 0px", minWidth: '100%', width: '100%', maxWidth: "max-content" }} className="searchbox QuotationJobAllBtnSec">
-                  <TextField id="standard-basic" label="Search" variant="outlined" value={searchVal} style={{ minWidth: '100%' }} onChange={eve => {
+
+                <Box sx={{ position: "relative", width: '100%' }}>
+                  <TextField label="Search" variant="outlined" value={searchVal} fullWidth onChange={eve => {
                     setSearchVal(eve?.target?.value);
                     setPage(0);
-                    // handleSearch(eve, eve?.target?.value, fromDate, toDate, metalPurity, MetalColor, category, statuse, orderProm);
                     handleSearch(eve, eve?.target?.value, fromDate, toDate, metalPurity, MetalColor, category, selectedStatus, orderProm);
                   }} />
-                  <Button sx={{ padding: 0, maxWidth: "max-content", minWidth: "max-content", position: "absolute", right: "20px", color: "#757575" }}
-                    // onClick={eve => handleSearch(eve, searchVal, fromDate, toDate, metalPurity, MetalColor, category, statuse, orderProm)}><SearchIcon /></Button>
+                  <Button sx={{ padding: 0, maxWidth: "max-content", minWidth: "max-content", position: "absolute", right: "12px", top: '50%', transform: 'translateY(-50%)', color: "#757575" }}
                     onClick={eve => handleSearch(eve, searchVal, fromDate, toDate, metalPurity, MetalColor, category, selectedStatus, orderProm)}><SearchIcon /></Button>
                 </Box>
               </Box>

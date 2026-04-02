@@ -2,18 +2,21 @@ import React, { useEffect, useState } from 'react';
 import './printCart.scss';
 import useCart from '@/app/(core)/utils/Glob_Functions/Cart_Wishlist/Cart';
 import { formatter } from '@/app/(core)/utils/Glob_Functions/GlobalFunction';
+import { getSession } from '@/app/(core)/utils/FetchSessionData';
+import { useStore } from '@/app/(core)/contexts/StoreProvider';
 
 const PrintPageCard = () => {
   const { cartData, finalCartData, CartCardImageFunc } = useCart();
+  const { storeInit } = useStore();
 
   const noImageFound = "/image-not-found.jpg";
 
   const [imageSrcs, setImageSrcs] = useState({});
-  const [storeInitData, setStoreInitData] = useState();
-  const loginInfo = JSON.parse(sessionStorage.getItem("loginUserDetail"));
+  const [storeInitData, setStoreInitData] = useState(storeInit);
+  const loginInfo = getSession("loginUserDetail");
 
   useEffect(() => {
-    const storeinitData = JSON.parse(sessionStorage.getItem('storeInit'));
+    const storeinitData = getSession('storeInit');
     setStoreInitData(storeinitData)
   }, [])
 

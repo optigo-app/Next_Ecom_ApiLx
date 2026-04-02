@@ -109,7 +109,7 @@ const BreadCrumbs = ({
 
     breadcrumbItems.push({
         label: "Home",
-        onClick: () => navigate('/menu')
+        onClick: () => navigate('/')
     });
 
     if (typeCondition === "A") {

@@ -50,7 +50,18 @@ const WishlistItems = ({ item, index, selectedValue, itemInCart, updateCount, co
   const handleWishlistToCartFun = async (item) => {
     const returnValue = await handleWishlistToCart(item);
     if (returnValue?.msg == "success") {
-      toast.success("Wishlist items added in cart");
+      toast.success("Wishlist items added in cart", {
+        position: "bottom-center",
+        style: {
+          width: "max-content",
+          margin: "0 auto",
+          minHeight: "35px",
+          padding: "4px 16px",
+          fontSize: "13px",
+          borderRadius: "20px",
+          marginBottom: "60px",
+        }
+      });
       GetCountAPI(visiterId).then((res) => {
         setCartCountNum(res?.cartcount);
       });
@@ -139,9 +150,10 @@ const WishlistItems = ({ item, index, selectedValue, itemInCart, updateCount, co
               )}
               <CardContent className="smr_cardContent">
                 <div className="cardText">
-                  <Typography variant="body2" className="smr_card-ContentData smr_WlTitleline">
-                    {item?.designno != "" && item?.designno}
-                    {formatTitleLine(item?.TitleLine) && " - " + item?.TitleLine}
+                  <Typography variant="body2" className="smr_card-ContentData fg_smr_WlTitleline">
+                    {item?.designno && item?.designno !== "" ? item?.designno : ""}
+                    {item?.designno && item?.designno !== "" && formatTitleLine(item?.TitleLine) ? " - " : ""}
+                    {formatTitleLine(item?.TitleLine) ? item?.TitleLine : ""}
                   </Typography>
                   <Typography variant="body2" className="smr_card-ContentData">
                     {storeInit?.IsGrossWeight == 1 && (
@@ -218,14 +230,14 @@ const WishlistItems = ({ item, index, selectedValue, itemInCart, updateCount, co
           </Card>
         </Grid>
       ) : (
-        <Grid item 
-        size={{
-          xs: itemsLength <= 2 ? 6 : 6,
-          sm: itemsLength <= 2 ? 4 : 3,
-          md: itemsLength <= 2 ? 4 : 2,
-          lg: itemsLength <= 2 ? 3 : 2
-        }}
-        className="smr_wlListGrid">
+        <Grid item
+          size={{
+            xs: itemsLength <= 2 ? 6 : 6,
+            sm: itemsLength <= 2 ? 4 : 3,
+            md: itemsLength <= 2 ? 4 : 2,
+            lg: itemsLength <= 2 ? 3 : 2
+          }}
+          className="smr_wlListGrid">
           <Card className="smr_WlListCard">
             <div className="cardContent">
               {isLoading === true ? (

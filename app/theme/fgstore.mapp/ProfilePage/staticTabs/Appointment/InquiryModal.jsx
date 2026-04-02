@@ -49,7 +49,10 @@ const InquiryModal = ({
       sx={{
         "& .MuiDrawer-paper": {
           width: "100%",
-          // maxWidth: 480,
+          height: "100dvh",
+          display: "flex",
+          flexDirection: "column",
+          overflow: "hidden"
         },
       }}
     >
@@ -72,7 +75,7 @@ const InquiryModal = ({
         </Toolbar>
       </AppBar>
 
-      <Box sx={{ p: 2, flex: 1, display: 'flex', flexDirection: 'column' }}>
+      <Box sx={{ p: 2, flex: 1, display: 'flex', flexDirection: 'column', overflowY: "auto" }}>
         {step === 1 && (
           <Box>
             <Typography variant="body2" color="text.secondary" mb={3}>
@@ -177,7 +180,10 @@ const InquiryModal = ({
                   name="AppointmentDateTime"
                   type="datetime-local"
                   InputLabelProps={{ shrink: true }}
-                  inputProps={{ min: minDateTime }}
+                  inputProps={{
+                    min: minDateTime,
+                    style: { fontSize: "16px" } // Prevents iOS Zoom
+                  }}
                   value={formData.AppointmentDateTime}
                   onChange={handleChange}
                   error={Boolean(errors.AppointmentDateTime)}

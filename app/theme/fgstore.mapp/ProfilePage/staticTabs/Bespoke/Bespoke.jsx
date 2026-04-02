@@ -9,7 +9,7 @@ import { useState } from "react";
 export default function BespokeTab({
   open,
   onClose,
-  title = "Bespoke Jewelry",
+  title = "Bespoke Jewellery",
 }) {
     const [InquiryModal, setInquiryModal] = useState(false);
   return (
@@ -69,7 +69,7 @@ export default function BespokeTab({
           <Box
             component="img"
             src="https://sonasons.optigoapps.com/WebSiteStaticImage/images/HomePage/bespoke/2.png"
-            alt="Bespoke Jewelry"
+            alt="Bespoke Jewellery"
             sx={{
               width: "100%",
               objectFit: "contain",
@@ -86,7 +86,7 @@ export default function BespokeTab({
               mb: 2,
             }}
           >
-            Crafting Timeless Bespoke Jewelry for Every Occasion
+            Crafting Timeless Bespoke Jewellery for Every Occasion
           </Typography>
 
           {/* Description */}
@@ -98,7 +98,7 @@ export default function BespokeTab({
               mb: 3,
             }}
           >
-            Experience the art of bespoke jewelry, where every piece is
+            Experience the art of bespoke jewellery, where every piece is
             designed exclusively for you. From personalized necklaces to custom
             rings, our artisans combine traditional craftsmanship with modern
             design.

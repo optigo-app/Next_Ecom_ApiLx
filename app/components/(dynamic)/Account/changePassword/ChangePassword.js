@@ -133,7 +133,7 @@ export default function ChangePassword() {
     }
   };
 
-  return <>
+  return (
     <Box sx={{ px: 2, py: 3, maxWidth: 420, mx: "auto" }}>
 
       {isLoading && (
@@ -263,121 +263,5 @@ export default function ChangePassword() {
 
       </Stack>
     </Box>
-
-  </>
-
-  return (
-    <div className='changePassword_Account_SMR'>
-      <div>
-        {isLoading && (
-          <div className="loader-overlay">
-            <CircularProgress className='loadingBarManage' />
-          </div>
-        )}
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: '20px' }}>
-          <TextField
-            id="outlined-confirm-password-input"
-            label="Old Password"
-            type={showOldPassword ? 'text' : 'password'}
-            autoComplete="current-password"
-            className='labgrowRegister'
-            style={{ margin: '15px' }}
-            value={oldPassword}
-            // onChange={(e) => handleInputChange(e, setOldPassword, 'oldPassword')}
-            // onChange={(e) => handlePasswordInputChangeAcc(e, 'oldPassword', { setOldPassword, setPassword, setConfirmPassword }, errors, setErrors)}
-            // error={!!errors.oldPassword}
-            // helperText={errors.oldPassword}
-            onChange={(e) =>
-              handlePasswordInputChangeAcc(e, 'oldPassword', { password, confirmPassword, oldPassword, setPassword, setConfirmPassword, setOldPassword }, setErrors)
-            }
-            error={!!errors.oldPassword}
-            helperText={errors.oldPassword}
-            InputProps={{
-              endAdornment: (
-                <InputAdornment position="end">
-                  <IconButton
-                    aria-label="toggle password visibility"
-                    onClick={() => handleTogglePasswordVisibility('oldPassword')}
-                    onMouseDown={handleMouseDownConfirmPassword}
-                    edge="end"
-                  >
-                    {showOldPassword ? <VisibilityOff /> : <Visibility />}
-                  </IconButton>
-                </InputAdornment>
-              ),
-            }}
-          />
-
-          <TextField
-            id="outlined-password-input"
-            label="Password"
-            type={showPassword ? 'text' : 'password'}
-            autoComplete="current-password"
-            className='labgrowRegister'
-            style={{ margin: '15px' }}
-            value={password}
-            // onChange={handlePasswordChange}
-            // onChange={(e) => handlePasswordInputChangeAcc(e, 'password', { setPassword, setConfirmPassword, setOldPassword }, errors, setErrors)}
-            // error={!!passwordError}
-            // helperText={passwordError}
-            onChange={(e) =>
-              handlePasswordInputChangeAcc(e, 'password', { password, confirmPassword, oldPassword, setPassword, setConfirmPassword, setOldPassword }, setErrors)
-            }
-            error={!!errors.password}
-            helperText={errors.password}
-            InputProps={{
-              endAdornment: (
-                <InputAdornment position="end">
-                  <IconButton
-                    aria-label="toggle password visibility"
-                    onClick={() => handleTogglePasswordVisibility('password')}
-                    onMouseDown={handleMouseDownPassword}
-                    edge="end"
-                  >
-                    {showPassword ? <VisibilityOff /> : <Visibility />}
-                  </IconButton>
-                </InputAdornment>
-              ),
-            }}
-          />
-
-          <TextField
-            id="outlined-confirm-password-input"
-            label="Confirm Password"
-            type={showConfirmPassword ? 'text' : 'password'}
-            autoComplete="current-password"
-            className='labgrowRegister'
-            style={{ margin: '15px' }}
-            value={confirmPassword}
-            // onChange={(e) => handleInputChange(e, setConfirmPassword, 'confirmPassword')}
-            // onChange={(e) => handlePasswordInputChangeAcc(e, 'confirmPassword', { setPassword, setConfirmPassword, setOldPassword }, errors, setErrors)}
-            // error={!!errors.confirmPassword}
-            // helperText={errors.confirmPassword}
-            onChange={(e) =>
-              handlePasswordInputChangeAcc(e, 'confirmPassword', { password, confirmPassword, oldPassword, setPassword, setConfirmPassword, setOldPassword }, setErrors)
-            }
-            error={!!errors.confirmPassword}
-            helperText={errors.confirmPassword}
-            InputProps={{ // Set InputProps for icon
-              endAdornment: (
-                <InputAdornment position="end">
-                  <IconButton
-                    aria-label="toggle password visibility"
-                    onClick={() => handleTogglePasswordVisibility('confirmPassword')}
-                    onMouseDown={handleMouseDownConfirmPassword}
-                    edge="end"
-                  >
-                    {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
-                  </IconButton>
-                </InputAdornment>
-              ),
-            }}
-          />
-
-          <button className='ForgotPassBtn' onClick={handleSubmit}>Change Password</button>
-        </div>
-      </div>
-
-    </div>
-  )
+  );
 }

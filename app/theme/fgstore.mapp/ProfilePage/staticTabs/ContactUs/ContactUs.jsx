@@ -39,7 +39,12 @@ const ContactUs = ({ open, onClose }) => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    if (name === "mobileno") {
+      const numericValue = value.replace(/\D/g, ""); // Filter to allow only digits
+      setFormData((prev) => ({ ...prev, [name]: numericValue }));
+    } else {
+      setFormData((prev) => ({ ...prev, [name]: value }));
+    }
     setErrors((prev) => ({ ...prev, [name]: "" }));
   };
 
@@ -102,8 +107,10 @@ const ContactUs = ({ open, onClose }) => {
       sx={{
         "& .MuiDrawer-paper": {
           width: "100%",
-          height: "100svh",
+          height: "100dvh",
           overflow: "hidden",
+          display: "flex",
+          flexDirection: "column",
           position: "relative"
         },
       }}
@@ -195,6 +202,7 @@ const ContactUs = ({ open, onClose }) => {
                   onChange={handleChange}
                   error={!!errors.FullName}
                   helperText={errors.FullName}
+                  inputProps={{ style: { fontSize: "16px" } }}
                   size="small"
                 />
               </Grid>
@@ -207,6 +215,7 @@ const ContactUs = ({ open, onClose }) => {
                   onChange={handleChange}
                   error={!!errors.InQuiryCompanyName}
                   helperText={errors.InQuiryCompanyName}
+                  inputProps={{ style: { fontSize: "16px" } }}
                   size="small"
                 />
               </Grid>
@@ -219,6 +228,7 @@ const ContactUs = ({ open, onClose }) => {
                   onChange={handleChange}
                   error={!!errors.EmailId}
                   helperText={errors.EmailId}
+                  inputProps={{ style: { fontSize: "16px" } }}
                   size="small"
                 />
               </Grid>
@@ -227,11 +237,15 @@ const ContactUs = ({ open, onClose }) => {
                   fullWidth
                   label="Phone Number"
                   name="mobileno"
-                  maxLength={10}
                   value={formData.mobileno}
                   onChange={handleChange}
                   error={!!errors.mobileno}
                   helperText={errors.mobileno}
+                  inputProps={{ 
+                    maxLength: 10,
+                    inputMode: "numeric",
+                    style: { fontSize: "16px" }
+                  }}
                   size="small"
                 />
               </Grid>
@@ -244,6 +258,7 @@ const ContactUs = ({ open, onClose }) => {
                   onChange={handleChange}
                   error={!!errors.InQuirySubject}
                   helperText={errors.InQuirySubject}
+                  inputProps={{ style: { fontSize: "16px" } }}
                   size="small"
                 />
               </Grid>
@@ -258,6 +273,7 @@ const ContactUs = ({ open, onClose }) => {
                   onChange={handleChange}
                   error={!!errors.Be_In_Message}
                   helperText={errors.Be_In_Message}
+                  inputProps={{ style: { fontSize: "16px" } }}
                 />
               </Grid>
               <Grid item size={{ xs: 12 }} sx={{ mt: 2 }}>

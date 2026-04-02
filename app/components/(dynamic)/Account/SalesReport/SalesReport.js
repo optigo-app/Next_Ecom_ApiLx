@@ -1057,25 +1057,27 @@ const SalesReport = () => {
         </Box>}
         {
           isSmallScreen && <>
-            <Accordion style={{ padding: '2px', paddingBottom: '10px', marginBottom: '40px', marginTop: '20px' }}>
-              <AccordionSummary expandIcon={<ExpandMoreIcon />}>More Filters</AccordionSummary>
-              <AccordionDetails style={{ margin: '0px', padding: '0px' }}>
-                <Button variant="contained" size="small" sx={{ background: "#7d7f85" }} className="muiSmilingRocksBtn" style={{ marginBottom: '20px' }} onClick={(eve) => resetAllFilters(eve)} >
+            <Accordion style={{ padding: '2px', paddingBottom: '10px', marginBottom: '40px', marginTop: '20px', boxShadow: 'none', border: '1px solid #e1e1e1' }}>
+              <AccordionSummary expandIcon={<ExpandMoreIcon />} sx={{ backgroundColor: '#f5f5f5' }}>
+                <Typography sx={{ fontWeight: 'bold' }}>More Filters</Typography>
+              </AccordionSummary>
+              <AccordionDetails sx={{ padding: '15px 10px' }}>
+                <Button variant="contained" size="small" sx={{ background: "#7d7f85", marginBottom: '20px', padding: '6px 20px' }} className="muiSmilingRocksBtn" onClick={(eve) => resetAllFilters(eve)} >
                   All
                 </Button>
-                <Box sx={{ display: "flex", alignItems: "center", position: "relative", maxWidth: "max-content", paddingBottom: "15px", paddingRight: "0px", marginRight: "15px", minWidth: '100%' }} className="searchbox" >
-                  <TextField id="standard-basic" label="Search" variant="outlined" value={searchVal} style={{ minWidth: '100%' }} onChange={(eve) => { setSearchVal(eve?.target?.value); handleSearch(eve, eve?.target?.value, fromDate, toDate, grossWtInput?.from, grossWtInput?.to, custCurrency); }} />
+                <Box sx={{ display: "flex", alignItems: "center", position: "relative", marginBottom: '20px', width: '100%' }} className="searchbox" >
+                  <TextField id="standard-basic" label="Search" variant="outlined" value={searchVal} fullWidth onChange={(eve) => { setSearchVal(eve?.target?.value); handleSearch(eve, eve?.target?.value, fromDate, toDate, grossWtInput?.from, grossWtInput?.to, custCurrency); }} />
                   <Button sx={{ padding: 0, maxWidth: "max-content", minWidth: "max-content", position: "absolute", right: "8px", color: "#757575", }} > <SearchIcon /> </Button>
                 </Box>
-                <Box style={{ display: 'flex', alignItems: 'flex-end', marginBottom: '1rem', justifyContent: 'space-between' }}>
-                  <Box>
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                  <Box sx={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                     <LocalizationProvider dateAdapter={AdapterDayjs}>
                       <DatePicker
                         label="Date From"
                         value={fromDate}
                         ref={fromDateRef}
                         format="DD MM YYYY"
-                        className="quotationFilterDates"
+                        slotProps={{ textField: { fullWidth: true } }}
                         onChange={(newValue) => {
                           if (newValue === null) {
                             setFromDate(null)
@@ -1096,15 +1098,13 @@ const SalesReport = () => {
 
                       />
                     </LocalizationProvider>
-                  </Box>
-                  <Box>
                     <LocalizationProvider dateAdapter={AdapterDayjs}>
                       <DatePicker
                         label="Date To"
                         value={toDate}
                         ref={toDateRef}
                         format="DD MM YYYY"
-                        className="quotationFilterDates"
+                        slotProps={{ textField: { fullWidth: true } }}
                         onChange={(newValue) => {
                           if (newValue === null) {
                             setToDate(null);
@@ -1128,56 +1128,43 @@ const SalesReport = () => {
                         }}
                       />
                     </LocalizationProvider>
-                  </Box>
-                  <Box>
-                    <Button variant="contained" size="small" className="muiSmilingRocksBtn" sx={{ padding: "7px 7px", minWidth: "max-content", background: "#7d7f85", }} onClick={(eve) => handleSearch(eve, searchVal, fromDate, toDate, grossWtInput?.from, grossWtInput?.to, custCurrency)} >
-                      <SearchIcon sx={{ color: "#fff !important" }} />
+                    <Button variant="contained" className="muiSmilingRocksBtn" sx={{ padding: "10px", width: "100%", background: "#7d7f85", }} onClick={(eve) => handleSearch(eve, searchVal, fromDate, toDate, grossWtInput?.from, grossWtInput?.to, custCurrency)} >
+                      <SearchIcon sx={{ color: "#fff !important", marginRight: '5px' }} /> Search
                     </Button>
                   </Box>
-                </Box>
-                <Box sx={{ paddingRight: "10px", paddingBottom: "5px" }}>
-                  <Typography>Gross Wt : </Typography>
-                </Box>
-                <Box style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between' }}>
-                  <Box sx={{ minWidth: '35%', maxWidth: '35%', width: '100%', boxSizing: 'border-box' }}>
-                    <TextField
-                      placeholder="From"
-                      name="from"
-                      sx={{ minWidth: '100%' }}
-                      className="grossWtinputSecSalesReport"
-                      value={grossWtInput?.from}
-                      onChange={(eve) => handleChangegrossWt(eve)}
-                    />
-                  </Box>
-                  <Box sx={{ minWidth: '35%', maxWidth: '35%', width: '100%', boxSizing: 'border-box' }}>
-                    <TextField
-                      placeholder="To"
-                      name="to"
-                      sx={{ minWidth: '100%' }}
-                      className="grossWtinputSecSalesReport"
-                      value={grossWtInput?.to}
-                      onChange={(eve) => handleChangegrossWt(eve)}
-                    />
-                  </Box>
-                  <Box sx={{ minWidth: '15%', maxWidth: '15%', width: '100%', boxSizing: 'border-box' }}>
-                    <Button variant="contained" size="small" className="muiSmilingRocksBtn" sx={{ padding: "7px 7px", minWidth: "max-content", background: "#7d7f85", }} onClick={(eve) => handleSearch(eve, searchVal, fromDate, toDate, grossWtInput?.from, grossWtInput?.to, custCurrency)} >
-                      <SearchIcon sx={{ color: "#fff !important" }} />
-                    </Button>
 
+                  <Box>
+                    <Typography sx={{ fontWeight: 'bold', marginBottom: '5px' }}>Gross Wt : </Typography>
+                    <Box sx={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                      <TextField
+                        placeholder="From"
+                        label="From"
+                        name="from"
+                        fullWidth
+                        value={grossWtInput?.from}
+                        onChange={(eve) => handleChangegrossWt(eve)}
+                      />
+                      <TextField
+                        placeholder="To"
+                        label="To"
+                        name="to"
+                        fullWidth
+                        value={grossWtInput?.to}
+                        onChange={(eve) => handleChangegrossWt(eve)}
+                      />
+                    </Box>
                   </Box>
-                  <Box sx={{ paddingRight: "15px", paddingBottom: "18px", position: 'relative' }}>
-                    <Typography sx={{ paddingBottom: "5px", position: 'absolute', top: '-22px' }}>Currency</Typography>
+
+                  <Box>
+                    <Typography sx={{ fontWeight: 'bold', marginBottom: '5px' }}>Currency</Typography>
                     <Select
-                      labelId="SubCategory"
-                      id="demo-simple-select"
                       value={custCurrency}
-                      label="Product Type"
                       onChange={handleCurrencyChange}
-                      sx={{ width: "100px" }}
+                      fullWidth
                     >
-                      {currencyList?.map((ele, ind) => {
-                        return <MenuItem value={ele} key={ind} sx={{ textTransform: 'uppercase' }}>{ele}</MenuItem>
-                      })}
+                      {currencyList?.map((ele, ind) => (
+                        <MenuItem value={ele} key={ind} sx={{ textTransform: 'uppercase' }}>{ele}</MenuItem>
+                      ))}
                     </Select>
                   </Box>
                 </Box>

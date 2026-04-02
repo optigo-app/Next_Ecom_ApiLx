@@ -11,6 +11,7 @@ import MobileCartDetails from "./MobileCartDetails"
 import ConfirmationDialog from '@/app/(core)/utils/Glob_Functions/ConfirmationDialog/ConfirmationDialog';
 import { useNextRouterLikeRR } from '@/app/(core)/hooks/useLocationRd';
 import { useStore } from '@/app/(core)/contexts/StoreProvider';
+import ReusableConfirmModal from '@/app/components/ui/Modal';
 
 const CartPage = ({ storeinit, visiterId }) => {
 
@@ -87,6 +88,28 @@ const CartPage = ({ storeinit, visiterId }) => {
       behavior: 'smooth'
     });
   }, [])
+
+  const [removeItemData, setRemoveItemData] = useState(null);
+
+  const handleRemoveItemDialog = (item) => {
+    setRemoveItemData(item);
+  };
+
+  const handleConfirmRemoveItem = async () => {
+    if (removeItemData) {
+      const returnValue = await handleRemoveItem(removeItemData);
+      if (returnValue?.msg == "success") {
+        GetCountAPI(visiterId).then((res) => {
+          setCartCountVal(res?.cartcount);
+        });
+      }
+      setRemoveItemData(null);
+    }
+  };
+
+  const handleCloseRemoveItem = () => {
+    setRemoveItemData(null);
+  };
 
 
   const handleRemoveAllDialog = () => {
@@ -167,7 +190,7 @@ const CartPage = ({ storeinit, visiterId }) => {
                     selectedItem={selectedItem}
                     selectedItems={selectedItems}
                     multiSelect={multiSelect}
-                    onRemove={handleRemoveItem}
+                    onRemove={handleRemoveItemDialog}
                     handleAddReamrk={handleAddReamrk}
                     handleRemarkChange={handleRemarkChange}
                     handleSave={handleSave}
@@ -238,7 +261,7 @@ const CartPage = ({ storeinit, visiterId }) => {
                   open={openModal}
                   onClose={handleCloseModal}
                   selectedItems={selectedItems}
-                  onRemove={handleRemoveItem}
+                  onRemove={handleRemoveItemDialog}
                   onUpdateCart={handleUpdateCart}
                   onCancelCart={handleCancelUpdateCart}
                 />
@@ -260,6 +283,13 @@ const CartPage = ({ storeinit, visiterId }) => {
           onConfirm={handleConfirmRemoveAll}
           title="Confirm"
           content="Are you sure you want to remove all Items?"
+        />
+
+        <ReusableConfirmModal
+          open={Boolean(removeItemData)}
+          onClose={handleCloseRemoveItem}
+          onConfirm={handleConfirmRemoveItem}
+          type="removeItem"
         />
 
         {/* <Footer /> */}

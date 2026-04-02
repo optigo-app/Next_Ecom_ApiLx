@@ -10,6 +10,9 @@ import LocalMallIcon from "@mui/icons-material/LocalMallRounded";
 import StarIcon from "@mui/icons-material/StarBorderRounded";
 import StarRoundedIcon from "@mui/icons-material/StarRounded";
 import SwiperProductCard from './SwiperProductCard';
+import FavoriteRoundedIcon from '@mui/icons-material/FavoriteRounded';
+import FavoriteBorderRoundedIcon from '@mui/icons-material/FavoriteBorderRounded';
+
 
 
 const ProductCard = ({
@@ -111,7 +114,7 @@ const ProductCard = ({
         >
             <Checkbox
                 icon={
-                    <StarIcon
+                    <FavoriteRoundedIcon
                         sx={{
                             fontSize: "22px",
                             color: "#7d7f85",
@@ -120,7 +123,7 @@ const ProductCard = ({
                     />
                 }
                 checkedIcon={
-                    <StarRoundedIcon
+                    <FavoriteBorderRoundedIcon
                         sx={{
                             fontSize: "22px",
                             color: "#4caf50",
@@ -583,7 +586,7 @@ const ProductCard = ({
                     />
                     <Checkbox
                         icon={
-                            <StarBorderIcon
+                            <FavoriteBorderRoundedIcon
                                 sx={{
                                     fontSize: "22px",
                                     color: "#7d7f85",
@@ -592,7 +595,7 @@ const ProductCard = ({
                             />
                         }
                         checkedIcon={
-                            <StarIcon
+                            <FavoriteRoundedIcon
                                 sx={{
                                     fontSize: "22px",
                                     color: "#ffd200",

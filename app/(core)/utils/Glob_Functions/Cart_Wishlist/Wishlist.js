@@ -195,15 +195,7 @@ const Usewishlist = () => {
         console.error("Error:", error);
       }
     } else {
-      toast.info(<Toast />, {
-        hideProgressBar: true,
-        style: {
-          borderRadius: "4px",
-          padding: '-2px 45px',
-          boxShadow: `rgba(0, 0, 0, 0.16) 0px 10px 36px 0px, rgba(0, 0, 0, 0.06) 0px 0px 0px 1px`,
-          border: "2px solid white"
-        },
-      })
+      toast.info('Already in Cart.')
     }
   };
   // Already in cart
@@ -534,8 +526,12 @@ const Usewishlist = () => {
 };
 
 export default Usewishlist;
+
+
+
+
 const Toast = () => (
   <div className="cust_hoq_toast">
-    <div className="right">Already in Cart.</div>
+    Already in Cart.
   </div>
 );

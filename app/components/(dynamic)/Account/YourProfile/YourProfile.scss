@@ -117,5 +117,39 @@
       width: 100% !important;
     }
   }
+  @media screen and (max-width: 768px) {
+    .smr_editProfileModal {
+        padding: 20px 15px !important;
+        
+        h6, .MuiTypography-h6 {
+            font-size: 1.1rem !important;
+            margin-bottom: 12px !important;
+            text-align: center;
+        }
+
+        .MuiTextField-root {
+            margin-top: 8px !important;
+            margin-bottom: 8px !important;
+            width: 100% !important;
+
+            input, textarea {
+                font-size: 16px !important; /* Prevents auto-zoom on iOS */
+            }
+
+            label {
+                font-size: 14px !important;
+            }
+        }
+
+        .MuiBox-root {
+            margin-top: 16px !important;
+            gap: 10px;
+            
+            button {
+                font-size: 14px !important;
+                padding: 10px !important;
+            }
+        }
+    }
+  }
 }
-// }

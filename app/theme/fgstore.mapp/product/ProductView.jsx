@@ -31,7 +31,8 @@ const ProductView = ({
   metalColorCombo,
   isProdLoading,
   filterProdListEmpty,
-  ImageView
+  ImageView,
+  handelMenu
 }) => {
 
   if (isProdLoading) {
@@ -39,7 +40,7 @@ const ProductView = ({
   }
 
   else if (filterProdListEmpty) {
-    return <NoResults />
+    return <NoResults explore={handelMenu} />
   }
 
   return (
@@ -116,7 +117,7 @@ const ProductView = ({
 export default ProductView;
 
 
-const NoResults = () => {
+const NoResults = ({ explore }) => {
   return (
     <Box
       sx={{
@@ -160,7 +161,6 @@ const NoResults = () => {
       <Button
         variant="contained"
         size="medium"
-
         sx={{
           textTransform: "none",
           px: 4,
@@ -169,6 +169,7 @@ const NoResults = () => {
           fontWeight: 600,
           color: '#fff'
         }}
+        onClick={explore}
       >
         Explore
       </Button>
