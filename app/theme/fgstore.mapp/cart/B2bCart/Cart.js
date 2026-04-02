@@ -19,6 +19,7 @@ import { useNextRouterLikeRR } from '@/app/(core)/hooks/useLocationRd';
 import MobileNavbar from './NavigationBar';
 import LocalPrintshopRoundedIcon from '@mui/icons-material/LocalPrintshopRounded';
 import { getButtonStyle } from '@/app/(core)/constants/MobileAppTheme';
+import ReusableConfirmModal from '@/app/components/ui/Modal';
 
 
 const CartPage = ({ storeinit, visiterId, islogin, setCartCountNum }) => {
@@ -93,6 +94,28 @@ const CartPage = ({ storeinit, visiterId, islogin, setCartCountNum }) => {
     }
     window.scrollTo(0, 0);
   }
+
+  const [removeItemData, setRemoveItemData] = useState(null);
+
+  const handleRemoveItemDialog = (item) => {
+    setRemoveItemData(item);
+  };
+
+  const handleConfirmRemoveItem = async () => {
+    if (removeItemData) {
+      const returnValue = await handleRemoveItem(removeItemData);
+      if (returnValue?.msg == "success") {
+        GetCountAPI(visiterId).then((res) => {
+          setCartCountVal(res?.cartcount);
+        });
+      }
+      setRemoveItemData(null);
+    }
+  };
+
+  const handleCloseRemoveItem = () => {
+    setRemoveItemData(null);
+  };
 
   const handleRemoveAllDialog = () => {
     setDialogOpen(true);
@@ -217,7 +240,7 @@ const CartPage = ({ storeinit, visiterId, islogin, setCartCountNum }) => {
                       selectedItem={selectedItem}
                       selectedItems={selectedItems}
                       multiSelect={multiSelect}
-                      onRemove={handleRemoveItem}
+                      onRemove={handleRemoveItemDialog}
                       handleAddReamrk={handleAddReamrk}
                       handleRemarkChange={handleRemarkChange}
                       handleSave={handleSave}
@@ -286,16 +309,16 @@ const CartPage = ({ storeinit, visiterId, islogin, setCartCountNum }) => {
                     open={openModal}
                     onClose={handleCloseModal}
                     selectedItems={selectedItems}
-                    onRemove={handleRemoveItem}
+                    onRemove={handleRemoveItemDialog}
                     onUpdateCart={handleUpdateCart}
                     onCancelCart={handleCancelUpdateCart}
                   />
                 </div>
-              ) :
+              ) : (
                 <NoResults
                   onClick={handelMenu}
                 />
-              }
+              )}
             </>
           ) :
             <CartPageSkeleton />
@@ -307,6 +330,13 @@ const CartPage = ({ storeinit, visiterId, islogin, setCartCountNum }) => {
             onConfirm={handleConfirmRemoveAll}
             title="Confirm"
             content="Are you sure you want to remove all Items?"
+          />
+
+          <ReusableConfirmModal
+            open={Boolean(removeItemData)}
+            onClose={handleCloseRemoveItem}
+            onConfirm={handleConfirmRemoveItem}
+            type="removeItem"
           />
         </div>
 

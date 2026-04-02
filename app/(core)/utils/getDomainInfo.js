@@ -10,7 +10,6 @@ export async function getDomainInfo() {
             const rawHost = headerList.get("x-forwarded-host") || headerList.get("host") || "";
             console.log("🚀 ~ getDomainInfo ~ rawHost:", rawHost)
             const rawProto = headerList.get("x-forwarded-proto") || "https";
-            console.log("🚀 ~ getDomainInfo ~ rawProto:", rawProto)
 
             return {
                 hostname: rawHost || NEXT_APP_WEB,

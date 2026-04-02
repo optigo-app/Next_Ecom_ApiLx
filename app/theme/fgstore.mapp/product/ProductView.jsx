@@ -1,7 +1,7 @@
 import React from "react";
 import ProductCard from "./ProductCard";
 import ProductListSkeleton from "./ProductListSkeleton";
-import { Box, Typography, Button ,Grid } from "@mui/material";
+import { Box, Typography, Button, Grid } from "@mui/material";
 
 
 const ProductView = ({
@@ -30,21 +30,22 @@ const ProductView = ({
   location,
   metalColorCombo,
   isProdLoading,
-  filterProdListEmpty ,
-  ImageView
+  filterProdListEmpty,
+  ImageView,
+  handelMenu
 }) => {
 
   if (isProdLoading) {
     return <ProductListSkeleton />
   }
 
-  else if(filterProdListEmpty){
-    return <NoResults />
-  } 
+  else if (filterProdListEmpty) {
+    return <NoResults explore={handelMenu} />
+  }
 
   return (
     <>
-      <Grid container spacing={0} className="customGrid">
+      <Grid container spacing={0} className="customGrid" sx={{ width: "100%", margin: 0 }}>
         {data?.map((productData, index) => {
           const images = imageMap[productData.designno] || {};
           const yellowImage = images?.yellowImage;
@@ -116,7 +117,7 @@ const ProductView = ({
 export default ProductView;
 
 
-const NoResults = () => {
+const NoResults = ({ explore }) => {
   return (
     <Box
       sx={{
@@ -160,15 +161,15 @@ const NoResults = () => {
       <Button
         variant="contained"
         size="medium"
-        
         sx={{
           textTransform: "none",
           px: 4,
-          boxShadow:'none',
-          bgcolor:'#1a6bff',
-          fontWeight:600,
-          color:'#fff'
+          boxShadow: 'none',
+          bgcolor: '#1a6bff',
+          fontWeight: 600,
+          color: '#fff'
         }}
+        onClick={explore}
       >
         Explore
       </Button>

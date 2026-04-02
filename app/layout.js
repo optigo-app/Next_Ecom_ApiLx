@@ -13,16 +13,23 @@ import { defaultFont } from "./(core)/assets/FontSetup";
 const DEFAULT_JEWELRY_DESCRIPTION = "Discover timeless jewelry crafted with precision and elegance. Explore gold, diamond, and silver collections designed for everyday wear and special occasions, with trusted quality and exceptional craftsmanship.";
 const DEFAULT_JEWELRY_KEYWORDS = "jewelry online, gold jewelry, diamond jewelry, silver jewelry, fine jewelry, bridal jewelry, earrings, rings, necklaces, bracelets, luxury jewelry, handcrafted jewelry";
 
+export const viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+};
+
 const Favicon = {
   Sonasons: {
     ico: '/optigo_favicon.ico',
   },
   omjiyas: {
-    ico: '/WebSiteStaticImage/logoIcon/om/new/32 x 32.png',
+    ico: '/WebSiteStaticImage/logoIcon/om/new/favicon.ico',
   }
 }
 
-const activeBrand = 'omjiyas'; // dynamic later
+const activeBrand = 'Sonasons';
 
 const ActiveFavicon = Favicon[activeBrand].ico;
 

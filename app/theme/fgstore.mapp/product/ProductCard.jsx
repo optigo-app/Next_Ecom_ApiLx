@@ -10,6 +10,9 @@ import LocalMallIcon from "@mui/icons-material/LocalMallRounded";
 import StarIcon from "@mui/icons-material/StarBorderRounded";
 import StarRoundedIcon from "@mui/icons-material/StarRounded";
 import SwiperProductCard from './SwiperProductCard';
+import FavoriteRoundedIcon from '@mui/icons-material/FavoriteRounded';
+import FavoriteBorderRoundedIcon from '@mui/icons-material/FavoriteBorderRounded';
+
 
 
 const ProductCard = ({
@@ -111,7 +114,7 @@ const ProductCard = ({
         >
             <Checkbox
                 icon={
-                    <StarIcon
+                    <FavoriteRoundedIcon
                         sx={{
                             fontSize: "22px",
                             color: "#7d7f85",
@@ -120,7 +123,7 @@ const ProductCard = ({
                     />
                 }
                 checkedIcon={
-                    <StarRoundedIcon
+                    <FavoriteBorderRoundedIcon
                         sx={{
                             fontSize: "22px",
                             color: "#4caf50",
@@ -314,13 +317,14 @@ const ProductCard = ({
                 spacing={0.4}
                 sx={{
                     fontSize: 13,
-                    minHeight: 31
+                    minHeight: 31,
+                    width: "100%"
                 }}
             >
                 {storeInit?.IsGrossWeight == 1 &&
                     Number(productData?.Gwt) !== 0 && (
                         <>
-                            <Grid size={6}>
+                            <Grid item size={{ xs: 6 }}>
                                 <Typography
                                     sx={{
 
@@ -339,7 +343,7 @@ const ProductCard = ({
                 }
                 {Number(productData?.Nwt) !== 0 && (
                     <>
-                        <Grid size={6}>
+                        <Grid item size={{ xs: 6 }}>
                             <Typography
                                 sx={{
 
@@ -360,7 +364,7 @@ const ProductCard = ({
                 {storeInit?.IsDiamondWeight == 1 &&
                     (Number(productData?.Dwt) !== 0 && (
                         <>
-                            <Grid size={6}>
+                            <Grid item xs={6}>
                                 <Typography
                                     sx={{
 
@@ -383,7 +387,7 @@ const ProductCard = ({
                 {storeInit?.IsStoneWeight == 1 &&
                     (Number(productData?.CSwt) !== 0 && (
                         <>
-                            <Grid size={6}>
+                            <Grid item xs={6}>
                                 <Typography
                                     sx={{
 
@@ -582,7 +586,7 @@ const ProductCard = ({
                     />
                     <Checkbox
                         icon={
-                            <StarBorderIcon
+                            <FavoriteBorderRoundedIcon
                                 sx={{
                                     fontSize: "22px",
                                     color: "#7d7f85",
@@ -591,7 +595,7 @@ const ProductCard = ({
                             />
                         }
                         checkedIcon={
-                            <StarIcon
+                            <FavoriteRoundedIcon
                                 sx={{
                                     fontSize: "22px",
                                     color: "#ffd200",

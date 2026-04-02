@@ -63,7 +63,18 @@ const Wishlist = ({ storeInit }) => {
   const handleAddtoCartAllfun = async () => {
     const returnValue = await handleAddtoCartAll();
     if (returnValue?.msg == "success") {
-      toast.success("All wishlist items added in cart")
+      toast.success("All wishlist items added in cart", {
+        position: "bottom-center",
+        style: {
+          width: "max-content",
+          margin: "0 auto",
+          minHeight: "35px",
+          padding: "4px 16px",
+          fontSize: "13px",
+          borderRadius: "20px",
+          marginBottom: "60px",
+        }
+      });
       GetCountAPI(visiterId).then((res) => {
         setCartCountNum(res?.cartcount);
       })

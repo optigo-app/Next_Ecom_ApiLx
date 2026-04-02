@@ -19,7 +19,7 @@ const PriceBreakup = ({
 }) => {
 
 
-  const prod = singleProd ?? singleProd1;
+  const prod = Object.keys(singleProd1).length > 0 ? singleProd1 : singleProd;
 
   const currency = (
     <span

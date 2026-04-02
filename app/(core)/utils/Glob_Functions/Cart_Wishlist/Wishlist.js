@@ -66,6 +66,14 @@ const Usewishlist = () => {
       if (response?.Data?.rd[0]?.stat != 0) {
         let diamondData = response?.Data?.rd1;
         setWishlistData(response?.Data?.rd);
+        const initialProducts = response?.Data?.rd?.map(data => ({
+          ...data,
+          images: [],
+          loading: true
+        }));
+        setFinalWishData(initialProducts);
+        setLoadingIndex(0);
+
         if (diamondData?.length != 0) {
           const solStockNos = diamondData?.map(item => item?.Sol_StockNo);
           const commaSeparatedString = solStockNos?.join(',');
@@ -76,6 +84,7 @@ const Usewishlist = () => {
       } else {
         setIsWlLoading(false);
         setWishlistData([]);
+        setFinalWishData([]);
         setDiamondWishData([]);
       }
     } catch (error) {
@@ -186,15 +195,7 @@ const Usewishlist = () => {
         console.error("Error:", error);
       }
     } else {
-      toast.info(<Toast />, {
-        hideProgressBar: true,
-        style: {
-          borderRadius: "4px",
-          padding: '-2px 45px',
-          boxShadow: `rgba(0, 0, 0, 0.16) 0px 10px 36px 0px, rgba(0, 0, 0, 0.06) 0px 0px 0px 1px`,
-          border: "2px solid white"
-        },
-      })
+      toast.info('Already in Cart.')
     }
   };
   // Already in cart
@@ -525,8 +526,12 @@ const Usewishlist = () => {
 };
 
 export default Usewishlist;
+
+
+
+
 const Toast = () => (
   <div className="cust_hoq_toast">
-    <div className="right">Already in Cart.</div>
+    Already in Cart.
   </div>
 );

@@ -16,6 +16,8 @@ const BottomNavigation = () => {
     const [activeTab, setActiveTab] = useState("home");
     const pathname = usePathname();
 
+    const [isKeyboardVisible, setKeyboardVisible] = useState(false);
+
     useEffect(() => {
         if (pathname === "/") setActiveTab("home");
         else if (pathname.startsWith("/menu")) setActiveTab("shop");
@@ -23,15 +25,57 @@ const BottomNavigation = () => {
         else if (pathname.startsWith("/profile") || pathname.startsWith("/account")) setActiveTab("Profile");
     }, [pathname]);
 
+    useEffect(() => {
+        // Fallback for older browsers without visualViewport
+        if (!window.visualViewport) {
+            const handleFocusIn = (e) => {
+                const tagName = e.target.tagName?.toLowerCase();
+                if (tagName === "input" || tagName === "textarea") {
+                    setKeyboardVisible(true);
+                }
+            };
+            const handleFocusOut = () => {
+                setKeyboardVisible(false);
+            };
+            window.addEventListener("focusin", handleFocusIn);
+            window.addEventListener("focusout", handleFocusOut);
+            return () => {
+                window.removeEventListener("focusin", handleFocusIn);
+                window.removeEventListener("focusout", handleFocusOut);
+            };
+        }
+
+        // Modern, robust approach (iOS and Android Webviews)
+        let baseHeight = window.visualViewport.height;
+
+        const handleResize = () => {
+            // Update base height if window gets larger (e.g. rotation)
+            if (window.visualViewport.height > baseHeight) {
+                baseHeight = window.visualViewport.height;
+            }
+
+            // If the current physical viewport shrinks by more than 150px, keyboard is 100% physically up.
+            if (window.visualViewport.height < baseHeight - 150) {
+                setKeyboardVisible(true);
+            } else {
+                setKeyboardVisible(false);
+            }
+        };
+
+        window.visualViewport.addEventListener("resize", handleResize);
+        return () => window.visualViewport.removeEventListener("resize", handleResize);
+
+    }, []);
+
     const hideNavbar =
         pathname.startsWith("/d/") ||
-        pathname.startsWith("/p") ||   // ✅ covers /p?query and /p/anything
+        pathname.startsWith("/p") ||
         pathname.startsWith("/delivery") ||
         pathname.startsWith("/payment") ||
-        pathname.startsWith("/confirmation");
+        pathname.startsWith("/confirmation") ||
+        isKeyboardVisible;
 
     if (hideNavbar) return null;
-
 
     return (
         <Paper

@@ -484,7 +484,9 @@ const ManageAddress = () => {
             bgcolor: "background.paper",
             borderRadius: 2,
             boxShadow: 24,
-            p: 3
+            p: { xs: 2.5, sm: 3 },
+            maxHeight: '85vh',
+            overflowY: 'auto'
           }}
         >
           <Typography

@@ -5,9 +5,10 @@ import "react-toastify/dist/ReactToastify.css";
 import { getSession } from "../utils/FetchSessionData";
 import Cookies from "js-cookie";
 import { GetCountAPI } from "../utils/API/GetCount/GetCountAPI";
+import { LocalSetup } from "@/app/env";
 
 const StoreContext = createContext({
-  finalId: ""
+  finalId: "",
 });
 
 const toastStyle = {
@@ -38,7 +39,6 @@ export function StoreProvider({ children, storeInit }) {
     return loginUserDetail?.id || "0";
   }, [islogin, storeInit]);
 
-
   useEffect(() => {
     if (finalId) {
       GetCountAPI(finalId)
@@ -54,7 +54,7 @@ export function StoreProvider({ children, storeInit }) {
           }
         });
     }
-  }, [finalId])
+  }, [finalId]);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -81,12 +81,37 @@ export function StoreProvider({ children, storeInit }) {
     SoketData,
     setSoketData,
     finalId,
-    storeInit
+    storeInit,
   };
 
   return (
     <StoreContext.Provider value={value}>
-      <ToastContainer toastStyle={toastStyle} stacked={true} hideProgressBar={true} autoClose={1400} transition={Zoom} style={{ zIndex: "9999999999999999", fontFamily: "inherit" }} />
+      {LocalSetup !== "fgstore.mapp" && <ToastContainer toastStyle={toastStyle} stacked={true} hideProgressBar={true} autoClose={1400} transition={Zoom} style={{ zIndex: "9999999999999999", fontFamily: "inherit" }} />}
+      {LocalSetup === "fgstore.mapp" && (
+        <ToastContainer
+          className="mobile_fgs_store_mapp"
+          position="bottom-center"
+          autoClose={2400}
+          hideProgressBar
+          newestOnTop
+          closeOnClick
+          pauseOnHover={false}
+          limit={6}
+          stacked={true}
+          transition={Zoom}
+          toastStyle={{
+            minWidth: "0px",
+            width: "200px",
+            fontSize: "12px",
+            borderRadius: "20px",
+            color: "#333",
+            background: "#fff",
+            boxShadow: "0 4px 16px rgba(0,0,0,0.10), 0 1.5px 4px rgba(29,158,117,0.10)",
+            marginBottom: "6px",
+            padding: "6px 10px !important",
+          }}
+        />
+      )}
       {children}
     </StoreContext.Provider>
   );

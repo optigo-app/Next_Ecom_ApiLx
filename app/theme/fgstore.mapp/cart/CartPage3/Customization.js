@@ -60,7 +60,11 @@ const Customization = ({
     <>
       {(selectedItem?.StockId == 0 && selectedItem?.IsMrpBase == 0) ? (
         <div className="smr3_CartCusto_R-details">
-          <p className='smr3_cart-Titleline'>{selectedItem?.designno != "" && selectedItem?.designno}{formatTitleLine(selectedItem?.TitleLine) && " - " + selectedItem?.TitleLine}</p>
+          <p className='smr3_cart-Titleline'>
+            {selectedItem?.designno && selectedItem?.designno !== "" ? selectedItem?.designno : ""}
+            {selectedItem?.designno && selectedItem?.designno !== "" && formatTitleLine(selectedItem?.TitleLine) ? " - " : ""}
+            {formatTitleLine(selectedItem?.TitleLine) ? selectedItem?.TitleLine : ""}
+          </p>
           <Divider className='smr3_dividerline' />
           {storeInitData?.IsProductWebCustomization == 1 &&
             <div className="smr3_Cart-options">

@@ -69,11 +69,16 @@ const BreadCrumbs = ({
 
         const url = `/p/${BreadCumsObj()?.menuname}/${queryParameters1}/?M=${btoa(menuEncoded)}`;
 
-        navigate(url);
+        if (url) {
+            navigate(url);
+        }
     }
 
     const BreadCumsObj = () => {
         let BreadCum = menuDecode;
+        if (!BreadCum || !Array.isArray(BreadCum) || BreadCum.length < 2) {
+            return { menuname: decodeURI(location?.pathname)?.slice(3)?.split("/")[0] || "" };
+        }
 
         const values = BreadCum[0]?.split(',') || [];
         const labels = BreadCum[1]?.split(',') || [];
@@ -92,18 +97,19 @@ const BreadCrumbs = ({
         if (res) {
             res.menuname = decodeURI(location?.pathname)?.slice(3)?.split("/")[0]
         } else {
-            res = {}
+            res = { menuname: decodeURI(location?.pathname)?.slice(3)?.split("/")[0] || "" }
         }
 
         return res;
     }
 
+    const bObj = BreadCumsObj();
     const breadcrumbItems = [];
     const typeCondition = result?.[0]?.split("=")?.[0];
 
     breadcrumbItems.push({
         label: "Home",
-        onClick: () => navigate('/menu')
+        onClick: () => navigate('/')
     });
 
     if (typeCondition === "A") {
@@ -129,7 +135,7 @@ const BreadCrumbs = ({
     }
 
     if (IsBreadCumShow) {
-        const bObj = BreadCumsObj();
+        // const bObj = BreadCumsObj();
 
         // If condition "S", we don't show menuname (matching your old logic)
         if (bObj?.menuname) {
@@ -244,8 +250,8 @@ const BreadCrumbs = ({
                         <MenuItem
                             key={index}
                             onClick={() => {
-                                if (item.onClick) item.onClick();
                                 setAnchorEl(null);
+                                if (item.onClick) item.onClick();
                             }}
                             sx={{
                                 backgroundColor: isCurrent ? '#F0F7FF' : 'transparent',

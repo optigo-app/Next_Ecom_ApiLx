@@ -31,11 +31,9 @@ const InquiryModal = ({
   handleChange,
   handleFileChange,
   error,
-  loading
+  loading,
+  file
 }) => {
-
-
-
   return (
     <Drawer
       anchor="right"
@@ -44,7 +42,10 @@ const InquiryModal = ({
       sx={{
         "& .MuiDrawer-paper": {
           width: "100%",
-          // maxWidth: 480,
+          height: "100dvh",
+          display: "flex",
+          flexDirection: "column",
+          overflow: "hidden"
         },
       }}
     >
@@ -83,7 +84,9 @@ const InquiryModal = ({
       <Box
         sx={{
           p: 2.5,
-          pb: 4
+          pb: 4,
+          flex: 1,
+          overflowY: "auto"
         }}
       >
         <Box component="form" onSubmit={handleSubmit}>
@@ -95,6 +98,7 @@ const InquiryModal = ({
                 label="Full Name"
                 name="FullName"
                 value={formData?.FullName || ""}
+                inputProps={{ style: { fontSize: "16px" } }}
                 onChange={handleChange}
                 error={Boolean(error?.FullName)}
                 helperText={error?.FullName}
@@ -108,6 +112,7 @@ const InquiryModal = ({
                 name="EmailId"
                 type="email"
                 value={formData?.EmailId || ""}
+                inputProps={{ style: { fontSize: "16px" } }}
                 onChange={handleChange}
                 error={Boolean(error?.EmailId)}
                 helperText={error?.EmailId}
@@ -119,7 +124,11 @@ const InquiryModal = ({
                 fullWidth
                 label="Phone"
                 name="mobileno"
-                inputProps={{ maxLength: 10 }}
+                inputProps={{
+                  maxLength: 10,
+                  inputMode: "numeric",
+                  style: { fontSize: "16px" }
+                }}
                 value={formData?.mobileno || ""}
                 onChange={handleChange}
                 error={Boolean(error?.mobileno)}
@@ -133,6 +142,7 @@ const InquiryModal = ({
                 label="Website URL (Optional)"
                 name="WebSite"
                 placeholder={TheDifferenceData.omjiyansh.title}
+                inputProps={{ style: { fontSize: "16px" } }}
                 value={formData?.WebSite || ""}
                 onChange={handleChange}
               />
@@ -145,6 +155,7 @@ const InquiryModal = ({
                 rows={4}
                 label="Additional Information"
                 name="Be_In_Message"
+                inputProps={{ style: { fontSize: "16px" } }}
                 value={formData?.Be_In_Message || ""}
                 onChange={handleChange}
                 error={Boolean(error?.Be_In_Message)}
@@ -156,20 +167,21 @@ const InquiryModal = ({
             <Grid size={{ xs: 12 }}>
               <Button
                 fullWidth
-                variant="outlined"
+                variant={file ? "contained" : "outlined"}
                 component="label"
                 sx={getButtonStyle(true, {
                   py: 1.2,
-                  backgroundColor: 'transparent',
-                  color: 'black',
+                  backgroundColor: file ? COLORS.primary : 'transparent',
+                  color: file ? 'white' : 'black',
+                  borderColor: file ? COLORS.primary : '#ccc',
                   "&:hover": {
-                    backgroundColor: "#f5f5f5",
+                    backgroundColor: file ? COLORS.primary : "#f5f5f5",
                     boxShadow: 'none',
-                    color: 'black',
+                    color: file ? 'white' : 'black',
                   },
                 })}
               >
-                ATTACH FILE
+                {file ? `FILE SELECTED: ${file.name}` : "ATTACH FILE"}
                 <input
                   hidden
                   type="file"
@@ -177,6 +189,12 @@ const InquiryModal = ({
                   onChange={handleFileChange}
                 />
               </Button>
+
+              {error?.file && (
+                <Typography color="error" fontSize={11} mt={0.5}>
+                  {error.file}
+                </Typography>
+              )}
 
               <Typography
                 fontSize={11}

@@ -47,11 +47,6 @@ export default function usePerformanceTracker({ onComplete } = {}) {
 
         function logResults(pageLoadTime, imageLoadTime) {
             const totalTime = pageLoadTime + imageLoadTime;
-
-            console.log('📄 Page Load Time:', pageLoadTime.toFixed(2), 'ms');
-            console.log('🖼️ Image Load Time:', imageLoadTime.toFixed(2), 'ms');
-            console.log('⏱️ Total Load Time:', totalTime.toFixed(2), 'ms');
-
             if (onComplete && typeof onComplete === 'function') {
                 onComplete({
                     pageLoadTime,

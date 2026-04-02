@@ -11,7 +11,9 @@ const InfoDetail = ({
     Currency
 }) => {
     const [showMdesc, setShowMdesc] = useState(false);
-    console.log(singleProd, "singleProd", singleProd1)
+    
+    const prod = Object.keys(singleProd1).length > 0 ? singleProd1 : singleProd;
+    
     return (
         <Box sx={{ width: "100%", px: 2, mt: 4, textAlign: 'left' }}>
 
@@ -61,7 +63,7 @@ const InfoDetail = ({
                                 />
 
                                 <Typography sx={{ fontSize: "18px", fontWeight: 600 }}>
-                                    {(singleProd1?.UnitCostWithMarkUp ?? singleProd?.UnitCostWithMarkUp)?.toLocaleString("en-IN")}
+                                    {prod?.UnitCostWithMarkUp?.toLocaleString("en-IN")}
                                 </Typography>
                             </>
                         )}

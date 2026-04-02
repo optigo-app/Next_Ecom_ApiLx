@@ -20,6 +20,7 @@ import DeleteSweepRoundedIcon from '@mui/icons-material/DeleteSweepRounded';
  *
  * @param {ReusableConfirmModalProps} props
  */
+
 const ReusableConfirmModal = ({ open, onClose, onConfirm, type }) => {
   const modalConfigs = {
     suggest: {
@@ -35,6 +36,15 @@ const ReusableConfirmModal = ({ open, onClose, onConfirm, type }) => {
       title: "Confirm",
       icon: <DeleteSweepRoundedIcon color="error" />,
       message: "Are you sure you want to remove all Items ?",
+      confirmText: "Remove",
+      cancelText: "Cancel",
+      confirmColor: "error",
+      cancelColor: "inherit",
+    },
+    removeItem: {
+      title: "Confirm",
+      icon: <DeleteSweepRoundedIcon color="error" />,
+      message: "Are you sure you want to remove this item from the cart?",
       confirmText: "Remove",
       cancelText: "Cancel",
       confirmColor: "error",

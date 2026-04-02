@@ -351,6 +351,7 @@ $cartUpdateBtncolor: #b1b1b1;
           border-radius: 0px !important;
           border: 1px solid #ccc;
           color: $titleColor;
+          font-size: $fontSize3;
         }
       }
     }
@@ -470,6 +471,7 @@ $cartUpdateBtncolor: #b1b1b1;
         border-bottom: 1px solid #ccc;
         border-left: none;
         border-right: none;
+        font-size: $fontSize3;
       }
 
       a.bttn,
@@ -769,6 +771,7 @@ $cartUpdateBtncolor: #b1b1b1;
       border-radius: 4px;
       resize: none;
       color: $titleColor;
+      font-size: $fontSize3;
     }
   }
 
@@ -1033,7 +1036,7 @@ $cartUpdateBtncolor: #b1b1b1;
 
           .smr_RightCartList {
             width: 100%;
-            padding: 0px 12px 0px 10px;
+            padding: 2px;
 
             .smr_cartListCardGrid {
               padding-left: 10px !important;
@@ -1092,7 +1095,7 @@ $cartUpdateBtncolor: #b1b1b1;
 
           .smr_RightCartList {
             width: 100%;
-            padding: 0px 8px 0px 8px;
+            padding: 2px !important;
 
             .smr_cartListCardGrid {
               padding-left: 8px !important;

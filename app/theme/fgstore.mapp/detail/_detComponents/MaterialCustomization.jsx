@@ -1,4 +1,4 @@
-import { Box, Typography } from '@mui/material';
+import { Box, Skeleton } from '@mui/material';
 import Grid from '@mui/material/Grid'; // Standard MUI Grid
 import React from 'react';
 import CustomSelect from './Select';
@@ -21,6 +21,7 @@ const MaterialCustomization = ({
   handleCustomChange,
   handleMetalWiseColorImg,
   SizeSorting,
+  loadingdata,
 }) => {
 
 
@@ -67,6 +68,20 @@ const MaterialCustomization = ({
     padding: '0',
     fontFamily: 'inherit',
   };
+
+  if (loadingdata) {
+    return (
+      <Box sx={{ width:'100%',  mt: 4 }}>
+        <Grid container spacing={1}>
+          {[...Array(4)].map((_, index) => (
+            <Grid item size={{xs:6, sm:6}} key={index}>
+              <Skeleton variant="rounded" width="100%" height={56} sx={{ borderRadius: '4px' }} />
+            </Grid>
+          ))}
+        </Grid>
+      </Box>
+    );
+  }
 
   return (
     <>
