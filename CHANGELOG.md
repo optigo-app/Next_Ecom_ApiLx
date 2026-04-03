@@ -6,6 +6,11 @@
   - **New behavior**: Replaced with authentic Elior Jewel brand content across four sections: "Experience the brilliance with us" (brand intro), "Elior Advantage" (direct-to-consumer value proposition), "Brand Vision" (Mr. Hemal Dholakia's mission), and "Our Promise" (quality guarantees and policies).
   - **Reason for change**: EliorApp was displaying incorrect brand information belonging to Sonasons.
 
+- **Shree Diamond & Elior Static Pages (Dynamic Refactor via AppConfig)**:
+  - **Files modified**: `app/(static-routes)/account-delete/page.js`, `app/(static-routes)/support/page.js`, `app/(static-routes)/privacy-policy/page.js`, `app/(static-routes)/copyright/page.js`, `app/(core)/constants/AppConfig.js`
+  - **Old behavior**: These compliance pages had hardcoded "Shree Diamond" content.
+  - **New behavior**: Pages now dynamically pull content from `AppConfig[activeBrand].compliance_content`. Both `shreediamond` and `EliorApp` brands are now fully populated with their respective instructions, contact details, and legal text.
+  - **Reason for change**: Enable multi-brand support and centralized content management as requested by the user.
 
 - **New constants for Theme Assets**:
   - **Files created**: `app/(core)/constants/MobileAppConfig.js`.
