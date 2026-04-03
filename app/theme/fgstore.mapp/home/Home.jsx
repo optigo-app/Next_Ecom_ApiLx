@@ -33,7 +33,7 @@ export default function Home({ storeinit }) {
           <ShowCaseBlock />
           <Trendings storeinit={storeinit} />
           {/* storeinit?.IsHomeTrending === 0 && */}
-          <Collection storeinit={storeinit} />
+          {/* <Collection storeinit={storeinit} /> */}
           <NewArrival storeinit={storeinit} />
           {/* storeinit?.IsHomeNewArrival === 0 && */}
         </Box>

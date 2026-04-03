@@ -1,3 +1,17 @@
+## [2026-04-03]
+
+- **EliorApp About Us Content Update**:
+  - **Files modified**: `app/(core)/constants/AppConfig.js`
+  - **Old behavior**: The `EliorApp.about_us` section contained placeholder content copied from the Sonasons brand (Our Milieu, Brand Statement, Vision, Mission — all referencing Sonasons/Khodal Gems/Mr. Dhaval Kaladiya).
+  - **New behavior**: Replaced with authentic Elior Jewel brand content across four sections: "Experience the brilliance with us" (brand intro), "Elior Advantage" (direct-to-consumer value proposition), "Brand Vision" (Mr. Hemal Dholakia's mission), and "Our Promise" (quality guarantees and policies).
+  - **Reason for change**: EliorApp was displaying incorrect brand information belonging to Sonasons.
+
+
+- **New constants for Theme Assets**:
+  - **Files created**: `app/(core)/constants/MobileAppConfig.js`.
+  - **Changes made**: Centralized Favicon and Logo paths for `Sonasons`, `omjiyas`, and `hoq` themes.
+  - **Reason for change**: Consolidate hardcoded theme asset paths from `layout.js` and `ServerHelper.js` into a reusable constant.
+
 ## [2026-04-02]
 
 - **Mobile UI Stability & iOS Zoom Prevention**:

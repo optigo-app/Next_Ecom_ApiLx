@@ -3,15 +3,17 @@
 import { Drawer, Box, Typography, Button, IconButton } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import AppointmentInquiry from "./AppointmentInquiry";
-import { useState } from "react";
 import { getButtonStyle } from "@/app/(core)/constants/MobileAppTheme";
 
 export default function AppointmentTab({
   open,
   onClose,
   title = "Book an Appointment",
+  activeDrawer,
+  openDrawer
 }) {
-  const [inquiryModal, setInquiryModal] = useState(false);
+  // Check if the current drawer in URL is the inquiry one
+  const inquiryModalOpen = activeDrawer === "appointment-inquiry";
 
   return (
     <Drawer
@@ -108,12 +110,6 @@ export default function AppointmentTab({
           {/* Button */}
           <Button
             variant="contained"
-            // sx={{
-            // px: 3,
-            // py: 1.2,
-            // fontSize: 12.5,
-            // letterSpacing: 1,
-            // }}
             sx={getButtonStyle(true, {
               px: 3,
               py: 1.2,
@@ -122,15 +118,18 @@ export default function AppointmentTab({
               justifyContent: 'center',
               mx: 'auto'
             })}
-            onClick={() => setInquiryModal(true)}
+            // Navigate to the inquiry sub-drawer
+            onClick={() => openDrawer("appointment-inquiry")}
           >
             BOOK NOW
           </Button>
         </Box>
       </Box>
+
       <AppointmentInquiry
-        open={inquiryModal}
-        onClose={() => setInquiryModal(false)}
+        open={inquiryModalOpen}
+        // Triggers router.back() to pop "appointment-inquiry" and return to "appointment"
+        onClose={onClose}
       />
     </Drawer>
   );

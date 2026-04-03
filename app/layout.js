@@ -8,6 +8,8 @@ import { themeMap } from "./(core)/utils/ThemeMap";
 import { AuthProvider } from "./(core)/contexts/AuthProvider";
 import { EmotionRegistry } from "./(core)/contexts/EmotionRegistry";
 import { defaultFont } from "./(core)/assets/FontSetup";
+import { AppConfig } from "./(core)/constants/AppConfig";
+import { activeBrand } from "./env";
 
 
 const DEFAULT_JEWELRY_DESCRIPTION = "Discover timeless jewelry crafted with precision and elegance. Explore gold, diamond, and silver collections designed for everyday wear and special occasions, with trusted quality and exceptional craftsmanship.";
@@ -20,18 +22,8 @@ export const viewport = {
   userScalable: false,
 };
 
-const Favicon = {
-  Sonasons: {
-    ico: '/optigo_favicon.ico',
-  },
-  omjiyas: {
-    ico: '/WebSiteStaticImage/logoIcon/om/new/favicon.ico',
-  }
-}
 
-const activeBrand = 'Sonasons';
-
-const ActiveFavicon = Favicon[activeBrand].ico;
+const ActiveFavicon = AppConfig[activeBrand].ico;
 
 const isOmJiyansh = activeBrand === 'omjiyas';
 

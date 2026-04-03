@@ -37,6 +37,10 @@ const DRAWER = {
   PRIVACY: "Privacy Policy",
   COPYRIGHT: "Copyright",
   SUPPORT: "Support",
+  TERMS: "Terms & Conditions",
+  // Sub-drawers
+  BESPOKE_INQUIRY: "bespoke-inquiry",
+  APPOINTMENT_INQUIRY: "appointment-inquiry",
 };
 
 const ProfilePage = () => {
@@ -80,8 +84,7 @@ const ProfilePage = () => {
     ? `${loginUserDetail.firstname} ${loginUserDetail.lastname}`
     : null;
 
-  // Static-page drawers (Feedback, Privacy Policy, Copyright, Support)
-  const staticPageDrawers = [DRAWER.FEEDBACK, DRAWER.PRIVACY, DRAWER.COPYRIGHT, DRAWER.SUPPORT];
+  const staticPageDrawers = [DRAWER.FEEDBACK, DRAWER.PRIVACY, DRAWER.COPYRIGHT, DRAWER.SUPPORT, DRAWER.TERMS];
   const isStaticOpen = staticPageDrawers.includes(activeDrawer) ? activeDrawer : null;
 
   return (
@@ -100,13 +103,17 @@ const ProfilePage = () => {
       />
 
       <BespokeTabScreen
-        open={activeDrawer === DRAWER.BESPOKE}
+        open={activeDrawer === DRAWER.BESPOKE || activeDrawer === DRAWER.BESPOKE_INQUIRY}
         onClose={closeDrawer}
+        activeDrawer={activeDrawer}
+        openDrawer={openDrawer}
       />
 
       <AppointmentTabScreen
-        open={activeDrawer === DRAWER.APPOINTMENT}
+        open={activeDrawer === DRAWER.APPOINTMENT || activeDrawer === DRAWER.APPOINTMENT_INQUIRY}
         onClose={closeDrawer}
+        activeDrawer={activeDrawer}
+        openDrawer={openDrawer}
       />
 
       <Newsletter
@@ -279,6 +286,14 @@ const ProfilePage = () => {
             <ListItem disablePadding onClick={() => openDrawer(DRAWER.COPYRIGHT)}>
               <ListItemButton sx={{ py: 1.5 }}>
                 <ListItemText primary="Copyright" />
+                <ChevronRightIcon color="action" />
+              </ListItemButton>
+            </ListItem>
+            <Divider />
+
+            <ListItem disablePadding onClick={() => openDrawer(DRAWER.TERMS)}>
+              <ListItemButton sx={{ py: 1.5 }}>
+                <ListItemText primary="Terms & Conditions" />
                 <ChevronRightIcon color="action" />
               </ListItemButton>
             </ListItem>

@@ -25,5 +25,8 @@ export const themeMap = {
   },
   "omjiyanshjewels.com": {
     page: "fgstore.web",
+  },
+  'shreediamond.optigoapps.com': {
+    page: "fgstore.mapp",
   }
 };

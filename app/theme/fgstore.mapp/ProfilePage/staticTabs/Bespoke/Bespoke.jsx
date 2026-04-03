@@ -1,17 +1,19 @@
 "use client";
 
-import { Drawer, Box, Typography, Button ,IconButton } from "@mui/material";
+import { Drawer, Box, Typography, Button, IconButton } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import BespokeInquiry from "./BespokeInquiry";
-import { useState } from "react";
-
 
 export default function BespokeTab({
   open,
   onClose,
   title = "Bespoke Jewellery",
+  activeDrawer,
+  openDrawer
 }) {
-    const [InquiryModal, setInquiryModal] = useState(false);
+  // Check if the current drawer in URL is the inquiry one
+  const inquiryModalOpen = activeDrawer === "bespoke-inquiry";
+
   return (
     <Drawer
       anchor="right"
@@ -23,30 +25,30 @@ export default function BespokeTab({
         },
       }}
     >
-        <Box
+      <Box
         sx={{
-              minHeight: 56,
+          minHeight: 56,
           px: 1,
           display: "flex",
           justifyContent: "space-between",
-          position:'absolute' ,
-          color:'#fff',
-          zIndex:9,
-          alignItems:'center'
+          position: 'absolute',
+          color: '#fff',
+          zIndex: 9,
+          alignItems: 'center'
         }}
-        >
-  <IconButton edge="start" size="small"
+      >
+        <IconButton edge="start" size="small"
           onClick={onClose}
           sx={{
-            background:'#fff',
-            ':hover':{
-            background:'#fff',
+            background: '#fff',
+            ':hover': {
+              background: '#fff',
             }
           }}
         >
           <ArrowBackIcon />
         </IconButton>
-        </Box>
+      </Box>
       <Box
         sx={{
           background: "#000",
@@ -119,15 +121,18 @@ export default function BespokeTab({
                 background: "rgba(255,255,255,0.08)",
               },
             }}
-            onClick={() => setInquiryModal(true)}
+            // Navigate to the inquiry sub-drawer
+            onClick={() => openDrawer("bespoke-inquiry")}
           >
             CREATE YOUR BESPOKE PIECE
           </Button>
         </Box>
       </Box>
+      
       <BespokeInquiry
-      open={InquiryModal}
-      onClose={() => setInquiryModal(false)}
+        open={inquiryModalOpen}
+        // Triggers router.back() to pop "bespoke-inquiry" and return to "bespoke"
+        onClose={onClose} 
       />
     </Drawer>
   );
