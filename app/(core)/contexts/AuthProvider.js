@@ -27,7 +27,7 @@ export function AuthProvider({ children, storeInit, theme }) {
   const [localData, setLocalData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  const isMobileApp = storeInit?.domain === "nxt14.optigoapps.com" || storeInit?.domain === "nxtmobileapp.web" || storeInit?.domain === "fgstore.mapp";
+  const isMobileApp = storeInit?.domain === 'elior.optigoapps.com' || storeInit?.domain === "shreediamond.optigoapps.com" || storeInit?.domain === "nxt14.optigoapps.com" || storeInit?.domain === "nxtmobileapp.web" || storeInit?.domain === "fgstore.mapp";
 
   const hasInitializedAuth = useRef(false);
   const prevTokenRef = useRef(token);

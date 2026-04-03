@@ -22,6 +22,8 @@ import { toast } from "react-toastify";
 import { wesbiteDomainName } from "@/app/(core)/utils/Glob_Functions/GlobalFunction";
 import { ContactUsAPI } from "@/app/(core)/utils/API/ContactUs/ContactUsAPI";
 import { COLORS, getButtonStyle } from "@/app/(core)/constants/MobileAppTheme";
+import { AppConfig } from "@/app/(core)/constants/AppConfig";
+import { activeBrand } from "@/app/env";
 
 const ContactUs = ({ open, onClose }) => {
   const [formData, setFormData] = useState({
@@ -36,6 +38,10 @@ const ContactUs = ({ open, onClose }) => {
   });
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
+
+  const ActiveMap = AppConfig[activeBrand].address.map;
+  const ActiveAddress = AppConfig[activeBrand].address;
+
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -136,7 +142,7 @@ const ContactUs = ({ open, onClose }) => {
           {/* Filled Map Section */}
           <Box sx={{ width: "100%", height: 300, overflow: "hidden" }}>
             <iframe
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3720.2828242419437!2d72.8191344!3d21.1809209!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3be04e438cc948fb%3A0x5712a989b70ef3a2!2sOrail%20Services%20-%20OptigoApps!5e0!3m2!1sen!2sin!4v1734596370112!5m2!1sen!2sin"
+              src={ActiveMap}
               width="100%"
               height="100%"
               style={{ border: 0 }}
@@ -159,7 +165,7 @@ const ContactUs = ({ open, onClose }) => {
                   }} />
                 </Box>
                 <Typography variant="body2" color="text.secondary">
-                  D-Block G20, ITC( International Trade Centre), Majura Gate, Ring Road
+                  {ActiveAddress.address}
                 </Typography>
               </Grid>
               <Grid item size={{ xs: 12 }} sx={{ display: "flex", alignItems: "center", gap: 2 }}>
@@ -169,7 +175,7 @@ const ContactUs = ({ open, onClose }) => {
                   }} />
                 </Box>
                 <Typography variant="body2" color="text.secondary">
-                  +919099887762
+                  {ActiveAddress.phone}
                 </Typography>
               </Grid>
               <Grid item size={{ xs: 12 }} sx={{ display: "flex", alignItems: "center", gap: 2 }}>
@@ -179,7 +185,7 @@ const ContactUs = ({ open, onClose }) => {
                   }} />
                 </Box>
                 <Typography variant="body2" color="text.secondary">
-                  hello@optigoapps.com
+                  {ActiveAddress.email}
                 </Typography>
               </Grid>
             </Grid>
@@ -241,7 +247,7 @@ const ContactUs = ({ open, onClose }) => {
                   onChange={handleChange}
                   error={!!errors.mobileno}
                   helperText={errors.mobileno}
-                  inputProps={{ 
+                  inputProps={{
                     maxLength: 10,
                     inputMode: "numeric",
                     style: { fontSize: "16px" }
