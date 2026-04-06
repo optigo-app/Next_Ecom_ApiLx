@@ -76,11 +76,12 @@ export const AppConfig = {
                     subtext: "When you register or log in, we collect:",
                     steps: [
                         "Log in to your Shree Diamond App account",
-                        "Go To 'Menu' on Top Left Corner",
+                        "Tap on 'Profile' from the bottom navigation bar",
                         "Select 'Delete My Account'",
-                        "Click on 'Yes to Delete Account'",
-                        "Your account deletion will be completed in a maximum of 30 days"
+                        "Confirm by clicking 'Yes to Delete Account'",
+                        "Your account deletion will be completed within a maximum of 30 days"
                     ]
+
                 },
                 web: {
                     title: "Website:",
@@ -118,14 +119,137 @@ export const AppConfig = {
             },
             privacy_policy: {
                 title: "Privacy Policy",
+                effective_date: "10 Feb 2025",
+                intro: "Welcome to Shree Diamond (\"we,\" \"our,\" or \"us\"). We respect your privacy and are committed to protecting your personal information. This Privacy Policy explains what data we collect, why we collect it, how we use it, how we protect it, and your rights regarding your data. By using our App, you agree to the collection and use of your data as described in this Privacy Policy.",
                 sections: [
-                    { title: "Collection of Information", content: "Shree Diamond, operating in the diamond jewellery vertical, respects your privacy and is committed to protecting your personal information. We collect information you provide to us, such as your name, contact details, and payment information, when you interact with our website, make a purchase, or subscribe to our newsletter." },
-                    { title: "Use of Information", content: "The information we collect is used to process your orders, provide customer support, personalize your shopping experience, send promotional materials, and improve our services. We may also use the information to analyze trends, track user activity, and gather demographic information for internal purposes." },
-                    { title: "Sharing of Information", content: "We may share your personal information with trusted third parties who assist us in operating our website, conducting business, or providing services to you. These parties include payment processors, shipping companies, marketing agencies, and IT service providers. However, we do not sell or rent your personal information to third parties for their marketing purposes without your explicit consent." },
-                    { title: "Protection of Information", content: "Shree Diamond employs industry-standard security measures to protect the personal information you provide to us. We use secure socket layer (SSL) encryption technology to ensure the confidentiality of your information during transmission. Additionally, we implement physical, technical, and administrative safeguards to prevent unauthorized access, disclosure, alteration, or destruction of your information." },
-                    { title: "Children's Privacy", content: "Our services are not directed to individuals under the age of 18. We do not knowingly collect personal information from children. If you believe that we have inadvertently collected information from a child, please contact us and we will promptly delete the information." }
+                    {
+                        title: "Information We Collect",
+                        subsections: [
+                            {
+                                subtitle: "A. Personal Information (Provided by Users)",
+                                intro: "When you register or log in, we collect:",
+                                items: [
+                                    "First Name",
+                                    "Last Name",
+                                    "Email Address",
+                                    "Mobile Number",
+                                    "Password (encrypted and stored securely)",
+                                    "Address",
+                                    "Country",
+                                    "State",
+                                    "City",
+                                    "Zip Code"
+                                ]
+                            },
+                            {
+                                subtitle: "B. Device Information (Collected Automatically)",
+                                intro: "To ensure app compatibility and security, we collect:",
+                                items: [
+                                    "Brand (e.g., Samsung, Apple)",
+                                    "Model (e.g., Galaxy S23, iPhone 14)",
+                                    "Manufacturer (e.g., Samsung Electronics, Apple Inc.)",
+                                    "OS Version (e.g., Android 13, iOS 17)",
+                                    "OS Version Code (e.g., SDK 34 for Android)",
+                                    "Device Type (e.g., \"android\" or \"iOS\")"
+                                ]
+                            },
+                            {
+                                subtitle: "C. User Identifiers",
+                                intro: "To provide a personalized experience, we collect:",
+                                items: [
+                                    "OneSignal UID: A unique identifier for push notifications.",
+                                    "Device ID: A unique identifier for managing user sessions."
+                                ]
+                            },
+                            {
+                                subtitle: "D. Usage Data & Crash Reports",
+                                intro: "We use Firebase for performance monitoring and error tracking. This may include:",
+                                items: [
+                                    "Error logs",
+                                    "Crash reports",
+                                    "App performance data"
+                                ],
+                                note: "Even if Firebase Crashlytics is not explicitly configured, Firebase may still collect diagnostic information for troubleshooting purposes. This data is only used for app improvements and is not shared for advertising purposes."
+                            }
+                        ]
+                    },
+                    {
+                        title: "How We Use Your Information",
+                        intro: "We use collected data for:",
+                        items: [
+                            "Authentication & Security: Verify accounts and prevent fraud.",
+                            "App Performance: Improve user experience based on device compatibility.",
+                            "Push Notifications: Send updates and promotional alerts via OneSignal.",
+                            "Bug Fixing & Crash Reports: Identify and resolve technical issues.",
+                            "Order Management: Process orders and transactions.",
+                            "Compliance: Ensure legal and regulatory compliance."
+                        ],
+                        note: "We do not sell or share your personal data with advertisers."
+                    },
+                    {
+                        title: "How We Share Your Information",
+                        intro: "We do not sell your personal data. However, we may share data in the following cases:",
+                        items: [
+                            "With Service Providers: We use third-party services (e.g., Firebase, OneSignal) to improve our App.",
+                            "With Legal Authorities: If required by law, we may disclose your information."
+                        ]
+                    },
+                    {
+                        title: "Data Security",
+                        intro: "We implement security measures to protect your data:",
+                        items: [
+                            "Encryption: Passwords are encrypted before storage.",
+                            "Secure Storage: Sensitive data is stored securely.",
+                            "Restricted Access: Only authorized personnel can access user data."
+                        ],
+                        note: "We take appropriate security measures to protect your data. However, no method of transmission over the internet or electronic storage is 100% secure. We encourage you to keep your login credentials confidential and take steps to protect your account from unauthorized access."
+                    },
+                    {
+                        title: "Your Rights & Choices",
+                        intro: "You have the following rights:",
+                        items: [
+                            "Correction: Request corrections to inaccurate data.",
+                            "Deletion: Request data deletion (subject to legal obligations).",
+                            "Notification Preferences: You can manage notification preferences through your device settings."
+                        ],
+                        note: "To exercise these rights, contact us at shreediamondandjewels@gmail.com."
+                    },
+                    {
+                        title: "Data Retention Policy",
+                        intro: "We retain all collected data until the user deletes their account. This includes, but is not limited to:",
+                        items: [
+                            "Personal Information: First name, last name, email, address, city, country, state, zip code, mobile number, encrypted password.",
+                            "Device Information: Brand, model, manufacturer, OS version, OS version code, device type.",
+                            "User Identifiers: OneSignal UID (for push notifications), Device ID.",
+                            "Usage Data: App activity logs, error logs, and crash reports (collected via Firebase).",
+                            "Order & Transaction Data: Any order history or transaction details linked to the user."
+                        ],
+                        note: "Once a user requests account deletion, all associated data is permanently erased, except where retention is required by law or for fraud prevention. Users can request account and data deletion by contacting shreediamondandjewels@gmail.com."
+                    },
+                    {
+                        title: "Third-Party Services",
+                        intro: "Our App uses third-party services to improve functionality, performance, and user experience. These services may collect and process data per their own privacy policies:",
+                        items: [
+                            "OneSignal (for push notifications)",
+                            "Firebase (for analytics and crash reporting)"
+                        ],
+                        note: "These services may collect device and usage data to enhance performance and stability. We do not share personal information with these services for advertising purposes."
+                    },
+                    {
+                        title: "Changes to This Privacy Policy",
+                        intro: "We may update this Privacy Policy. Users will be notified of changes via:",
+                        items: [
+                            "In-app notifications",
+                            "Emails (if applicable)"
+                        ],
+                        note: "We encourage users to review the Privacy Policy regularly."
+                    },
+                    {
+                        title: "Contact Us",
+                        content: "Shree Diamond\nAddress: 30, Dhamawala Bazaar Rd, opp. Bata store, Ajit Prasad Nagar, Paltan Bazaar, Dehradun, Uttarakhand, India - 248001\nEmail: shreediamondandjewels@gmail.com"
+                    }
                 ],
-                closing_text: "If you have any questions or concerns about our Privacy Policy, please contact us using the details provided on our website. We value your privacy and will make reasonable efforts to address any inquiries or issues you may have."
+                closing_text: "If you have any questions or concerns about our Privacy Policy, please contact us at shreediamondandjewels@gmail.com. We value your privacy and will make every effort to address your inquiries."
             },
             copyright: {
                 title: "Copyright",
@@ -244,10 +368,11 @@ export const AppConfig = {
                     subtext: "When you register or log in, we collect:",
                     steps: [
                         "Log in to your Elior jewels App account",
-                        "Go To 'Menu' on Top Left Corner",
+                        "Go to 'Profile' from the bottom navigation bar",
                         "Select 'Delete My Account'",
                         "Click on 'Yes to Delete Account'",
                         "Your account deletion will be completed in a maximum of 30 days"
+
                     ]
                 },
                 web: {
@@ -286,14 +411,137 @@ export const AppConfig = {
             },
             privacy_policy: {
                 title: "Privacy Policy",
+                effective_date: "10 Feb 2025",
+                intro: "Welcome to Elior jewels (\"we,\" \"our,\" or \"us\"). We respect your privacy and are committed to protecting your personal information. This Privacy Policy explains what data we collect, why we collect it, how we use it, how we protect it, and your rights regarding your data. By using our App, you agree to the collection and use of your data as described in this Privacy Policy.",
                 sections: [
-                    { title: "Collection of Information", content: "Elior jewels, operating in the diamond jewellery vertical, respects your privacy and is committed to protecting your personal information. We collect information you provide to us, such as your name, contact details, and payment information, when you interact with our website, make a purchase, or subscribe to our newsletter." },
-                    { title: "Use of Information", content: "The information we collect is used to process your orders, provide customer support, personalize your shopping experience, send promotional materials, and improve our services. We may also use the information to analyze trends, track user activity, and gather demographic information for internal purposes." },
-                    { title: "Sharing of Information", content: "We may share your personal information with trusted third parties who assist us in operating our website, conducting business, or providing services to you. These parties include payment processors, shipping companies, marketing agencies, and IT service providers. However, we do not sell or rent your personal information to third parties for their marketing purposes without your explicit consent." },
-                    { title: "Protection of Information", content: "Elior jewels employs industry-standard security measures to protect the personal information you provide to us. We use secure socket layer (SSL) encryption technology to ensure the confidentiality of your information during transmission. Additionally, we implement physical, technical, and administrative safeguards to prevent unauthorized access, disclosure, alteration, or destruction of your information." },
-                    { title: "Children's Privacy", content: "Our services are not directed to individuals under the age of 18. We do not knowingly collect personal information from children. If you believe that we have inadvertently collected information from a child, please contact us and we will promptly delete the information." }
+                    {
+                        title: "Information We Collect",
+                        subsections: [
+                            {
+                                subtitle: "A. Personal Information (Provided by Users)",
+                                intro: "When you register or log in, we collect:",
+                                items: [
+                                    "First Name",
+                                    "Last Name",
+                                    "Email Address",
+                                    "Mobile Number",
+                                    "Password (encrypted and stored securely)",
+                                    "Address",
+                                    "Country",
+                                    "State",
+                                    "City",
+                                    "Zip Code"
+                                ]
+                            },
+                            {
+                                subtitle: "B. Device Information (Collected Automatically)",
+                                intro: "To ensure app compatibility and security, we collect:",
+                                items: [
+                                    "Brand (e.g., Samsung, Apple)",
+                                    "Model (e.g., Galaxy S23, iPhone 14)",
+                                    "Manufacturer (e.g., Samsung Electronics, Apple Inc.)",
+                                    "OS Version (e.g., Android 13, iOS 17)",
+                                    "OS Version Code (e.g., SDK 34 for Android)",
+                                    "Device Type (e.g., \"android\" or \"iOS\")"
+                                ]
+                            },
+                            {
+                                subtitle: "C. User Identifiers",
+                                intro: "To provide a personalized experience, we collect:",
+                                items: [
+                                    "OneSignal UID: A unique identifier for push notifications.",
+                                    "Device ID: A unique identifier for managing user sessions."
+                                ]
+                            },
+                            {
+                                subtitle: "D. Usage Data & Crash Reports",
+                                intro: "We use Firebase for performance monitoring and error tracking. This may include:",
+                                items: [
+                                    "Error logs",
+                                    "Crash reports",
+                                    "App performance data"
+                                ],
+                                note: "Even if Firebase Crashlytics is not explicitly configured, Firebase may still collect diagnostic information for troubleshooting purposes. This data is only used for app improvements and is not shared for advertising purposes."
+                            }
+                        ]
+                    },
+                    {
+                        title: "How We Use Your Information",
+                        intro: "We use collected data for:",
+                        items: [
+                            "Authentication & Security: Verify accounts and prevent fraud.",
+                            "App Performance: Improve user experience based on device compatibility.",
+                            "Push Notifications: Send updates and promotional alerts via OneSignal.",
+                            "Bug Fixing & Crash Reports: Identify and resolve technical issues.",
+                            "Order Management: Process orders and transactions.",
+                            "Compliance: Ensure legal and regulatory compliance."
+                        ],
+                        note: "We do not sell or share your personal data with advertisers."
+                    },
+                    {
+                        title: "How We Share Your Information",
+                        intro: "We do not sell your personal data. However, we may share data in the following cases:",
+                        items: [
+                            "With Service Providers: We use third-party services (e.g., Firebase, OneSignal) to improve our App.",
+                            "With Legal Authorities: If required by law, we may disclose your information."
+                        ]
+                    },
+                    {
+                        title: "Data Security",
+                        intro: "We implement security measures to protect your data:",
+                        items: [
+                            "Encryption: Passwords are encrypted before storage.",
+                            "Secure Storage: Sensitive data is stored securely.",
+                            "Restricted Access: Only authorized personnel can access user data."
+                        ],
+                        note: "We take appropriate security measures to protect your data. However, no method of transmission over the internet or electronic storage is 100% secure. We encourage you to keep your login credentials confidential and take steps to protect your account from unauthorized access."
+                    },
+                    {
+                        title: "Your Rights & Choices",
+                        intro: "You have the following rights:",
+                        items: [
+                            "Correction: Request corrections to inaccurate data.",
+                            "Deletion: Request data deletion (subject to legal obligations).",
+                            "Notification Preferences: You can manage notification preferences through your device settings."
+                        ],
+                        note: "To exercise these rights, contact us at eliorjewel@gmail.com."
+                    },
+                    {
+                        title: "Data Retention Policy",
+                        intro: "We retain all collected data until the user deletes their account. This includes, but is not limited to:",
+                        items: [
+                            "Personal Information: First name, last name, email, address, city, country, state, zip code, mobile number, encrypted password.",
+                            "Device Information: Brand, model, manufacturer, OS version, OS version code, device type.",
+                            "User Identifiers: OneSignal UID (for push notifications), Device ID.",
+                            "Usage Data: App activity logs, error logs, and crash reports (collected via Firebase).",
+                            "Order & Transaction Data: Any order history or transaction details linked to the user."
+                        ],
+                        note: "Once a user requests account deletion, all associated data is permanently erased, except where retention is required by law or for fraud prevention. Users can request account and data deletion by contacting eliorjewel@gmail.com."
+                    },
+                    {
+                        title: "Third-Party Services",
+                        intro: "Our App uses third-party services to improve functionality, performance, and user experience. These services may collect and process data per their own privacy policies:",
+                        items: [
+                            "OneSignal (for push notifications)",
+                            "Firebase (for analytics and crash reporting)"
+                        ],
+                        note: "These services may collect device and usage data to enhance performance and stability. We do not share personal information with these services for advertising purposes."
+                    },
+                    {
+                        title: "Changes to This Privacy Policy",
+                        intro: "We may update this Privacy Policy. Users will be notified of changes via:",
+                        items: [
+                            "In-app notifications",
+                            "Emails (if applicable)"
+                        ],
+                        note: "We encourage users to review the Privacy Policy regularly."
+                    },
+                    {
+                        title: "Contact Us",
+                        content: "Elior jewels\nAddress: 1st Floor, Patwa Building, Varachha Main Rd, opp. Tapi Baug Soc, Bhatni Wadi, Mira Nagar Society, Varachha, Surat, Gujarat 395006\nEmail: eliorjewel@gmail.com"
+                    }
                 ],
-                closing_text: "If you have any questions or concerns about our Privacy Policy, please contact us using the details provided on our website. We value your privacy and will make reasonable efforts to address any inquiries or issues you may have."
+                closing_text: "If you have any questions or concerns about our Privacy Policy, please contact us at eliorjewel@gmail.com. We value your privacy and will make every effort to address your inquiries."
             },
             copyright: {
                 title: "Copyright",

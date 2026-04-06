@@ -1,4 +1,34 @@
-## [2026-04-03]
+## [2026-04-06]
+
+- **Shree Diamond & EliorApp Privacy Policy — Full Content Upgrade**:
+  - **Files modified**: `app/(core)/constants/AppConfig.js`
+  - **Old behavior**: The `compliance_content.privacy_policy` objects for both `shreediamond` and `EliorApp` contained a generic 5-section boilerplate block (Collection, Use, Sharing, Protection, Children's Privacy). They did not reflect actual data processing practices securely taking place in the apps.
+  - **New behavior**: Replaced both instances with a comprehensive, accurate 10-section privacy policy (Effective Date: 10 Feb 2025). The updated structures now include: Introduction (`intro`), Information We Collect (Personal, Device, Identifiers, Usage Data/Crash Reports), How We Use Your Information, How We Share Your Information, Data Security, Your Rights & Choices, Data Retention Policy, Third-Party Services (OneSignal, Firebase), Changes to This Privacy Policy, and Contact Us. The content was strictly branded for each respectively ("Shree Diamond" and "Elior jewels") along with their specific contact details.
+  - **Reason for change**: User requested both brand configurations accurately reflect the detailed privacy terms and data tracking implementations outlined in the provided source document.
+
+- **Privacy Policy UI Rendering Fix**:
+  - **Files modified**: `app/(static-routes)/privacy-policy/page.js`
+  - **Old behavior**: The `PrivacyPolicyPage` component only mapped over `sections` and rendered `section.title` and `section.content`. It ignored nested structures like `items`, `subsections`, `intro`, `note`, and `effective_date`.
+  - **New behavior**: Completely rewrote the component to support the new deeply-nested structured JSON format. It now perfectly renders ordered lists for items, subgroups for subsections, distinct styling for `note` blocks (alerts), and preserves `\n` linebreaks via `pre-wrap` for plain-text content blocks.
+  - **Reason for change**: Fix the issue where only the titles were visible after upgrading the configuration object.
+
+
+
+- **Delete Account Flow**:
+  - **Files modified**: `app/theme/fgstore.mapp/ProfilePage/page.js`, `app/theme/fgstore.mapp/ProfilePage/staticTabs/DeleteAccount/DeleteAccount.jsx` (New)
+  - **Old behavior**: The user had no visible way to request account deletion directly within the Profile page settings.
+  - **New behavior**: Added a "Delete Account" tab in the "More options" section of the Profile page. When clicked, it opens a drawer rendering the dynamic account deletion instructions based on the active brand config. Clicking the red "Delete My Account" button presents a confirmation modal before logging the user out.
+  - **Reason for change**: User requested an accessible account deletion step containing branded instructions with a confirmation dialog.
+
+## [2026-04-04]
+
+- **Menu Page API Not Calling on Client-Side Navigation**:
+  - **Files modified**: `app/theme/fgstore.mapp/Menu/page.js`
+  - **Old behavior**: The Menu API (`GetMenuAPI`) was not called when navigating to the Menu page via the bottom navigation (client-side navigation). It only worked on hard refresh. The root cause was a race condition: `fetchMenu` was wrapped in `useCallback` with `cacheList` as a dependency, and `isFetchingRef` blocked subsequent calls. When `loginUserDetail` updated (causing `pricingContext` to change and `fetchMenu` to be recreated), the `useEffect` re-triggered — but the previous call still had `isFetchingRef.current = true`, blocking the new call. Since `cacheList` was already populated from MasterProvider (persistent across navigations), no further dependency changes occurred to re-trigger the effect.
+  - **New behavior**: Moved `fetchMenu` inside the `useEffect` (matching the pattern used by `Categories.jsx`). Added `lastRequestKeyRef` to prevent duplicate calls based on cache key identity rather than relying solely on `isFetchingRef`. Guards are now checked outside the async function, and the fetch function is defined and called within the effect body. This ensures the API is called reliably on both hard refresh and client-side navigation.
+  - **Reason for change**: User reported Menu page showing infinite loading spinner on client-side navigation but working correctly on hard refresh.
+
+
 
 - **EliorApp About Us Content Update**:
   - **Files modified**: `app/(core)/constants/AppConfig.js`

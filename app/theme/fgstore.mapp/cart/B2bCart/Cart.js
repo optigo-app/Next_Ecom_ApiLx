@@ -69,6 +69,7 @@ const CartPage = ({ storeinit, visiterId, islogin, setCartCountNum }) => {
   const location = useNextRouterLikeRR();
   const navigate = location.push;
 
+
   const storeInit = storeinit;
   const [dialogOpen, setDialogOpen] = useState(false);
   const setCartCountVal = setCartCountNum;

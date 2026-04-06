@@ -28,5 +28,8 @@ export const themeMap = {
   },
   'shreediamond.optigoapps.com': {
     page: "fgstore.mapp",
+  },
+  'elior.optigoapps.com': {
+    page: "fgstore.mapp",
   }
 };

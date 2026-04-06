@@ -56,6 +56,7 @@ const CartPage = ({ storeinit, visiterId }) => {
     handleMoveToDetail,
     handelMenu
   } = useCart();
+  console.log("finalCartData", finalCartData)
 
   const location = useNextRouterLikeRR();
   const navigate = location?.push;
