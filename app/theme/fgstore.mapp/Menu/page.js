@@ -1,5 +1,5 @@
 'use client';
-import React, { useEffect, useMemo, useState, useCallback, useRef } from 'react';
+import React, { useEffect, useMemo, useState, useRef } from 'react';
 import { Box, ButtonBase, Typography, CircularProgress } from '@mui/material';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronRight, LogIn } from 'lucide-react';
@@ -25,127 +25,134 @@ const Menu = ({ storeInit }) => {
 
     const pricingContext = useMemo(() => getPricingContext(loginUserDetail, storeInit, islogin), [loginUserDetail, storeInit, islogin]);
     const isFetchingRef = useRef(false);
-
-    const fetchMenu = useCallback(async () => {
-        const isB2B = storeInit?.IsB2BWebsite === 1;
-        const isUserLoggedIn = getSession("LoginUser") === true;
-
-        // B2B Guard Condition
-        if (isB2B && !isUserLoggedIn) {
-            setLoading(false);
-            return;
-        }
-
-        // Wait for global cacheList to be initialized
-        if (!pricingContext || cacheList === null || isFetchingRef.current) return;
-
-        isFetchingRef.current = true;
-        setLoading(true);
-
-        try {
-            const visitorID = Cookies.get('visiterId');
-            let finalID;
-
-            if (storeInit?.IsB2BWebsite === 0) {
-                finalID = islogin === false ? visitorID : (loginUserDetail?.id || '0');
-            } else {
-                finalID = loginUserDetail?.id || '0';
-            }
-
-            const eventName = "home_menu";
-            // PackageId only for menu cache as requested
-            const menuPricing = { PackageId: pricingContext.PackageId };
-            const { key, meta } = buildMenuCacheKey(eventName, storeInit, menuPricing, finalID);
-
-            // Step 1: Check server cache list + local cache metadata
-            const localCacheRes = await fetch(`/api/v1/cache?mode=meta&key=${key}`)
-                .then(res => res.json())
-                .catch(() => ({ cached: false }));
-
-            const serverCacheEntries = cacheList?.Data?.rd ?? [];
-            const matchingServerEntry = findMatchingMenuCacheEntry(serverCacheEntries, menuPricing, eventName);
-            const serverCacheRebuildDate = matchingServerEntry?.CacheRebuildDate ?? null;
-
-            const localCacheMeta = localCacheRes;
-            const localCacheRebuildDate = localCacheMeta?.CacheRebuildDate ?? null;
-
-            console.log("[Menu] Cache check:", { key, localCached: localCacheMeta?.cached, serverRebuild: serverCacheRebuildDate, localRebuild: localCacheRebuildDate });
-
-            // Step 2: Use cache if valid
-            if (localCacheMeta?.cached) {
-                const canValidate = Boolean(matchingServerEntry && serverCacheRebuildDate);
-                const datesMatch = localCacheRebuildDate === serverCacheRebuildDate;
-
-                if (canValidate && datesMatch) {
-                    const cachedRes = await fetch(`/api/v1/cache?key=${key}`);
-                    const cached = await cachedRes.json();
-                    if (cached.cached && Array.isArray(cached.data)) {
-                        console.log("[Menu] Serving from cache");
-                        setMenuData(cached.data);
-                        setLoading(false);
-                        isFetchingRef.current = false;
-                        return;
-                    }
-                }
-                console.log("[Menu] Cache invalid or mismatch, deleting");
-                fetch(`/api/v1/cache?key=${key}`, { method: 'DELETE' }).catch(() => { });
-            }
-
-            // Step 3: API Fallback
-            console.log("[Menu] Calling GetMenuAPI...");
-            const response = await GetMenuAPI(finalID);
-            const apiData = response?.Data?.rd || [];
-
-            if (apiData.length > 0) {
-                setMenuData(apiData);
-            }
-
-            setLoading(false);
-            isFetchingRef.current = false;
-
-            // Step 4: Book cache and sync global state
-            if (apiData.length > 0) {
-                try {
-                    // Send PackageId only, others empty
-                    const bookCacheResult = await BookCache(finalID, eventName, menuPricing, "");
-                    const newCacheRebuildDate = bookCacheResult?.CacheRebuildDate ?? null;
-
-                    if (newCacheRebuildDate) {
-                        const newEntry = {
-                            EventName: eventName,
-                            PackageId: menuPricing.PackageId,
-                            CacheRebuildDate: newCacheRebuildDate,
-                        };
-
-                        if (cacheList?.Data?.rd) {
-                            const updatedRd = [...cacheList.Data.rd];
-                            const idx = updatedRd.findIndex(e => e.EventName === eventName && e.PackageId == menuPricing.PackageId);
-                            if (idx > -1) updatedRd[idx] = newEntry; else updatedRd.push(newEntry);
-                            setCacheList({ ...cacheList, Data: { ...cacheList.Data, rd: updatedRd } });
-                            console.log("[Menu] Global cacheList updated");
-                        }
-                    }
-
-                    const updatedMeta = { ...meta, CacheRebuildDate: newCacheRebuildDate };
-                    fetch("/api/v1/cache", {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({ key, data: apiData, meta: updatedMeta }),
-                    }).catch(console.error);
-                } catch (cacheErr) {
-                    console.error("[Menu] Cache update failed:", cacheErr);
-                }
-            }
-        } catch (err) {
-            console.error("[Menu] Error in fetchMenu:", err);
-            setLoading(false);
-            isFetchingRef.current = false;
-        }
-    }, [islogin, storeInit, loginUserDetail, pricingContext, cacheList, setCacheList]);
+    const lastRequestKeyRef = useRef("");
 
     useEffect(() => {
+        const isB2B = storeInit?.IsB2BWebsite === 1;
+        const isUserLoggedIn = getSession("LoginUser") === true;
+        console.log("isB2B", isB2B)
+        console.log("isUserLoggedIn", isUserLoggedIn)
+
+        // // B2B Guard Condition
+        // if (isB2B && !isUserLoggedIn) {
+        //     setLoading(false);
+        //     console.log("retur from here")
+        //     return;
+        // }
+
+        // Wait for dependencies to be ready
+        if (!pricingContext || !storeInit || cacheList === null) return;
+        console.log("pricingContext", pricingContext)
+        
+
+        const visitorID = Cookies.get('visiterId');
+        let finalID;
+        if (storeInit?.IsB2BWebsite === 0) {
+            finalID = islogin === false ? visitorID : (loginUserDetail?.id || '0');
+        } else {
+            finalID = loginUserDetail?.id || '0';
+        }
+
+        const eventName = "home_menu";
+        const menuPricing = { PackageId: pricingContext.PackageId };
+        const { key, meta } = buildMenuCacheKey(eventName, storeInit, menuPricing, finalID);
+
+        // Prevent duplicate calls with same key
+        if (isFetchingRef.current || lastRequestKeyRef.current === key) return;
+        lastRequestKeyRef.current = key;
+
+        const fetchMenu = async () => {
+            isFetchingRef.current = true;
+            setLoading(true);
+
+            try {
+                // Step 1: Check server cache list + local cache metadata
+                const localCacheRes = await fetch(`/api/v1/cache?mode=meta&key=${key}`)
+                    .then(res => res.json())
+                    .catch(() => ({ cached: false }));
+
+                const serverCacheEntries = cacheList?.Data?.rd ?? [];
+                const matchingServerEntry = findMatchingMenuCacheEntry(serverCacheEntries, menuPricing, eventName);
+                const serverCacheRebuildDate = matchingServerEntry?.CacheRebuildDate ?? null;
+
+                const localCacheMeta = localCacheRes;
+                const localCacheRebuildDate = localCacheMeta?.CacheRebuildDate ?? null;
+
+                console.log("[Menu] Cache check:", { key, localCached: localCacheMeta?.cached, serverRebuild: serverCacheRebuildDate, localRebuild: localCacheRebuildDate });
+
+                // Step 2: Use cache if valid
+                if (localCacheMeta?.cached) {
+                    const canValidate = Boolean(matchingServerEntry && serverCacheRebuildDate);
+                    const datesMatch = localCacheRebuildDate === serverCacheRebuildDate;
+
+                    if (canValidate && datesMatch) {
+                        const cachedRes = await fetch(`/api/v1/cache?key=${key}`);
+                        const cached = await cachedRes.json();
+                        if (cached.cached && Array.isArray(cached.data)) {
+                            console.log("[Menu] Serving from cache");
+                            setMenuData(cached.data);
+                            setLoading(false);
+                            isFetchingRef.current = false;
+                            return;
+                        }
+                    }
+                    console.log("[Menu] Cache invalid or mismatch, deleting");
+                    fetch(`/api/v1/cache?key=${key}`, { method: 'DELETE' }).catch(() => { });
+                }
+
+                // Step 3: API Fallback
+                console.log("[Menu] Calling GetMenuAPI...");
+                const response = await GetMenuAPI(finalID);
+                const apiData = response?.Data?.rd || [];
+
+                if (apiData.length > 0) {
+                    setMenuData(apiData);
+                }
+
+                setLoading(false);
+                isFetchingRef.current = false;
+
+                // Step 4: Book cache and sync global state
+                if (apiData.length > 0) {
+                    try {
+                        const bookCacheResult = await BookCache(finalID, eventName, menuPricing, "");
+                        const newCacheRebuildDate = bookCacheResult?.CacheRebuildDate ?? null;
+
+                        if (newCacheRebuildDate) {
+                            const newEntry = {
+                                EventName: eventName,
+                                PackageId: menuPricing.PackageId,
+                                CacheRebuildDate: newCacheRebuildDate,
+                            };
+
+                            if (cacheList?.Data?.rd) {
+                                const updatedRd = [...cacheList.Data.rd];
+                                const idx = updatedRd.findIndex(e => e.EventName === eventName && e.PackageId == menuPricing.PackageId);
+                                if (idx > -1) updatedRd[idx] = newEntry; else updatedRd.push(newEntry);
+                                setCacheList({ ...cacheList, Data: { ...cacheList.Data, rd: updatedRd } });
+                                console.log("[Menu] Global cacheList updated");
+                            }
+                        }
+
+                        const updatedMeta = { ...meta, CacheRebuildDate: newCacheRebuildDate };
+                        fetch("/api/v1/cache", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({ key, data: apiData, meta: updatedMeta }),
+                        }).catch(console.error);
+                    } catch (cacheErr) {
+                        console.error("[Menu] Cache update failed:", cacheErr);
+                    }
+                }
+            } catch (err) {
+                console.error("[Menu] Error in fetchMenu:", err);
+                setLoading(false);
+                isFetchingRef.current = false;
+            }
+        };
+
         fetchMenu();
-    }, [fetchMenu]);
+    }, [islogin, storeInit, loginUserDetail, pricingContext, cacheList, setCacheList]);
 
     // ==========================================
     // 2. FORMAT MENU DATA FOR NEW UI

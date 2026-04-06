@@ -11,7 +11,15 @@ const MOBILE_APP_REDIRECT_PATH = "/";
 
 const restrictedPaths = ["/LoginOption", "/ContinueWithEmail", "/ContinueWithMobile", "/LoginWithEmailCode", "/LoginWithMobileCode", "/forgotPass", "/ForgotPass", "/LoginWithEmail", "/register"];
 
-const publicPages = ["/", "/LoginOption", "/forgotPass", "/privacyPolicy", "/aboutUs", "/contactUs", "/appointment", "/bespoke-jewelry", "/refund-policy", "/shipping-policy", "/terms-and-conditions", "/debug-internal-config-manager-v2", "contactus", "aboutus", "privacypolicy", "servicepolicy", "expertadvice", "bespoke-jewelry", "appointment", "terms-and-conditions", "searchbystock", "funfact", "termspolicy", "natural-diamond", ...restrictedPaths];
+const publicPages = ["/", "/LoginOption", "/forgotPass", "/privacyPolicy", "/aboutUs", "/contactUs", "/appointment", "/bespoke-jewelry", "/refund-policy", "/shipping-policy", "/terms-and-conditions", "/debug-internal-config-manager-v2", "contactus", "aboutus", "privacypolicy", "servicepolicy", "expertadvice", "bespoke-jewelry", "appointment", "terms-and-conditions", "searchbystock", "funfact", "termspolicy", "natural-diamond",
+  "/account-delete",
+  "/copyright",
+  "/customization",
+  "/ourStory",
+  "/privacy-policy",
+  "/support",
+  "/why-quality-matters",
+  ...restrictedPaths];
 
 const protectedPages = ["/account", "/delivery", "/payment", "/confirmation", "/accountdwsr", "account", "delivery", "payment", "confirmation"];
 

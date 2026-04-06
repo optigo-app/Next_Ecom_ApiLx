@@ -20,6 +20,7 @@ import StaticPage from "./StaticPage";
 import Newsletter from "./staticTabs/Newsletter/Newsletter";
 import AboutUs from "./staticTabs/AboutUs/AboutUs";
 import ContactUs from "./staticTabs/ContactUs/ContactUs";
+import DeleteAccountTabScreen from "./staticTabs/DeleteAccount/DeleteAccount";
 import { COLORS } from "@/app/(core)/constants/MobileAppTheme";
 import Cookie from "js-cookie";
 
@@ -38,6 +39,7 @@ const DRAWER = {
   COPYRIGHT: "Copyright",
   SUPPORT: "Support",
   TERMS: "Terms & Conditions",
+  DELETE_ACCOUNT: "delete-account",
   // Sub-drawers
   BESPOKE_INQUIRY: "bespoke-inquiry",
   APPOINTMENT_INQUIRY: "appointment-inquiry",
@@ -129,6 +131,12 @@ const ProfilePage = () => {
       <ContactUs
         open={activeDrawer === DRAWER.CONTACT_US}
         onClose={closeDrawer}
+      />
+
+      <DeleteAccountTabScreen
+        open={activeDrawer === DRAWER.DELETE_ACCOUNT}
+        onClose={closeDrawer}
+        onConfirm={HandleLogout}
       />
 
       {/* --- Page Body --- */}
@@ -332,14 +340,24 @@ const ProfilePage = () => {
             <Divider />
 
             {isUserAvailable && (
-              <ListItem disablePadding>
-                <ListItemButton sx={{ py: 1.5 }} onClick={() => openDrawer(DRAWER.LOGOUT)}>
-                  <ListItemIcon sx={{ color: "error.main" }}>
-                    <PowerSettingsNewIcon />
-                  </ListItemIcon>
-                  <ListItemText primary="Logout" sx={{ color: "error.main" }} />
-                </ListItemButton>
-              </ListItem>
+              <>
+                <ListItem disablePadding onClick={() => openDrawer(DRAWER.DELETE_ACCOUNT)}>
+                  <ListItemButton sx={{ py: 1.5 }}>
+                    <ListItemText primary="Delete Account" />
+                    <ChevronRightIcon color="action" />
+                  </ListItemButton>
+                </ListItem>
+                <Divider />
+
+                <ListItem disablePadding>
+                  <ListItemButton sx={{ py: 1.5 }} onClick={() => openDrawer(DRAWER.LOGOUT)}>
+                    <ListItemIcon sx={{ color: "error.main" }}>
+                      <PowerSettingsNewIcon />
+                    </ListItemIcon>
+                    <ListItemText primary="Logout" sx={{ color: "error.main" }} />
+                  </ListItemButton>
+                </ListItem>
+              </>
             )}
           </List>
         </Box>
