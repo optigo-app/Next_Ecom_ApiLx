@@ -14,21 +14,21 @@ export const StockItemApi = async (ac, type, obj = {}, visiterId) => {
     FrontEnd_RegNo: `${storeInit?.FrontEnd_RegNo}`,
     autocode: `${ac ?? ""}`,
     Customerid: `${customerId ?? 0}`,
-    Laboursetid: `${storeInit?.IsB2BWebsite == 0 && islogin == false
-      ? storeInit?.pricemanagement_laboursetid
-      : loginUserDetail?.pricemanagement_laboursetid
+    Laboursetid: `${storeInit?.IsB2BWebsite == 0 && (islogin == false || islogin == null)
+      ? storeInit?.pricemanagement_laboursetid ?? ""
+      : loginUserDetail?.pricemanagement_laboursetid ?? storeInit?.pricemanagement_laboursetid ?? ""
       }`,
-    diamondpricelistname: `${storeInit?.IsB2BWebsite == 0 && islogin == false
-      ? storeInit?.diamondpricelistname
-      : loginUserDetail?.diamondpricelistname
+    diamondpricelistname: `${storeInit?.IsB2BWebsite == 0 && (islogin == false || islogin == null)
+      ? storeInit?.diamondpricelistname ?? ""
+      : loginUserDetail?.diamondpricelistname ?? storeInit?.diamondpricelistname ?? ""
       }`,
-    colorstonepricelistname: `${storeInit?.IsB2BWebsite == 0 && islogin == false
-      ? storeInit?.colorstonepricelistname
-      : loginUserDetail?.colorstonepricelistname
+    colorstonepricelistname: `${storeInit?.IsB2BWebsite == 0 && (islogin == false || islogin == null)
+      ? storeInit?.colorstonepricelistname ?? ""
+      : loginUserDetail?.colorstonepricelistname ?? storeInit?.colorstonepricelistname ?? ""
       }`,
-    SettingPriceUniqueNo: `${storeInit?.IsB2BWebsite == 0 && islogin == false
-      ? storeInit?.SettingPriceUniqueNo
-      : loginUserDetail?.SettingPriceUniqueNo
+    SettingPriceUniqueNo: `${storeInit?.IsB2BWebsite == 0 && (islogin == false || islogin == null)
+      ? storeInit?.SettingPriceUniqueNo ?? ""
+      : loginUserDetail?.SettingPriceUniqueNo ?? storeInit?.SettingPriceUniqueNo ?? ""
       }`,
   }
   let data1 = {
@@ -38,21 +38,21 @@ export const StockItemApi = async (ac, type, obj = {}, visiterId) => {
     Metalid: `${obj?.mt == undefined ? (loginUserDetail?.MetalId ?? storeInit?.MetalId) : obj?.mt}`,
     DiaQCid: `${obj?.diaQc == undefined ? (loginUserDetail?.cmboDiaQCid ?? storeInit?.cmboDiaQCid) : obj?.diaQc}`,
     CsQCid: `${obj?.csQc == undefined ? (loginUserDetail?.cmboCSQCid ?? storeInit?.cmboCSQCid) : obj?.csQc}`,
-    Laboursetid: `${storeInit?.IsB2BWebsite == 0 && islogin == false
-      ? storeInit?.pricemanagement_laboursetid
-      : loginUserDetail?.pricemanagement_laboursetid
+    Laboursetid: `${storeInit?.IsB2BWebsite == 0 && (islogin == false || islogin == null)
+      ? storeInit?.pricemanagement_laboursetid ?? ""
+      : loginUserDetail?.pricemanagement_laboursetid ?? storeInit?.pricemanagement_laboursetid ?? ""
       }`,
-    diamondpricelistname: `${storeInit?.IsB2BWebsite == 0 && islogin == false
-      ? storeInit?.diamondpricelistname
-      : loginUserDetail?.diamondpricelistname
+    diamondpricelistname: `${storeInit?.IsB2BWebsite == 0 && (islogin == false || islogin == null)
+      ? storeInit?.diamondpricelistname ?? ""
+      : loginUserDetail?.diamondpricelistname ?? storeInit?.diamondpricelistname ?? ""
       }`,
-    colorstonepricelistname: `${storeInit?.IsB2BWebsite == 0 && islogin == false
-      ? storeInit?.colorstonepricelistname
-      : loginUserDetail?.colorstonepricelistname
+    colorstonepricelistname: `${storeInit?.IsB2BWebsite == 0 && (islogin == false || islogin == null)
+      ? storeInit?.colorstonepricelistname ?? ""
+      : loginUserDetail?.colorstonepricelistname ?? storeInit?.colorstonepricelistname ?? ""
       }`,
-    SettingPriceUniqueNo: `${storeInit?.IsB2BWebsite == 0 && islogin == false
-      ? storeInit?.SettingPriceUniqueNo
-      : loginUserDetail?.SettingPriceUniqueNo
+    SettingPriceUniqueNo: `${storeInit?.IsB2BWebsite == 0 && (islogin == false || islogin == null)
+      ? storeInit?.SettingPriceUniqueNo ?? ""
+      : loginUserDetail?.SettingPriceUniqueNo ?? storeInit?.SettingPriceUniqueNo ?? ""
       }`,
   }
 

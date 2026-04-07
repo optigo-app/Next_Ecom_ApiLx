@@ -53,6 +53,7 @@ import PriceBreakUp from './PriceBreakUp';
 import ButtonBlock from './ButtonBlock'
 import DeliveryInfo from './DeliveryInfo'
 import NewStockitem from './InstockProduct/NewStockitem'
+import { getSession } from "@/app/(core)/utils/FetchSessionData";
 
 
 const ProductPage = ({ params, searchParams, storeInit }) => {
@@ -143,10 +144,10 @@ const ProductPage = ({ params, searchParams, storeInit }) => {
     };
 
     const callAllApi = () => {
-        let mtTypeLocal = JSON.parse(sessionStorage.getItem("metalTypeCombo"));
-        let diaQcLocal = JSON.parse(sessionStorage.getItem("diamondQualityColorCombo"));
-        let csQcLocal = JSON.parse(sessionStorage.getItem("ColorStoneQualityColorCombo"));
-        let mtColorLocal = JSON.parse(sessionStorage.getItem("MetalColorCombo"));
+        let mtTypeLocal = getSession("metalTypeCombo");
+        let diaQcLocal = getSession("diamondQualityColorCombo");
+        let csQcLocal = getSession("ColorStoneQualityColorCombo");
+        let mtColorLocal = getSession("MetalColorCombo");
 
         if (!mtTypeLocal || mtTypeLocal?.length === 0) {
             MetalTypeComboAPI(cookie)
@@ -206,7 +207,7 @@ const ProductPage = ({ params, searchParams, storeInit }) => {
     };
 
     useEffect(() => {
-        const logininfo = JSON.parse(sessionStorage.getItem("loginUserDetail"));
+        const logininfo = getSession("loginUserDetail");
         setLoginInfo(logininfo);
     }, []);
 
@@ -347,14 +348,14 @@ const ProductPage = ({ params, searchParams, storeInit }) => {
             setDecodeUrl(decodeobj);
         }
 
-        let storeinitInside = JSON.parse(sessionStorage.getItem("storeInit"));
-        const logininfoInside = JSON.parse(sessionStorage.getItem("loginUserDetail"));
+        let storeinitInside = getSession("storeInit");
+        const logininfoInside = getSession("loginUserDetail");
 
-        let mtTypeLocal = JSON.parse(sessionStorage.getItem("metalTypeCombo"));
+        let mtTypeLocal = getSession("metalTypeCombo");
 
-        let diaQcLocal = JSON.parse(sessionStorage.getItem("diamondQualityColorCombo"));
+        let diaQcLocal = getSession("diamondQualityColorCombo");
 
-        let csQcLocal = JSON.parse(sessionStorage.getItem("ColorStoneQualityColorCombo"));
+        let csQcLocal = getSession("ColorStoneQualityColorCombo");
 
         let metalArr;
         let diaArr;
@@ -608,11 +609,11 @@ const ProductPage = ({ params, searchParams, storeInit }) => {
         let navVal = result[0]?.split("=")[1];
         let decodeobj = decodeAndDecompress(navVal);
 
-        let mtTypeLocal = JSON.parse(sessionStorage.getItem("metalTypeCombo"));
+        let mtTypeLocal = getSession("metalTypeCombo");
 
-        let diaQcLocal = JSON.parse(sessionStorage.getItem("diamondQualityColorCombo"));
+        let diaQcLocal = getSession("diamondQualityColorCombo");
 
-        let csQcLocal = JSON.parse(sessionStorage.getItem("ColorStoneQualityColorCombo"));
+        let csQcLocal = getSession("ColorStoneQualityColorCombo");
 
         setTimeout(() => {
             if (decodeUrl) {
@@ -658,7 +659,7 @@ const ProductPage = ({ params, searchParams, storeInit }) => {
     }, [singleProd]);
 
     useEffect(() => {
-        let mtColorLocal = JSON.parse(sessionStorage.getItem("MetalColorCombo"));
+        let mtColorLocal = getSession("MetalColorCombo");
         let mcArr;
 
         if (mtColorLocal?.length) {
@@ -671,8 +672,8 @@ const ProductPage = ({ params, searchParams, storeInit }) => {
     const ProdCardImageFunc = async () => {
         // Show skeleton loader while we validate images
         setIsImageLoaded(true);
-        const storeInit = JSON.parse(sessionStorage.getItem("storeInit"));
-        const mtColorLocal = JSON.parse(sessionStorage.getItem("MetalColorCombo")) || [];
+        const storeInit = getSession("storeInit");
+        const mtColorLocal = getSession("MetalColorCombo") || [];
         const pd = singleProd;
 
         const imageVideoDetail = pd?.ImageVideoDetail;
@@ -817,11 +818,11 @@ const ProductPage = ({ params, searchParams, storeInit }) => {
         let csArr;
         let size;
 
-        let mtTypeLocal = JSON.parse(sessionStorage.getItem("metalTypeCombo"));
+        let mtTypeLocal = getSession("metalTypeCombo");
 
-        let diaQcLocal = JSON.parse(sessionStorage.getItem("diamondQualityColorCombo"));
+        let diaQcLocal = getSession("diamondQualityColorCombo");
 
-        let csQcLocal = JSON.parse(sessionStorage.getItem("ColorStoneQualityColorCombo"));
+        let csQcLocal = getSession("ColorStoneQualityColorCombo");
 
         if (type === "mt") {
             metalArr = mtTypeLocal?.filter((ele) => ele?.metaltype == e.target.value)[0]?.Metalid;
@@ -884,7 +885,7 @@ const ProductPage = ({ params, searchParams, storeInit }) => {
     };
 
     const handleMetalWiseColorImg = async (e) => {
-        const mtColorLocal = JSON.parse(sessionStorage.getItem("MetalColorCombo")) || [];
+        const mtColorLocal = getSession("MetalColorCombo") || [];
         const pd = singleProd ?? singleProd1;
         const selectedMetalColorName = e.target.value;
         const { designno, ImageExtension } = pd || {};
@@ -1054,7 +1055,7 @@ const ProductPage = ({ params, searchParams, storeInit }) => {
 
     const handleCartandWish = (e, ele, type) => {
         // console.log("event", e.target.checked, ele, type);
-        let loginInfo = JSON.parse(sessionStorage.getItem("loginUserDetail"));
+        let loginInfo = getSession("loginUserDetail");
 
         let prodObj = {
             StockId: ele?.StockId,

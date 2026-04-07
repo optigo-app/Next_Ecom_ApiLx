@@ -1,35 +1,41 @@
+import { getSession } from "../../FetchSessionData";
 import { CommonAPI } from "../CommonAPI/CommonAPI";
 
 export const SearchProductPrice = async ({ searchVar, autocodeList }) => {
 
-  const storeInit = JSON.parse(sessionStorage.getItem("storeInit"))
-  const loginUserDetail = JSON.parse(sessionStorage.getItem("loginUserDetail"));
+  const storeInit = getSession("storeInit");
+  const loginUserDetail = getSession("loginUserDetail");
+  const islogin = getSession("LoginUser");
+
+  const isGuest = storeInit?.IsB2BWebsite == 0 && (islogin == false || islogin == null);
+
+  const customerEmail = isGuest ? "" : (loginUserDetail?.userid ?? "");
 
   let data = {
-    CurrencyRate: `${loginUserDetail?.CurrencyRate}`,
-    FrontEnd_RegNo: `${storeInit?.FrontEnd_RegNo}`,
+    CurrencyRate: `${loginUserDetail?.CurrencyRate ?? storeInit?.CurrencyRate ?? ""}`,
+    FrontEnd_RegNo: `${storeInit?.FrontEnd_RegNo ?? ""}`,
     Customerid: `${loginUserDetail?.id ?? 0}`,
-    Laboursetid: `${storeInit?.IsB2BWebsite == 0 && islogin == false
-        ? storeInit?.pricemanagement_laboursetid
-        : loginUserDetail?.pricemanagement_laboursetid
+    Laboursetid: `${isGuest
+        ? storeInit?.pricemanagement_laboursetid ?? ""
+        : loginUserDetail?.pricemanagement_laboursetid ?? storeInit?.pricemanagement_laboursetid ?? ""
       }`,
-    diamondpricelistname: `${storeInit?.IsB2BWebsite == 0 && islogin == false
-        ? storeInit?.diamondpricelistname
-        : loginUserDetail?.diamondpricelistname
+    diamondpricelistname: `${isGuest
+        ? storeInit?.diamondpricelistname ?? ""
+        : loginUserDetail?.diamondpricelistname ?? storeInit?.diamondpricelistname ?? ""
       }`,
-    colorstonepricelistname: `${storeInit?.IsB2BWebsite == 0 && islogin == false
-        ? storeInit?.colorstonepricelistname
-        : loginUserDetail?.colorstonepricelistname
+    colorstonepricelistname: `${isGuest
+        ? storeInit?.colorstonepricelistname ?? ""
+        : loginUserDetail?.colorstonepricelistname ?? storeInit?.colorstonepricelistname ?? ""
       }`,
-    SettingPriceUniqueNo: `${storeInit?.IsB2BWebsite == 0 && islogin == false
-        ? storeInit?.SettingPriceUniqueNo
-        : loginUserDetail?.SettingPriceUniqueNo
+    SettingPriceUniqueNo: `${isGuest
+        ? storeInit?.SettingPriceUniqueNo ?? ""
+        : loginUserDetail?.SettingPriceUniqueNo ?? storeInit?.SettingPriceUniqueNo ?? ""
       }`,
-    "Metalid": `${loginUserDetail?.Metalid}`,
-    "DiaQCid": `${loginUserDetail?.cmboDiaQCid}`,
-    "CsQCid": `${loginUserDetail?.cmboCSQCid}`,
-    "SearchKey": `${searchVar}`,
-    "AutoCodeList": `${autocodeList}`,
+    "Metalid": `${loginUserDetail?.Metalid ?? storeInit?.MetalId ?? ""}`,
+    "DiaQCid": `${loginUserDetail?.cmboDiaQCid ?? storeInit?.cmboDiaQCid ?? ""}`,
+    "CsQCid": `${loginUserDetail?.cmboCSQCid ?? storeInit?.cmboCSQCid ?? ""}`,
+    "SearchKey": `${searchVar ?? ""}`,
+    "AutoCodeList": `${autocodeList ?? ""}`,
     "WebDiscount": islogin ? `${loginUserDetail?.WebDiscount ?? 0}` : `${0}`,
     IsZeroPriceProductShow: `${storeInit?.IsZeroPriceProductShow ?? 0}`,
     IsSolitaireWebsite: `${storeInit?.IsSolitaireWebsite ?? 0}`,
@@ -38,7 +44,7 @@ export const SearchProductPrice = async ({ searchVar, autocodeList }) => {
   let encData = JSON.stringify(data)
 
   let body = {
-    "con": `{\"id\":\"Store\",\"mode\":\"getdesignpricelist\",\"appuserid\":\"${loginUserDetail?.userid ?? ""}\"}`,
+    "con": `{\"id\":\"Store\",\"mode\":\"getdesignpricelist\",\"appuserid\":\"${customerEmail}\"}`,
     "f": "onloadFirstTime (getdesignpricelist)",
     // "p": btoa(encData),
     // "dp": encData

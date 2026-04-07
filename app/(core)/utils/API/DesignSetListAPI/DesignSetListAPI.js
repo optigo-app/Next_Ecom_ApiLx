@@ -20,21 +20,21 @@ export const DesignSetListAPI = async (obj, dno, visiterId) => {
     Metalid: `${obj?.mt == undefined ? (loginInfo?.MetalId ?? storeinit?.MetalId) : obj?.mt}`,
     DiaQCid: `${obj?.diaQc == undefined ? (loginInfo?.cmboDiaQCid ?? storeinit?.cmboDiaQCid) : obj?.diaQc}`,
     CsQCid: `${obj?.csQc == undefined ? (loginInfo?.cmboCSQCid ?? storeinit?.cmboCSQCid) : obj?.csQc}`,
-    Laboursetid: `${storeinit?.IsB2BWebsite == 0 && islogin == false
-      ? storeinit?.pricemanagement_laboursetid
-      : loginInfo?.pricemanagement_laboursetid
+    Laboursetid: `${storeinit?.IsB2BWebsite == 0 && (islogin == false || islogin == null)
+      ? storeinit?.pricemanagement_laboursetid ?? ""
+      : loginInfo?.pricemanagement_laboursetid ?? storeinit?.pricemanagement_laboursetid ?? ""
       }`,
-    diamondpricelistname: `${storeinit?.IsB2BWebsite == 0 && islogin == false
-      ? storeinit?.diamondpricelistname
-      : loginInfo?.diamondpricelistname
+    diamondpricelistname: `${storeinit?.IsB2BWebsite == 0 && (islogin == false || islogin == null)
+      ? storeinit?.diamondpricelistname ?? ""
+      : loginInfo?.diamondpricelistname ?? storeinit?.diamondpricelistname ?? ""
       }`,
-    colorstonepricelistname: `${storeinit?.IsB2BWebsite == 0 && islogin == false
-      ? storeinit?.colorstonepricelistname
-      : loginInfo?.colorstonepricelistname
+    colorstonepricelistname: `${storeinit?.IsB2BWebsite == 0 && (islogin == false || islogin == null)
+      ? storeinit?.colorstonepricelistname ?? ""
+      : loginInfo?.colorstonepricelistname ?? storeinit?.colorstonepricelistname ?? ""
       }`,
-    SettingPriceUniqueNo: `${storeinit?.IsB2BWebsite == 0 && islogin == false
-      ? storeinit?.SettingPriceUniqueNo
-      : loginInfo?.SettingPriceUniqueNo
+    SettingPriceUniqueNo: `${storeinit?.IsB2BWebsite == 0 && (islogin == false || islogin == null)
+      ? storeinit?.SettingPriceUniqueNo ?? ""
+      : loginInfo?.SettingPriceUniqueNo ?? storeinit?.SettingPriceUniqueNo ?? ""
       }`,
     IsStockWebsite: `${storeinit?.IsStockWebsite}`,
     WebDiscount: islogin ? `${loginInfo?.WebDiscount ?? 0}` : `${0}`,
@@ -64,4 +64,3 @@ export const DesignSetListAPI = async (obj, dno, visiterId) => {
   return resp
 
 }
-

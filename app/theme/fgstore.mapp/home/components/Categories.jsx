@@ -66,7 +66,7 @@ const categoryImages = [
   },
   {
     "CategoryName": "Pendant set",
-    ImageUrl: "/category/PendantSet.webp",
+    ImageUrl: "/category/pendent_set.jpg",
   },
   {
     "CategoryName": "Mangalsutra",
@@ -75,6 +75,10 @@ const categoryImages = [
   {
     "CategoryName": "Mangalsutra Set",
     ImageUrl: "/category/MangalsutraSet.webp",
+  },
+  {
+    "CategoryName": "Necklace Set",
+    ImageUrl: "/category/Necklace_set.jpg",
   }
 ];
 

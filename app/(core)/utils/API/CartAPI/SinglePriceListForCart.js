@@ -4,33 +4,32 @@ import { CommonAPI } from "../CommonAPI/CommonAPI";
 export const GetSinglePriceListApi = async (item) => {
 
   const storeInit = (typeof window !== 'undefined' && window.__STORE_INIT__) ? window.__STORE_INIT__ : getSession('storeInit');
-  const loginUserDetail = JSON.parse(sessionStorage.getItem("loginUserDetail"))
-  const islogin = JSON.parse(sessionStorage.getItem("LoginUser"))
-  const customerEmail = data?.userid ?? "";
+  const loginUserDetail = getSession("loginUserDetail");
+  const islogin = getSession("LoginUser");
 
-
-
-
-  // let encodedFilter = {
-  //   "DesignNo":item?.designno,
-  //   "FilterKey":"",
-  //   "FilterVal":"",
-  //   "PageNo":"",
-  //   "PageSize":"",
-  //   "Metalid":"",
-  //   "DiaQCid":"",
-  //   "CsQCid":"",
-  //   "IsFromDesDet":"1"
-  // }
+  const customerId = (storeInit?.IsB2BWebsite == 0 && (islogin == false || islogin == null)) ? 0 : (loginUserDetail?.id ?? 0);
+  const customerEmail = (storeInit?.IsB2BWebsite == 0 && (islogin == false || islogin == null)) ? "" : (loginUserDetail?.userid ?? "");
 
   const GetPriceReq = {
-    "CurrencyRate": `${storeInit?.CurrencyRate}`,
-    "FrontEnd_RegNo": `${storeInit?.FrontEnd_RegNo}`,
-    "Customerid": `${loginUserDetail?.id ?? 0}`,
-    "Laboursetid": `${(storeInit?.IsB2BWebsite == 0 && (islogin == false)) ? storeInit?.pricemanagement_laboursetid : loginUserDetail?.pricemanagement_laboursetid}`,
-    "diamondpricelistname": `${(storeInit?.IsB2BWebsite == 0 && (islogin == false)) ? storeInit?.diamondpricelistname : loginUserDetail?.diamondpricelistname}`,
-    "colorstonepricelistname": `${(storeInit?.IsB2BWebsite == 0 && (islogin == false)) ? storeInit?.colorstonepricelistname : loginUserDetail?.colorstonepricelistname}`,
-    "SettingPriceUniqueNo": `${(storeInit?.IsB2BWebsite == 0 && (islogin == false)) ? storeInit?.SettingPriceUniqueNo : loginUserDetail?.SettingPriceUniqueNo}`,
+    "CurrencyRate": `${storeInit?.CurrencyRate ?? ""}`,
+    "FrontEnd_RegNo": `${storeInit?.FrontEnd_RegNo ?? ""}`,
+    "Customerid": `${customerId ?? 0}`,
+    "Laboursetid": `${storeInit?.IsB2BWebsite == 0 && (islogin == false || islogin == null)
+      ? storeInit?.pricemanagement_laboursetid ?? ""
+      : loginUserDetail?.pricemanagement_laboursetid ?? storeInit?.pricemanagement_laboursetid ?? ""
+      }`,
+    "diamondpricelistname": `${storeInit?.IsB2BWebsite == 0 && (islogin == false || islogin == null)
+      ? storeInit?.diamondpricelistname ?? ""
+      : loginUserDetail?.diamondpricelistname ?? storeInit?.diamondpricelistname ?? ""
+      }`,
+    "colorstonepricelistname": `${storeInit?.IsB2BWebsite == 0 && (islogin == false || islogin == null)
+      ? storeInit?.colorstonepricelistname ?? ""
+      : loginUserDetail?.colorstonepricelistname ?? storeInit?.colorstonepricelistname ?? ""
+      }`,
+    "SettingPriceUniqueNo": `${storeInit?.IsB2BWebsite == 0 && (islogin == false || islogin == null)
+      ? storeInit?.SettingPriceUniqueNo ?? ""
+      : loginUserDetail?.SettingPriceUniqueNo ?? storeInit?.SettingPriceUniqueNo ?? ""
+      }`,
     "designno": item?.designno,
     "FilterKey": "",
     "FilterVal": "",
@@ -42,13 +41,11 @@ export const GetSinglePriceListApi = async (item) => {
     "IsFromDesDet": "1"
   }
 
-  const encodedCombinedValue = btoa(JSON.stringify(GetPriceReq));
-
   let body = {
     "con": `{\"id\":\"Store\",\"mode\":\"getdesignpricelist\",\"appuserid\":\"${customerEmail}\"}`,
     "f": "cartPagePriceApi (fullProdInfo)",
-    // "p": encodedCombinedValue,
-    // "dp":JSON.stringify(GetPriceReq)
+    // "p": btoa(JSON.stringify(GetPriceReq)),
+    // "dp": JSON.stringify(GetPriceReq)
     "p": JSON.stringify(GetPriceReq)
   }
 

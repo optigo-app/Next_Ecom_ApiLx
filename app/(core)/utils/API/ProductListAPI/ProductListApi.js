@@ -1,3 +1,4 @@
+import { getSession } from "../../FetchSessionData";
 import { CommonAPI } from "../CommonAPI/CommonAPI";
 
 
@@ -37,51 +38,18 @@ const ProductListApi = async (filterObj = {}, page, obj = {}, mainData = "", vis
           MenuParams.FilterVal = atob(mainData)
         }
       }
-
-
     }
   }
 
+  let storeinit = getSession("storeInit");
+  let loginInfo = getSession("loginUserDetail");
 
-  let storeinit = JSON.parse(sessionStorage.getItem("storeInit"));
-  let loginInfo = JSON.parse(sessionStorage.getItem("loginUserDetail"));
-  let menuparam = JSON.parse(sessionStorage.getItem("menuparams"));
+  const islogin = getSession("LoginUser") ?? false;
 
-  const islogin = JSON.parse(sessionStorage.getItem("LoginUser")) ?? false;
+  const isGuest = storeinit?.IsB2BWebsite == 0 && (islogin == false || islogin == null);
 
-
-
-  const customerId = storeinit?.IsB2BWebsite == 0 && islogin == false || islogin == null ? visiterId : loginInfo?.id ?? 0;
-  const customerEmail = storeinit?.IsB2BWebsite == 0 && islogin == false || islogin == null ? visiterId : loginInfo?.userid ?? "";
-
-  // let diaQc = findDiaQcId(obj?.dia ?? loginInfo?.cmboDiaQCid)[0]
-  // let csQc = findCsQcId(obj?.cs ?? loginInfo?.cmboCSQCid)[0]
-  // let mtiddd =  obj?.mt === undefined ? loginInfo?.cmboMetalType : obj?.mt
-  // let mtid = findMetal(loginInfo?.cmboMetalType)[0]?.Metalid
-  // console.log("diaa prod api",mtid);
-
-  //   {
-  //     PackageId: "1",
-  //     autocode: "0000081",
-  //     designno: "D24705E",
-  //     FrontEnd_RegNo: "80kgizbiduw5e7gg",
-  //     Customerid: "10",
-  //     FilterKey: "Album",
-  //     FilterVal: "P15",
-  //     PageNo: "1",
-  //     PageSize: "50",
-  //     SortBy: "In Stock",
-  //     Laboursetid: "1",
-  //     diamondpricelistname: "Priyankdiam",
-  //     colorstonepricelistname: "Priyankcs",
-  //     SettingPriceUniqueNo: "1",
-  //     Metalid: "1",
-  //     DiaQCid: "1,2",
-  //     CsQCid": "7,4",
-  //     IsStockWebsite: "0",
-  //     Size: "9mm",
-  //     IsFromDesDet: "1"
-  // }
+  const customerId = isGuest ? visiterId : (loginInfo?.id ?? 0);
+  const customerEmail = isGuest ? visiterId : (loginInfo?.userid ?? "");
 
   let diaQc = (obj?.dia === undefined ? (loginInfo?.cmboDiaQCid ?? storeinit?.cmboDiaQCid) : obj?.dia)
   let csQc = (obj?.cs === undefined ? (loginInfo?.cmboCSQCid ?? storeinit?.cmboCSQCid) : obj?.cs)
@@ -93,9 +61,6 @@ const ProductListApi = async (filterObj = {}, page, obj = {}, mainData = "", vis
   const priceData = Array.isArray(filterObj)
     ? filterObj.find(item => item.dropdownIndex === 4) || {}
     : [];
-
-  // const caratData = filterObj.find(item => item.dropdownIndex === 5);
-  // const ProductType = filterObj.find(item => item.dropdownIndex === 6);
 
   let foreveryPrice = priceData?.value
     ? { Minval: priceData.value[0], Maxval: priceData.value[1] }
@@ -154,22 +119,18 @@ const ProductListApi = async (filterObj = {}, page, obj = {}, mainData = "", vis
           : filPrice ?? "",
     CurrencyRate: loginInfo?.CurrencyRate ?? storeinit?.CurrencyRate ?? "",
     SortBy: sortby ?? "",
-    Laboursetid: (storeinit?.IsB2BWebsite == 0 && islogin == false)
-      ? storeinit?.pricemanagement_laboursetid
-      : loginInfo?.pricemanagement_laboursetid
-      ?? "",
-    diamondpricelistname: (storeinit?.IsB2BWebsite == 0 && islogin == false)
-      ? storeinit?.diamondpricelistname
-      : loginInfo?.diamondpricelistname
-      ?? "",
-    colorstonepricelistname: (storeinit?.IsB2BWebsite == 0 && islogin == false)
-      ? storeinit?.colorstonepricelistname
-      : loginInfo?.colorstonepricelistname
-      ?? "",
-    SettingPriceUniqueNo: (storeinit?.IsB2BWebsite == 0 && islogin == false)
-      ? storeinit?.SettingPriceUniqueNo
-      : loginInfo?.SettingPriceUniqueNo
-      ?? "",
+    Laboursetid: isGuest
+      ? (storeinit?.pricemanagement_laboursetid ?? "")
+      : (loginInfo?.pricemanagement_laboursetid ?? storeinit?.pricemanagement_laboursetid ?? ""),
+    diamondpricelistname: isGuest
+      ? (storeinit?.diamondpricelistname ?? "")
+      : (loginInfo?.diamondpricelistname ?? storeinit?.diamondpricelistname ?? ""),
+    colorstonepricelistname: isGuest
+      ? (storeinit?.colorstonepricelistname ?? "")
+      : (loginInfo?.colorstonepricelistname ?? storeinit?.colorstonepricelistname ?? ""),
+    SettingPriceUniqueNo: isGuest
+      ? (storeinit?.SettingPriceUniqueNo ?? "")
+      : (loginInfo?.SettingPriceUniqueNo ?? storeinit?.SettingPriceUniqueNo ?? ""),
     IsStockWebsite: storeinit?.IsStockWebsite ?? "",
     Size: "",
     IsFromDesDet: "",
