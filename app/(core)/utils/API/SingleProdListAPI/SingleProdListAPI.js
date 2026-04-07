@@ -2,6 +2,11 @@ import { getSession } from "../../FetchSessionData";
 import { CommonAPI } from "../CommonAPI/CommonAPI";
 
 export const SingleProdListAPI = async (singprod, size = "", obj = {}, visiterId, AlbumName = '') => {
+  console.log(
+    singprod, size = "", obj = {}, visiterId, AlbumName = '',
+
+    "s obj = {} visiterId AlbumName"
+  )
 
   let storeinit = getSession('storeInit');
   let loginInfo = getSession("loginUserDetail");
@@ -55,21 +60,21 @@ export const SingleProdListAPI = async (singprod, size = "", obj = {}, visiterId
     // Max_Price: '',
     // Min_Price: '',
     // SortBy: "",
-    Laboursetid: `${storeinit?.IsB2BWebsite == 0 && islogin == false
-      ? storeinit?.pricemanagement_laboursetid
-      : loginInfo?.pricemanagement_laboursetid
+    Laboursetid: `${storeinit?.IsB2BWebsite == 0 && (islogin == false || islogin == null)
+      ? storeinit?.pricemanagement_laboursetid ?? ""
+      : loginInfo?.pricemanagement_laboursetid ?? storeinit?.pricemanagement_laboursetid ?? ""
       }`,
-    diamondpricelistname: `${storeinit?.IsB2BWebsite == 0 && islogin == false
-      ? storeinit?.diamondpricelistname
-      : loginInfo?.diamondpricelistname
+    diamondpricelistname: `${storeinit?.IsB2BWebsite == 0 && (islogin == false || islogin == null)
+      ? storeinit?.diamondpricelistname ?? ""
+      : loginInfo?.diamondpricelistname ?? storeinit?.diamondpricelistname ?? ""
       }`,
-    colorstonepricelistname: `${storeinit?.IsB2BWebsite == 0 && islogin == false
-      ? storeinit?.colorstonepricelistname
-      : loginInfo?.colorstonepricelistname
+    colorstonepricelistname: `${storeinit?.IsB2BWebsite == 0 && (islogin == false || islogin == null)
+      ? storeinit?.colorstonepricelistname ?? ""
+      : loginInfo?.colorstonepricelistname ?? storeinit?.colorstonepricelistname ?? ""
       }`,
-    SettingPriceUniqueNo: `${storeinit?.IsB2BWebsite == 0 && islogin == false
-      ? storeinit?.SettingPriceUniqueNo
-      : loginInfo?.SettingPriceUniqueNo
+    SettingPriceUniqueNo: `${storeinit?.IsB2BWebsite == 0 && (islogin == false || islogin == null)
+      ? storeinit?.SettingPriceUniqueNo ?? ""
+      : loginInfo?.SettingPriceUniqueNo ?? storeinit?.SettingPriceUniqueNo ?? ""
       }`,
     IsStockWebsite: `${storeinit?.IsStockWebsite}`,
     Size: `${size}`,

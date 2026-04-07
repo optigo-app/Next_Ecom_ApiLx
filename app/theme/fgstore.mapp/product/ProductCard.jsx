@@ -148,41 +148,34 @@ const ProductCard = ({
                 width: "100%",
                 backgroundColor: "#f9f9f9",
                 position: "relative",
-                height: "100%",
+                minHeight: {
+                    xs: 200,
+                    sm: 250,
+                    md: 312,
+                    lg: 350,
+                    xl: 412,
+                },
             }}
             onClick={() => handleMoveToDetail(productData)}
         >
             {isLoading === true ?
-                <Card
-                    elevation={0}
+                <Skeleton
+                    animation="wave"
+                    variant="rectangular"
                     sx={{
-                        height: "200px",
-                        display: "flex",
-                        flexDirection: "column",
                         width: "100%",
-                        backgroundColor: "transparent",
-                        boxShadow: "none",
+                        minHeight: {
+                            xs: 200,
+                            sm: 250,
+                            md: 312,
+                            lg: 350,
+                            xl: 412,
+                        },
+                        height: "100%",
+                        backgroundColor: "#f2f2f2",
+                        display: "block",
                     }}
-                >
-                    <CardMedia
-                        sx={{
-                            flex: 1,
-                            width: "100%",
-                            height: "100%",
-                            backgroundColor: "#fafafa",
-                        }}
-                    >
-                        <Skeleton
-                            animation="wave"
-                            variant="rectangular"
-                            sx={{
-                                width: "100%",
-                                height: "100%",
-                                backgroundColor: "#f2f2f2",
-                            }}
-                        />
-                    </CardMedia>
-                </Card>
+                />
 
                 :
                 <SwiperProductCard
@@ -629,31 +622,23 @@ const ProductCard = ({
                     onClick={() => handleMoveToDetail(productData)}
                 >
                     {isLoading === true ?
-                        <Card
+                        <Skeleton
+                            animation="wave"
+                            variant="rectangular"
                             sx={{
+                                width: '100%',
+                                minHeight: {
+                                    xs: 200,
+                                    sm: 250,
+                                    md: 312,
+                                    lg: 350,
+                                    xl: 412,
+                                },
                                 height: '100%',
-                                display: 'flex',
-                                flexDirection: 'column',
+                                backgroundColor: '#e7e7e7',
+                                display: 'block',
                             }}
-                        >
-                            <CardMedia
-                                sx={{
-                                    flex: 1,
-                                    width: '100%',
-                                    height: '100%',
-                                }}
-                            >
-                                <Skeleton
-                                    animation="wave"
-                                    variant="rectangular"
-                                    sx={{
-                                        width: '100%',
-                                        height: '100%',
-                                        backgroundColor: '#e7e7e7',
-                                    }}
-                                />
-                            </CardMedia>
-                        </Card>
+                        />
                         :
                         <>
 

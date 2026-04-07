@@ -3,24 +3,26 @@ import { CommonAPI } from "../CommonAPI/CommonAPI";
 
 export const fetchCartDetails = async (visiterId) => {
     let storeInit = (typeof window !== 'undefined' && window.__STORE_INIT__) ? window.__STORE_INIT__ : getSession('storeInit');
-    const storedData = sessionStorage.getItem("loginUserDetail");
-    const islogin = JSON.parse(sessionStorage.getItem("LoginUser"));
-    const data = JSON.parse(storedData);
-    const customerId = storeInit?.IsB2BWebsite == 0 && islogin == false || islogin == null ? visiterId : data?.id ?? 0;
-    const customerEmail = storeInit?.IsB2BWebsite == 0 && islogin == false || islogin == null ? visiterId : data?.userid ?? "";
+    const data = getSession("loginUserDetail");
+    const islogin = getSession("LoginUser");
 
-    let packageId = storeInit?.IsB2BWebsite == 0 && islogin == false || islogin == null ? storeInit?.PackageId : data?.PackageId ?? 0
-    let laboursetid = storeInit?.IsB2BWebsite == 0 && islogin == false || islogin == null ? storeInit?.pricemanagement_laboursetid : data?.pricemanagement_laboursetid ?? 0
-    let diamondpricelistname = storeInit?.IsB2BWebsite == 0 && islogin == false || islogin == null ? storeInit?.diamondpricelistname : data?.diamondpricelistname ?? ""
-    let colorstonepricelistname = storeInit?.IsB2BWebsite == 0 && islogin == false || islogin == null ? storeInit?.colorstonepricelistname : data?.colorstonepricelistname ?? ""
-    let SettingPriceUniqueNo = storeInit?.IsB2BWebsite == 0 && islogin == false || islogin == null ? storeInit?.SettingPriceUniqueNo : data?.SettingPriceUniqueNo ?? ""
+    const isGuest = storeInit?.IsB2BWebsite == 0 && (islogin == false || islogin == null);
+
+    const customerId = isGuest ? visiterId : (data?.id ?? 0);
+    const customerEmail = isGuest ? visiterId : (data?.userid ?? "");
+
+    let packageId = isGuest ? (storeInit?.PackageId ?? 0) : (data?.PackageId ?? storeInit?.PackageId ?? 0);
+    let laboursetid = isGuest ? (storeInit?.pricemanagement_laboursetid ?? "") : (data?.pricemanagement_laboursetid ?? storeInit?.pricemanagement_laboursetid ?? "");
+    let diamondpricelistname = isGuest ? (storeInit?.diamondpricelistname ?? "") : (data?.diamondpricelistname ?? storeInit?.diamondpricelistname ?? "");
+    let colorstonepricelistname = isGuest ? (storeInit?.colorstonepricelistname ?? "") : (data?.colorstonepricelistname ?? storeInit?.colorstonepricelistname ?? "");
+    let SettingPriceUniqueNo = isGuest ? (storeInit?.SettingPriceUniqueNo ?? "") : (data?.SettingPriceUniqueNo ?? storeInit?.SettingPriceUniqueNo ?? "");
 
     try {
         const combinedValue = JSON.stringify({
             PageNo: "1",
             PageSize: "1000",
             CurrRate: "1",
-            FrontEnd_RegNo: `${storeInit?.FrontEnd_RegNo}` ?? '',
+            FrontEnd_RegNo: `${storeInit?.FrontEnd_RegNo ?? ""}`,
             Customerid: `${customerId ?? ""}`,
             PackageId: packageId,
             Laboursetid: laboursetid,
@@ -29,24 +31,22 @@ export const fetchCartDetails = async (visiterId) => {
             SettingPriceUniqueNo: SettingPriceUniqueNo,
             IsWishList: 0,
             IsPLW: storeInit?.IsPLW,
-            CurrencyRate: `${data?.CurrencyRate ?? storeInit?.CurrencyRate}`,
+            CurrencyRate: `${data?.CurrencyRate ?? storeInit?.CurrencyRate ?? ""}`,
             DomainForNo: `${storeInit?.DomainForNo ?? ""}`,
             WebDiscount: islogin ? `${data?.WebDiscount ?? 0}` : `${0}`,
             IsZeroPriceProductShow: `${storeInit?.IsZeroPriceProductShow ?? 0}`,
             IsSolitaireWebsite: `${storeInit?.IsSolitaireWebsite ?? 0}`,
         });
 
-        const encodedCombinedValue = btoa(combinedValue);
         const body = {
             con: `{\"id\":\"\",\"mode\":\"GetCart_Details\",\"appuserid\":\"${customerEmail ?? ""}\"}`,
             f: "Header (getCartData)",
-            // p: encodedCombinedValue,
+            // p: btoa(combinedValue),
             // dp: combinedValue
             "p": combinedValue
         };
 
         const response = await CommonAPI(body);
-
         return response;
     } catch (error) {
         console.error("Error fetching cart details:", error);
