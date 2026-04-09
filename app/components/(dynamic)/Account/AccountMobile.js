@@ -136,24 +136,13 @@ export default function Account({ Storeinit }) {
   useGlobalPreventSave();
 
   const handleLogout = () => {
-    setislogin(false);
-    Cookies.remove("userLoginCookie");
-    sessionStorage.setItem("LoginUser", false);
-    sessionStorage.removeItem("storeInit");
-    sessionStorage.removeItem("loginUserDetail");
-    sessionStorage.removeItem("remarks");
-    sessionStorage.removeItem("selectedAddressId");
-    sessionStorage.removeItem("orderNumber");
-    sessionStorage.removeItem("registerEmail");
-    sessionStorage.removeItem("UploadLogicalPath");
-    sessionStorage.removeItem("remarks");
-    sessionStorage.removeItem("registerMobile");
-    sessionStorage.removeItem("allproductlist");
-    sessionStorage.clear();
-    Cookies.remove("userLoginCookie");
-    Cookies.remove("LoginUser");
+    Cookies.remove("isUserLoggedIn");
+    Cookies.remove("visiterId");
+    sessionStorage.removeItem('token');
+    sessionStorage.setItem('LoginUser', JSON.stringify(false));
+    sessionStorage.setItem('loginUserDetail', JSON.stringify({}));
+    sessionStorage.removeItem('myAccountFlags');
     replace("/logout");
-
   };
 
   return (
