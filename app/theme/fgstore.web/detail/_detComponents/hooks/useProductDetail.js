@@ -225,56 +225,61 @@ export const useProductDetail = (searchParams, storeInit, initialDecodeUrl) => {
         let csArr;
         let size;
 
+        // Track the new value for metal type BEFORE React state updates (stale closure fix)
+        let newMtTypeValue = type === "mt" ? e.target.value : selectMtType;
+
         let mtTypeLocal = getSession("metalTypeCombo");
         let diaQcLocal = getSession("diamondQualityColorCombo");
         let csQcLocal = getSession("ColorStoneQualityColorCombo");
 
         if (type === "mt") {
-            metalArr = mtTypeLocal?.filter((ele) => ele?.metaltype == e.target.value)[0]?.Metalid;
+            // Resolve Metalid from the newly selected metaltype
+            metalArr = mtTypeLocal?.find((ele) => ele?.metaltype == e.target.value)?.Metalid;
             setSelectMtType(e.target.value);
         }
         if (type === "dia") {
             setSelectDiaQc(e.target.value);
-            diaArr = diaQcLocal?.filter(
+            diaArr = diaQcLocal?.find(
                 (ele) =>
                     ele?.Quality == e.target.value?.split(",")[0] &&
                     ele?.color == e.target.value?.split(",")[1]
-            )[0];
+            );
         }
         if (type === "cs") {
             setSelectCsQc(e.target.value);
-            csArr = csQcLocal?.filter(
+            csArr = csQcLocal?.find(
                 (ele) =>
                     ele?.Quality == e.target.value?.split(",")[0] &&
                     ele?.color == e.target.value?.split(",")[1]
-            )[0];
+            );
         }
         if (type === "sz") {
             setSizeData(e.target.value);
             size = e.target.value;
         }
 
-        // Handle undefined values
-        if (metalArr == undefined) {
-            metalArr = mtTypeLocal?.filter((ele) => ele?.metaltype == selectMtType)[0]?.Metalid;
+        // Fallbacks for unchanged fields — use newMtTypeValue (not stale state) for metal
+        if (metalArr == null) {
+            metalArr = mtTypeLocal?.find((ele) => ele?.metaltype == newMtTypeValue)?.Metalid;
         }
-        if (diaArr == undefined) {
-            diaArr = diaQcLocal?.filter(
+        if (diaArr == null) {
+            diaArr = diaQcLocal?.find(
                 (ele) =>
                     ele?.Quality == selectDiaQc?.split(",")[0] &&
                     ele?.color == selectDiaQc?.split(",")[1]
-            )[0];
+            );
         }
-        if (csArr == undefined) {
-            csArr = csQcLocal?.filter(
+        if (csArr == null) {
+            csArr = csQcLocal?.find(
                 (ele) =>
                     ele?.Quality == selectCsQc?.split(",")[0] &&
                     ele?.color == selectCsQc?.split(",")[1]
-            )[0];
+            );
         }
 
+        // Build obj — metalArr must be a valid Metalid number, NOT 0 (which would be overridden by storeinit)
         let obj = {
-            mt: metalArr ?? 0,
+            mt: metalArr != null ? metalArr : null,
             diaQc: `${diaArr?.QualityId ?? 0},${diaArr?.ColorId ?? 0}`,
             csQc: `${csArr?.QualityId ?? 0},${csArr?.ColorId ?? 0}`,
         };

@@ -5,17 +5,22 @@ import { assetBase } from "@/app/(core)/lib/ServerHelper";
 import "./AppointmentBanner.scss";
 
 const AppointmentBanner = () => {
-  const Banner = assetBase + `/Appointment/appointment.jpg`;
+  const Banner = `/${assetBase}/Appointment/appointment.jpg`;
 
   return (
     <section className="smr_AppointmentBanner">
       <div className="center_mode_banner">
         <div className="image_banner_smr">
-          <img
+          <Image
             src={Banner}
             alt="Appointment banner"
             className="banner-img"
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            width={1200}
+            height={600}
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 100vw, 1200px"
+            loading="lazy"
+            quality={80}
+            style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "center" }}
           />
 
           <div className="content_detail_smr">

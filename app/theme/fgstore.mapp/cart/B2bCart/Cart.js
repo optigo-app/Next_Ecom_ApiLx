@@ -68,6 +68,7 @@ const CartPage = ({ storeinit, visiterId, islogin, setCartCountNum }) => {
 
   const location = useNextRouterLikeRR();
   const navigate = location.push;
+  const ReplaceNavigate = location.replace;
 
 
   const storeInit = storeinit;
@@ -88,7 +89,7 @@ const CartPage = ({ storeinit, visiterId, islogin, setCartCountNum }) => {
       if (storeInit?.IsB2BWebsite == 0 && islogin == false || islogin == null) {
         navigate(redirectUrl);
       } else {
-        navigate("/delivery", { replace: true });
+        ReplaceNavigate("/delivery");
       }
     } else {
       handlePay();
@@ -142,7 +143,7 @@ const CartPage = ({ storeinit, visiterId, islogin, setCartCountNum }) => {
     if (paymentResponse?.Data?.rd[0]?.stat == 1) {
       let num = paymentResponse.Data?.rd[0]?.orderno
       sessionStorage.setItem('orderNumber', num);
-      navigate('/confirmation');
+      ReplaceNavigate('/confirmation');
       GetCountAPI().then((res) => {
         setCartCountVal(res?.cartcount)
       })

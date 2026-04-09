@@ -6,7 +6,7 @@ import React, { useState, useEffect, useRef, useCallback } from "react";
 import "@/app/theme/fgstore.web/product/page.scss";
 import { formatRedirectTitleLine, getDomainName } from "@/app/(core)/utils/Glob_Functions/GlobalFunction";
 import ProductListSkeleton from "@/app/components/productlist_skeleton/ProductListSkeleton";
-import { Box, Grid, Paper, Typography, IconButton, Checkbox, Pagination, PaginationItem, Skeleton, useMediaQuery } from "@mui/material";
+import { Box, Grid, Paper, Typography, IconButton, Checkbox, Pagination, PaginationItem, Skeleton, useMediaQuery, CircularProgress } from "@mui/material";
 import { CartAndWishListAPI } from "@/app/(core)/utils/API/CartAndWishList/CartAndWishListAPI";
 import { RemoveCartAndWishAPI } from "@/app/(core)/utils/API/RemoveCartandWishAPI/RemoveCartAndWishAPI";
 import { MetalTypeComboAPI } from "@/app/(core)/utils/API/Combo/MetalTypeComboAPI";
@@ -90,6 +90,12 @@ const Layout = ({ params, searchParams, storeinit }) => {
     const [ImageView, setImageView] = useState(false);
     const location = useNextRouterLikeRR();
 
+    // ─── Infinite Scroll ───────────────────────────────────────────────
+    const [isLoadingMore, setIsLoadingMore] = useState(false);
+    const infiniteScrollPageRef = useRef(1);   // current page loaded
+    const hasMoreRef = useRef(true);            // false when no more pages
+    const sentinelRef = useRef(null);           // bottom sentinel div
+    const isLoadingMoreRef = useRef(false);     // ref mirror of isLoadingMore (avoids stale closure)
 
     const isEditablePage = 1;
 
@@ -253,6 +259,10 @@ const Layout = ({ params, searchParams, storeinit }) => {
         isApiCallInProgressRef.current = true;
 
         const fetchData = async () => {
+            // Fresh URL → reset infinite scroll
+            infiniteScrollPageRef.current = 1;
+            hasMoreRef.current = true;
+
             let obj = { mt: selectedMetalId, dia: selectedDiaId, cs: selectedCsId };
             // let UrlVal = location?.search?.slice(1).split("/")
             let UrlVal = result;
@@ -359,6 +369,10 @@ const Layout = ({ params, searchParams, storeinit }) => {
                             }),
                         );
                         setAfterFilterCount(res?.pdResp?.rd1[0]?.designcount);
+                        // Stop infinite scroll if we got a partial page (last page)
+                        if ((res?.pdList?.length ?? 0) < storeInit.PageSize) {
+                            hasMoreRef.current = false;
+                        }
                     }
 
                     if (res?.pdList) {
@@ -428,6 +442,9 @@ const Layout = ({ params, searchParams, storeinit }) => {
 
         if (Object.keys(filterChecked)?.length > 0 || isClearAllClicked === true) {
             setIsOnlyProdLoading(true);
+            // Filter changed → reset infinite scroll
+            infiniteScrollPageRef.current = 1;
+            hasMoreRef.current = true;
             let DiaRange = { DiaMin: isDia ? sliderValue[0] : "", DiaMax: isDia ? sliderValue[1] : "" };
             let grossRange = { grossMin: isGross ? sliderValue2[0] : "", grossMax: isGross ? sliderValue2[1] : "" };
             let netRange = { netMin: isNet ? sliderValue1[0] : "", netMax: isNet ? sliderValue1[1] : "" };
@@ -438,6 +455,9 @@ const Layout = ({ params, searchParams, storeinit }) => {
                         setProductListData(res?.pdList);
                         setAfterFilterCount(res?.pdResp?.rd1[0]?.designcount);
                         setAfterCountStatus(false);
+                        if ((res?.pdList?.length ?? 0) < storeInit.PageSize) {
+                            hasMoreRef.current = false;
+                        }
                     }
                     return res;
                 })
@@ -583,6 +603,9 @@ const Layout = ({ params, searchParams, storeinit }) => {
 
         if (location?.state?.SearchVal === undefined) {
             setIsOnlyProdLoading(true);
+            // Metal/Dia/Cs combo changed → reset infinite scroll
+            infiniteScrollPageRef.current = 1;
+            hasMoreRef.current = true;
             let DiaRange = { DiaMin: isDia ? sliderValue[0] : "", DiaMax: isDia ? sliderValue[1] : "" };
             let grossRange = { grossMin: isGross ? sliderValue2[0] : "", grossMax: isGross ? sliderValue2[1] : "" };
             let netRange = { netMin: isNet ? sliderValue1[0] : "", netMax: isNet ? sliderValue1[1] : "" };
@@ -592,6 +615,9 @@ const Layout = ({ params, searchParams, storeinit }) => {
                     if (res) {
                         setProductListData(res?.pdList);
                         setAfterFilterCount(res?.pdResp?.rd1[0]?.designcount);
+                        if ((res?.pdList?.length ?? 0) < storeInit.PageSize) {
+                            hasMoreRef.current = false;
+                        }
                     }
                     return res;
                 })
@@ -688,6 +714,10 @@ const Layout = ({ params, searchParams, storeinit }) => {
     const handleSortby = async (e) => {
         setSortBySelect(e.target?.value);
 
+        // Sort changed → reset infinite scroll
+        infiniteScrollPageRef.current = 1;
+        hasMoreRef.current = true;
+
         let output = FilterValueWithCheckedOnly();
         let obj = { mt: selectedMetalId, dia: selectedDiaId, cs: selectedCsId };
 
@@ -711,6 +741,9 @@ const Layout = ({ params, searchParams, storeinit }) => {
                 if (res) {
                     setProductListData(res?.pdList);
                     setAfterFilterCount(res?.pdResp?.rd1[0]?.designcount);
+                    if ((res?.pdList?.length ?? 0) < storeInit.PageSize) {
+                        hasMoreRef.current = false;
+                    }
                 }
                 return res;
             })
@@ -835,6 +868,66 @@ const Layout = ({ params, searchParams, storeinit }) => {
         })();
     }, []);
 
+    // ─── Infinite Scroll: load next page when sentinel enters viewport ───
+    const loadMoreProducts = useCallback(async () => {
+        // Block if already loading, no more pages, or primary fetch in progress
+        if (isLoadingMoreRef.current || !hasMoreRef.current || isApiCallInProgressRef.current) return;
+        if (!prodListType) return;
+
+        const nextPage = infiniteScrollPageRef.current + 1;
+        const obj = { mt: selectedMetalId, dia: selectedDiaId, cs: selectedCsId };
+
+        isLoadingMoreRef.current = true;
+        setIsLoadingMore(true);
+
+        try {
+            const res = await ProductListApi(
+                {},
+                nextPage,
+                obj,
+                prodListType,
+                cookie,
+                sortBySelect,
+                { DiaMin: "", DiaMax: "" },
+                { netMin: "", netMax: "" },
+                { grossMin: "", grossMax: "" }
+            );
+            const newItems = res?.pdList ?? [];
+
+            if (newItems.length > 0) {
+                setProductListData(prev => [...(prev ?? []), ...newItems]);
+                infiniteScrollPageRef.current = nextPage;
+            }
+
+            // No more pages if we got fewer items than a full page
+            if (newItems.length < storeInit.PageSize) {
+                hasMoreRef.current = false;
+            }
+        } catch (err) {
+            console.error("[InfiniteScroll] Error loading page:", err);
+        } finally {
+            isLoadingMoreRef.current = false;
+            setIsLoadingMore(false);
+        }
+    }, [prodListType, selectedMetalId, selectedDiaId, selectedCsId, cookie, sortBySelect, storeInit.PageSize]);
+
+    useEffect(() => {
+        const sentinel = sentinelRef.current;
+        if (!sentinel) return;
+
+        const observer = new IntersectionObserver(
+            ([entry]) => {
+                if (entry.isIntersecting) {
+                    loadMoreProducts();
+                }
+            },
+            { rootMargin: "400px", threshold: 0 }
+        );
+
+        observer.observe(sentinel);
+        return () => observer.disconnect();
+    }, [loadMoreProducts]);
+
 
     return (
         <Box
@@ -933,6 +1026,13 @@ const Layout = ({ params, searchParams, storeinit }) => {
                 isProdLoading={isProdLoading}
                 metalColorCombo={getSession("MetalColorCombo")}
             />
+            {/* Infinite scroll sentinel – IntersectionObserver triggers loadMoreProducts */}
+            <div ref={sentinelRef} style={{ height: 1 }} />
+            {isLoadingMore && (
+                <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", py: 3 }}>
+                    <CircularProgress size={28} sx={{ color: "#D6B08B" }} />
+                </Box>
+            )}
             <ActionIsland
                 ImageView={ImageView}
                 ChangeView={() => setImageView(!ImageView)}

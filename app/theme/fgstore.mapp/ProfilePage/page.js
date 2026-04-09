@@ -92,6 +92,7 @@ const ProfilePage = () => {
   return (
     <>
       {/* --- URL-synced drawers --- */}
+      {/* Static info pages — no form state, always-mounted is fine */}
       <StaticPage
         open={isStaticOpen}
         onClose={closeDrawer}
@@ -104,6 +105,8 @@ const ProfilePage = () => {
         onConfirm={HandleLogout}
       />
 
+      {/* Form drawers — always mounted so MUI Drawer slide animation works.
+          Each child resets its form state internally when open → false. */}
       <BespokeTabScreen
         open={activeDrawer === DRAWER.BESPOKE || activeDrawer === DRAWER.BESPOKE_INQUIRY}
         onClose={closeDrawer}

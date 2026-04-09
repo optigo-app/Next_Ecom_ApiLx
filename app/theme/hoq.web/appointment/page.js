@@ -13,7 +13,7 @@ export const services = [
     },
     {
         title: 'Free 30 Day Returns',
-        description: 'Forevery offers a hassle-free jewelry shopping experience with its 30-DAY Returns policy. Get ready to shop confidently.',
+        description: 'Sonasons offers a hassle-free jewelry shopping experience with its 30-DAY Returns policy. Get ready to shop confidently.',
         image: '/images/HomePage/OurServices/free-return.png',
         link: '#',
         btnText: "Read More"
@@ -76,7 +76,7 @@ const AppointmentPage = ({ assetBase }) => {
             <p className="hoq_intro">
                 Welcome to Sonasons your premier destination for exquisite labgrown diamonds.
                 Schedule an appointment today to experience the brilliance and beauty of our lab-grown diamonds and let Sonasons help you find the perfect piece to cherish forever.
-                Experience the brilliance of lab-grown diamonds with Forevery.
+                Experience the brilliance of lab-grown diamonds with Sonasons.
                 Book an appointment now to view our exquisite collection and discover the sustainable and ethical beauty of labgrown diamonds.
             </p>
             <div className="hoq_itemsMainDiv">

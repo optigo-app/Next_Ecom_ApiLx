@@ -27,23 +27,34 @@ const Menu = ({ storeInit }) => {
     const isFetchingRef = useRef(false);
     const lastRequestKeyRef = useRef("");
 
+    // Use refs so we can read latest values inside the effect without making them deps.
+    // This prevents cacheList updates (inside the effect) from re-triggering the effect.
+    const cacheListRef = useRef(cacheList);
+    const setCacheListRef = useRef(setCacheList);
+    useEffect(() => { cacheListRef.current = cacheList; }, [cacheList]);
+    useEffect(() => { setCacheListRef.current = setCacheList; }, [setCacheList]);
+
+    // Reset the lastRequestKey lock whenever login-state changes so a fresh fetch can happen.
+    useEffect(() => {
+        lastRequestKeyRef.current = "";
+        isFetchingRef.current = false;
+    }, [islogin, loginUserDetail]);
+
     useEffect(() => {
         const isB2B = storeInit?.IsB2BWebsite === 1;
         const isUserLoggedIn = getSession("LoginUser") === true;
-        console.log("isB2B", isB2B)
-        console.log("isUserLoggedIn", isUserLoggedIn)
+        console.log("isB2B", isB2B);
+        console.log("isUserLoggedIn", isUserLoggedIn);
 
-        // // B2B Guard Condition
+        // B2B Guard Condition
         // if (isB2B && !isUserLoggedIn) {
         //     setLoading(false);
-        //     console.log("retur from here")
         //     return;
         // }
 
         // Wait for dependencies to be ready
-        if (!pricingContext || !storeInit || cacheList === null) return;
-        console.log("pricingContext", pricingContext)
-        
+        if (!pricingContext || !storeInit || cacheListRef.current === null) return;
+        console.log("pricingContext", pricingContext);
 
         const visitorID = Cookies.get('visiterId');
         let finalID;
@@ -65,13 +76,17 @@ const Menu = ({ storeInit }) => {
             isFetchingRef.current = true;
             setLoading(true);
 
+            // Read refs at call time — always up-to-date, no stale closure
+            const currentCacheList = cacheListRef.current;
+            const currentSetCacheList = setCacheListRef.current;
+
             try {
                 // Step 1: Check server cache list + local cache metadata
                 const localCacheRes = await fetch(`/api/v1/cache?mode=meta&key=${key}`)
                     .then(res => res.json())
                     .catch(() => ({ cached: false }));
 
-                const serverCacheEntries = cacheList?.Data?.rd ?? [];
+                const serverCacheEntries = currentCacheList?.Data?.rd ?? [];
                 const matchingServerEntry = findMatchingMenuCacheEntry(serverCacheEntries, menuPricing, eventName);
                 const serverCacheRebuildDate = matchingServerEntry?.CacheRebuildDate ?? null;
 
@@ -125,11 +140,11 @@ const Menu = ({ storeInit }) => {
                                 CacheRebuildDate: newCacheRebuildDate,
                             };
 
-                            if (cacheList?.Data?.rd) {
-                                const updatedRd = [...cacheList.Data.rd];
+                            if (currentCacheList?.Data?.rd) {
+                                const updatedRd = [...currentCacheList.Data.rd];
                                 const idx = updatedRd.findIndex(e => e.EventName === eventName && e.PackageId == menuPricing.PackageId);
                                 if (idx > -1) updatedRd[idx] = newEntry; else updatedRd.push(newEntry);
-                                setCacheList({ ...cacheList, Data: { ...cacheList.Data, rd: updatedRd } });
+                                currentSetCacheList({ ...currentCacheList, Data: { ...currentCacheList.Data, rd: updatedRd } });
                                 console.log("[Menu] Global cacheList updated");
                             }
                         }
@@ -152,7 +167,9 @@ const Menu = ({ storeInit }) => {
         };
 
         fetchMenu();
-    }, [islogin, storeInit, loginUserDetail, pricingContext, cacheList, setCacheList]);
+    // NOTE: cacheList & setCacheList intentionally excluded from deps — accessed via refs.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [islogin, storeInit, loginUserDetail, pricingContext]);
 
     // ==========================================
     // 2. FORMAT MENU DATA FOR NEW UI
@@ -230,7 +247,7 @@ const Menu = ({ storeInit }) => {
             g: finalData?.FilterKey1,
             c: finalData?.FilterKey2,
         })
-            .filter(([key, value]) => value !== undefined && value !== "")
+            .filter(([key, value]) => value !== undefined)
             .map(([key, value]) => value)
             .filter(Boolean)
             .join(',');
@@ -265,7 +282,7 @@ const Menu = ({ storeInit }) => {
             const otherparamUrl = Object.entries({
                 b: finalData?.FilterKey,
             })
-                .filter(([key, value]) => value !== undefined && value !== "")
+                .filter(([key, value]) => value !== undefined)
                 .map(([key, value]) => value)
                 .filter(Boolean)
                 .join(',');

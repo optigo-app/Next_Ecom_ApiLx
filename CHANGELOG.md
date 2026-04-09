@@ -1,3 +1,87 @@
+## [2026-04-09]
+
+- **iOS Safari Double-Tap Zoom Fix (Mobile App)**:
+  - **Files modified**: `app/globals.css`
+  - **Root cause**: iOS Safari has ignored `user-scalable=no` / `userScalable: false` since iOS 10 (Apple removed the restriction for accessibility). The profile page and other mobile pages were experiencing unintended zoom-in/zoom-out when users tapped list items, buttons, or links rapidly. iOS interprets rapid taps on small interactive elements as "double-tap to zoom" gestures.
+  - **Old behavior**: Only `-webkit-tap-highlight-color: transparent` and `-webkit-touch-callout: none` were set on `.FgstoreMapp`. No protection against double-tap zoom despite `maximumScale: 1` in the viewport config (which iOS ignores).
+  - **New behavior**: Added `touch-action: manipulation` to `.FgstoreMapp` (wraps the whole mobile app) and as a global rule targeting `a`, `button`, `[role="button"]`, `.MuiButtonBase-root`, `.MuiListItemButton-root`, `.MuiIconButton-root`, `.MuiMenuItem-root`, and `.MuiTab-root`. This tells iOS the element only handles single-tap and drag — double-tap zoom is disabled. As a side-effect, the 300ms tap delay is also eliminated, making the app feel faster.
+  - **Reason for change**: User reported screen zooming in and out on the profile page on iOS/mobile devices.
+
+## [2026-04-09]
+
+- **Profile Page — `useSearchParams` Suspense Fix**:
+  - **Files modified**: `app/profile/page.js`
+  - **Old behavior**: `ProfilePage` (a Client Component using `useSearchParams()`) was rendered directly from the Server Component route without a `Suspense` boundary. In Next.js App Router this causes a build warning ("useSearchParams() should be wrapped in a suspense boundary") and can lead to hydration mismatches or the entire route opting out of static generation.
+  - **New behavior**: The route now wraps `<ProfilePage />` in `<Suspense fallback={null}>`, satisfying the Next.js requirement. `fallback={null}` means no flash of placeholder — the existing loading state inside the component handles UX.
+  - **Reason for change**: User reported UI rendering issue on the `/profile` page; root cause was the missing Suspense boundary required by `useSearchParams`.
+
+## [2026-04-09]
+
+- **Mobile Product List — Infinite Scroll (fgstore.mapp)**:
+  - **Files modified**: `app/theme/fgstore.mapp/product/MobileView.jsx`
+  - **Old behavior**: Product list used pagination (`handelPageChange`) which replaced the entire list and scrolled to the top. No mobile-friendly way to browse beyond the first page.
+  - **New behavior**: Replaced pagination with infinite scroll using `IntersectionObserver` on a 1px sentinel `div` placed below `<ProductView>`. When the sentinel enters the viewport (with a 400px look-ahead margin), `loadMoreProducts` fetches the next page and **appends** results to the existing list. A gold `CircularProgress` spinner appears while loading more.
+  - **Reset logic**: Every "fresh" data load (new URL via `searchParams`, filter change, sort change, metal/dia/cs combo change) resets `infiniteScrollPageRef` to 1 and `hasMoreRef` to `true`, ensuring the list starts clean.
+  - **Stop condition**: `hasMoreRef` is set to `false` when the API returns fewer items than `storeInit.PageSize` (last page reached). The `isApiCallInProgressRef` guard prevents the infinite scroll from firing while the initial fetch is still in progress.
+  - **No breaking changes**: `handelPageChange`, `handlePageInputChange`, and all filter/sort/combo logic are fully preserved and untouched in behavior.
+  - **Reason for change**: User requested infinite scroll for mobile since there is no visible pagination UI on mobile.
+
+## [2026-04-09]
+
+- **Menu Navigation Bug Fix (fgstore.mapp)**:
+  - **Files modified**: `app/theme/fgstore.mapp/Menu/page.js`
+  - **Old behavior (broken)**: The new caching-enhanced Menu component had 2 bugs that caused navigation from menu items to silently fail or produce stale data:
+    1. `cacheList` and `setCacheList` were in the `useEffect` dependency array. Since `setCacheList` is called **inside** the same effect (after booking cache), it caused the effect to re-trigger. The `lastRequestKeyRef` guard then blocked the re-trigger — but this also meant that if the user's login state changed and the cache key remained the same, no fresh API call would occur.
+    2. `lastRequestKeyRef.current` was never cleared when login state changed. If the computed cache key was identical between two sessions (e.g., two guest visits), the menu API would never re-fire.
+    3. The B2B guard (`if (isB2B && !isUserLoggedIn) return`) was accidentally commented out, so B2B non-logged-in users could enter the menu fetch flow.
+  - **New behavior**:
+    1. `cacheList` and `setCacheList` are now accessed via **refs** (`cacheListRef`, `setCacheListRef`) that stay in sync via their own lightweight `useEffect` hooks. This breaks the feedback loop — reading a ref inside an effect does not re-trigger it.
+    2. A dedicated `useEffect` on `[islogin, loginUserDetail]` resets `lastRequestKeyRef.current` and `isFetchingRef.current` whenever login state changes. This ensures a fresh API call fires after login/logout.
+    3. The B2B guard is restored.
+    4. The `otherparamUrl` filter is restored to match the original codebase (`.filter(([key, value]) => value !== undefined)`) for exact parity with old code.
+  - **Root cause**: `cacheList` in the effect dependency array created a mutation loop — updating cache inside the effect re-triggered the effect, which was blocked by `lastRequestKeyRef`, preventing any recovery.
+  - **Reason for change**: User reported menu item clicks were not navigating correctly or were navigating to wrong/stale product listings.
+
+## [2026-04-08]
+
+- **Static Image & Asset Performance Optimization**:
+  - **Files modified**:
+    - `app/components/(dynamic)/BestSellerSection/BestSellerSection1.js`
+    - `app/components/(static)/BespokeBanner/index.js`
+    - `app/components/(static)/AppointmentBanner/AppointmentBanner.js`
+    - `app/components/(static)/Footer/FooterNew.js`
+    - `next.config.js`
+  - **Problem identified**: Network waterfall showed 1,786 KiB of unoptimized local images loading on every page visit with only a 1-day cache TTL. Footer social icons from external `nzen` server loaded with no Cache-Control header (414 KiB total). Key offenders:
+    - `bestsellerbanner1.png` — 818 KiB, plain `<img>`, no lazy loading
+    - `bespoke/2.png` — 473 KiB, plain `<img>`, no lazy loading
+    - `appointment.jpg` — 125 KiB, plain `<img>`, no lazy loading
+    - Footer social icons (5 images) — 414 KiB combined, no cache, no lazy loading
+  - **Old behavior**: All above images used plain `<img>` tags, loaded eagerly on page load, consumed full PNG/JPG byte size, and were evicted from browser cache after 1 day.
+  - **New behavior**:
+    1. `BestSellerSection1.js`: Added `loading="lazy"`, `decoding="async"`, and explicit `width`/`height` to the 818 KiB banner — browser now defers download until near viewport.
+    2. `BespokeBanner/index.js`: Switched to Next.js `<Image>` component — auto-converts 473 KiB PNG to WebP (~70–80% smaller), lazy-loads, and serves at `quality={75}`.
+    3. `AppointmentBanner.js`: Switched to Next.js `<Image>` — auto-converts 125 KiB JPG to WebP, lazy-loads, `quality={80}`.
+    4. `FooterNew.js`: Added `loading="lazy"`, `decoding="async"`, and `width={32} height={32}` to all 5 social icons — defers 414 KiB of external images until footer is near viewport.
+    5. `next.config.js`: Increased static asset `Cache-Control` from `1 day` → **30 days + `immutable`** for images, **7 days** for videos, **1 year + `immutable`** for fonts. `stale-while-revalidate=86400` allows background refresh without blocking. On repeat visits, transfer size for all local images drops to ~0 KiB.
+  - **Reason for change**: User shared network waterfall showing 1.7 MB+ of unoptimized image payloads causing slow initial load.
+
+## [2026-04-08]
+
+- **Product Detail — Metal Type Change Not Updating Metalid in API**:
+  - **Files modified**:
+    - `app/theme/fgstore.web/detail/_detComponents/hooks/useProductDetail.js`
+    - `app/(core)/utils/API/SingleProdListAPI/SingleProdListAPI.js`
+  - **Old behavior**: When the user changed the Metal Type dropdown (e.g., GOLD 14K → GOLD 18K), the `Metalid` sent to the `SingleProdListAPI` always remained fixed at `storeinit.MetalId` (e.g., `2` for GOLD 18K). The dropdown visually changed but the API always re-fetched prices for the wrong metal.
+  - **Root Cause (2 bugs)**:
+    1. **Stale React state closure**: In `handleCustomChange`, the line `if (metalArr == undefined)` fell back to `selectMtType` (the *old* state value because `setSelectMtType` is async). This caused the resolved `metalArr` to always be the *previous* selection, not the newly selected one.
+    2. **Wrong sentinel value**: `obj.mt` was set to `metalArr ?? 0` — if `metalArr` was undefined, `obj.mt` became `0`. In `SingleProdListAPI.js`, the condition `obj?.mt == undefined` evaluated to `false` (since `0 !== undefined`), so it sent `Metalid: "0"` instead of the storeinit default. But even before this, when `obj` was not passed or `obj.mt` was `undefined`, it fell back to `storeinit.MetalId`.
+  - **New behavior**:
+    1. Introduced `let newMtTypeValue = type === "mt" ? e.target.value : selectMtType` to capture the new metal type value synchronously before any React state update.
+    2. Fallback now uses `newMtTypeValue` instead of the stale `selectMtType` state.
+    3. `obj.mt` is now set to `metalArr != null ? metalArr : null` — explicit `null` as the sentinel for "use storeinit default".
+    4. In `SingleProdListAPI.js`, changed `== undefined` to `== null` for `Metalid`, `DiaQCid`, and `CsQCid` — so only `null` triggers the storeinit fallback, while any valid resolved value (including `0`) passes correctly.
+  - **Reason for change**: User reported that changing metal type on product detail page always sent the same fixed `Metalid: "2"` to the API regardless of selection, causing wrong price/product data to load.
+
 ## [2026-04-06]
 
 - **Shree Diamond & EliorApp Privacy Policy — Full Content Upgrade**:

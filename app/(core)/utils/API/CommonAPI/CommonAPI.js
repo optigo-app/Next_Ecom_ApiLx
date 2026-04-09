@@ -16,8 +16,8 @@ const setApiUrl = async () => {
             const cleanHost = hostname.split(":")[0];
 
             if (isLocalHost(cleanHost)) {
-                // APIURL = "http://newnextjs.web//api/report";
-                APIURL = "https://apilx.optigoapps.com/api/report";
+                APIURL = "http://newnextjs.web//api/report";
+                // APIURL = "https://apilx.optigoapps.com/api/report";
 
             } else {
                 APIURL = "https://apilx.optigoapps.com/api/report";

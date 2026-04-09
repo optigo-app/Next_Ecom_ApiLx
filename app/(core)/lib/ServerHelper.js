@@ -60,7 +60,7 @@ const Theme = {
 }
 
 export function getLogos() {
-  return Theme.omjiyansh;
+  return Theme.Sonasons;
 }
 
 export function getHoqLogos() {

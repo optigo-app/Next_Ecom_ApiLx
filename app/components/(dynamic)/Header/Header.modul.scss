@@ -9,7 +9,7 @@ li {
   position: relative;
   z-index: 100;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid $navbarbg;
 
   .TopNavBar {
     width: 100%;
@@ -759,14 +759,14 @@ li {
   }
 
   .badgeColor .MuiBadge-badge {
-    background-color: $btnBg !important;
-    color: $btncolor !important;
+    background-color: $authbg !important;
+    color: $authbtnbg !important;
     margin-left: 10px !important;
   }
 
   .badgeColorFix .MuiBadge-badge {
-    background-color: $btnBg !important;
-    color: $btncolor !important;
+    background-color: $authbg !important;
+    color: $authbtnbg !important;
     margin-left: 10px !important;
   }
 

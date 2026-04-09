@@ -2,11 +2,7 @@ import { getSession } from "../../FetchSessionData";
 import { CommonAPI } from "../CommonAPI/CommonAPI";
 
 export const SingleProdListAPI = async (singprod, size = "", obj = {}, visiterId, AlbumName = '') => {
-  console.log(
-    singprod, size = "", obj = {}, visiterId, AlbumName = '',
 
-    "s obj = {} visiterId AlbumName"
-  )
 
   let storeinit = getSession('storeInit');
   let loginInfo = getSession("loginUserDetail");
@@ -24,6 +20,12 @@ export const SingleProdListAPI = async (singprod, size = "", obj = {}, visiterId
   //     IsFromDesDet:1
   //   };
 
+  console.log(
+    "s obj = {} visiterId AlbumName",
+    obj?.mt === null,
+    `${obj?.mt == null ? (loginInfo?.MetalId ?? storeinit?.MetalId) : obj?.mt}`,
+  )
+
   const data = {
     PackageId: `${loginInfo?.PackageId ?? storeinit?.PackageId}`,
     autocode: `${singprod?.a ?? ""}`,
@@ -40,9 +42,9 @@ export const SingleProdListAPI = async (singprod, size = "", obj = {}, visiterId
     // PageNo:`${page}`,
     // PageSize:`${storeinit?.PageSize}`,
     CurrencyRate: `${loginInfo?.CurrencyRate ?? storeinit?.CurrencyRate}`,
-    Metalid: `${obj?.mt == undefined ? (loginInfo?.MetalId ?? storeinit?.MetalId) : obj?.mt}`,
-    DiaQCid: `${obj?.diaQc == undefined ? (loginInfo?.cmboDiaQCid ?? storeinit?.cmboDiaQCid) : obj?.diaQc}`,
-    CsQCid: `${obj?.csQc == undefined ? (loginInfo?.cmboCSQCid ?? storeinit?.cmboCSQCid) : obj?.csQc ?? "0,0"}`,
+    Metalid: `${obj?.mt == null ? (loginInfo?.MetalId ?? storeinit?.MetalId) : obj?.mt}`,
+    DiaQCid: `${obj?.diaQc == null ? (loginInfo?.cmboDiaQCid ?? storeinit?.cmboDiaQCid) : obj?.diaQc}`,
+    CsQCid: `${obj?.csQc == null ? (loginInfo?.cmboCSQCid ?? storeinit?.cmboCSQCid) : obj?.csQc ?? "0,0"}`,
     // Collectionid: `${filterObj?.collection ?? ""}`,
     // Categoryid: `${filterObj?.category ?? ""}`,
     // SubCategoryid: `${filterObj?.subcategory ?? ""}`,

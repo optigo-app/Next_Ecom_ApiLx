@@ -1237,7 +1237,7 @@ const ProductPage = ({ params, searchParams, storeInit }) => {
                                                     />
                                                 ) : (
                                                     <div className="video_box" style={{ position: "relative" }}>
-                                                        <video src={val?.src} className="fgstore_mapp_prod_thumb_img" autoPlay muted loop />
+                                                        <video src={val?.src} className="fgstore_mapp_prod_thumb_img" autoPlay muted loop playsInline />
                                                         <IoIosPlayCircle className="play_io_icon" />
                                                     </div>
                                                 )}
@@ -1281,6 +1281,7 @@ const ProductPage = ({ params, searchParams, storeInit }) => {
                                                                                 loop={true}
                                                                                 autoPlay={true}
                                                                                 muted
+                                                                                playsInline
                                                                                 style={{
                                                                                     width: "100%",
                                                                                     height: "100%",

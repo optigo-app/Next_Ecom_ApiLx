@@ -16,7 +16,9 @@ const AddressManagement = () => {
   const { addressData, open, openDelete, formData, errors, isEditMode, isLoading, handleOpen, handleClose, handleCancel, handleInputChange, handleSubmit, handleDelete, handleDeleteClick, handleDeleteClose, handleDefaultSelection, proceedToOrder } = useAddress();
 
   const location = useNextRouterLikeRR();
-  const navigate = location.push;
+  // Use replace so Delivery → Payment doesn't stack in back-history.
+  // Pressing Back from Payment returns to Cart, not a mid-checkout page.
+  const navigate = location.replace;
 
   return (
     <>

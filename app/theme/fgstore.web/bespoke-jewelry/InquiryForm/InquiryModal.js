@@ -61,7 +61,7 @@ const InquiryModal = ({ open, setOpen, handleSubmit, formData,
               <input
                 id="WebSite"
                 name="WebSite"
-                placeholder={TheDifferenceData.omjiyansh.title}
+                placeholder={TheDifferenceData.sonasons.title}
                 value={formData.WebSite}
                 onChange={handleChange}
               />

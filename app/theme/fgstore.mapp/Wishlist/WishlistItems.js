@@ -51,6 +51,7 @@ const WishlistItems = ({ item, index, selectedValue, itemInCart, updateCount, co
     const returnValue = await handleWishlistToCart(item);
     if (returnValue?.msg == "success") {
       toast.success("Wishlist items added in cart", {
+        toastId: `wishlist-to-cart-${item?.id}`,
         position: "bottom-center",
         style: {
           width: "max-content",
