@@ -9,15 +9,24 @@ const ProductListApi = async (filterObj = {}, page, obj = {}, mainData = "", vis
 
   if (Array.isArray(mainData)) {
     if (mainData?.length > 0) {
-      Object.values(mainData[0])?.forEach((ele, index) => {
-        let keyName = `FilterKey${index === 0 ? '' : index}`;
-        MenuParams[keyName] = ele.replace(/%20/g, ' ')
-      })
-
-      Object.values(mainData[1])?.forEach((ele, index) => {
-        let keyName = `FilterVal${index === 0 ? '' : index}`;
-        MenuParams[keyName] = ele.replace(/%20/g, ' ')
-      })
+      const savedMenu = getSession('menuparams');
+      if (savedMenu && savedMenu.FilterKey !== undefined) {
+        MenuParams.FilterKey = savedMenu.FilterKey ?? '';
+        MenuParams.FilterVal = savedMenu.FilterVal ?? '';
+        MenuParams.FilterKey1 = savedMenu.FilterKey1 ?? '';
+        MenuParams.FilterVal1 = savedMenu.FilterVal1 ?? '';
+        MenuParams.FilterKey2 = savedMenu.FilterKey2 ?? '';
+        MenuParams.FilterVal2 = savedMenu.FilterVal2 ?? '';
+      } else {
+        Object.values(mainData[0])?.forEach((ele, index) => {
+          let keyName = `FilterKey${index === 0 ? '' : index}`;
+          MenuParams[keyName] = ele.replace(/%20/g, ' ');
+        });
+        Object.values(mainData[1])?.forEach((ele, index) => {
+          let keyName = `FilterVal${index === 0 ? '' : index}`;
+          MenuParams[keyName] = ele.replace(/%20/g, ' ');
+        });
+      }
     }
   } else {
     if (mainData !== "") {
