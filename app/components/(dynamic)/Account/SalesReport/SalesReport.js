@@ -266,6 +266,14 @@ const SalesReport = () => {
   const loginDetails = loginUserDetail
 
   const isSmallScreen = useMediaQuery('(max-width:500px)');
+
+  // Mobile: auto width + disableScrollLock — prevents dropdown breaking out
+  // of the form due to conflict with global 'overflow: auto !important'.
+  const MenuPropsMobile = {
+    disableScrollLock: true,
+    PaperProps: { style: { maxHeight: 248, width: 'auto' } },
+  };
+
   const [searchVal, setSearchVal] = useState("");
   const [fromDate, setFromDate] = useState(null);
   const [toDate, setToDate] = useState(null);
@@ -1066,7 +1074,9 @@ const SalesReport = () => {
                   All
                 </Button>
                 <Box sx={{ display: "flex", alignItems: "center", position: "relative", marginBottom: '20px', width: '100%' }} className="searchbox" >
-                  <TextField id="standard-basic" label="Search" variant="outlined" value={searchVal} fullWidth onChange={(eve) => { setSearchVal(eve?.target?.value); handleSearch(eve, eve?.target?.value, fromDate, toDate, grossWtInput?.from, grossWtInput?.to, custCurrency); }} />
+                  <TextField id="standard-basic" label="Search" variant="outlined" value={searchVal} fullWidth
+                    inputProps={{ style: { fontSize: '16px' } }}
+                    onChange={(eve) => { setSearchVal(eve?.target?.value); handleSearch(eve, eve?.target?.value, fromDate, toDate, grossWtInput?.from, grossWtInput?.to, custCurrency); }} />
                   <Button sx={{ padding: 0, maxWidth: "max-content", minWidth: "max-content", position: "absolute", right: "8px", color: "#757575", }} > <SearchIcon /> </Button>
                 </Box>
                 <Box sx={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
@@ -1077,7 +1087,12 @@ const SalesReport = () => {
                         value={fromDate}
                         ref={fromDateRef}
                         format="DD MM YYYY"
-                        slotProps={{ textField: { fullWidth: true } }}
+                        slotProps={{
+                        textField: {
+                          fullWidth: true,
+                          inputProps: { style: { fontSize: '16px' } },
+                        },
+                      }}
                         onChange={(newValue) => {
                           if (newValue === null) {
                             setFromDate(null)
@@ -1104,7 +1119,12 @@ const SalesReport = () => {
                         value={toDate}
                         ref={toDateRef}
                         format="DD MM YYYY"
-                        slotProps={{ textField: { fullWidth: true } }}
+                        slotProps={{
+                        textField: {
+                          fullWidth: true,
+                          inputProps: { style: { fontSize: '16px' } },
+                        },
+                      }}
                         onChange={(newValue) => {
                           if (newValue === null) {
                             setToDate(null);
@@ -1141,6 +1161,7 @@ const SalesReport = () => {
                         label="From"
                         name="from"
                         fullWidth
+                        inputProps={{ style: { fontSize: '16px' } }}
                         value={grossWtInput?.from}
                         onChange={(eve) => handleChangegrossWt(eve)}
                       />
@@ -1149,6 +1170,7 @@ const SalesReport = () => {
                         label="To"
                         name="to"
                         fullWidth
+                        inputProps={{ style: { fontSize: '16px' } }}
                         value={grossWtInput?.to}
                         onChange={(eve) => handleChangegrossWt(eve)}
                       />
@@ -1161,6 +1183,9 @@ const SalesReport = () => {
                       value={custCurrency}
                       onChange={handleCurrencyChange}
                       fullWidth
+                      MenuProps={MenuPropsMobile}
+                      inputProps={{ style: { fontSize: '16px' } }}
+                      SelectDisplayProps={{ style: { fontSize: '16px' } }}
                     >
                       {currencyList?.map((ele, ind) => (
                         <MenuItem value={ele} key={ind} sx={{ textTransform: 'uppercase' }}>{ele}</MenuItem>

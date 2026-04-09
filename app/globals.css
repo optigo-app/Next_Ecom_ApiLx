@@ -106,7 +106,7 @@ input:-moz-placeholder {
   top: 0;
   left: 0;
   right: 0;
-  zindex: 1;
+  z-index: 1;
 }
 .headroom--unfixed {
   position: relative;
@@ -137,6 +137,7 @@ input:-moz-placeholder {
     radial-gradient(farthest-side, #030303 94%, #0000) top/8px 8px no-repeat,
     conic-gradient(#0000 30%, #000000);
   -webkit-mask: radial-gradient(farthest-side, #0000 calc(100% - 8px), #000 0);
+  mask: radial-gradient(farthest-side, #0000 calc(100% - 8px), #000 0);
   animation: spin 1s infinite linear;
 }
 
@@ -152,8 +153,24 @@ input:-moz-placeholder {
   -ms-user-select: none;
   user-select: none;
   -webkit-tap-highlight-color: transparent;
-
   -webkit-touch-callout: none;
+
+  /* Prevent iOS double-tap zoom on all interactive elements inside the mobile app */
+  touch-action: manipulation;
+}
+
+/* Global iOS double-tap zoom prevention for all clickable/tappable elements.
+   iOS Safari ignores user-scalable=no since iOS 10.
+   touch-action: manipulation = single-tap + drag only, no double-tap zoom. */
+a,
+button,
+[role="button"],
+.MuiButtonBase-root,
+.MuiListItemButton-root,
+.MuiIconButton-root,
+.MuiMenuItem-root,
+.MuiTab-root {
+  touch-action: manipulation;
 }
 /* 
  *::selection {

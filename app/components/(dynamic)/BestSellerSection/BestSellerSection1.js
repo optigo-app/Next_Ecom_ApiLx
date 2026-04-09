@@ -367,7 +367,17 @@ const BestSellerSection1 = ({ data, storeData }) => {
               <div className="smr_rightSideBestSeler">
                 {/* <img src="https://pipeline-theme-fashion.myshopify.com/cdn/shop/files/clothing-look-44.jpg?v=1638651514&width=4000" alt="modalimages" /> */}
                 {/* <img src={`${storImagePath()}/images/HomePage/BestSeller/promoSetMainBanner.png`} alt="modalimages" /> */}
-                <img src={data?.image[0]} alt="modalimages" draggable={true} onContextMenu={(e) => e.preventDefault()} />
+                <img
+                  src={data?.image[0]}
+                  alt="Best Seller Collection Banner"
+                  draggable={true}
+                  onContextMenu={(e) => e.preventDefault()}
+                  loading="lazy"
+                  decoding="async"
+                  width={800}
+                  height={1000}
+                  style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                />
                 <div className="smr_lookbookImageRightDT">
                   {/*    not need for maiora  */}
                   {/* <p>SHORESIDE COLLECTION</p>

@@ -114,7 +114,7 @@ const ProductCard = ({
         >
             <Checkbox
                 icon={
-                    <FavoriteRoundedIcon
+                    <FavoriteBorderRoundedIcon
                         sx={{
                             fontSize: "22px",
                             color: "#7d7f85",
@@ -123,7 +123,7 @@ const ProductCard = ({
                     />
                 }
                 checkedIcon={
-                    <FavoriteBorderRoundedIcon
+                    <FavoriteRoundedIcon
                         sx={{
                             fontSize: "22px",
                             color: "#4caf50",

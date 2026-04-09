@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import "./BespokeBanner.scss";
 import { assetBase } from "@/app/(core)/lib/ServerHelper";
 
@@ -34,10 +35,16 @@ const BespokeBanner = () => {
         <div
           className="image-content"
         >
-          <img
-            src={assetBase + `/images/HomePage/bespoke/2.png`}
+          <Image
+            src={`/${assetBase}/images/HomePage/bespoke/2.png`}
             alt="Luxury Diamond Jewelry"
             className="hero-image"
+            width={900}
+            height={700}
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 900px"
+            loading="lazy"
+            quality={75}
+            style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "center" }}
           />
         </div>
       </div>

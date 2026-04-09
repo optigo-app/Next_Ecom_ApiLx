@@ -25,7 +25,7 @@ const Cart = ({
   const noImageFound = "/image-not-found.jpg";
 
   const location = useNextRouterLikeRR();
-  const navigate = location.push;
+  const navigate = location.replace; // replace so back-button skips this step
   const { islogin, loginUserDetail } = useStore()
 
   const [totalPrice, setTotalPrice] = useState();
@@ -44,13 +44,15 @@ const Cart = ({
   const redirectUrl = `/LoginOption/?LoginRedirect=/delivery`;
   const handlePlaceOrder = () => {
     let storeInit = storeinit;
+    // Use replace so the cart remains in back-history but checkout pages
+    // do not stack — prevents navigating back to a zero-price payment page.
     if (storeInit?.IsB2BWebsite == 0 && islogin == false || islogin == null) {
       navigate(redirectUrl);
       closeDrawer();
     } else {
-      navigate("/delivery")
       let priceData = items?.reduce((total, item) => total + item?.FinalCost, 0);
-      sessionStorage.setItem('TotalPriceData', priceData)
+      sessionStorage.setItem('TotalPriceData', priceData);
+      navigate("/delivery");
       closeDrawer();
     }
     window.scrollTo(0, 0);

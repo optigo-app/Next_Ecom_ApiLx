@@ -1,6 +1,7 @@
 import React from 'react'
 import './TheDifference.modul.scss'
 import { assetBase } from '@/app/(core)/lib/ServerHelper'
+import Image from 'next/image';
 
 const TheDifference = () => {
 
@@ -18,7 +19,7 @@ const TheDifference = () => {
       <p
         className="smilingTitle"
       >
-        {TheDifferenceData.omjiyansh.title}
+        {TheDifferenceData.sonasons.title}
       </p>
 
       <div className="smr_smilingRock">
@@ -27,10 +28,15 @@ const TheDifference = () => {
           className="smr_smilingRockBox"
         >
           <div className="smr_diffrence_box1_main">
-            <img
+            <Image
               className="smr_deffrence_img"
-              src={`${assetBase}/images/HomePage/TheDifference/TheDifference1.webp`}
+              src={`/${assetBase}/images/HomePage/TheDifference/TheDifference1.webp`}
               alt="Natural Diamond & jewellery"
+              width={100}
+              height={100}
+              sizes="(max-width: 768px) 100px, 150px"
+              loading="lazy"
+              style={{ height: 'auto' }}
             />
           </div>
           <div className="smr_diffrence_box2_main">
@@ -43,10 +49,15 @@ const TheDifference = () => {
           className="smr_smilingRockBox"
         >
           <div className="smr_diffrence_box1_main">
-            <img
+            <Image
               className="smr_deffrence_img"
-              src={`${assetBase}/images/HomePage/TheDifference/TheDifference2.webp`}
+              src={`/${assetBase}/images/HomePage/TheDifference/TheDifference2.webp`}
               alt="1% of each purchase goes to your choice of charity"
+              width={100}
+              height={100}
+              sizes="(max-width: 768px) 100px, 150px"
+              loading="lazy"
+              style={{ height: 'auto' }}
             />
           </div>
           <div className="smr_diffrence_box2_main">
@@ -61,14 +72,19 @@ const TheDifference = () => {
           className="smr_smilingRockBox"
         >
           <div className="smr_diffrence_box1_main">
-            <img
+            <Image
               className="smr_deffrence_img"
-              src={`${assetBase}/images/HomePage/TheDifference/TheDifference3.webp`}
+              src={`/${assetBase}/images/HomePage/TheDifference/TheDifference3.webp`}
               alt="Laser inscribed diamonds with Sonasons logo"
+              width={100}
+              height={100}
+              sizes="(max-width: 768px) 100px, 150px"
+              loading="lazy"
+              style={{ height: 'auto' }}
             />
           </div>
           <div className="smr_diffrence_box2_main">
-            <p className="smr_smilingBoxName">Laser inscribed diamonds with omjiyansh logo</p>
+            <p className="smr_smilingBoxName">Laser inscribed diamonds with sonasons logo</p>
           </div>
         </div>
 
@@ -77,10 +93,15 @@ const TheDifference = () => {
           className="smr_smilingRockBox"
         >
           <div className="smr_diffrence_box1_main">
-            <img
+            <Image
               className="smr_deffrence_img"
-              src={`${assetBase}/images/HomePage/TheDifference/TheDifference4.webp`}
+              src={`/${assetBase}/images/HomePage/TheDifference/TheDifference4.webp`}
               alt="ECG+ Certified Brand Butterfly Mark"
+              width={100}
+              height={100}
+              sizes="(max-width: 768px) 100px, 150px"
+              loading="lazy"
+              style={{ height: 'auto' }}
             />
           </div>
           <div className="smr_diffrence_box2_main">

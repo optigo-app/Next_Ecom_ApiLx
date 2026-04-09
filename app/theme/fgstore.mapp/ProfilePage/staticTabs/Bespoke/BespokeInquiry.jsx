@@ -18,6 +18,15 @@ const BespokeInquiry = ({ open, onClose }) => {
   const [file, setFile] = useState();
   const [loading, setLoading] = useState();
 
+  // Reset form whenever the drawer closes so re-opening shows a blank form
+  useEffect(() => {
+    if (!open) {
+      setFormData({ FullName: "", EmailId: "", mobileno: "", WebSite: "", Be_In_Message: "" });
+      setError({});
+      setFile(undefined);
+    }
+  }, [open]);
+
   const handleChange = (event) => {
     const { name, value } = event.target;
     if (name === "mobileno") {
@@ -103,13 +112,14 @@ const BespokeInquiry = ({ open, onClose }) => {
 
   const resetForm = () => {
     setFormData({
-      fullName: "",
-      email: "",
-      phone: "",
-      website: "",
-      additionalInfo: "",
-      file: null,
+      FullName: "",
+      EmailId: "",
+      mobileno: "",
+      WebSite: "",
+      Be_In_Message: "",
     });
+    setFile(undefined);
+    setError({});
   };
   return (
     <>

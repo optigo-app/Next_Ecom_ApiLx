@@ -8,9 +8,10 @@ import { toast } from 'react-toastify';
 import { handlePasswordChangeAcc, handlePasswordInputChangeAcc, validateChangePassword } from '@/app/(core)/utils/Glob_Functions/AccountPages/AccountPage';
 import { useNextRouterLikeRR } from '@/app/(core)/hooks/useLocationRd';
 import { getButtonStyle } from '@/app/(core)/constants/MobileAppTheme';
+import { getSession } from '@/app/(core)/utils/FetchSessionData';
 
 export default function ChangePassword() {
-  const { push } = useNextRouterLikeRR()
+  const { replace } = useNextRouterLikeRR()
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [oldPassword, setOldPassword] = useState('');
@@ -20,17 +21,20 @@ export default function ChangePassword() {
   const [email, setEmail] = useState('');
   const [errors, setErrors] = useState({});
   const [passwordError, setPasswordError] = useState('');
-  const naviagation = push;
+  const naviagation = replace;
   const [isLoading, setIsLoading] = useState(false);
   const [customerID, setCustomerID] = useState('');
 
   useEffect(() => {
-    const storedEmail = sessionStorage.getItem('registerEmail');
-    if (storedEmail) setEmail(storedEmail);
+    const storedEmail = getSession('registerEmail');
+    const storedData = getSession('loginUserDetail');
+    if (storedEmail) {
+      setEmail(storedEmail);
+    } else {
+      setEmail(storedData?.userid)
+    }
 
-    const storedData = sessionStorage.getItem('loginUserDetail');
-    const data = JSON.parse(storedData);
-    setCustomerID(data?.id);
+    setCustomerID(storedData?.id);
 
   }, []); // 
 
@@ -88,7 +92,7 @@ export default function ChangePassword() {
       setIsLoading(true);
       try {
 
-        const storeInit = JSON.parse(sessionStorage.getItem('storeInit'));
+        const storeInit = getSession('storeInit');
 
         const { FrontEnd_RegNo } = storeInit;
 
@@ -113,8 +117,7 @@ export default function ChangePassword() {
 
           if (response?.Data?.rd[0]?.stat === 1) {
             sessionStorage.setItem('LoginUser', 'false');
-            naviagation('/')
-            window.location.reload()
+            naviagation('/logout')
           } else {
             setErrors(prevErrors => ({ ...prevErrors, oldPassword: 'Enter Valid Old Password' }));
           }

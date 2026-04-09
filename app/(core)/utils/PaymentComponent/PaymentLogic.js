@@ -29,6 +29,7 @@ import { useStore } from '@/app/(core)/contexts/StoreProvider';
 const usePaymentLogic = (storeinit) => {
     const location = useNextRouterLikeRR();
     const navigate = location.push;
+    const ReplaceNavigate = location.replace;
 
     const { loginUserDetail, islogin: isLogin } = useStore();
 
@@ -113,7 +114,7 @@ const usePaymentLogic = (storeinit) => {
         }
     };
 
-   // for remark
+    // for remark
     useEffect(() => {
         const GetOrderRemark = sessionStorage.getItem('orderRemark')
         if (GetOrderRemark) {
@@ -161,7 +162,7 @@ const usePaymentLogic = (storeinit) => {
     //         console.error("Error:", error);
     //     }
     // };
-     const handleOrderRemarkFun = async (trimmedRemark) => {
+    const handleOrderRemarkFun = async (trimmedRemark) => {
         try {
             const response = await handleOrderRemark(trimmedRemark);
             const resStatus = response?.Data?.rd[0];
@@ -250,7 +251,7 @@ const usePaymentLogic = (storeinit) => {
                     sessionStorage.setItem('orderNumber', orderNumber);
                     // const cartCount = await GetCountAPI();
                     // setCartCountVal(cartCount?.cartcount);
-                    navigate('/confirmation', { replace: true });
+                    ReplaceNavigate('/confirmation');
                 }
                 setIsloder(false);
             } else {
@@ -272,7 +273,7 @@ const usePaymentLogic = (storeinit) => {
                 const orderNumber = paymentResponse.Data?.rd[0]?.orderno;
                 sessionStorage.setItem('orderNumber', orderNumber);
                 setIsloding(false);
-                navigate('/confirmation', { replace: true });
+                ReplaceNavigate('/confirmation');
                 sessionStorage.removeItem("orderRemark");
             } else {
                 toast.error('Payment unsuccessful. Please try again.');

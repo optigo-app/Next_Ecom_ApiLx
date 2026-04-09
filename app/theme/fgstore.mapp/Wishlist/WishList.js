@@ -64,6 +64,7 @@ const Wishlist = ({ storeInit }) => {
     const returnValue = await handleAddtoCartAll();
     if (returnValue?.msg == "success") {
       toast.success("All wishlist items added in cart", {
+        toastId: "wishlist-add-all-to-cart",
         position: "bottom-center",
         style: {
           width: "max-content",

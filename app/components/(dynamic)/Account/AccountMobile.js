@@ -44,10 +44,11 @@ function CustomTabPanel(props) {
       {value === index && (
         <Box
           sx={{
-            paddingBottom: '5rem'
+            paddingBottom: '5rem',
+            px: 1
           }}
         >
-          <Typography>{children}</Typography>
+          {children}
         </Box>
       )}
     </div>
@@ -72,7 +73,7 @@ const tabIndicator = {
 
 export default function Account({ Storeinit }) {
   const { loginUserDetail, islogin, setislogin } = useStore();
-  const { push } = useNextRouterLikeRR();
+  const { push, replace } = useNextRouterLikeRR();
   const [value, setValue] = useState(0);
   const [value1, setValue1] = useState(0);
   const [LogoutModal, setLogoutModal] = useState(false);
@@ -150,9 +151,9 @@ export default function Account({ Storeinit }) {
     sessionStorage.removeItem("allproductlist");
     sessionStorage.clear();
     Cookies.remove("userLoginCookie");
-    Cookies.remove("userLoginCookie");
     Cookies.remove("LoginUser");
-    window.location.href = "/";
+    replace("/logout");
+
   };
 
   return (
@@ -200,13 +201,13 @@ export default function Account({ Storeinit }) {
             },
           }}
           value={value} onChange={handleChange} variant="scrollable" scrollButtons="auto" allowScrollButtonsMobile>
-          <Tab label="Your Profile" {...a11yProps(0)} />
+          <Tab label="YOUR PROFILE" {...a11yProps(0)} />
           <Tab label="ORDER HISTORY" {...a11yProps(1)} />
           <Tab label="MANAGE ADDRESSES" {...a11yProps(2)} />
           {accountValidation() && <Tab label="ACCOUNT" {...a11yProps(3)} />}
           <Tab label="CHANGE PASSWORD" {...a11yProps(accountValidation() ? 4 : 3)} />
           {loginUserDetail?.IsPLWOn && <Tab label="PLM" {...a11yProps(1)} />}
-          <Tab label="Log Out" onClick={() => setLogoutModal(true)} />
+          <Tab label="LOG OUT" onClick={() => setLogoutModal(true)} />
         </Tabs>
       </AppBar>
       <div

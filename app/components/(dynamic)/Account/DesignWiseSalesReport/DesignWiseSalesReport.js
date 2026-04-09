@@ -19,6 +19,14 @@ import DWSRprintComp from '../DWSRprintComp/DWSRprintComp';
 
 const DesignWiseSalesReport = () => {
     const isSmallScreen = useMediaQuery('(max-width:500px)');
+
+    // Mobile: auto width + disableScrollLock — prevents dropdown breaking out
+    // of the form due to conflict with global 'overflow: auto !important'.
+    const MenuPropsMobile = {
+        disableScrollLock: true,
+        PaperProps: { style: { maxHeight: 248, width: 'auto' } },
+    };
+
     const imageNotFound = '/fallback.jpg';
 
     const storeInit = JSON.parse(sessionStorage.getItem('storeInit'));
@@ -834,7 +842,12 @@ const DesignWiseSalesReport = () => {
                                                 value={fromDate}
                                                 ref={fromDateRef}
                                                 format="DD MM YYYY"
-                                                slotProps={{ textField: { fullWidth: true } }}
+                                                slotProps={{
+                                                    textField: {
+                                                        fullWidth: true,
+                                                        inputProps: { style: { fontSize: '16px' } },
+                                                    },
+                                                }}
                                                 onChange={(newValue) => {
                                                     if (newValue === null) {
                                                         setFromDate(null)
@@ -860,7 +873,12 @@ const DesignWiseSalesReport = () => {
                                                 value={toDate}
                                                 ref={toDateRef}
                                                 format="DD MM YYYY"
-                                                slotProps={{ textField: { fullWidth: true } }}
+                                                slotProps={{
+                                                    textField: {
+                                                        fullWidth: true,
+                                                        inputProps: { style: { fontSize: '16px' } },
+                                                    },
+                                                }}
                                                 onChange={(newValue) => {
                                                     if (newValue === null) {
                                                         setToDate(null)
@@ -904,10 +922,10 @@ const DesignWiseSalesReport = () => {
                                             <TextField type="number" label="Min" value={(netWtSlider[0])} sx={{ width: '100%' }}
                                                 onChange={handleNetWtSliderCustom(0)}
                                                 onBlur={handleBlurNetWt(0)}
-                                                inputProps={{ min: netWtLimit?.min, max: netWtSlider[1], type: 'number', step: 1 }}
+                                                inputProps={{ min: netWtLimit?.min, max: netWtSlider[1], type: 'number', step: 1, style: { fontSize: '16px' } }}
                                             />
                                             <TextField type="number" label="Max" value={(netWtSlider[1])} sx={{ width: '100%' }}
-                                                inputProps={{ min: netWtSlider[0], max: netWtLimit?.max, type: 'number', step: 1 }}
+                                                inputProps={{ min: netWtSlider[0], max: netWtLimit?.max, type: 'number', step: 1, style: { fontSize: '16px' } }}
                                                 onChange={handleNetWtSliderCustom(1)}
                                                 onBlur={handleBlurNetWt(1)}
                                             />
@@ -930,10 +948,10 @@ const DesignWiseSalesReport = () => {
                                             <TextField type="number" label="Min" value={grossWtSlider[0]} sx={{ width: '100%' }}
                                                 onChange={handleGrossWtSliderCustom(0)}
                                                 onBlur={handleBlurGrossWt(0)}
-                                                inputProps={{ min: grossWtLimit?.min, max: grossWtSlider[1], type: 'number', step: 1 }}
+                                                inputProps={{ min: grossWtLimit?.min, max: grossWtSlider[1], type: 'number', step: 1, style: { fontSize: '16px' } }}
                                             />
                                             <TextField type="number" label="Max" value={grossWtSlider[1]} sx={{ width: '100%' }}
-                                                inputProps={{ min: grossWtSlider[0], max: grossWtLimit?.max, type: 'number', step: 1 }}
+                                                inputProps={{ min: grossWtSlider[0], max: grossWtLimit?.max, type: 'number', step: 1, style: { fontSize: '16px' } }}
                                                 onChange={handleGrossWtSliderCustom(1)}
                                                 onBlur={handleBlurGrossWt(1)}
                                             />
@@ -942,10 +960,12 @@ const DesignWiseSalesReport = () => {
 
                                     <Box>
                                         <Typography sx={{ fontWeight: 'bold', marginBottom: '5px' }}>DesignNo</Typography>
-                                        <TextField type='text' value={designNo} fullWidth onChange={eve => {
-                                            setDesignNo(eve?.target?.value);
-                                            handleSearch(eve, fromDate, toDate, netWtSlider[0], netWtSlider[1], grossWtSlider[0], grossWtSlider[1], purchaseCount, eve?.target?.value, metal, productType, metalColor, category, subCategory, orderProm);
-                                        }} className='design_No' placeholder='#DesignNo' />
+                                        <TextField type='text' value={designNo} fullWidth
+                                            inputProps={{ style: { fontSize: '16px' } }}
+                                            onChange={eve => {
+                                                setDesignNo(eve?.target?.value);
+                                                handleSearch(eve, fromDate, toDate, netWtSlider[0], netWtSlider[1], grossWtSlider[0], grossWtSlider[1], purchaseCount, eve?.target?.value, metal, productType, metalColor, category, subCategory, orderProm);
+                                            }} className='design_No' placeholder='#DesignNo' />
                                     </Box>
 
                                     <Box>
@@ -954,6 +974,9 @@ const DesignWiseSalesReport = () => {
                                             value={purchaseCount}
                                             onChange={handleChangePurchaseCount}
                                             fullWidth
+                                            MenuProps={MenuPropsMobile}
+                                            inputProps={{ style: { fontSize: '16px' } }}
+                                            SelectDisplayProps={{ style: { fontSize: '16px' } }}
                                         >
                                             {purchaseCountList?.map((ele, ind) => (
                                                 <MenuItem key={ind} value={ele?.value}>{ele?.label}</MenuItem>
@@ -967,6 +990,9 @@ const DesignWiseSalesReport = () => {
                                             value={metal}
                                             onChange={handleMetalChange}
                                             fullWidth
+                                            MenuProps={MenuPropsMobile}
+                                            inputProps={{ style: { fontSize: '16px' } }}
+                                            SelectDisplayProps={{ style: { fontSize: '16px' } }}
                                         >
                                             {metalList?.map((ele, ind) => (
                                                 <MenuItem key={ind} value={ele?.value} sx={{ textTransform: 'uppercase' }}>{ele?.label}</MenuItem>
@@ -980,6 +1006,9 @@ const DesignWiseSalesReport = () => {
                                             value={productType}
                                             onChange={handleChangeProductType}
                                             fullWidth
+                                            MenuProps={MenuPropsMobile}
+                                            inputProps={{ style: { fontSize: '16px' } }}
+                                            SelectDisplayProps={{ style: { fontSize: '16px' } }}
                                         >
                                             {productTypeList?.map((ele, ind) => (
                                                 <MenuItem key={ind} value={ele?.value} sx={{ textTransform: 'uppercase' }}>{ele?.label}</MenuItem>
@@ -993,6 +1022,9 @@ const DesignWiseSalesReport = () => {
                                             value={metalColor}
                                             onChange={handleChangeMetalColor}
                                             fullWidth
+                                            MenuProps={MenuPropsMobile}
+                                            inputProps={{ style: { fontSize: '16px' } }}
+                                            SelectDisplayProps={{ style: { fontSize: '16px' } }}
                                         >
                                             {metalColorList?.map((ele, ind) => (
                                                 <MenuItem key={ind} value={ele?.value} sx={{ textTransform: 'uppercase' }}>{ele?.label}</MenuItem>
@@ -1006,6 +1038,9 @@ const DesignWiseSalesReport = () => {
                                             value={category}
                                             onChange={handleChangeCategory}
                                             fullWidth
+                                            MenuProps={MenuPropsMobile}
+                                            inputProps={{ style: { fontSize: '16px' } }}
+                                            SelectDisplayProps={{ style: { fontSize: '16px' } }}
                                         >
                                             {categorylist?.map((ele, ind) => (
                                                 <MenuItem key={ind} value={ele?.value} sx={{ textTransform: 'uppercase' }}>{ele?.label}</MenuItem>
@@ -1019,6 +1054,9 @@ const DesignWiseSalesReport = () => {
                                             value={subCategory}
                                             onChange={handleChangeSubCategory}
                                             fullWidth
+                                            MenuProps={MenuPropsMobile}
+                                            inputProps={{ style: { fontSize: '16px' } }}
+                                            SelectDisplayProps={{ style: { fontSize: '16px' } }}
                                         >
                                             {subCategoryList?.map((ele, ind) => (
                                                 <MenuItem key={ind} value={ele?.value} sx={{ textTransform: 'uppercase' }}>{ele?.label}</MenuItem>

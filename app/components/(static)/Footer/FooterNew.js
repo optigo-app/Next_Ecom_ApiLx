@@ -40,7 +40,15 @@ const FooterNew = ({ companyInfoData, storeData, extraFlag, logos }) => {
         <div className="fg-footer__social">
           {parsedSocialLinks?.map((social, idx) => (
             <Link key={idx} href={social.SLink} target="_blank" rel="noopener noreferrer" className="fg-footer__social-link">
-              <img src={social.SImgPath} alt={social.SName} className="fg-footer__social-img" />
+              <img
+                src={social.SImgPath}
+                alt={social.SName}
+                className="fg-footer__social-img"
+                loading="lazy"
+                decoding="async"
+                width={32}
+                height={32}
+              />
             </Link>
           ))}
         </div>

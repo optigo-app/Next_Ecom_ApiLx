@@ -673,6 +673,8 @@ const QuotationJob = () => {
 
   const ITEM_HEIGHT = 48;
   const ITEM_PADDING_TOP = 8;
+
+  // Desktop: fixed 250px width
   const MenuProps = {
     PaperProps: {
       style: {
@@ -680,7 +682,18 @@ const QuotationJob = () => {
         width: 250,
       },
     },
+  };
 
+  // Mobile: auto width (matches the Select width) + disableScrollLock to avoid
+  // conflict with the global 'overflow: auto !important' on mobile body.
+  const MenuPropsMobile = {
+    disableScrollLock: true,
+    PaperProps: {
+      style: {
+        maxHeight: ITEM_HEIGHT * 5 + ITEM_PADDING_TOP,
+        width: 'auto',
+      },
+    },
   };
 
   // Inside handleMasterCheckboxChange function
@@ -1074,7 +1087,12 @@ const QuotationJob = () => {
                       value={fromDate}
                       ref={fromDateRef}
                       format="DD MM YYYY"
-                      slotProps={{ textField: { fullWidth: true } }}
+                      slotProps={{
+                        textField: {
+                          fullWidth: true,
+                          inputProps: { style: { fontSize: '16px' } },
+                        },
+                      }}
                       onChange={(newValue) => {
                         if (newValue === null) {
                           setFromDate(null)
@@ -1100,7 +1118,12 @@ const QuotationJob = () => {
                       value={toDate}
                       ref={toDateRef}
                       format="DD MM YYYY"
-                      slotProps={{ textField: { fullWidth: true } }}
+                      slotProps={{
+                        textField: {
+                          fullWidth: true,
+                          inputProps: { style: { fontSize: '16px' } },
+                        },
+                      }}
                       onChange={(newValue) => {
                         if (newValue === null) {
                           setToDate(null)
@@ -1131,11 +1154,13 @@ const QuotationJob = () => {
                     multiple
                     value={selectedStatus}
                     onChange={handleStatus}
-                    MenuProps={MenuProps}
+                    MenuProps={MenuPropsMobile}
                     input={<OutlinedInput />}
                     fullWidth
                     renderValue={(selected) => selected.length === 0 ? <em>All Status</em> : selected.join(', ')}
                     displayEmpty
+                    inputProps={{ style: { fontSize: '16px' } }}
+                    SelectDisplayProps={{ style: { fontSize: '16px' } }}
                   >
                     {statusList?.map((status) => (
                       <MenuItem key={status.id} value={status.value}>
@@ -1148,7 +1173,11 @@ const QuotationJob = () => {
 
                 <Box>
                   <Typography sx={{ fontWeight: 'bold', marginBottom: '5px' }}>Category</Typography>
-                  <Select fullWidth value={category} onChange={handleCategory} >
+                  <Select fullWidth value={category} onChange={handleCategory}
+                    MenuProps={MenuPropsMobile}
+                    inputProps={{ style: { fontSize: '16px' } }}
+                    SelectDisplayProps={{ style: { fontSize: '16px' } }}
+                  >
                     {categoryList?.map((e, i) => (
                       <MenuItem value={e?.value} key={i}>{e?.label}</MenuItem>
                     ))}
@@ -1157,7 +1186,11 @@ const QuotationJob = () => {
 
                 <Box>
                   <Typography sx={{ fontWeight: 'bold', marginBottom: '5px' }}>Metal Color</Typography>
-                  <Select fullWidth value={MetalColor} onChange={handleMetalColor} >
+                  <Select fullWidth value={MetalColor} onChange={handleMetalColor}
+                    MenuProps={MenuPropsMobile}
+                    inputProps={{ style: { fontSize: '16px' } }}
+                    SelectDisplayProps={{ style: { fontSize: '16px' } }}
+                  >
                     {metalColorList?.map((e, i) => (
                       <MenuItem value={e?.value} key={i}>{e?.label}</MenuItem>
                     ))}
@@ -1166,7 +1199,11 @@ const QuotationJob = () => {
 
                 <Box>
                   <Typography sx={{ fontWeight: 'bold', marginBottom: '5px' }}>Metal Purity</Typography>
-                  <Select fullWidth value={metalPurity} onChange={handleMetalPurity} >
+                  <Select fullWidth value={metalPurity} onChange={handleMetalPurity}
+                    MenuProps={MenuPropsMobile}
+                    inputProps={{ style: { fontSize: '16px' } }}
+                    SelectDisplayProps={{ style: { fontSize: '16px' } }}
+                  >
                     {metalPurityList?.map((e, i) => (
                       <MenuItem value={e?.value} key={i}>{e?.label}</MenuItem>
                     ))}
@@ -1174,11 +1211,13 @@ const QuotationJob = () => {
                 </Box>
 
                 <Box sx={{ position: "relative", width: '100%' }}>
-                  <TextField label="Search" variant="outlined" value={searchVal} fullWidth onChange={eve => {
-                    setSearchVal(eve?.target?.value);
-                    setPage(0);
-                    handleSearch(eve, eve?.target?.value, fromDate, toDate, metalPurity, MetalColor, category, selectedStatus, orderProm);
-                  }} />
+                  <TextField label="Search" variant="outlined" value={searchVal} fullWidth
+                    inputProps={{ style: { fontSize: '16px' } }}
+                    onChange={eve => {
+                      setSearchVal(eve?.target?.value);
+                      setPage(0);
+                      handleSearch(eve, eve?.target?.value, fromDate, toDate, metalPurity, MetalColor, category, selectedStatus, orderProm);
+                    }} />
                   <Button sx={{ padding: 0, maxWidth: "max-content", minWidth: "max-content", position: "absolute", right: "12px", top: '50%', transform: 'translateY(-50%)', color: "#757575" }}
                     onClick={eve => handleSearch(eve, searchVal, fromDate, toDate, metalPurity, MetalColor, category, selectedStatus, orderProm)}><SearchIcon /></Button>
                 </Box>

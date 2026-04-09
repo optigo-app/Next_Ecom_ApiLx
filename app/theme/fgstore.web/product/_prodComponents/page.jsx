@@ -654,6 +654,7 @@ const Product = ({ params, searchParams, storeinit }) => {
     }, [productListData])
 
     const handelCustomCombo = (obj) => {
+        console.log(obj , "obj 131313")
 
         let output = FilterValueWithCheckedOnly()
 

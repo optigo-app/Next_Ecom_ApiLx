@@ -63,7 +63,7 @@ export const IsUserLoggedIn = async () => {
 
 export const getAboutUsContent = async () => {
   try {
-    const filePath = path.join(process.cwd(), "public", "WebSiteStaticImage", "html", ActiveTheme.aboutus.omjiyas);
+    const filePath = path.join(process.cwd(), "public", "WebSiteStaticImage", "html", ActiveTheme.aboutus.Sonasons);
     const htmlContent = await fs.promises.readFile(filePath, "utf-8");
     return htmlContent;
   } catch (error) {
@@ -130,7 +130,7 @@ export const getCustomHoqContent = async () => {
 
 export const getContactUsContent = async () => {
   try {
-    const filePath = path.join(process.cwd(), "public", "WebSiteStaticImage", "html", ActiveTheme.contactuse.omjiyas);
+    const filePath = path.join(process.cwd(), "public", "WebSiteStaticImage", "html", ActiveTheme.contactuse.Sonasons);
     const htmlContent = await fs.promises.readFile(filePath, "utf-8");
     return htmlContent;
   } catch (error) {

@@ -265,7 +265,7 @@ const OmjiyanshTermsData = {
 const ActiveThemeName = "omjiyas";
 
 export default function TermsAndConditions() {
-  const termsData = ActiveThemeName === "omjiyas" ? OmjiyanshTermsData : SonasonstermsData;
+  const termsData = ActiveThemeName !== "omjiyas" ? OmjiyanshTermsData : SonasonstermsData;
   return (
     <div className="fg_smr_about_mainDiv">
       <div className="daimondsEveryAbout">

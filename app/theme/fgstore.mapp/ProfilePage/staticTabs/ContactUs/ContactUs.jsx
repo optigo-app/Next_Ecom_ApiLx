@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Box,
   Typography,
@@ -38,6 +38,23 @@ const ContactUs = ({ open, onClose }) => {
   });
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
+
+  // Reset form whenever the drawer closes so re-opening shows a blank form
+  useEffect(() => {
+    if (!open) {
+      setFormData({
+        FullName: "",
+        InQuiryCompanyName: "",
+        EmailId: "",
+        mobileno: "",
+        InQuirySubject: "",
+        Be_In_Message: "",
+        Themeno: "1",
+        domainname: wesbiteDomainName,
+      });
+      setErrors({});
+    }
+  }, [open]);
 
   const ActiveMap = AppConfig[activeBrand].address.map;
   const ActiveAddress = AppConfig[activeBrand].address;

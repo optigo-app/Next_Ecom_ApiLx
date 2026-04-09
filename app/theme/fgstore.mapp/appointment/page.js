@@ -13,7 +13,7 @@ export const services = [
     },
     {
         title: 'Free 30 Day Returns',
-        description: 'Forevery offers a hassle-free jewelry shopping experience with its 30-DAY Returns policy. Get ready to shop confidently.',
+        description: 'Sonasons offers a hassle-free jewelry shopping experience with its 30-DAY Returns policy. Get ready to shop confidently.',
         image: '/images/HomePage/OurServices/free-return.png',
         link: '#',
         btnText: "Read More"
@@ -41,7 +41,7 @@ export const services = [
     }
 ];
 
-const AppointmentPage = ({assetBase}) => {
+const AppointmentPage = ({ assetBase }) => {
     const [selectedItem, setSelectedItem] = useState({});
     const items = [
         { id: 1, title: 'Engagement Ring', image: '/Appointment/appointment-jewel-1.png' },
@@ -76,9 +76,9 @@ const AppointmentPage = ({assetBase}) => {
                 </div>
             </div>
             <p className="smr_intro">
-                Welcome to Forevery your premier destination for exquisite labgrown diamonds.
-                Schedule an appointment today to experience the brilliance and beauty of our lab-grown diamonds and let Forevery help you find the perfect piece to cherish forever.
-                Experience the brilliance of lab-grown diamonds with Forevery.
+                Welcome to Sonasons your premier destination for exquisite labgrown diamonds.
+                Schedule an appointment today to experience the brilliance and beauty of our lab-grown diamonds and let Sonasons help you find the perfect piece to cherish forever.
+                Experience the brilliance of lab-grown diamonds with Sonasons.
                 Book an appointment now to view our exquisite collection and discover the sustainable and ethical beauty of labgrown diamonds.
             </p>
             <div className="smr_itemsMainDiv">
@@ -88,13 +88,13 @@ const AppointmentPage = ({assetBase}) => {
                         <div className="smr_items-grid">
                             {items.map(item => {
                                 const image = `${assetBase}${item?.image}`;
-                                 return <div className="smr_item-card" key={item.id}>
+                                return <div className="smr_item-card" key={item.id}>
                                     <div className="smr_imageDiv">
                                         <img src={image} alt={item?.title} />
                                     </div>
                                     <div className="smr_item-content">
                                         <h2>{item?.title}</h2>
-                                        <button className='smr_btn_a'  onClick={() => hanldeBook(item)}>BOOK NOW</button>
+                                        <button className='smr_btn_a' onClick={() => hanldeBook(item)}>BOOK NOW</button>
                                     </div>
                                 </div>
                             })}
@@ -102,7 +102,7 @@ const AppointmentPage = ({assetBase}) => {
                     </div>
                 }
                 {Object.keys(selectedItem).length !== 0 && selectedItem.constructor === Object &&
-                    <AppointmentForm selectedItem={selectedItem}  setSelectedItem={setSelectedItem}/>
+                    <AppointmentForm selectedItem={selectedItem} setSelectedItem={setSelectedItem} />
                 }
             </div>
         </div>
