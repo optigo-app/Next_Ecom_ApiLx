@@ -186,7 +186,9 @@ export const downloadExcelLedgerData = async () => {
   try {
     const table = document.getElementById('table-to-xls');
 
+
     if (!table) {
+
       setTimeout(() => {
         const button = document.getElementById('test-table-xls-button');
         if (button) button.click();
@@ -212,10 +214,12 @@ export const downloadExcelLedgerData = async () => {
 
     // ✅ MOBILE APP (Flutter WebView)
     if (window.flutter_inappwebview) {
+
       const reader = new FileReader();
 
       reader.onloadend = () => {
         const base64data = reader.result.split(",")[1];
+
 
         window.flutter_inappwebview.callHandler(
           "shareExcel",   // 👈 create this handler in Flutter
@@ -227,6 +231,7 @@ export const downloadExcelLedgerData = async () => {
       reader.readAsDataURL(blob);
       return;
     }
+
 
     // ✅ WEB DOWNLOAD (Fallback)
     const url = URL.createObjectURL(blob);

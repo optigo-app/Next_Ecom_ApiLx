@@ -2,16 +2,13 @@ import { getSession } from "../../FetchSessionData";
 import { CommonAPI } from "../CommonAPI/CommonAPI";
 
 export const CartAndWishListAPI = async (type, obj, visiterId, type2 = "", stockno, isPair) => {
-    // console.log('stockno in api: ', stockno);
-    // console.log("type2", type2, obj)
-
     const islogin = getSession("LoginUser");
     const UserEmail = getSession("registerEmail");
     const storeInit = getSession('storeInit');
     const loginUserDetail = getSession("loginUserDetail");
 
-    const customerId = (storeInit?.IsB2BWebsite == 0 && (islogin == false || islogin == null)) ? visiterId : (loginUserDetail?.id ?? 0);
-    const customerEmail = (storeInit?.IsB2BWebsite == 0 && (islogin == false || islogin == null)) ? visiterId : (loginUserDetail?.userid ?? "");
+    const customerId = (storeInit?.IsB2BWebsite == 0 && islogin == false) || islogin == null ? visiterId : loginUserDetail?.id ?? 0;
+    const customerEmail = (storeInit?.IsB2BWebsite == 0 && islogin == false) || islogin == null ? visiterId : loginUserDetail?.userid ?? "";
 
 
     let FinalObj = {
