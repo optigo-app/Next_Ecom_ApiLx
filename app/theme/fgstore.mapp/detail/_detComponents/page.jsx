@@ -476,7 +476,11 @@ const ProductPage = ({ params, searchParams, storeInit }) => {
     }, [location?.key]);
 
     const handleCart = (cartflag) => {
-        let metal = metalTypeCombo?.filter((ele) => ele?.metaltype == selectMtType)[0] ?? metalTypeCombo[0];
+        let storeinitInside = storeInit;
+        let logininfoInside = loginUserDetail;
+        // let metal = metalTypeCombo?.filter((ele) => ele?.metaltype == selectMtType)[0] ?? metalTypeCombo[0];
+        let metal = metalTypeCombo?.filter((ele) => ele?.metaltype == selectMtType)[0];
+
         let dia = diaQcCombo?.filter((ele) => ele?.Quality == selectDiaQc.split(",")[0] && ele?.color == selectDiaQc.split(",")[1])[0] ?? diaQcCombo[0];
         // let cs =
         //   csQcCombo?.filter(
@@ -485,10 +489,12 @@ const ProductPage = ({ params, searchParams, storeInit }) => {
         //       ele?.color == selectCsQc.split(",")[1]
         //   )[0] ?? csQcCombo[0];
 
-        const cs =
-            csQcCombo?.find((ele) => {
-                return ele?.Quality == selectCsQc.split(",")[0] && ele?.color == selectCsQc.split(",")[1];
-            }) ?? csQcCombo;
+        // const cs =
+        //     csQcCombo?.find((ele) => {
+        //         return ele?.Quality == selectCsQc.split(",")[0] && ele?.color == selectCsQc.split(",")[1];
+        //     }) ?? csQcCombo;
+        let cs = csQcCombo?.filter((ele) => ele?.Quality == selectCsQc?.split(",")[0] && ele?.color == selectCsQc?.split(",")[1]);
+
 
         let mcArr = metalColorCombo?.filter((ele) => {
             if (selectMtColor) {
@@ -499,16 +505,21 @@ const ProductPage = ({ params, searchParams, storeInit }) => {
         })[0];
 
         let prodObj = {
-            autocode: singleProd?.autocode,
-            Metalid: metal?.Metalid,
+            autocode: singleProd1?.autocode ?? singleProd?.autocode,
+            Metalid: metal?.Metalid ? metal?.Metalid : (logininfoInside?.MetalId ?? storeinitInside?.MetalId),
             MetalColorId: mcArr?.id ?? singleProd?.MetalColorid,
-            DiaQCid: `${dia?.QualityId},${dia?.ColorId}`,
-            CsQCid: `${cs?.QualityId ?? 0},${cs?.ColorId ?? 0}`,
-            Size: sizeData ?? singleProd?.DefaultSize,
+            // DiaQCid: `${dia?.QualityId},${dia?.ColorId}`,
+            // CsQCid: `${cs?.QualityId ?? 0},${cs?.ColorId ?? 0}`,
+            // Size: sizeData ?? singleProd?.DefaultSize,
+            DiaQCid: dia?.length ? `${dia[0]?.QualityId},${dia[0]?.ColorId}` : (logininfoInside?.cmboDiaQCid ?? storeinitInside?.cmboDiaQCid),
+            CsQCid: cs?.length ? `${cs[0]?.QualityId},${cs[0]?.ColorId}` : (logininfoInside?.cmboCSQCid ?? storeinitInside?.cmboCSQCid),
+            Size: sizeData ?? singleProd1?.DefaultSize ?? singleProd?.DefaultSize,
             Unitcost: singleProd1?.UnitCost ?? singleProd?.UnitCost,
             markup: singleProd1?.DesignMarkUp ?? singleProd?.DesignMarkUp,
             UnitCostWithmarkup: singleProd1?.UnitCostWithMarkUp ?? singleProd?.UnitCostWithMarkUp,
             Remark: "",
+            AlbumName: decodeUrl?.n ?? "",
+            Quantity: 1,
         };
 
         if (cartflag) {
