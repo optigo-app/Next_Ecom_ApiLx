@@ -546,7 +546,7 @@ $settedcOLOR: rgba(112, 128, 144, 0.096);
 
           .hoq_plus {
             position: absolute;
-            bottom: 6rem;
+            bottom: 5rem;
             width: 100%;
             height: 10vh;
             display: flex;
@@ -555,6 +555,8 @@ $settedcOLOR: rgba(112, 128, 144, 0.096);
             z-index: 55;
             display: none;
             opacity: 0.3;
+            box-sizing: border-box;
+            padding-inline: 8px;
 
             button {
               transition: 0.3s ease-in;
@@ -634,7 +636,7 @@ $settedcOLOR: rgba(112, 128, 144, 0.096);
             //       visibility: visible;  // Make it visible on hover
             //       opacity: 1;  // Fade in the .story-diamond
             //       transition: opacity 0.3s ease-in-out, visibility 0s linear 0s;  // Smooth opacity fade and immediate visibility change
-            //     }  
+            //     }
             // }
 
             .rollup_video {
@@ -716,9 +718,11 @@ $settedcOLOR: rgba(112, 128, 144, 0.096);
             }
 
             .jewel_parameter {
-              margin-top: -8px;
+              margin-top: 4px;
               display: flex;
               align-items: center;
+              justify-content: center;
+              flex-wrap: wrap;
               color: #7d7f85;
               font-size: 11px;
 
@@ -733,6 +737,7 @@ $settedcOLOR: rgba(112, 128, 144, 0.096);
 
             .hoq_prod_mtcolr_price {
               color: #7d7f85;
+              margin-top: 4px;
 
               span {
                 color: #7d7f85;
@@ -907,7 +912,8 @@ $settedcOLOR: rgba(112, 128, 144, 0.096);
             }
 
             .det {
-              h2 {}
+              h2 {
+              }
 
               .jewel_parameter {
                 line-height: 18px;
@@ -953,7 +959,8 @@ $settedcOLOR: rgba(112, 128, 144, 0.096);
             }
 
             .det {
-              h2 {}
+              h2 {
+              }
 
               .jewel_parameter {
                 line-height: 12px;
@@ -995,7 +1002,8 @@ $settedcOLOR: rgba(112, 128, 144, 0.096);
             }
 
             .det {
-              h2 {}
+              h2 {
+              }
 
               .jewel_parameter {
                 line-height: 12px;
@@ -1519,7 +1527,8 @@ $settedcOLOR: rgba(112, 128, 144, 0.096);
                 line-height: 9px !important;
               }
 
-              .hoq_prod_mtcolr_price {}
+              .hoq_prod_mtcolr_price {
+              }
             }
           }
         }

@@ -628,7 +628,7 @@ const Header = ({ storeinit, logos }) => {
                   </div>
                 )}
                 <List className="smr_ListMenuSiderMobile" sx={{ paddingTop: "0", marginBottom: "0px", marginTop: "15px" }}>
-                  {menuItems.map((menuItem) => (
+                  {menuItems?.map((menuItem) => (
                     <div key={menuItem.menuid}>
                       <ButtonBase component="div" className="muilistMenutext" onClick={() => handleLoginMenuClick(menuItem.menuname, null, "iconclicked")} style={{ width: "100%" }}>
                         <ListItem

@@ -47,7 +47,7 @@ const MobileCartDetails = ({
   const loginInfo = JSON.parse(sessionStorage.getItem("loginUserDetail"));
   const [imageSrc, setImageSrc] = useState();
 
-  const noImageFound = './image-not-found.jpg';
+  const noImageFound = '/image-not-found.jpg';
 
   const CDNDesignImageFolThumb = storeInitData?.CDNDesignImageFolThumb;
   const fullImagePath = `${CDNDesignImageFolThumb}${selectedItem?.designno}~1.jpg`;

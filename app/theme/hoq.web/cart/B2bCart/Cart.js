@@ -72,6 +72,7 @@ const CartPage = ({ storeinit, visiterId }) => {
 
   const location = useNextRouterLikeRR();
   const navigate = location.push;
+  const navigateReplace = location.replace;
   const { islogin, setCartCountNum } = useStore();
 
   const storeInit = storeinit;
@@ -81,17 +82,18 @@ const CartPage = ({ storeinit, visiterId }) => {
   const setCartCountVal = setCartCountNum;
   const isLargeScreen = useMediaQuery("(min-width:1000px)");
   const isMobileScreen = useMediaQuery("(max-width:768px)");
+  const redirectUrl = `/LoginOption?LoginRedirect=/delivery`;
 
   const handlePlaceOrder = () => {
-    if (storeInit?.IsPLW == 0) {
-      let priceData = finalCartData.reduce(
-        (total, item) => total + item?.FinalCost,
-        0
-      );
-      sessionStorage.setItem("TotalPriceData", priceData);
-      navigate("/delivery", { replace: true });
+    let priceData = finalCartData.reduce(
+      (total, item) => total + item?.FinalCost,
+      0
+    );
+    sessionStorage.setItem("TotalPriceData", priceData);
+    if (storeInit?.IsB2BWebsite == 0 && islogin == false || islogin == null) {
+      navigate(redirectUrl);
     } else {
-      handlePay();
+      navigateReplace("/delivery");
     }
     window.scrollTo(0, 0);
   };
@@ -269,6 +271,7 @@ const CartPage = ({ storeinit, visiterId }) => {
                     handleSave={handleSave}
                     handleCancel={handleCancel}
                     openHandleUpdateCartModal={handleOpenModal}
+                    storeinit={storeinit}
                   />
                 </div>
                 <div className="hoq_cart-right-side">
@@ -294,6 +297,7 @@ const CartPage = ({ storeinit, visiterId }) => {
                           decodeEntities={decodeEntities}
                           onUpdateCart={handleUpdateCart}
                           handleMoveToDetail={handleMoveToDetail}
+                          storeinit={storeinit}
                         />
                       )}
                     </div>
@@ -320,6 +324,7 @@ const CartPage = ({ storeinit, visiterId }) => {
                         decodeEntities={decodeEntities}
                         onUpdateCart={handleUpdateCart}
                         handleMoveToDetail={handleMoveToDetail}
+                        storeinit={storeinit}
                       />
                     </div>
                   )}
@@ -331,6 +336,7 @@ const CartPage = ({ storeinit, visiterId }) => {
                   onRemove={handleRemoveItem}
                   onUpdateCart={handleUpdateCart}
                   onCancelCart={handleCancelUpdateCart}
+                  storeinit={storeinit}
                 />
               </div>
             ) : (

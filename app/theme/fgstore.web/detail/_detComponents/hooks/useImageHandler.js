@@ -82,7 +82,7 @@ export const useImageHandler = (singleProd, singleProd1, selectMtColor, storeIni
         const normalImageCount = normalImages.length ? Math.max(...normalImages.map(i => i.Nm)) : 0;
 
         // Get metal color code
-        const mcArr = mtColorLocal.find(ele => ele.id === singleProd?.MetalColorid);
+        const mcArr = mtColorLocal?.find((ele) => ele?.id === pd?.MetalColorid);
         setSelectedMetalColor(mcArr?.colorcode);
 
         const buildImageURL = (i, isColor = false) => {

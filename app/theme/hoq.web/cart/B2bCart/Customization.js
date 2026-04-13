@@ -3,7 +3,7 @@ import "./hoq_cartPage.scss";
 import { Divider, Skeleton } from "@mui/material";
 import QuantitySelector from "./QuantitySelector";
 import { toast } from "react-toastify";
-import { formatTitleLine } from "@/app/(core)/utils/Glob_Functions/GlobalFunction";
+import { formatter, formatTitleLine } from "@/app/(core)/utils/Glob_Functions/GlobalFunction";
 
 const Customization = ({
   ispriceloding,
@@ -21,17 +21,17 @@ const Customization = ({
   handleSizeChange,
   decodeEntities,
   onUpdateCart,
+  storeinit
 }) => {
+  console.log(selectedItem, "selectedItem")
   const [metalTypeCombo, setMetalTypeCombo] = useState([]);
   const [metalColorCombo, setMetalColorCombo] = useState([]);
   const [ColorStoneCombo, setColorStoneCombo] = useState([]);
   const [diamondQualityColorCombo, setDiamondQualityColorCombo] = useState([]);
-  const [storeInitData, setStoreInitData] = useState();
   const loginUserDetail = JSON.parse(sessionStorage.getItem("loginUserDetail"));
 
   useEffect(() => {
-    const storeinitData = JSON.parse(sessionStorage.getItem("storeInit"));
-    setStoreInitData(storeinitData);
+
     const metalTypeData = JSON.parse(sessionStorage.getItem("metalTypeCombo"));
     const metalColorData = JSON.parse(sessionStorage.getItem("MetalColorCombo"));
     const diamondQtyColorData = JSON.parse(
@@ -68,9 +68,9 @@ const Customization = ({
         <div className="hoq_CartCusto_R-details">
           <p className="hoq_cart-Titleline">{formatTitleLine(selectedItem?.TitleLine) && selectedItem?.TitleLine}</p>
           <Divider />
-          {storeInitData?.IsProductWebCustomization == 1 && (
+          {storeinit?.IsProductWebCustomization == 1 && (
             <div className="hoq_Cart-options">
-              {storeInitData?.IsMetalCustomization == 1 && (
+              {storeinit?.IsMetalCustomization == 1 && (
                 <div className="option">
                   <label htmlFor="metal-type">Metal Type:</label>
                   <select
@@ -98,7 +98,7 @@ const Customization = ({
                   </select>
                 </div>
               )}
-              {storeInitData?.IsMetalCustomization == 1 && (
+              {storeinit?.IsMetalCustomization == 1 && (
                 <div className="option">
                   <label htmlFor="metal-color">Metal Color:</label>
                   <select
@@ -124,7 +124,7 @@ const Customization = ({
                   </select>
                 </div>
               )}
-              {storeInitData?.IsDiamondCustomization == 1 && (
+              {storeinit?.IsDiamondCustomization == 1 && (
                 <div className="option">
                   <label htmlFor="diamond">Diamond:</label>
                   <select
@@ -165,7 +165,7 @@ const Customization = ({
                   </select>
                 </div>
               )}
-              {storeInitData?.IsCsCustomization == 1 && (
+              {storeinit?.IsCsCustomization == 1 && (
                 <div className="option">
                   <label htmlFor="diamond">Color Stone:</label>
                   <select
@@ -239,7 +239,7 @@ const Customization = ({
               handleDecrement={handleDecrement}
               qtyCount={qtyCount}
             />
-            {storeInitData?.IsPriceShow == 1 && (
+            {storeinit?.IsPriceShow == 1 && (
               <div className="product-price">
                 {!ispriceloding ? (
                   <span>
@@ -249,10 +249,10 @@ const Customization = ({
                         paddingRight: "0.1rem",
                       }}
                       dangerouslySetInnerHTML={{
-                        __html: decodeEntities(loginUserDetail?.CurrencyCode ?? storeInitData?.CurrencyCode),
+                        __html: decodeEntities(loginUserDetail?.CurrencyCode ?? storeinit?.CurrencyCode),
                       }}
                     />
-                    {(selectedItem?.FinalCost).toLocaleString("en-IN")}
+                    {formatter(selectedItem?.FinalCost || selectedItem?.UnitCostWithMarkUp || 0)}
                   </span>
                 ) : (
                   <Skeleton
@@ -332,17 +332,19 @@ const Customization = ({
               </div>
             }
             <div className="">
-              {storeInitData?.IsPriceShow == 1 && (
+              {storeinit?.IsPriceShow == 1 && (
                 <div className="hoq_Stockproduct-price">
                   {!ispriceloding ? (
                     <span>
                       <span
                         className="hoq_currencyFont"
                         dangerouslySetInnerHTML={{
-                          __html: decodeEntities(loginUserDetail?.CurrencyCode ?? storeInitData?.CurrencyCode),
+                          __html: decodeEntities(loginUserDetail?.CurrencyCode ?? storeinit?.CurrencyCode),
                         }}
                       />
-                      {(selectedItem?.FinalCost).toLocaleString("en-IN")}
+                      {/* {Number(selectedItem?.FinalCost || selectedItem?.UnitCostWithMarkUp || 0).toLocaleString("en-IN")} */}
+                      {formatter(selectedItem?.FinalCost || selectedItem?.UnitCostWithMarkUp || 0)}
+
                     </span>
                   ) : (
                     <Skeleton

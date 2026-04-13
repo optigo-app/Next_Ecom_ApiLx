@@ -29,6 +29,7 @@ const Product_Card = ({
     CurrencyCode2,
     StoryLineProductList
 }) => {
+    const imageNotFound = "/image-not-found.jpg";
     const [isHover, setisHover] = useState(false);
     const [isPlusClicked, SetisPlusClicked] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
@@ -189,7 +190,7 @@ const Product_Card = ({
                             alt=""
                             onError={(e) => {
                                 e.target.onerror = null;
-                                e.target.src = imagnotfound;
+                                e.target.src = imageNotFound;
                             }}
                             loading="lazy"
                         />

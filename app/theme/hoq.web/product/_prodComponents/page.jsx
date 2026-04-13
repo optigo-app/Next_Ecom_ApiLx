@@ -815,7 +815,6 @@ const Product = ({ params, searchParams, storeinit }) => {
 
     const handleMoveToDetail = (productData) => {
         let output = FilterValueWithCheckedOnly()
-        const uniqueNmList = [...new Set(JSON.parse(productData?.ImageVideoDetail).map(item => item.Nm))];
 
         let obj = {
             a: productData?.autocode,
@@ -825,8 +824,8 @@ const Product = ({ params, searchParams, storeinit }) => {
             c: selectedCsId,
             f: output,
             i: productData?.MetalColorid,
-            l: JSON.parse(productData?.ImageVideoDetail)[0]?.Ex,
-            count: uniqueNmList.length,
+            l: productData?.ImageExtension,
+            count: productData?.ImageCount,
         }
 
         decodeAndDecompress()

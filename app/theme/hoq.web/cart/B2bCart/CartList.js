@@ -24,7 +24,7 @@ const CartList = ({
 
   return (
     <div className="hoq_RightCartList" >
-      <Grid container spacing={1} sx={{marginBottom  :"4rem"}}>
+      <Grid container gridColumn={0} spacing={0 } sx={{ marginBottom: "4rem" }}>
         {items.map((item, index) => (
           <CartItem
             key={item.id}

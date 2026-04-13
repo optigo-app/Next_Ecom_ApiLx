@@ -25,7 +25,7 @@ const OrderRemarkModal = ({ open, onClose, remark, onRemarkChange, onSave }) => 
           width: "90%",
           bgcolor: 'background.paper',
           boxShadow: 24,
-          p: 4,
+          p: 2,
           display: 'flex',
           flexDirection: 'column',
           borderRadius: '8px',

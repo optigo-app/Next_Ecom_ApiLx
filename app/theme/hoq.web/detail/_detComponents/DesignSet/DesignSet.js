@@ -17,8 +17,6 @@ const DesignSet = ({
   check
 }) => {
 
-  console.log("TCL: designSetList", JSON.parse(designSetList[0]?.Designdetail))
-  const noimage = "./image-not-found.jpg";
   return (
     <div className="hoq_design_Set">
       <div className="hoq_DesignSet_main">
@@ -103,7 +101,7 @@ const DesignSet = ({
                         style={{ borderTop: i !== 0 ? "none" : "" }}
                       >
                         <div style={{ display: "flex", gap: "60px" }}>
-                          <div style={{ marginLeft: "12px" }}>
+                          <div style={{ marginLeft: "12px", width: "110px", height: "110px", minWidth: "110px", flexShrink: 0 }}>
                             <img
                               src={
 
@@ -131,7 +129,8 @@ const DesignSet = ({
                               loading="lazy"
                               className="hoqthelook_img"
                               onError={(e) => {
-                                e.target.src = noimage;
+                                e.target.onerror = null;
+                                e.target.src = imageNotFound;
                               }}
                             />
                           </div>
