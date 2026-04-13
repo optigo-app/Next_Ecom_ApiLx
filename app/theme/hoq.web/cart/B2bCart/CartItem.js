@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import Box from "@mui/material/Box";
+import { formatter } from "@/app/(core)/utils/Glob_Functions/GlobalFunction";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import CardMedia from "@mui/material/CardMedia";
@@ -14,6 +15,7 @@ import RemarkModal from "./RemarkModal";
 import { GetCountAPI } from "@/app/(core)/utils/API/GetCount/GetCountAPI";
 import Cookies from "js-cookie";
 import { useStore } from "@/app/(core)/contexts/StoreProvider";
+import ConfirmationDialog from "@/app/(core)/utils/Glob_Functions/ConfirmationDialog/ConfirmationDialog";
 
 const CartItem = ({
   item,
@@ -45,6 +47,7 @@ const CartItem = ({
   const [isLoading, setisLoading] = useState(true);
   const [remark, setRemark] = useState(item.Remarks || "");
   const [isSelectedItems, setIsSelectedItems] = useState();
+  const [removeDialogOpen, setRemoveDialogOpen] = useState(false);
   const [countstatus, setCountStatus] = useState();
   const setCartCountVal = setCartCountNum;
   const [storeInitData, setStoreInitData] = useState();
@@ -152,6 +155,16 @@ const CartItem = ({
     }
   };
 
+  const handleConfirmRemoveItem = async () => {
+    setRemoveDialogOpen(false);
+    const returnValue = await onRemove(item);
+    if (returnValue?.msg == "success") {
+      GetCountAPI(visiterId).then((res) => {
+        setCartCountVal(res?.cartcount);
+      });
+    }
+  };
+
   const [pressing, setPressing] = useState(false);
   const pressTimer = useRef(null);
 
@@ -194,10 +207,11 @@ const CartItem = ({
       item
       size={{
         xs: 12,
-        sm: itemLength <= 2 ? 6 : 6,
-        md: itemLength <= 2 ? 6 : 6,
-        lg: itemLength <= 2 ? 6 : 4,
-        xxl: itemLength <= 2 ? 6 : 3,
+        sm: 6,
+        md: 4,
+        lg: 4,
+        xl: 4,
+        xxl: 4,
       }}
       className="hoq_cartListCardGrid"
     >
@@ -228,7 +242,8 @@ const CartItem = ({
           sx={{
             display: "flex",
             flexDirection: "row",
-            justifyContent: "center",
+            justifyContent: "space-between",
+            alignItems: "flex-start",
             position: "relative",
           }}
         >
@@ -253,6 +268,8 @@ const CartItem = ({
               image={imageSrc}
               alt=" "
               sx={{
+                width: '50%',
+                objectFit: 'contain',
                 border: 'none',
                 outline: 'none',
                 boxShadow: 'none',
@@ -274,7 +291,7 @@ const CartItem = ({
               loading="lazy"
             />
           )}
-          <div className="hoq_rightContentDataDiv">
+          <div className="hoq_rightContentDataDiv" style={{ width: '50%', paddingLeft: '5px' }}>
             <CardContent
               className="hoq_cartcontentData"
               onClick={() => onSelect(item)}
@@ -337,7 +354,7 @@ const CartItem = ({
                           __html: decodeEntities(loginUserDetail?.CurrencyCode ?? storeInitData?.CurrencyCode),
                         }}
                       />
-                      {(item?.UnitCostWithMarkUp).toLocaleString('en-IN')}
+                      {formatter(item?.FinalCost || item?.UnitCostWithMarkUp || 0)}
                     </span>
                   )}
                 </>
@@ -349,7 +366,7 @@ const CartItem = ({
                 </Typography>
               )}
             </CardContent>
-            <Box className="hoq_cartbtngroupReRm">
+            <Box className="hoq_cartbtngroupReRm" sx={{ display: 'flex', justifyContent: 'space-between', padding: '5px' }}>
               <button
                 className='hoq_ItemRemarkbtn'
                 onClick={() => handleOpen()}
@@ -359,7 +376,7 @@ const CartItem = ({
               </button>
               <button
                 style={{ border: 'none', background: 'none', cursor: 'pointer' }}
-                className='hoq_ReomoveCartbtn' variant="body2" onClick={() => handleRemoveItem(item, index)} >
+                className='hoq_ReomoveCartbtn' variant="body2" onClick={() => setRemoveDialogOpen(true)} >
                 Remove
               </button>
             </Box>
@@ -391,6 +408,13 @@ const CartItem = ({
         remark={remark}
         onRemarkChange={handleRemarkChangeInternal}
         onSave={handleSaveInternal}
+      />
+      <ConfirmationDialog
+        open={removeDialogOpen}
+        onClose={() => setRemoveDialogOpen(false)}
+        onConfirm={handleConfirmRemoveItem}
+        title="Confirm"
+        content="Are you sure you want to remove this item?"
       />
     </Grid>
   );

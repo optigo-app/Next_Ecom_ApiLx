@@ -6,6 +6,8 @@ const domainMap = {
   localhost: NEXT_APP_WEB,
 };
 
+
+
 export default async function middleware(req) {
   try {
     const { cookies, nextUrl } = req;

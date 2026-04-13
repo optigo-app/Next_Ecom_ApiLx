@@ -45,6 +45,7 @@ import { SaveLastViewDesign } from "@/app/(core)/utils/API/SaveLastViewDesign/Sa
 import { useNextRouterLikeRR } from "@/app/(core)/hooks/useLocationRd";
 import { useStore } from "@/app/(core)/contexts/StoreProvider";
 import { SearchParamsParser } from "@/app/(core)/utils/GlobalFunctions/Parser";
+import { getSession } from "@/app/(core)/utils/FetchSessionData";
 
 const ProductPage = ({ params, searchParams, storeInit }) => {
     const navigate = useNextRouterLikeRR();
@@ -103,8 +104,8 @@ const ProductPage = ({ params, searchParams, storeInit }) => {
     const [proThumImgCount, setProThumImgCount] = useState("");
     const [imageLoaded, setIsImageLoaded] = useState(true);
 
-    const noimage = "./image-not-found.jpg";
-    const imageNotFound = "./image-not-found.jpg";
+    const noimage = "/image-not-found.jpg";
+    const imageNotFound = "/image-not-found.jpg";
 
     useEffect(() => {
         if (singleProd?.IsInWish == 1) {
@@ -136,10 +137,10 @@ const ProductPage = ({ params, searchParams, storeInit }) => {
     };
 
     const callAllApi = () => {
-        let mtTypeLocal = JSON.parse(sessionStorage.getItem("metalTypeCombo"));
-        let diaQcLocal = JSON.parse(sessionStorage.getItem("diamondQualityColorCombo"));
-        let csQcLocal = JSON.parse(sessionStorage.getItem("ColorStoneQualityColorCombo"));
-        let mtColorLocal = JSON.parse(sessionStorage.getItem("MetalColorCombo"));
+        let mtTypeLocal = getSession("metalTypeCombo");
+        let diaQcLocal = getSession("diamondQualityColorCombo");
+        let csQcLocal = getSession("ColorStoneQualityColorCombo");
+        let mtColorLocal = getSession("MetalColorCombo");
 
         if (!mtTypeLocal || mtTypeLocal?.length === 0) {
             MetalTypeComboAPI(cookie)
@@ -199,7 +200,7 @@ const ProductPage = ({ params, searchParams, storeInit }) => {
     };
 
     useEffect(() => {
-        const logininfo = JSON.parse(sessionStorage.getItem("loginUserDetail"));
+        const logininfo = getSession("loginUserDetail");
         setLoginInfo(logininfo);
     }, []);
 
@@ -327,7 +328,8 @@ const ProductPage = ({ params, searchParams, storeInit }) => {
                 setPdImageArr(thumbs);
             }
         }
-        setIsImageLoaded(false);
+        // NOTE: Do NOT call setIsImageLoaded(false) here.
+        // The skeleton must stay visible until ProdCardImageFunc validates images.
     }, []); // Empty dependency array to run only once on mount
 
     useEffect(() => {
@@ -339,14 +341,14 @@ const ProductPage = ({ params, searchParams, storeInit }) => {
             setDecodeUrl(decodeobj);
         }
 
-        let storeinitInside = JSON.parse(sessionStorage.getItem("storeInit"));
-        const logininfoInside = JSON.parse(sessionStorage.getItem("loginUserDetail"));
+        let storeinitInside = getSession("storeInit");
+        const logininfoInside = getSession("loginUserDetail");
 
-        let mtTypeLocal = JSON.parse(sessionStorage.getItem("metalTypeCombo"));
+        let mtTypeLocal = getSession("metalTypeCombo");
 
-        let diaQcLocal = JSON.parse(sessionStorage.getItem("diamondQualityColorCombo"));
+        let diaQcLocal = getSession("diamondQualityColorCombo");
 
-        let csQcLocal = JSON.parse(sessionStorage.getItem("ColorStoneQualityColorCombo"));
+        let csQcLocal = getSession("ColorStoneQualityColorCombo");
 
         let metalArr;
         let diaArr;
@@ -414,10 +416,6 @@ const ProductPage = ({ params, searchParams, storeInit }) => {
 
                         setSizeData(initialsize);
 
-                        // await SingleFullProdPriceAPI(decodeobj).then((res) => {
-                        //   setSingleProdPrice(res);
-                        //   console.log("singlePrice", res);
-                        // });
                     }
                     return res;
                 })
@@ -469,12 +467,6 @@ const ProductPage = ({ params, searchParams, storeInit }) => {
     const handleCart = (cartflag) => {
         let metal = metalTypeCombo?.filter((ele) => ele?.metaltype == selectMtType)[0] ?? metalTypeCombo[0];
         let dia = diaQcCombo?.filter((ele) => ele?.Quality == selectDiaQc.split(",")[0] && ele?.color == selectDiaQc.split(",")[1])[0] ?? diaQcCombo[0];
-        // let cs =
-        //   csQcCombo?.filter(
-        //     (ele) =>
-        //       ele?.Quality == selectCsQc.split(",")[0] &&
-        //       ele?.color == selectCsQc.split(",")[1]
-        //   )[0] ?? csQcCombo[0];
 
         const cs =
             csQcCombo?.find((ele) => {
@@ -600,11 +592,11 @@ const ProductPage = ({ params, searchParams, storeInit }) => {
         let navVal = result[0]?.split("=")[1];
         let decodeobj = decodeAndDecompress(navVal);
 
-        let mtTypeLocal = JSON.parse(sessionStorage.getItem("metalTypeCombo"));
+        let mtTypeLocal = getSession("metalTypeCombo");
 
-        let diaQcLocal = JSON.parse(sessionStorage.getItem("diamondQualityColorCombo"));
+        let diaQcLocal = getSession("diamondQualityColorCombo");
 
-        let csQcLocal = JSON.parse(sessionStorage.getItem("ColorStoneQualityColorCombo"));
+        let csQcLocal = getSession("ColorStoneQualityColorCombo");
 
         setTimeout(() => {
             if (decodeUrl) {
@@ -612,8 +604,8 @@ const ProductPage = ({ params, searchParams, storeInit }) => {
                 let diaArr;
                 let csArr;
 
-                let storeinitInside = JSON.parse(sessionStorage.getItem("storeInit"));
-                let logininfoInside = JSON.parse(sessionStorage.getItem("loginUserDetail"));
+                let storeinitInside = getSession("storeInit");
+                let logininfoInside = getSession("loginUserDetail");
 
                 if (mtTypeLocal?.length) {
                     metalArr = mtTypeLocal?.filter((ele) => ele?.Metalid == (decodeobj?.m ? decodeobj?.m : (logininfoInside?.MetalId ?? storeinitInside?.MetalId)))[0];
@@ -650,7 +642,7 @@ const ProductPage = ({ params, searchParams, storeInit }) => {
     }, [singleProd]);
 
     useEffect(() => {
-        let mtColorLocal = JSON.parse(sessionStorage.getItem("MetalColorCombo"));
+        let mtColorLocal = getSession("MetalColorCombo");
         let mcArr;
 
         if (mtColorLocal?.length) {
@@ -661,8 +653,11 @@ const ProductPage = ({ params, searchParams, storeInit }) => {
     }, [singleProd]);
 
     const ProdCardImageFunc = async () => {
-        const storeInit = JSON.parse(sessionStorage.getItem("storeInit"));
-        const mtColorLocal = JSON.parse(sessionStorage.getItem("MetalColorCombo")) || [];
+        // Show skeleton while we validate images
+        setIsImageLoaded(true);
+
+        const storeInit = getSession("storeInit");
+        const mtColorLocal = getSession("MetalColorCombo") || [];
         const pd = singleProd;
 
         const imageVideoDetail = pd?.ImageVideoDetail;
@@ -786,17 +781,19 @@ const ProductPage = ({ params, searchParams, storeInit }) => {
 
         setPdVideoArr(pdvideoList.length > 0 ? pdvideoList : []);
         setPdImageLoader(false);
+        // Images validated — dismiss skeleton
+        setIsImageLoaded(false);
 
         return pdImgList[0] || imageNotFound;
     };
 
-    // Run ProdCardImageFunc only when singleProd is available
+
     useEffect(() => {
-        if (Object.keys(singleProd).length > 0) {
-            setPdImageLoader(true);
+        if (singleProd && Object.keys(singleProd).length > 0) {
             ProdCardImageFunc();
         }
-    }, [singleProd]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [singleProd, singleProd1]);
 
     const handleCustomChange = async (e, type) => {
         let metalArr;
@@ -804,11 +801,11 @@ const ProductPage = ({ params, searchParams, storeInit }) => {
         let csArr;
         let size;
 
-        let mtTypeLocal = JSON.parse(sessionStorage.getItem("metalTypeCombo"));
+        let mtTypeLocal = getSession("metalTypeCombo");
 
-        let diaQcLocal = JSON.parse(sessionStorage.getItem("diamondQualityColorCombo"));
+        let diaQcLocal = getSession("diamondQualityColorCombo");
 
-        let csQcLocal = JSON.parse(sessionStorage.getItem("ColorStoneQualityColorCombo"));
+        let csQcLocal = getSession("ColorStoneQualityColorCombo");
 
         if (type === "mt") {
             metalArr = mtTypeLocal?.filter((ele) => ele?.metaltype == e.target.value)[0]?.Metalid;
@@ -869,7 +866,7 @@ const ProductPage = ({ params, searchParams, storeInit }) => {
     };
 
     const handleMetalWiseColorImg = async (e) => {
-        const mtColorLocal = JSON.parse(sessionStorage.getItem("MetalColorCombo")) || [];
+        const mtColorLocal = getSession("MetalColorCombo") || [];
         const pd = singleProd ?? singleProd1;
         const selectedMetalColorName = e.target.value;
         const { designno, ImageExtension } = pd || {};
@@ -1010,9 +1007,7 @@ const ProductPage = ({ params, searchParams, storeInit }) => {
     };
 
     const handleMoveToDetail = (productData) => {
-        console.log("TCL: handleMoveToDetail -> productData", productData);
         let loginInfo = loginUserDetail;
-        console.log("TCL: handleMoveToDetail -> loginInfo", loginInfo);
 
         let obj = {
             a: productData?.autocode,
@@ -1035,11 +1030,12 @@ const ProductPage = ({ params, searchParams, storeInit }) => {
         setSingleProd1({});
         setSingleProd({});
         setIsImageLoad(true);
+        setIsImageLoaded(true);
     };
 
     const handleCartandWish = (e, ele, type) => {
         // console.log("event", e.target.checked, ele, type);
-        let loginInfo = JSON.parse(sessionStorage.getItem("loginUserDetail"));
+        let loginInfo = getSession("loginUserDetail");
 
         let prodObj = {
             StockId: ele?.StockId,
@@ -1155,24 +1151,14 @@ const ProductPage = ({ params, searchParams, storeInit }) => {
                                         );
                                     })}
                                 </div>
-                                <div
-                                    className="main_image"
-                                    style={{
-                                        height: "80vh",
-                                        width: "100%",
-                                        marginTop: "3rem",
-                                        marginLeft: "1rem",
-                                        borderRadius: "4px",
-                                    }}
-                                >
+                                <div className="main_image">
                                     <Skeleton
-                                        width={"100%"}
+                                        variant="rectangular"
+                                        width="100%"
+                                        height={650}
                                         sx={{
-                                            padding: "0",
-                                            marginTop: "-16rem",
-                                            marginLeft: "-8px",
-                                            height: "100vh",
-                                            backgroundColor: "#f0ededb4 !important;",
+                                            backgroundColor: "#f0ededb4 !important",
+                                            borderRadius: "4px"
                                         }}
                                     />
                                 </div>
@@ -1223,7 +1209,7 @@ const ProductPage = ({ params, searchParams, storeInit }) => {
                                                     />
                                                 ) : (
                                                     <div className="video_box" style={{ position: "relative" }}>
-                                                        <video src={val?.src} className="hoq_prod_thumb_img" autoPlay muted loop />
+                                                        <video src={val?.src} className="hoq_prod_thumb_img" autoPlay muted loop playsInline />
                                                         <IoIosPlayCircle className="play_io_icon" />
                                                     </div>
                                                 )}

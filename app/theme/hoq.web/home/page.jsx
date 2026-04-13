@@ -48,8 +48,8 @@ const HoqHome = cache(async () => {
           <ImageBannerTab assetsBase={assetBase} />
           <ScrollTriggerTab assetBase={assetBase} />
           <SocialTab assetBase={assetBase} />
-          <InfoSection />
-          <FaqSection />
+          {/* <InfoSection /> */}
+          {/* <FaqSection /> */}
         </>
       )}
       {storeData?.Blockno === 2 && (
@@ -64,8 +64,8 @@ const HoqHome = cache(async () => {
           <ImageBannerTab assetsBase={assetBase} />
           <ScrollTriggerTab assetBase={assetBase} />
           <SocialTab assetBase={assetBase} />
-          <InfoSection />
-          <FaqSection />
+          {/* <InfoSection /> */}
+          {/* <FaqSection /> */}
         </>
       )}
     </Box>

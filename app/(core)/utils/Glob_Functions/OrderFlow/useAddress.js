@@ -295,10 +295,10 @@ export const useAddress = () => {
     };
 
     useEffect(() => {
-        const defaultAddressItem = addressData.find(item => item.isdefault === 1);
+        const defaultAddressItem = addressData?.find(item => item?.isdefault === 1);
         if (defaultAddressItem) {
-            let deafu = JSON.stringify(defaultAddressItem)
-            sessionStorage.setItem('selectedAddressId', deafu)
+            let deafu = JSON?.stringify(defaultAddressItem)
+            sessionStorage?.setItem('selectedAddressId', deafu)
         } else {
             return;
         }

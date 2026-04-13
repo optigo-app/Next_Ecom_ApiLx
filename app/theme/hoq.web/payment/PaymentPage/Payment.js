@@ -3,7 +3,7 @@ import PaymentComponent from '@/app/(core)/utils/PaymentComponent/PaymentCompone
 
 const Payment = ({ storeinit }) => {
   return (
-    <div><PaymentComponent bgcolor={"red"} storeinit={storeinit} /></div>
+    <div><PaymentComponent bgcolor={"#C20000"} storeinit={storeinit} /></div>
   )
 }
 

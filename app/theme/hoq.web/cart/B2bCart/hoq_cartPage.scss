@@ -6,7 +6,6 @@ $cartUpdateBtncolor: #b1b1b1;
   font-family: $fontDmSans;
   font-size: 16px;
   font-weight: 500;
-
 }
 
 .hoq_MainBGDiv {
@@ -19,7 +18,6 @@ $cartUpdateBtncolor: #b1b1b1;
     font-family: $fontDmSans;
     font-size: 16px;
     font-weight: 500;
-
   }
 
   .cartMainPageDiv {
@@ -93,7 +91,9 @@ $cartUpdateBtncolor: #b1b1b1;
         background-color: $btn1bgColor;
         border: 1px solid $btn1FontColor;
         cursor: pointer;
-        transition: background-color 0.3s, color 0.3s;
+        transition:
+          background-color 0.3s,
+          color 0.3s;
 
         &.hoq_cartActivebtn {
           background-color: $btn1ActivebgColor;
@@ -257,7 +257,8 @@ $cartUpdateBtncolor: #b1b1b1;
 
     .hoq_cartListCard1 {
       width: 400px !important;
-      box-shadow: rgba(0, 0, 0, 0.02) 0px 1px 3px 0px,
+      box-shadow:
+        rgba(0, 0, 0, 0.02) 0px 1px 3px 0px,
         rgba(27, 31, 35, 0.15) 0px 0px 0px 1px !important;
 
       .hoq_card-ContentsData {
@@ -325,7 +326,6 @@ $cartUpdateBtncolor: #b1b1b1;
       @media (max-width: 1100px) {
         height: 250px !important;
       }
-
     }
   }
 
@@ -531,7 +531,8 @@ $cartUpdateBtncolor: #b1b1b1;
   // cart list item css(left side)
 
   .hoq_cartListCard {
-    box-shadow: rgba(0, 0, 0, 0.02) 0px 1px 3px 0px,
+    box-shadow:
+      rgba(0, 0, 0, 0.02) 0px 1px 3px 0px,
       rgba(27, 31, 35, 0.15) 0px 0px 0px 1px !important;
     display: flex !important;
     justify-content: space-between !important;
@@ -647,12 +648,14 @@ $cartUpdateBtncolor: #b1b1b1;
   }
 
   .hoq_cart-Accordian {
-    box-shadow: rgba(0, 0, 0, 0.02) 0px 1px 3px 0px,
+    box-shadow:
+      rgba(0, 0, 0, 0.02) 0px 1px 3px 0px,
       rgba(27, 31, 35, 0.15) 0px 0px 0px 1px !important;
   }
 
   .hoq_Cart-prCard {
-    box-shadow: rgba(0, 0, 0, 0.02) 0px 1px 3px 0px,
+    box-shadow:
+      rgba(0, 0, 0, 0.02) 0px 1px 3px 0px,
       rgba(27, 31, 35, 0.15) 0px 0px 0px 1px !important;
   }
 

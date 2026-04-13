@@ -28,9 +28,10 @@ const CartDetails = ({
   onUpdateCart,
   decodeEntities,
   handleMoveToDetail,
+  storeinit
 }) => {
 
-  const storeinitData = JSON.parse(sessionStorage.getItem('storeInit'));
+  const storeinitData = storeinit;
   const CDNDesignImageFolThumb = storeinitData?.CDNDesignImageFolThumb;
   const fullImagePath = `${CDNDesignImageFolThumb}${selectedItem?.designno}~1.jpg`;
   const CDNDesignImageFol = storeinitData?.CDNDesignImageFol;
@@ -43,7 +44,7 @@ const CartDetails = ({
     handleMetalColorChange(value);
   };
 
-  const noImageFound = "./image-not-found.jpg";
+  const noImageFound = "/image-not-found.jpg";
 
   const isLoading = selectedItem?.loading;
 
@@ -140,6 +141,7 @@ const CartDetails = ({
 
       </div>
       <Customization
+        storeinit={storeinit}
         ispriceloding={ispriceloding}
         selectedItem={selectedItem}
         handleIncrement={handleIncrement}

@@ -1,9 +1,6 @@
-import { getStoreInit } from "@/app/(core)/utils/GlobalFunctions/GlobalFunctions";
 import AddressManagement from "./_deliComp/Delivery";
 
-const ProductList = async ({ params, searchParams }) => {
-    const storeinit = await getStoreInit();
-
+const ProductList = async ({ params, searchParams, storeinit }) => {
     return (
         <>
             <AddressManagement params={params} searchParams={searchParams} storeinit={storeinit} />

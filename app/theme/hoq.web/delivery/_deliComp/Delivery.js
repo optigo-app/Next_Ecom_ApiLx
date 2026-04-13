@@ -31,29 +31,28 @@ const AddressManagement = () => {
         handleDeleteClick,
         handleDeleteClose,
         handleDefaultSelection,
-        proceedToOrder
+        proceedToOrder,
+        storeinit
     } = useAddress();
 
     const location = useNextRouterLikeRR();
     const navigate = location.push;
+    const GoBack = location.back;
 
     return (
         <div className="hoqMo_DeliverMainDiv">
-            <p
-                className="SmiCartListTitle"
-                style={{
-                    padding: " 25px 15px ",
-                    margin: "25px ",
-                    boxShadow: "none",
-                    cursor: "pointer",
-                }}
-            >
-                <IoArrowBack
-                    style={{ height: "25px", width: "25px", marginRight: "10px" }}
-                    onClick={() => navigate(-1)}
-                />
-                Select delivery address
-            </p>
+            {/* ── Page Header ── */}
+            <div className="hoq_deliveryPageHeader">
+                <button
+                    className="hoq_backBtn"
+                    onClick={() => GoBack()}
+                    aria-label="Go back"
+                >
+                    <IoArrowBack />
+                </button>
+                <h1 className="hoq_deliveryTitle">Select Delivery Address</h1>
+            </div>
+
             <div className="hoqMo_secondMaindivAdd">
                 <div className="hoqMo_addMainDiv">
                     {!isLoading ? (

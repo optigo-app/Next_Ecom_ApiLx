@@ -28,15 +28,14 @@ const WishlistItems = ({
   StoreInit,
 }) => {
 
-  const { setCartCountNum: setCartCountVal, setWishCountNum: setWishCountVal } = useStore();
+  const { setCartCountNum: setCartCountVal, setWishCountNum: setWishCountVal, loginUserDetail } = useStore();
 
   const visiterId = Cookies.get("visiterId");
-  const loginUserDetail = JSON.parse(sessionStorage.getItem("loginUserDetail"));
+  // const loginUserDetail = JSON.parse(sessionStorage.getItem("loginUserDetail"));
 
   const noImageFound = "./image-not-found.jpg";
 
-  const storeInit = JSON.parse(sessionStorage.getItem("storeInit"));
-  const CDNDesignImageFolThumb = storeInit?.CDNDesignImageFolThumb;
+  const CDNDesignImageFolThumb = StoreInit?.CDNDesignImageFolThumb;
   const fullImagePath = `${CDNDesignImageFolThumb}${item?.designno}~1.jpg`;
 
   const isLoading = item?.loading;
@@ -235,7 +234,7 @@ const WishlistItems = ({
               className="hoq_Wl-Cartbtn"
               onClick={() => handleWishlistToCartFun(item)}
             >
-              {item?.IsInCart != 1 ? "Add to cart +" : "Remove from cart"}
+              {item?.IsInCart != 1 ? "Add to cart +" : "In cart"}
             </button>
           </div>
         </div>
@@ -261,15 +260,15 @@ const Toast = () => (
 
 const CustomGrid = ({ itemsLength, children }) => {
   const sizes = {
-    xs: 6,                              // 2 items per row on mobile
+    xs: 12,                              // 2 items per row on mobile
     sm: itemsLength <= 2 ? 6 : 4,       // if only 2 items → bigger
     md: itemsLength <= 2 ? 4 : 4,
     lg: itemsLength <= 2 ? 3 : 3,       // 4 items per row on desktop
-    xl: 2.4,                            // smoother spacing on big screens
+    xl: itemsLength <= 2 ? 3 : 3,       // 4 items per row on extra large screens
   };
 
   return (
-    <Grid item {...sizes} sx={{ borderRadius: 0 }}>
+    <Grid item size={sizes} sx={{ borderRadius: 0 }}>
       {children}
     </Grid>
   );

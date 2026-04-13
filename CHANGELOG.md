@@ -1,3 +1,75 @@
+## [2026-04-13]
+
+- **Cart — Dual Price Display Fix (hoq.web B2B Cart)**:
+  - **Files modified**: `app/theme/hoq.web/cart/B2bCart/CartItem.js`
+  - **Old behavior**: The cart list card showed `item.UnitCostWithMarkUp` (per-unit price) while the right-side detail panel showed `selectedItem.FinalCost` (unit × quantity). This caused two visually different prices for the same product, confusing users.
+  - **New behavior**: Cart list card now uses `formatter(item?.FinalCost || item?.UnitCostWithMarkUp || 0)` — matching the fgstore.web reference exactly. Both card and panel now show the same total cost.
+  - **Reason for change**: User reported two different prices showing for the same selected product.
+
+- **Navbar — Cart/Wish Count Zero on Navigation/Refresh (hoq.web)**:
+  - **Files modified**: `app/components/(dynamic)/Header/Hoq/Navbar.js`
+  - **Old behavior**: The Navbar's own `GetCountAPI` call always passed `visiterId` (the guest cookie) and only ran on mount (`[]` deps). For a logged-in B2B user, `visiterId` resolves 0 items from the API because the server expects `loginUserDetail.id`. Counts appeared correct at first login but reset to 0 on any navigation/refresh.
+  - **New behavior**: The `useEffect` now reads `loginUserDetail` from session and resolves the correct ID — `loginUserDetail.id` for B2B/logged-in users, `visiterId` for B2C guests. The dependency array is changed to `[islogin]` so the count also refreshes after login/logout events.
+  - **Reason for change**: User reported cart and wishlist counts showing as 0 after page refresh or navigation.
+
+- **DeliveryAPI — TypeError Null Guard (hoq.web)**:
+  - **Files modified**: `app/(core)/utils/API/OrderFlow/DeliveryAPI.js`
+  - **Old behavior**: All five exported functions (`fetchAddresses`, `addAddress`, `editAddress`, `deleteAddress`, `setDefaultAddress`) immediately destructured `storedData.id` and `storeInit.FrontEnd_RegNo` without checking if those values were non-null. Because `useAddress` is imported by `Cart.js`, which mounts on the cart page before session hydration completes, `getSession('loginUserDetail')` returned `null`, causing a hard crash: `TypeError: Cannot read properties of null (reading 'id')`.
+  - **New behavior**: Each function now performs an early null-guard: `if (!storedData?.id || !storeInit?.FrontEnd_RegNo)` → returns a safe empty value (`[]`, `null`, or `false`) and logs a warning. Removed now-dead `encodedCombinedValue`/`btoa` lines. Fixed `response.Data.rd` to `response?.Data?.rd` to avoid secondary crash if API itself fails.
+  - **Reason for change**: Runtime error on cart page: `TypeError: Cannot read properties of null (reading 'id') at fetchAddresses (DeliveryAPI.js:11:76)`.
+
+## [2026-04-13]
+
+- **Client IP Tracking for CommonAPI**:
+  - **Files modified**: `app/(core)/utils/API/CommonAPI/CommonAPI.js`
+  - **Old behavior**: CommonAPI payload did not include the client's IP address.
+  - **New behavior**: Added the `getClientIpAddress` utility to fetch the client IP from `api.ipify.org` and cache it in `sessionStorage` with proper SSR window checks. Modified `CommonAPI` to dynamically inject the retrieved IP (`ipaddress`) directly into the `con` JSON string parameter of the request payload (parsing and re-stringifying it) without adding it as a separate root level variable. This ensures the IP is cleanly passed within existing parameter boundaries across all API calls.
+  - **Reason for change**: To track the client's IP address centrally across all API requests without fetching it on every interaction due to session caching.
+
+## [2026-04-11]
+
+- **ScrollTriggerTab Component Refactor**:
+  - **Files modified**: `app/components/(static)/ScrollTriggerTab/ScrollTriggerTab.js`
+  - **Old behavior**: The component relied heavily on a custom SCSS file (`ScrollTriggerTab.scss`) with manual left/right offset classes that caused overlapping layout issues and a "cut" visual effect. It also used generic placeholder text.
+  - **New behavior**: The component has been completely rewritten using Material-UI (MUI) structural components (`Box`, `Typography`, `Button`) and the `sx` prop, matching the exact layout style and visual structure without using external or raw CSS/SCSS. E-commerce standard dummy text (e.g., "Exquisite Craftsmanship", "Custom Designs") now replaces the generic "Lorem Ipsum".
+  - **Reason for change**: User requested removal of raw CSS/SCSS in favor of pure MUI components, along with proper e-commerce content and consistent card layout rendering.
+
+- **Product Detail — "NO IMAGE" Flash Fix (hoq.web)**:
+  - **Files modified**: `app/theme/hoq.web/detail/_detComponents/page.jsx`
+  - **Old behavior**: On first load or hard refresh, the skeleton loader was dismissed prematurely by `setIsImageLoaded(false)` in the mount `useEffect` (line 330). This caused the image area to render with "NO IMAGE" placeholder while `ProdCardImageFunc` was still asynchronously validating images. Once validation completed, the real image appeared — causing a visible "NO IMAGE" → real image flash.
+  - **New behavior**: 1) Removed premature `setIsImageLoaded(false)` from mount effect. 2) Added `setIsImageLoaded(true)` at the start of `ProdCardImageFunc` to ensure skeleton stays visible during async image validation. 3) Added `setIsImageLoaded(false)` at the end of `ProdCardImageFunc` to dismiss skeleton only after images are confirmed. 4) Added `setIsImageLoaded(true)` in `handleMoveToDetail` to re-show skeleton when navigating between designs. If no valid images exist, "NO IMAGE" is shown correctly after validation. This matches the existing fix pattern in `fgstore.web` and `fgstore.mapp`.
+  - **Reason for change**: User reported "NO IMAGE" flashing on product detail page before real images loaded on first visit/refresh.
+
+- **DesignSet Component — Squeezed/Broken Image Fix (hoq.web)**:
+  - **Files modified**: `app/theme/hoq.web/detail/_detComponents/DesignSet/DesignSet.js`
+  - **Old behavior**: The sidebar product thumbnails in the "Complete The Look" section disappeared or became incredibly thin lines. This happened because the fallback `noimage` variable had a relative path (`"./image-not-found.jpg"`) which caused a 404 error on dynamic routes (like `/d/...`), and the surrounding flex container had no shrink protection, causing the missing image bounding box to collapse under flex pressure.
+  - **New behavior**: 1) Replaced the invalid relative `noimage` variable with the correctly passed absolute `imageNotFound` prop. 2) Added `e.target.onerror = null` to prevent infinite image loading loops. 3) Added `flexShrink: 0` to the image's parent wrapper so the 110x110 aspect ratio holds its shape regardless of long text pushing against it.
+  - **Reason for change**: User reported missing and squeezed visual anomalies in the "Complete the Look" section.
+
+- **Product Card — Missing Fallback Image Fix (hoq.web)**:
+  - **Files modified**: `app/theme/hoq.web/product/_prodComponents/Product_Card.jsx`
+  - **Old behavior**: When a product was missing an image, the `<img onError />` handler tried to assign a fallback using a mispelled and completely undefined `imagnotfound` variable. This resulted in the browser silently dropping the `src` attribute, leaving an ugly, completely blank grey box with only a tiny 16px broken-image icon sitting in the top left underneath the "In Stock" badges.
+  - **New behavior**: Defined `const imageNotFound = "/image-not-found.jpg"` at the top of the component and properly assigned it inside the `onError` handler so the grey box correctly renders the app's standard placeholder graphic instead of looking visually broken.
+  - **Reason for change**: User reported a visual UX issue in the product list card where the image area was rendering improperly when missing assets.
+
+- **Product Card — Typographic Overlap Fix (hoq.web)**:
+  - **Files modified**: `app/theme/hoq.web/product/page.scss`
+  - **Old behavior**: The `margin-top: -8px` applied to the `.jewel_parameter` (weight string) physically forced the weight text upwards into the product title bounding box, causing gross visual collisions on multi-line text or different screen sizes. The element also lacked wrapping capability for extraordinarily long weight strings.
+  - **New behavior**: Replaced the negative margin with positive margins (`margin-top: 4px`) across the text stack to allow for natural breathing room. Added `flex-wrap: wrap` to the weight parameter section to gracefully flow onto the next line when space is constrained.
+  - **Reason for change**: User reported title and weight alignment squishing/overlapping issues on the product list.
+
+- **DesignSet — Detail-to-Detail Navigation Fix (hoq.web)**:
+  - **Files modified**: `app/theme/hoq.web/detail/_detComponents/page.jsx`
+  - **Old behavior**: When clicking a "Complete the Look" item, the query parameters (which contained base64 strings) were pushed to the Next.js router without `encodeURIComponent()`. As a result, Next.js parsed `+` symbols in the base64 string as spaces, returning a corrupted payload that caused infinite "Data not Found!!" loading states. Additionally, the skeleton loader UI had extreme inline styles (`marginTop: "-16rem"`, `height: "100vh"`) that created a gigantic, massive whitespace block while navigating.
+  - **New behavior**: Wrapped `encodeObj` in `encodeURIComponent()` to safely retain base64 URL payloads across router pushes. Replaced the convoluted skeleton inline styles with a standard `variant="rectangular"` Skeleton of an appropriate 650px height.
+  - **Reason for change**: User reported navigation to another product from DesignSet resulted in an infinite loader, and the loader UI itself was too tall.
+
+- **Cart — Details Panel NaN Bug & Card UI Spacing (hoq.web)**:
+  - **Files modified**: `app/theme/hoq.web/cart/B2bCart/Customization.js`, `app/theme/hoq.web/cart/B2bCart/CartItem.js`
+  - **Old behavior**: The right-side selected item details panel was occasionally rendering prices as `INR NaN` because it strictly relied on `selectedItem?.FinalCost` which could be undefined on certain items. Additionally, the "Add Remark" and "Remove" action buttons at the bottom of the item cards were tightly squished together without spacing.
+  - **New behavior**: Updated the price formatting logic to fall back dynamically: `Number(selectedItem?.FinalCost || selectedItem?.UnitCostWithMarkUp || 0)`. Added `display: 'flex'` and `justifyContent: 'space-between'` alongside some basic padding to the card action button box to neatly separate the UI elements.
+  - **Reason for change**: User reported a "price nan issue" and a missing space-between parameter causing messy UI inside the cart view.
+
 ## [2026-04-09]
 
 - **iOS Safari Double-Tap Zoom Fix (Mobile App)**:
@@ -73,7 +145,7 @@
     - `app/(core)/utils/API/SingleProdListAPI/SingleProdListAPI.js`
   - **Old behavior**: When the user changed the Metal Type dropdown (e.g., GOLD 14K → GOLD 18K), the `Metalid` sent to the `SingleProdListAPI` always remained fixed at `storeinit.MetalId` (e.g., `2` for GOLD 18K). The dropdown visually changed but the API always re-fetched prices for the wrong metal.
   - **Root Cause (2 bugs)**:
-    1. **Stale React state closure**: In `handleCustomChange`, the line `if (metalArr == undefined)` fell back to `selectMtType` (the *old* state value because `setSelectMtType` is async). This caused the resolved `metalArr` to always be the *previous* selection, not the newly selected one.
+    1. **Stale React state closure**: In `handleCustomChange`, the line `if (metalArr == undefined)` fell back to `selectMtType` (the _old_ state value because `setSelectMtType` is async). This caused the resolved `metalArr` to always be the _previous_ selection, not the newly selected one.
     2. **Wrong sentinel value**: `obj.mt` was set to `metalArr ?? 0` — if `metalArr` was undefined, `obj.mt` became `0`. In `SingleProdListAPI.js`, the condition `obj?.mt == undefined` evaluated to `false` (since `0 !== undefined`), so it sent `Metalid: "0"` instead of the storeinit default. But even before this, when `obj` was not passed or `obj.mt` was `undefined`, it fell back to `storeinit.MetalId`.
   - **New behavior**:
     1. Introduced `let newMtTypeValue = type === "mt" ? e.target.value : selectMtType` to capture the new metal type value synchronously before any React state update.
@@ -96,8 +168,6 @@
   - **New behavior**: Completely rewrote the component to support the new deeply-nested structured JSON format. It now perfectly renders ordered lists for items, subgroups for subsections, distinct styling for `note` blocks (alerts), and preserves `\n` linebreaks via `pre-wrap` for plain-text content blocks.
   - **Reason for change**: Fix the issue where only the titles were visible after upgrading the configuration object.
 
-
-
 - **Delete Account Flow**:
   - **Files modified**: `app/theme/fgstore.mapp/ProfilePage/page.js`, `app/theme/fgstore.mapp/ProfilePage/staticTabs/DeleteAccount/DeleteAccount.jsx` (New)
   - **Old behavior**: The user had no visible way to request account deletion directly within the Profile page settings.
@@ -111,8 +181,6 @@
   - **Old behavior**: The Menu API (`GetMenuAPI`) was not called when navigating to the Menu page via the bottom navigation (client-side navigation). It only worked on hard refresh. The root cause was a race condition: `fetchMenu` was wrapped in `useCallback` with `cacheList` as a dependency, and `isFetchingRef` blocked subsequent calls. When `loginUserDetail` updated (causing `pricingContext` to change and `fetchMenu` to be recreated), the `useEffect` re-triggered — but the previous call still had `isFetchingRef.current = true`, blocking the new call. Since `cacheList` was already populated from MasterProvider (persistent across navigations), no further dependency changes occurred to re-trigger the effect.
   - **New behavior**: Moved `fetchMenu` inside the `useEffect` (matching the pattern used by `Categories.jsx`). Added `lastRequestKeyRef` to prevent duplicate calls based on cache key identity rather than relying solely on `isFetchingRef`. Guards are now checked outside the async function, and the fetch function is defined and called within the effect body. This ensures the API is called reliably on both hard refresh and client-side navigation.
   - **Reason for change**: User reported Menu page showing infinite loading spinner on client-side navigation but working correctly on hard refresh.
-
-
 
 - **EliorApp About Us Content Update**:
   - **Files modified**: `app/(core)/constants/AppConfig.js`
@@ -137,7 +205,6 @@
   - **Files modified**: `app/layout.js`, `app/components/(dynamic)/Account/changePassword/ChangePassword.js`, `app/components/(dynamic)/Account/YourProfile/YourProfile.js`, `app/theme/fgstore.mapp/ProfilePage/staticTabs/Appointment/InquiryModal.jsx`, `app/theme/fgstore.mapp/ProfilePage/staticTabs/Bespoke/InquiryModal.jsx`, `app/theme/fgstore.mapp/ProfilePage/staticTabs/ContactUs/ContactUs.jsx`.
   - **Old behavior**: Interactive inputs often had small font sizes (<16px), causing iOS Safari to aggressively zoom in on focus, breaking the layout. Some mobile drawers were cut off or unscrollable due to static height calculations.
   - **New behavior**: Standardized `16px` font-size for all inputs and implemented `100dvh` for drawers. The viewport meta-tag was hardened to prevent unwanted scaling. This ensures a stable, premium mobile experience.
-  
 - **Strict Form Validation & Numeric Inputs**:
   - **Files modified**: `app/theme/fgstore.mapp/ProfilePage/staticTabs/Bespoke/BespokeInquiry.jsx`, `app/theme/fgstore.mapp/ProfilePage/staticTabs/ContactUs/ContactUs.jsx`, `app/theme/fgstore.mapp/ProfilePage/staticTabs/Appointment/InquiryModal.jsx`.
   - **Old behavior**: Phone fields allowed alphabetic characters and didn't automatically trigger the number pad on mobile.
@@ -204,14 +271,14 @@
   - **Reason for change**: Improve perceived performance and eliminate jarring UI flickering on initial load.
 
 - **Product Listing Layout Fix**: Resolved "extra padding on right side" issue by correcting Grid props and ensuring full-width containers.
-  - **Files modified**: 
+  - **Files modified**:
     - `app/theme/fgstore.mapp/product/ProductView.jsx`: Changed `size` to `xs` and added `sx={{ width: "100%", margin: 0 }}` to the container.
     - `app/theme/fgstore.mapp/product/ProductListSkeleton.jsx`: Changed `size` to `xs` and added `sx={{ width: "100%", m: 0 }}` to the container.
     - `app/theme/fgstore.mapp/product/ProductCard.jsx`: Changed internal Grid items from `size={6}` to `item xs={6}` and ensured container has `width: "100%"`.
   - **Reason for change**: The use of the `size` prop on the old MUI Grid component (instead of `xs`) caused items to shrink to content width instead of filling their 50% (xs:6) slot, leading to large gaps/padding on the right.
 
 - **Mobile Breadcrumb Performance & Reliability**: Improved breadcrumb menu responsiveness and added safety guards.
-  - **Files modified**: 
+  - **Files modified**:
     - `app/theme/fgstore.mapp/product/MobileBreadCrumb.jsx`: Added `menuDecode` guards, optimized `BreadCumsObj` calculation, and ensured menu closes before navigation.
     - `app/theme/fgstore.mapp/product/MobileHeader.jsx`: Fixed invalid HTML (Stack inside Typography) which could cause layout/event issues.
   - **Reason for change**: User reported "sluggish" menu behavior. Closing the menu before triggering route changes improves perceived latency.
@@ -229,7 +296,7 @@
 
 - **Header Logo Size and Responsiveness Fix**: Optimized the logo alignment and size in the header across all devices.
   - **Files modified**: `app/components/(dynamic)/Header/Header.modul.scss`.
-  - **New behavior**: Re-adjusted container widths for `smiling_Top_header_div1`, `smiling_Top_header_div2_web`, `smiling_Top_header_div2_Mobile`, and `smiling_Top_header_div3` to give more space (20%-flex) to the logo. Added specific styles for the mobile logo container and balanced `max-height` constraints. 
+  - **New behavior**: Re-adjusted container widths for `smiling_Top_header_div1`, `smiling_Top_header_div2_web`, `smiling_Top_header_div2_Mobile`, and `smiling_Top_header_div3` to give more space (20%-flex) to the logo. Added specific styles for the mobile logo container and balanced `max-height` constraints.
   - **Reason for change**: User reported the logo was too small on various devices.
 
 - **Footer Logo Size Fix**: Balanced the footer logo size to match the overall design.
@@ -275,6 +342,7 @@
   - **Reason for change**: User request to update company information and branding.
 
 ## [2026-03-24]
+
 - **MasterProvider Performance Optimization**: Improved initial load speed and data availability.
   - **Files modified**: `app/(core)/contexts/MasterProvider.js`.
   - **Old behavior**: Artificial 2-second delay for `payMaster` fetch; broken asynchrony in combo API calls (not waited for); redundant API calls even if data was in session.
@@ -311,21 +379,24 @@
   - **Files modified**: `app/theme/fgstore.web/product/_prodComponents/page.jsx`.
   - **Old behavior**: Fragmented initialization in multiple `useEffect` hooks caused the initial fetch to run with stale or missing filter IDs.
   - **New behavior**: Synchronous state initialization from session data and props ensures correct parameters for the first render and API call.
+
 ### 6. Product Card Metal Display Robustness
+
 Resolved a UI issue in `Product_Card.jsx` where the metal color and type display would show a leading hyphen if the metal color was missing.
+
 - Implemented conditional rendering for the hyphen to ensure it only appears when both values are present.
 - Improved metadata display fallback for a cleaner product card UI.
 
-
-
-
-
 ## [2026-03-23]
+
 ### 7. Home Page Data Robustness
+
 Strengthened the data fetching and caching logic for dynamic home page sections to handle missing or incomplete store metadata gracefully.
+
 - Modified `getPricingContext` to return `null` if a `PackageId` cannot be resolved.
 - Added explicit guards in `AlbumSection`, `BestSellerSection1`, `NewArrival1`, `TrendingView1`, and `DesignSet2` to wait for a valid pricing context.
 - Ensured that sections display skeletons instead of "Empty" messages or invalid data during the initial metadata recovery phase.
+
 ### Modified
 
 - **Session & Global Management**: Implemented robust session storage and global `window` access for critical store and user data. Added an **Auto-Refetch Fallback** and **Async Robust Getters**.
@@ -334,23 +405,25 @@ Strengthened the data fetching and caching logic for dynamic home page sections 
     - `app/(core)/contexts/MasterProvider.js`: Implemented client-side re-fetch logic for `storeInit` using `fetchStoreInitData`.
 
 ### 8. API Parameter Normalization
+
 Resolved an issue where `undefined` variables were being incorrectly transmitted as the string `"undefined"` in API request bodies.
+
 - Refactored `FilterListAPI.js` and `ProductListApi.js` to remove problematic template literals.
 - Implemented consistent defaulting to empty strings for missing metadata.
 - Verified that `PackageId` and `FrontEnd_RegNo` are correctly transmitted even when session state is partially initialized.
-
-    - `app/(core)/utils/API/Combo/*.js`: Refactored all combo APIs to use `getSessionAsync` to wait for configuration data.
+  - `app/(core)/utils/API/Combo/*.js`: Refactored all combo APIs to use `getSessionAsync` to wait for configuration data.
 
 ### 9. MasterProvider Performance Optimization
+
 Significantly improved the application's perceived performance by optimizing the initial configuration load.
+
 - Replaced 7 individual API calls with a single aggregated `/api/v1/combos` request.
 - Implemented server-side parallel fetching and 30-minute caching.
 - Added a client-side session-persistence layer to eliminate redundant fetches on page refreshes.
 - Result: Drastically faster "skeleton-to-data" transition for all dynamic sections.### 10. MasterProvider Simplification
-Streamlined the initialization process by removing redundant client-side recovery logic.
+  Streamlined the initialization process by removing redundant client-side recovery logic.
 - Relies on middleware-provided `getStoreInit` instead of manual refetching.
 - Simplified `useEffect` hook for better maintenance and slightly faster startup.
-
   - **Old behavior**: Inconsistent access to session data; potential crashes if `sessionStorage` was accessed too early or if `storeInit` was null, leading to "FrontEnd Registration Error".
   - **New behavior**: Centralized, robust access via `getSession/setSession` with automatic `window` global sync (`__STORE_INIT__`, `__LOGIN_USER__`, `__LOGIN_USER_DETAIL__`) and async retry logic via `getSessionAsync`.
   - **Reason for change**: Fix reported "FrontEnd Registration Error" and provide reliable, easy-to-access global data for both client components and utility functions.
@@ -367,7 +440,7 @@ Streamlined the initialization process by removing redundant client-side recover
 ### Modified
 
 - **Authentication Flow (Session Data Cleanup)**: Implemented automatic clearing of stale `registerEmail` and `registerMobile` from `sessionStorage` to prevent old data from being displayed when a new user attempts to log in.
-  - **Files modified**: 
+  - **Files modified**:
     - `app/theme/fgstore.web/Auth/ContinueWithEmail/page.js`
     - `app/theme/fgstore.web/Auth/ContinueWithMobile/page.js`
     - `app/theme/hoq.web/Auth/ContinueWithEmail/page.js`
@@ -379,7 +452,7 @@ Streamlined the initialization process by removing redundant client-side recover
 - **Header (Search Overlay Fix)**: Replaced `ClickAwayListener` with manual click-outside detection using `useRef` and a global event listener.
   - **Files modified**: `app/components/(dynamic)/Header/Header.jsx`
   - **Old behavior**: Conflicting `ClickAwayListener` instances caused the search overlay to close unexpectedly when clicking the input field, and previous unification attempts broke the CSS layout during scrolling.
-  - **New behavior**: The search overlay now uses a robust manual check that detects clicks outside *both* the normal and fixed search containers. This keeps the bar open when clicking the input and maintains perfect CSS consistency across all scroll states.
+  - **New behavior**: The search overlay now uses a robust manual check that detects clicks outside _both_ the normal and fixed search containers. This keeps the bar open when clicking the input and maintains perfect CSS consistency across all scroll states.
   - **Reason for change**: Fix reported bug while ensuring the design and layout remain exactly as intended by the user.
 
 ### Added
@@ -390,7 +463,7 @@ Streamlined the initialization process by removing redundant client-side recover
 ### Modified
 
 - Authentication Flow (SSR Validation): Implemented server-side redirects in all authentication-related page components to prevent logged-in users from accessing them.
-  - **Files modified**: 
+  - **Files modified**:
     - `app/(auth)/LoginOption/page.js`
     - `app/(auth)/ContinueWithEmail/[[...slug]]/page.js`
     - `app/(auth)/ContinueWithMobile/[[...slug]]/page.js`
@@ -404,7 +477,6 @@ Streamlined the initialization process by removing redundant client-side recover
   - **Reason for change**: Improved security and user experience by ensuring robust, flicker-free protection of authentication routes without relying on middleware.
 
 ## [2026-03-20]
-
 
 ### Updated
 
@@ -469,6 +541,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### [2026-03-23]
 
 #### Added
+
 - Fixed malformed code in `Header.jsx` caused by manual edits (resolved syntax errors like `valugetMenuApi`).
 - Re-implemented standardized Menu Caching in `Header.jsx` mirroring the mobile app's menu logic with `PackageId` focus.
 - Restored original B2B/B2C conditional guard for menu fetching in `Header.jsx`.
@@ -480,6 +553,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Upgraded `DesignSet2.js` with robust 5-step caching validation (local vs server metadata) and global `cacheList` sync using `fg_designset` prefix.
 
 #### Fixed
+
 - Updated Combo APIs (`MetalType`, `DiamondQualityColor`, `MetalColor`, `ColorStoneQualityColor`, `Currency`) to use `getSessionAsync` for robust data fetching.
 - `app/theme/fgstore.mapp/detail/_detComponents/MaterialCustomization.jsx`: **Fixed Optional Chaining in CustomSelect properties** — Updated `getOptionLabel` and `getOptionValue` references to `opt.metaltype`, `opt.Quality`, etc. to use `opt?.` optional chaining. This prevents `Cannot read properties of undefined` UI crashes when CustomSelect loads options asynchronously.
 - `app/theme/fgstore.mapp/detail/_detComponents/page.jsx` + `InfoDetail.jsx`: **Fixed price not updating in UI after customization change** — `singleProd1` (updated from `SingleProdListAPI` on every customization change) was never passed as a prop to `InfoDetail`, so the price always showed the stale `singleProd` value. Added `singleProd1={singleProd1}` prop. Also fixed price formatting to apply `toLocaleString("en-IN")` to both `singleProd1` and `singleProd` consistently.

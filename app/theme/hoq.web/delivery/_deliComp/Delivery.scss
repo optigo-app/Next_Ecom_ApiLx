@@ -1,11 +1,337 @@
-@use '../../../hoq.web/style/variable.scss' as *;
+@use "../../../hoq.web/style/variable.scss" as *;
 
+// ─────────────────────────────────────────────
+// Page wrapper
+// ─────────────────────────────────────────────
 .hoqMo_DeliverMainDiv {
-  // background-color: #c0bbb1;
-  height: auto;
-  font-family: $fontDmSans !important;
-  width: 95%;
+  width: 90%;
   margin-inline: auto;
+  padding-bottom: 60px;
+  color: $titleColor;
+}
+
+// ─────────────────────────────────────────────
+// Page header — back arrow + title
+// ─────────────────────────────────────────────
+.hoq_deliveryPageHeader {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 32px 0 20px;
+
+  .hoq_backBtn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: 1px solid $primaryBorderColor;
+    background: #fff;
+    cursor: pointer;
+    color: $titleColor;
+    transition:
+      background 0.2s,
+      border-color 0.2s;
+    flex-shrink: 0;
+
+    svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    &:hover {
+      background: #f5f5f5;
+      border-color: $color;
+      color: $color;
+    }
+  }
+
+  .hoq_deliveryTitle {
+    font-size: $fontSize6;
+    color: #2c2c2c;
+    letter-spacing: 0.3px;
+    margin: 0;
+    line-height: 1.2;
+  }
+}
+
+// ─────────────────────────────────────────────
+// Section below header
+// ─────────────────────────────────────────────
+.hoqMo_secondMaindivAdd {
+  background-color: #fff;
+  padding-bottom: 32px;
+  padding-top: 8px;
+}
+
+.hoqMo_addMainDiv {
+  // intentionally empty — children handle layout
+}
+
+.hoqMo_getAddrMainDiv {
+  margin-bottom: 32px;
+}
+
+// ─────────────────────────────────────────────
+// Address Cards
+// ─────────────────────────────────────────────
+.hoq_AddrCard,
+.hoq_ActiveAddrCard {
+  padding: 20px !important;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  transition:
+    box-shadow 0.2s,
+    transform 0.15s;
+  cursor: pointer;
+}
+
+.hoq_AddrCard {
+  border: 1.5px solid $primaryBorderColor !important;
+  background: #fff !important;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05) !important;
+}
+
+.hoq_ActiveAddrCard {
+  border: 1.5px solid $color !important;
+  background: #fff8f8 !important;
+  box-shadow: 0 2px 12px rgba(194, 0, 0, 0.08) !important;
+  position: relative;
+}
+
+// "Selected" chip badge
+.hoq_defualt_addrSelected {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  color: #fff;
+  background: $color;
+  border-radius: 20px;
+  border: none;
+  cursor: default;
+  position: absolute;
+  top: 12px;
+  right: 12px;
+}
+
+.hoq_defualt_addrSelectedHide {
+  display: none !important;
+}
+
+// Card content typography
+.hoqMo_addrcardContent {
+  flex: 1 0 auto;
+  padding: 0 !important;
+}
+
+.hoq_addrTypoTitle {
+  font-size: $fontSize4 !important;
+  font-weight: 600 !important;
+  color: #2c2c2c !important;
+  margin-bottom: 8px !important;
+  text-transform: capitalize;
+  line-height: 1.3;
+}
+
+.hoq_addrTypo {
+  font-size: $fontSize2 !important;
+  color: #6b6b6b !important;
+  line-height: 1.6;
+  margin: 0 !important;
+}
+
+// Edit / Delete icon row
+.hoq_editDeleteBtngroup {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 4px;
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid $primaryBorderColor;
+
+  .hoq_editIcon,
+  .hoq_DeleteIcon {
+    font-size: 18px;
+    color: #9a9a9a;
+    transition: color 0.2s;
+  }
+
+  button:hover {
+    .hoq_editIcon {
+      color: $color;
+    }
+    .hoq_DeleteIcon {
+      color: $color;
+    }
+  }
+}
+
+// ─────────────────────────────────────────────
+// Bottom action buttons
+// ─────────────────────────────────────────────
+.hoqMo_AddressBtnGroup {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 32px;
+  margin-bottom: 2rem;
+
+  .hoqMo_AddNewAddrbtn,
+  .hoqMo_ContinueOrderbtn {
+    height: 48px;
+    min-width: 180px;
+    padding: 0 28px;
+    border: none;
+    outline: none;
+    border-radius: 6px;
+    font-size: $fontSize3;
+    font-weight: 500;
+    letter-spacing: 0.3px;
+    color: #fff;
+    background-color: $color;
+    cursor: pointer;
+    transition:
+      background-color 0.25s,
+      box-shadow 0.2s,
+      transform 0.15s;
+
+    &:hover {
+      background-color: #a60000;
+      box-shadow: 0 4px 16px rgba(194, 0, 0, 0.28);
+      transform: translateY(-1px);
+    }
+
+    &:active {
+      transform: translateY(0);
+      box-shadow: none;
+    }
+  }
+
+  .hoqMo_AddNewAddrbtn {
+    background-color: #fff;
+    color: $color;
+    border: 1.5px solid $color;
+
+    &:hover {
+      background-color: #fff5f5;
+      box-shadow: 0 4px 12px rgba(194, 0, 0, 0.15);
+    }
+  }
+}
+
+// ─────────────────────────────────────────────
+// Address form dialog
+// ─────────────────────────────────────────────
+.hoq_addressTextFields {
+  margin-bottom: 18px !important;
+  color: $titleColor !important;
+}
+
+.hoq_dialogTitle {
+  font-size: $fontSize4 !important;
+  color: #2c2c2c !important;
+  font-weight: 600 !important;
+  text-align: center;
+}
+
+// Address modal buttons
+.hoqMo_AddressModalBtnGroup {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  padding: 0 16px 16px;
+
+  .hoqMo_AddNewAddrModalbtn {
+    height: 42px;
+    min-width: 140px;
+    font-size: $fontSize2;
+    font-weight: 500;
+    color: #fff;
+    background-color: $color;
+    border: 1px solid $color;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+
+    &:hover {
+      background-color: #a60000;
+    }
+  }
+
+  .hoqMo_Cancelbtn {
+    height: 42px;
+    min-width: 120px;
+    font-size: $fontSize2;
+    font-weight: 500;
+    color: $titleColor;
+    background-color: #fff;
+    border: 1px solid $primaryBorderColor;
+    border-radius: 6px;
+    cursor: pointer;
+    transition:
+      border-color 0.2s,
+      color 0.2s;
+
+    &:hover {
+      border-color: $color;
+      color: $color;
+    }
+  }
+}
+
+// ─────────────────────────────────────────────
+// Responsive
+// ─────────────────────────────────────────────
+@media (max-width: 768px) {
+  .hoqMo_DeliverMainDiv {
+    width: 95%;
+  }
+
+  .hoq_deliveryTitle {
+    font-size: $fontSize5 !important;
+  }
+
+  .hoqMo_AddressBtnGroup {
+    flex-direction: row;
+    gap: 12px;
+
+    .hoqMo_AddNewAddrbtn,
+    .hoqMo_ContinueOrderbtn {
+      flex: 1;
+      min-width: 0;
+      padding: 0 12px;
+      font-size: $fontSize2;
+      height: 44px;
+    }
+  }
+
+  .hoq_addrTypoTitle {
+    font-size: $fontSize3 !important;
+  }
+
+  .hoq_AddrCard,
+  .hoq_ActiveAddrCard {
+    padding: 14px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .hoq_deliveryPageHeader {
+    padding: 20px 0 16px;
+  }
+
+  .hoq_deliveryTitle {
+    font-size: $fontSize4 !important;
+  }
 }
 
 .hoqMo_secondMaindivAdd {
@@ -25,25 +351,27 @@
 
 .hoq_addressTextFields {
   margin-bottom: 18px !important;
-  font-family: $fontDmSans !important;
   color: $titleColor !important;
 }
 
 .hoq_AddrCard {
-  box-shadow: rgba(0, 0, 0, 0.02) 0px 1px 3px 0px, rgba(27, 31, 35, 0.15) 0px 0px 0px 1px !important;
+  box-shadow:
+    rgba(0, 0, 0, 0.02) 0px 1px 3px 0px,
+    rgba(27, 31, 35, 0.15) 0px 0px 0px 1px !important;
   padding: 20px 20px 0px 20px !important;
 }
 
 .hoq_ActiveAddrCard {
   padding: 20px 20px 0px 20px !important;
-  box-shadow: rgba(0, 0, 0, 0.02) 0px 1px 3px 0px, rgba(27, 31, 35, 0.15) 0px 0px 0px 1px !important;
+  box-shadow:
+    rgba(0, 0, 0, 0.02) 0px 1px 3px 0px,
+    rgba(27, 31, 35, 0.15) 0px 0px 0px 1px !important;
   background: #f5f4f4 !important;
   position: relative;
 }
 
 .hoq_defualt_addrSelected {
   padding: 3px 10px;
-  font-family: $fontDmSans !important;
   font-size: $fontSize3;
   color: #fff;
   background: #c20000;
@@ -53,7 +381,9 @@
   position: absolute;
   top: 8px;
   right: 8px;
-  transition: background-color 0.3s, color 0.3s;
+  transition:
+    background-color 0.3s,
+    color 0.3s;
 }
 
 .hoq_defualt_addrSelectedHide {
@@ -62,13 +392,11 @@
 
 .hoq_addrTypoTitle {
   color: $titleColor;
-  font-family: $fontDmSans !important;
   text-transform: capitalize;
 }
 
 .hoq_addrTypo {
   color: $titleColor;
-  font-family: $fontDmSans !important;
   text-transform: capitalize;
 }
 
@@ -86,12 +414,13 @@
     flex-basis: 20%;
     outline: none;
     border-radius: none !important;
-    font-family: $fontDmSans !important;
     font-size: $fontSize3;
-    color: #FFF;
+    color: #fff;
     background-color: #c20000;
     cursor: pointer;
-    transition: background-color 0.3s, color 0.3s;
+    transition:
+      background-color 0.3s,
+      color 0.3s;
     border-radius: 4px;
 
     &:hover {
@@ -100,7 +429,6 @@
   }
 
   .hoqMo_ContinueOrderbtn {
-    font-family: $fontDmSans !important;
     background-color: #c20000 !important;
     color: #fff !important;
     font-size: $fontSize3 !important;
@@ -129,27 +457,29 @@
     margin-left: 20px;
     height: 40px;
     width: 150px;
-    font-family: $fontDmSans !important;
     font-size: $fontSize3;
     color: $btn1hoverFontColor;
     background-color: #c20000 !important;
     border: 1px solid #c20000;
     margin-bottom: 15px;
     cursor: pointer;
-    transition: background-color 0.3s, color 0.3s;
+    transition:
+      background-color 0.3s,
+      color 0.3s;
   }
 
   .hoqMo_Cancelbtn {
     margin-right: 20px;
     height: 40px;
     width: 150px;
-    font-family: $fontDmSans !important;
     font-size: $fontSize3;
     color: $btn1FontColor;
     background-color: $btn1bgColor;
     border: 1px solid $btn1FontColor;
     cursor: pointer;
-    transition: background-color 0.3s, color 0.3s;
+    transition:
+      background-color 0.3s,
+      color 0.3s;
 
     &:hover {
       background-color: #c20000 !important;
