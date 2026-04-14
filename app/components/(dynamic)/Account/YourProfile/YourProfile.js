@@ -98,10 +98,13 @@ export default function YourProfile() {
     }
 
     return (
-        <Box sx={{
-            padding: '10px'
-        }} className='yourProfile_Account_SMR'>
-            <div className='  smr_yourProfile'>
+        <Box
+            sx={{
+                boxSizing: 'border-box',
+                paddingInline: 1
+            }}
+        >
+            <div className='smr_yourProfile'>
 
                 {isLoading && (
                     <div className="loader-overlay" style={{
@@ -115,7 +118,7 @@ export default function YourProfile() {
                         <CircularProgress className='loadingBarManage' />
                     </div>
                 )}
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: '20px', paddingInline: '20px' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: '20px' }}>
                     {<div className='userProfileMain' style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
                         {userData && (
                             <>

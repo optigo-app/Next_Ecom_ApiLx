@@ -54,9 +54,12 @@ const ProductImageGallery = ({
                     ) : (
                         <div className="smr_prod_video">
                             <video
-                                src={filteredVideos?.length > 0 ? selectedThumbImg?.link?.imageUrl : imageNotFound}
-                                loop={true}
-                                autoPlay={true}
+                                key={selectedThumbImg?.link?.imageUrl}
+                                loop
+                                autoPlay
+                                muted
+                                playsInline
+                                preload="auto"
                                 style={{
                                     width: "100%",
                                     objectFit: "cover",
@@ -65,8 +68,9 @@ const ProductImageGallery = ({
                                 }}
                                 draggable={true}
                                 onContextMenu={(e) => e.preventDefault()}
-                            // poster={imageNotFound}
-                            />
+                            >
+                                <source src={filteredVideos?.length > 0 ? selectedThumbImg?.link?.imageUrl : imageNotFound} type="video/mp4" />
+                            </video>
                         </div>
                     )
                 ) : (
@@ -139,9 +143,13 @@ const ProductImageGallery = ({
                             }}
                         >
                             <video
+                                key={data}
+                                autoPlay
+                                muted
+                                loop
+                                playsInline
+                                preload="auto"
                                 src={data}
-                                autoPlay={false}
-                                loop={true}
                                 className="smr_prod_thumb_img"
                                 style={{ height: "70px", objectFit: "cover" }}
                                 draggable={true}
