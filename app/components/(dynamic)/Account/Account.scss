@@ -1,137 +1,133 @@
 // .account_AccountTab_SMR{
 
-
 .Smiling-AccountMain {
-    background-color: white;
-    margin-inline: 6%;
-    margin-bottom: 5rem;
+  background-color: white;
+  margin-bottom: 5rem;
 }
-    
-.SmilingAccountTitle {
 
-    font-size: 40px;
-    text-align: center;
-    color: #7d7f85;
-    font-family: 'FreightDispProBook-Regular,Times New Roman,serif';
-    font-weight: 500;
-    // padding-top: 80px;
+.SmilingAccountTitle {
+  font-size: 40px;
+  text-align: center;
+  color: #7d7f85;
+  font-family: "FreightDispProBook-Regular,Times New Roman,serif";
+  font-weight: 500;
+  // padding-top: 80px;
 }
 
 .smling-AccountTabMain {
-    margin-inline: 10%;
+  margin-inline: 10%;
 }
 
 .smlingOrderHistory {
-    border: 1px solid #e1e1e1;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
+  border: 1px solid #e1e1e1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 
 .smlingOrderHistoryBtn {
-    height: 55px;
-    width: 200px;
-    background-color: #7d7f85;
-    color: white;
-    font-weight: 500;
-    font-size: 15px;
-    border: 0;
+  height: 55px;
+  width: 200px;
+  background-color: #7d7f85;
+  color: white;
+  font-weight: 500;
+  font-size: 15px;
+  border: 0;
 }
 
 .smilingSavedAddressMain {
-    border: 1px solid #e1e1e1;
-    margin-bottom: 20px;
+  border: 1px solid #e1e1e1;
+  margin-bottom: 20px;
 }
 
-
 .smilingAccountSavedRemoveBtn {
-    font-size: 13px;
-    font-weight: 500;
-    margin-top: 15px;
-    color: #7d7f85;
-    margin: 0px;
-    cursor: pointer;
-    position: relative;
-    display: inline-block;
-    height: 22px;
+  font-size: 13px;
+  font-weight: 500;
+  margin-top: 15px;
+  color: #7d7f85;
+  margin: 0px;
+  cursor: pointer;
+  position: relative;
+  display: inline-block;
+  height: 22px;
 }
 
 .smilingAccountSavedRemoveBtn::before {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    right: 0;
-    width: 0%;
-    height: 1px;
-    background-color: black;
-    transition: width 0.3s ease-out;
+  content: "";
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 0%;
+  height: 1px;
+  background-color: black;
+  transition: width 0.3s ease-out;
 }
 
 .smilingAccountSavedRemoveBtn:hover::before {
-    width: 100%;
-    left: 0;
-    right: auto;
-    transition: width 0.3s ease-out;
+  width: 100%;
+  left: 0;
+  right: auto;
+  transition: width 0.3s ease-out;
 }
 
 .smilingAcoountAddNewBtn {
-    height: 55px;
-    width: 220px;
-    background-color: #7d7f85;
-    color: white;
-    font-size: 15px;
-    font-weight: 500;
-    border: 0;
-    transition: all 0.4s ease;
-    margin-top: 25px;
+  height: 55px;
+  width: 220px;
+  background-color: #7d7f85;
+  color: white;
+  font-size: 15px;
+  font-weight: 500;
+  border: 0;
+  transition: all 0.4s ease;
+  margin-top: 25px;
 }
 
 .smilingAcoountAddNewBtn:hover {
-    border: 1px solid #7d7f85;
-    background-color: white;
-    color: #7d7f85;
+  border: 1px solid #7d7f85;
+  background-color: white;
+  color: #7d7f85;
 }
 
 .smilingAccountLogout {
-    position: relative;
-    left: 235px !important;
-    top: 18px;
-    font-size: 13px;
-    color: #7d7f85;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.4s ease;
+  position: relative;
+  left: 235px !important;
+  top: 18px;
+  font-size: 13px;
+  color: #7d7f85;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.4s ease;
 }
 
 .smilingAccountLogout:hover {
-    border-bottom: 1px solid black;
+  border-bottom: 1px solid black;
 }
 
-.smlingAccountTabWebView_SMR button.Mui-selected{
-    color: #3b3c3d;
-    /* text-decoration: underline; */
+.smlingAccountTabWebView_SMR button.Mui-selected {
+  color: #3b3c3d;
+  /* text-decoration: underline; */
 }
 
-.smlingAccountTabWebView_SMR span.MuiTabs-indicator{
-    background-color: #3b3c3d;
+.smlingAccountTabWebView_SMR span.MuiTabs-indicator {
+  background-color: #3b3c3d;
 }
 
-.YourAccountPageTabs .MuiTab-textColorPrimary.Mui-selected{
-    color: #000;
+.YourAccountPageTabs .MuiTab-textColorPrimary.Mui-selected {
+  color: #000;
 }
 
-.salesPage > div{
-    padding-left: 0;
-    padding-right: 0;
+.salesPage > div {
+  padding-left: 0;
+  padding-right: 0;
 }
 .sticky-header_web_sm {
-    position: -webkit-sticky !important; /* For Safari */
-    position: sticky !important;
-    top: 50px;
-    background-color: white;
-    z-index: 10; /* Adjust z-index as needed */
-    padding: 10px 0;
+  position: -webkit-sticky !important; /* For Safari */
+  position: sticky !important;
+  top: 50px;
+  background-color: white;
+  z-index: 10; /* Adjust z-index as needed */
+  padding: 10px 0;
 }
 // .sticky-tabs_web_sm {
 //     position: -webkit-sticky; /* For Safari */
@@ -141,173 +137,165 @@
 //     z-index: 9; /* Adjust z-index as needed */
 //     border-bottom: 1px solid #ddd; /* Optional: to add a border below the sticky tabs */
 // }
-.smlingAccountTabMobileView{
-    z-index: 1000;
+.smlingAccountTabMobileView {
+  z-index: 1000;
 }
 @media screen and (max-width: 1441px) {
-
-    .Smiling-AccountMain {
+  .Smiling-AccountMain {
     margin-inline: 2%;
+  }
 
-    }
-
-    .smling-AccountTabMain {
+  .smling-AccountTabMain {
     margin-inline: 5%;
+  }
 
-    }
-
-    .smilingAccountLogout{
-        position: relative;
-        left: 130px;
-    }
-    .sticky-header_web_sm {
-        position: -webkit-sticky !important; /* For Safari */
-        position: sticky !important;
-        top: 50px;
-        background-color: white;
-        z-index: 10; /* Adjust z-index as needed */
-        padding: 10px 0;
-    }
+  .smilingAccountLogout {
+    position: relative;
+    left: 130px;
+  }
+  .sticky-header_web_sm {
+    position: -webkit-sticky !important; /* For Safari */
+    position: sticky !important;
+    top: 50px;
+    background-color: white;
+    z-index: 10; /* Adjust z-index as needed */
+    padding: 10px 0;
+  }
 }
 @media screen and (min-width: 1050px) {
-    .smlingAccountTabMobileView{
-        display: none;
-    }
-    .sticky-header_web_sm {
-        position: unset; /* For Safari */
-        position: unset;
-        top: 50px;
-        background-color: white;
-        z-index: 10; /* Adjust z-index as needed */
-        padding: 10px 0;
-    }
+  .smlingAccountTabMobileView {
+    display: none;
+  }
+  .sticky-header_web_sm {
+    position: unset; /* For Safari */
+    position: unset;
+    top: 50px;
+    background-color: white;
+    z-index: 10; /* Adjust z-index as needed */
+    padding: 10px 0;
+  }
 }
 
 @media screen and (max-width: 1049px) {
+  // .smlingAccountTabWebView_SMR{
+  //     // display: none;
+  //     display: unset;
+  // }
 
-    // .smlingAccountTabWebView_SMR{
-    //     // display: none;
-    //     display: unset;
-    // }
-
-    .smilingAccountLogoutMobile{
-        position: relative;
-        left: 18px;
-        top: 10px;
-        font-size: 13px;
-        color: #7d7f85;
-        font-weight: 500;
-        cursor: pointer;
-        transition: all 0.4s ease;
-        border-bottom: 1xp solid #7d7f85!important;
-    }
-    .css-10d9dml-MuiTabs-indicator{
-        position: relative!important;
-    }
-    .css-jg8ebh-MuiButtonBase-root-MuiTab-root{
-        display: flex;
-        align-items: flex-start !important;
-    }
-    .css-1h9z7r5-MuiButtonBase-root-MuiTab-root{
-        display: flex;
-        align-items: flex-start !important;
-    }
-    .sticky-header_web_sm {
-        position: unset; /* For Safari */
-        position: unset;
-        top: 60px;
-        background-color: white;
-        z-index: 1001; /* Adjust z-index as needed */
-        padding: 10px 0;
-    }
-    // .d_none_acc_smr{
-    //     display: none !important;
-    // }
-}
-
-@media (max-width:786px),(max-width:1080px){
-    .SmilingAccountTitle{
-        padding-top: 0px !important;
-    }
-    .yourAccount_SMR .MuiButtonBase-root{
-        // padding: 0px !important;
-        min-height: auto !important;
-        align-items: flex-start;
-    }
-}
-@media (max-width:1026px){
-    
-    // .smlingAccountTabWebView_SMR{
-    //     // display: none;
-    //     display: unset !important;
-    // }
-    // .d_none_acc_smr{
-    //     display: none !important;
-    // }
-    
-    .SmilingAccountTitle{
-        padding-top: 0px !important;
-    }
-    .smlingAccountTabWebView_SMR {
-        display: none !important;
-    }
-    .yourAccount_SMR .MuiButtonBase-root{
-        padding: 0px !important;
-        min-height: auto !important;
-        align-items: flex-start;
-    }
-}
-@media(max-width: 768px){
-    .YourAccountPageTabs div[aria-orientation="vertical"] > .MuiTab-textColorPrimary {
-        padding: 2px 15px !important;
-        min-height: unset;
-        min-width: 100%;
-        align-items: flex-start;
-    }
-    .smlingAccountTabMobileView{
-        display: unset;
-        background-color: white;
-    }
-
-    .youraccountpagesecSMR{
-        font-size: calc(1.375rem + 1.5vw) !important;
-        padding-bottom: 0px;
-        margin-bottom: 0px;
-    }
-
-    .accountTabSection .MuiTabs-scrollButtons{
-        display: -webkit-inline-box !important;
-        /* width: 20px !important; */
-    }
-
-    .accountTabSection .Mui-disabled.MuiTabs-scrollButtons{
-        display: none !important;
-    }
-
-   .accountTabSection .MuiTab-root.MuiTab-textColorPrimary{
-    padding: 0 10px !important;
-    min-width: max-content;
-   }
-
-   .accountSalesPage > div{
-    padding-left: 0 !important;
-    padding-right: 0 !important;
-    padding-bottom: 150px;
-   }
-   .sticky-header_web_sm {
+  .smilingAccountLogoutMobile {
+    position: relative;
+    left: 18px;
+    top: 10px;
+    font-size: 13px;
+    color: #7d7f85;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.4s ease;
+    border-bottom: 1xp solid #7d7f85 !important;
+  }
+  .css-10d9dml-MuiTabs-indicator {
+    position: relative !important;
+  }
+  .css-jg8ebh-MuiButtonBase-root-MuiTab-root {
+    display: flex;
+    align-items: flex-start !important;
+  }
+  .css-1h9z7r5-MuiButtonBase-root-MuiTab-root {
+    display: flex;
+    align-items: flex-start !important;
+  }
+  .sticky-header_web_sm {
     position: unset; /* For Safari */
     position: unset;
     top: 60px;
     background-color: white;
     z-index: 1001; /* Adjust z-index as needed */
     padding: 10px 0;
-
+  }
+  // .d_none_acc_smr{
+  //     display: none !important;
+  // }
 }
-.SmilingAccountTitle{
-        padding-top: 20px !important;
+
+@media (max-width: 786px), (max-width: 1080px) {
+  .SmilingAccountTitle {
+    padding-top: 0px !important;
+  }
+  .yourAccount_SMR .MuiButtonBase-root {
+    // padding: 0px !important;
+    min-height: auto !important;
+    align-items: flex-start;
+  }
 }
+@media (max-width: 1026px) {
+  // .smlingAccountTabWebView_SMR{
+  //     // display: none;
+  //     display: unset !important;
+  // }
+  // .d_none_acc_smr{
+  //     display: none !important;
+  // }
 
+  .SmilingAccountTitle {
+    padding-top: 0px !important;
+  }
+  .smlingAccountTabWebView_SMR {
+    display: none !important;
+  }
+  .yourAccount_SMR .MuiButtonBase-root {
+    padding: 0px !important;
+    min-height: auto !important;
+    align-items: flex-start;
+  }
+}
+@media (max-width: 768px) {
+  .YourAccountPageTabs div[aria-orientation="vertical"] > .MuiTab-textColorPrimary {
+    padding: 2px 15px !important;
+    min-height: unset;
+    min-width: 100%;
+    align-items: flex-start;
+  }
+  .smlingAccountTabMobileView {
+    display: unset;
+    background-color: white;
+  }
 
+  .youraccountpagesecSMR {
+    font-size: calc(1.375rem + 1.5vw) !important;
+    padding-bottom: 0px;
+    margin-bottom: 0px;
+  }
+
+  .accountTabSection .MuiTabs-scrollButtons {
+    display: -webkit-inline-box !important;
+    /* width: 20px !important; */
+  }
+
+  .accountTabSection .Mui-disabled.MuiTabs-scrollButtons {
+    display: none !important;
+  }
+
+  .accountTabSection .MuiTab-root.MuiTab-textColorPrimary {
+    padding: 0 10px !important;
+    min-width: max-content;
+  }
+
+  .accountSalesPage > div {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    padding-bottom: 150px;
+  }
+  .sticky-header_web_sm {
+    position: unset; /* For Safari */
+    position: unset;
+    top: 60px;
+    background-color: white;
+    z-index: 1001; /* Adjust z-index as needed */
+    padding: 10px 0;
+  }
+  .SmilingAccountTitle {
+    padding-top: 20px !important;
+  }
 }
 
 /* 1px solid #e1e1e1 */

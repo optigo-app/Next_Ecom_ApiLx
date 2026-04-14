@@ -1,4 +1,16 @@
+## [2026-04-14]
+
+- **Product Detail — iOS Video Playback Fix (fgstore.mapp, fgstore.web, & hoq.web)**:
+  - **Files modified**: 
+    - `app/theme/fgstore.mapp/detail/_detComponents/page.jsx`
+    - `app/theme/fgstore.web/detail/_detComponents/components/ProductImageGallery.jsx`
+    - `app/theme/hoq.web/detail/_detComponents/page.jsx`
+  - **Old behavior**: Videos on product detail pages (thumbnails and main sliders/galleries) were not playing on iOS devices across all primary themes. Problems included faulty `IntersectionObserver` logic that hindered playback in sliders, and video tags missing critical attributes (`playsInline`, `muted`, `preload="auto"`) and structure (like `<source>` tags and `key` props) required by iOS Safari.
+  - **New behavior**: 1) Removed broken `IntersectionObserver` logic in `fgstore.mapp` and `hoq.web`. 2) Standardized all video tags across themes to include `playsInline`, `muted`, `autoPlay`, `preload="auto"`, and a unique `key` (based on the video URL) to ensure reliable loading and re-initialization. 3) Updated main display videos to use the `<source>` element with `type="video/mp4"` for maximum cross-browser compatibility.
+  - **Reason for change**: User reported video playback failure on iPhones while functioning correctly on Android. Applied the fix to all active product detail implementations to ensure cross-platform stability.
+
 ## [2026-04-13]
+
 
 - **Cart — Dual Price Display Fix (hoq.web B2B Cart)**:
   - **Files modified**: `app/theme/hoq.web/cart/B2bCart/CartItem.js`

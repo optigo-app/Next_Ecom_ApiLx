@@ -95,7 +95,6 @@ const ProductPage = ({ params, searchParams, storeInit }) => {
     const [loadingdata, setloadingdata] = useState(false);
     const [cartArr, setCartArr] = useState({});
     const [videoArr, SETvideoArr] = useState([]);
-    const videoRef = useRef(null);
     const [ShowMdesc, setShowMdesc] = useState(false);
     const [saveLastView, setSaveLastView] = useState();
     const [selectedMetalColor, setSelectedMetalColor] = useState();
@@ -1091,28 +1090,7 @@ const ProductPage = ({ params, searchParams, storeInit }) => {
         return SizeSorted;
     };
 
-    useEffect(() => {
-        const videoElement = videoRef.current;
 
-        if (!videoElement) return;
-
-        const observer = new IntersectionObserver(
-            (entries) => {
-                entries.forEach((entry) => {
-                    if (entry.isIntersecting) {
-                        videoElement.play();
-                    } else {
-                        videoElement.pause();
-                    }
-                });
-            },
-            { threshold: 0.5 },
-        );
-        observer.observe(videoElement);
-        return () => {
-            observer.disconnect();
-        };
-    }, []);
 
     if (!singleProd) {
         return <NotFoundProduct navigate={navigate} />;
@@ -1209,7 +1187,16 @@ const ProductPage = ({ params, searchParams, storeInit }) => {
                                                     />
                                                 ) : (
                                                     <div className="video_box" style={{ position: "relative" }}>
-                                                        <video src={val?.src} className="hoq_prod_thumb_img" autoPlay muted loop playsInline />
+                                                        <video 
+                                                            key={val?.src}
+                                                            src={val?.src} 
+                                                            className="hoq_prod_thumb_img" 
+                                                            autoPlay 
+                                                            muted 
+                                                            loop 
+                                                            playsInline 
+                                                            preload="auto"
+                                                        />
                                                         <IoIosPlayCircle className="play_io_icon" />
                                                     </div>
                                                 )}
@@ -1246,17 +1233,20 @@ const ProductPage = ({ params, searchParams, storeInit }) => {
                                                                             }}
                                                                         >
                                                                             <video
-                                                                                src={val?.src}
-                                                                                ref={videoRef}
+                                                                                key={val?.src}
                                                                                 loop={true}
                                                                                 autoPlay={true}
                                                                                 muted
+                                                                                playsInline
+                                                                                preload="auto"
                                                                                 style={{
                                                                                     width: "100%",
                                                                                     height: "100%",
                                                                                     objectFit: "scale-down",
                                                                                 }}
-                                                                            />
+                                                                            >
+                                                                                <source src={val?.src} type="video/mp4" />
+                                                                            </video>
                                                                         </div>
                                                                     )}
                                                                 </div>
