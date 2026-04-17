@@ -1,155 +1,216 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>About Us | OmJiyansh Jewels</title>
-    <style type="text/css">
-      body {
-        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-        line-height: 1.6;
-        color: #333;
-        margin: 0;
-        padding: 0;
-        background-color: #fff;
-      }
+<style type="text/css">
+  /* Import Google Fonts directly in style tag for compatibility */
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Inter:wght@300;400;600&display=swap');
 
-      .om__container {
-        max-width: 1500px;
-        margin: 0 auto;
-        padding: 20px 40px;
-      }
+  .om_about_root {
+    --om-primary: #08054c;
+    --om-accent: #b8860b;
+    --om-bg-soft: #fdfcf8;
+    --om-text-dark: #1a1a1a;
+    --om-text-muted: #555;
+    
+    font-family: 'Inter', sans-serif;
+    color: var(--om-text-dark);
+    line-height: 1.8;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 40px 20px;
+  }
 
-      .om__header-section {
-        text-align: center;
-        padding: 50px 0 30px;
-      }
+  .om_about_root h1, .om_about_root h2, .om_about_root h3 {
+    font-family: 'Playfair Display', serif;
+    color: var(--om-primary);
+  }
 
-      .om__header-section h1 {
-        font-size: clamp(32px, 5vw, 48px);
-        margin: 0;
-        letter-spacing: 3px;
-        font-weight: 700;
-        color: #1a1a1a;
-        text-transform: uppercase;
-      }
+  .om_hero {
+    text-align: center;
+    padding: 80px 40px;
+    background: var(--om-bg-soft);
+    border-radius: 30px;
+    margin-bottom: 60px;
+    border: 1px solid rgba(184, 134, 11, 0.15);
+    position: relative;
+    overflow: hidden;
+  }
 
-      .om__header-section span {
-        color: #08054c;
-      }
+  .om_hero::before {
+    content: '';
+    position: absolute;
+    top: -50px;
+    right: -50px;
+    width: 150px;
+    height: 150px;
+    background: rgba(184, 134, 11, 0.05);
+    border-radius: 50%;
+  }
 
-      .om__banner-container {
-        width: 100%;
-        margin-bottom: 40px;
-        border-radius: 12px;
-        overflow: hidden;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-      }
+  .om_hero h1 {
+    font-size: clamp(2.5rem, 6vw, 4.5rem);
+    margin-bottom: 10px;
+    font-weight: 900;
+    letter-spacing: -0.03em;
+  }
 
-      .om__banner-img {
-        width: 100%;
-        height: auto;
-        display: block;
-        transition: transform 0.5s ease;
-      }
+  .om_subtitle {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.6rem;
+    color: var(--om-accent);
+    font-style: italic;
+    margin-bottom: 40px;
+  }
 
-      .om__banner-img:hover {
-        transform: scale(1.02);
-      }
+  .om_intro_card {
+    background: white;
+    padding: 50px;
+    border-radius: 20px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.04);
+    max-width: 850px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+    border-top: 5px solid var(--om-accent);
+  }
 
-      .om__content-section {
-        margin-bottom: 50px;
-      }
+  .om_intro_card p {
+    font-size: 1.15rem;
+    color: var(--om-text-muted);
+    text-align: center;
+    margin: 0;
+  }
 
-      .om__content-section h2 {
-        font-size: clamp(22px, 4vw, 30px);
-        color: #08054c;
-        margin-bottom: 20px;
-        border-bottom: 3px solid #08054c;
-        display: inline-block;
-        padding-bottom: 8px;
-        font-weight: 600;
-      }
+  .om_features_grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 40px;
+    margin-top: 80px;
+  }
 
-      .om__content-section p {
-        font-size: clamp(16px, 2vw, 19px);
-        margin-bottom: 25px;
-        text-align: justify;
-        color: #444;
-      }
+  .om_feature_card {
+    background: #fff;
+    padding: 45px;
+    border-radius: 24px;
+    border: 1px solid #f0f0f0;
+    transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+    display: flex;
+    flex-direction: column;
+  }
 
-      .om__highlight-text {
-        font-weight: 700;
-        color: #08054c;
-        font-size: 1.1em;
-        display: block;
-        margin-bottom: 10px;
-      }
+  .om_feature_card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 30px 60px rgba(8, 5, 76, 0.08);
+    border-color: rgba(184, 134, 11, 0.3);
+  }
 
-      .om__footer-note {
-        text-align: center;
-        font-style: italic;
-        margin-top: 60px;
-        padding: 30px;
-        font-size: clamp(18px, 3vw, 24px);
-        color: #08054c;
-        background-color: #f9f9f9;
-        border-radius: 8px;
-        font-weight: 500;
-      }
+  .om_feature_card h2 {
+    font-size: 2rem;
+    margin-bottom: 25px;
+    position: relative;
+    padding-bottom: 15px;
+  }
 
-      @media (max-width: 768px) {
-        .om__container {
-          padding: 0;
-        }
-        .om__header-section {
-          padding: 40px 0 20px;
-        }
-        .om__content-section p {
-          text-align: left;
-        }
-        .om__footer-note {
-          padding: 20px;
-          margin-top: 40px;
-        }
-      }
-    </style>
-  </head>
+  .om_feature_card h2::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 50px;
+    height: 3px;
+    background: var(--om-accent);
+  }
 
-  <body>
-    <div class="om__container">
-      <div class="om__header-section">
-        <h1>ABOUT <span>US</span></h1>
-      </div>
+  .om_feature_card p {
+    font-size: 1.05rem;
+    color: var(--om-text-muted);
+    margin: 0;
+  }
 
-      <div class="om__banner-container">
-        <img class="om__banner-img" src="/WebSiteStaticImage/images/HomePage/Aboutus/Banner.jpg" alt="OmJiyansh Jewels Banner" />
-      </div>
+  /* Full width item for the last one */
+  .om_feature_card.full-width {
+    grid-column: span 2;
+  }
 
-      <div class="om__content-section">
-        <h2>OmJiyansh Jewels</h2>
-        <p>
-          <span class="om__highlight-text">Modern Luxury, Made with Heart</span>
-          Hey there! We're Ajay Shah and Kalpesh Mangukiya—best friends who turned our passion into OmJiyansh Jewels back in 2023. Ajay brings the jewelry magic, Kalpesh knows diamonds inside out. It's more than business; it's like family.
-        </p>
-      </div>
+  .om_footer_banner {
+    margin-top: 100px;
+    padding: 80px 40px;
+    background: linear-gradient(135deg, var(--om-primary) 0%, #0c0861 100%);
+    color: white;
+    text-align: center;
+    border-radius: 40px;
+    box-shadow: 0 20px 40px rgba(8, 5, 76, 0.2);
+  }
 
-      <div class="om__content-section">
-        <h2>Hands-On Craftsmanship</h2>
-        <p>Our 100-strong team in Surat's Sachin SEZ crafts everything from sketch to shine—under one roof! We love making lightweight jewels that look heavy, comfy daily flex-wear, stunning Arabic designs, and timeless classics. Want custom? We'll nail your exact vision.</p>
-      </div>
+  .om_footer_banner h2 {
+    color: white;
+    font-size: clamp(2rem, 5vw, 3rem);
+    margin-bottom: 15px;
+  }
 
-      <div class="om__content-section">
-        <h2>Sourcing Done Right</h2>
-        <p>We grab top HRD-certified, conflict-free natural diamonds from Mumbai's BKC—100% traceable via Kimberley Process and RJC. Ethical and sparkling!</p>
-      </div>
+  .om_footer_banner p {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.5rem;
+    font-style: italic;
+    opacity: 0.9;
+    margin: 0;
+  }
 
-      <div class="om__content-section">
-        <h2>Growing Together</h2>
-        <p>We're already lighting up Gulf jewelers and dreaming big: worldwide wholesale. Check our exclusive Prestige Collection if you're elite trade.</p>
-      </div>
+  @media (max-width: 850px) {
+    .om_features_grid {
+      grid-template-columns: 1fr;
+    }
+    .om_feature_card.full-width {
+      grid-column: span 1;
+    }
+    .om_hero {
+      padding: 60px 20px;
+    }
+    .om_intro_card {
+      padding: 30px;
+    }
+  }
+</style>
 
-      <div class="om__footer-note">Handcrafted just for you. Let's create magic!</div>
+<div class="om_about_root">
+  <section class="om_hero">
+    <h1>OmJiyansh Jewels</h1>
+    <p class="om_subtitle">Modern Luxury, Made with Heart</p>
+    
+    <div class="om_intro_card">
+      <p>
+        Hey there! We're Ajay Shah and Kalpesh Mangukiya—best friends who turned our passion into OmJiyansh Jewels back in 2023. 
+        Ajay brings the jewelry magic, Kalpesh knows diamonds inside out. It's more than business; it's like family.
+      </p>
     </div>
-  </body>
-</html>
+  </section>
+
+  <div class="om_features_grid">
+    <div class="om_feature_card">
+      <h2>Hands-On Craftsmanship</h2>
+      <p>
+        Our 100-strong team in Surat's Sachin SEZ crafts everything from sketch to shine—under one roof! 
+        We love making lightweight jewels that look heavy, comfy daily flex-wear, stunning Arabic designs, and timeless classics. 
+        Want custom? We'll nail your exact vision.
+      </p>
+    </div>
+
+    <div class="om_feature_card">
+      <h2>Sourcing Done Right</h2>
+      <p>
+        We grab top HRD-certified, conflict-free natural diamonds from Mumbai's BKC—100% traceable via Kimberley Process and RJC. 
+        Ethical and sparkling!
+      </p>
+    </div>
+
+    <div class="om_feature_card full-width">
+      <h2>Growing Together</h2>
+      <p>
+        We're already lighting up Gulf jewelers and dreaming big: worldwide wholesale. 
+        Check our exclusive Prestige Collection if you're elite trade.
+      </p>
+    </div>
+  </div>
+
+  <section class="om_footer_banner">
+    <h2>Handcrafted just for you.</h2>
+    <p>Let's create magic!</p>
+  </section>
+</div>
