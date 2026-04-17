@@ -6,18 +6,18 @@ import "./AppointmentBanner.scss";
 
 const AppointmentBanner = () => {
   const Banner = `/${assetBase}/Appointment/appointment.jpg`;
-
+  const OmjiyansBanner = `/${assetBase}/Appointment/visit us image.jpeg`;
   return (
     <section className="smr_AppointmentBanner">
       <div className="center_mode_banner">
         <div className="image_banner_smr">
           <Image
-            src={Banner}
+            src={OmjiyansBanner}
             alt="Appointment banner"
             className="banner-img"
-            width={1200}
+            width={800}
             height={600}
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 100vw, 1200px"
+            sizes="(max-width: 768px) 100vw, (max-width: 800px) 100vw, 800px"
             loading="lazy"
             quality={80}
             style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "center" }}

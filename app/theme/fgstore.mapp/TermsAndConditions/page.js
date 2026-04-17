@@ -157,8 +157,119 @@ const SonasonstermsData = {
   },
 };
 
+const OmjiyanshTermsData = {
+  introduction: {
+    text: "These Terms of Use (\"Terms\") apply to the OmJiyansh Jewels website (the \"Site\" or \"Platform\") at https://omjiyanshjewels.com. The Site is operated by OmJiyansh Jewels (\"we,\" \"us,\" \"our\").\n\nWe provide this wholesale platform for natural diamond jewelry—including exclusive Prestige collections—to verified elite business customers only. Your use of the Site constitutes acceptance of these Terms, our Privacy Policy, and any additional guidelines. If you disagree, do not use the Site.\n\nNote: Sales are governed by separate Terms of Sale (linked below). Contact privacy@omjiyanshjewels.com for questions."
+  },
+  sections: [
+    {
+      title: "Definitions",
+      content: [
+        { text: "Platform: Our website and secure account features for wholesale access." },
+        { text: "Products: In-house manufactured natural diamond jewelry." },
+        { text: "Services: Account management, order tracking, Prestige access." }
+      ]
+    },
+    {
+      title: "Accuracy of Information",
+      content: [
+        { text: "Information on the Site is for general guidance. Prices, images, and availability may change. We disclaim liability for inaccuracies—verify details before ordering. Historical data is reference-only." }
+      ]
+    },
+    {
+      title: "Third-Party Content",
+      content: [
+        { text: "Some features involve third parties (e.g., payment gateways). Their terms apply separately. We aren't liable for third-party content, acts, or omissions." }
+      ]
+    },
+    {
+      title: "Intellectual Property",
+      content: [
+        { text: "All Site content (text, images, designs, code) is our property or licensed to us, protected by copyright/trademark laws.\n\nPermitted: View, download for personal business evaluation (no modifications; retain notices).\nProhibited: Copy, distribute, reverse-engineer, or use competitively without written consent.\n\nWe retain full ownership and may revoke access anytime." }
+      ]
+    },
+    {
+      title: "User Conduct",
+      content: [
+        { text: "You agree not to:\n\nShare accounts or Prestige content.\n\nUse malware, overload Site, or intercept data.\n\nViolate export laws or engage in fraud.\n\nUse for unauthorized marketing.\n\nComply with local laws. We may terminate access for violations without notice." }
+      ]
+    },
+    {
+      title: "Registration and Security",
+      content: [
+        { text: "Registration requires accurate business info. Protect your password—you're responsible for all activity under it. Notify us of breaches immediately." }
+      ]
+    },
+    {
+      title: "Linking and Framing",
+      content: [
+        { text: "No framing, meta tags, or deep-linking without consent. Links to third-party sites are at your risk—we don't endorse or guarantee them." }
+      ]
+    },
+    {
+      title: "Trademarks",
+      content: [
+        { text: "\"OmJiyansh Jewels\" and logos are our trademarks. No implied license to use." }
+      ]
+    },
+    {
+      title: "Copyright Claims",
+      content: [
+        { text: "Report infringements to: legal@omjiyanshjewels.com. Include: signature, work ID, infringing material location, contact info, good-faith statement, accuracy declaration.\n\nWe terminate repeat infringers." }
+      ]
+    },
+    {
+      title: "Disclaimer of Warranties",
+      content: [
+        { text: "Site provided \"AS IS.\" No warranties for availability, accuracy, or uninterrupted use." }
+      ]
+    },
+    {
+      title: "Limitation of Liability",
+      content: [
+        { text: "Liability capped at your last order value. No indirect/consequential damages." }
+      ]
+    },
+    {
+      title: "Governing Law",
+      content: [
+        { text: "Indian law governs. Exclusive jurisdiction: Surat, Gujarat courts." }
+      ]
+    },
+    {
+      title: "Changes to Terms",
+      content: [
+        { text: "We may update Terms—posted here with notice. Continued use means acceptance." }
+      ]
+    },
+    {
+      title: "Entire Agreement",
+      content: [
+        { text: "These Terms, Privacy Policy, and Terms of Sale form the full agreement. Printed versions admissible in court." }
+      ]
+    },
+    {
+      title: "Severability",
+      content: [
+        { text: "Invalid provisions don't affect others." }
+      ]
+    },
+    {
+      title: "Contact",
+      content: [
+        { text: "Email: legal@omjiyanshjewels.com\nPhone: +971 569954344" }
+      ]
+    }
+  ],
+  conclusion: {
+    text: "Thank you for trusting OmJiyansh Jewels."
+  }
+};
+
+const ActiveThemeName = "omjiyas";
+
 export default function TermsAndConditions() {
-  const termsData = SonasonstermsData;
+  const termsData = ActiveThemeName === "omjiyas" ? OmjiyanshTermsData : SonasonstermsData;
   return (
     <div className="smr_about_mainDiv">
       <div className="daimondsEveryAbout">
@@ -175,7 +286,7 @@ export default function TermsAndConditions() {
                     <h2 className="smr-section-title">{section.title}</h2>
                     {section.content.map((item, itemIndex) => (
                       <div key={itemIndex} className="smr-section-content">
-                        <h3 className="smr-subtitle">{item.subtitle}</h3>
+                        {item.subtitle && <h3 className="smr-subtitle">{item.subtitle}</h3>}
                         <p className="smr-text">{item.text}</p>
                       </div>
                     ))}
@@ -190,4 +301,3 @@ export default function TermsAndConditions() {
     </div>
   );
 }
-

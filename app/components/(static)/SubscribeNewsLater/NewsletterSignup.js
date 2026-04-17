@@ -19,11 +19,11 @@ export default function NewsletterSignup({ storeData }) {
         <TbMailFast size={65} />
       </div>
       <h2>Deals are delivered to your Inbox.</h2>
-      <p className="sub-text">Be the first one to get the details of the '{TheDifferenceData.sonasons.title}' Brand New Collection.</p>
+      <p className="sub-text">Be the first one to get the details of the '{TheDifferenceData.omjiyansh.title}' Brand New Collection.</p>
       <NewsletterForm storeData={storeData} />
       <p className="disclaimer">
-        By signing up with {TheDifferenceData.sonasons.title}, you are agreeing to the terms outlined in our privacy policy. Any information provided will be collected and used for the purpose of sending news, promotions, and updates through email communication. You can withdraw your consent at any time by unsubscribing or reaching out to the customer service team at&nbsp;
-        <a href={`mailto:${TheDifferenceData.sonasons.mail}`}>{TheDifferenceData.sonasons.mail}</a>
+        By signing up with {TheDifferenceData.omjiyansh.title}, you are agreeing to the terms outlined in our privacy policy. Any information provided will be collected and used for the purpose of sending news, promotions, and updates through email communication. You can withdraw your consent at any time by unsubscribing or reaching out to the customer service team at&nbsp;
+        <a href={`mailto:${TheDifferenceData.omjiyansh.mail}`}>{TheDifferenceData.omjiyansh.mail}</a>
       </p>
     </div>
   );

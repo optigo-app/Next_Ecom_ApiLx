@@ -159,15 +159,15 @@ const SonasonstermsData = {
 
 const OmjiyanshTermsData = {
   introduction: {
-    text: "These Terms of Use (\"Terms\") apply to the OmJiyansh Jewels website (the \"Site\" or \"Platform\") at https://omjiyanshjewels.com. The Site is operated by OmJiyansh Jewels (\"we,\" \"us,\" \"our\"). We provide this wholesale platform for natural diamond jewelry—including exclusive Prestige collections—to verified elite business customers only. Your use of the Site constitutes acceptance of these Terms, our Privacy Policy, and any additional guidelines. If you disagree, do not use the Site. Note: Sales are governed by separate Terms of Sale (linked below). Contact privacy@omjiyanshjewels.com for questions."
+    text: "These Terms of Use (\"Terms\") apply to the OmJiyansh Jewels website (the \"Site\" or \"Platform\") at https://omjiyanshjewels.com. The Site is operated by OmJiyansh Jewels (\"we,\" \"us,\" \"our\").\n\nWe provide this wholesale platform for natural diamond jewelry—including exclusive Prestige collections—to verified elite business customers only. Your use of the Site constitutes acceptance of these Terms, our Privacy Policy, and any additional guidelines. If you disagree, do not use the Site.\n\nNote: Sales are governed by separate Terms of Sale (linked below). Contact privacy@omjiyanshjewels.com for questions."
   },
   sections: [
     {
       title: "Definitions",
       content: [
-        { subtitle: "Platform:", text: "Our website and secure account features for wholesale access." },
-        { subtitle: "Products:", text: "In-house manufactured natural diamond jewelry." },
-        { subtitle: "Services:", text: "Account management, order tracking, Prestige access." }
+        { text: "Platform: Our website and secure account features for wholesale access." },
+        { text: "Products: In-house manufactured natural diamond jewelry." },
+        { text: "Services: Account management, order tracking, Prestige access." }
       ]
     },
     {
@@ -185,15 +185,13 @@ const OmjiyanshTermsData = {
     {
       title: "Intellectual Property",
       content: [
-        { subtitle: "Ownership:", text: "All Site content (text, images, designs, code) is our property or licensed to us, protected by copyright/trademark laws." },
-        { subtitle: "Permitted:", text: "View, download for personal business evaluation (no modifications; retain notices)." },
-        { subtitle: "Prohibited:", text: "Copy, distribute, reverse-engineer, or use competitively without written consent. We retain full ownership and may revoke access anytime." }
+        { text: "All Site content (text, images, designs, code) is our property or licensed to us, protected by copyright/trademark laws.\n\nPermitted: View, download for personal business evaluation (no modifications; retain notices).\nProhibited: Copy, distribute, reverse-engineer, or use competitively without written consent.\n\nWe retain full ownership and may revoke access anytime." }
       ]
     },
     {
       title: "User Conduct",
       content: [
-        { text: "You agree not to: Share accounts or Prestige content; Use malware, overload Site, or intercept data; Violate export laws or engage in fraud; Use for unauthorized marketing. Comply with local laws. We may terminate access for violations without notice." }
+        { text: "You agree not to:\n\nShare accounts or Prestige content.\n\nUse malware, overload Site, or intercept data.\n\nViolate export laws or engage in fraud.\n\nUse for unauthorized marketing.\n\nComply with local laws. We may terminate access for violations without notice." }
       ]
     },
     {
@@ -217,7 +215,7 @@ const OmjiyanshTermsData = {
     {
       title: "Copyright Claims",
       content: [
-        { text: "Report infringements to: legal@omjiyanshjewels.com. Include: signature, work ID, infringing material location, contact info, good-faith statement, accuracy declaration. We terminate repeat infringers." }
+        { text: "Report infringements to: legal@omjiyanshjewels.com. Include: signature, work ID, infringing material location, contact info, good-faith statement, accuracy declaration.\n\nWe terminate repeat infringers." }
       ]
     },
     {
@@ -255,17 +253,23 @@ const OmjiyanshTermsData = {
       content: [
         { text: "Invalid provisions don't affect others." }
       ]
+    },
+    {
+      title: "Contact",
+      content: [
+        { text: "Email: legal@omjiyanshjewels.com\nPhone: +971 569954344" }
+      ]
     }
   ],
   conclusion: {
-    text: "Thank you for trusting OmJiyansh Jewels. Email: legal@omjiyanshjewels.com, Phone: +971 569954344"
+    text: "Thank you for trusting OmJiyansh Jewels."
   }
 };
 
 const ActiveThemeName = "omjiyas";
 
 export default function TermsAndConditions() {
-  const termsData = ActiveThemeName !== "omjiyas" ? OmjiyanshTermsData : SonasonstermsData;
+  const termsData = ActiveThemeName === "omjiyas" ? OmjiyanshTermsData : SonasonstermsData;
   return (
     <div className="fg_smr_about_mainDiv">
       <div className="daimondsEveryAbout">

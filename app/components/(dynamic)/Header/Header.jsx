@@ -748,7 +748,7 @@ const Header = ({ storeinit, logos }) => {
                 </List>
               </div>
               <div>
-                <Link
+                {/* <Link
                   href="/aboutUs"
                   className="smr_menuStaicMobilePage"
                   onClick={() => {
@@ -757,7 +757,7 @@ const Header = ({ storeinit, logos }) => {
                   }}
                 >
                   About us
-                </Link>
+                </Link> */}
               </div>
               {islogin && (
                 <div>
@@ -924,11 +924,11 @@ const Header = ({ storeinit, logos }) => {
             </div>
             <div className="smiling_Top_header_div3">
               <ul className="nav_ul_shop">
-                <li>
+                {/* <li>
                   <Link href="/aboutUs" className="nav_li_smining nav_li_smining_Mobile" style={{ cursor: "pointer" }} >
                     ABOUT US
                   </Link>
-                </li>
+                </li> */}
                 {IsB2BWebsiteChek == 0 ? (
                   storeinit?.IsPLW ? (
                     ""
@@ -1125,14 +1125,14 @@ const Header = ({ storeinit, logos }) => {
               </div>
               <div className="smiling_Top_header_div3">
                 <ul className="nav_ul_shop">
-                  <li>
+                  {/* <li>
                     <Link href="/aboutUs"
                       className="nav_li_smining_Fixed nav_li_smining_Mobile"
                       style={{ cursor: "pointer" }}
                     >
                       ABOUT US
                     </Link>
-                  </li>
+                  </li> */}
 
                   {storeinit?.IsPLW == 0 && IsB2BWebsiteChek == 0 ? (
                     <>
@@ -1232,7 +1232,7 @@ const Header = ({ storeinit, logos }) => {
                     isMounted && islogin && (
                       <>
                         <li>
-                          <Badge badgeContent={wishCountNum} max={1000} overlap={"rectangular"} color="secondary" className="badgeColor smr_mobileHideIcone">
+                          <Badge badgeContent={wishCountNum} max={1000} overlap={"rectangular"} color="secondary" className="badgeColorFix smr_mobileHideIcone">
                             <Tooltip title="WishList">
                               <Link href="/myWishList" className="nav_li_smining_Fixed_Icone smr_mobileHideIcone">
                                 <StarBorderRoundedIcon

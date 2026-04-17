@@ -79,26 +79,28 @@ export default function ContactForm() {
   };
 
   return (
-    <div className="fg_smr_Fo_contactBox1">
-      <form onSubmit={handleSubmit}>
-        <div>
+    <div className="smr_contact_form_container">
+      <form onSubmit={handleSubmit} className="smr_contact_form_grid">
+        <div className="smr_form_field">
           <p className="Fo-contactBox1Title">FULL NAME</p>
           <input
             type="text"
             className="Fo-contactBox1InputBox"
             name="FullName"
+            placeholder="Enter your name"
             value={formData.FullName}
             onChange={handleChange}
           />
           {errors.FullName && <p className="error">{errors.FullName}</p>}
         </div>
 
-        <div style={{ marginTop: "25px" }}>
+        <div className="smr_form_field">
           <p className="Fo-contactBox1Title">COMPANY NAME</p>
           <input
             type="text"
             className="Fo-contactBox1InputBox"
             name="InQuiryCompanyName"
+            placeholder="Enter company name"
             value={formData.InQuiryCompanyName}
             onChange={handleChange}
           />
@@ -107,58 +109,64 @@ export default function ContactForm() {
           )}
         </div>
 
-        <div style={{ marginTop: "25px" }}>
+        <div className="smr_form_field">
           <p className="Fo-contactBox1Title">EMAIL ADDRESS</p>
           <input
             type="text"
             className="Fo-contactBox1InputBox"
             name="EmailId"
+            placeholder="Enter email address"
             value={formData.EmailId}
             onChange={handleChange}
           />
           {errors.EmailId && <p className="error">{errors.EmailId}</p>}
         </div>
 
-        <div style={{ marginTop: "25px" }}>
+        <div className="smr_form_field">
           <p className="Fo-contactBox1Title">PHONE NUMBER</p>
           <input
             type="text"
             className="Fo-contactBox1InputBox"
             name="mobileno"
             maxLength={10}
+            placeholder="Enter phone number"
             value={formData.mobileno}
             onChange={handleChange}
           />
           {errors.mobileno && <p className="error">{errors.mobileno}</p>}
         </div>
 
-        <div style={{ marginTop: "25px" }}>
+        <div className="smr_form_field full-width">
           <p className="Fo-contactBox1Title">SUBJECT</p>
           <input
             type="text"
             className="Fo-contactBox1InputBox"
             name="InQuirySubject"
+            placeholder="Enter subject"
             value={formData.InQuirySubject}
             onChange={handleChange}
           />
           {errors.InQuirySubject && <p className="error">{errors.InQuirySubject}</p>}
         </div>
 
-        <div style={{ marginTop: "25px" }}>
+        <div className="smr_form_field full-width">
           <p className="Fo-contactBox1Title">MESSAGE</p>
-          <input
-            type="text"
-            className="Fo-contactBox1InputBox"
+          <textarea
+            className="Fo-contactBox1TextArea"
             name="Be_In_Message"
+            rows={4}
+            placeholder="Write your message here..."
             value={formData.Be_In_Message}
             onChange={handleChange}
           />
           {errors.Be_In_Message && <p className="error">{errors.Be_In_Message}</p>}
         </div>
 
-        <button type="submit" disabled={loading} className="Fo-contactBox1BtnSub">
-          {loading ? "SUBMITTING" : "SUBMIT"}
-        </button>
+        <div className="smr_form_field full-width">
+          <button type="submit" disabled={loading} className="Fo-contactBox1BtnSub">
+            {loading ? "SUBMITTING..." : "SUBMIT"}
+          </button>
+        </div>
       </form>
 
       <PageLoader loading={loading} />

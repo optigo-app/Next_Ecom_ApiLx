@@ -1,3 +1,52 @@
+## [2026-04-17]
+
+- **Contact Us Layout Overhaul**:
+  - **Files modified**: `app/theme/fgstore.web/contactUs/page.js`, `app/theme/fgstore.web/contactUs/ContactForm.jsx`, `app/theme/fgstore.web/contactUs/ContactUs.modul.scss`
+  - **Old behavior**: A simple split-pane layout with the map hidden or misaligned inside the address box, and a single-column long form that was difficult to navigate.
+  - **New behavior**: 
+    - Moved the interactive Google Map to the top of the page, spanning full width with a 400px fixed height.
+    - Refactored the Contact Form into a modern 2-column grid layout for desktop.
+    - Upgraded form inputs to include textareas, polished placeholders, and better focus states.
+    - Improved overall visual hierarchy and responsiveness across all devices.
+  - **Reason for change**: User requested a specific 2-column grid for the form and the map at the top for better UX.
+
+## [2026-04-17]
+
+- **About Us Page Editorial Redesign (OmJiyansh)**:
+  - **Files modified**: `public/WebSiteStaticImage/html/OmAbout.html`
+  - **Old behavior**: Simple, vertically stacked HTML with basic styling and unformatted text blocks.
+  - **New behavior**: Transformed the page into a high-end editorial experience. Implemented 'Playfair Display' and 'Inter' typography, a soft-gradient hero section, founder-focused introduction cards, and a grid-based feature layout. Added responsive styling and premium visual touches like subtle hover transitions and custom color tokens (Navy & Gold).
+  - **Reason for change**: User requested a professional UI/UX improvement for the OmJiyansh About Us page.
+
+## [2026-04-17]
+
+- **Mobile App Terms and Conditions Sync**:
+  - **Files modified**: `app/theme/fgstore.mapp/TermsAndConditions/page.js`, `app/theme/fgstore.mapp/TermsAndConditions/termsPage.scss`
+  - **New behavior**: Synchronized the mobile app theme (.mapp) with the web theme (.web) for the Terms and Conditions page. This includes adding the exact OmJiyansh content, implementing theme switching logic, and updating the SCSS to the new professional layout with `white-space: pre-line` support.
+  - **Reason for change**: Ensure consistency across all theme versions (web and mobile app) for branding and legal accuracy.
+
+## [2026-04-17]
+
+- **OmJiyansh Terms and Conditions Content Match & Formatting Fix**:
+  - **Files modified**: `app/theme/fgstore.web/TermsAndConditions/page.js`, `app/theme/fgstore.web/TermsAndConditions/termsPage.scss`
+  - **Old behavior**: The terms data included slight unrequested modifications (like inferred subtitles such as "Ownership:") and lacked proper line breaks inside the `text` strings, causing bullet points to render as a single continuous paragraph.
+  - **New behavior**: Replaced the `OmjiyanshTermsData` object to perfectly match the user's provided raw text string without altering or adding any unrequested subtitles. Added `white-space: pre-line` to `.smr-text`, `.smr-introduction`, and `.smr-conclusion` in SCSS so that `\n` characters in the JSON strictly map to visual line breaks.
+  - **Reason for change**: User provided exact policy text and requested flawless formatting without unapproved content additions.
+
+## [2026-04-17]
+
+- **DiffBlock Dynamic Content Update**:
+  - **Files modified**: `app/components/(static)/DiffBlock/index.js`
+  - **Old behavior**: Hardcoded textual data for `TheDifference` component across 4 manual box rendering blocks.
+  - **New behavior**: Centralized data inside `TheDifferenceData` using an array format and mapped over the array, making textual content dynamic along with the images to support distinct copy for multiple active brands like Omjiyansh and Sonasons.
+  - **Reason for change**: User requested to make the textual content dynamic with the images.
+
+- **Terms and Conditions Layout Formatting UI Fix**:
+  - **Files modified**: `app/theme/fgstore.web/TermsAndConditions/termsPage.scss`
+  - **Old behavior**: Mismatched SCSS class name prefixes (`.fg_smr-` and `.shinjini-`) compared to the actual JSX class names (`.smr-`), causing raw, unformatted text display on the Terms and Conditions page.
+  - **New behavior**: Updated the SCSS file to perfectly map to `.smr-` classes. Implemented a professional e-commerce layout structure with centralized max-width reading areas, appropriate typography scaling, and clean section borders.
+  - **Reason for change**: User requested to fix the UI/UX to look like a professional e-commerce term policy with clean layout formatting.
+
 ## [2026-04-14]
 
 - **Product Detail — iOS Video Playback Fix (fgstore.mapp, fgstore.web, & hoq.web)**:
