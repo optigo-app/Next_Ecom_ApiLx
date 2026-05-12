@@ -1,3 +1,180 @@
+## [2026-05-08]
+
+- **Product Listing, Detail, Cart Pages, Cache & API — Build & Runtime Failure Fixes**:
+  - **Files modified**: `app/p/[[...slug]]/page.jsx`, `app/d/[[...slug]]/page.jsx`, `app/theme/fgstore.web/cart/page.jsx`, `app/(core)/utils/API/CommonAPI/CommonAPI.js`, `app/(core)/cache_utility/dynamic_serverCache.js`, `app/(core)/utils/fetchStoreInit.js`
+  - **Old behavior**: 
+    - In `app/p/[[...slug]]/page.jsx`, `params` and `searchParams` were passed to `getDynamicMetadata` without being awaited, causing errors in Next.js 15.
+    - `generateMetadata` lacked try/catch guards and called `headers()` which can fail outside request scope during build.
+    - `Cart` page tried to SSR `MainCart` which used `sessionStorage`, causing `ReferenceError`.
+    - `CommonAPI.js` tried to fetch from relative URL `/api/store-init` on the server, causing `TypeError: Failed to parse URL`.
+    - `dynamic_serverCache.js` assumed `.next_cache` directory existed or was created on module load, but failed with `ENOENT` during file write if it didn't exist.
+    - `fetchStoreInit.js` tried to parse JSON before checking `response.ok`, leading to `SyntaxError` when receiving HTML (e.g. 404).
+    - `CommonAPI.js` threw `ReferenceError: cleanHost is not defined` after a previous edit removed its definition.
+  - **New behavior**: 
+    - Awaited `params` and `searchParams` in `generateMetadata` for product page.
+    - Added `export const dynamic = "force-dynamic";` to both product and detail pages to prevent `headers()` errors during build.
+    - Wrapped `generateMetadata` in try/catch with fallbacks in both files.
+    - Used `dynamic` with `ssr: false` for `MainCart` in cart page to prevent `sessionStorage` errors during SSR (Note: User reverted this change in cart page).
+    - Fixed `CommonAPI.js` to use `fetchStoreInitData` directly on the server instead of fetching via HTTP.
+    - Added directory existence check and creation in `setCache` in `dynamic_serverCache.js` to prevent `ENOENT` errors.
+    - Updated `fetchStoreInit.js` to check `response.ok` before calling `response.json()`.
+    - Restored `cleanHost` definition in `CommonAPI.js` to fix the `ReferenceError`.
+  - **Reason for change**: Fix critical build-time and runtime errors reported in server logs during deployment.
+  - **Reason for change**: Fix critical build-time and runtime errors reported in server logs during deployment.
+
+## [2026-04-30]
+
+- **Sidebar Filter — API Call & Loading State Fix**:
+  - **File modified**: `app/theme/elvee.web/product/ProductList/ProductList.js`
+  - **Old behavior**: Selecting a filter in the sidebar would trigger a loading skeleton but fail to call the `ProductListApi`. This happened because the application relied on `location.key` (a legacy React Router property) to synchronize state, which is `undefined` in Next.js `usePathname()`. Consequently, the filter logic failed its identity check (`location === locationKey`) and never executed the API call or cleared the loading state.
+  - **New behavior**: Corrected all `location.key` references to use the plain `location` (pathname) string. Synchronized the `locationKey` state with the current pathname on every navigation.
+  - **Reason for change**: User reported that filters caused infinite loading skeletons without fetching data.
+
+- **ShopHeader — Filter Button Alignment Fix**:
+  - **File modified**: `app/theme/elvee.web/product/ProductList/New/ShopHeader.jsx`
+  - **Old behavior**: The "Filter" button occasionally appeared centered on the page during the loading state or initial refresh. This was due to its container `Box` lacking an explicit `width: 100%` and using `justifyContent: "space-between"` with a single child, making it susceptible to layout shifts or parent-level centering during skeleton phases.
+  - **New behavior**: Ensured the "Filter" button container is full-width (`width: 100%`) and explicitly left-aligned (`justifyContent: "flex-start"`). Added a top margin for better vertical separation.
+  - **Reason for change**: User reported the Filter text being in the center on refresh/load and requested it be placed properly on the left.
+
+- **ShopHeader — 'Remove all' Button**:
+  - **Files modified**: `app/theme/elvee.web/product/ProductList/New/ShopHeader.jsx`, `app/theme/elvee.web/product/ProductList/ProductList.js`
+  - **Old behavior**: Users had to open the filter sidebar to clear applied filters. There was no quick way to reset filters from the main header.
+  - **New behavior**: Added a compact "Remove all" button next to the "Filter" text in the header. It only appears when one or more filters (checkboxes, price range, or sliders) are active.
+  - **Reason for change**: User requested a compact reset button for better UX.
+
+- **Product Listing — Dynamic SEO & Metadata**:
+  - **Files modified**: `app/p/[[...slug]]/page.jsx`, `app/theme/elvee.web/product/ProductList/ProductList.js`
+  - **Old behavior**: Product listing pages used static or generic metadata, and breadcrumb navigation was not visible to search engines via structured data.
+  - **New behavior**: 
+    - Implemented `generateMetadata` to derive dynamic titles and descriptions from the URL slug and search parameters.
+    - Added `BreadcrumbList` JSON-LD schema to the listing page to enhance search engine snippet visibility.
+  - **Reason for change**: User requested dynamic metadata for Google SEO and overall search engine optimization.
+
+- **ShopHeader — Dropdown Selection Fix**:
+  - **Files modified**: `app/theme/elvee.web/product/ProductList/New/ShopHeader.jsx`, `app/theme/elvee.web/product/ProductList/ProductList.js`
+  - **Old behavior**: The Metal and Diamond dropdowns occasionally failed to show the default selection or update when user data loaded. This was caused by two issues: (1) `useEffect` hooks in `ProductList.js` had empty dependency arrays and didn't react to `storeinit` or `loginUserDetail` changes, and (2) the Diamond `Select` expected a combined string `"QualityId,ColorId"`, but was often initialized with a single integer ID.
+  - **New behavior**: Added `storeinit` and `loginUserDetail` to effect dependency arrays for consistent state synchronization. Implemented a fallback mechanism in `ProductList.js` to convert single-integer Diamond IDs into the required `"QualityId,ColorId"` format, ensuring they highlight correctly in the UI.
+  - **Reason for change**: User reported that default metal and diamond types were not visible or selectable.
+
+## [2026-04-29]
+
+- **ShopHeader — `split is not a function` Crash Fix**:
+  - **Files modified**: `app/theme/elvee.web/product/ProductList/New/ShopHeader.jsx`, `app/theme/elvee.web/product/ProductList/ProductList.js`
+  - **Old behavior**: `ShopHeader` accepted a `location` prop (which after Next.js migration was `usePathname()` — a plain string). `location.search` on a string returns `String.prototype.search` (a function, truthy), so the guard always passed and `.split()` was called on the function itself → `TypeError: split is not a function`.
+  - **New behavior**: `ShopHeader` now accepts `decodedSearchResult` (the already-decoded array from `ParseAndDecodeSearchParams`) and derives `hasCollection` / `hasNewArrival` safely without calling `atob()` or `.split()` on a location object.
+  - **Reason for change**: Runtime crash preventing the product listing page from rendering.
+
+## [2026-04-29]
+
+- **Cart Summary — Real-time Recalculation Fix**:
+  - **Files modified**: `app/theme/elvee.web/cart/Cart/Cart.js`, `app/(core)/utils/Glob_Functions/Cart_Wishlist/Cart.js` (useCart hook)
+  - **Old behavior**: The cart summary (total weights, costs, etc.) did not update when an item was removed or when quantities were incremented/decremented. The recalculation logic in `Cart.js` was gated by a `shouldRecalculate` flag that was only true on initial mount and didn't handle the empty cart state correctly.
+  - **New behavior**: 
+    - Updated the `useCart` hook to explicitly trigger `setShouldRecalculate(true)` inside `handleRemoveItem`, `handleRemoveAll`, `handleIncrement`, and `handleDecrement`.
+    - Modified the `useEffect` in `Cart.js` to reset the summary to `null` if the cart becomes empty and removed the strict length check that prevented updates during item removal.
+  - **Reason for change**: User reported that the cart was not recalculating totals when items were removed.
+
+## [2026-04-29]
+
+- **Cart Module Migration & UX Refinement**:
+  - **Files modified**: `app/theme/elvee.web/cart/Cart/CartDetails.js`, `app/theme/elvee.web/cart/Cart/Customization.js`, `app/theme/elvee.web/cart/Cart/New/CartHeader.jsx`
+  - **Old behavior**: Cart details and customization components relied on legacy `sessionStorage` for store initialization data, leading to hydration issues and state inconsistency in Next.js. The CartHeader layout and typography were inconsistent with the premium React reference, and product images in the customization panel flickered or showed skeletons unnecessarily.
+  - **New behavior**: 
+    - Migrated all cart sub-components to use the centralized `useStore` hook for real-time, reactive access to `storeInit` and `loginUserDetail`.
+    - Standardized image loading in `CartDetails.js` using an eager loading strategy and pre-loaded buffers, eliminating the 'gray box' skeleton flicker.
+    - Refined `CartHeader.jsx` with stabilized sticky logic (`margin` adjustments) and perfectly matched typography (font weights/colors) to the Zara-inspired React reference.
+    - Optimized the summary box layout for better readability and a more editorial feel.
+  - **Reason for change**: User requested to fix "weird" layout behavior and ensure full functional and visual parity with the legacy React implementation.
+
+## [2026-04-29]
+
+- **Exhibitions Section (MaxBrandMarquee) — Hover Swap Interaction**:
+  - **File modified**: `app/theme/elvee.web/home/blocks/MaxBrandMarquee.jsx`
+  - **Old behavior**: Logos swapped randomly every 4 seconds, but user interaction (hover) only triggered a slight scale effect. Mobile grid was temporarily set to 1 column.
+  - **New behavior**: 
+    - Replaced `mode="wait"` with `mode="popLayout"` in `AnimatePresence` to eliminate the white blank gap during logo swaps.
+    - Reduced animation duration from 0.5s to 0.35s and simplified the motion path for a snappier, "swipe-like" feel.
+    - Implemented `handleHover` which triggers an immediate logo swap when a user hovers over any brand slot.
+    - Reused the `rotateLogo` logic to ensure the hovered logo is replaced by a fresh one from the pool.
+    - Fixed mobile grid back to 2 columns (`xs: 6`) for a more standard and compact brand wall look.
+  - **Reason for change**: User requested that logos should swap specifically on hover to increase engagement.
+
+- **Exhibitions Section (MaxBrandMarquee) — Mobile Responsiveness Optimization**:
+  - **File modified**: `app/theme/elvee.web/home/blocks/MaxBrandMarquee.jsx`
+  - **Old behavior**: The section had excessive vertical padding (120px) on mobile, and logo images were set to 120px height which caused them to overflow or look disproportionately large in their containers. Border logic resulted in inconsistent or double borders in the grid.
+  - **New behavior**: 
+    - Reduced vertical padding on mobile from 120px to 64px for a more balanced layout.
+    - Adjusted logo heights to be responsive (70px on desktop, 50px on mobile) to fit perfectly within the slots.
+    - Implemented a clean "single border" grid logic by using `borderRight`, `borderBottom`, and parent container `borderTop`/`borderLeft`.
+    - Refined typography sizing and letter spacing for the section title on mobile.
+    - Added a subtle scale-up animation on logo hover for better interactivity.
+  - **Reason for change**: User requested proper mobile responsiveness for the Exhibitions section.
+
+- **Category & Collection Blocks — Unified Loader Structure and Logic Fix**:
+  - **File modified**: `app/theme/elvee.web/home/blocks/Category.jsx`
+  - **Old behavior**: The loading state had inverted logic (`!loading`) in the Category section and inconsistent structure in the Collections section. Skeletons didn't perfectly match card dimensions, and Swiper navigation remained active during loading.
+  - **New behavior**: 
+    - Synchronized the `loading ?` logic across both Category and Collection sections.
+    - Disabled Swiper navigation (`navigation={false}`) during the loading phase for both sections to prevent empty slide interactions.
+    - Replaced the loading `Swiper` with a stable CSS `Grid` layout (using `display: grid`) to eliminate the "large then small" flickering issue caused by Swiper's initial 1-slide layout.
+    - Standardized `SkeletonCard` with reliable fixed heights that approximate the 3/3.5 aspect ratio, ensuring visual stability during the entire loading phase.
+    - Ensured consistent section header visibility and structural alignment across the entire block.
+  - **Reason for change**: User requested to extend the "proper" loader improvements to the Collections section and fix existing logic bugs.
+
+- **ChatMenu — Modern Tooltip and Micro-interactions**:
+  - **File modified**: `app/components/(static)/ChatMenu/ChatMenu.js`
+  - **Old behavior**: The WhatsApp chat button was a static icon with no explanation of its purpose and lacked interactive feedback on hover.
+  - **New behavior**: 
+    - Added a custom-styled MUI `Tooltip` that says "Chat with a Jewellery Expert" on hover.
+    - Implemented a `Zoom` transition for the tooltip for a smoother entrance.
+    - Added a scale-up and slight rotation micro-interaction on the button hover to make it feel more interactive and "alive".
+    - Enhanced the button's shadow and transition properties for a more premium feel.
+  - **Reason for change**: User requested a modern tooltip and micro-interactions to improve the component's UX and visual appeal.
+
+- **MaxNewsletter — Functional Integration and Validation**:
+  - **File modified**: `app/theme/elvee.web/home/blocks/MaxNewsletter.jsx`
+  - **Old behavior**: The component had a static UI with broken submission logic (referenced undefined `storeData` instead of `storeInit`). The form submission was not hooked up, and there was no visual feedback for success or error states. The privacy policy checkbox was non-functional.
+  - **New behavior**: 
+    - Connected `handleSubmit` to the form `onSubmit` event.
+    - Fixed the API endpoint URL by correctly using `storeInit.newslatter`.
+    - Implemented state tracking for the Privacy Policy checkbox and added validation to require agreement before submission.
+    - Added dynamic typography-based feedback messages (success/error) with auto-clear timeouts.
+    - Wrapped the component with `ThemeProvider` using the custom Zara-inspired minimalist theme.
+    - Added loading states to the button text and disabled the button during submission.
+  - **Reason for change**: User requested to make the newsletter block fully functional with working logic and messaging.
+
+## [2026-04-28]
+
+- **MaxBestSeller — Swiper Nav Refactor (Category.jsx pattern)**:
+  - **File modified**: `app/theme/elvee.web/home/blocks/MaxBestSeller.jsx`
+  - **Old behavior**: Navigation used inline `handlePrev`/`handleNext` functions calling `swiperRef.current.slidePrev()` / `slideNext()`. Buttons were rendered above the Swiper inside a grid layout and hidden on mobile via `isMobile` guard. Used MUI `ChevronLeftRounded` / `ChevronRightRounded` icons.
+  - **New behavior**: Navigation now uses two `useRef` refs (`prevRef`, `nextRef`) passed to Swiper's `navigation` prop and `onBeforeInit`, with styled `NavButton` components (`position: absolute`, `top: 50%`, backdrop-blur) matching `Category.jsx` exactly. Uses `lucide-react` `ChevronLeft`/`ChevronRight` icons (same as Category). Removed `isMobile` / `handlePrev` / `handleNext` / `useMediaQuery` / `useTheme`. Product card UI and all API logic are unchanged.
+  - **Reason for change**: User requested BestSeller to use the same Swiper-based nav pattern as `Category.jsx` while keeping the same product card UI.
+
+## [2026-04-28]
+
+- **Migration to next/link and next/navigation (Header & Menubar)**:
+  - **Files modified**: `app/components/(dynamic)/Header/Elvee/Header.js`, `app/components/(dynamic)/Header/Elvee/MenuBar/Menubar.js`
+  - **Old behavior**: Used `react-router-dom` for navigation (`Link`, `NavLink`, `useNavigate`). Many internal links were also using standard `<a>` tags which caused full page reloads.
+  - **New behavior**: Replaced all `react-router-dom` components and hooks with `next/link` and `useNextRouterLikeRR` (Next.js compatible navigation hook). Converted all `<a>` tags to `<Link>` components to enable client-side navigation and prefetching.
+  - **Reason for change**: Standardize the Elvee theme navigation on Next.js App Router patterns to improve performance, SEO, and developer experience.
+
+## [2026-04-22]
+
+- **CommonAPI — Dynamic API URL and Header Payload from StoreInit**:
+  - **Files modified**: `app/(core)/utils/API/CommonAPI/CommonAPI.js`
+  - **Old behavior**: The API URL was cached in `apiUrlPromise` globally on the server, and `setApiUrl` could not read the dynamic `storeInit.ApiUrl` from server-side cookies, falling back to static domain checks. It also executed `setApiUrl()` at the module level which can cause "cookies() outside request scope" errors in Next.js. Header parameters like `Version` and `sv` were hardcoded (`"NXT"` overriding storeInit, and `sv` restricted to `0 : 1`).
+  - **New behavior**: `setApiUrl` now seamlessly reads `storeInit` from `cookies()` on the server side (and `sessionStorage` / `window` on the client). The dynamic `storeInit.ApiUrl` is extracted and appended with `/api/report`. The global module-level execution of `setApiUrl()` and `apiUrlPromise` caching were removed to prevent Next.js scope errors and ensure multi-tenant reliability. Header fields `Version`, `sv`, and `token` are now strictly reading dynamic values from `storeInit` without arbitrary overrides.
+  - **Reason for change**: User requested that the API URL and authorization headers be completely dynamically read from the `storeInit` payload payload to support varying configurations.
+
+## [2026-04-21]
+
+- **CommonAPI — Dynamic API URL from StoreInit**:
+  - **Files modified**: `app/(core)/utils/API/CommonAPI/CommonAPI.js`
+  - **Old behavior**: API URL was hardcoded — `http://newnextjs.web//api/report` for localhost and `https://apilx.optigoapps.com/api/report` for production. URL was resolved at module load time via domain-based detection using `getDomainInfo()` and `isLocalHost()`.
+  - **New behavior**: API URL is now 100% dynamically resolved from `storeInit.ApiUrl` field (from `StoreInit.json`). The pattern is `storeInit.ApiUrl + "api/report"`. No hardcoded fallback URLs. The URL is cached after first resolution for performance. Added `resetApiUrlCache()` export for logout/session-clear scenarios. Removed `setApiUrl()`, `apiUrlPromise`, and unused imports (`isLocalHost`, `localHosts`, `getDomainInfo`).
+  - **Reason for change**: Make the API endpoint fully dynamic per-store from StoreInit configuration, eliminating static URL dependencies that required code changes when switching environments or stores.
+
 ## [2026-04-17]
 
 - **Contact Us Layout Overhaul**:

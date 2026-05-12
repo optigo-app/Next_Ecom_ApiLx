@@ -7,13 +7,14 @@ import { assetBase } from "@/app/(core)/lib/ServerHelper";
 const BrandsComponent = () => {
   const kayralogo = ["logo1.png", "logo2.png", "logo3.png", "logo4.png", "logo5.png", "logo6.png", "logo1.png", "logo2.png", "logo3.png", "logo4.png", "logo5.png", "logo6.png"];
   const mayrologo = ["logo1.png", "logo2.jpg", "logo3.png", "logo4.png", "logo1.png", "logo2.jpg", "logo3.png", "logo4.png", "logo1.png", "logo2.jpg", "logo3.png", "logo4.png"];
-  const Omjiyanslogo = ["logo1.png", "logo2.png", "logo3.png", "logo4.png", "logo5.png", "logo6.png", "logo1.png", "logo2.png", "logo3.png", "logo4.png", "logo5.png", "logo6.png", "logo7.png"];
+  const Omjiyanslogo = ["logo1.png", "logo2.png", "logo3.png", "logo4.png", "logo1.png", "logo2.png", "logo3.png", "logo4.png", "logo1.png", "logo2.png", "logo3.png", "logo4.png"];
 
   const sonasonsLogo = ["logo2.png", "logo3.png", "logo4.png", "logo6.png", "logo2.png", "logo3.png", "logo4.png", "logo6.png"];
   const KayralogoElements = kayralogo.map((logo, index) => <img key={index} alt="logo" className="smr_affilitionImg" loading="lazy" src={`${assetBase}/images/HomePage/BrandLogo/kayra/${logo}`} style={{ width: "130px", objectFit: "cover", marginRight: "90px" }} />);
   const OmlogoElements = Omjiyanslogo?.map((logo, index) => <img key={index} alt="logo" className="smr_affilitionImg" loading="lazy" src={`${assetBase}/images/HomePage/BrandLogo/omjiyansh/${logo}`} style={{ width: "130px", objectFit: "cover", marginRight: "90px" }} />);
   const MayoralogoElements = mayrologo.map((logo, index) => <img key={index} alt="logo" className="smr_affilitionImg" loading="lazy" src={`${assetBase}/images/HomePage/BrandLogo/mayora/${logo}`} style={{ width: "130px", objectFit: "cover", marginRight: "90px" }} />);
   const SonasonslogoElements = sonasonsLogo.map((logo, index) => <img key={index} alt="logo" className="smr_affilitionImg" loading="lazy" src={`${assetBase}/images/HomePage/BrandLogo/sonasons/${logo}`} style={{ width: "130px", objectFit: "cover", marginRight: "90px" }} />);
+
 
   return (
     <div id="brandsComponentID" className="smr_brandsComponentsDiv">

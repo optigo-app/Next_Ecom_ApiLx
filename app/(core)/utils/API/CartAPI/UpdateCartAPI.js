@@ -1,7 +1,8 @@
+import { LocalSetup } from "@/app/env";
 import { getSession } from "../../FetchSessionData";
 import { CommonAPI } from "../CommonAPI/CommonAPI";
 
-export const updateCartAPI = async (updatedItems, metalID, metalCOLORID, diaIDData, colorStoneID, sizeId, markupData, finalPrice, finalPriceWithMarkup) => {
+export const updateCartAPI = async (updatedItems, metalID, metalCOLORID, diaIDData, colorStoneID, sizeId, markupData, finalPrice, finalPriceWithMarkup, ObjExtra) => {
     try {
         const islogin = JSON.parse(sessionStorage.getItem("LoginUser"));
         const storeInit = (typeof window !== 'undefined' && window.__STORE_INIT__) ? window.__STORE_INIT__ : getSession('storeInit');
@@ -11,6 +12,7 @@ export const updateCartAPI = async (updatedItems, metalID, metalCOLORID, diaIDDa
 
         // console.log('jbjasd--', updatedItems, metalID, metalCOLORID, diaIDData, colorStoneID, sizeId, markupData, finalPrice, finalPriceWithMarkup);
 
+        const IsElvee = LocalSetup === "elvee.web";
         const combinedValue = JSON.stringify({
             ForEvt: "Cart",
             FrontEnd_RegNo: `${FrontEnd_RegNo}`,
@@ -30,6 +32,9 @@ export const updateCartAPI = async (updatedItems, metalID, metalCOLORID, diaIDDa
                     "WebDiscount": islogin ? `${loginUserDetail?.WebDiscount ?? 0}` : `${0}`,
                     IsZeroPriceProductShow: `${storeInit?.IsZeroPriceProductShow ?? 0}`,
                     IsSolitaireWebsite: `${storeInit?.IsSolitaireWebsite ?? 0}`,
+                    ...(IsElvee && {
+                        ...ObjExtra
+                    })
                 }],
             DomainForNo: `${storeInit?.DomainForNo ?? ""}`
         });

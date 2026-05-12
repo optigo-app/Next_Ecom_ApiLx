@@ -4,12 +4,21 @@ export async function getDomainInfo() {
     try {
         // ✅ If running on server
         if (typeof window === "undefined") {
-            const { headers } = await import("next/headers");
-            const headerList = await headers();
+            let headerList;
+            try {
+                const { headers } = await import("next/headers");
+                headerList = await headers();
+            } catch (e) {
+                console.warn("😉 ~ getDomainInfo ~ headers() not available, using fallback.");
+                return {
+                    hostname: NEXT_APP_WEB,
+                    protocol: process.env.NODE_ENV === "development" ? "http:" : "https:",
+                };
+            }
 
-            const rawHost = headerList.get("x-forwarded-host") || headerList.get("host") || "";
+            const rawHost = headerList?.get("x-forwarded-host") || headerList?.get("host") || "";
             console.log("🚀 ~ getDomainInfo ~ rawHost:", rawHost)
-            const rawProto = headerList.get("x-forwarded-proto") || "https";
+            const rawProto = headerList?.get("x-forwarded-proto") || "https";
 
             return {
                 hostname: rawHost || NEXT_APP_WEB,

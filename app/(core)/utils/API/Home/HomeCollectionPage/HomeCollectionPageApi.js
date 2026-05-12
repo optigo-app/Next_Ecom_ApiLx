@@ -1,7 +1,6 @@
-import { REACT_APP_WEB } from "../../../../env";
+import { LocalSetup } from "@/app/env";
 import { getSession } from "../../../FetchSessionData";
 import { CommonAPI } from "../../CommonAPI/CommonAPI";
-
 export const HomeCollectionPageApi = async (visiterId = "") => {
     try {
         const storeInit = (typeof window !== 'undefined' && window.__STORE_INIT__) ? window.__STORE_INIT__ : getSession('storeInit');
@@ -18,7 +17,7 @@ export const HomeCollectionPageApi = async (visiterId = "") => {
 
         const selectedTab = getSession("selectedTabPersistence") ?? "";
         const domain = window.location.hostname;
-        const shouldPassMenuFilter = REACT_APP_WEB === "elvee.web";
+        const shouldPassMenuFilter = LocalSetup === "elvee.web";
         const data = {
             FrontEnd_RegNo: `${storeInit?.FrontEnd_RegNo}`,
             Customerid: `${customerId ?? 0}`,

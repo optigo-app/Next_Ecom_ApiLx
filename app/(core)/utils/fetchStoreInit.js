@@ -27,7 +27,7 @@ export async function fetchStoreInitData(req) {
     const isLocalhost = cleanHost === "localhost" || cleanHost === "127.0.0.1" || cleanHost.endsWith(".localhost") || isNgrok;
 
     if (!hostname) hostname = NEXT_APP_WEB;
-    if (hostname == 'nxt29.optigoapps.com') hostname = 'nxt10.optigoapps.com';
+    // if (hostname == 'nxt29.optigoapps.com') hostname = 'nxt10.optigoapps.com';
 
     if (isLocalHost(cleanHost)) {
       if (process.env.NODE_ENV === "development") {
@@ -37,7 +37,11 @@ export async function fetchStoreInitData(req) {
         // baseUrl = `https://cdnfs.optigoapps.com/content-global3/StoreInit/nxt14.optigoapps.com/StoreInit.json`;
 
       } else {
-        baseUrl = `http://192.168.1.153/R50B3/UFS/StoreInit/${cleanHost}/StoreInit.json`;
+        if (cleanHost === "localhost") {
+          baseUrl = `http://192.168.1.153/R50B3/UFS/StoreInit/${NEXT_APP_WEB}/StoreInit.json`;
+        } else {
+          baseUrl = `http://192.168.1.153/R50B3/UFS/StoreInit/${cleanHost}/StoreInit.json`;
+        }
       }
     } else if (isLocalhost) {
       baseUrl = `https://cdnfs.optigoapps.com/content-global3/StoreInit/${hostname}/StoreInit.json`;
@@ -46,9 +50,10 @@ export async function fetchStoreInitData(req) {
     }
 
     const finalUrl = baseUrl;
+    console.log(baseUrl, "baseUrl")
     const response = await fetch(finalUrl);
+    if (!response.ok) throw new Error(`HTTP error ${response.status}`);
     const jsonData = await response.json();
-    if (!Boolean(response.ok)) throw new Error(`HTTP error ${response.status}`);
     return jsonData || {};
   } catch (error) {
     console.error("❌ Error fetching StoreInit data:", error);

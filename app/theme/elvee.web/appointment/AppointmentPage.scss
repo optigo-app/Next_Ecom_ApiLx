@@ -1,0 +1,229 @@
+@use '../../fgstore.web/style/variable.scss' as *;
+
+.smr_appointment-page {
+    text-align: center;
+    margin-top: 0px;
+    font-family: $primaryFontFamily;
+    color: $primaryfontcolor2;
+    padding-bottom: 4rem;
+
+    h1 {
+        letter-spacing: .8px;
+    }
+
+    .smr_intro {
+        font-size: $fontSize4;
+        max-width: 1500px;
+        margin: 2rem auto;
+        letter-spacing: .8px;
+        line-height: 1.6;
+
+        @media (max-width: 768px) {
+            font-size: $fontSize3;
+            padding-inline: 10px;
+        }
+
+        @media (max-width: 576px) {
+            font-size: $fontSize2;
+        }
+    }
+
+    .smr_itemsMainDiv {
+        margin-inline: 140px;
+
+        @media (max-width: 1200px) {
+            margin-inline: 80px;
+        }
+
+        @media (max-width: 992px) {
+            margin-inline: 40px;
+        }
+
+        @media (max-width: 768px) {
+            margin-inline: 20px;
+        }
+
+        .smr_itemsSubDiv {
+            padding: 50px;
+            border: 1px solid #000;
+            box-shadow: 0 48px 100px 0 rgba(17, 12, 46, .15);
+
+            @media (max-width: 768px) {
+                padding: 30px;
+            }
+
+            @media (max-width: 576px) {
+                padding: 20px;
+            }
+
+            h3 {
+                margin-bottom: 30px;
+                letter-spacing: .8px;
+
+                @media (max-width: 768px) {
+                    font-size: $fontSize5;
+                }
+
+                @media (max-width: 576px) {
+                    font-size: $fontSize4;
+                }
+            }
+
+            .smr_items-grid {
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 3rem;
+                padding-inline: 40px;
+                padding-top: 40px;
+
+                @media (max-width: 768px) {
+                    padding-inline: 20px;
+                    padding-top: 30px;
+                }
+
+                @media (max-width: 576px) {
+                    flex-direction: column;
+                    gap: 2rem;
+                    padding-inline: 10px;
+                    padding-top: 20px;
+                }
+
+                .smr_item-card {
+                    display: flex;
+                    flex: 1 1 calc(50% - 1.5rem);
+                    max-width: calc(50% - 1.5rem);
+                    border: 1px solid #000;
+                    background-color: #fff;
+                    align-items: center;
+                    text-align: left;
+                    transition: transform 0.3s ease-in-out;
+
+                    .smr_imageDiv {
+                        width: 50%;
+                        margin-right: 20px;
+
+                        img {
+                            max-width: 100%;
+                            height: auto;
+                        }
+                    }
+
+                    .smr_item-content {
+                        width: 50%;
+                        .smr_btn_a{
+                            border: none;
+                            background-color: #cec7ba;
+                            font-weight: 500;
+                            border: 1px solid gray;
+                        }
+
+                        h2 {
+                            font-size: $fontSize5;
+                            margin-bottom: 1rem;
+                            font-weight: 600;
+                            letter-spacing: .8px;
+                        }
+
+                        button {
+                            padding: 0.5rem 1rem;
+                            font-size: 1rem;
+                        }
+                    }
+
+                    @media (max-width: 768px) {
+                        flex-direction: column;
+                        max-width: 100%;
+                        align-items: center;
+                        text-align: center;
+
+                        .smr_item-content {
+                            width: 100%;
+                            margin-bottom: 15px;
+                        }
+
+                        .smr_imageDiv {
+                            margin-right: 0;
+                            width: 100%;
+                            padding-top: 15px;
+
+                        }
+
+                        img {
+                            margin-bottom: 1rem;
+                        }
+                    }
+
+                    @media (max-width: 576px) {
+                        flex-direction: column;
+                        align-items: center;
+                        max-width: 100%;
+
+                        .smr_imageDiv, .smr_item-content {
+                            width: 100%;
+                        }
+
+                        h2 {
+                            font-size: $fontSize4;
+                        }
+
+                        button {
+                            font-size: 0.9rem;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    .smr_bg-imageCart {
+        position: relative;
+        background-size: cover;
+        background-position: center;
+        height: 300px;
+
+        @media (max-width: 768px) {
+            height: 250px;
+            background-position: right;
+        }
+
+        @media (max-width: 576px) {
+            height: 200px;
+        }
+    }
+
+    .smr_overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: transparent;
+    }
+
+    .smr_text-container {
+        position: relative;
+        z-index: 1;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .smr_textContainerData {
+        h2 {
+            font-size: $fontSize8;
+            color: $primaryfontcolor2;
+            text-align: start;
+
+            @media (max-width: 768px) {
+                font-size: $fontSize6;
+            }
+
+            @media (max-width: 576px) {
+                font-size: $fontSize5;
+                text-align: center;
+            }
+        }
+    }
+}

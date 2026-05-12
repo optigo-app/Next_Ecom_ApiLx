@@ -38,13 +38,16 @@ const SonasonsHome = async () => {
     >
       <TopSection />
       <TheDifference />
-      <BespokeBanner />
+      {/* <BespokeBanner /> */}
       {storeData?.Blockno === 1 && (
         <>
           {storeData?.IsHomeAlbum === 1 && <AlbumSection storeData={storeData} />}
           {storeData?.IsHomeBestSeller === 1 && <BestSellerSection2 data={bestsellerBanner} storeData={storeData} />}
           {storeData?.IsHomeBestSeller === 1 && <NewArrival data={newArrivalBanner} storeData={storeData} />}
           {storeData?.IsHomeTrending === 1 && <TrendingView data={trendingBanner} storeInit={storeData} />}
+          <Box sx={{ marginTop: 4 }}>
+            <BespokeBanner />
+          </Box>
           <AppointmentBanner />
           {storeData?.IsHomeDesignSet === 1 && <DesignSet data={lookbookBanner} storeInit={storeData} />}
           <BrandsComponent />
@@ -57,6 +60,9 @@ const SonasonsHome = async () => {
           {storeData?.IsHomeBestSeller === 1 && <BestSellerSection1 data={bestsellerBanner} storeData={storeData} />}
           {storeData?.IsHomeNewArrival === 1 && <NewArrival2 data={newArrivalBanner} storeInit={storeData} />}
           {storeData?.IsHomeTrending === 1 && <TrendingView2 data={trendingBanner} storeInit={storeData} />}
+          <Box sx={{ marginTop: 4 }}>
+            <BespokeBanner />
+          </Box>
           <AppointmentBanner />
           {storeData?.IsHomeDesignSet === 1 && <DesignSet2 data={lookbookBanner} storeInit={storeData} />}
           <BrandsComponent />

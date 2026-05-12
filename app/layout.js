@@ -10,6 +10,7 @@ import { EmotionRegistry } from "./(core)/contexts/EmotionRegistry";
 import { defaultFont } from "./(core)/assets/FontSetup";
 import { AppConfig } from "./(core)/constants/AppConfig";
 import { activeBrand } from "./env";
+import JewelrySnackbar from "./components/ui/Snackbar";
 
 
 const DEFAULT_JEWELRY_DESCRIPTION = "Discover timeless jewelry crafted with precision and elegance. Explore gold, diamond, and silver collections designed for everyday wear and special occasions, with trusted quality and exceptional craftsmanship.";
@@ -65,6 +66,7 @@ export default async function RootLayout({ children }) {
             <StoreProvider storeInit={storeInit}>
               <AuthProvider theme={themeData?.page} storeInit={storeInit}>
                 <Layout>{children}</Layout>
+                <JewelrySnackbar />
               </AuthProvider>
             </StoreProvider>
           </MasterProvider>

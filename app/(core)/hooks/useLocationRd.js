@@ -33,3 +33,9 @@ export function useNextRouterLikeRR() {
     },
   };
 }
+
+
+export function useNavigate() {
+  const nav = useNextRouterLikeRR();
+  return (url) => nav.push(url);
+}

@@ -1,0 +1,307 @@
+@use "../../../../../theme/elvee.web/style/variable.scss" as *;
+
+.el_display_background {
+  font-family: $fontSansSerif !important;
+
+  @media only screen and (max-width: 1366px) {
+    display: block;
+    overflow: visible;
+  }
+
+  .el_login_header_menu_main {
+    position: fixed;
+    // width: 100%;
+    left: 0;
+    width: 23rem;
+    z-index: 1200;
+    background-color: white;
+    border: 2px solid white;
+    height: 100vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+
+    @media screen and (max-width: 1366px) {
+      width: 22rem;
+    }
+  }
+
+  .el_login_header_menu_main_side {
+    position: fixed;
+    width: 100%;
+    left: 0;
+    top: 0;
+    width: 23rem;
+    z-index: 1200;
+    background-color: white;
+    border: 2px solid white;
+    height: 100vh;
+    overflow-y: auto;
+  }
+
+  .el_withoutL_Header_Main {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 80px;
+    z-index: 1;
+    height: auto;
+  }
+
+  .el_withoutL_ul_Main {
+    display: flex;
+    list-style: none;
+    width: 100%;
+    padding: 0px;
+  }
+
+  .el_whioutL_headerDiv1 {
+    width: 44%;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+  }
+
+  .el_whioutL_headerDiv2 {
+    width: 12%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .el_whioutL_headerDiv3 {
+    width: 44%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .el_without_headerLogo {
+    max-width: 150px;
+  }
+
+  .el_whioutL_headerDiv3_sub1 {
+    display: flex;
+  }
+
+  .el_whioutL_li {
+    margin-inline: 15px;
+  }
+
+  .elv_login_header_menu_div {
+    display: flex;
+    flex: 1;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 24px;
+    padding: 0px 20px 0px 20px;
+  }
+
+  .elv_login_header_menu_close_btn {
+    cursor: pointer;
+  }
+
+  .elv_login_header_menu_lists_div {
+    margin-top: 3rem;
+  }
+
+  .el_login_header_menu_main_div1_logo {
+    text-align: center;
+    max-width: 1000px;
+  }
+
+  .el_login_header_menu_main_div1_logo_side {
+    text-align: center;
+    max-width: 1000px;
+  }
+
+  .elv_menubar_menu_div {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 96%;
+  }
+
+  .el_login_header_menu_li {
+    height: 100%;
+    align-items: center;
+    cursor: pointer;
+    text-transform: uppercase;
+    margin-inline: 20px;
+  }
+
+  .elv_login_header_menu_hr {
+    width: 100%;
+    border: none;
+    border-bottom: 2px solid #000;
+    height: 1px;
+    margin: 0px 0px 0px -8px;
+  }
+
+  .el_login_header_menu_main_div1_ul {
+    display: flex;
+    list-style: none;
+    justify-content: left;
+    flex-direction: column;
+    margin: 0px;
+    padding: 0px;
+    height: auto;
+  }
+
+  .el_login_header_menu_main_div2 {
+    display: flex;
+    align-items: center;
+    list-style: none;
+    margin: 0px;
+    padding: 0px;
+  }
+
+  .el_login_header_menu_main_div2_li {
+    margin-inline: 15px;
+  }
+
+  .elv_heart_menu_icon {
+    font-size: 25px;
+    color: #7d7f85;
+  }
+
+  .el_login_header_menu_main_div1 {
+    display: flex;
+  }
+
+  .elv_login_header_menu_menunames {
+    height: auto;
+  }
+
+  .el_shop_dropdown {
+    height: auto;
+    width: 100%;
+    position: absolute;
+    background: rgba(255, 255, 255, 0.8);
+    top: 72px;
+    left: 0;
+    backdrop-filter: blur(8px);
+    border-radius: 0 0 15px 15px;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    transition: backdrop-filter 0.3s ease;
+    z-index: 11111111;
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 1px 0px;
+    display: none;
+    transition: all 0.5s ease;
+  }
+
+  .el_shop_dropdown.open {
+    display: block;
+    position: absolute;
+    z-index: 111111;
+    width: 100%;
+    margin-top: 0px;
+    transition: all 0.5s ease;
+  }
+
+  .elv_Menu_size {
+    font-size: 35px;
+    margin: 23px 0px 0px 15px;
+  }
+
+  .elv_menu_without_login_div {
+    .el_whioutL_headerDiv1_side {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      flex-direction: column;
+      margin-top: 2rem;
+
+      .el_whioutL_li_side {
+        display: flex;
+        justify-content: start;
+        width: 100%;
+        margin-block: 0.3rem;
+        padding-inline: 8%;
+      }
+    }
+  }
+
+  @media screen and (max-width: 768px) {
+    .el_login_header_menu_main {
+      width: 20rem;
+    }
+
+    .elv_login_header_menu_names {
+      font-size: 14px;
+    }
+
+    .el_login_header_menu_main_div1_logo {
+      max-width: 1000px;
+    }
+  }
+
+  @media screen and (max-width: 425px) {
+    .el_login_header_menu_main {
+      width: 18rem;
+    }
+
+    .el_login_header_menu_main_div2_li {
+      margin-inline: 7px;
+    }
+
+    .elv_login_header_menu_names {
+      font-size: 13px;
+    }
+
+    .elv_param1 {
+      font-size: 13px;
+    }
+
+    .elv_param2 {
+      font-size: 13px;
+    }
+
+    .el_login_header_menu_main_div1_logo {
+      max-width: 1000px;
+    }
+
+    .elv_Menu_size {
+      font-size: 30px;
+      margin: 25px 0px 0px 15px;
+    }
+  }
+
+  @media screen and (max-width: 375px) {
+    .el_login_header_menu_main {
+      width: 17rem;
+    }
+
+    .elv_login_header_menu_names {
+      font-size: 13px;
+    }
+
+    .el_login_header_menu_main_div2_li {
+      margin-inline: 7px;
+    }
+
+    .elv_param1 {
+      font-size: 11px;
+    }
+
+    .elv_param2 {
+      font-size: 11px;
+    }
+
+    .el_login_header_menu_main_div1_logo {
+      max-width: 1000px;
+    }
+
+    .elv_Menu_size {
+      font-size: 25px;
+      margin: 28px 0px 0px 15px;
+    }
+
+    .elv_heart_menu_icon {
+      font-size: 20px;
+    }
+
+    .elv_login_header_menu_div {
+      padding-inline: 15px;
+    }
+  }
+}

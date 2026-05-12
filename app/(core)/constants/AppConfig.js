@@ -425,12 +425,7 @@ export const AppConfig = {
                                     "Last Name",
                                     "Email Address",
                                     "Mobile Number",
-                                    "Password (encrypted and stored securely)",
-                                    "Address",
-                                    "Country",
-                                    "State",
-                                    "City",
-                                    "Zip Code"
+                                    "Password (encrypted and stored securely)"
                                 ]
                             },
                             {

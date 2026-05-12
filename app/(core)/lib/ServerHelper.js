@@ -56,13 +56,17 @@ const Theme = {
   hoq: {
     web: "/WebSiteStaticImage/logoIcon/webLogo1.png",
     mobile: "/WebSiteStaticImage/logoIcon/mobileLogo2.png",
-  }
+  },
+  Elvee: {
+    web: "/WebSiteStaticImage/logoIcon/webLogo.png",
+    mobile: "/WebSiteStaticImage/logoIcon/mobileLogo.png",
+  },
 }
 
 export function getLogos() {
-  return Theme.omjiyansh;
+  return Theme.Elvee;
 }
 
 export function getHoqLogos() {
-  return Theme.hoq;
+  return Theme.Elvee;
 }

@@ -17,7 +17,7 @@ const TheDifference = () => {
       ],
     },
     omjiyansh: {
-      title: "The omjiyanshjewels Difference",
+      // title: "The omjiyanshjewels Difference",
       imgPath: "images/HomePage/TheDifference/om",
       ext: "png",
       data: [
@@ -32,8 +32,8 @@ const TheDifference = () => {
   const activeData = TheDifferenceData.omjiyansh;
 
   return (
-    <div className="smilingPAgeMain" style={{ paddingBlock: "8%" }}>
-      <p className="smilingTitle">{activeData.title}</p>
+    <div className="smilingPAgeMain">
+      {activeData?.title && <p className="smilingTitle">{activeData.title}</p>}
 
       <div className="smr_smilingRock">
         {activeData.data.map((item, index) => (
@@ -43,9 +43,9 @@ const TheDifference = () => {
                 className="smr_deffrence_img"
                 src={`/${assetBase}/${activeData.imgPath}/TheDifference${index + 1}.${activeData.ext}`}
                 alt={item.title}
-                width={100}
-                height={100}
-                sizes="(max-width: 768px) 100px, 150px"
+                width={130}
+                height={130}
+                sizes="(max-width: 768px) 130px, 150px"
                 loading="lazy"
                 style={{ height: "auto" }}
               />

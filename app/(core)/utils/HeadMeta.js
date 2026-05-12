@@ -58,7 +58,7 @@ export function generatePageMetadata(pageData, isOmJiyansh) {
             images:
                 [
                     {
-                        url: '/MetaShareImage.jpg',
+                        url: pageData.ogImage || '/MetaShareImage.jpg',
                         width: 1200,
                         height: 630,
                         alt: `${pageData.title} - ${pageData.websiteName}`,
@@ -69,7 +69,7 @@ export function generatePageMetadata(pageData, isOmJiyansh) {
             card: "summary_large_image",
             title: `${pageData.title} | ${pageData.websiteName}`,
             description: pageData.description || "",
-            images: '/MetaShareImage.jpg' ? ['/MetaShareImage.jpg'] : [],
+            images: [pageData.ogImage || '/MetaShareImage.jpg'],
             creator: NEXT_APP_WEB,
         },
         additionalScripts: [],

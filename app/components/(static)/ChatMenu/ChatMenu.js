@@ -1,6 +1,6 @@
 "use client";
 
-import { Box, IconButton } from "@mui/material";
+import { Box, IconButton, Tooltip, Zoom } from "@mui/material";
 import WhatsAppIcon from "@mui/icons-material/WhatsApp";
 
 const ChatMenu = ({
@@ -47,25 +47,51 @@ const ChatMenu = ({
         zIndex: 1300,
       }}
     >
-      <IconButton
-        component="a"
-        href={whatsappLink}
-        target="_blank"
-        rel="noopener noreferrer"
-        sx={{
-          width: { xs: 50, sm: 54 },
-          height: { xs: 50, sm: 54 },
-          borderRadius: "50%",
-          backgroundColor: "#25D366",
-          color: "#fff",
-          boxShadow: 3,
-          "&:hover": {
-            backgroundColor: "#1ebe5d",
+      <Tooltip 
+        title="Chat with a Jewellery Expert" 
+        placement="left" 
+        arrow 
+        TransitionComponent={Zoom}
+        componentsProps={{
+          tooltip: {
+            sx: {
+              bgcolor: '#01C501',
+              color: '#fff',
+              fontSize: '0.9rem',
+              fontWeight: 500,
+              p: '8px 16px',
+              borderRadius: '10px',
+              boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+              '& .MuiTooltip-arrow': {
+                color: '#01C501',
+              },
+            },
           },
         }}
       >
-        <WhatsAppIcon sx={{ fontSize: { xs: 26, sm: 30, md: 32 } }} />
-      </IconButton>
+        <IconButton
+          component="a"
+          href={whatsappLink}
+          target="_blank"
+          rel="noopener noreferrer"
+          sx={{
+            width: { xs: 50, sm: 54 },
+            height: { xs: 50, sm: 54 },
+            borderRadius: "50%",
+            backgroundColor: "#01C501",
+            color: "#fff",
+            boxShadow: 3,
+            transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+            "&:hover": {
+              backgroundColor: "#01C501",
+              transform: 'scale(1.1) rotate(5deg)',
+              boxShadow: 6,
+            },
+          }}
+        >
+          <WhatsAppIcon sx={{ fontSize: { xs: 30, sm: 35, md: 40 } }} />
+        </IconButton>
+      </Tooltip>
     </Box>
   );
 };

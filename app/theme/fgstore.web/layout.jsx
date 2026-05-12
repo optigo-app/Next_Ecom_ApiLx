@@ -5,6 +5,8 @@ import { getLogos } from "@/app/(core)/lib/ServerHelper";
 import FooterNew from "@/app/components/(static)/Footer/FooterNew";
 import { Box } from "@mui/material";
 import ChatMenu from "@/app/components/(static)/ChatMenu/ChatMenu";
+import PremiumFooter from "@/app/components/(static)/Footer/FooterV2";
+import { activeBrand } from "@/app/env";
 
 const layout = async ({ children }) => {
   const storeData = await getStoreInit();
@@ -15,16 +17,13 @@ const layout = async ({ children }) => {
   return (
     <Box sx={{ display: "flex", flexDirection: "column", minHeight: "100vh", width: "100%", overflow: "hidden" }}>
       <Header logos={logos} storeinit={storeData} />
-      <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-        <Suspense fallback={<Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', flex: 1, minHeight: '90vh' }}></Box>}>
-          {children}
-        </Suspense>
+      <Box sx={{ flex: 1, display: "flex", flexDirection: "column" }}>
+        <Suspense fallback={<Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", flex: 1, minHeight: "90vh" }}></Box>}>{children}</Suspense>
       </Box>
-      <FooterNew companyInfoData={companyInfoData} storeData={storeData} extraFlag={extraFlag} logos={logos} />
+      {activeBrand === "omjiyas" ? <PremiumFooter companyInfoData={companyInfoData} storeData={storeData} extraFlag={extraFlag} logos={logos} /> : <FooterNew companyInfoData={companyInfoData} storeData={storeData} extraFlag={extraFlag} logos={logos} />}
       <ChatMenu />
     </Box>
   );
 };
-
 
 export default layout;
