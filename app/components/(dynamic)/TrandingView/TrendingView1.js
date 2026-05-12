@@ -9,9 +9,8 @@ import { useNextRouterLikeRR } from "@/app/(core)/hooks/useLocationRd";
 import { useStore } from "@/app/(core)/contexts/StoreProvider";
 import cookies from "js-cookie";
 import { compressAndEncode } from "@/app/(core)/utils/Encoder&Decoder";
-import { useMaster } from "@/app/(core)/contexts/MasterProvider";
-import { BookCache } from "@/app/(core)/utils/API/Cache/CacheApi";
-import { normalizeALC, buildAlbumCacheKey, findMatchingCacheEntry, getPricingContext } from "@/app/(core)/cache_utility/CacheBuilder";
+import { normalizeALC, buildAlbumCacheKey, getPricingContext } from "@/app/(core)/cache_utility/CacheBuilder";
+import { readCache, writeCache } from "@/app/(core)/cache_utility/cacheActions";
 
 
 
@@ -21,7 +20,6 @@ import { normalizeALC, buildAlbumCacheKey, findMatchingCacheEntry, getPricingCon
 const TrendingView1 = ({ data, storeInit }) => {
     const { islogin, loginUserDetail } = useStore();
     const { push } = useNextRouterLikeRR();
-    const { cacheList, setCacheList } = useMaster();
     const trendingRef = useRef(null);
     const [trandingViewData, setTrandingViewData] = useState([]);
     const [imageUrl, setImageUrl] = useState();
@@ -61,117 +59,55 @@ const TrendingView1 = ({ data, storeInit }) => {
 
     const pricingContext = useMemo(() => getPricingContext(loginUserDetail, storeInit, islogin), [loginUserDetail, storeInit, islogin]);
 
-    const fetchAndSetTrending = useCallback(async (finalID, precomputedKey) => {
-        if (!pricingContext || !pricingContext.PackageId || isFetchingRef.current) return;
+    const fetchAndSetTrending = useCallback(
+        async (finalID, cacheKey) => {
+            if (!pricingContext || !pricingContext.PackageId || isFetchingRef.current) return;
 
-        const apiALC = "";
-        const keyALC = normalizeALC("");
-        const eventName = "fg_trending";
+            isFetchingRef.current = true;
+            setIsLoading(true);
 
-        const { key, meta } = buildAlbumCacheKey(eventName, storeInit, pricingContext, finalID, keyALC);
-        const effectiveKey = precomputedKey || key;
+            try {
+                // Step 1: Check server-side disk cache (12h TTL)
+                const cacheRes = await readCache(cacheKey);
 
-        isFetchingRef.current = true;
-        setIsLoading(true);
-
-        try {
-            // Step 1: Check server cache + local cache in parallel
-            const localCacheRes = await fetch(`/api/v1/cache?mode=meta&key=${effectiveKey}`)
-                .then((res) => res.json())
-                .catch(() => ({ cached: false }));
-
-            const serverCacheEntries = cacheList?.Data?.rd ?? [];
-            const matchingServerEntry = findMatchingCacheEntry(serverCacheEntries, pricingContext, eventName, apiALC);
-            const serverCacheRebuildDate = matchingServerEntry?.CacheRebuildDate ?? null;
-
-            const localCacheMeta = localCacheRes;
-            const localCacheRebuildDate = localCacheMeta?.CacheRebuildDate ?? null;
-
-            console.log("[TrendingView1] Cache check:", { key: effectiveKey, localCached: localCacheMeta?.cached, serverRebuild: serverCacheRebuildDate, localRebuild: localCacheRebuildDate });
-
-            // Step 2: Use cache if valid
-            if (localCacheMeta?.cached) {
-                const canValidate = Boolean(matchingServerEntry && serverCacheRebuildDate);
-                const datesMatch = localCacheRebuildDate === serverCacheRebuildDate;
-
-                if (canValidate && datesMatch) {
-                    const cachedRes = await fetch(`/api/v1/cache?key=${effectiveKey}`);
-                    const cached = await cachedRes.json();
-                    if (cached.cached && Array.isArray(cached.data)) {
-                        console.log("[TrendingView1] Serving from cache");
-                        const records = cached.data;
-                        const oddNumbers = records.filter((obj) => isOdd(obj.SrNo));
-                        const evenNumbers = records.filter((obj) => !isOdd(obj.SrNo));
-                        setTrandingViewData(records);
-                        setOddNumberObjects(oddNumbers);
-                        setEvenNumberObjects(evenNumbers);
-                        setIsLoading(false);
-                        isFetchingRef.current = false;
-                        return;
-                    }
+                if (cacheRes?.cached && Array.isArray(cacheRes.data)) {
+                    console.log("[TrendingView1] Serving from cache");
+                    const records = cacheRes.data;
+                    setTrandingViewData(records);
+                    setOddNumberObjects(records.filter((obj) => isOdd(obj.SrNo)));
+                    setEvenNumberObjects(records.filter((obj) => !isOdd(obj.SrNo)));
+                    setIsLoading(false);
+                    isFetchingRef.current = false;
+                    return;
                 }
-                fetch(`/api/v1/cache?key=${effectiveKey}`, { method: "DELETE" }).catch(() => { });
-            }
 
-            // Step 3: API Fallback
-            console.log("[TrendingView1] Calling API...");
-            const response = await Get_Tren_BestS_NewAr_DesigSet_Album(storeInit, "GETTrending", finalID);
-            const records = response?.Data?.rd ?? [];
+                // Step 2: Cache miss — call API
+                console.log("[TrendingView1] Cache miss, calling API...");
+                const response = await Get_Tren_BestS_NewAr_DesigSet_Album(storeInit, "GETTrending", finalID);
+                const records = response?.Data?.rd ?? [];
 
-            const oddNumbers = records.filter((obj) => isOdd(obj.SrNo));
-            const evenNumbers = records.filter((obj) => !isOdd(obj.SrNo));
+                setTrandingViewData(records);
+                setOddNumberObjects(records.filter((obj) => isOdd(obj.SrNo)));
+                setEvenNumberObjects(records.filter((obj) => !isOdd(obj.SrNo)));
 
-            setTrandingViewData(records);
-            setOddNumberObjects(oddNumbers);
-            setEvenNumberObjects(evenNumbers);
+                setIsLoading(false);
+                isFetchingRef.current = false;
 
-            setIsLoading(false);
-            isFetchingRef.current = false;
-
-            // Step 4: Book cache + store local cache
-            if (records.length > 0) {
-                try {
-                    const bookCacheResult = await BookCache(finalID, eventName, pricingContext, apiALC);
-                    const newCacheRebuildDate = bookCacheResult?.CacheRebuildDate ?? null;
-
-                    if (newCacheRebuildDate) {
-                        const newEntry = {
-                            EventName: eventName,
-                            PackageId: pricingContext.PackageId,
-                            LabourSetId: pricingContext.Laboursetid,
-                            diamondpricelistname: pricingContext.diamondpricelistname,
-                            colorstonepricelistname: pricingContext.colorstonepricelistname,
-                            ALC: keyALC,
-                            CacheRebuildDate: newCacheRebuildDate,
-                        };
-
-                        if (cacheList?.Data?.rd) {
-                            const updatedRd = [...cacheList.Data.rd];
-                            const idx = updatedRd.findIndex(e => e.EventName === eventName && e.PackageId == pricingContext.PackageId && e.LabourSetId == pricingContext.Laboursetid);
-                            if (idx > -1) updatedRd[idx] = newEntry; else updatedRd.push(newEntry);
-                            setCacheList({ ...cacheList, Data: { ...cacheList.Data, rd: updatedRd } });
-                        }
-                    }
-
-                    const updatedMeta = { ...meta, CacheRebuildDate: newCacheRebuildDate };
-                    fetch("/api/v1/cache", {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({ key: effectiveKey, data: records, meta: updatedMeta }),
-                    }).catch(console.error);
-                } catch (cacheErr) {
-                    console.error("[TrendingView1] Cache update failed:", cacheErr);
+                // Step 3: Save to server cache (fire-and-forget, 12h TTL)
+                if (records.length > 0) {
+                    writeCache(cacheKey, records).catch(console.error);
                 }
+            } catch (error) {
+                console.error("[TrendingView1] Error fetching trending:", error);
+                isFetchingRef.current = false;
+                setIsLoading(false);
             }
-        } catch (error) {
-            console.error("[TrendingView1] Error fetching trending:", error);
-            isFetchingRef.current = false;
-            setIsLoading(false);
-        }
-    }, [pricingContext, storeInit, cacheList, setCacheList]);
+        },
+        [pricingContext, storeInit]
+    );
 
     useEffect(() => {
-        if (!mounted || !pricingContext || !storeInit || cacheList === null) return;
+        if (!mounted || !pricingContext || !storeInit) return;
 
         const fetchData = async () => {
             const visitorId = cookies.get("visiterId") ?? "0";
@@ -179,8 +115,7 @@ const TrendingView1 = ({ data, storeInit }) => {
             const uid = loginUserDetail?.id || "0";
             const finalID = IsB2BWebsite == 0 ? (islogin === false ? visitorId : uid) : uid;
 
-            const keyALC = normalizeALC("");
-            const { key } = buildAlbumCacheKey("fg_trending", storeInit, pricingContext, finalID, keyALC);
+            const { key } = buildAlbumCacheKey("fg_trending", storeInit, pricingContext, finalID, normalizeALC(""));
 
             if (isFetchingRef.current || lastRequestKeyRef.current === key) return;
             lastRequestKeyRef.current = key;
@@ -189,7 +124,7 @@ const TrendingView1 = ({ data, storeInit }) => {
         };
 
         fetchData();
-    }, [mounted, islogin, pricingContext, storeInit, fetchAndSetTrending, loginUserDetail?.id, cacheList]);
+    }, [mounted, islogin, pricingContext, storeInit, fetchAndSetTrending, loginUserDetail?.id]);
 
 
 
