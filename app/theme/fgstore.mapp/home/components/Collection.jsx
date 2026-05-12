@@ -5,10 +5,9 @@ import Headers from "./composable/Headers";
 import { HomeCollectionApi } from "@/app/(core)/utils/API/Home/HomeCollectionApi/HomeCollectionApi";
 import { useStore } from "@/app/(core)/contexts/StoreProvider";
 import { useNextRouterLikeRR } from "@/app/(core)/hooks/useLocationRd";
-import { BookCache } from "@/app/(core)/utils/API/Cache/CacheApi";
-import { normalizeALC, buildAlbumCacheKey, findMatchingCacheEntry, getPricingContext } from "@/app/(core)/cache_utility/CacheBuilder";
+import { normalizeALC, buildAlbumCacheKey, getPricingContext } from "@/app/(core)/cache_utility/CacheBuilder";
+import { readCache, writeCache } from "@/app/(core)/cache_utility/cacheActions";
 import Cookies from "js-cookie";
-import { useMaster } from "@/app/(core)/contexts/MasterProvider";
 
 const DummyCollections = [
     {
@@ -47,7 +46,6 @@ const DummyCollections = [
 
 function Collection({ storeinit }) {
     const { loginUserDetail, islogin } = useStore();
-    const { cacheList, setCacheList } = useMaster();
     const [CollectionData, setCollectionData] = useState([]);
     const { push } = useNextRouterLikeRR();
     const [loading, setLoading] = useState(true);
@@ -96,66 +94,25 @@ function Collection({ storeinit }) {
     }, []);
 
     const fetchAndSetCollection = useCallback(
-        async (finalID, precomputedKey) => {
-            if (!pricingContext || isFetchingRef.current) return;
-
-            const apiALC = "";
-            const keyALC = normalizeALC("");
-            const eventName = "home_collection";
-
-            const { key, meta } = buildAlbumCacheKey(eventName, storeinit, pricingContext, finalID, keyALC);
-            const effectiveKey = precomputedKey || key;
+        async (finalID, cacheKey) => {
+            if (!pricingContext || !pricingContext.PackageId || isFetchingRef.current) return;
 
             isFetchingRef.current = true;
             setLoading(true);
 
             try {
-                // Step 1: Check server cache + local cache in parallel
-                const localCacheRes = await fetch(`/api/v1/cache?mode=meta&key=${effectiveKey}`)
-                    .then((res) => res.json())
-                    .catch(() => ({ cached: false }));
+                const cacheRes = await readCache(cacheKey);
 
-                const serverCacheEntries = cacheList?.Data?.rd ?? [];
-                const matchingServerEntry = findMatchingCacheEntry(serverCacheEntries, pricingContext, eventName, apiALC);
-                const serverCacheRebuildDate = matchingServerEntry?.CacheRebuildDate ?? null;
-
-                const localCacheMeta = localCacheRes;
-                const localCacheRebuildDate = localCacheMeta?.CacheRebuildDate ?? null;
-
-                console.log("[Collection] Cache meta checked: localCacheMeta.cached =", localCacheMeta?.cached, "server entries count =", serverCacheEntries?.length);
-
-                // Step 2: Use cache if valid
-                if (localCacheMeta?.cached) {
-                    const canValidate = Boolean(matchingServerEntry && serverCacheRebuildDate);
-                    const datesMatch = localCacheRebuildDate === serverCacheRebuildDate;
-
-                    if (canValidate && datesMatch) {
-                        const cachedRes = await fetch(`/api/v1/cache?key=${effectiveKey}`);
-                        const cached = await cachedRes.json();
-                        console.log("[Collection] Using cache, skipping API");
-                        if (cached.cached && Array.isArray(cached.data)) {
-                            console.log("[Collection] Setting collections from cache");
-                            const mappedData = mapCollectionImages(cached.data);
-                            setCollectionData(mappedData);
-                            setLoading(false);
-                            isFetchingRef.current = false;
-                            return cached.data;
-                        }
-                    }
-                    fetch(`/api/v1/cache?key=${effectiveKey}`, { method: "DELETE" }).catch(() => { });
-                }
-
-                // Step 3: Guard for storeinit
-                if (!storeinit) {
-                    setTimeout(() => {
-                        isFetchingRef.current = false;
-                        fetchAndSetCollection(finalID, effectiveKey);
-                    }, 500);
+                if (cacheRes?.cached && Array.isArray(cacheRes.data)) {
+                    console.log("[Collection] Serving from cache");
+                    const mappedData = mapCollectionImages(cacheRes.data);
+                    setCollectionData(mappedData);
+                    setLoading(false);
+                    isFetchingRef.current = false;
                     return;
                 }
 
-                // Step 4: API Call
-                console.log("[Collection] Making API call for finalID:", finalID);
+                console.log("[Collection] Cache miss, calling API...");
                 const res = await HomeCollectionApi(storeinit, finalID);
                 const apiData = res?.Data?.rd || [];
                 console.log("[Collection] API response received, count:", apiData.length);
@@ -163,60 +120,27 @@ function Collection({ storeinit }) {
                 if (apiData.length > 0) {
                     const mappedData = mapCollectionImages(apiData);
                     setCollectionData(mappedData);
+
+                    writeCache(cacheKey, apiData).catch(console.error);
                 } else {
                     setCollectionData([]);
                 }
 
                 setLoading(false);
                 isFetchingRef.current = false;
-
-                // Step 5: Book cache + store local cache
-                try {
-                    const bookCacheResult = await BookCache(finalID, eventName, pricingContext, apiALC);
-                    const newCacheRebuildDate = bookCacheResult?.CacheRebuildDate ?? null;
-
-                    if (newCacheRebuildDate) {
-                        // Update global cacheList in context
-                        const newEntry = {
-                            EventName: eventName,
-                            PackageId: pricingContext.PackageId,
-                            LabourSetId: pricingContext.Laboursetid,
-                            diamondpricelistname: pricingContext.diamondpricelistname,
-                            colorstonepricelistname: pricingContext.colorstonepricelistname,
-                            ALC: normalizeALC(apiALC),
-                            CacheRebuildDate: newCacheRebuildDate,
-                        };
-                        if (cacheList?.Data?.rd) {
-                            const updatedRd = [...cacheList.Data.rd];
-                            const idx = updatedRd.findIndex(e => e.EventName === eventName && e.PackageId == pricingContext.PackageId && e.LabourSetId == pricingContext.Laboursetid);
-                            if (idx > -1) updatedRd[idx] = newEntry; else updatedRd.push(newEntry);
-                            setCacheList({ ...cacheList, Data: { ...cacheList.Data, rd: updatedRd } });
-                        }
-                    }
-
-                    const updatedMeta = { ...meta, CacheRebuildDate: newCacheRebuildDate };
-                    fetch("/api/v1/cache", {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({ key: effectiveKey, data: apiData, meta: updatedMeta }),
-                    }).catch(console.error);
-                } catch (cacheErr) {
-                    console.error("[Collection] Cache update failed:", cacheErr);
-                }
             } catch (err) {
                 console.log("[Collection] Error in fetch:", err);
                 console.error(err);
                 setCollectionData([]);
                 isFetchingRef.current = false;
-            } finally {
                 setLoading(false);
             }
         },
-        [pricingContext, storeinit, mapCollectionImages, cacheList, setCacheList],
+        [pricingContext, storeinit, mapCollectionImages]
     );
 
     useEffect(() => {
-        if (!pricingContext || !storeinit || cacheList === null) return;
+        if (!pricingContext || !storeinit) return;
 
         const fetchData = async () => {
             const visiterID = Cookies.get("visiterId");
@@ -233,7 +157,7 @@ function Collection({ storeinit }) {
         };
 
         fetchData();
-    }, [islogin, pricingContext, storeinit, fetchAndSetCollection, loginUserDetail?.id, cacheList]);
+    }, [islogin, pricingContext, storeinit, fetchAndSetCollection, loginUserDetail?.id]);
 
     if (!loading && CollectionData?.length == 0) {
         return null;

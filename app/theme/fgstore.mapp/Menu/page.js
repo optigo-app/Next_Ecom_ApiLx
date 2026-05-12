@@ -10,13 +10,11 @@ import { useNextRouterLikeRR } from '@/app/(core)/hooks/useLocationRd';
 import { getSession } from '@/app/(core)/utils/FetchSessionData';
 import DashboardRoundedIcon from '@mui/icons-material/DashboardRounded';
 import { COLORS } from '@/app/(core)/constants/MobileAppTheme';
-import { useMaster } from '@/app/(core)/contexts/MasterProvider';
-import { BookCache } from '@/app/(core)/utils/API/Cache/CacheApi';
-import { getPricingContext, buildMenuCacheKey, findMatchingMenuCacheEntry } from '@/app/(core)/cache_utility/CacheBuilder';
+import { getPricingContext, buildMenuCacheKey } from '@/app/(core)/cache_utility/CacheBuilder';
+import { readCache, writeCache } from '@/app/(core)/cache_utility/cacheActions';
 
 const Menu = ({ storeInit }) => {
     const { islogin, loginUserDetail } = useStore();
-    const { cacheList, setCacheList } = useMaster();
     const navigation = useNextRouterLikeRR().push;
 
     const [menuData, setMenuData] = useState([]);
@@ -26,13 +24,6 @@ const Menu = ({ storeInit }) => {
     const pricingContext = useMemo(() => getPricingContext(loginUserDetail, storeInit, islogin), [loginUserDetail, storeInit, islogin]);
     const isFetchingRef = useRef(false);
     const lastRequestKeyRef = useRef("");
-
-    // Use refs so we can read latest values inside the effect without making them deps.
-    // This prevents cacheList updates (inside the effect) from re-triggering the effect.
-    const cacheListRef = useRef(cacheList);
-    const setCacheListRef = useRef(setCacheList);
-    useEffect(() => { cacheListRef.current = cacheList; }, [cacheList]);
-    useEffect(() => { setCacheListRef.current = setCacheList; }, [setCacheList]);
 
     // Reset the lastRequestKey lock whenever login-state changes so a fresh fetch can happen.
     useEffect(() => {
@@ -53,7 +44,7 @@ const Menu = ({ storeInit }) => {
         // }
 
         // Wait for dependencies to be ready
-        if (!pricingContext || !storeInit || cacheListRef.current === null) return;
+        if (!pricingContext || !storeInit) return;
         console.log("pricingContext", pricingContext);
 
         const visitorID = Cookies.get('visiterId');
@@ -66,7 +57,7 @@ const Menu = ({ storeInit }) => {
 
         const eventName = "home_menu";
         const menuPricing = { PackageId: pricingContext.PackageId };
-        const { key, meta } = buildMenuCacheKey(eventName, storeInit, menuPricing, finalID);
+        const { key } = buildMenuCacheKey(eventName, storeInit, menuPricing, finalID);
 
         // Prevent duplicate calls with same key
         if (isFetchingRef.current || lastRequestKeyRef.current === key) return;
@@ -76,89 +67,33 @@ const Menu = ({ storeInit }) => {
             isFetchingRef.current = true;
             setLoading(true);
 
-            // Read refs at call time — always up-to-date, no stale closure
-            const currentCacheList = cacheListRef.current;
-            const currentSetCacheList = setCacheListRef.current;
-
             try {
-                // Step 1: Check server cache list + local cache metadata
-                const localCacheRes = await fetch(`/api/v1/cache?mode=meta&key=${key}`)
-                    .then(res => res.json())
-                    .catch(() => ({ cached: false }));
+                // Step 1: Check server-side disk cache (12h TTL)
+                const cacheRes = await readCache(key);
 
-                const serverCacheEntries = currentCacheList?.Data?.rd ?? [];
-                const matchingServerEntry = findMatchingMenuCacheEntry(serverCacheEntries, menuPricing, eventName);
-                const serverCacheRebuildDate = matchingServerEntry?.CacheRebuildDate ?? null;
-
-                const localCacheMeta = localCacheRes;
-                const localCacheRebuildDate = localCacheMeta?.CacheRebuildDate ?? null;
-
-                console.log("[Menu] Cache check:", { key, localCached: localCacheMeta?.cached, serverRebuild: serverCacheRebuildDate, localRebuild: localCacheRebuildDate });
-
-                // Step 2: Use cache if valid
-                if (localCacheMeta?.cached) {
-                    const canValidate = Boolean(matchingServerEntry && serverCacheRebuildDate);
-                    const datesMatch = localCacheRebuildDate === serverCacheRebuildDate;
-
-                    if (canValidate && datesMatch) {
-                        const cachedRes = await fetch(`/api/v1/cache?key=${key}`);
-                        const cached = await cachedRes.json();
-                        if (cached.cached && Array.isArray(cached.data)) {
-                            console.log("[Menu] Serving from cache");
-                            setMenuData(cached.data);
-                            setLoading(false);
-                            isFetchingRef.current = false;
-                            return;
-                        }
-                    }
-                    console.log("[Menu] Cache invalid or mismatch, deleting");
-                    fetch(`/api/v1/cache?key=${key}`, { method: 'DELETE' }).catch(() => { });
+                if (cacheRes?.cached && Array.isArray(cacheRes.data)) {
+                    console.log("[Menu] Serving from cache");
+                    setMenuData(cacheRes.data);
+                    setLoading(false);
+                    isFetchingRef.current = false;
+                    return;
                 }
 
-                // Step 3: API Fallback
+                // Step 2: API Fallback
                 console.log("[Menu] Calling GetMenuAPI...");
                 const response = await GetMenuAPI(finalID);
                 const apiData = response?.Data?.rd || [];
 
                 if (apiData.length > 0) {
                     setMenuData(apiData);
+
+                    // Step 3: Save to server cache (fire-and-forget, 12h TTL)
+                    writeCache(key, apiData).catch(console.error);
                 }
 
                 setLoading(false);
                 isFetchingRef.current = false;
 
-                // Step 4: Book cache and sync global state
-                if (apiData.length > 0) {
-                    try {
-                        const bookCacheResult = await BookCache(finalID, eventName, menuPricing, "");
-                        const newCacheRebuildDate = bookCacheResult?.CacheRebuildDate ?? null;
-
-                        if (newCacheRebuildDate) {
-                            const newEntry = {
-                                EventName: eventName,
-                                PackageId: menuPricing.PackageId,
-                                CacheRebuildDate: newCacheRebuildDate,
-                            };
-
-                            if (currentCacheList?.Data?.rd) {
-                                const updatedRd = [...currentCacheList.Data.rd];
-                                const idx = updatedRd.findIndex(e => e.EventName === eventName && e.PackageId == menuPricing.PackageId);
-                                if (idx > -1) updatedRd[idx] = newEntry; else updatedRd.push(newEntry);
-                                currentSetCacheList({ ...currentCacheList, Data: { ...currentCacheList.Data, rd: updatedRd } });
-                                console.log("[Menu] Global cacheList updated");
-                            }
-                        }
-
-                        const updatedMeta = { ...meta, CacheRebuildDate: newCacheRebuildDate };
-                        fetch("/api/v1/cache", {
-                            method: "POST",
-                            headers: { "Content-Type": "application/json" },
-                            body: JSON.stringify({ key, data: apiData, meta: updatedMeta }),
-                        }).catch(console.error);
-                    } catch (cacheErr) {
-                        console.error("[Menu] Cache update failed:", cacheErr);
-                    }
-                }
             } catch (err) {
                 console.error("[Menu] Error in fetchMenu:", err);
                 setLoading(false);
@@ -167,8 +102,6 @@ const Menu = ({ storeInit }) => {
         };
 
         fetchMenu();
-    // NOTE: cacheList & setCacheList intentionally excluded from deps — accessed via refs.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [islogin, storeInit, loginUserDetail, pricingContext]);
 
     // ==========================================
