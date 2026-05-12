@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "next dev -p 5009 --turbo",
     "build": "next build --turbo",
-    "start": "next start -p 5009",
+    "start": "next start -p 5005",
     "lint": "eslint",
     "ng": "next build && next start",
     "dev:watch": "nodemon --watch \"app/(core)/utils/env.js\" --exec \"next dev -p 5009 --turbo\""

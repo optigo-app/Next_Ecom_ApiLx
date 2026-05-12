@@ -19,7 +19,8 @@ export const themeMap = {
     page: "fgstore.mapp",
   },
   "nxtelvee.web": {
-    page: "elvee.web",
+    // page: "elvee.web",
+    page: LocalSetup,
   },
   'nxthoq.web': {
     page: "hoq.web",

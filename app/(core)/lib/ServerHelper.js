@@ -64,9 +64,9 @@ const Theme = {
 }
 
 export function getLogos() {
-  return Theme.Elvee;
+  return Theme.hoq;
 }
 
 export function getHoqLogos() {
-  return Theme.Elvee;
+  return Theme.hoq;
 }
