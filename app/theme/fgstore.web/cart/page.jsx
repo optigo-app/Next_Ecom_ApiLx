@@ -1,6 +1,8 @@
 
 import { getStoreInit, GetVistitorId } from "@/app/(core)/utils/GlobalFunctions/GlobalFunctions";
-import MainCart from "./MainCart";
+import dynamic from "next/dynamic";
+import MainCart from './MainCart'
+
 
 const Cart = async ({ params, searchParams }) => {
     const storeinit = await getStoreInit();

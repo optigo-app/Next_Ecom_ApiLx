@@ -4,11 +4,12 @@ import { removeFromCartList } from '../../API/RemoveCartAPI/RemoveCartAPI';
 import { handleWishlistToCartAPI } from '../../API/WishList_Cart/WishlistToCart';
 import { GetCountAPI } from '../../API/GetCount/GetCountAPI';
 import pako from 'pako';
-import { toast } from 'react-toastify';
 import Cookies from "js-cookie";
 import { DiamondListData } from '../../API/DiamondStore/DiamondList';
 import { formatRedirectTitleLine } from '../GlobalFunction';
 import { useNextRouterLikeRR } from '@/app/(core)/hooks/useLocationRd';
+import { getSession } from '../../FetchSessionData';
+import { useSnackbarStore } from '@/app/(core)/hooks/useSnackbar';
 
 const Usewishlist = () => {
   const navigate = useNextRouterLikeRR().push;
@@ -32,12 +33,13 @@ const Usewishlist = () => {
   const [finalWishData, setFinalWishData] = useState([]);
   const [loadingIndex, setLoadingIndex] = useState(0)
   const imageNotFound = '/Assets/image-not-found.jpg'
+  const showSnackbar = useSnackbarStore((state) => state.showSnackbar);
 
   const validThemenos = [3, 4, 11, 12, 10, 7, 1, 2];
 
   useEffect(() => {
-    const storeInit = JSON.parse(sessionStorage.getItem("storeInit"));
-    const storedData = JSON.parse(sessionStorage.getItem("loginUserDetail"));
+    const storeInit = getSession("storeInit");
+    const storedData = getSession("loginUserDetail");
     setStoreInit(storeInit)
     if (storeInit?.IsB2BWebsite != 0) {
       setCurrencyData(storedData?.CurrencyCode)
@@ -47,10 +49,10 @@ const Usewishlist = () => {
   }, [])
 
   useEffect(() => {
-    // const metalTypeData = JSON.parse(sessionStorage.getItem('metalTypeCombo'));
-    const metalColorData = JSON.parse(sessionStorage.getItem('MetalColorCombo'));
-    // const diamondQtyColorData = JSON.parse(sessionStorage.getItem('diamondQualityColorCombo'));
-    // const CSQtyColorData = JSON.parse(sessionStorage.getItem('ColorStoneQualityColorCombo'));
+    // const metalTypeData = getSession('metalTypeCombo');
+    const metalColorData = getSession('MetalColorCombo');
+    // const diamondQtyColorData = getSession('diamondQualityColorCombo');
+    // const CSQtyColorData = getSession('ColorStoneQualityColorCombo');
     // setMetalTypeCombo(metalTypeData);
     setMetalColorCombo(metalColorData);
     // setDiamondQualityColorCombo(diamondQtyColorData);
@@ -195,7 +197,7 @@ const Usewishlist = () => {
         console.error("Error:", error);
       }
     } else {
-      toast.info('Already in Cart.')
+      showSnackbar('Already in Cart.')
     }
   };
   // Already in cart
@@ -465,7 +467,7 @@ const Usewishlist = () => {
   //browse our collection
 
   const handelMenu = () => {
-    let menudata = JSON.parse(sessionStorage.getItem('menuparams'));
+    let menudata = getSession('menuparams');
     if (menudata) {
       const queryParameters1 = [
         menudata?.FilterKey && `${menudata?.FilterVal}`,
@@ -527,11 +529,3 @@ const Usewishlist = () => {
 
 export default Usewishlist;
 
-
-
-
-const Toast = () => (
-  <div className="cust_hoq_toast">
-    Already in Cart.
-  </div>
-);

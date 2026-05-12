@@ -8,6 +8,7 @@ import { Get_Tren_BestS_NewAr_DesigSet_Album } from "@/app/(core)/utils/API/Home
 import { useMaster } from "@/app/(core)/contexts/MasterProvider";
 import { BookCache } from "@/app/(core)/utils/API/Cache/CacheApi";
 import { normalizeALC, buildAlbumCacheKey, findMatchingCacheEntry, getPricingContext } from "@/app/(core)/cache_utility/CacheBuilder";
+import SonaHeader from "@/app/theme/fgstore.web/home/Header";
 
 
 const Main = ({ storeData }) => {
@@ -168,58 +169,63 @@ const Main = ({ storeData }) => {
 
 
   return (
-    <Grid container spacing={3} justifyContent="center" alignContent="start" mt={2}>
-      {isLoading
-        ? skeletons
-        : albumData.slice(0, 5).map((album, index) => (
-          <Grid item size={{ xs: 12, sm: 6, md: 4, lg: 2 }} key={index}>
-            <Card
-              sx={{
-                overflow: "hidden",
-                "&:hover": { boxShadow: "0 4px 12px rgba(0,0,0,0.12)" },
-              }}
-              component={Link}
-              href={`/p/${album?.AlbumName}/?A=${btoa(`AlbumName=${album?.AlbumName}`)}`}
-              prefetch={false}
-            >
-              <CardActionArea>
-                <Box
-                  sx={{
-                    position: "relative",
-                    width: "100%",
-                    aspectRatio: "3 / 4",
-                    overflow: "hidden",
-                    bgcolor: "rgba(0,0,0,0.04)",
-                  }}
-                >
-                  <CardMedia
+    <>
+      <SonaHeader title="Infinitely Inspiring" isShowViewMore={true} />
+      <Grid container spacing={3} justifyContent="center" alignContent="start" mt={2}>
+        {isLoading
+          ? skeletons
+          : albumData.slice(0, 5).map((album, index) => (
+            <Grid item size={{ xs: 12, sm: 6, md: 4, lg: 2 }} key={index}>
+              <Card
+                sx={{
+                  overflow: "hidden",
+                  "&:hover": { boxShadow: "0 4px 12px rgba(0,0,0,0.12)" },
+                  // borderRadius: 2
+                }}
+                component={Link}
+                href={`/p/${album?.AlbumName}/?A=${btoa(`AlbumName=${album?.AlbumName}`)}`}
+                prefetch={false}
+              >
+                <CardActionArea>
+                  <Box
                     sx={{
+                      position: "relative",
                       width: "100%",
-                      height: "100%",
-                      objectFit: "cover",
-                      display: "block",
+                      aspectRatio: "3 / 4",
+                      overflow: "hidden",
+                      bgcolor: "rgba(0,0,0,0.04)",
                     }}
-                    component="img"
-                    image={imageUrl + album?.AlbumImageFol + "/" + album?.AlbumImageName || "/image-not-found.jpg"}
-                    alt={"album-image"}
-                    onError={(e) => {
-                      e.target.src = "/image-not-found.jpg";
-                    }}
-                    width={600}
-                    height={800}
-                    loading="lazy"
-                  />
-                  <CardContent>
-                    <Typography variant="body1" noWrap fontWeight={600} color="text.primary">
-                      {album?.AlbumName}
-                    </Typography>
-                  </CardContent>
-                </Box>
-              </CardActionArea>
-            </Card>
-          </Grid>
-        ))}
-    </Grid>
+                  >
+                    <CardMedia
+                      sx={{
+                        width: "100%",
+                        height: "100%",
+                        objectFit: "cover",
+                        display: "block",
+                        // borderRadius: 2
+                      }}
+                      component="img"
+                      image={imageUrl + album?.AlbumImageFol + "/" + album?.AlbumImageName || "/image-not-found.jpg"}
+                      alt={"album-image"}
+                      onError={(e) => {
+                        e.target.src = "/image-not-found.jpg";
+                      }}
+                      width={600}
+                      height={800}
+                      loading="lazy"
+                    />
+                    <CardContent>
+                      <Typography variant="body1" noWrap fontWeight={600} color="text.primary">
+                        {album?.AlbumName}
+                      </Typography>
+                    </CardContent>
+                  </Box>
+                </CardActionArea>
+              </Card>
+            </Grid>
+          ))}
+      </Grid>
+    </>
   );
 };
 

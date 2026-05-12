@@ -70,12 +70,16 @@ export const ParseAndDecodeSearchParams = (searchParams) => {
                         fixed = fixed.padEnd(fixed.length + paddingNeeded, "=");
                     }
 
-                    // Decode and then re-encode to ensure valid Base64
-                    const decoded = atob(fixed);
-                    const reEncoded = btoa(decoded);
-                    return `${key}=${reEncoded}`;
+                    try {
+                        // Decode and then re-encode to ensure valid Base64
+                        const decoded = atob(fixed);
+                        const reEncoded = btoa(decoded);
+                        return `${key}=${reEncoded}`;
+                    } catch (e) {
+                        // Silently handle non-Base64 values to avoid log flooding
+                        return `${key}=null`;
+                    }
                 } catch (e) {
-                    console.error(`❌ Error decoding key "${key}":`, e);
                     return `${key}=null`;
                 }
             });

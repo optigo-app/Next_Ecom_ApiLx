@@ -1,88 +1,49 @@
-@use '../../../theme/fgstore.web/style/variable.scss' as *;
+@use "../../../theme/fgstore.web/style/variable.scss" as *;
 
+#brandsComponentID {
+  padding-block: 3%;
+}
+.mainAffiliDiv {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.smr_brandsCompoents {
+  color: $textColor;
+  font-size: 27px;
+  font-family: $Pratafonts !important;
+  font-weight: 500 !important;
+  text-align: center;
+  text-transform: capitalize;
+  line-height: 2px;
+  margin: 0;
+  padding: 0;
+  padding-block: 3%;
+  margin-bottom: 2rem; /* cghanges */
+}
+.AffiliationComponents {
+  color: $titleColor !important;
+  text-align: center;
+  font-size: $fontSize5;
+  text-transform: capitalize;
+  line-height: 2px;
+  margin: 0;
+  padding: 0;
+  padding-block: 3%;
+  font-family: $homePageFontFamily;
+}
 
-.mainAffiliDiv{
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-.smr_brandsCompoents{
-    // color: $titleColor !important;
-    // font-family: $homePageFontFamily;
-    // font-size: $fontSize5 !important;
-    color: $textColor;
-    font-size: 27px;
-    font-family: $Pratafonts !important;
-    font-weight: 500 !important;
-    text-align: center;
-    text-transform: capitalize;
-    line-height: 2px;
-    margin: 0;
-    padding: 0;
-    padding-block: 3%;
-    margin-bottom: 2rem;  /* cghanges */
-}
-.AffiliationComponents{
-    color: $titleColor !important;
-    text-align: center;
-    font-size: $fontSize5;
-    text-transform: capitalize;
-    line-height: 2px;
-    margin: 0 ;
-    padding: 0;
-    padding-block: 3%;
-    font-family: $homePageFontFamily;
-}
-
-.smr_affilitionImg1{
-    max-width: 180px;
-    object-fit: contain;
+.smr_affilitionImg1 {
+  max-width: 180px;
+  object-fit: contain;
 }
 
 .brandsComponentClass {
-    margin-bottom: -10%;
+  margin-bottom: -10%;
 }
-
 
 @media (min-width: 320px) and (max-width: 768px) {
-    .smr_brandsCompoents{
-        margin-bottom: 20px !important;
-    }
-    
+  .smr_brandsCompoents {
+    margin-bottom: 20px !important;
+  }
 }
-
-
-// @media (max-width: 445px) {
-//     .smr_brandsComponentClass{
-//         width: 100%;
-//         display: flex  !important;
-//         justify-content: start;
-//     }
-//     .AffiliationClassComponents{
-//         width: 100%;
-//         display: flex;
-//         justify-content: start;
-//     }
-//     .AffiliationComponents{
-//         margin: 50px 0px 20px 0px 
-//     }
-//     .mainAffiliDiv{
-//         display: block ;
-//         text-align: center;
-//     }
-//     .smr_affilitionImg{
-//         width: 80px ;
-//         margin-right: 10px ;
-//     }
-
-//     .smr_affilitionImg1{
-//         width: 80px;
-//         margin-right: 20px ;
-//     }
-
-
-//     .smr_brandsCompoents{
-//         font-size: $fontSize5;
-//         padding-block: 40px;
-//     }
-// }

@@ -11,6 +11,7 @@ import Pako from "pako";
 import Cookies from "js-cookie";
 import { useStore } from "@/app/(core)/contexts/StoreProvider";
 import { useNextRouterLikeRR } from "@/app/(core)/hooks/useLocationRd";
+import SonaHeader from "@/app/theme/fgstore.web/home/Header";
 
 const BestSellerSection = ({ data, storeData }) => {
   const { push } = useNextRouterLikeRR();
@@ -145,7 +146,7 @@ const BestSellerSection = ({ data, storeData }) => {
         <div className="proCat_bestSallerMain">
           <div className="linkingLoveMain">
             <div className="linkingLove">
-              <p className="linkingTitle">Best Seller</p>
+              <p className="linkingTitle"></p>
 
               <Slider {...settings}>
                 {chunkedData.map((chunk, index) => (

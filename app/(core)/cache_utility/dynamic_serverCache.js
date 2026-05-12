@@ -20,6 +20,9 @@ export async function setCache(key, data, meta) {
   };
 
   try {
+    if (!fs.existsSync(CACHE_DIR)) {
+      await fs.promises.mkdir(CACHE_DIR, { recursive: true });
+    }
     // Optimization: Remove pretty-printing (null, 2) to reduce file size and I/O
     await fs.promises.writeFile(file, JSON.stringify(payload), "utf8");
     console.log(`✅ [CACHE SAVED] ${key}`);

@@ -11,6 +11,9 @@ import Cookies from "js-cookie";
 import { fetchSingleProdDT } from '@/app/(core)/utils/API/CartAPI/SingleProdDtAPI';
 import { formatRedirectTitleLine } from '@/app/(core)/utils/Glob_Functions/GlobalFunction';
 import { useNextRouterLikeRR } from '@/app/(core)/hooks/useLocationRd';
+import { useBroadcaster } from '@/app/(core)/contexts/BoardCastContext';
+import { LocalSetup } from '@/app/env';
+import { getSession } from '../../FetchSessionData';
 
 const useCart = () => {
   const location = useNextRouterLikeRR();
@@ -53,6 +56,9 @@ const useCart = () => {
   const [csColor, setCsColor] = useState();
   const [csQua, setCsQua] = useState();
   const [cartStatus, setCartStatus] = useState(null);
+  const { broadcast } = useBroadcaster(); // Get the broadcaster
+  const [shouldRecalculate, setShouldRecalculate] = useState(true);
+
 
   const imageNotFound = "/image-not-found.jpg";
 
@@ -69,8 +75,8 @@ const useCart = () => {
   useEffect(() => {
     const visiterIdVal = Cookies.get('visiterId');
     setVisiterId(visiterIdVal)
-    const storeInit = JSON.parse(sessionStorage.getItem("storeInit"));
-    const storedData = JSON.parse(sessionStorage.getItem("loginUserDetail"));
+    const storeInit = getSession("storeInit");
+    const storedData = getSession("loginUserDetail");
     setStoreInit(storeInit)
     if (storeInit?.IsB2BWebsite != 0) {
       setCurrencyData(storedData)
@@ -84,10 +90,10 @@ const useCart = () => {
 
 
   useEffect(() => {
-    const metalTypeData = JSON.parse(sessionStorage.getItem('metalTypeCombo'));
-    const metalColorData = JSON.parse(sessionStorage.getItem('MetalColorCombo'));
-    const diamondQtyColorData = JSON.parse(sessionStorage.getItem('diamondQualityColorCombo'));
-    const CSQtyColorData = JSON.parse(sessionStorage.getItem('ColorStoneQualityColorCombo'));
+    const metalTypeData = getSession('metalTypeCombo');
+    const metalColorData = getSession('MetalColorCombo');
+    const diamondQtyColorData = getSession('diamondQualityColorCombo');
+    const CSQtyColorData = getSession('ColorStoneQualityColorCombo');
     setMetalTypeCombo(metalTypeData);
     setMetalColorCombo(metalColorData);
     setDiamondQualityColorCombo(diamondQtyColorData);
@@ -200,9 +206,13 @@ const useCart = () => {
     if (validThemenos?.includes(storeInit?.Themeno)) {
       cartfilter = finalCartData?.filter(cartItem => cartItem?.id !== item?.id);
       setFinalCartData(cartfilter);
+      // FIX: trigger summary recalculation after removal
+      setShouldRecalculate(true);
     } else {
       cartfilter = cartData?.filter(cartItem => cartItem?.id !== item?.id);
       setCartData(cartfilter);
+      // FIX: trigger summary recalculation after removal
+      setShouldRecalculate(true);
     }
 
     setTimeout(() => {
@@ -226,6 +236,8 @@ const useCart = () => {
     }
   };
 
+  // LocalSetup
+
   const handleRemoveAll = async () => {
     let param = "Cart"
     try {
@@ -238,6 +250,7 @@ const useCart = () => {
         getCartData();
         setCartData([]);
         setFinalCartData([]);
+        broadcast('LOGOUT_ALL_TABS');
         return resStatus;
       } else {
         console.log('Failed to remove product or product not found');
@@ -301,13 +314,28 @@ const useCart = () => {
     setMultiSelect(false);
     setOpenModal(false);
 
+    const objExtra = {
+      Metal_Cost: updatedItems?.Metal_Cost,
+      Labour_Cost: updatedItems?.Labour_Cost,
+      Diamond_Cost: updatedItems?.Diamond_Cost,
+      Diamond_SettingCost: updatedItems?.Diamond_SettingCost,
+      ColorStone_Cost: updatedItems?.ColorStone_Cost,
+      ColorStone_SettingCost: updatedItems?.ColorStone_SettingCost,
+      Misc_Cost: updatedItems?.Misc_Cost,
+      Misc_SettingCost: updatedItems?.Misc_SettingCost,
+      Other_Cost: updatedItems?.Other_Cost,
+      SolPrice: updatedItems?.SolPrice
+    }
+
     if (validThemenos?.includes(storeInit?.Themeno)) {
       const response1 = await updateQuantity(updatedItems.id, updatedItems?.Quantity, visiterId);
       let resStatus1 = response1?.Data.rd[0];
 
       if (resStatus1?.stat_msg == "success") {
         try {
-          const response = await updateCartAPI(updatedItems, metalID, metalCOLORID, diaIDData, colorStoneID, sizeId, markupData, finalPrice, finalPriceWithMarkup);
+          const response = await updateCartAPI(updatedItems, metalID, metalCOLORID, diaIDData, colorStoneID, sizeId, markupData, finalPrice, finalPriceWithMarkup,
+            objExtra
+          );
           let resStatus = response?.Data.rd[0];
           const mtcCode = metalColorCombo?.find(option => option?.id === metalCOLORID);
           if (resStatus?.msg == "success") {
@@ -335,7 +363,8 @@ const useCart = () => {
                 Size: sizeId
               } : cart
             );
-            setFinalCartData(updatedCartData)
+            setFinalCartData(updatedCartData);
+            setShouldRecalculate(true);
             return resStatus;
           } else {
             console.log('Failed to update product or product not found');
@@ -369,7 +398,7 @@ const useCart = () => {
               Size: sizeId
             } : cart
           );
-          setCartData(updatedCartData)
+          setCartData(updatedCartData);
           return resStatus;
         } else {
           console.log('Failed to update product or product not found');
@@ -616,11 +645,25 @@ const useCart = () => {
         const resData = response?.Data?.rd[0];
         const finalPrice = resData?.UnitCostWithMarkUp * qtyCount;
         setFinalPrice(resData)
+        const objExtra = {
+          Metal_Cost: resData?.Metal_Cost,
+          Labour_Cost: resData?.Labour_Cost,
+          Diamond_Cost: resData?.Diamond_Cost,
+          Diamond_SettingCost: resData?.Diamond_SettingCost,
+          ColorStone_Cost: resData?.ColorStone_Cost,
+          ColorStone_SettingCost: resData?.ColorStone_SettingCost,
+          Misc_Cost: resData?.Misc_Cost,
+          Misc_SettingCost: resData?.Misc_SettingCost,
+          Other_Cost: resData?.Other_Cost,
+          SolPrice: resData?.SolPrice
+        }
+
         setSelectedItem(prevItem => ({
           ...prevItem,
           FinalCost: finalPrice,
           UnitCostWithMarkUp: resData?.UnitCostWithMarkUp,
-          Quantity: qtyCount
+          Quantity: qtyCount,
+          ...objExtra
         }));
 
         // setCartData(prevCartData => prevCartData.map(cart =>
@@ -750,7 +793,7 @@ const useCart = () => {
   };
 
   const handleMoveToDetail = (cartData) => {
-    const logindata = JSON.parse(sessionStorage.getItem("loginUserDetail"));
+    const logindata = getSession("loginUserDetail");
     const createAndNavigate = (obj) => {
       const encodedObj = compressAndEncode(JSON.stringify(obj));
       // navigate(`/d/${ ? cartData?.TitleLine.replace(/\s+/g, `_`) + (cartData?.TitleLine?.length > 0 ? "_" : "") : ""}${}?p=${}`);
@@ -790,7 +833,7 @@ const useCart = () => {
 
   // browse our collection
   const handelMenu = () => {
-    let menudata = JSON.parse(sessionStorage.getItem('menuparams'));
+    let menudata = getSession('menuparams');
     // let redirectURL = sessionStorage.getItem('redirectURL');
     // if (redirectURL) {
     //   return navigate(redirectURL);
@@ -854,6 +897,7 @@ const useCart = () => {
     handleSelectAll,
     handlecloseMobileModal,
     setmrpbasedPriceFlag,
+    mrpbasedPriceFlag,
     CartCardImageFunc,
     handleSelectItem,
     handleIncrement,
@@ -876,7 +920,9 @@ const useCart = () => {
     handleSizeChange,
     decodeEntities,
     handleMoveToDetail,
-    handelMenu
+    handelMenu,
+    shouldRecalculate,
+    setShouldRecalculate
   };
 };
 

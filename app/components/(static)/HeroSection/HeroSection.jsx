@@ -27,8 +27,9 @@ export default async function TopSection() {
         loop
         playsInline
         controls={false}
+        preload="auto"
+        priority="high"
         poster={`/${assetBase}/Banner/homepageVideoPoster.webp`}
-        fetchPriority="high"
         sx={{
           position: "absolute",
           inset: 0,
@@ -38,6 +39,9 @@ export default async function TopSection() {
         }}
       >
         {videoUrl && <source src={videoUrl} type="video/webm" />}
+        {banners?.mainBanner?.video?.[0] && (
+          <source src={banners.mainBanner.video[0]} type="video/mp4" />
+        )}
       </Box>
     </Box>
   );

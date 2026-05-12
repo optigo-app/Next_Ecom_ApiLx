@@ -8,156 +8,336 @@
   width: 100%;
   font-family: $primaryFontFamily;
   text-align: center;
-  padding: 1.5rem 10px;
+  padding: 4rem 20px; // Increased padding for a more premium, airy feel
   box-sizing: border-box;
-  overflow: hidden; // Prevent accidental overflow
+  overflow: hidden;
+  background-color: #f0f8ff; // Kept your exact background
+  margin-top: 4rem;
 
   * {
     box-sizing: border-box;
   }
 
   .icon {
-    margin-bottom: 4px;
-    margin-top: 1rem;
+    margin-bottom: 1.25rem;
+    color: $primaryfontcolor; // Ensures icon matches theme text
   }
 
   h2 {
-    font-size: 1.5rem;
-    margin-bottom: 10px;
+    font-size: 1.75rem; // Slightly larger for better hierarchy
+    font-weight: 600;
+    margin-bottom: 0.5rem;
     padding-inline: 10px;
+    letter-spacing: 0.5px;
   }
 
-  p {
-    color: #666;
-    font-size: 1rem;
-    margin-bottom: 20px;
+  .sub-text {
+    color: $primaryfontcolor2; // Using your secondary color variable
+    font-size: 1.05rem;
+    margin-bottom: 2.5rem; // More breathing room before the input
     padding-inline: 10px;
-    max-width: 100%;
-
-    a {
-      text-decoration: none;
-      color: inherit;
-    }
+    max-width: 600px;
+    line-height: 1.5;
   }
 
   .email-input {
     display: flex;
     justify-content: center;
+    align-items: flex-start; // Prevents button from stretching if error appears
     margin-bottom: 15px;
     width: 100%;
-    max-width: 600px;
-    gap: 10px;
+    max-width: 650px; // Slightly wider to accommodate longer emails
+    gap: 12px; // Slightly more gap between input and button
 
     .email-input-with-error {
       display: flex;
       flex-direction: column;
       flex-grow: 1;
-      max-width: 350px;
+      max-width: 400px;
+      position: relative; // Crucial: Keeps error message from shifting layout
 
       input {
-        padding: 8.2px 12px;
+        height: 46px; // Fixed height for perfect alignment with button
+        padding: 0 16px;
         font-size: $fontSize2;
-        border: 1px solid #ccc;
+        border: 1px solid rgba(0, 0, 0, 0.15); // Softer, more premium border
+        border-radius: 2px; // Tiny radius for softer edges
         outline: none;
         color: $primaryfontcolor;
         width: 100%;
+        transition:
+          border-color 0.3s ease,
+          box-shadow 0.3s ease; // Smooth focus
 
         &:focus {
-          border-color: #000;
+          border-color: $primaryfontcolor;
+          box-shadow: 0 0 0 1px $primaryfontcolor; // Sharp, clear focus state
+        }
+
+        &::placeholder {
+          color: rgba(0, 0, 0, 0.4); // Softer placeholder text
         }
       }
 
       .for-error-message-news {
-        display: flex;
+        position: absolute;
+        bottom: -22px; // Positions text neatly below the input
+        left: 2px;
+        display: block;
         font-size: 0.8rem;
         text-align: left;
-        margin-top: 4px;
+        font-weight: 500;
+        white-space: nowrap;
       }
     }
 
-    button {
-      padding: 8px 20px;
+    button.btn_for_new {
+      height: 46px; // Exact match to input height
+      padding: 0 24px;
       font-size: $fontSize2;
-      height: 2.45rem;
-      white-space: nowrap;
-    }
-
-    .btn_for_new {
+      font-weight: 500; // Slightly bolder button text
+      letter-spacing: 0.5px;
       background: $btnBg;
       color: $btncolor;
       border: none;
+      border-radius: 2px;
       cursor: pointer;
+      white-space: nowrap;
+      transition:
+        opacity 0.2s ease,
+        transform 0.1s ease;
+
       &:hover {
-        opacity: 0.9;
-        transition: 0.2s ease-in-out;
+        opacity: 0.85;
+      }
+
+      &:active {
+        transform: scale(0.98); // Tiny click effect
       }
     }
   }
 
   .disclaimer {
-    font-size: $fontSize1;
+    font-size: 0.85rem; // Slightly smaller to recede visually
     color: $primaryfontcolor2;
-    margin-top: 20px;
-    max-width: 500px;
+    opacity: 0.8; // Softens the text block without changing your color variable
+    margin-top: 1.5rem;
+    max-width: 700px;
     width: 100%;
-    padding-inline: 10px;
-    text-wrap: pretty;
-  }
+    padding-inline: 15px;
+    line-height: 1.6; // Better readability for long text
+    text-wrap: balance; // Beautiful text wrapping in modern browsers
 
-  .newslatterEmail {
     a {
-      text-decoration: none;
-      color: $primaryfontcolor2;
-      font-size: $fontSize1;
+      text-decoration: underline; // Make links obvious
+      text-underline-offset: 3px; // Modern underline spacing
+      color: inherit;
+      font-weight: 500;
+      transition: color 0.2s ease;
+
+      &:hover {
+        color: $primaryfontcolor;
+      }
     }
   }
 
+  // --- Responsive Breakpoints ---
   @media (max-width: 768px) {
+    padding: 3rem 15px;
+
     .email-input {
       flex-direction: column;
       align-items: center;
-      
+      gap: 20px; // Space for the absolute error message
+      max-width: 100%;
+
       .email-input-with-error {
         width: 100%;
         max-width: 100%;
       }
 
-      button {
+      button.btn_for_new {
         width: 100%;
       }
     }
   }
 
   @media (max-width: 600px) {
-    .sub-text {
-      font-size: 13px;
-      padding-inline: 15px;
-      text-align: center;
-    }
-
     h2 {
-      font-size: 1.3rem;
+      font-size: 1.4rem;
     }
 
-    .email-input {
-      width: 100%;
-      padding-inline: 10px;
-
-      .email-input-with-error {
-        input {
-          border-radius: 2px;
-          margin-bottom: 10px;
-        }
-      }
-
-      button {
-        border-radius: 2px;
-      }
+    .sub-text {
+      font-size: 0.95rem;
     }
 
     .disclaimer {
       font-size: 0.75rem;
-      text-align: center;
     }
   }
 }
+// @use "../../../theme/fgstore.web/style/variable.scss" as *;
+
+// .smr_newsletter-signup {
+//   display: flex;
+//   flex-direction: column;
+//   justify-content: center;
+//   align-items: center;
+//   width: 100%;
+//   font-family: $primaryFontFamily;
+//   text-align: center;
+//   padding: 1.5rem 10px;
+//   box-sizing: border-box;
+//   overflow: hidden; // Prevent accidental overflow
+//   background-color: #f0f8ff;
+//   margin-top: 4rem;
+
+//   * {
+//     box-sizing: border-box;
+//   }
+
+//   .icon {
+//     margin-bottom: 4px;
+//     margin-top: 1rem;
+//   }
+
+//   h2 {
+//     font-size: 1.5rem;
+//     margin-bottom: 10px;
+//     padding-inline: 10px;
+//   }
+
+//   p {
+//     color: #666;
+//     font-size: 1rem;
+//     margin-bottom: 20px;
+//     padding-inline: 10px;
+//     max-width: 100%;
+
+//     a {
+//       text-decoration: none;
+//       color: inherit;
+//     }
+//   }
+
+//   .email-input {
+//     display: flex;
+//     justify-content: center;
+//     margin-bottom: 15px;
+//     width: 100%;
+//     max-width: 600px;
+//     gap: 10px;
+
+//     .email-input-with-error {
+//       display: flex;
+//       flex-direction: column;
+//       flex-grow: 1;
+//       max-width: 350px;
+
+//       input {
+//         padding: 8.2px 12px;
+//         font-size: $fontSize2;
+//         border: 1px solid #ccc;
+//         outline: none;
+//         color: $primaryfontcolor;
+//         width: 100%;
+
+//         &:focus {
+//           border-color: #000;
+//         }
+//       }
+
+//       .for-error-message-news {
+//         display: flex;
+//         font-size: 0.8rem;
+//         text-align: left;
+//         margin-top: 4px;
+//       }
+//     }
+
+//     button {
+//       padding: 8px 20px;
+//       font-size: $fontSize2;
+//       height: 2.45rem;
+//       white-space: nowrap;
+//     }
+
+//     .btn_for_new {
+//       background: $btnBg;
+//       color: $btncolor;
+//       border: none;
+//       cursor: pointer;
+//       &:hover {
+//         opacity: 0.9;
+//         transition: 0.2s ease-in-out;
+//       }
+//     }
+//   }
+
+//   .disclaimer {
+//     font-size: $fontSize1;
+//     color: $primaryfontcolor2;
+//     margin-top: 20px;
+//     max-width: 500px;
+//     width: 100%;
+//     padding-inline: 10px;
+//     text-wrap: pretty;
+//   }
+
+//   .newslatterEmail {
+//     a {
+//       text-decoration: none;
+//       color: $primaryfontcolor2;
+//       font-size: $fontSize1;
+//     }
+//   }
+
+//   @media (max-width: 768px) {
+//     .email-input {
+//       flex-direction: column;
+//       align-items: center;
+
+//       .email-input-with-error {
+//         width: 100%;
+//         max-width: 100%;
+//       }
+
+//       button {
+//         width: 100%;
+//       }
+//     }
+//   }
+
+//   @media (max-width: 600px) {
+//     .sub-text {
+//       font-size: 13px;
+//       padding-inline: 15px;
+//       text-align: center;
+//     }
+
+//     h2 {
+//       font-size: 1.3rem;
+//     }
+
+//     .email-input {
+//       width: 100%;
+//       padding-inline: 10px;
+
+//       .email-input-with-error {
+//         input {
+//           border-radius: 2px;
+//           margin-bottom: 10px;
+//         }
+//       }
+
+//       button {
+//         border-radius: 2px;
+//       }
+//     }
+
+//     .disclaimer {
+//       font-size: 0.75rem;
+//       text-align: center;
+//     }
+//   }
+// }

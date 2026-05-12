@@ -759,8 +759,10 @@ li {
   }
 
   .badgeColor .MuiBadge-badge {
-    background-color: $authbg !important;
-    color: $authbtnbg !important;
+    // background-color: $authbg !important;
+    // color: $authbtnbg !important;
+    background-color: $btnBg !important;
+    color: $btncolor !important;
     margin-left: 10px !important;
   }
 

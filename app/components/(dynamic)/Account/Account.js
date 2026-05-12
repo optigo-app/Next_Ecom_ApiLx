@@ -168,9 +168,10 @@ export default function Account({ Storeinit }) {
           variant="h3"
           align="center"
           sx={{
-            fontWeight: 500,
+            fontWeight: 400,
             mb: 3,
-            color: '#7d7f85'
+            color: '#7d7f85',
+            mt: 2
           }}
         >
           Your Account

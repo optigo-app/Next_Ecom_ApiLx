@@ -1,4 +1,4 @@
-export const localHosts = ["localhost", "nxtsonasons.web", "nxthoq.web", "nxtmobileapp.web", "nzen", "nxt10.optigoapps.com"];
+export const localHosts = ["localhost", "nxtsonasons.web", "nxthoq.web", "nxtelvee.web", "nxtmobileapp.web", "nzen", "nxt10.optigoapps.com"];
 
 
 

@@ -18,6 +18,9 @@ export const themeMap = {
   "nxt14.optigoapps.com": {
     page: "fgstore.mapp",
   },
+  "nxtelvee.web": {
+    page: "elvee.web",
+  },
   'nxthoq.web': {
     page: "hoq.web",
   },
@@ -32,5 +35,8 @@ export const themeMap = {
   },
   'elior.optigoapps.com': {
     page: "fgstore.mapp",
-  }
+  },
+  'sonasons.optigoapps.com': {
+    page: "fgstore.web",
+  },
 };
