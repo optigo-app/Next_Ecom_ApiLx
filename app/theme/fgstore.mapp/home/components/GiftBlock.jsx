@@ -6,16 +6,14 @@ import { Get_Tren_BestS_NewAr_DesigSet_Album } from "@/app/(core)/utils/API/Home
 import { useStore } from "@/app/(core)/contexts/StoreProvider";
 import Link from "next/link";
 import Headers from "./composable/Headers";
-import { BookCache } from "@/app/(core)/utils/API/Cache/CacheApi";
-import { normalizeALC, buildAlbumCacheKey, findMatchingCacheEntry, getPricingContext } from "@/app/(core)/cache_utility/CacheBuilder";
+import { normalizeALC, buildAlbumCacheKey, getPricingContext } from "@/app/(core)/cache_utility/CacheBuilder";
+import { readCache, writeCache } from "@/app/(core)/cache_utility/cacheActions";
 import Cookies from "js-cookie";
-import { useMaster } from "@/app/(core)/contexts/MasterProvider";
 
 const GiftBlock = ({ storeinit }) => {
   const [albumData, setAlbumData] = useState([]);
   const [loading, setLoading] = useState(true);
   const { loginUserDetail, islogin } = useStore();
-  const { cacheList, setCacheList } = useMaster();
 
   const fallbackImage = "/fallback.jpg";
   const imageBaseUrl = useMemo(() => {
@@ -38,66 +36,25 @@ const GiftBlock = ({ storeinit }) => {
   }, [imageBaseUrl, fallbackImage]);
 
   const fetchAndSetAlbums = useCallback(
-    async (finalID, precomputedKey) => {
-      if (!pricingContext || isFetchingRef.current) return;
-
-      const apiALC = "";
-      const keyALC = normalizeALC("");
-      const eventName = "home_album";
-
-      const { key, meta } = buildAlbumCacheKey(eventName, storeinit, pricingContext, finalID, keyALC);
-      const effectiveKey = precomputedKey || key;
+    async (finalID, cacheKey) => {
+      if (!pricingContext || !pricingContext.PackageId || isFetchingRef.current) return;
 
       isFetchingRef.current = true;
       setLoading(true);
 
       try {
-        // Step 1: Check server cache + local cache in parallel
-        const localCacheRes = await fetch(`/api/v1/cache?mode=meta&key=${effectiveKey}`)
-          .then((res) => res.json())
-          .catch(() => ({ cached: false }));
+        const cacheRes = await readCache(cacheKey);
 
-        const serverCacheEntries = cacheList?.Data?.rd ?? [];
-        const matchingServerEntry = findMatchingCacheEntry(serverCacheEntries, pricingContext, eventName, apiALC);
-        const serverCacheRebuildDate = matchingServerEntry?.CacheRebuildDate ?? null;
-
-        const localCacheMeta = localCacheRes;
-        const localCacheRebuildDate = localCacheMeta?.CacheRebuildDate ?? null;
-
-        console.log("[GiftBlock] Cache meta checked: localCacheMeta.cached =", localCacheMeta?.cached, "server entries count =", serverCacheEntries?.length);
-
-        // Step 2: Use cache if valid
-        if (localCacheMeta?.cached) {
-          const canValidate = Boolean(matchingServerEntry && serverCacheRebuildDate);
-          const datesMatch = localCacheRebuildDate === serverCacheRebuildDate;
-
-          if (canValidate && datesMatch) {
-            const cachedRes = await fetch(`/api/v1/cache?key=${effectiveKey}`);
-            const cached = await cachedRes.json();
-            console.log("[GiftBlock] Using cache, skipping API");
-            if (cached.cached && Array.isArray(cached.data)) {
-              console.log("[GiftBlock] Setting albums from cache");
-              const mappedData = mapAlbumImages(cached.data);
-              setAlbumData(mappedData);
-              setLoading(false);
-              isFetchingRef.current = false;
-              return cached.data;
-            }
-          }
-          fetch(`/api/v1/cache?key=${effectiveKey}`, { method: "DELETE" }).catch(() => { });
-        }
-
-        // Step 3: Guard for storeinit
-        if (!storeinit) {
-          setTimeout(() => {
-            isFetchingRef.current = false;
-            fetchAndSetAlbums(finalID, effectiveKey);
-          }, 500);
+        if (cacheRes?.cached && Array.isArray(cacheRes.data)) {
+          console.log("[GiftBlock] Serving from cache");
+          const mappedData = mapAlbumImages(cacheRes.data);
+          setAlbumData(mappedData);
+          setLoading(false);
+          isFetchingRef.current = false;
           return;
         }
 
-        // Step 4: API Call
-        console.log("[GiftBlock] Making API call for finalID:", finalID);
+        console.log("[GiftBlock] Cache miss, calling API...");
         const res = await Get_Tren_BestS_NewAr_DesigSet_Album(storeinit, "GETAlbum", finalID);
         const apiData = res?.Data?.rd || [];
         console.log("[GiftBlock] API response received, count:", apiData.length);
@@ -105,60 +62,27 @@ const GiftBlock = ({ storeinit }) => {
         if (apiData.length > 0) {
           const mappedData = mapAlbumImages(apiData);
           setAlbumData(mappedData);
+
+          writeCache(cacheKey, apiData).catch(console.error);
         } else {
           setAlbumData([]);
         }
 
         setLoading(false);
         isFetchingRef.current = false;
-
-        // Step 5: Book cache + store local cache
-        try {
-          const bookCacheResult = await BookCache(finalID, eventName, pricingContext, apiALC);
-          const newCacheRebuildDate = bookCacheResult?.CacheRebuildDate ?? null;
-
-          if (newCacheRebuildDate) {
-            // Update global cacheList in context
-            const newEntry = {
-              EventName: eventName,
-              PackageId: pricingContext.PackageId,
-              LabourSetId: pricingContext.Laboursetid,
-              diamondpricelistname: pricingContext.diamondpricelistname,
-              colorstonepricelistname: pricingContext.colorstonepricelistname,
-              ALC: normalizeALC(apiALC),
-              CacheRebuildDate: newCacheRebuildDate,
-            };
-            if (cacheList?.Data?.rd) {
-              const updatedRd = [...cacheList.Data.rd];
-              const idx = updatedRd.findIndex(e => e.EventName === eventName && e.PackageId == pricingContext.PackageId && e.LabourSetId == pricingContext.Laboursetid);
-              if (idx > -1) updatedRd[idx] = newEntry; else updatedRd.push(newEntry);
-              setCacheList({ ...cacheList, Data: { ...cacheList.Data, rd: updatedRd } });
-            }
-          }
-
-          const updatedMeta = { ...meta, CacheRebuildDate: newCacheRebuildDate };
-          fetch("/api/v1/cache", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ key: effectiveKey, data: apiData, meta: updatedMeta }),
-          }).catch(console.error);
-        } catch (cacheErr) {
-          console.error("[GiftBlock] Cache update failed:", cacheErr);
-        }
       } catch (err) {
         console.log("[GiftBlock] Error in fetch:", err);
         console.error(err);
         setAlbumData([]);
         isFetchingRef.current = false;
-      } finally {
         setLoading(false);
       }
     },
-    [pricingContext, storeinit, mapAlbumImages, cacheList, setCacheList],
+    [pricingContext, storeinit, mapAlbumImages]
   );
 
   useEffect(() => {
-    if (!pricingContext || !storeinit || cacheList === null) return;
+    if (!pricingContext || !storeinit) return;
 
     const fetchData = async () => {
       const visiterID = Cookies.get("visiterId"); // Consistent with Categories.jsx
@@ -175,7 +99,7 @@ const GiftBlock = ({ storeinit }) => {
     };
 
     fetchData();
-  }, [islogin, pricingContext, storeinit, fetchAndSetAlbums, loginUserDetail?.id, cacheList]);
+  }, [islogin, pricingContext, storeinit, fetchAndSetAlbums, loginUserDetail?.id]);
 
   if (!loading && albumData.length === 0) {
     return null;

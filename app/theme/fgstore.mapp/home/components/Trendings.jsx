@@ -9,14 +9,12 @@ import { useStore } from "@/app/(core)/contexts/StoreProvider";
 import { useNextRouterLikeRR } from "@/app/(core)/hooks/useLocationRd";
 import { compressAndEncode } from "@/app/(core)/utils/Encoder&Decoder";
 import { formatRedirectTitleLine, formatter, formatTitleLine } from "@/app/(core)/utils/Glob_Functions/GlobalFunction";
-import { BookCache } from "@/app/(core)/utils/API/Cache/CacheApi";
-import { normalizeALC, buildAlbumCacheKey, findMatchingCacheEntry, getPricingContext } from "@/app/(core)/cache_utility/CacheBuilder";
+import { normalizeALC, buildAlbumCacheKey, getPricingContext } from "@/app/(core)/cache_utility/CacheBuilder";
+import { readCache, writeCache } from "@/app/(core)/cache_utility/cacheActions";
 import Cookies from "js-cookie";
-import { useMaster } from "@/app/(core)/contexts/MasterProvider";
 
 function Trendings({ storeinit }) {
   const { loginUserDetail, islogin } = useStore();
-  const { cacheList, setCacheList } = useMaster();
   const [TrendingData, setTrendingData] = useState([]);
   const { push } = useNextRouterLikeRR();
   const [loading, setLoading] = useState(true);
@@ -49,66 +47,25 @@ function Trendings({ storeinit }) {
   }, [storeinit?.CDNDesignImageFolThumb]);
 
   const fetchAndSetTrendings = useCallback(
-    async (finalID, precomputedKey) => {
-      if (!pricingContext || isFetchingRef.current) return;
-
-      const apiALC = "";
-      const keyALC = normalizeALC("");
-      const eventName = "home_trending";
-
-      const { key, meta } = buildAlbumCacheKey(eventName, storeinit, pricingContext, finalID, keyALC);
-      const effectiveKey = precomputedKey || key;
+    async (finalID, cacheKey) => {
+      if (!pricingContext || !pricingContext.PackageId || isFetchingRef.current) return;
 
       isFetchingRef.current = true;
       setLoading(true);
 
       try {
-        // Step 1: Check server cache + local cache in parallel
-        const localCacheRes = await fetch(`/api/v1/cache?mode=meta&key=${effectiveKey}`)
-          .then((res) => res.json())
-          .catch(() => ({ cached: false }));
+        const cacheRes = await readCache(cacheKey);
 
-        const serverCacheEntries = cacheList?.Data?.rd ?? [];
-        const matchingServerEntry = findMatchingCacheEntry(serverCacheEntries, pricingContext, eventName, apiALC);
-        const serverCacheRebuildDate = matchingServerEntry?.CacheRebuildDate ?? null;
-
-        const localCacheMeta = localCacheRes;
-        const localCacheRebuildDate = localCacheMeta?.CacheRebuildDate ?? null;
-
-        console.log("[Trendings] Cache meta checked: localCacheMeta.cached =", localCacheMeta?.cached, "server entries count =", serverCacheEntries?.length);
-
-        // Step 2: Use cache if valid
-        if (localCacheMeta?.cached) {
-          const canValidate = Boolean(matchingServerEntry && serverCacheRebuildDate);
-          const datesMatch = localCacheRebuildDate === serverCacheRebuildDate;
-
-          if (canValidate && datesMatch) {
-            const cachedRes = await fetch(`/api/v1/cache?key=${effectiveKey}`);
-            const cached = await cachedRes.json();
-            console.log("[Trendings] Using cache, skipping API");
-            if (cached.cached && Array.isArray(cached.data)) {
-              console.log("[Trendings] Setting trendings from cache");
-              const mappedData = mapTrendingImages(cached.data);
-              setTrendingData(mappedData);
-              setLoading(false);
-              isFetchingRef.current = false;
-              return cached.data;
-            }
-          }
-          fetch(`/api/v1/cache?key=${effectiveKey}`, { method: "DELETE" }).catch(() => { });
-        }
-
-        // Step 3: Guard for storeinit
-        if (!storeinit) {
-          setTimeout(() => {
-            isFetchingRef.current = false;
-            fetchAndSetTrendings(finalID, effectiveKey);
-          }, 500);
+        if (cacheRes?.cached && Array.isArray(cacheRes.data)) {
+          console.log("[Trendings] Serving from cache");
+          const mappedData = mapTrendingImages(cacheRes.data);
+          setTrendingData(mappedData);
+          setLoading(false);
+          isFetchingRef.current = false;
           return;
         }
 
-        // Step 4: API Call
-        console.log("[Trendings] Making API call for finalID:", finalID);
+        console.log("[Trendings] Cache miss, calling API...");
         const res = await Get_Tren_BestS_NewAr_DesigSet_Album(storeinit, "GETTrending", finalID);
         const apiData = res?.Data?.rd || [];
         console.log("[Trendings] API response received, count:", apiData.length);
@@ -116,60 +73,27 @@ function Trendings({ storeinit }) {
         if (apiData.length > 0) {
           const mappedData = mapTrendingImages(apiData);
           setTrendingData(mappedData);
+
+          writeCache(cacheKey, apiData).catch(console.error);
         } else {
           setTrendingData([]);
         }
 
         setLoading(false);
         isFetchingRef.current = false;
-
-        // Step 5: Book cache + store local cache
-        try {
-          const bookCacheResult = await BookCache(finalID, eventName, pricingContext, apiALC);
-          const newCacheRebuildDate = bookCacheResult?.CacheRebuildDate ?? null;
-
-          if (newCacheRebuildDate) {
-            // Update global cacheList in context
-            const newEntry = {
-              EventName: eventName,
-              PackageId: pricingContext.PackageId,
-              LabourSetId: pricingContext.Laboursetid,
-              diamondpricelistname: pricingContext.diamondpricelistname,
-              colorstonepricelistname: pricingContext.colorstonepricelistname,
-              ALC: normalizeALC(apiALC),
-              CacheRebuildDate: newCacheRebuildDate,
-            };
-            if (cacheList?.Data?.rd) {
-              const updatedRd = [...cacheList.Data.rd];
-              const idx = updatedRd.findIndex(e => e.EventName === eventName && e.PackageId == pricingContext.PackageId && e.LabourSetId == pricingContext.Laboursetid);
-              if (idx > -1) updatedRd[idx] = newEntry; else updatedRd.push(newEntry);
-              setCacheList({ ...cacheList, Data: { ...cacheList.Data, rd: updatedRd } });
-            }
-          }
-
-          const updatedMeta = { ...meta, CacheRebuildDate: newCacheRebuildDate };
-          fetch("/api/v1/cache", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ key: effectiveKey, data: apiData, meta: updatedMeta }),
-          }).catch(console.error);
-        } catch (cacheErr) {
-          console.error("[Trendings] Cache update failed:", cacheErr);
-        }
       } catch (err) {
         console.log("[Trendings] Error in fetch:", err);
         console.error(err);
         setTrendingData([]);
         isFetchingRef.current = false;
-      } finally {
         setLoading(false);
       }
     },
-    [pricingContext, storeinit, mapTrendingImages, cacheList, setCacheList],
+    [pricingContext, storeinit, mapTrendingImages]
   );
 
   useEffect(() => {
-    if (!pricingContext || !storeinit || cacheList === null) return;
+    if (!pricingContext || !storeinit) return;
 
     const fetchData = async () => {
       const visiterID = Cookies.get("visiterId");
@@ -186,7 +110,7 @@ function Trendings({ storeinit }) {
     };
 
     fetchData();
-  }, [islogin, pricingContext, storeinit, fetchAndSetTrendings, loginUserDetail?.id, cacheList]);
+  }, [islogin, pricingContext, storeinit, fetchAndSetTrendings, loginUserDetail?.id]);
 
   if (!loading && TrendingData?.length == 0) {
     return null;
