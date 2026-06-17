@@ -6,6 +6,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import "./accountledger.scss"
 
 
+
 const AccountLedgerExcel = ({ filterArray, credit_curr_diff, credit_amt_diff, credit_mg_diff, credit_dia_diff, debit_curr_diff, debit_amt_diff, debit_mg_diff, debit_dia_diff, resultTotal, currencySymbol, currencyRate }) => {
 
   const [summaryObj, setSummaryObj] = useState({

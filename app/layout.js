@@ -11,6 +11,7 @@ import { defaultFont } from "./(core)/assets/FontSetup";
 import { AppConfig } from "./(core)/constants/AppConfig";
 import { activeBrand } from "./env";
 import JewelrySnackbar from "./components/ui/Snackbar";
+import { BroadcasterProvider } from "@/app/(core)/contexts/BoardCastContext";
 
 
 const DEFAULT_JEWELRY_DESCRIPTION = "Discover timeless jewelry crafted with precision and elegance. Explore gold, diamond, and silver collections designed for everyday wear and special occasions, with trusted quality and exceptional craftsmanship.";
@@ -60,18 +61,20 @@ export default async function RootLayout({ children }) {
 
   return (
     <html lang="en">
-      <EmotionRegistry>
-        <body className={`${defaultFont.variable}`}>
-          <MasterProvider getCompanyInfoData={companyInfo} getStoreInit={storeInit} getMyAccountFlags={myAccountFlags}>
-            <StoreProvider storeInit={storeInit}>
-              <AuthProvider theme={themeData?.page} storeInit={storeInit}>
-                <Layout>{children}</Layout>
-                <JewelrySnackbar />
-              </AuthProvider>
-            </StoreProvider>
-          </MasterProvider>
-        </body>
-      </EmotionRegistry>
+      <BroadcasterProvider>
+        <EmotionRegistry>
+          <body className={`${defaultFont.variable}`}>
+            <MasterProvider getCompanyInfoData={companyInfo} getStoreInit={storeInit} getMyAccountFlags={myAccountFlags}>
+              <StoreProvider storeInit={storeInit}>
+                <AuthProvider theme={themeData?.page} storeInit={storeInit}>
+                  <Layout>{children}</Layout>
+                  {/* <JewelrySnackbar /> */}
+                </AuthProvider>
+              </StoreProvider>
+            </MasterProvider>
+          </body>
+        </EmotionRegistry>
+      </BroadcasterProvider>
     </html>
   );
 }
