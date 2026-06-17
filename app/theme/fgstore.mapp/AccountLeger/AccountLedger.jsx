@@ -17,7 +17,6 @@ import Swal from "sweetalert2";
 import dayjs from "dayjs";
 import { useRef } from "react";
 import { getAccountLedgerData } from "@/app/(core)/utils/API/AccountTabs/accountLedger";
-import ReactHTMLTableToExcel from "react-html-table-to-excel";
 import AccountLedgerExcel from "./AccountLedgerExcel";
 import { downloadExcelLedgerData } from "@/app/(core)/utils/Glob_Functions/GlobalFunction";
 import { loginUserDetailWiseAccountLedgerData } from "@/app/(core)/utils/Glob_Functions/AccountPages/AccountLedger";

@@ -9,7 +9,6 @@ import { activeBrand } from "@/app/env";
 import ElveeBaseHeader from "@/app/components/(dynamic)/Header/Elvee/Header";
 import ElveePreNavbar from "@/app/components/(dynamic)/Header/Elvee/New/Navbar";
 import MaxNavbar from "@/app/components/(dynamic)/Header/Elvee/New/MaxMenu";
-import { BroadcasterProvider } from "@/app/(core)/contexts/BoardCastContext";
 
 const layout = async ({ children }) => {
   const storeData = await getStoreInit();
@@ -18,7 +17,7 @@ const layout = async ({ children }) => {
   let extraFlag = await getExtraFlag();
 
   return (
-    <BroadcasterProvider>
+    <>
       <Box sx={{ display: "flex", flexDirection: "column", minHeight: "100vh", width: "100%" }}>
         <ElveePreNavbar hidden={false} logos={logos} storeinit={storeData} />
         <Box sx={{ flex: 1, display: "flex", flexDirection: "column" }}>
@@ -27,7 +26,7 @@ const layout = async ({ children }) => {
         {activeBrand === "omjiyas" ? <PremiumFooter companyInfoData={companyInfoData} storeData={storeData} extraFlag={extraFlag} logos={logos} /> : <FooterNew companyInfoData={companyInfoData} storeData={storeData} extraFlag={extraFlag} logos={logos} />}
         <ChatMenu />
       </Box>
-    </BroadcasterProvider>
+    </>
   );
 };
 

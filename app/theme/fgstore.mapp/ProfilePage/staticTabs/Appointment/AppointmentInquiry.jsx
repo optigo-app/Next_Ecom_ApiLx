@@ -37,12 +37,16 @@ const AppointmentInquiry = ({ open, onClose }) => {
 
   useEffect(() => {
     const today = new Date();
-    const threeDaysFromNow = new Date();
-    threeDaysFromNow.setDate(today.getDate() + 3);
     const formatDate = (date) => {
-      return date.toISOString().slice(0, 16);
+      const pad = (num) => String(num).padStart(2, "0");
+      const year = date.getFullYear();
+      const month = pad(date.getMonth() + 1);
+      const day = pad(date.getDate());
+      const hours = pad(date.getHours());
+      const minutes = pad(date.getMinutes());
+      return `${year}-${month}-${day}T${hours}:${minutes}`;
     };
-    setMinDateTime(formatDate(threeDaysFromNow));
+    setMinDateTime(formatDate(today));
   }, []);
 
   const handleChange = (event) => {
@@ -72,16 +76,34 @@ const AppointmentInquiry = ({ open, onClose }) => {
     else if (!/\S+@\S+\.\S+/.test(formData.EmailId))
       newErrors.EmailId = "Invalid email address";
     if (!formData.mobileno) newErrors.mobileno = "Phone is required";
-    if (!formData.AppointmentDateTime)
+
+    if (!formData.AppointmentDateTime) {
       newErrors.AppointmentDateTime = "Date & Time is required";
+    } else {
+      const selectedDate = new Date(formData.AppointmentDateTime);
+      if (isNaN(selectedDate.getTime())) {
+        newErrors.AppointmentDateTime = "Please enter a valid date and time";
+      } else {
+        const now = new Date();
+        if (selectedDate < now) {
+          newErrors.AppointmentDateTime = "Appointment date and time cannot be in the past";
+        }
+      }
+    }
     return newErrors;
   };
 
   const formatDateTime = (dateTimeString) => {
     if (!dateTimeString) return "";
-    const [date, time] = dateTimeString.split("T");
-    const [year, month, day] = date.split("-");
-    return `${day}-${month}-${year} ${time}`;
+    const dateObj = new Date(dateTimeString);
+    if (isNaN(dateObj.getTime())) return "";
+    const pad = (num) => String(num).padStart(2, "0");
+    const day = pad(dateObj.getDate());
+    const month = pad(dateObj.getMonth() + 1);
+    const year = dateObj.getFullYear();
+    const hours = pad(dateObj.getHours());
+    const minutes = pad(dateObj.getMinutes());
+    return `${day}-${month}-${year} ${hours}:${minutes}`;
   };
 
   const handleSubmit = async (event) => {

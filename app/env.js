@@ -6,6 +6,6 @@ export const LocalSetup = "fgstore.mapp";
 
 
 // export const activeBrand = "shreediamond"
-export const activeBrand = "SonasonsApp"
-// export const activeBrand = "EliorApp"
+// export const activeBrand = "SonasonsApp"
+export const activeBrand = "EliorApp"
 // export const activeBrand = "omjiyas"

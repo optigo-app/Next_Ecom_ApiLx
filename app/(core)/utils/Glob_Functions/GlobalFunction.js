@@ -186,13 +186,9 @@ export const downloadExcelLedgerData = async () => {
   try {
     const table = document.getElementById('table-to-xls');
 
-
     if (!table) {
-
-      setTimeout(() => {
-        const button = document.getElementById('test-table-xls-button');
-        if (button) button.click();
-      }, 500);
+      console.error("Table 'table-to-xls' not found");
+      alert("Ledger data table is not ready yet. Please try again in a moment.");
       return;
     }
 
@@ -200,7 +196,23 @@ export const downloadExcelLedgerData = async () => {
       <html xmlns:o="urn:schemas-microsoft-com:office:office"
             xmlns:x="urn:schemas-microsoft-com:office:excel"
             xmlns="http://www.w3.org/TR/REC-html40">
-        <head><meta charset="utf-8"></head>
+        <head>
+          <meta charset="utf-8">
+          <!--[if gte mso 9]>
+          <xml>
+            <x:ExcelWorkbook>
+              <x:ExcelWorksheets>
+                <x:ExcelWorksheet>
+                  <x:Name>AccountLedger</x:Name>
+                  <x:WorksheetOptions>
+                    <x:DisplayGridlines/>
+                  </x:WorksheetOptions>
+                </x:ExcelWorksheet>
+              </x:ExcelWorksheets>
+            </x:ExcelWorkbook>
+          </xml>
+          <![endif]-->
+        </head>
         <body>
           <table>${table.innerHTML}</table>
         </body>
@@ -212,47 +224,52 @@ export const downloadExcelLedgerData = async () => {
 
     const fileName = `AccountLedger_${Date.now()}.xls`;
 
-    // ✅ MOBILE APP (Flutter WebView)
-    if (window.flutter_inappwebview) {
-
+    // 1. MOBILE APP (Flutter WebView)
+    if (typeof window !== "undefined" && window.flutter_inappwebview) {
       const reader = new FileReader();
-
       reader.onloadend = () => {
         const base64data = reader.result.split(",")[1];
-
-
         window.flutter_inappwebview.callHandler(
-          "shareExcel",   // 👈 create this handler in Flutter
+          "shareExcel",
           base64data,
           fileName
         );
       };
-
       reader.readAsDataURL(blob);
       return;
     }
 
+    // 2. MOBILE BROWSER (Web Share API fallback for iOS/Android Safari & Chrome)
+    const isMobileDevice = /Mobi|Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    if (isMobileDevice && navigator.share && navigator.canShare) {
+      try {
+        const file = new File([blob], fileName, { type: 'application/vnd.ms-excel' });
+        if (navigator.canShare({ files: [file] })) {
+          await navigator.share({
+            files: [file],
+            title: 'Account Ledger Excel',
+            text: 'Here is your Account Ledger report.',
+          });
+          return;
+        }
+      } catch (err) {
+        console.warn('Share API failed, falling back to direct download:', err);
+      }
+    }
 
-    // ✅ WEB DOWNLOAD (Fallback)
+    // 3. DESKTOP / WEB DOWNLOAD (Fallback)
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
-
     link.href = url;
     link.download = fileName;
-
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-
     setTimeout(() => URL.revokeObjectURL(url), 100);
 
   } catch (error) {
     console.error("Download Excel Error:", error);
-
-    setTimeout(() => {
-      const button = document.getElementById('test-table-xls-button');
-      if (button) button.click();
-    }, 500);
+    alert("Failed to download Excel file. Please try again.");
   }
 };
 
