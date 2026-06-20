@@ -40,4 +40,7 @@ export const themeMap = {
   'sonasons.optigoapps.com': {
     page: "fgstore.web",
   },
+  'nxt09.optigoapps.com': {
+    page: "fgstore.mapp",
+  }
 };
