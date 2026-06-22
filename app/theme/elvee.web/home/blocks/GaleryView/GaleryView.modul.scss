@@ -1,5 +1,4 @@
-
-@import '../../../style/variable.scss';
+@use '../../../style/variable.scss' as *;
 .el_mainGalleryConatinerID {
   margin-bottom: 1.3rem;
 

@@ -1,4 +1,4 @@
-@import '../../../../style/variable.scss';
+@use '../../../../style/variable.scss' as *;
 
 .promo-daimondBoxMain {
     display: flex;
@@ -54,8 +54,8 @@
     width: 100%;
     object-fit: cover;
     margin-top: 5px;
-    max-width: 100%;   // Prevent image from overflowing container
-    max-height: 100%;  // Ensure image height doesn't stretch beyond container's max height
+    max-width: 100%; // Prevent image from overflowing container
+    max-height: 100%; // Ensure image height doesn't stretch beyond container's max height
 }
 
 .promo-foundersDesc {
@@ -113,8 +113,8 @@
         object-fit: cover;
         width: 100%;
         order: 1;
-        max-width: 100%;   // Ensure it doesn't overflow
-        max-height: auto;  // Ensure it's responsive
+        max-width: 100%; // Ensure it doesn't overflow
+        max-height: auto; // Ensure it's responsive
     }
 
     .promo-daimondBox1 {
@@ -137,10 +137,11 @@
     .elv_promo_div {
         margin-top: 5rem;
     }
+
     .promo_first_div {
         margin-block: 50px;
     }
-    
+
 }
 
 @media (min-width: 426px) and (max-width: 768px) {
@@ -177,7 +178,7 @@
 @media screen and (max-width: 425px) {
     .promo-daimondBox2-image {
         height: 220px;
-        object-fit: cover;  // Make sure it maintains its aspect ratio
+        object-fit: cover; // Make sure it maintains its aspect ratio
     }
 
     .promo-daimondBox_1 p {
