@@ -7,9 +7,9 @@ import { Box, Typography, Button } from "@mui/material";
 const ScrollTriggerTab = ({ assetBase }) => {
   const ScrollImageList = [
     {
-      img: `${assetBase}/imageBanner/1.webp`,
-      title: "Exquisite Craftsmanship",
-      desc: "Discover our meticulously crafted jewelry pieces designed to elevate your everyday elegance. Each piece tells a story of unparalleled artistry and passion.",
+      img: `${assetBase}/imageBanner/1.png`,
+      title: "Crafted to Celebrate Your Moments",
+      desc: "Every piece at Sonasons Jewellery is thoughtfully designed and handcrafted to reflect timeless elegance, purity, and precision. From everyday wear to wedding heirlooms, we create jewellery that lasts generations.",
       align: "right",
       btn_des: "READ MORE",
       top: "55px",
@@ -17,20 +17,20 @@ const ScrollTriggerTab = ({ assetBase }) => {
       link: "/why-quality-matters",
     },
     {
-      head: "Custom Designs",
-      title: "Tailored to Perfection",
-      img: `${assetBase}/imageBanner/3.webp`,
-      desc: "Create a piece that is uniquely yours. Work with our expert artisans to bring your vision to life with custom engravings and personalized styles.",
+      head: "",
+      title: "Design Your Own Jewellery",
+      img: `${assetBase}/imageBanner/3.png`,
+      desc: "Create jewellery that is truly your own. Choose your preferred design, materials, and details to craft a piece that reflects your personal style. Bring your vision to life with a design made just for you.",
       align: "left",
       btn_des: "CUSTOMISE NOW",
       top: "15px",
-      isborder: false,
+      isborder: true,
       link: "/customization",
     },
     {
-      title: "Timeless Elegance",
+      title: "Meet Our Experts",
       subtitle: "",
-      img: `${assetBase}/imageBanner/6.webp`,
+      img: `${assetBase}/imageBanner/6.png`,
       desc: "Explore our collection of timeless classics. Perfect for any occasion, these pieces are designed to be cherished for generations to come.",
       desc2: "Mon - Fri, 9:00 AM - 6:00 PM",
       align: "right",
@@ -131,13 +131,13 @@ const ScrollImageCard = ({ img, details, index }) => {
       <Box
         className="details_card"
         sx={{
-          width: { xs: "100%", md: "400px" },
+          width: { xs: "100%", md: "550px" },
           maxWidth: { xs: "750px", md: "none" },
           height: { xs: "auto", md: "320px" },
           backgroundColor: "white",
           position: { xs: "static", md: "relative" },
           zIndex: 15,
-          padding: { xs: "5px", md: "15px" },
+          padding: { xs: "5px", md: "12px" },
           mt: { xs: 0, md: details?.top || 0 }, // Restoring manual tops
           display: "flex",
           justifyContent: "center",
@@ -195,7 +195,7 @@ const ScrollImageCard = ({ img, details, index }) => {
               fontFamily: "var(--font-dm-sans), sans-serif",
               fontSize: { xs: "15px", md: "17px" },
               fontWeight: 450,
-              mb: 3,
+              mb: 2,
               p: 0,
               lineHeight: 1.5
             }}
