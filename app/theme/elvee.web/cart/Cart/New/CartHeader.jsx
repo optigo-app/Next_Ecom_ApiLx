@@ -54,7 +54,7 @@ export default function CartHeader({
             >
               <Box
                 sx={{
-                  background: "rgba(10, 31, 71, 0.95)", // Dark Blue Glassmorphism
+                  background: "#000", // Dark Blue Glassmorphism
                   backdropFilter: "blur(10px)",
                   color: "#fff",
                   borderRadius: "50px", // Pill shape
@@ -122,7 +122,7 @@ export default function CartHeader({
                     ":hover": { background: "#f0f0f0" }
                   }}
                 >
-                  <ShoppingBagIcon fontSize="small" />
+                  <ShoppingBagIcon    fontSize="small" />
                 </Button>}
               </Box>
             </motion.div>
@@ -175,9 +175,7 @@ export default function CartHeader({
         )}
       </AnimatePresence>
 
-      {/* ================================================================================== */}
-      {/*                               NORMAL HEADER CONTENT                                */}
-      {/* ================================================================================== */}
+       
 
       {/* ---- Title Section (Centered) ---- */}
       <Box sx={{ textAlign: "center", mb: 2 }}>
@@ -311,13 +309,13 @@ export default function CartHeader({
               <Button
                 variant="contained"
                 sx={{
-                  background: "#163164",
+                  background: "#000",
                   color: "#fff",
                   fontSize: { xs: "13px", sm: "15px" },
                   textTransform: "none",
                   borderRadius: "10px",
                   px: 3,
-                  ":hover": { background: "#163164" },
+                  ":hover": { background: "#000" },
                 }}
                 onClick={count > 0 ? handleOpen1 : handleClose1}
               >
@@ -347,7 +345,7 @@ export default function CartHeader({
                 variant="contained"
                 endIcon={<ShoppingBagIcon />}
                 sx={{
-                  background: "#163164",
+                  background: "#000",
                   color: "#fff",
                   fontSize: "14px",
                   textTransform: "none",
@@ -355,7 +353,7 @@ export default function CartHeader({
                   px: 3,
                   py: 0.9,
                   whiteSpace: "nowrap",
-                  ":hover": { background: "#163164" },
+                  ":hover": { background: "#000" },
                   "@media (max-width: 968px)": {
                     position: "fixed",
                     bottom: 0,

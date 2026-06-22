@@ -10,6 +10,7 @@ import InstagramIcon from '@mui/icons-material/Instagram';
 import YouTubeIcon from '@mui/icons-material/YouTube';
 import FacebookIcon from '@mui/icons-material/Facebook';
 import LinkedInIcon from '@mui/icons-material/LinkedIn';
+import PinterestIcon from '@mui/icons-material/Pinterest';
 
 
 const VideoCard = styled(Box)(({ theme }) => ({
@@ -44,23 +45,27 @@ export default function SocialMediaVideoSection({ }) {
     const videoData = [
         {
             id: 1,
-            link: "/video/1.mp4",
-            icon: <InstagramIcon />
+            link: "/social_media/Instagram.mp4",
+            icon: <InstagramIcon />,
+            platform:"https://www.instagram.com/"
         },
         {
             id: 2,
-            link: "/video/2.mp4",
-            icon: <FacebookIcon />
+            link: "/social_media/Facebook.mp4",
+            icon: <FacebookIcon />,
+            platform:"https://www.facebook.com/"
         },
         {
             id: 3,
-            link: "/video/3.mp4",
-            icon: <LinkedInIcon />
+            link: "/social_media/Pinterest.mp4",
+            icon: <PinterestIcon />,
+            platform:"https://www.pinterest.com/"
         },
         {
             id: 4,
-            link: "/video/4.mp4",
-            icon: <YouTubeIcon />
+            link: "/social_media/Youtube.mp4",
+            icon: <YouTubeIcon />,
+            platform:"https://www.youtube.com/"
         },
 
     ]
@@ -90,8 +95,8 @@ export default function SocialMediaVideoSection({ }) {
         }}>
 
             <HeaderV2
-                title="Curated moments"
-                alignment="center"
+                title="Social Media"
+                alignment="left"
             />
 
             <Swiper
@@ -108,7 +113,7 @@ export default function SocialMediaVideoSection({ }) {
             >
                 {videoData?.map((item, index) => (
                     <SwiperSlide key={index}>
-                        <Link href="#" target="_blank" rel="noopener noreferrer" style={{ textDecoration: "none" }}>
+                        <Link href={item.platform} target="_blank" rel="noopener noreferrer" style={{ textDecoration: "none" }}>
                             <VideoCard onMouseEnter={() => handleMouseEnter(index)} onMouseLeave={() => handleMouseLeave(index)}>
                                 <video
                                     ref={(el) => (videoRefs.current[index] = el)}
@@ -118,9 +123,11 @@ export default function SocialMediaVideoSection({ }) {
                                     preload="metadata"
                                     style={{
                                         width: "100%",
-                                        height: "100%",
+                                        // height: "100%",
+                                        height:"530px",
                                         display: "block",
                                         objectFit: "cover",
+                                        borderRadius: "14px",
                                     }}
                                 />
 
