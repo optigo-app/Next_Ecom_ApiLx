@@ -18,6 +18,8 @@ import { useStore } from "@/app/(core)/contexts/StoreProvider";
 import { useNextRouterLikeRR } from "@/app/(core)/hooks/useLocationRd";
 import { usePathname } from "next/navigation";
 import { clearSession } from "@/app/(core)/utils/FetchSessionData";
+import { getPricingContext, buildMenuCacheKey } from "@/app/(core)/cache_utility/CacheBuilder";
+import { readCache, writeCache } from "@/app/(core)/cache_utility/cacheActions";
 
 
 
@@ -200,7 +202,6 @@ const ElveeBaseHeader = ({ hidden, storeinit, logos }) => {
   };
 
   const getMenuApi = async () => {
-
     const { IsB2BWebsite } = storeinit;
     const visiterID = Cookies.get("visiterId");
     let finalId;
@@ -210,11 +211,34 @@ const ElveeBaseHeader = ({ hidden, storeinit, logos }) => {
       finalId = loginUserDetail?.id || "0";
     }
 
-    await GetMenuAPI(finalId)
-      .then((response) => {
-        setMenuData(response?.Data?.rd);
-      })
-      .catch((err) => console.log(err));
+    const pricingContext = getPricingContext(loginUserDetail, storeinit, islogin);
+    let cacheKey = "";
+    if (pricingContext) {
+      const eventName = "elvee_baseheader_menu";
+      const { key } = buildMenuCacheKey(eventName, storeinit, pricingContext, finalId);
+      cacheKey = key;
+      try {
+        const cacheRes = await readCache(key);
+        if (cacheRes?.cached && Array.isArray(cacheRes.data)) {
+          console.log("[Elvee BaseHeader Menu] Serving from cache");
+          setMenuData(cacheRes.data);
+          return;
+        }
+      } catch (err) {
+        console.error("Cache read error:", err);
+      }
+    }
+
+    try {
+      const response = await GetMenuAPI(finalId);
+      const apiData = response?.Data?.rd || [];
+      setMenuData(apiData);
+      if (apiData.length > 0 && cacheKey) {
+        writeCache(cacheKey, apiData).catch(console.error);
+      }
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   const handleMenuClick = async (menuItem, param1Item = null, param2Item = null) => {

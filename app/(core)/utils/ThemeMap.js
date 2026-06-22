@@ -8,9 +8,8 @@ export const themeMap = {
     page: "hoq.web",
   },
   "nxtsonasons.web": {
-    // page: "fgstore.mapp",
+    page: "fgstore.mapp",
     // page: LocalSetup,
-    page: "fgstore.web",
   },
   // local dev
   "nxtmobileapp.web": {
@@ -42,4 +41,7 @@ export const themeMap = {
   'sonasons.optigoapps.com': {
     page: "fgstore.web",
   },
+  'nxt09.optigoapps.com': {
+    page: "fgstore.mapp",
+  }
 };

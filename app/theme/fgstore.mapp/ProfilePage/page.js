@@ -77,8 +77,9 @@ const ProfilePage = () => {
     sessionStorage.removeItem('token');
     sessionStorage.setItem('LoginUser', JSON.stringify(false));
     sessionStorage.setItem('loginUserDetail', JSON.stringify({}));
-    sessionStorage.removeItem('myAccountFlags');
-    router.push("/logout");
+    sessionStorage.setItem('myAccountFlags', JSON.stringify([]));
+    // router.push("/logout");
+    window.location.href = "/logout";
   };
 
   const isUserAvailable = loginUserDetail && Object.keys(loginUserDetail).length > 0;

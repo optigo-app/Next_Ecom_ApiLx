@@ -20,7 +20,7 @@ const layout = async ({ children }) => {
   let extraFlag = await getExtraFlag();
 
   return (
-    <BroadcasterProvider>
+    <>
       <Box sx={{ display: "flex", flexDirection: "column", minHeight: "100vh", width: "100%" }}>
 
         {isOldElvee ? <OldHeader hidden={false} logos={logos} storeinit={storeData} /> :  <ElveeBaseHeader hidden={false} logos={logos} storeinit={storeData} />}
@@ -33,7 +33,7 @@ const layout = async ({ children }) => {
  
         <ChatMenu />
       </Box>
-    </BroadcasterProvider>
+    </>
   );
 };
 

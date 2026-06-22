@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useMemo, useCallback } from "react";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import Slider from "react-slick";
@@ -11,6 +11,8 @@ import Pako from "pako";
 import { formatRedirectTitleLine } from "@/app/(core)/utils/Glob_Functions/GlobalFunction";
 import { useStore } from "@/app/(core)/contexts/StoreProvider";
 import { useNextRouterLikeRR } from "@/app/(core)/hooks/useLocationRd";
+import { normalizeALC, buildAlbumCacheKey, getPricingContext } from "@/app/(core)/cache_utility/CacheBuilder";
+import { readCache, writeCache } from "@/app/(core)/cache_utility/cacheActions";
 
 const Collection = ({ storeInit }) => {
     const navigate = useNextRouterLikeRR().push;
@@ -20,31 +22,68 @@ const Collection = ({ storeInit }) => {
     const productRefs = useRef({});
     const noimage = `./image-not-found.jpg`;
 
+    const pricingContext = useMemo(() => getPricingContext(loginUserDetail, storeInit, islogin), [loginUserDetail, storeInit, islogin]);
+    const isFetchingRef = useRef(false);
+    const lastRequestKeyRef = useRef("");
+
+    const fetchAndSetCollections = useCallback(
+        async (finalID, cacheKey) => {
+            if (!pricingContext || !pricingContext.PackageId || isFetchingRef.current) return;
+
+            isFetchingRef.current = true;
+
+            try {
+                const cacheRes = await readCache(cacheKey);
+
+                if (cacheRes?.cached && Array.isArray(cacheRes.data)) {
+                    console.log("[Collection] Serving from cache");
+                    setDesignSetList(cacheRes.data);
+                    isFetchingRef.current = false;
+                    return;
+                }
+
+                console.log("[Collection] Cache miss, calling API...");
+                const response = await Get_Tren_BestS_NewAr_DesigSet_Album(storeInit, "GETDesignSet", finalID);
+                const apiData = response?.Data?.rd || [];
+
+                if (apiData.length > 0) {
+                    setDesignSetList(apiData);
+                    writeCache(cacheKey, apiData).catch(console.error);
+                } else {
+                    setDesignSetList([]);
+                }
+                isFetchingRef.current = false;
+            } catch (err) {
+                console.log("[Collection] Error in fetch:", err);
+                setDesignSetList([]);
+                isFetchingRef.current = false;
+            }
+        },
+        [pricingContext, storeInit]
+    );
+
     useEffect(() => {
-        // const storeInit = JSON.parse(sessionStorage.getItem("storeInit"));
-        const IsB2BWebsite = storeInit?.IsB2BWebsite;
-        const visiterID = Cookies.get("visiterId");
-        let finalID;
-        if (IsB2BWebsite == 0) {
-            finalID = islogin === false ? visiterID : loginUserDetail?.id || "0";
-        } else {
-            finalID = loginUserDetail?.id || "0";
-        }
+        if (!pricingContext || !storeInit) return;
 
-        let data = storeInit;
-        setImageUrl(data?.DesignSetImageFol);
+        setImageUrl(storeInit?.DesignSetImageFol);
 
-        const Collections = async () => {
-            Get_Tren_BestS_NewAr_DesigSet_Album(storeInit, "GETDesignSet", finalID)
-                .then((response) => {
-                    if (response?.Data?.rd) {
-                        setDesignSetList(response?.Data?.rd);
-                    }
-                })
-                .catch((err) => console.log(err));
-        }
-        Collections()
-    }, []);
+        const fetchData = async () => {
+            const IsB2BWebsite = storeInit?.IsB2BWebsite;
+            const visiterID = Cookies.get("visiterId");
+            const userId = loginUserDetail?.id;
+            const finalID = IsB2BWebsite === 0 ? (islogin ? userId || "" : visiterID) : userId || "";
+
+            const keyALC = normalizeALC("");
+            const { key } = buildAlbumCacheKey("home_designset", storeInit, pricingContext, finalID, keyALC);
+
+            if (isFetchingRef.current || lastRequestKeyRef.current === key) return;
+            lastRequestKeyRef.current = key;
+
+            await fetchAndSetCollections(finalID, key);
+        };
+
+        fetchData();
+    }, [islogin, pricingContext, storeInit, fetchAndSetCollections, loginUserDetail?.id]);
 
     const compressAndEncode = (inputString) => {
         try {

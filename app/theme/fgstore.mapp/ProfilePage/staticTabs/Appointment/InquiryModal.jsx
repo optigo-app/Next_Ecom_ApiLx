@@ -18,6 +18,10 @@ import CloseIcon from "@mui/icons-material/Close";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import { COLORS, getButtonStyle } from "@/app/(core)/constants/MobileAppTheme";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
+import dayjs from "dayjs";
 
 const jewelryItems = [
   { id: 1, title: 'Engagement Ring', image: '/WebSiteStaticImage/Appointment/appointment-jewel-1.png' },
@@ -75,7 +79,20 @@ const InquiryModal = ({
         </Toolbar>
       </AppBar>
 
-      <Box sx={{ p: 2, flex: 1, display: 'flex', flexDirection: 'column', overflowY: "auto" }}>
+      <Box
+        sx={{
+          p: 2,
+          flex: 1,
+          display: 'flex',
+          flexDirection: 'column',
+          overflowY: "auto",
+          "&::-webkit-scrollbar": {
+            display: "none",
+          },
+          scrollbarWidth: "none",
+          msOverflowStyle: "none",
+        }}
+      >
         {step === 1 && (
           <Box>
             <Typography variant="body2" color="text.secondary" mb={3}>
@@ -174,21 +191,33 @@ const InquiryModal = ({
                 />
               </Grid>
               <Grid item size={{ xs: 12 }}>
-                <TextField
-                  fullWidth
-                  label="Appointment Date & Time*"
-                  name="AppointmentDateTime"
-                  type="datetime-local"
-                  InputLabelProps={{ shrink: true }}
-                  inputProps={{
-                    min: minDateTime,
-                    style: { fontSize: "16px" } // Prevents iOS Zoom
-                  }}
-                  value={formData.AppointmentDateTime}
-                  onChange={handleChange}
-                  error={Boolean(errors.AppointmentDateTime)}
-                  helperText={errors.AppointmentDateTime}
-                />
+                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                  <DateTimePicker
+                    label="Appointment Date & Time*"
+                    value={formData.AppointmentDateTime ? dayjs(formData.AppointmentDateTime) : null}
+                    onChange={(newValue) => {
+                      const formattedValue = newValue && newValue.isValid() ? newValue.format("YYYY-MM-DDTHH:mm") : "";
+                      handleChange({
+                        target: {
+                          name: "AppointmentDateTime",
+                          value: formattedValue
+                        }
+                      });
+                    }}
+                    format="DD-MM-YYYY hh:mm A"
+                    minDateTime={minDateTime ? dayjs(minDateTime) : dayjs()}
+                    slotProps={{
+                      textField: {
+                        fullWidth: true,
+                        error: Boolean(errors.AppointmentDateTime),
+                        helperText: errors.AppointmentDateTime,
+                        inputProps: {
+                          style: { fontSize: "16px" }
+                        }
+                      }
+                    }}
+                  />
+                </LocalizationProvider>
               </Grid>
               <Grid item size={{ xs: 12 }}>
                 <TextField

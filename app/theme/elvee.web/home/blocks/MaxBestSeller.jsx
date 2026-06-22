@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useMemo, useCallback } from "react";
 import {
   Box,
   Typography,
@@ -18,6 +18,8 @@ import Pako from "pako";
 import { useStore } from "@/app/(core)/contexts/StoreProvider";
 import { useNextRouterLikeRR } from "@/app/(core)/hooks/useLocationRd";
 import { HeaderV2 } from "./Header";
+import { normalizeALC, buildAlbumCacheKey, getPricingContext } from "@/app/(core)/cache_utility/CacheBuilder";
+import { readCache, writeCache } from "@/app/(core)/cache_utility/cacheActions";
 
 // ─── Styled Components (mirrors Category.jsx) ────────────────────────────────
 
@@ -48,23 +50,64 @@ const MaxBestSeller = ({ storeInit }) => {
   const [validatedData, setValidatedData] = useState([]);
 
   const navigation = useNextRouterLikeRR();
-  const { finalId, loginUserDetail } = useStore();
+  const { finalId, loginUserDetail, islogin } = useStore();
+
+  const pricingContext = useMemo(() => getPricingContext(loginUserDetail, storeInit, islogin), [loginUserDetail, storeInit, islogin]);
+  const isFetchingRef = useRef(false);
+  const lastRequestKeyRef = useRef("");
 
   // ── API ──────────────────────────────────────────────────────────────────────
-  const callAllApi = () => {
-    setImageUrl(storeInit?.CDNDesignImageFol);
-    Get_Tren_BestS_NewAr_DesigSet_Album(storeInit, "GETBestSeller", finalId)
-      .then((response) => {
-        if (response?.Data?.rd) {
-          setBestSellerData(response?.Data?.rd);
-        }
-      })
-      .catch((err) => console.log(err));
-  };
+  const fetchAndSetBestSellers = useCallback(async (finalID, cacheKey) => {
+    if (!pricingContext || !pricingContext.PackageId || isFetchingRef.current) return;
+
+    isFetchingRef.current = true;
+
+    try {
+      const cacheRes = await readCache(cacheKey);
+
+      if (cacheRes?.cached && Array.isArray(cacheRes.data)) {
+        console.log("[MaxBestSeller] Serving from cache");
+        setBestSellerData(cacheRes.data);
+        isFetchingRef.current = false;
+        return;
+      }
+
+      console.log("[MaxBestSeller] Cache miss, calling API...");
+      const response = await Get_Tren_BestS_NewAr_DesigSet_Album(storeInit, "GETBestSeller", finalID);
+      const apiData = response?.Data?.rd || [];
+
+      if (apiData.length > 0) {
+        setBestSellerData(apiData);
+        writeCache(cacheKey, apiData).catch(console.error);
+      } else {
+        setBestSellerData([]);
+      }
+      isFetchingRef.current = false;
+    } catch (err) {
+      console.log("[MaxBestSeller] Error in fetch:", err);
+      setBestSellerData([]);
+      isFetchingRef.current = false;
+    }
+  }, [pricingContext, storeInit]);
 
   useEffect(() => {
-    callAllApi();
-  }, []);
+    if (!pricingContext || !storeInit) return;
+
+    setImageUrl(storeInit?.CDNDesignImageFol);
+
+    const fetchData = async () => {
+      const visitorId = finalId || "0";
+      const keyALC = normalizeALC("");
+      const { key } = buildAlbumCacheKey("fg_bestseller", storeInit, pricingContext, visitorId, keyALC);
+
+      if (isFetchingRef.current || lastRequestKeyRef.current === key) return;
+      lastRequestKeyRef.current = key;
+
+      await fetchAndSetBestSellers(visitorId, key);
+    };
+
+    fetchData();
+  }, [islogin, pricingContext, storeInit, fetchAndSetBestSellers, finalId]);
 
   // ── Image URL builder ────────────────────────────────────────────────────────
   const validateImageURLs = async () => {
