@@ -1,5 +1,5 @@
-// @use "../../../scss/variable.scss" as *;
-@use "../../style/variable.scss" as *;
+@use "../../../scss/variable.scss" as *;
+// @use "../../style/variable.scss" as *;
 
 .smr_DeliverMainDiv {
   background-color: $bgColor;
@@ -35,7 +35,7 @@
     width: 150px;
     font-family: $homePageFontFamily !important;
     font-size: $fontSize3;
-    background-color: $elecbtnbg !important;
+    background-color: $elecbtnbg;
     color: $elebtncolor !important;
     border: none;
     border-radius: 0px !important;
