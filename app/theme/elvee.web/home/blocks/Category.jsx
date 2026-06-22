@@ -1,5 +1,5 @@
 "use client"
-import React, { useRef, useState, useEffect } from "react";
+import React, { useRef, useState, useEffect, useMemo, useCallback } from "react";
 import {
   Box,
   Typography,
@@ -19,6 +19,8 @@ import { useNextRouterLikeRR } from "@/app/(core)/hooks/useLocationRd";
 import { HomeCategoryApi } from "@/app/(core)/utils/API/Home/HomeCategoryApi/HomeCategoryApi";
 import { useStore } from "@/app/(core)/contexts/StoreProvider";
 import { HomeCollectionApi } from "@/app/(core)/utils/API/Home/HomeCollectionApi/HomeCollectionApi";
+import { normalizeALC, buildAlbumCacheKey, getPricingContext } from "@/app/(core)/cache_utility/CacheBuilder";
+import { readCache, writeCache } from "@/app/(core)/cache_utility/cacheActions";
 
 const SkeletonCard = () => (
   <Box sx={{ width: "100%" }}>
@@ -143,7 +145,7 @@ const fallbackCollection = {
 }
 
 const CategoryBlock = ({ assetBase, storeInit }) => {
-  const { finalId } = useStore();
+  const { finalId, islogin, loginUserDetail } = useStore();
   const theme = useTheme();
   const navigate = useNextRouterLikeRR();
   const swiperRef = useRef(null);
@@ -157,25 +159,71 @@ const CategoryBlock = ({ assetBase, storeInit }) => {
     collection: [],
   });
 
+  const pricingContext = useMemo(() => getPricingContext(loginUserDetail, storeInit, islogin), [loginUserDetail, storeInit, islogin]);
+  const isFetchingRef = useRef(false);
+  const lastRequestKeyRef = useRef("");
 
-  const fetchHomeCollection = async () => {
+  const fetchAndSetCategories = useCallback(async (finalID, cacheKey) => {
+    if (!pricingContext || !pricingContext.PackageId || isFetchingRef.current) return;
+
+    isFetchingRef.current = true;
+    setLoading(true);
+
     try {
-      const categoryList = await HomeCategoryApi(finalId);
-      const collectionList = await HomeCollectionApi(finalId);
+      const cacheRes = await readCache(cacheKey);
+
+      if (cacheRes?.cached && Array.isArray(cacheRes.data)) {
+        console.log("[CategoryBlock] Serving from cache");
+        setSectionData({
+          collection: fallbackCollection.Data.rd,
+          category: cacheRes.data,
+        });
+        setLoading(false);
+        isFetchingRef.current = false;
+        return;
+      }
+
+      console.log("[CategoryBlock] Cache miss, calling API...");
+      const categoryList = await HomeCategoryApi(finalID);
+      const apiData = categoryList?.Data?.rd || [];
+
       setSectionData({
         collection: fallbackCollection.Data.rd,
-        category: categoryList?.Data?.rd ?? [],
+        category: apiData,
+      });
+
+      if (apiData.length > 0) {
+        writeCache(cacheKey, apiData).catch(console.error);
+      }
+      setLoading(false);
+      isFetchingRef.current = false;
+    } catch (error) {
+      console.error("[CategoryBlock] Error fetching category:", error);
+      setSectionData({
+        collection: fallbackCollection.Data.rd,
+        category: [],
       });
       setLoading(false);
-    } catch (error) {
-      console.error("Error fetching home collection:", error);
-      setLoading(false);
+      isFetchingRef.current = false;
     }
-  };
+  }, [pricingContext, storeInit]);
 
   useEffect(() => {
-    fetchHomeCollection();
-  }, []);
+    if (!pricingContext || !storeInit) return;
+
+    const fetchData = async () => {
+      const visitorId = finalId || "0";
+      const keyALC = normalizeALC("");
+      const { key } = buildAlbumCacheKey("fg_category", storeInit, pricingContext, visitorId, keyALC);
+
+      if (isFetchingRef.current || lastRequestKeyRef.current === key) return;
+      lastRequestKeyRef.current = key;
+
+      await fetchAndSetCategories(visitorId, key);
+    };
+
+    fetchData();
+  }, [islogin, pricingContext, storeInit, fetchAndSetCategories, finalId]);
 
   const handleNavigate = (name, type) => {
     let finalData = {

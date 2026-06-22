@@ -1,11 +1,13 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useMemo, useCallback } from "react";
 import "./CategoryTab.scss";
 import { Get_Tren_BestS_NewAr_DesigSet_Album } from "@/app/(core)/utils/API/Home/Get_Tren_BestS_NewAr_DesigSet_Album/Get_Tren_BestS_NewAr_DesigSet_Album";
 import Cookies from "js-cookie";
 import { useStore } from "@/app/(core)/contexts/StoreProvider";
 import { useNextRouterLikeRR } from "@/app/(core)/hooks/useLocationRd";
+import { normalizeALC, buildAlbumCacheKey, getPricingContext } from "@/app/(core)/cache_utility/CacheBuilder";
+import { readCache, writeCache } from "@/app/(core)/cache_utility/cacheActions";
 
 const CategoryTab = ({ storeData }) => {
     const [albumData, setAlbumData] = useState();
@@ -16,34 +18,68 @@ const CategoryTab = ({ storeData }) => {
     const productRefs = useRef({});
     const noimage = `./image-not-found.jpg`;
 
+    const pricingContext = useMemo(() => getPricingContext(loginUserDetail, storeData, islogin), [loginUserDetail, storeData, islogin]);
+    const isFetchingRef = useRef(false);
+    const lastRequestKeyRef = useRef("");
+
+    const fetchAndSetAlbums = useCallback(
+        async (finalID, cacheKey) => {
+            if (!pricingContext || !pricingContext.PackageId || isFetchingRef.current) return;
+
+            isFetchingRef.current = true;
+
+            try {
+                const cacheRes = await readCache(cacheKey);
+
+                if (cacheRes?.cached && Array.isArray(cacheRes.data)) {
+                    console.log("[CategoryTab] Serving from cache");
+                    setAlbumData(cacheRes.data);
+                    isFetchingRef.current = false;
+                    return;
+                }
+
+                console.log("[CategoryTab] Cache miss, calling API...");
+                const response = await Get_Tren_BestS_NewAr_DesigSet_Album(storeData, "GETAlbum", finalID);
+                const apiData = response?.Data?.rd || [];
+
+                if (apiData.length > 0) {
+                    setAlbumData(apiData);
+                    writeCache(cacheKey, apiData).catch(console.error);
+                } else {
+                    setAlbumData([]);
+                }
+                isFetchingRef.current = false;
+            } catch (err) {
+                console.log("[CategoryTab] Error in fetch:", err);
+                setAlbumData([]);
+                isFetchingRef.current = false;
+            }
+        },
+        [pricingContext, storeData]
+    );
+
     useEffect(() => {
-        let data = storeData;
-        setImageUrl(data?.AlbumImageFol);
+        if (!pricingContext || !storeData) return;
 
-        const loginUserDetail = JSON.parse(
-            sessionStorage?.getItem("loginUserDetail")
-        );
-        const storeInit = storeData;
-        const IsB2BWebsite = storeInit?.IsB2BWebsite;
-        const visiterID = Cookies.get("visiterId");
-        let finalID;
-        if (IsB2BWebsite == 0) {
-            finalID = islogin === false ? visiterID : loginUserDetail?.id || "0";
-        } else {
-            finalID = loginUserDetail?.id || "0";
-        }
+        setImageUrl(storeData?.AlbumImageFol);
 
-        const sHOPBYCATEGORY = async () => {
-            Get_Tren_BestS_NewAr_DesigSet_Album(storeData, "GETAlbum", finalID)
-                .then((response) => {
-                    if (response?.Data?.rd) {
-                        setAlbumData(response?.Data?.rd);
-                    }
-                })
-                .catch((err) => console.log(err));
+        const fetchData = async () => {
+            const IsB2BWebsite = storeData?.IsB2BWebsite;
+            const visiterID = Cookies.get("visiterId");
+            const userId = loginUserDetail?.id;
+            const finalID = IsB2BWebsite === 0 ? (islogin ? userId || "" : visiterID) : userId || "";
+
+            const keyALC = normalizeALC("");
+            const { key } = buildAlbumCacheKey("home_album", storeData, pricingContext, finalID, keyALC);
+
+            if (isFetchingRef.current || lastRequestKeyRef.current === key) return;
+            lastRequestKeyRef.current = key;
+
+            await fetchAndSetAlbums(finalID, key);
         };
-        sHOPBYCATEGORY();
-    }, []);
+
+        fetchData();
+    }, [islogin, pricingContext, storeData, fetchAndSetAlbums, loginUserDetail?.id]);
 
     const handleNavigate = (name, index) => {
         sessionStorage.setItem('scrollToProduct3', `product-${index}`);

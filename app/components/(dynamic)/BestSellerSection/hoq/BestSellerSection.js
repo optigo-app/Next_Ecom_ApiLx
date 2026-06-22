@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useMemo, useCallback } from "react";
 import { Get_Tren_BestS_NewAr_DesigSet_Album } from "@/app/(core)/utils/API/Home/Get_Tren_BestS_NewAr_DesigSet_Album/Get_Tren_BestS_NewAr_DesigSet_Album";
 import Cookies from "js-cookie";
 import Pako from "pako";
@@ -8,6 +8,8 @@ import './BestSellerSection.scss'
 import { formatRedirectTitleLine } from "@/app/(core)/utils/Glob_Functions/GlobalFunction";
 import { useStore } from "@/app/(core)/contexts/StoreProvider";
 import { useNextRouterLikeRR } from "@/app/(core)/hooks/useLocationRd";
+import { normalizeALC, buildAlbumCacheKey, getPricingContext } from "@/app/(core)/cache_utility/CacheBuilder";
+import { readCache, writeCache } from "@/app/(core)/cache_utility/cacheActions";
 
 const BestSellerSection = ({ storeData }) => {
     const [imageUrl, setImageUrl] = useState();
@@ -17,33 +19,68 @@ const BestSellerSection = ({ storeData }) => {
     const productRefs = useRef({});
     const noimage = `./image-not-found.jpg`;
 
+    const pricingContext = useMemo(() => getPricingContext(loginUserDetail, storeData, islogin), [loginUserDetail, storeData, islogin]);
+    const isFetchingRef = useRef(false);
+    const lastRequestKeyRef = useRef("");
+
+    const fetchAndSetBestSellers = useCallback(
+        async (finalID, cacheKey) => {
+            if (!pricingContext || !pricingContext.PackageId || isFetchingRef.current) return;
+
+            isFetchingRef.current = true;
+
+            try {
+                const cacheRes = await readCache(cacheKey);
+
+                if (cacheRes?.cached && Array.isArray(cacheRes.data)) {
+                    console.log("[BestSellerSection] Serving from cache");
+                    setBestSellerData(cacheRes.data);
+                    isFetchingRef.current = false;
+                    return;
+                }
+
+                console.log("[BestSellerSection] Cache miss, calling API...");
+                const response = await Get_Tren_BestS_NewAr_DesigSet_Album(storeData, "GETBestSeller", finalID);
+                const apiData = response?.Data?.rd || [];
+
+                if (apiData.length > 0) {
+                    setBestSellerData(apiData);
+                    writeCache(cacheKey, apiData).catch(console.error);
+                } else {
+                    setBestSellerData([]);
+                }
+                isFetchingRef.current = false;
+            } catch (err) {
+                console.log("[BestSellerSection] Error in fetch:", err);
+                setBestSellerData([]);
+                isFetchingRef.current = false;
+            }
+        },
+        [pricingContext, storeData]
+    );
+
     useEffect(() => {
-        const storeInit = storeData;
-        const IsB2BWebsite = storeInit?.IsB2BWebsite;
-        const visiterID = Cookies.get("visiterId");
-        let finalID;
-        if (IsB2BWebsite == 0) {
-            finalID = islogin === false ? visiterID : loginUserDetail?.id || "0";
-        } else {
-            finalID = loginUserDetail?.id || "0";
-        }
+        if (!pricingContext || !storeData) return;
 
-        // setImageUrl(data?.DesignImageFol);
-        // setImageUrl(data?.CDNDesignImageFol);
-        setImageUrl(storeInit?.CDNDesignImageFolThumb);
+        setImageUrl(storeData?.CDNDesignImageFolThumb);
 
-        const BestSeller = async () => {
-            Get_Tren_BestS_NewAr_DesigSet_Album(storeData, "GETBestSeller", finalID)
-                .then((response) => {
-                    if (response?.Data?.rd) {
-                        setBestSellerData(response?.Data?.rd);
-                    }
-                })
-                .catch((err) => console.log(err));
-        }
+        const fetchData = async () => {
+            const IsB2BWebsite = storeData?.IsB2BWebsite;
+            const visiterID = Cookies.get("visiterId");
+            const userId = loginUserDetail?.id;
+            const finalID = IsB2BWebsite === 0 ? (islogin ? userId || "" : visiterID) : userId || "";
 
-        BestSeller()
-    }, []);
+            const keyALC = normalizeALC("");
+            const { key } = buildAlbumCacheKey("home_bestseller", storeData, pricingContext, finalID, keyALC);
+
+            if (isFetchingRef.current || lastRequestKeyRef.current === key) return;
+            lastRequestKeyRef.current = key;
+
+            await fetchAndSetBestSellers(finalID, key);
+        };
+
+        fetchData();
+    }, [islogin, pricingContext, storeData, fetchAndSetBestSellers, loginUserDetail?.id]);
 
     const compressAndEncode = (inputString) => {
         try {
@@ -56,8 +93,8 @@ const BestSellerSection = ({ storeData }) => {
         }
     };
 
-    const handleNavigation = (designNo, autoCode, titleLine, index,data) => {
-             const imageVideoDetail = data?.ImageVideoDetail;
+    const handleNavigation = (designNo, autoCode, titleLine, index, data) => {
+        const imageVideoDetail = data?.ImageVideoDetail;
 
         const parsed = imageVideoDetail
             ? JSON.parse(imageVideoDetail)
@@ -166,7 +203,7 @@ const BestSellerSection = ({ storeData }) => {
                                     data?.designno,
                                     data?.autocode,
                                     data?.TitleLine,
-                                    i ,
+                                    i,
                                     data
                                 )
                             }

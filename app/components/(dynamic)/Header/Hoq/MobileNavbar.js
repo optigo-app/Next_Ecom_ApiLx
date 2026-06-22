@@ -15,7 +15,6 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { MdClose } from "react-icons/md";
 import { FiLogOut } from "react-icons/fi";
 import { CiHeart, CiUser } from "react-icons/ci";
-import { GetCountAPI } from "@/app/(core)/utils/API/GetCount/GetCountAPI";
 import Cookies from "js-cookie";
 import { PiBagSimpleThin } from "react-icons/pi";
 import { FaSignInAlt, FaUserPlus } from "react-icons/fa"; // Import specific icons
@@ -45,21 +44,7 @@ export default function TemporaryDrawer({
     fetchData();
   }, [islogin]);
 
-  React.useEffect(() => {
-    const visiterID = Cookies?.get("visiterId");
-    GetCountAPI(visiterID)
-      .then((res) => {
-        if (res) {
-          setCartCountNum(res?.cartcount);
-          setWishCountNum(res?.wishcount);
-        }
-      })
-      .catch((err) => {
-        if (err) {
-          console.log("getCountApiErr", err);
-        }
-      });
-  }, []);
+
 
 
   const handleLogout = () => {
