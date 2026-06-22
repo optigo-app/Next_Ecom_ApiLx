@@ -1,5 +1,5 @@
 'use client'
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import './Css/ShopBanner.modul.scss';
 import { Get_Tren_BestS_NewAr_DesigSet_Album } from '@/app/(core)/utils/API/Home/Get_Tren_BestS_NewAr_DesigSet_Album/Get_Tren_BestS_NewAr_DesigSet_Album';
 import { FiChevronRight } from "react-icons/fi";
@@ -8,29 +8,74 @@ import { Box } from '@mui/material';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { useStore } from '@/app/(core)/contexts/StoreProvider';
 import { useNextRouterLikeRR } from '@/app/(core)/hooks/useLocationRd';
+import { normalizeALC, buildAlbumCacheKey, getPricingContext } from '@/app/(core)/cache_utility/CacheBuilder';
+import { readCache, writeCache } from '@/app/(core)/cache_utility/cacheActions';
+
+const noimagefound = "/image-not-found.jpg";
 
 const MaxAlbum = ({ storeInit }) => {
   const { finalId, islogin, loginUserDetail } = useStore();
   const [imageUrl, setImageUrl] = useState();
   const [albumList, setAlbumList] = useState([]);
-  const noimagefound = '/image-not-found.jpg'
 
-  const apiCall = () => {
-    setImageUrl(storeInit?.AlbumImageFol);
-    Get_Tren_BestS_NewAr_DesigSet_Album(storeInit, "GETAlbum", finalId)
-      .then((response) => {
-        if (response?.Data?.rd) {
-          setAlbumList(response?.Data?.rd);
+  const pricingContext = useMemo(() => getPricingContext(loginUserDetail, storeInit, islogin), [loginUserDetail, storeInit, islogin]);
+  const isFetchingRef = useRef(false);
+  const lastRequestKeyRef = useRef("");
+
+  const fetchAndSetAlbums = useCallback(
+    async (visitorId, cacheKey) => {
+      if (!pricingContext || !pricingContext.PackageId || isFetchingRef.current) return;
+
+      isFetchingRef.current = true;
+
+      try {
+        const cacheRes = await readCache(cacheKey);
+
+        if (cacheRes?.cached && Array.isArray(cacheRes.data)) {
+          console.log("[MaxAlbum] Serving from cache");
+          setAlbumList(cacheRes.data);
+          isFetchingRef.current = false;
+          return;
         }
-      })
-      .catch((error) => {
-        console.error("Error fetching data:", error);
-      });
-  };
+
+        console.log("[MaxAlbum] Cache miss, calling API...");
+        const res = await Get_Tren_BestS_NewAr_DesigSet_Album(storeInit, "GETAlbum", visitorId);
+        const apiData = res?.Data?.rd || [];
+
+        if (apiData.length > 0) {
+          setAlbumList(apiData);
+          writeCache(cacheKey, apiData).catch(console.error);
+        } else {
+          setAlbumList([]);
+        }
+        isFetchingRef.current = false;
+      } catch (err) {
+        console.error("[MaxAlbum] Error in fetch:", err);
+        setAlbumList([]);
+        isFetchingRef.current = false;
+      }
+    },
+    [pricingContext, storeInit]
+  );
 
   useEffect(() => {
-    apiCall();
-  }, []);
+    if (!pricingContext || !storeInit) return;
+
+    setImageUrl(storeInit?.AlbumImageFol);
+
+    const fetchData = async () => {
+      const visitorId = finalId || "0";
+      const keyALC = normalizeALC("");
+      const { key } = buildAlbumCacheKey("fg_album", storeInit, pricingContext, visitorId, keyALC);
+
+      if (isFetchingRef.current || lastRequestKeyRef.current === key) return;
+      lastRequestKeyRef.current = key;
+
+      await fetchAndSetAlbums(visitorId, key);
+    };
+
+    fetchData();
+  }, [islogin, pricingContext, storeInit, fetchAndSetAlbums, finalId]);
 
   if (albumList?.length === 0) {
     return null;
@@ -131,6 +176,7 @@ export const CategoryGrid = ({
                   <img
                     src={GenrateImage(val)}
                     onError={(e) => {
+                      e.target.onerror = null;
                       e.target.src = noimagefound;
                       e.target.alt = "no-image-found";
                     }}

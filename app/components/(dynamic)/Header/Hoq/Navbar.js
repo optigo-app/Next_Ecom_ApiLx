@@ -26,7 +26,6 @@ import MuiLink from "@mui/material/Link";
 import Cookies from "js-cookie";
 import LogoutIcon from "@mui/icons-material/Logout";
 import { Badge, Tooltip, useMediaQuery } from "@mui/material";
-import { GetCountAPI } from "@/app/(core)/utils/API/GetCount/GetCountAPI";
 import Pako from "pako";
 import DummyNav from "./DummyNav";
 import TemporaryDrawer from "./MobileNavbar";
@@ -315,27 +314,7 @@ const Navbar = ({ storeinit, logos }) => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  useEffect(() => {
-    const visiterID = Cookies?.get("visiterId");
-    const loginUserDetailNav = getSession("loginUserDetail");
-    const isB2B = storeinit?.IsB2BWebsite;
-    const isLoggedIn = JSON.parse(sessionStorage.getItem("LoginUser")) ?? false;
-    // For B2B: always use loginUserDetail.id; for B2C: use visiterId when logged out
-    const resolvedId =
-      isB2B === 0 && !isLoggedIn ? visiterID : loginUserDetailNav?.id || visiterID;
-    GetCountAPI(resolvedId)
-      .then((res) => {
-        if (res) {
-          setCartCountNum(res?.cartcount);
-          setWishCountNum(res?.wishcount);
-        }
-      })
-      .catch((err) => {
-        if (err) {
-          console.log("getCountApiErr", err);
-        }
-      });
-  }, [islogin]);
+
 
   const compressAndEncode = (inputString) => {
     try {

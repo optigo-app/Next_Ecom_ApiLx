@@ -6,7 +6,6 @@ import Link from "next/link";
 import MobileMenu from "./MobileMenu";
 import RightSideMenu from "./RightSideMenu";
 import Cookies from "js-cookie";
-import { GetCountAPI } from "@/app/(core)/utils/API/GetCount/GetCountAPI";
 import { GetMenuAPI } from "@/app/(core)/utils/API/GetMenuAPI/GetMenuAPI";
 import { GETProductType } from "@/app/(core)/utils/API/GETProductType/GETProductType";
 import SearchBarToggle from "./SearchBarToggle";
@@ -79,21 +78,6 @@ const ElveePreNavbar = ({ storeinit, logos }) => {
     const IsB2BWebsiteChek = storeinit?.IsB2BWebsite;
 
     // --- Initial Setup (Logo, Counts, Scroll) ---
-    useEffect(() => {
-
-
-        const fetchData = async () => {
-            try {
-                const visiterID = Cookies.get("visiterId");
-                const res = await GetCountAPI(visiterID);
-                setCartCountNum(res?.cartcount);
-                setWishCountNum(res?.wishcount);
-            } catch (error) {
-                console.error(error);
-            }
-        };
-        fetchData();
-    }, []);
 
     useEffect(() => {
         if (location === "/") {

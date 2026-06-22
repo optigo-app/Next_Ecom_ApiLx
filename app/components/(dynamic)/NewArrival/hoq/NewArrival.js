@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useMemo, useCallback } from "react";
 import Cookies from "js-cookie";
 import "./NewArrival.scss";
 import { Get_Tren_BestS_NewAr_DesigSet_Album } from "@/app/(core)/utils/API/Home/Get_Tren_BestS_NewAr_DesigSet_Album/Get_Tren_BestS_NewAr_DesigSet_Album";
@@ -8,6 +8,8 @@ import { formatRedirectTitleLine } from "@/app/(core)/utils/Glob_Functions/Globa
 import Pako from "pako";
 import { useStore } from "@/app/(core)/contexts/StoreProvider";
 import { useNextRouterLikeRR } from "@/app/(core)/hooks/useLocationRd";
+import { normalizeALC, buildAlbumCacheKey, getPricingContext } from "@/app/(core)/cache_utility/CacheBuilder";
+import { readCache, writeCache } from "@/app/(core)/cache_utility/cacheActions";
 
 const TabSection = ({ storeData }) => {
     const [newArrivalData, setNewArrivalData] = useState([]);
@@ -17,27 +19,68 @@ const TabSection = ({ storeData }) => {
     const productRefs = useRef({});
     const noimage = `./image-not-found.jpg`;
 
-    useEffect(() => {
-        const IsB2BWebsite = storeData?.IsB2BWebsite;
-        const visiterID = Cookies.get("visiterId");
-        let finalID;
-        if (IsB2BWebsite == 0) {
-            finalID = islogin === false ? visiterID : loginUserDetail?.id || "0";
-        } else {
-            finalID = loginUserDetail?.id || "0";
-        }
-        let data = storeData;
-        setImageUrl(data?.CDNDesignImageFolThumb);
+    const pricingContext = useMemo(() => getPricingContext(loginUserDetail, storeData, islogin), [loginUserDetail, storeData, islogin]);
+    const isFetchingRef = useRef(false);
+    const lastRequestKeyRef = useRef("");
 
+    const fetchAndSetNewArrivals = useCallback(
+        async (finalID, cacheKey) => {
+            if (!pricingContext || !pricingContext.PackageId || isFetchingRef.current) return;
 
-        Get_Tren_BestS_NewAr_DesigSet_Album(storeData, "GETNewArrival", finalID)
-            ?.then((response) => {
-                if (response?.Data?.rd) {
-                    setNewArrivalData(response?.Data?.rd);
+            isFetchingRef.current = true;
+
+            try {
+                const cacheRes = await readCache(cacheKey);
+
+                if (cacheRes?.cached && Array.isArray(cacheRes.data)) {
+                    console.log("[NewArrival] Serving from cache");
+                    setNewArrivalData(cacheRes.data);
+                    isFetchingRef.current = false;
+                    return;
                 }
-            })
-            .catch((err) => console.log(err));
-    }, []);
+
+                console.log("[NewArrival] Cache miss, calling API...");
+                const response = await Get_Tren_BestS_NewAr_DesigSet_Album(storeData, "GETNewArrival", finalID);
+                const apiData = response?.Data?.rd || [];
+
+                if (apiData.length > 0) {
+                    setNewArrivalData(apiData);
+                    writeCache(cacheKey, apiData).catch(console.error);
+                } else {
+                    setNewArrivalData([]);
+                }
+                isFetchingRef.current = false;
+            } catch (err) {
+                console.log("[NewArrival] Error in fetch:", err);
+                setNewArrivalData([]);
+                isFetchingRef.current = false;
+            }
+        },
+        [pricingContext, storeData]
+    );
+
+    useEffect(() => {
+        if (!pricingContext || !storeData) return;
+
+        setImageUrl(storeData?.CDNDesignImageFolThumb);
+
+        const fetchData = async () => {
+            const IsB2BWebsite = storeData?.IsB2BWebsite;
+            const visiterID = Cookies.get("visiterId");
+            const userId = loginUserDetail?.id;
+            const finalID = IsB2BWebsite === 0 ? (islogin ? userId || "" : visiterID) : userId || "";
+
+            const keyALC = normalizeALC("");
+            const { key } = buildAlbumCacheKey("home_newarrivals", storeData, pricingContext, finalID, keyALC);
+
+            if (isFetchingRef.current || lastRequestKeyRef.current === key) return;
+            lastRequestKeyRef.current = key;
+
+            await fetchAndSetNewArrivals(finalID, key);
+        };
+
+        fetchData();
+    }, [islogin, pricingContext, storeData, fetchAndSetNewArrivals, loginUserDetail?.id]);
 
     const ImageGenrate = (product) => {
         return product?.ImageCount >= 1
