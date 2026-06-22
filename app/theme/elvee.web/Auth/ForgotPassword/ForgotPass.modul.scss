@@ -1,4 +1,7 @@
-@use "../../../fgstore.web/style/variable.scss" as *;
+// @use "../../../fgstore.web/style/variable.scss" as *;
+@use "../../style/variable.scss" as *;
+
+
 
 .fg_smr_forgotMain {
   background-color: $authbg;
@@ -33,7 +36,7 @@
   }
 
   .submitBtnForgot:hover {
-    background-color: white;
+    background-color: white !important;
     color: #7d7f85;
     border: 1px solid #7d7f85;
   }

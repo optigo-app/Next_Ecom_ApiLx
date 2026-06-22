@@ -6,6 +6,9 @@ export default async function TopSection() {
   const banners = await getHomeBannerImages({ host: assetBase });
   const videoUrl = banners?.mainBanner?.video?.[0] ? banners.mainBanner.video[0].replace(".mp4", ".webm") : null;
 
+  
+  console.log("TCL: TopSection -> videoUrl", videoUrl)
+
   return (
     <Box
       component="section"
@@ -29,7 +32,7 @@ export default async function TopSection() {
         controls={false}
         preload="auto"
         priority="high"
-        poster={`/${assetBase}/Banner/homepageVideoPoster.webp`}
+        // poster={`/${assetBase}/Banner/homepageVideoPoster.webp`}
         sx={{
           position: "absolute",
           inset: 0,
@@ -38,9 +41,11 @@ export default async function TopSection() {
           objectFit: "cover",
         }}
       >
-        {videoUrl && <source src={videoUrl} type="video/webm" />}
+        {videoUrl && <source src={`/${assetBase}/Banner/homepageVideoPoster5.mp4`} type="video/webm" />}
         {banners?.mainBanner?.video?.[0] && (
-          <source src={banners.mainBanner.video[0]} type="video/mp4" />
+          // <source src={banners.mainBanner.video[0]} type="video/mp4" />
+          <source src={`/${assetBase}/Banner/homepageVideoPoster5.mp4`} type="video/mp4" />
+
         )}
       </Box>
     </Box>

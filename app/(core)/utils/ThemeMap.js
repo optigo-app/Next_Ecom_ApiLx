@@ -13,14 +13,15 @@ export const themeMap = {
   },
   // local dev
   "nxtmobileapp.web": {
-    page: LocalSetup,
+    // page: LocalSetup,
+    page: "fgstore.mapp",
   },
   "nxt14.optigoapps.com": {
     page: "fgstore.mapp",
   },
   "nxtelvee.web": {
-    // page: "elvee.web",
-    page: LocalSetup,
+    page: "elvee.web",
+    // page: LocalSetup,
   },
   'nxthoq.web': {
     page: "hoq.web",
