@@ -465,7 +465,7 @@ const ElveeBaseHeader = ({ hidden, storeinit, logos }) => {
                       >
                         Social Media
                       </h4>
-                      <h4 className="el_whioutL_li" style={{ cursor: "pointer" }} onClick={() => navigate("/contact-us")}>
+                      <h4 className="el_whioutL_li" style={{ cursor: "pointer" }} onClick={() => navigate("/contactUs")}>
                         Contact
                       </h4>
                     </div>

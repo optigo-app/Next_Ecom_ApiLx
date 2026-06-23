@@ -32,7 +32,7 @@ export default async function TopSection() {
         controls={false}
         preload="auto"
         priority="high"
-        // poster={`/${assetBase}/Banner/homepageVideoPoster.webp`}
+        poster={`/${assetBase}/Banner/homepageVideoPoster5.png`}
         sx={{
           position: "absolute",
           inset: 0,
