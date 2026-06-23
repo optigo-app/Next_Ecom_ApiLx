@@ -20,8 +20,8 @@ export const themeMap = {
     page: "fgstore.mapp",
   },
   "nxtelvee.web": {
-    page: "elvee.web",
-    // page: LocalSetup,
+    // page: "elvee.web",
+    page: LocalSetup,
   },
   'nxthoq.web': {
     page: "hoq.web",
@@ -45,7 +45,7 @@ export const themeMap = {
     page: "fgstore.mapp",
   },
   "2sonasons.optigoapps.com": {
-    page: "hoq.web",
+    page: "elvee.web",
   },
   "1sonasons.optigoapps.com": {
     page: "hoq.web",
