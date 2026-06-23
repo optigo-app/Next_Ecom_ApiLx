@@ -12,7 +12,6 @@ const ScrollTriggerTab = ({ assetBase }) => {
       desc: "Every piece at Sonasons Jewellery is thoughtfully designed and handcrafted to reflect timeless elegance, purity, and precision. From everyday wear to wedding heirlooms, we create jewellery that lasts generations.",
       align: "right",
       btn_des: "READ MORE",
-      top: "55px",
       isborder: true,
       link: "/why-quality-matters",
     },
@@ -23,7 +22,6 @@ const ScrollTriggerTab = ({ assetBase }) => {
       desc: "Create jewellery that is truly your own. Choose your preferred design, materials, and details to craft a piece that reflects your personal style. Bring your vision to life with a design made just for you.",
       align: "left",
       btn_des: "CUSTOMISE NOW",
-      top: "15px",
       isborder: true,
       link: "/customization",
     },
@@ -35,7 +33,6 @@ const ScrollTriggerTab = ({ assetBase }) => {
       desc2: "Mon - Fri, 9:00 AM - 6:00 PM",
       align: "right",
       btn_des: "CALL US",
-      top: "55px",
       isborder: true,
       link: "tel:+464641313131",
     },
@@ -57,7 +54,7 @@ const ScrollTriggerTab = ({ assetBase }) => {
       });
     };
     window.addEventListener("scroll", handleScrollAnimations);
-    
+
     // Initial check
     handleScrollAnimations();
 
@@ -67,7 +64,7 @@ const ScrollTriggerTab = ({ assetBase }) => {
   }, []);
 
   return (
-    <Box sx={{ width: "100%", height: "auto", display: "flex", flexDirection: "column", gap: { xs: "0.8em", md: "3rem" }, mt: "2.2rem" }}>
+    <Box sx={{ width: "100%", height: "auto", display: "flex", flexDirection: "column", gap: { xs: "1.5rem", md: "3.5rem" }, mt: { xs: "1.5rem", md: "3.5rem" } }}>
       {ScrollImageList.slice(0, 3).map((val, i) => (
         <ScrollImageCard key={i} img={val?.img} details={val} index={i} />
       ))}
@@ -80,11 +77,9 @@ export default ScrollTriggerTab;
 const ScrollImageCard = ({ img, details, index }) => {
   const isRight = details?.align === "right";
 
-  // Replicating original CSS nth-child behavior for specific .details_card offsets
-  let cardOffset = {};
-  if (index === 0) cardOffset = { left: { md: "auto" }, right: { md: "5%" } };
-  if (index === 1) cardOffset = { right: { md: "auto" }, left: { md: "-3%" } };
-  if (index === 2) cardOffset = { left: { md: "auto" }, right: { md: "5%" } };
+  const cardOffset = isRight
+    ? { mr: { md: "5%" }, ml: { md: "auto" } }
+    : { ml: { md: "5%" }, mr: { md: "auto" } };
 
   return (
     <Box
@@ -92,21 +87,23 @@ const ScrollImageCard = ({ img, details, index }) => {
       sx={{
         width: "100%",
         position: "relative",
-        height: "450px", // Original was strictly 450px globally
+        height: { xs: "360px", sm: "400px", md: "450px" },
         overflow: "hidden",
         display: "flex",
-        flexDirection: { xs: "column", md: "row" },
-        padding: { xs: "10px", md: "10px 50px" },
-        justifyContent: { xs: "flex-end", md: isRight ? "flex-end" : "flex-start" },
-        alignItems: { xs: "flex-end", md: "flex-start" }, // Mobile: end
+        padding: { xs: "16px", md: "0 60px" },
+        justifyContent: { xs: "center", md: isRight ? "flex-end" : "flex-start" },
+        alignItems: "center",
         "&.is-visible img": {
-          animation: "scale-up 0.8s ease forwards",
-          opacity: 0,
+          animation: "fade-scale-in 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards",
         },
-        "@keyframes scale-up": {
+        "@keyframes fade-scale-in": {
+          from: {
+            opacity: 0,
+            transform: "scale(1.08)",
+          },
           to: {
-            transform: "scale(1.1)",
             opacity: 1,
+            transform: "scale(1)",
           },
         },
       }}
@@ -121,42 +118,47 @@ const ScrollImageCard = ({ img, details, index }) => {
           objectFit: "cover",
           position: "absolute",
           top: 0,
-          right: 0,
-          transition: "0.3s ease-out",
-          animation: "scale-up 0.5s ease forwards",
+          left: 0,
           opacity: 0,
+          transform: "scale(1.08)",
           zIndex: 0,
         }}
       />
       <Box
         className="details_card"
         sx={{
-          width: { xs: "100%", md: "550px" },
-          maxWidth: { xs: "750px", md: "none" },
-          height: { xs: "auto", md: "320px" },
+          width: { xs: "100%", md: "530px" },
+          height: { xs: "auto", md: "310px" },
           backgroundColor: "white",
-          position: { xs: "static", md: "relative" },
+          position: "relative",
           zIndex: 15,
-          padding: { xs: "5px", md: "12px" },
-          mt: { xs: 0, md: details?.top || 0 }, // Restoring manual tops
+          padding: { xs: "12px", md: "16px" },
           display: "flex",
+          flexDirection: "column",
           justifyContent: "center",
-          alignItems: "center",
+          alignItems: "stretch",
+          boxShadow: "0 10px 30px rgba(0, 0, 0, 0.06)",
+          transition: "transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1)",
+          "&:hover": {
+            transform: "translateY(-4px)",
+            boxShadow: "0 16px 40px rgba(0, 0, 0, 0.12)",
+          },
           ...cardOffset
         }}
       >
         <Box
           className="info"
           sx={{
-            width: { xs: "100%", md: "88%" }, // Crucial 88% width for inner border margin emulation
-            height: { xs: "auto", md: "83%" }, // Crucial 83% inner height 
-            padding: { xs: "20px", md: "25px" },
-            border: details?.isborder ? "2px solid black" : "none",
+            width: "100%",
+            height: { xs: "auto", md: "100%" },
+            padding: { xs: "20px 16px", md: "24px 28px" },
+            border: details?.isborder ? "1.5px solid #111111" : "none",
             display: "flex",
             flexDirection: "column",
             justifyContent: "center",
             textAlign: { xs: "center", md: "left" },
-            alignItems: { xs: "center", md: "flex-start" }
+            alignItems: { xs: "center", md: "flex-start" },
+            boxSizing: "border-box",
           }}
         >
           {details?.head && (
@@ -164,11 +166,11 @@ const ScrollImageCard = ({ img, details, index }) => {
               variant="h1"
               sx={{
                 fontFamily: "var(--font-tenor-sans), sans-serif",
-                fontSize: { xs: "12px", sm: "14px", md: "15px" },
+                fontSize: { xs: "11px", sm: "12px", md: "13px" },
                 letterSpacing: "2px",
                 textTransform: "uppercase",
-                color: "black",
-                fontWeight: 400,
+                color: "#666666",
+                fontWeight: 500,
                 mb: 1,
                 lineHeight: 1.2
               }}
@@ -180,12 +182,12 @@ const ScrollImageCard = ({ img, details, index }) => {
             variant="h2"
             sx={{
               fontFamily: "var(--font-tenor-sans), sans-serif",
-              fontSize: { xs: "20px", md: "22.75px" },
+              fontSize: { xs: "18px", md: "21px" },
               fontWeight: 500,
-              letterSpacing: "0.3px",
-              color: "black",
-              mb: 2,
-              lineHeight: 1.3
+              letterSpacing: "0.5px",
+              color: "#111111",
+              mb: 1.5,
+              lineHeight: 1.35,
             }}
           >
             {details?.title}
@@ -193,11 +195,12 @@ const ScrollImageCard = ({ img, details, index }) => {
           <Typography
             sx={{
               fontFamily: "var(--font-dm-sans), sans-serif",
-              fontSize: { xs: "15px", md: "17px" },
-              fontWeight: 450,
+              fontSize: { xs: "13px", md: "14px" },
+              fontWeight: 400,
+              color: "#444444",
               mb: 2,
               p: 0,
-              lineHeight: 1.5
+              lineHeight: 1.5,
             }}
           >
             {details?.desc}
@@ -209,25 +212,26 @@ const ScrollImageCard = ({ img, details, index }) => {
               </>
             )}
           </Typography>
-          <Box sx={{ mt: { xs: "-10px", md: 0 } }}>
+          <Box>
             <Link href={details?.link || "#"} passHref style={{ textDecoration: "none", color: "inherit", outline: "none" }}>
               <Button
                 sx={{
-                  padding: { xs: "7px 15px", md: "10px 25px" },
-                  borderRadius: { xs: "3px", md: "2px" },
-                  fontWeight: 200,
-                  letterSpacing: "2.1px",
+                  padding: { xs: "6px 16px", md: "8px 22px" },
+                  borderRadius: 0,
+                  fontWeight: 500,
+                  letterSpacing: "1.5px",
                   textTransform: "uppercase",
-                  fontSize: "14px",
+                  fontSize: { xs: "12px", md: "13px" },
                   color: "white",
                   backgroundColor: "#c20000",
                   fontFamily: "var(--font-tenor-sans), sans-serif",
                   position: "relative",
                   overflow: "hidden",
                   boxShadow: "none",
+                  transition: "all 0.3s ease",
                   "&:hover": {
-                    backgroundColor: "#c20000",
-                    boxShadow: "none",
+                    backgroundColor: "#9e0000",
+                    boxShadow: "0 4px 12px rgba(194, 0, 0, 0.15)",
                   },
                   "&::after": {
                     content: '""',
@@ -236,7 +240,7 @@ const ScrollImageCard = ({ img, details, index }) => {
                     left: "120%",
                     width: "100%",
                     height: "200%",
-                    background: "rgba(255, 255, 255, 0.274)",
+                    background: "rgba(255, 255, 255, 0.25)",
                     transform: "translateY(-100%)",
                     pointerEvents: "none",
                   },

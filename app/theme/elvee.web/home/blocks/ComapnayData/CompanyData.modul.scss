@@ -1,4 +1,4 @@
-@import '../../../style/variable.scss';
+@use '../../../style/variable.scss' as *;
 
 .el_companyData_main {
   color: rgba(29, 50, 88, 0.8) !important;
