@@ -253,7 +253,7 @@ const ElveeCartPage = ({ storeinit, visiterId }) => {
   }, []);
 
   const handleMoveToOrder = () => {
-    navigate("/Delivery", { replace: true });
+    navigate("/delivery", { replace: true });
     sessionStorage.setItem("iscartData", randomNumber);
   };
 
@@ -352,7 +352,7 @@ const ElveeCartPage = ({ storeinit, visiterId }) => {
           width: "100%",
         }}
       >
-        {hasItems && <CartHeader   count={finalCartData.length} AddOrderRemark={handleOrderRemarkFun} handleRemoveAll={handleConfirmRemoveAll} totalPrice={getTotalPrice[0]?.total} CurrencyCode={loginUserDetail?.CurrencyCode ?? CurrencyData?.CurrencyCode} IsPriceShow={storeinit?.IsPriceShow == 1} handleMoveToOrder={handleDiscountModalOpen} handleOpen1={handleOpen1} handleClose1={handleClose1} orderRemark={orderRemark} OrderMessage={orderRemark ? "View & Edit Order Remark" : "Add Order Remark"} openClearAllModal={handleOpen} closeClearAllModal={handleClose} summary={summary} />}
+        {hasItems && <CartHeader count={finalCartData.length} AddOrderRemark={handleOrderRemarkFun} handleRemoveAll={handleConfirmRemoveAll} totalPrice={getTotalPrice[0]?.total} CurrencyCode={loginUserDetail?.CurrencyCode ?? CurrencyData?.CurrencyCode} IsPriceShow={storeinit?.IsPriceShow == 1} handleMoveToOrder={handleDiscountModalOpen} handleOpen1={handleOpen1} handleClose1={handleClose1} orderRemark={orderRemark} OrderMessage={orderRemark ? "View & Edit Order Remark" : "Add Order Remark"} openClearAllModal={handleOpen} closeClearAllModal={handleClose} summary={summary} />}
 
         <div className="elv_Productlists_Main_div">
           <div className="elv_Productlists_lists_div">
