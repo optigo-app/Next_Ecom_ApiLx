@@ -43,5 +43,11 @@ export const themeMap = {
   },
   'nxt09.optigoapps.com': {
     page: "fgstore.mapp",
-  }
+  },
+  "2sonasons.optigoapps.com": {
+    page: "hoq.web",
+  },
+  "1sonasons.optigoapps.com": {
+    page: "hoq.web",
+  },
 };

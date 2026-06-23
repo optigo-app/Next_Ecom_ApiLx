@@ -205,14 +205,14 @@ export const CommonAPI = async (body) => {
             sv: sv,
         };
 
-        const endpoint = APIURL.endsWith('/api/report')
+        const endpoint = APIURL.endsWith('/api/report') || APIURL.toLowerCase().includes('.aspx')
             ? APIURL
             : APIURL.replace(/\/$/, '') + '/api/report';
-
         const response = await axios.post(endpoint, body, {
             headers: header,
             timeout: 30000
         });
+
 
         return response?.data || { Data: { rd: [] } };
     } catch (error) {

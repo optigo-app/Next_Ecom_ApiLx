@@ -1,4 +1,4 @@
-@import '../../../../style/variable.scss';
+@use '../../../../style/variable.scss' as *;
 
 .mainAffiliDiv {
     display: flex;
