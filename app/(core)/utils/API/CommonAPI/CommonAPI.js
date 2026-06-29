@@ -212,11 +212,11 @@ export const CommonAPI = async (body) => {
         const endpoint = isSpecialApi
             ? APIURL
             : APIURL.replace(/\/$/, '') + '/api/report';
-
         const response = await axios.post(endpoint, body, {
             headers: header,
             timeout: 30000
         });
+
 
         return response?.data || { Data: { rd: [] } };
     } catch (error) {
