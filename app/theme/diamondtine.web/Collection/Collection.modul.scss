@@ -1,0 +1,248 @@
+@import '../../../scss/elvee_modules.scss';
+
+.el_Collection_main {
+    .gorGiftMain {
+        display: flex;
+        margin-inline: 12%;
+        color: rgba(29, 50, 88, 0.8) !important;
+        text-align: center;
+        font-size: 22px;
+    }
+
+    .gorGiftBox1 {
+        width: 45%;
+        margin-top: 7%;
+        margin-inline: 5%;
+    }
+
+    .gorGiftBox1Images {
+        width: 100% !important;
+    }
+
+
+    .gorGiftBox2 {
+        width: 55%;
+        margin-top: 7%;
+    }
+
+    .gorGiftBox2Images {
+        width: 95%;
+        height: 690px;
+    }
+
+    .gorGiftBoxDesc {
+        font-size: 22px;
+        margin: 0px;
+        font-weight: 300;
+        line-height: 1.25;
+        font-family: $fontSansSerif;
+    }
+
+    .gorViewLookBookimg {
+        width: 50%;
+        display: flex;
+        justify-content: flex-end;
+    }
+
+    .gorViewLookBookDesc {
+        width: 50%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        margin-left: 50px;
+    }
+
+    .gorViewLookBookImage {
+        width: 68%;
+    }
+
+    .gorGiftBoxMainTitleWeb {
+        font-size: 31px;
+        font-weight: 300;
+        font-family: $fontSansSerif;
+        line-height: 1.25;
+        margin: 0px;
+    }
+
+    .gorGiftBox1Sub1 {
+        margin-top: 5rem;
+    }
+
+    .gorGiftBox2Sub1 {
+        margin-top: 5rem;
+    }
+
+    @media screen and (max-width: 1550px) {
+
+        .gorGiftBox2Images {
+            width: 95%;
+            height: 100%;
+        }
+
+        .gorGiftMain {
+            display: flex;
+            margin-inline: 3%;
+        }
+
+    }
+
+    @media (max-width: 1200px) {
+        .gorGiftBox1 {
+            margin-top: 5%;
+        }
+
+        .gorGiftBox2 {
+            margin-top: 5%;
+        }
+    }
+
+    @media screen and (min-width: 751px) {
+        .gorGiftBoxMainTitleMobile {
+            display: none;
+        }
+
+    }
+
+    @media screen and (max-width: 750px) {
+
+        .gorGiftBoxMainTitleWeb {
+            display: none;
+        }
+
+        .gorGiftBox1Sub1 {
+            margin-top: 2rem;
+        }
+
+        .gorGiftBox2Sub1 {
+            margin-top: 2rem;
+        }
+
+        .gorGiftBox1 {
+            margin-top: 5%;
+        }
+
+        .gorGiftBox2 {
+            margin-top: 5%;
+        }
+
+
+        .gorGiftBoxMainTitleMobile {
+            font-size: 31px;
+            font-weight: 300;
+            font-family: $fontSansSerif;
+            line-height: 1.25px;
+            margin: 30px;
+        }
+
+
+        .gorGiftMain {
+            display: flex;
+            margin-inline: 3%;
+        }
+
+        .gorGiftBox1 {
+            width: 50%;
+            margin-top: 1%;
+            margin-inline: 2%;
+        }
+
+        .gorGiftBox1Images {
+            width: 100% !important;
+        }
+
+
+        .gorGiftBox2Images {
+            width: 100% !important;
+            height: 100% !important;
+        }
+
+        .gorGiftBox2 {
+            width: 50%;
+            margin-top: 5px !important;
+        }
+
+        .gorGiftBoxDesc {
+            font-size: 15px;
+        }
+    }
+
+    @media (max-width: 425px) {
+        .gorGiftBox1Sub1 {
+            margin-top: 1rem;
+        }
+
+        .gorGiftBox2Sub1 {
+            margin-top: 1rem;
+        }
+
+    }
+
+    @media screen and (max-width: 1100px) {
+        .gorViewLookBookimg {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+        }
+
+        .gorViewLookBookDesc {
+            width: 75%;
+        }
+    }
+
+
+    @media screen and (max-width: 750px) {
+        .gorLookBookMain {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .gorViewLookBookImage {
+            width: 100%;
+        }
+
+        .gorViewLookBookDesc {
+            width: 100%;
+            margin-left: 0px;
+        }
+    }
+
+    .gorjanaTrade1Web {
+        cursor: pointer;
+        position: relative;
+    }
+
+    .gorjanaTrideBox {
+        position: absolute;
+        right: 20%;
+        margin-top: -20%;
+    }
+
+
+
+    @media screen and (min-width:751px) {
+        .gorjanaTrade1Mobile {
+            display: none;
+        }
+
+
+    }
+
+    @media screen and (max-width:750px) {
+
+        .gorjanaTrade1Web {
+            display: none;
+        }
+
+        .gorjanaTrade1Mobile {
+            cursor: pointer;
+            position: relative;
+        }
+
+        .gorjanaTrideBoxMobile {
+            position: absolute;
+            bottom: 20%;
+            text-align: center;
+            width: 100%;
+        }
+    }
+}

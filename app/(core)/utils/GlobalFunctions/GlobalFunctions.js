@@ -86,6 +86,73 @@ export const getPrivacyHoqContent = async () => {
 export const getTermsHoqContent = async () => {
   try {
     const filePath = path.join(process.cwd(), "public", "WebSiteStaticImage", "html", "termshoq.html");
+    
+ 
+    const htmlContent = await fs.promises.readFile(filePath, "utf-8");
+    return htmlContent;
+  } catch (error) {
+    console.error("Error loading AboutUs HTML file:", error);
+    return null;
+  }
+};
+
+export const  getTermsDiamondtineContent= async () => {
+  try {
+    const filePath = path.join(process.cwd(), "public", "WebSiteStaticImage", "html", "termsdiatine.html");
+    
+ 
+    const htmlContent = await fs.promises.readFile(filePath, "utf-8");
+    return htmlContent;
+  } catch (error) {
+    console.error("Error loading AboutUs HTML file:", error);
+    return null;
+  }
+};
+
+export const  getFaqDiamondtineContent= async () => {
+  try {
+    const filePath = path.join(process.cwd(), "public", "WebSiteStaticImage", "html", "faqdiatine.html");
+    
+  
+    const htmlContent = await fs.promises.readFile(filePath, "utf-8");
+    return htmlContent;
+  } catch (error) {
+    console.error("Error loading AboutUs HTML file:", error);
+    return null;
+  }
+};
+
+export const  getExchangeDiamondtineContent= async () => {
+  try {
+    const filePath = path.join(process.cwd(), "public", "WebSiteStaticImage", "html", "exchange-diatatine.html");
+    
+  
+    const htmlContent = await fs.promises.readFile(filePath, "utf-8");
+    return htmlContent;
+  } catch (error) {
+    console.error("Error loading AboutUs HTML file:", error);
+    return null;
+  }
+};
+
+export const  getShipingAndReturnDiamondtineContent= async () => {
+  try {
+    const filePath = path.join(process.cwd(), "public", "WebSiteStaticImage", "html", "shipingandreturndiatine.html");
+    
+  
+    const htmlContent = await fs.promises.readFile(filePath, "utf-8");
+    return htmlContent;
+  } catch (error) {
+    console.error("Error loading AboutUs HTML file:", error);
+    return null;
+  }
+};
+
+export const  getPrivacypolicyDiamondtineContent= async () => {
+  try {
+    const filePath = path.join(process.cwd(), "public", "WebSiteStaticImage", "html", "privacypolicydiatine.html");
+    
+  
     const htmlContent = await fs.promises.readFile(filePath, "utf-8");
     return htmlContent;
   } catch (error) {

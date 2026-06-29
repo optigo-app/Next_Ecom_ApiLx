@@ -1,0 +1,21 @@
+
+.campaignMainDiv{
+    font-family: 'Ubuntu', sans-serif;
+}
+
+
+@media screen and (max-width:768px) {
+    .campaignDesc{
+        width: 100%!important;
+        padding-inline: 20px;
+
+    }
+
+    .comapinSustain{
+        padding: 0px!important;
+    }
+
+    .campaingImages{
+        padding: 0px!important;
+    }
+}
