@@ -23,14 +23,14 @@ const layout = async ({ children }) => {
     <>
       <Box sx={{ display: "flex", flexDirection: "column", minHeight: "100vh", width: "100%" }}>
 
-        {isOldElvee ? <OldHeader hidden={false} logos={logos} storeinit={storeData} /> :  <ElveeBaseHeader hidden={false} logos={logos} storeinit={storeData} />}
-     
-        
+        {isOldElvee ? <OldHeader hidden={false} logos={logos} storeInit={storeData} /> : <ElveeBaseHeader hidden={false} logos={logos} storeInit={storeData} />}
+
+
         <Box sx={{ flex: 1, display: "flex", flexDirection: "column" }}>
           <Suspense fallback={<Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", flex: 1, minHeight: "90vh" }}></Box>}>{children}</Suspense>
         </Box>
         {activeBrand === "omjiyas" ? <PremiumFooter companyInfoData={companyInfoData} storeData={storeData} extraFlag={extraFlag} logos={logos} /> : <FooterNew companyInfoData={companyInfoData} storeData={storeData} extraFlag={extraFlag} logos={logos} />}
- 
+
         <ChatMenu />
       </Box>
     </>

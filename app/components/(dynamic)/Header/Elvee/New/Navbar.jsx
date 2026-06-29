@@ -314,6 +314,8 @@ const ElveePreNavbar = ({ storeinit, logos }) => {
             setActiveMenu(null);
         }
     };
+
+
     const handleDrawerToggle = () => {
         setMobileOpen(!mobileOpen);
         if (mobileOpen) {
@@ -567,7 +569,7 @@ const ElveePreNavbar = ({ storeinit, logos }) => {
                                 </Box>
                             )}
 
-                            
+
 
                             <RightSideMenu setSearchOpen={setSearchOpen} IsB2BWebsiteChek={IsB2BWebsiteChek} storeinit={storeinit} handleLogout={handleLogout} DynamicMenu={DynamicMenu?.slice(0, 3)} handleTabChange={handleTabChange} islogin={islogin} isMobile={isMobile} cartCount={cartCountNum} wishCount={wishCountNum} is768px={is768px} navigate={navigate} isHovered={isHovered} isScrolled={isScrolled} />
                         </Toolbar>
