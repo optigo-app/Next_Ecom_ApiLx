@@ -206,12 +206,9 @@ export const CommonAPI = async (body) => {
             sp,
             sv: sv,
         };
-        const isSpecialApi =
-  APIURL.includes('/api/report') ||
-  /\.aspx(\?|$)/i.test(APIURL);
-        const endpoint = isSpecialApi
-            ? APIURL
-            : APIURL.replace(/\/$/, '') + '/api/report';
+        const isSpecialApi = APIURL.includes('/api/report') || /\.aspx(\?|$)/i.test(APIURL);
+
+        const endpoint = isSpecialApi ? APIURL : APIURL.replace(/\/$/, '') + '/api/report';
         const response = await axios.post(endpoint, body, {
             headers: header,
             timeout: 30000
