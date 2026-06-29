@@ -9,8 +9,9 @@ export const WEBSITE_DOMAINS = {
   FGSTOREMAPP: "nxtmobileapp.web",
   NXT10: "nxt10.optigoapps.com",
   ELVEEWEB: "nxtelvee.web",
-  FGSTOREMAPP: 'nxt09.optigoapps.com'
+  FGSTOREMAPP: 'nxt09.optigoapps.com',
+  DIAMONDINEWEB: "nxtdiamondtine.web",
 };
 
-export const NEXT_APP_WEB = WEBSITE_DOMAINS.ELVEEWEB;
+export const NEXT_APP_WEB = WEBSITE_DOMAINS.DIAMONDINEWEB;
 export const NEXT_PUBLIC_SITE_URL = NEXT_APP_WEB;

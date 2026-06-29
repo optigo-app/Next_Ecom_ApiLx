@@ -1,0 +1,197 @@
+@import '../../../../theme/diamondtine.web/style/variable.scss';
+
+.dt_footer_main {
+
+    .daimondFooterMain {
+        background-color: #f0e0e0;
+    }
+
+    .subScriMain {
+        background-color: black;
+        padding-top: 20px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .footerInputBox {
+        height: 40px;
+        width: 40%;
+        border: none;
+        outline: none;
+        background-color: white;
+        color: #999;
+    }
+
+    .dt_footerLermore{
+        padding-top: 1rem;
+        color: blue;
+        text-decoration: underline;
+        cursor: pointer;
+    }
+
+    .subScriMainTitle {
+        color: white;
+        font-family: $homePageFontFamily;
+        font-size: 30px;
+        text-align: center;
+        margin: 0px;
+        width: 50%;
+    }
+
+    .subScriMainSubTitle {
+        color: #999999;
+        font-family: $homePageFontFamily;
+        text-align: center;
+    }
+
+    .FooterSubBtn {
+        margin-top: 20px;
+        height: 40px;
+        width: 120px;
+        border: none;
+        outline: none;
+
+    }
+
+
+    .FooterLinkMain {
+        border-top: 1px solid black;
+        border-bottom: 1px solid black;
+        margin-top: 30px;
+        margin-inline: 20%;
+        display: flex;
+    }
+
+    .FooterLinkMainBox {
+        width: 25%;
+        margin-block: 40px;
+    }
+
+    .footerMoteText {
+        font-weight: 600;
+        font-family: $homePageFontFamily;
+    }
+
+    .FoooterText {
+        color: #999;
+        font-size: 14px;
+        // text-align: justify;
+        width: 85%;
+        text-wrap: pretty;
+        font-family: $homePageFontFamily;
+    }
+
+    .FoooterTextLink 
+    {
+        color: #999;
+        font-family: $homePageFontFamily;
+        cursor: pointer;
+        font-size: 14px;
+        margin: 7px;
+        width: fit-content;
+    }
+
+    .FoooterTextLink:hover {
+        color: black;
+    }
+
+    .footerBottom {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding-block: 40px;
+    }
+
+    .newImgFooter {
+        width: 300px;
+    }
+
+    .logoImgFooter {
+        width: 130px;
+        margin-top: 0px;
+    }
+
+    .FooterBottomText {
+        font-family: $homePageFontFamily;
+        margin: 0px;
+        color: #999;
+        margin-top: 0px;
+        font-size: 14px;
+    }
+
+
+
+    @media screen and (max-width: 900px) {
+
+        .footerNewslater {
+            padding-inline: 0% !important;
+        }
+
+        .FooterLinkMainBox {
+            margin-block: 5px !important;
+            margin-inline: 0px !important;
+        }
+
+        .FooterLinkMain {
+            margin-inline: 0px !important;
+            padding-inline: 5%!important;
+        }
+
+        // .FoooterText {
+        //     width: 100% !important;
+        // }
+
+    }
+
+    @media screen and (max-width: 850px) {
+
+        .FooterLinkMain {
+            display: flex !important;
+            flex-direction: column !important;
+        }
+
+        .FooterLinkMainBox {
+            width: 100% !important;
+            padding-inline: 10px !important;
+        }
+
+        .footerNewslater{
+            padding-top: 0px!important;
+        }
+    }
+
+    @media screen and (max-width: 650px) {
+        .subScriMainTitle {
+            font-size: 24px;
+        }
+
+        .FooterLinkMain {
+            display: block;
+            margin-top: 0px!important;
+        }
+
+        .FooterLinkMainBox {
+            width: 100%;
+        }
+
+        .FooterBottomText {
+            text-align: center;
+        }
+
+        .logoImgFooter {
+            width: 150px;
+        }
+
+        .footerNewslater {
+            padding-inline: 0% !important;
+        }
+
+        .footerInputBox {
+            width: 80%;
+        }
+
+    }
+}

@@ -1,0 +1,33 @@
+
+
+
+@media screen and (max-width: 1441px) {
+
+    .impacrCardMobileMain{
+        padding-inline: 20px!important;
+    }
+    .impacrCardMobileMain-sub{
+        display: flex!important;
+        flex-direction: column!important;
+    }
+    .impacrCardMobile{
+        width: 100%!important;
+        order: 2;
+
+    }
+    .impacrCardImgMobile{
+        width: 100%!important;
+        order: 1;
+    }
+
+    .impacrCardMobileDesc{
+        width: fit-content!important;
+    }
+
+    .impackCardNew{
+        margin-left: 0px!important;
+        padding: 0px!important;
+    }
+}
+
+

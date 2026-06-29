@@ -197,6 +197,8 @@ export const CommonAPI = async (body) => {
         const sp = "54";
         const sv = process.env.NODE_ENV === "development" ? 0 : 1;
 
+
+        //make changes in header for diamondtine theme
         const header = {
             Authorization: `Bearer ${token}`,
             Yearcode: YearCode,
@@ -204,8 +206,10 @@ export const CommonAPI = async (body) => {
             sp,
             sv: sv,
         };
-
-        const endpoint = APIURL.endsWith('/api/report')
+        const isSpecialApi =
+  APIURL.includes('/api/report') ||
+  /\.aspx(\?|$)/i.test(APIURL);
+        const endpoint = isSpecialApi
             ? APIURL
             : APIURL.replace(/\/$/, '') + '/api/report';
 

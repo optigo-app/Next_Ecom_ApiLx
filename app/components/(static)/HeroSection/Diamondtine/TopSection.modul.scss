@@ -1,0 +1,47 @@
+.dt_topSectionMain {
+
+    .dt_imageContainer {
+        margin-top: 50px;
+        text-align: center;
+    }
+
+    .dt_centeredImg {
+        width: 50%;
+        margin-top: 20px;
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+
+    @media screen and (max-width: 1200px) {
+        .dt_topSectionImg {
+            min-height: auto !important;
+        }
+    }
+
+    @media screen and (max-width: 1000px) {
+        .mySwiper {
+            padding-top: 50px;
+        }
+    }
+
+    @media screen and (max-width: 768px) {
+        .dt_imageContainer {
+            margin-top: 20px;
+        }
+
+        .dt_centeredImg {
+            width: 90%;
+        }
+
+
+    }
+
+    @media screen and (max-width: 500px) {
+        .dt_centeredImg {
+            width: 100% !important;
+        }
+
+    }
+}
