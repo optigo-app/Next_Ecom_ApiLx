@@ -1,0 +1,68 @@
+.impact-container{
+    /* background-image: url('https://cdn.accentuate.io/19336265828/3641674891364/Stocksy_txp824d1dddS9J200_Medium_2036581.jpg'); */
+    height: auto;
+    width: 100%;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    opacity: 0.4;
+    top:0;
+    bottom: 0;
+    left:0;
+    right: 0;
+    z-index: -1;
+    position: fixed;
+    font-family: 'Ubuntu', sans-serif;
+}
+
+.impact-container2{
+    // background: #efe5ff !important;
+    background-color: #f0e0e0;
+    opacity: 0.2;
+    height: 100%;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    object-fit: cover;
+    top:0;
+    bottom: 0;
+    left:0;
+    right: 0;
+    z-index:-1;
+    position: fixed;
+    font-family: 'Ubuntu', sans-serif;
+}
+
+
+
+@media screen and (max-width:1441px) {
+
+    .quotes-div1Title{
+        text-align: center!important;
+    }
+}
+
+
+@media screen and (max-width:768px) {
+    .impact-container{
+        /* background-image: url('https://cdn.accentuate.io/19336265828/3641674891364/Stocksy_txp824d1dddS9J200_Medium_2036581.jpg'); */
+        height: 100%!important;
+    }
+    .quotes-div2{
+        width: fit-content!important;
+    }
+    .quotes-div1Title{
+        text-align: center!important;
+    }
+  
+    .quotes-div1Descript{
+        width: 100%!important;
+        padding-inline: 20px;
+
+    }
+
+    .quotes-div2Descript{
+        width: 100%!important;
+        padding-inline: 20px;
+    }
+}

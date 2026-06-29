@@ -2,31 +2,59 @@ import { ParseAndDecodeSearchParams } from "../GlobalFunctions/Parser";
 import { generatePageMetadata } from "../HeadMeta";
 import { AppConfig } from "../../constants/AppConfig";
 import { activeBrand } from "@/app/env";
-import Pako from "pako";
+import pako from 'pako';
 
 /**
  * Generates dynamic SEO metadata based on URL params and search parameters.
  * Designed to be "bulletproof" with internal try-catch blocks.
  */
 
+// export const decodeAndDecompress = (encodedString) => {
+//     try {
+//         if (!encodedString) return null;
+        
+        
+//         const base64 = encodedString.replace(/-/g, '+').replace(/_/g, '/');
+//         const padded = base64.padEnd(base64.length + (4 - (base64.length % 4)) % 4, '=');
+        
+//         console.log("TCL: decodeAndDecompress -> padded", padded)
+//         const binaryString = atob(padded);
+//         const uint8Array = new Uint8Array(binaryString.length);
+//         for (let i = 0; i < binaryString.length; i++) {
+//             uint8Array[i] = binaryString.charCodeAt(i);
+//         }
+//         const decompressed = Pako.inflate(uint8Array, { to: 'string' });
+//         return JSON.parse(decompressed);
+//     } catch (error) {
+//         console.error("SEO Utils: Decompression error:", error);
+//         return null;
+//     }
+// };
 export const decodeAndDecompress = (encodedString) => {
     try {
         if (!encodedString) return null;
-        const base64 = encodedString.replace(/-/g, '+').replace(/_/g, '/');
-        const padded = base64.padEnd(base64.length + (4 - (base64.length % 4)) % 4, '=');
-        const binaryString = atob(padded);
-        const uint8Array = new Uint8Array(binaryString.length);
-        for (let i = 0; i < binaryString.length; i++) {
-            uint8Array[i] = binaryString.charCodeAt(i);
-        }
-        const decompressed = Pako.inflate(uint8Array, { to: 'string' });
-        return JSON.parse(decompressed);
+        
+        // 1. Sanitize common URL transmission corruptions
+        // Replaces spaces back to '+' (in case URL decoding converted them)
+        let sanitized = encodedString.replace(/ /g, '+');
+        
+        // Convert URL-safe characters to standard Base64 characters
+        sanitized = sanitized.replace(/-/g, '+').replace(/_/g, '/');
+        
+        // 2. Decode to a binary buffer
+        const buffer = Buffer.from(sanitized, 'base64');
+        
+        // 3. Decompress the binary data
+        const decompressedUint8 = pako.inflate(buffer);
+        
+        // 4. Convert back to string and parse JSON
+        const decompressedString = new TextDecoder().decode(decompressedUint8);
+        return JSON.parse(decompressedString);
     } catch (error) {
-        console.error("SEO Utils: Decompression error:", error);
+        console.error("SEO Utils: Decompression error:", error.message || error);
         return null;
     }
 };
-
 
 
 

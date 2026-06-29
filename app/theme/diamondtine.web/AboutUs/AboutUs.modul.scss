@@ -1,0 +1,180 @@
+@import "../style/variable.scss";
+
+.dt-About-container {
+  height: auto;
+  width: 100%;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  opacity: 0.4;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: -1;
+  position: fixed;
+  font-family: 'Ubuntu', sans-serif;
+}
+
+.dt-About-container2 {
+  background-color: black;
+  opacity: 0.2;
+  height: 100%;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  object-fit: cover;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: -1;
+  position: fixed;
+  font-family: 'Ubuntu', sans-serif;
+}
+
+.dt-about-title {
+  background-color: white;
+  padding: 70px 0 120px;
+}
+
+.daimondsEveryAbout {
+  // margin-inline: 6%;
+  background-color: white;
+}
+
+.about-daimondBoxMain {
+  display: flex;
+  margin-inline: 90px;
+}
+
+.about-daimondBoxMains {
+  display: flex;
+  margin-inline: 90px;
+  border: 1px solid #e1e1e1;
+}
+
+.about-daimondBox11 {
+  width: 65%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding-inline: 5%;
+}
+
+.about-daimondBox1 {
+  /* border: 1px solid #e1e1e1; */
+  width: 70%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding-inline: 10%;
+}
+
+.about-daimondBox2 {
+  height: 550px;
+  width: 50%;
+
+}
+
+.about-daimondBox2-image {
+  height: 100%;
+  width: 100%;
+  object-fit: contain;
+}
+
+.about-daimondBox21 {
+  height: 550px;
+  width: 50%;
+}
+
+.about-daimondBox21-image {
+  height: 100%;
+  width: 70%;
+  object-fit: contain;
+  margin-top: 5px;
+}
+
+.about-foundersDesc {
+  display: flex;
+  justify-content: center;
+}
+
+.about-foundersImges {
+  width: 50%;
+  margin-block: 50px;
+}
+
+
+
+@media screen and (max-width: 1200px) {
+
+
+
+  .smining-about-title {
+    padding: 20px 0px !important;
+  }
+
+  .daimondsEveryAboutSubTitle {
+    padding-block: 10px !important;
+  }
+
+  .daimondsEveryAbout {
+    margin-inline: 1% !important;
+  }
+
+  .about-daimondBoxMain {
+    display: flex;
+    flex-direction: column;
+    margin-inline: 10px;
+  }
+
+  .about-daimondBox11 {
+    order: 2 !important;
+  }
+
+  .about-daimondBoxMains {
+    display: flex;
+    flex-direction: column;
+    margin-inline: 10px;
+  }
+
+  .about-daimondBox21 {
+    height: auto !important;
+    width: 100% !important;
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+  }
+
+  .about-daimondBox11 {
+    width: 100% !important;
+    margin-top: 10px;
+  }
+
+
+  .about-daimondBox1 {
+    width: 100%;
+    order: 2;
+
+  }
+
+  .about-daimondBox2 {
+    object-fit: cover;
+    width: 100%;
+    order: 1;
+  }
+
+}
+
+@media screen and (max-width: 600px) {
+  /* .about-daimondBox2-image {
+      height: 290px;
+  } */
+
+  .about-daimondBox2 {
+    height: auto;
+  }
+}
