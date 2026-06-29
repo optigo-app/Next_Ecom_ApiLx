@@ -54,4 +54,7 @@ export const themeMap = {
   "1sonasons.optigoapps.com": {
     page: "hoq.web",
   },
+  "appsonasons.optigoapps.com": {
+    page: "fgstore.mapp",
+  },
 };

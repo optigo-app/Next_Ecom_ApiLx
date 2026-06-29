@@ -1,4 +1,5 @@
 import "./globals.css";
+import { headers } from "next/headers";
 import { generatePageMetadata } from "@/app/(core)/utils/HeadMeta";
 import { MasterProvider } from "@/app/(core)/contexts/MasterProvider";
 import { getCompanyInfoData, getMyAccountFlags, getStoreInit, GetUserLoginCookie, GetVistitorId } from "./(core)/utils/GlobalFunctions/GlobalFunctions";
@@ -32,15 +33,36 @@ const isOmJiyansh = activeBrand === 'omjiyas';
 
 export async function generateMetadata() {
   const storeInit = await getStoreInit();
+  const headersList = await headers();
+  const host = headersList.get("host") || "";
+  const subdomain = host.split(".")[0] || "";
+  const fallbackSiteName = subdomain && subdomain !== "localhost" && subdomain !== "www"
+    ? subdomain.charAt(0).toUpperCase() + subdomain.slice(1)
+    : "Jewelry Store";
+
+  let siteName = fallbackSiteName;
+  if (storeInit) {
+    if (storeInit.companyname && !storeInit.companyname.toLowerCase().includes("orail designs") && !storeInit.companyname.toLowerCase().includes("optigoapps")) {
+      siteName = storeInit.companyname;
+    } else if (storeInit.BrowserTitle && !storeInit.BrowserTitle.toLowerCase().includes("online jewellery store") && !storeInit.BrowserTitle.toLowerCase().includes("optigoapps")) {
+      siteName = storeInit.BrowserTitle;
+    } else if (storeInit.ufcc) {
+      siteName = storeInit.ufcc.charAt(0).toUpperCase() + storeInit.ufcc.slice(1);
+    }
+  }
+
+  const siteUrl = storeInit?.domain ? `https://${storeInit.domain}` : (host ? `https://${host}` : "https://elior.optigoapps.com");
 
   return generatePageMetadata({
-    metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"),
+    metadataBase: new URL(siteUrl),
     title: storeInit?.ufcc,
     description: DEFAULT_JEWELRY_DESCRIPTION,
     keywords: DEFAULT_JEWELRY_KEYWORDS,
     ogImage: storeInit?.ogImage,
     ufcc: storeInit?.ufcc,
     websiteName: storeInit?.BrowserTitle,
+    siteName: siteName,
+    siteUrl: siteUrl,
     icons: {
       icon: ActiveFavicon,
       shortcut: ActiveFavicon,
@@ -59,8 +81,41 @@ export default async function RootLayout({ children }) {
   const VistitorId = await GetVistitorId();
   const UserLoginCookie = await GetUserLoginCookie();
 
+  const headersList = await headers();
+  const host = headersList.get("host") || "";
+  const subdomain = host.split(".")[0] || "";
+  const fallbackSiteName = subdomain && subdomain !== "localhost" && subdomain !== "www"
+    ? subdomain.charAt(0).toUpperCase() + subdomain.slice(1)
+    : "Jewelry Store";
+
+  let siteName = fallbackSiteName;
+  if (storeInit) {
+    if (storeInit.companyname && !storeInit.companyname.toLowerCase().includes("orail designs") && !storeInit.companyname.toLowerCase().includes("optigoapps")) {
+      siteName = storeInit.companyname;
+    } else if (storeInit.BrowserTitle && !storeInit.BrowserTitle.toLowerCase().includes("online jewellery store") && !storeInit.BrowserTitle.toLowerCase().includes("optigoapps")) {
+      siteName = storeInit.BrowserTitle;
+    } else if (storeInit.ufcc) {
+      siteName = storeInit.ufcc.charAt(0).toUpperCase() + storeInit.ufcc.slice(1);
+    }
+  }
+
+  const siteUrl = storeInit?.domain ? `https://${storeInit.domain}` : (host ? `https://${host}` : "https://elior.optigoapps.com");
+
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": siteName,
+    "url": siteUrl,
+  };
+
   return (
     <html lang="en">
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+      </head>
       <BroadcasterProvider>
         <EmotionRegistry>
           <body className={`${defaultFont.variable}`}>
