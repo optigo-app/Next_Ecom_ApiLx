@@ -19,13 +19,15 @@ export function generatePageMetadata(pageData, isOmJiyansh) {
     if (!pageData) return {};
 
     const Title_Suffix = isOmJiyansh ? pageData.websiteName : `${pageData.title} | ${pageData.websiteName}`
+    const resolvedSiteName = pageData.siteName || pageData.websiteName || "Jewelry Store";
+    const resolvedSiteUrl = pageData.siteUrl || pageData.websiteName || "";
     const baseMetadata = {
         title: Title_Suffix,
         description: pageData.description || "",
         keywords: pageData.keywords || "",
         authors: [{ name: pageData.ufcc }],
-        alternates: { canonical: getValidUrl(pageData?.websiteName) },
-        metadataBase: getValidUrl(pageData?.websiteName),
+        alternates: { canonical: getValidUrl(resolvedSiteUrl) },
+        metadataBase: getValidUrl(resolvedSiteUrl),
         icons: {
             icon: pageData.icons?.icon || [
                 { url: "/favicon.ico", sizes: "32x32", type: "image/png" },
@@ -34,7 +36,8 @@ export function generatePageMetadata(pageData, isOmJiyansh) {
             shortcut: pageData.icons?.shortcut || "/favicon.ico",
         },
         publisher: NEXT_APP_WEB,
-        websiteName: getValidUrl(pageData.websiteName),
+        applicationName: resolvedSiteName,
+        websiteName: getValidUrl(resolvedSiteUrl),
         robots: {
             index: true,
             follow: true,
@@ -51,8 +54,8 @@ export function generatePageMetadata(pageData, isOmJiyansh) {
         openGraph: {
             title: `${pageData.title} | ${pageData.websiteName}`,
             description: pageData.description || "",
-            url: getValidUrl(pageData.websiteName),
-            siteName: pageData.websiteName,
+            url: getValidUrl(resolvedSiteUrl),
+            siteName: resolvedSiteName,
             type: "website",
             locale: "en_IN",
             images:
