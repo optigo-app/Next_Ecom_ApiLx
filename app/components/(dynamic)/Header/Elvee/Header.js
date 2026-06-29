@@ -23,7 +23,7 @@ import { readCache, writeCache } from "@/app/(core)/cache_utility/cacheActions";
 
 
 
-const ElveeBaseHeader = ({ hidden, storeinit, logos }) => {
+const ElveeBaseHeader = ({ hidden, storeInit, logos }) => {
   const { islogin, loginUserDetail, setislogin, cartCountNum, wishCountNum } = useStore();
   const Router = useNextRouterLikeRR().push;
   const navigate = url => Router(url);
@@ -37,7 +37,7 @@ const ElveeBaseHeader = ({ hidden, storeinit, logos }) => {
   const isTabletResponsive = useMediaQuery("(max-width:1000px)");
   const isDesktopResp = useMediaQuery("(max-width:1650px)");
   const isMobile = useMediaQuery("(max-width:500px)");
-  const IsB2BWebsiteChek = storeinit?.IsB2BWebsite;
+  const IsB2BWebsiteChek = storeInit?.IsB2BWebsite;
   const compnyLogo = logos?.web;
   const compnyLogoM = logos?.mobile;
   const location = usePathname();
@@ -81,9 +81,9 @@ const ElveeBaseHeader = ({ hidden, storeinit, logos }) => {
       let obj = {
         a: "",
         b: inputValue,
-        m: loginUserDetail?.MetalId ?? storeinit?.MetalId,
-        d: loginUserDetail?.cmboDiaQCid ?? storeinit?.cmboDiaQCid,
-        c: loginUserDetail?.cmboCSQCid ?? storeinit?.cmboCSQCid,
+        m: loginUserDetail?.MetalId ?? storeInit?.MetalId,
+        d: loginUserDetail?.cmboDiaQCid ?? storeInit?.cmboDiaQCid,
+        c: loginUserDetail?.cmboCSQCid ?? storeInit?.cmboCSQCid,
         f: {},
       };
 
@@ -106,15 +106,30 @@ const ElveeBaseHeader = ({ hidden, storeinit, logos }) => {
   const [selectedData, setSelectedData] = useState([]);
   const isMounted = useRef(false);
 
-  useEffect(() => {
-    if (!isMounted.current) {
-      isMounted.current = true;
-      return;
-    }
 
-    if (storeinit?.IsB2BWebsite === 0 || (storeinit?.IsB2BWebsite === 1 && islogin === true)) {
+  const hasFetched = useRef(false);
+
+  // Fetch menu once on mount for B2C, or once when user logs in for B2B.
+  // We do NOT put storeInit in the dependency array — it is a server-side object
+  // whose reference changes on every render, which would cause an infinite loop.
+  // Instead we guard with a ref so the fetch only fires once per login state change.
+  useEffect(() => {
+    if (!storeInit) return;
+    const isB2C = storeInit?.IsB2BWebsite === 0;
+    const isB2B = storeInit?.IsB2BWebsite === 1;
+    const isUserLogin = islogin || (typeof window !== "undefined" && Cookies.get("userLoginCookie"));
+
+    if (isB2C && !hasFetched.current) {
+      hasFetched.current = true;
       getMenuApi();
+    } else if (isB2B && isUserLogin && !hasFetched.current) {
+      hasFetched.current = true;
+      getMenuApi();
+    } else if (isB2B && !isUserLogin) {
+      // Reset so menu re-fetches after login
+      hasFetched.current = false;
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [islogin]);
 
   useEffect(() => {
@@ -196,13 +211,15 @@ const ElveeBaseHeader = ({ hidden, storeinit, logos }) => {
 
       const paginationParam = [`page=${finalData.page ?? 1}`, `size=${finalData.size ?? 50}`].join("&");
       let menuEncoded = `${queryParameters}/${otherparamUrl}`;
+      // const url = `/productlist?V=${queryParameters}/K=${otherparamUrl}`;
       const url = `/p/${finalData?.menuname}/${queryParameters1}/?M=${btoa(menuEncoded)}`;
       navigate(url);
     }
   };
 
   const getMenuApi = async () => {
-    const { IsB2BWebsite } = storeinit;
+    if (!storeInit) return;
+    const { IsB2BWebsite } = storeInit;
     const visiterID = Cookies.get("visiterId");
     let finalId;
     if (IsB2BWebsite === 0) {
@@ -211,11 +228,11 @@ const ElveeBaseHeader = ({ hidden, storeinit, logos }) => {
       finalId = loginUserDetail?.id || "0";
     }
 
-    const pricingContext = getPricingContext(loginUserDetail, storeinit, islogin);
+    const pricingContext = getPricingContext(loginUserDetail, storeInit, islogin);
     let cacheKey = "";
     if (pricingContext) {
       const eventName = "elvee_baseheader_menu";
-      const { key } = buildMenuCacheKey(eventName, storeinit, pricingContext, finalId);
+      const { key } = buildMenuCacheKey(eventName, storeInit, pricingContext, finalId);
       cacheKey = key;
       try {
         const cacheRes = await readCache(key);
@@ -396,7 +413,7 @@ const ElveeBaseHeader = ({ hidden, storeinit, logos }) => {
             <>
               <div className="el_withoutL_Header_Main ">
                 <div className="el_withoutL_ul_Main_side">
-                  <Menubar storeinit={storeinit} logos={logos} />
+                  <Menubar storeInit={storeInit} logos={logos} />
                   <div className="el_whioutL_headerDiv2_side" draggable={false} onContextMenu={(e) => e.preventDefault()}>
                     <Link href="/" draggable={false} onContextMenu={(e) => e.preventDefault()}>
                       {compnyLogo && <img src={isMobile ? compnyLogoM : compnyLogo} alt="Title" className="el_without_headerLogo_side" draggable={false} onContextMenu={(e) => e.preventDefault()} />}
@@ -529,7 +546,7 @@ const ElveeBaseHeader = ({ hidden, storeinit, logos }) => {
                     )} */}
                     {/* {IsB2BWebsiteChek == 1 && (
                       <> */}
-                    {storeinit?.IsDesignSetInMenu == 1 && (
+                    {storeInit?.IsDesignSetInMenu == 1 && (
                       <Link
                         href={"/Lookbook"}
                         className="el_Login_header_li go-lookbook"
@@ -560,7 +577,7 @@ const ElveeBaseHeader = ({ hidden, storeinit, logos }) => {
                         >
                           New
                         </small>
-                        {storeinit?.DesignSetInMenu}
+                        {storeInit?.DesignSetInMenu}
                       </Link>
                       //   )}
                       // </>
@@ -776,7 +793,7 @@ const ElveeBaseHeader = ({ hidden, storeinit, logos }) => {
                   )}
                 </li>
               )}
-              {/* {storeinit?.IsPLW == 0 && (IsB2BWebsiteChek == 1 && islogin) ? (
+              {/* {storeInit?.IsPLW == 0 && (IsB2BWebsiteChek == 1 && islogin) ? (
                 <> */}
               <Tooltip title="Account">
                 <li
@@ -914,4 +931,4 @@ const ElveeBaseHeader = ({ hidden, storeinit, logos }) => {
   );
 };
 
-export default memo(ElveeBaseHeader);
+export default ElveeBaseHeader
