@@ -115,7 +115,7 @@ export default function MaxPhysicalStore() {
         <ThemeProvider theme={theme}>
             <Box sx={{ bgcolor: 'background.default', py: { xs: 6, md: 12 }, overflow: 'hidden' }}>
                 <Container maxWidth="lg" sx={{ px: { xs: 0, sm: 3, md: 4 } }}>
-                    
+
                     {/* Header */}
                     <Box sx={{ textAlign: 'center', mb: { xs: 6, md: 10 }, px: 2 }}>
                         <Typography variant="overline" display="block" sx={{ mb: 2 }}>
@@ -128,11 +128,11 @@ export default function MaxPhysicalStore() {
 
                     {/* Content Stack */}
                     <Box sx={{ position: 'relative', display: 'flex', flexDirection: 'column' }}>
-                        
+
                         <StoreImageWrapper>
                             <Box
                                 component="img"
-                                src="http://max.orail.co.in/WebSiteStaticImage/images/storeImage/store.png"
+                                src="store.png"
                                 alt="Luxury Boutique Interior"
                                 sx={{
                                     width: '100%',
@@ -170,11 +170,11 @@ export default function MaxPhysicalStore() {
                             />
 
                             <Box sx={{ mt: 5 }}>
-                                <Button 
-                                    variant="contained" 
-                                    fullWidth 
-                                    sx={{ 
-                                        bgcolor: '#1A1A1A', 
+                                <Button
+                                    variant="contained"
+                                    fullWidth
+                                    sx={{
+                                        bgcolor: '#1A1A1A',
                                         color: '#FFF',
                                         py: 2,
                                         borderRadius: '4px',

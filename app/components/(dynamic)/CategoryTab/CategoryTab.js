@@ -9,6 +9,8 @@ import { useNextRouterLikeRR } from "@/app/(core)/hooks/useLocationRd";
 import { normalizeALC, buildAlbumCacheKey, getPricingContext } from "@/app/(core)/cache_utility/CacheBuilder";
 import { readCache, writeCache } from "@/app/(core)/cache_utility/cacheActions";
 
+const noimage = "/image-not-found.jpg";
+
 const CategoryTab = ({ storeData }) => {
     const [albumData, setAlbumData] = useState();
     const { loginUserDetail, islogin } = useStore();
@@ -16,7 +18,6 @@ const CategoryTab = ({ storeData }) => {
     const navigation = useNextRouterLikeRR().push;
     const showShapeSection = false;
     const productRefs = useRef({});
-    const noimage = `./image-not-found.jpg`;
 
     const pricingContext = useMemo(() => getPricingContext(loginUserDetail, storeData, islogin), [loginUserDetail, storeData, islogin]);
     const isFetchingRef = useRef(false);
