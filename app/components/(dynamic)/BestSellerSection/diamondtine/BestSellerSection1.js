@@ -10,7 +10,7 @@ import { useRouter } from 'next/navigation';
 import Pako from 'pako';
 import Cookies from 'js-cookie';
  
-// import GoogleAnalytics from 'react-ga4';
+import GoogleAnalytics from 'react-ga4';
 
 const BestSellerSection1 = ({ data, storeData }) => {
   
@@ -95,8 +95,8 @@ const BestSellerSection1 = ({ data, storeData }) => {
         }
         sessionStorage.setItem('scrollToProduct2', `product-${index}`);
         let encodeObj = compressAndEncode(JSON.stringify(obj))
-        // navigation(`/d/${titleLine.replace(/\s+/g, `_`)}${titleLine?.length > 0 ? "_" : ""}${designNo}?p=${encodeObj}`)
-        router.push(`/d/${formatRedirectTitleLine(titleLine)}${designNo}?p=${encodeObj}`);
+        router.push(`/d/${titleLine.replace(/\s+/g, `_`)}${titleLine?.length > 0 ? "_" : ""}${designNo}?p=${encodeObj}`)
+        // router.push(`/d/${formatRedirectTitleLine(titleLine)}${designNo}?p=${encodeObj}`);
     }
 
     useEffect(() => {

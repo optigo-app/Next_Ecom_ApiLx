@@ -7,7 +7,7 @@ import 'swiper/css';
 import 'swiper/css/pagination';
 import './Album1.scss';
 import { Get_Tren_BestS_NewAr_DesigSet_Album } from "@/app/(core)/utils/API/Home/Get_Tren_BestS_NewAr_DesigSet_Album/Get_Tren_BestS_NewAr_DesigSet_Album";
- 
+ import { formatRedirectTitleLine } from "@/app/(core)/utils/Glob_Functions/GlobalFunction";
 import { useRouter } from 'next/navigation';
  
 import cookies from "js-cookie";
@@ -117,9 +117,30 @@ const Album1 = ({storeData}) => {
         }
     };
 
-    const handleNavigation = (album) => {
-        router.push(`/p/${album?.AlbumName}/?A=${btoa(`AlbumName=${album?.AlbumName}`)}`)
+    // const handleNavigation = (album) => {
+    //     router.push(`/p/${album?.AlbumName}/?A=${btoa(`AlbumName=${album?.AlbumName}`)}`)
+    // }
+    const handleNavigation = (designNo, autoCode, titleLine, index) => {
+        GoogleAnalytics.event({
+            action: "Navigate to Product Detail",
+            category: `Product Interaction Through Album Section`,
+            label: designNo || titleLine,
+            value: loginUserDetail?.firstname ?? 'User Not Login',
+        });
+        let obj = {
+            a: autoCode,
+            b: designNo,
+            m: loginUserDetail?.MetalId,
+            d: loginUserDetail?.cmboDiaQCid,
+            c: loginUserDetail?.cmboCSQCid,
+            f: {}
+        }
+        sessionStorage.setItem('scrollToProduct1', `product-${index}`);
+        let encodeObj = compressAndEncode(JSON.stringify(obj))
+        // navigation(`/d/${titleLine.replace(/\s+/g, `_`)}${titleLine?.length > 0 ? "_" : ""}${designNo}?p=${encodeObj}`)
+        router.push( islogin == true ? `/d/${formatRedirectTitleLine(titleLine)}${designNo}?p=${encodeObj}` : `/LoginOption`);
     }
+
 
     // const handleNavigation = (designNo, autoCode, titleLine, index) => {
     //     GoogleAnalytics.event({
@@ -200,6 +221,7 @@ const Album1 = ({storeData}) => {
         }
     }, [albumData]);
 
+ 
 
     const HandleAlbumMore = (data) => {
         const url = `/p/${encodeURIComponent(selectedAlbum)}/?A=${btoa(`AlbumName=${selectedAlbum}`)}`;
@@ -250,7 +272,7 @@ const Album1 = ({storeData}) => {
                             maxWidth: "100%",
                         }}>
                         <Tabs
-                            value={selectedAlbum}
+                            value={selectedAlbum || ""}
                             onChange={handleChangeTab}
                             variant="scrollable"
                             scrollButtons="auto"

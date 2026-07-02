@@ -98,47 +98,40 @@ const ElveeWishlist = ({ storeInit }) => {
 
       <Box
         sx={{
-          px: { xs: 1, sm: 2, md: 4 },
+         
           width: "100%",
           bgcolor: '#fff',
           boxSizing: 'border-box'
         }}
       >
         <div className="elv_WlMainPageDiv">
-          {finalWishData?.length > 0 &&
+          {/* {finalWishData?.length > 0 &&
             <WishlistHeader count={finalWishData?.length || 0} handleMovetoCartAll={handleAddtoCartAllfun} handleRemoveAll={handleRemoveAllDialog} />
-          }
+          } */}
           {!isWLLoading ? (
             <WishlistData
               isloding={isWLLoading}
               items={finalWishData}
               updateCount={updateCount}
               countDataUpdted={countDataUpdted}
-              curr={CurrencyData}
+              currency={CurrencyData}
               itemInCart={itemInCart}
               decodeEntities={decodeEntities}
               WishCardImageFunc={WishCardImageFunc}
+              itemsLength={finalWishData?.length}
               handleRemoveItem={handleRemoveItem}
               handleWishlistToCart={handleWishlistToCart}
               handleMoveToDetail={handleMoveToDetail}
               handelMenu={handelMenu}
             />
+
+           
           ) : (
             <div style={{ marginBottom: '2rem' }}>
               <SkeletonLoader />
             </div>
           )}
-          {dialogOpen && (
-            <>
-              <ConfirmationDialog
-                open={dialogOpen}
-                onClose={handleCloseDialog}
-                onConfirm={handleConfirmRemoveAll}
-                title={"Confirm"}
-                content={"Are You Sure to Clear All these items?"}
-              />
-            </>
-          )}
+          
         </div>
       </Box>
     </>

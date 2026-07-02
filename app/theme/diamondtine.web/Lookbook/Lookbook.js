@@ -420,10 +420,10 @@ const Lookbook = ({ storeInit }) => {
       ) : (
         <div className="smr1_LookBookSubMainDiv">
           <div className="smr_lookBookMobileTopLine">
-            <div className="smr_lookBook_FilterIconeDiv" onClick={handleFilterShow} style={{ fontSize: "12px" }}>
+            {/* <div className="smr_lookBook_FilterIconeDiv" onClick={handleFilterShow} style={{ fontSize: "12px" }}>
               {isShowfilter ? "HIDE FILTER" : "SHOW FILTER"}
               <FilterListIcon style={{ color: "white" }} />
-            </div>
+            </div> */}
             <Box className="smr_filetr_right_menu"
               sx={{
                 display: 'flex',
@@ -441,7 +441,7 @@ const Lookbook = ({ storeInit }) => {
                     onClick={handleOpen}
                     className="smr_lookBookSelectViewBtn"
                     style={{
-                      background: selectedCategories.length !== 0 ? "" : "#ffff",
+                      background: selectedCategories.length !== 0 ? "#a8807c" : "#ffff",
                       color: selectedCategories.length !== 0 ? "" : "#7d7f85",
                     }}
                   >
@@ -463,7 +463,7 @@ const Lookbook = ({ storeInit }) => {
             </Box>
           </div>
           <div className="smr_SubDiv_LookBookSubMainDiv">
-            <div className="smr_lookbookFilterMain" style={{ zIndex: 100, transition: "1s ease", backgroundColor: "white", width: `19%`, left: `${isShowfilter ? "0" : "-500%"}`, position: "absolute", top: "100px", display: isShowfilter ? "block" : "none" }}>
+            <div className="smr_lookbookFilterMain" style={{ zIndex: 100, transition: "1s ease", backgroundColor: "white", width: `20%`,  display:"block" }}>
               {filterData?.length > 0 && (
                 <div className="smr1_lookBookFilterSubDiv">
                   <span className="smr_filter_text">
@@ -637,7 +637,7 @@ const Lookbook = ({ storeInit }) => {
                 </div>
               )}
             </div>
-            <div className="smr_Main_lookBookImgDiv" style={{ transition: "1s ease", width: "100%" }}>
+            <div className="smr_Main_lookBookImgDiv" style={{ transition: "1s ease", width: "80%" }}>
               <DesignBlockView
                 selectedValue={selectedValue}
                 filteredDesignSetLstData={filteredDesignSetLstData}

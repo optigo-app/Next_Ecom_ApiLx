@@ -27,9 +27,7 @@ const CartList = ({
   return (
     <>
       {items?.map((item, index) => (
-        <Grid size={{
-          xs: 12, sm: 6, md: 6, lg: 4
-        }} key={item} >
+     
           <CartItem
             item={item}
             index={index}
@@ -56,7 +54,7 @@ const CartList = ({
             handleCancel={handleCancel}
             openHandleUpdateCartModal={openHandleUpdateCartModal}
           />
-        </Grid>
+      
       ))}
     </>
   );

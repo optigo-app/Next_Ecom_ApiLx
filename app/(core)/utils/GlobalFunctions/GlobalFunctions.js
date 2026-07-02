@@ -122,6 +122,19 @@ export const  getFaqDiamondtineContent= async () => {
   }
 };
 
+export const  getLocationDiamondtineContent= async () => {
+  try {
+    const filePath = path.join(process.cwd(), "public", "WebSiteStaticImage", "html", "locationdiatine.html");
+    
+  
+    const htmlContent = await fs.promises.readFile(filePath, "utf-8");
+    return htmlContent;
+  } catch (error) {
+    console.error("Error loading AboutUs HTML file:", error);
+    return null;
+  }
+};
+
 export const  getExchangeDiamondtineContent= async () => {
   try {
     const filePath = path.join(process.cwd(), "public", "WebSiteStaticImage", "html", "exchange-diatatine.html");

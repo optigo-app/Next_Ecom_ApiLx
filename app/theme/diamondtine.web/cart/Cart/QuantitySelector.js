@@ -13,8 +13,8 @@ const QuantitySelector = ({ selectedItem, handleIncrement, handleDecrement }) =>
       alignItems="center"
       gap={0.2}
       sx={{
-        p: 0.5,
-        borderRadius: "12px",
+     
+        borderRadius: "0px",
         border: "1px solid rgba(0,0,0,0.12)",
         backdropFilter: "blur(6px)",
         background: "rgba(255,255,255,0.7)",
@@ -27,9 +27,9 @@ const QuantitySelector = ({ selectedItem, handleIncrement, handleDecrement }) =>
         sx={{
           width: 36,
           height: 36,
-          borderRadius: "10px",
-          background: "rgba(0,0,0,0.05)",
-          "&:hover": { background: "rgba(0,0,0,0.08)" }
+          borderRadius:"0px",
+           
+         
         }}
       >
         <RemoveRoundedIcon fontSize="small" />
@@ -45,6 +45,9 @@ const QuantitySelector = ({ selectedItem, handleIncrement, handleDecrement }) =>
             fontSize: "1rem",
             fontWeight: 600,
             width: "50px",
+            border:" 1px solid #bfbfbf",
+            borderBottom:"none",
+            borderTop:"none",
           },
         }}
         variant="standard"
@@ -62,9 +65,8 @@ const QuantitySelector = ({ selectedItem, handleIncrement, handleDecrement }) =>
         sx={{
           width: 36,
           height: 36,
-          borderRadius: "10px",
-          background: "rgba(0,0,0,0.05)",
-          "&:hover": { background: "rgba(0,0,0,0.08)" }
+          borderRadius: "0px",
+          
         }}
       >
         <AddRoundedIcon fontSize="small" />

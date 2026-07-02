@@ -72,34 +72,23 @@ const CartDetails = ({
     <Box className="elv_cart-container"
       sx={{
         width: '100%',
-        bgcolor: '#f4f4f4e8',
-        borderRadius: 4,
-        py: 2,
-        px: 2,
+      
+  
+  
         position: 'sticky',
         top: 85,
         zIndex: 100,
         boxSizing: 'border-box'
       }}
     >
-      <Box sx={{ display: "flex", alignItems: "center", gap: 1, bgcolor: '#fff', py: 2, width: '100%', borderRadius: 4, mb: 1.6 }}>
-        <Box>
-          <Typography
-            component="h1"
-            variant="h5"
-            sx={{ fontWeight: 700, letterSpacing: -0.2, px: 2 }}
-          >
-            Customization
-          </Typography>
-        </Box>
-      </Box>
+     
       <div className="elv_Cart-imageDiv">
 
         {/* {imageSrc !== undefined && (
           <img src={imageSrc} alt="Cluster Diamond" className='elv_cartImage' onClick={() => handleMoveToDetail(selectedItem)} />
         )} */}
         {isLoading === true ? (
-          <Skeleton variant="rectangular" sx={{ width: "100%", height: 350, borderRadius: 2, bgcolor: "#fafafa" }} />
+          <Skeleton variant="rectangular" sx={{ width: "100%", height: 450,   bgcolor: "#fafafa" }} />
         ) : (
           <img
             src={imgSrc}
@@ -129,12 +118,13 @@ const CartDetails = ({
           py: 1,
           display: 'flex',
           alignItems: 'center',
+          justifyContent:"center",
           px: 1
         }}
       >
         <Typography
           sx={{
-            textAlign: "left",
+            textAlign: "center",
             fontWeight: 600,
             color: "#1A1A1A", // modern deep-dark tone
             fontSize: {

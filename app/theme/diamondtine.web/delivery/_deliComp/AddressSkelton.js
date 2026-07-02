@@ -9,7 +9,7 @@ const SkeletonLoader = () => {
     <Box className="smr_addCardSkeltonMainBox">
       {skeletonArray.map((_, index) => (
         <Card className='smr_addCardSkelton' key={index}>
-          <Skeleton className='smr_addCardSkelton' variant="rectangular" height={280} animation="wave" />
+          <Skeleton className='smr_addCardSkelton' variant="rectangular" width={400} height={240} animation="wave" />
         </Card>
       ))}
     </Box>

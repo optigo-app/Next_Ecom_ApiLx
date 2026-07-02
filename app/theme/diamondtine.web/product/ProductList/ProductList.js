@@ -1448,7 +1448,7 @@ const ProductList = ({ storeinit, searchParams, params }) => {
             className="paddingTopMobileSet mainProduct"
           >
             <div style={{ width: "100%", display: "flex", justifyContent: "center" }}>
-              <div className="smilingProductMain" id="smilingProductMain">
+              <div className="smilingProductMain" id="smilingProductMain" style={{width:"100%"}}>
                 <div
                   className="smilingProductSubMain"
                   style={{ width: "100%", display: "flex", position: "relative", gap: "14px" }}
