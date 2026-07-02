@@ -24,7 +24,7 @@ import { readCache, writeCache } from "@/app/(core)/cache_utility/cacheActions";
 
 
 const ElveeBaseHeader = ({ hidden, storeInit, logos }) => {
-  const { islogin, loginUserDetail, setislogin, cartCountNum, wishCountNum } = useStore();
+  const { islogin, loginUserDetail, setislogin, cartCountNum, wishCountNum, authChecked } = useStore();
   const Router = useNextRouterLikeRR().push;
   const navigate = url => Router(url);
   const [burgerMenu, setBurgerMenu] = useState(false);
@@ -228,6 +228,8 @@ const ElveeBaseHeader = ({ hidden, storeInit, logos }) => {
       finalId = loginUserDetail?.id || "0";
     }
 
+  
+
     const pricingContext = getPricingContext(loginUserDetail, storeInit, islogin);
     let cacheKey = "";
     if (pricingContext) {
@@ -396,6 +398,10 @@ const ElveeBaseHeader = ({ hidden, storeInit, logos }) => {
   }, [Menu, location]);
 
   if (hidden) return null;
+  
+  console.log("TCL: ElveeBaseHeader -> authChecked", authChecked)
+
+  if (!authChecked) return null; 
 
   return (
     <>

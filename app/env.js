@@ -2,7 +2,8 @@
 // export const LocalSetup = "fgstore.web";
 // export const LocalSetup = "hoq.web";
 // export const LocalSetup = "elvee.web";
-export const LocalSetup = "diamondtine.web";
+// export const LocalSetup = "diamondtine.web";
+export const LocalSetup = "malakanJwewls.web";
 
 
 
