@@ -16,6 +16,7 @@ import { HiOutlineShoppingBag } from "react-icons/hi2";
 import { GetMenuAPI } from "@/app/(core)/utils/API/GetMenuAPI/GetMenuAPI";
 import Cookies from "js-cookie";
 import Pako from 'pako';
+ 
 
 const Header = ({ hidden, storeinit, logos }) => {
 
@@ -31,7 +32,7 @@ const Header = ({ hidden, storeinit, logos }) => {
     const [menuData, setMenuData] = useState([]);
     // const navigation = useNavigate();
     const Router = useNextRouterLikeRR().push;
-      const navigate = url => Router(url);
+      const navigation = url => Router(url);
     const [expandedMenu, setExpandedMenu] = useState(null);
     const [hoveredIndex, setHoveredIndex] = useState(null);
     const [selectedData, setSelectedData] = useState([]);
@@ -47,7 +48,7 @@ const Header = ({ hidden, storeinit, logos }) => {
  
     const fetchData = () => {
         const value = JSON.parse(sessionStorage.getItem('LoginUser'));
-        setislogin(value);
+        // setislogin(value);
     };
 
     useEffect(() => {
@@ -96,6 +97,7 @@ const Header = ({ hidden, storeinit, logos }) => {
             getMenuApi();
         }
     }, [islogin]);
+
 
 
     useEffect(() => {
@@ -329,7 +331,7 @@ const Header = ({ hidden, storeinit, logos }) => {
         )}`;
 
         setDrawerOpen(false);
-        navigate(url);
+        navigation(url);
 
     };
 
@@ -393,7 +395,7 @@ const Header = ({ hidden, storeinit, logos }) => {
 
                 setSearchText("");
                 setDrawerOpen(false);
-                navigate(`/p/${searchText}?S=${encodeObj}`);
+                navigation(`/p/${searchText}?S=${encodeObj}`);
                 // navigate(`/d/${productData?.TitleLine.replace(/\s+/g, `_`)}${productData?.TitleLine?.length > 0 ? "_" : ""}${searchText}?p=${encodeObj}`)
                 // }
             }
@@ -415,11 +417,11 @@ const Header = ({ hidden, storeinit, logos }) => {
 
             let encodeObj = btoa(JSON.stringify(obj));
             setDrawerOpen(false);
-            navigate(`/p/${searchText}?S=${encodeObj}`);
+            navigation(`/p/${searchText}?S=${encodeObj}`);
             setSearchText("");
         }
     }
-
+    // console.log("TCL: Header ->islogin ", islogin)
 
     return (
         <div className='dai_headerMain' draggable={false} onContextMenu={(e) => e.preventDefault()}>
@@ -439,7 +441,7 @@ const Header = ({ hidden, storeinit, logos }) => {
                         </a>
                     ))}
                     {!islogin &&
-                        <p className='Dt_FontFamilySet' style={{ margin: '0px 20px', cursor: 'pointer', color: 'white', fontWeight: 500 }} onClick={() => navigate('/LoginOption')}>
+                        <p className='Dt_FontFamilySet' style={{ margin: '0px 20px', cursor: 'pointer', color: 'white', fontWeight: 500 }} onClick={() => navigation('/LoginOption')}>
                             Login
                         </p>
                     }
@@ -515,7 +517,7 @@ const Header = ({ hidden, storeinit, logos }) => {
                                         <Tooltip title="Cart">
                                             <li
                                                 className="dt_nav_li_smining"
-                                                onClick={() => navigation('/CartPage')}
+                                                onClick={() => navigation('/cartPage')}
                                                 style={{
                                                     cursor: "pointer",
                                                     marginTop: "0px",
@@ -565,7 +567,7 @@ const Header = ({ hidden, storeinit, logos }) => {
                                     <Tooltip title="Cart">
                                         <li
                                             className="dt_nav_li_smining"
-                                            onClick={() => navigation('/CartPage')}
+                                            onClick={() => navigation('/cartPage')}
                                             style={{
                                                 cursor: "pointer",
                                                 marginTop: "0px",
@@ -583,7 +585,7 @@ const Header = ({ hidden, storeinit, logos }) => {
                                 <li
                                     className="dt_nav_li_smining"
                                     style={{ cursor: "pointer", textDecoration: 'none', marginTop: "0" }}
-                                    onClick={() => { storeInit?.IsB2BWebsite == 0 && !islogin ? navigation("/LoginOption") : navigation("/account") }}
+                                    onClick={() => { storeinit?.IsB2BWebsite == 0 && !islogin ? navigation("/LoginOption") : navigation("/account") }}
                                 >
                                     <IoPersonOutline color="#7D7F85" fontSize='25px' />
                                 </li>
@@ -614,7 +616,12 @@ const Header = ({ hidden, storeinit, logos }) => {
                                 Home
                             </span>
                         </li>
-                        {menuItems.map((item, index) => (
+
+                        
+                        {
+                        
+                         islogin == true &&
+                        menuItems.map((item, index) => (
                             <li
                                 className="dt_menu_li"
                                 style={{ height: '100%', display: 'flex', alignItems: 'center', cursor: "pointer", textTransform: 'uppercase' }}

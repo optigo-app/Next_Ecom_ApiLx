@@ -11,11 +11,19 @@ import { GetCountAPI } from "@/app/(core)/utils/API/GetCount/GetCountAPI";
 import RemarkDialog from "./OrderRemarkDialog";
 import ItemRemarkDialog from "./ItemRemarkDialog";
 import ConfirmationDialog from "@/app/(core)/utils/Glob_Functions/ConfirmationDialog/ConfirmationDialog";
-import { RiDeleteBinLine } from "react-icons/ri";
+import { RiDeleteBinLine, RiCloseLine } from "react-icons/ri";
 import { formatter, formatTitleLine } from "@/app/(core)/utils/Glob_Functions/GlobalFunction";
 import { useBroadcaster } from "@/app/(core)/contexts/BoardCastContext";
 import { useStore } from "@/app/(core)/contexts/StoreProvider";
 import Cookies from "js-cookie";
+
+// Shared column widths so each row lines up under the header row
+const COLUMN_WIDTHS = {
+  image: 180,
+  price: 130,
+  totalPrice: 130,
+  delete: 40,
+};
 
 const CartItem = ({ item, index, CartCardImageFunc, onSelect, CurrencyData, showRemark1, decodeEntities, isSelected, selectedItem, selectedItemsLength, isActive, border, handleBorder, multiSelect, onRemove, itemLength, showRemark, productRemark, handleAddRemark, handleRemarkChange, handleSave, handleCancel, openHandleUpdateCartModal }) => {
   const [remark, setRemark] = useState(item.Remarks || "");
@@ -27,9 +35,8 @@ const CartItem = ({ item, index, CartCardImageFunc, onSelect, CurrencyData, show
   const { broadcast } = useBroadcaster();
   // const [countstatus, setCountStatus] = useState();
 
-  
   const isLoading = item?.loading;
-  
+
   const CDNDesignImageFolThumb = storeInit?.CDNDesignImageFolThumb;
   const fullImagePath = `${CDNDesignImageFolThumb}${item?.designno}~1.jpg`;
   const defaultUrl = item?.images && typeof item?.images === 'string'
@@ -67,6 +74,30 @@ const CartItem = ({ item, index, CartCardImageFunc, onSelect, CurrencyData, show
 
   const isMobileScreen = useMediaQuery("(min-width: 320px) and (max-width: 1037px)");
 
+  // ---- Container-based (not viewport-based) responsiveness ----
+  // This card can be rendered inside narrow grid columns even on a wide
+  // screen, so MUI's viewport breakpoints (xs/sm) are unreliable here.
+  // We measure the card's own width and switch layout based on that.
+  const containerRef = useRef(null);
+  const [containerWidth, setContainerWidth] = useState(0);
+
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const observer = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        setContainerWidth(entry.contentRect.width);
+      }
+    });
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
+  const STACK_BREAKPOINT = 460; // below this width, stack everything vertically
+  const COMPACT_BREAKPOINT = 600; // below this, use a tighter row layout
+  const isStacked = containerWidth > 0 && containerWidth < STACK_BREAKPOINT;
+  const isCompact = containerWidth > 0 && containerWidth < COMPACT_BREAKPOINT;
+
   // useEffect(() => {
   //   const isCartUpdateStatus = sessionStorage.getItem("cartUpdation");
   //   setCountStatus(isCartUpdateStatus);
@@ -81,8 +112,6 @@ const CartItem = ({ item, index, CartCardImageFunc, onSelect, CurrencyData, show
     handleSave(item);
     handleClose1();
   };
-
-
 
   const handleRemoveItem = async (item) => {
     const returnValue = await onRemove(item);
@@ -106,7 +135,6 @@ const CartItem = ({ item, index, CartCardImageFunc, onSelect, CurrencyData, show
     return text?.substring(0, maxLength) + "...";
   }
 
-
   useEffect(() => {
     window.scroll({
       top: 0,
@@ -114,49 +142,53 @@ const CartItem = ({ item, index, CartCardImageFunc, onSelect, CurrencyData, show
     });
   }, []);
 
+  // ---- Derived display values (built only from fields already on `item`) ----
+  const weightParts = [];
+  if (item?.Gwt) weightParts.push(`Gwt: ${Number(item.Gwt).toFixed(3)}`);
+  if (item?.Nwt) weightParts.push(`Nwt: ${Number(item.Nwt).toFixed(3)}`);
+  if (storeInit?.IsDiamondWeight == 1 && (item?.Dwt !== "0" || item?.Dpcs !== "0")) {
+    weightParts.push(`Dwt: ${(item?.Dwt || 0).toFixed(3)} / ${item?.Dpcs || 0}`);
+  }
+
+  const quantity = item?.Quantity || 1;
+  // Falls back to FinalCost x Quantity if a dedicated total field doesn't exist on item
+  const totalPrice = item?.TotalCost ?? (item?.FinalCost ? item.FinalCost * quantity : item?.FinalCost);
+
+  const currencySymbol = decodeEntities(loginUserDetail?.CurrencyCode ?? storeInit?.CurrencyCode) + " ";
+
   return (
-    <Card
-      elevation={0}
+  <>
+
+    <Box
+      ref={containerRef}
       sx={{
         width: "100%",
-        borderRadius: 3,
-        border: "1px solid #e5e5e5",
-        position: "relative",
         display: "flex",
-        flexDirection: "column",
-        gap: 2,
-        boxShadow: !multiSelect && !isMobileScreen && selectedItem?.id == item?.id && "#c20000 1px 1px 1px 0px, #c20000 0px 0px 0px 1px !important",
-        boxSizing: 'border-box'
+        flexDirection: isStacked ? "column" : "row",
+        alignItems: isStacked ? "stretch" : "center",
+        flexWrap: isCompact && !isStacked ? "wrap" : "nowrap",
+        gap: isStacked ? 1.5 : isCompact ? 1.5 : 3,
+        border: !multiSelect && !isMobileScreen && selectedItem?.id == item?.id
+          ? "1px solid #000000"
+          : "1px solid #e8e8e8",
+        borderRadius: 1.5,
+        bgcolor: "#fff",
+        p: isStacked ? 1.5 : 2,
+        boxSizing: "border-box",
+        transition: "box-shadow 0.2s ease",
+        "&:hover": { boxShadow: "0 2px 10px rgba(0,0,0,0.06)" },
+      
       }}
+      onClick={() => onSelect(item)}
     >
-      {/* Delete Icon */}
-      <IconButton
-        sx={{
-          position: "absolute",
-          top: 10,
-          right: 10,
-          zIndex: 10,
-          bgcolor: "#dbdbdb38",
-          backdropFilter: "blur(4px)",
-          "&:hover": { background: "rgba(255,255,255,0.9)" },
-        }}
-        onClick={handleOpen}
-      >
-        <RiDeleteBinLine />
-      </IconButton>
-
-      {/* Image Wrapper */}
+      {/* Image */}
       <Box
         sx={{
-          width: "100%",
-          height: "100%",
-          borderRadius: 3,
+          width: isStacked ? "100%" : COLUMN_WIDTHS.image,
+          height: isStacked ? 160 : COLUMN_WIDTHS.image,
+          flexShrink: 0,
+          borderRadius: 2,
           overflow: "hidden",
-          aspectRatio: {
-            xs: "3 / 3",
-            sm: "1 / 1",
-            md: "1 / 1",
-          },
           bgcolor: "#fff9f266",
           display: "flex",
           alignItems: "center",
@@ -170,15 +202,16 @@ const CartItem = ({ item, index, CartCardImageFunc, onSelect, CurrencyData, show
             component="img"
             image={imgSrc}
             alt=""
-            loading='eager'
+            loading="eager"
             draggable={false}
             onContextMenu={(e) => e.preventDefault()}
-            onClick={() => onSelect(item)}
+            
             sx={{
               width: "100%",
               height: "100%",
               objectFit: "contain",
               mixBlendMode: "multiply",
+              cursor: "pointer",
               '&:focus': { outline: 'none' },
               '&:active': { outline: 'none' },
             }}
@@ -196,221 +229,121 @@ const CartItem = ({ item, index, CartCardImageFunc, onSelect, CurrencyData, show
         )}
       </Box>
 
-      <Box sx={{ width: "100%", px: 2, py: 1, display: "flex", flexDirection: "column", gap: 1, boxSizing: 'border-box' }}>
+      {/* Product Details */}
+      
+      <Box sx={{ flex: 0.5, minWidth: isStacked ? "auto" : 100, display: "flex", flexDirection: "column", gap: 0.5 }}>
         <Typography
-          variant="body1"
           sx={{
             fontWeight: 600,
             lineHeight: 1.35,
-            color: "#0a1f47",
-            textAlign: "center",
-            mb: 1,
-            whiteSpace: "nowrap",
-            overflow: "hidden",
-            textOverflow: "ellipsis",
-            minHeight: "1.3em",
-            fontSize: { xs: "0.82rem", sm: "0.9rem", md: "0.94rem", lg: "1rem" },
+            color: "black",
+            fontSize: isCompact ? "0.82rem" : "1.3rem",
+            wordBreak: "break-word",
           }}
         >
+          {item?.designno}
+          {item?.StockNo ? ` (${item.StockNo})` : ""}
+          {item?.designno || item?.StockNo ? " - " : ""}
           {formatTitleLine(item?.TitleLine)}
         </Typography>
-        {item?.StockNo && (
-          <Typography
-            component="span"
-            sx={{
-              fontSize: { xs: 10, sm: 13, md: 14 },
-              lineHeight: 1.4,
-              ml: 0.3,
-              fontWeight: 500,
-              fontSize: { xs: "0.62rem", sm: "0.8rem", md: "0.85rem" },
-              letterSpacing: "0.02em",
-            }}
-          >
-            ({item.StockNo})
+
+        {weightParts.length > 0 && (
+          <Typography sx={{ fontSize: isCompact ? "0.68rem" : "0.78rem", color: "black", display: "flex", flexWrap: "wrap", columnGap: "6px" }}>
+            {weightParts.map((part, i) => (
+              <Box component="span" key={i} sx={{ whiteSpace: "nowrap" }}>
+                {part}{i < weightParts.length - 1 ? " |" : ""}
+              </Box>
+            ))}
           </Typography>
         )}
-        {/* ===========================
-   NEW ARRIVAL GRID FEELING
-   3 ROWS — ALWAYS SAME HEIGHT
-=========================== */}
-        <Grid container spacing={0.8}>
-          {/* DWT (SLOT 1) */}
-          <Grid item size={{
-            xs: 6
-          }}>
-            <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
-              <Typography
-                variant="body2"
-                sx={{
-                  fontWeight: 500,
-                  fontSize: { xs: "0.62rem", sm: "0.8rem", md: "0.85rem" },
-                  color: item?.designno ? "#000" : "transparent",
-                  letterSpacing: "0.02em",
-                }}
-              >
-                {item?.designno}
-              </Typography>
-            </Box>
-          </Grid>
-          <Grid item size={{
-            xs: 6
-          }}>
-            <Box sx={{ display: "flex", alignItems: "center", gap: 0.5, justifyContent: "flex-end" }}>
-              <Typography
-                variant="body2"
-                sx={{
-                  fontWeight: 500,
-                  fontSize: { xs: "0.62rem", sm: "0.8rem", md: "0.85rem" },
-                  color: item?.Dwt ? "#000" : "transparent",
-                  letterSpacing: "0.02em",
-                }}
-              >
-                DWT&nbsp;:
-              </Typography>
 
-              <Typography
-                variant="body2"
-                sx={{
-                  fontWeight: 500,
-                  fontSize: { xs: "0.62rem", sm: "0.8rem", md: "0.85rem" },
-                  color: item?.Dwt ? "#000" : "transparent",
-                }}
-              >
-                {storeInit?.IsDiamondWeight == 1
-                  ? item?.Dwt !== "0" || item?.Dpcs !== "0"
-                    ? `${(item?.Dwt || 0).toFixed(3)} / ${item?.Dpcs || 0}`
-                    : "" // EMPTY BUT SPACE PRESERVED
-                  : ""}
-              </Typography>
-            </Box>
-          </Grid>
-          <Grid item size={{
-            xs: 6
-          }}>
-            <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
-              {storeInit?.IsPriceShow == 1 ? (
-                <Typography
-                  variant="body2"
-                  sx={{
-                    fontWeight: 500,
-                    fontSize: { xs: "0.7rem", sm: "0.8rem", md: "0.85rem" },
-                    color: item?.FinalCost ? "#000" : "transparent",
-                  }}
-                >
-                  <span
-                    dangerouslySetInnerHTML={{
-                      __html:
-                        decodeEntities(
-                          loginUserDetail?.CurrencyCode ?? storeInit?.CurrencyCode
-                        ) + " ",
-                    }}
-                  />
-                  {formatter(item?.FinalCost)}
-                </Typography>
-              ) : (
-                <Typography
-                  variant="body2"
-                  sx={{
-                    fontWeight: 500,
-                    fontSize: { xs: "0.7rem", sm: "0.8rem", md: "0.85rem" },
-                    color: "#000",
-                  }}
-                >
-                  --
-                </Typography>
-              )}
-            </Box>
-          </Grid>
-
-          <Grid item size={{
-            xs: 6
-          }}>
-            <Box sx={{ display: "flex", alignItems: "center", gap: 0.5, justifyContent: "flex-end" }}>
-              <Typography
-                variant="body2"
-                sx={{
-                  fontWeight: 500,
-                  fontSize: { xs: "0.62rem", sm: "0.8rem", md: "0.85rem" },
-                  color: item?.Nwt ? "#000" : "transparent",
-                  letterSpacing: "0.02em",
-                }}
-              >
-                NWT&nbsp;:
-              </Typography>
-
-              <Typography
-                variant="body2"
-                sx={{
-                  fontWeight: 500,
-                  fontSize: { xs: "0.7rem", sm: "0.8rem", md: "0.85rem" },
-                  color: item?.Nwt ? "#000" : "transparent",
-                }}
-              >
-                {item?.Nwt?.toFixed(3) || "0"}
-              </Typography>
-            </Box>
-          </Grid>
-
-        </Grid>
-
-        {/* ================================
-       REMARK — KEEP SPACING STABLE
-     ================================ */}
-        <Box sx={{ minHeight: 22, display: "flex", alignItems: "center" }}>
-          {item?.Remarks ? (
-            <Typography fontSize={14}>
-              <strong>Remark: </strong>
-              {truncateText(item?.Remarks || productRemark, 40)}
-            </Typography>
-          ) : (
-            <Typography fontSize={14} color="transparent" sx={{ userSelect: "none" }}>
-              empty
-            </Typography>
-          )}
-        </Box>
-
-        {/* Actions */}
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            mt: 1,
-          }}
-        >
-          <Typography
-            onClick={handleOpen1}
-            sx={{
-              fontSize: 14,
-              color: "#1a73e8",
-              cursor: "pointer",
-              "&:hover": { textDecoration: "underline" },
-            }}
-          >
-            {item?.Remarks ? "Edit Remark" : "Add Remark"}
+        {(item?.Quantity || item?.Size) && (
+          <Typography sx={{ fontSize: isCompact ? "0.68rem" : "0.78rem", color: "black" }}>
+            {item?.Quantity ? <>Quantity: <Box component="span" sx={{ color: "black", fontWeight: 600 }}>{item.Quantity}</Box></> : null}
+            {item?.Quantity && item?.Size ? "   " : ""}
+            {item?.Size ? <>Size: {item.Size}</> : null}
           </Typography>
+        )}
 
-          <Box
-            sx={{
-              px: 2,
-              py: 0.6,
-              bgcolor: "#f3f3f3",
-              borderRadius: 20,
-              fontSize: 13,
-              minWidth: "88px",
-              textAlign: "center",
-            }}
-          >
-            In Cart
-          </Box>
-        </Box>
+       
+      </Box>
+
+      {/* Price */}
+      <Box
+        sx={{
+          flex: 0.5,
+          width: isStacked ? "100%" : "auto",
+          minWidth: isCompact ? 80 : COLUMN_WIDTHS.price,
+          flexShrink: 0,
+          textAlign: isStacked ? "left" : "center",
+        }}
+      >
+        {storeInit?.IsPriceShow == 1 ? (
+          <>
+            <Typography sx={{ fontWeight: 700, fontSize: isCompact ? "0.78rem" : "1.3rem", color: "black", whiteSpace: "nowrap" }}>
+              <span dangerouslySetInnerHTML={{ __html: currencySymbol }} />
+              {formatter(item?.FinalCost)}
+            </Typography>
+            <Typography sx={{ fontSize: "0.68rem", color: "black" }}>(Excl. VAT)</Typography>
+          </>
+        ) : (
+          <Typography sx={{ fontWeight: 700, color: "black" }}>--</Typography>
+        )}
+      </Box>
+
+      {/* Total Price */}
+      <Box
+        sx={{
+          width: isStacked ? "100%" : "auto",
+          minWidth: isCompact ? 80 : COLUMN_WIDTHS.totalPrice,
+          flexShrink: 0,
+          textAlign: isStacked ? "left" : "center",
+        }}
+      >
+        {storeInit?.IsPriceShow == 1 ? (
+          <>
+            <Typography sx={{ fontWeight: 700, fontSize: isCompact ? "0.78rem" : "1.3rem", color: "black", whiteSpace: "nowrap" }}>
+              <span dangerouslySetInnerHTML={{ __html: currencySymbol }} />
+              {formatter(totalPrice)}
+            </Typography>
+            <Typography sx={{ fontSize: "0.68rem", color: "black" }}>(Excl. VAT)</Typography>
+          </>
+        ) : (
+          <Typography sx={{ fontWeight: 700, color: "black" }}>--</Typography>
+        )}
+      </Box>
+
+      {/* Delete Icon - sits in its own column at the far right, matching header layout */}
+      <Box
+        sx={{
+          width: isStacked ? "100%" : COLUMN_WIDTHS.delete,
+          flexShrink: 0,
+          display: "flex",
+          justifyContent: isStacked ? "flex-end" : "center",
+        }}
+      >
+        <IconButton
+          size="small"
+          sx={{
+            width: 30,
+            height: 30,
+            bgcolor: "#9b9b9b",
+            color: "#fff",
+            "&:hover": { bgcolor: "#7a7a7a" },
+          }}
+          onClick={handleOpen}
+        >
+          <RiCloseLine size={18} />
+        </IconButton>
       </Box>
 
       {/* Modals */}
       <ItemRemarkDialog handleClose1={handleClose1} open1={open1} remark={remark} onRemarkChange={handleRemarkChangeInternal} onSave={handleSaveInternal} />
 
       <ConfirmationDialog open={open} onClose={handleClose} onConfirm={handleConfirm} title={"Confirm"} content={"Are You Sure to Delete this items?"} />
-    </Card>
+    </Box>
+  
+  </>
   );
 };
 

@@ -2,7 +2,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 import './ProductDetail.modul.scss'
 import Cookies from 'js-cookie'
-import { Box, Grid, useMediaQuery ,Accordion, AccordionDetails, AccordionSummary, Checkbox, Divider, FormControlLabel, Skeleton, Typography } from '@mui/material';
+import { Box, Grid, useMediaQuery, Accordion, AccordionDetails, AccordionSummary, Checkbox, Divider, FormControlLabel, Skeleton, Typography } from '@mui/material';
 import Pako from 'pako';
 import { SingleProdListAPI } from '@/app/(core)/utils/API/SingleProdListAPI/SingleProdListAPI';
 import { getSizeData } from '@/app/(core)/utils/API/CartAPI/GetCategorySizeAPI';
@@ -38,6 +38,7 @@ import FavoriteIcon from '@mui/icons-material/Favorite';
 import LocalMallOutlinedIcon from '@mui/icons-material/LocalMallOutlined';
 import LocalMallIcon from '@mui/icons-material/LocalMall';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import { IoIosPlayCircle } from "react-icons/io";
 
 import { Navigation, Pagination, Scrollbar, A11y } from 'swiper/modules';
 import { Swiper, SwiperSlide } from 'swiper/react';
@@ -108,6 +109,7 @@ const ProductDetail = ({ storeinit,
   const [selectMtType, setSelectMtType] = useState();
   const [loginInfo, setLoginInfo] = useState();
   const formatter = new Intl.NumberFormat("en-IN");
+  const imgRef = useRef(null);
   const initialDecodeUrl = useMemo(() => {
     const result = ParseAndDecodeSearchParams(searchParams);
     const navVal = result[0]?.split("=")[1];
@@ -122,6 +124,32 @@ const ProductDetail = ({ storeinit,
     }, 1000);
 
     return () => clearTimeout(timer);
+  }, []);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setIsImageLoad(false);
+            observer.disconnect();
+          }
+        });
+      },
+      {
+        threshold: 0.1, // Adjust the threshold as needed
+      }
+    );
+
+    if (imgRef.current) {
+      observer.observe(imgRef.current);
+    }
+
+    return () => {
+      if (imgRef.current) {
+        observer.disconnect();
+      }
+    };
   }, []);
 
   let cookie = Cookies.get('visiterId')
@@ -268,7 +296,7 @@ const ProductDetail = ({ storeinit,
     if (metalColorCombo.length) {
       const getCurrentMetalColor = mtColorLocal.find((ele) => ele?.id === singleProd?.MetalColorid)?.colorcode;
       setMetalColor(getCurrentMetalColor);
-      
+
     }
   }, [singleProd])
 
@@ -620,10 +648,10 @@ const ProductDetail = ({ storeinit,
           : logininfoInside?.cmboCSQCid ?? storeinitInside?.cmboCSQCid,
       };
 
-   
+
       setisPriceLoading(true);
       setProdLoading(true)
-      
+
       // step 4 
       setSingleProd1({})
       setSingleProd({})
@@ -1369,13 +1397,13 @@ const ProductDetail = ({ storeinit,
     }
   }, [lastSyncData]);
 
- 
+
 
 
 
   return (
     <>
-       {isDataFound ?
+      {isDataFound ?
         (<div
           style={{
             height: "70vh",
@@ -1408,128 +1436,98 @@ const ProductDetail = ({ storeinit,
             style={{ width: "100%", display: "flex", justifyContent: "center" }}
             className="productDetail-container-flex"
           >
+
             <div className="dt_product-detail-container">
-              <div className="srprodetail1" style={{ display: isImageload && "flex", alignItems: isImageload && 'center', }}>
-                {/* <div className="smr_prod_image_Sec"> */}
-                {/* {isImageload && ( */}
-                {isImageload && (
-                  <Skeleton
-                    // sx={{
-                    //   width: "95%",
-                    //   // height: "750px",
-                    //   height: '100% !important',
-                    //   // margin: "20px 0 0 0",
-                    // }}
-                    sx={{
-                      width: "95%",
-                      height: "550px",
-                      margin: "20px 0 0 0",
-                    }}
-                    className="dt_skeleton_main"
-                    variant="rounded"
-                  />
-                )}
+            <div
+  className="srprodetail1"
+  style={{ position: 'relative', display: 'flex', alignItems: 'center' }}
+>
+  {isImageload && (
+    <Skeleton
+      sx={{ width: "95%", height: "550px", margin: "20px 0 0 0", position: 'absolute', zIndex: 1 }}
+      className="dt_skeleton_main"
+      variant="rounded"
+    />
+  )}
 
-                {!isImageload ? <div
-                  className="dt_main_prod_img"
-                >
-                  {selectedThumbImg?.type == "img" ? (
-                    <LeftSide
-                    loading={loadingdata}
-                    media={[
-                      ...getImagesArr?.map(item => ({ type: "image", src: item })),
-                      ...pdVideoArr?.map(item => ({ type: "video", src: item }))
-                    ] || null}
-                    isMediaReady={isMediaReady}
-                    mediaBuildDone={mediaBuildDone}
-                    HandleImageDialogOpen={HandleImageDialogOpen}
-                  />
-                  ) : (
-                    <div className="dt_prod_video">
-                      <video
-                        src={selectedThumbImg?.link?.imageUrl}
-                        loop={true}
-                        autoPlay={true}
-                        style={{
-                          width: "100%",
-                          objectFit: "cover",
-                          // marginTop: "40px",
-                          borderRadius: "4px",
-                        }}
-                        onError={(e) => {
-                          e.target.poster = imageNotFound
-                        }}
-                      />
-                    </div>
-                  )}
+  {/* always mounted now — not gated behind isImageload */}
+  <div
+    className="dt_main_prod_img"
+    style={{ opacity: isImageload ? 0 : 1, visibility: isImageload ? 'hidden' : 'visible' }}
+  >
+    {selectedThumbImg?.type == "img" ? (
+      <img
+        ref={imgRef}
+        src={selectedThumbImg?.link?.imageUrl}
+        alt={""}
+        onLoad={() => setIsImageLoad(false)}
+        onError={(e) => {
+          e.target.src = imageNotFound;
+          setIsImageLoad(false); // don't get stuck forever if the image 404s
+        }}
+        className="dt_prod_img"
+      />
+    ) : (
+      <div className="dt_prod_video">
+        <video
+          src={selectedThumbImg?.link?.imageUrl}
+          loop
+          autoPlay
+          style={{ width: "100%", objectFit: "cover", borderRadius: "4px" }}
+          onLoadedData={() => setIsImageLoad(false)}  // videos never fired this before either
+          onError={(e) => {
+            e.target.poster = imageNotFound;
+            setIsImageLoad(false);
+          }}
+        />
+      </div>
+    )}
 
-                  <div className="dt_thumb_prod_img">
-                    {(pdThumbImg?.length > 1 || pdVideoArr?.length > 0) &&
-                      pdThumbImg?.map((ele, i) => {
-                        const firstHalf = ele?.thumbImageUrl?.split("/Design_Thumb")[0];
-                        const secondhalf = ele?.thumbImageUrl?.split("/Design_Thumb")[1]?.split('.')[0];
-                        return (
-                          <img
-                            src={ele?.thumbImageUrl}
-                            alt={""}
-                            onLoad={() => setIsImageLoad(false)}
-                            className="dt_prod_thumb_img"
-                            onClick={() => {
-                              setSelectedThumbImg({
-                                // link: ele.replace('Design_Thumb/', ''),
-                                link: {
-                                  "imageUrl": `${firstHalf}${secondhalf}.${ele?.originalImageExtension}`,
-                                  "extension": `${ele?.originalImageExtension}`
-                                },
-                                type: "img",
-                              });
-                              setThumbImgIndex(i);
-                            }}
-                            onError={(e) => {
-                              e.target.src = imageNotFound
-                            }}
-                          />
-                        )
-                      })}
-                    {filteredVideos?.map((data) => (
-                      <div
-                        style={{
-                          position: "relative",
-                          display: "flex",
-                          justifyContent: "center",
-                          alignItems: "center",
-                        }}
-                        onClick={() =>
-                          // setSelectedThumbImg({ link: data, type: "vid" })
-                          setSelectedThumbImg({ link: { "imageUrl": data, "extension": "mp4" }, type: "vid" })
-                        }
-                      >
-                        <video
-                          src={data}
-                          autoPlay={true}
-                          loop={true}
-                          className="dt_prod_thumb_img"
-                          onError={(e) => {
-                            e.target.poster = imageNotFound
-                          }}
-                        // style={{ height: "100px", objectFit: "cover" }}
-                        />
-                        <IoIosPlayCircle
-                          className="Dt_palyCircle"
-                        // style={{
-                        //   position: "absolute",
-                        //   color: "white",
-                        //   width: "50px",
-                        //   height: "50px",
-                        // }}
-                        />
-                      </div>
-                    ))}
-                  </div>
-                </div> : null}
-
-                {/* </div> */}
-              </div>
+    <div className="dt_thumb_prod_img">
+      {(pdThumbImg?.length > 1 || pdVideoArr?.length > 0) &&
+        pdThumbImg?.map((ele, i) => {
+          const firstHalf = ele?.thumbImageUrl?.split("/Design_Thumb")[0];
+          const secondhalf = ele?.thumbImageUrl?.split("/Design_Thumb")[1]?.split('.')[0];
+          return (
+            <img
+              key={i}
+              src={ele?.thumbImageUrl}
+              alt={""}
+              className="dt_prod_thumb_img"
+              onClick={() => {
+                setSelectedThumbImg({
+                  link: {
+                    imageUrl: `${firstHalf}${secondhalf}.${ele?.originalImageExtension}`,
+                    extension: `${ele?.originalImageExtension}`,
+                  },
+                  type: "img",
+                });
+                setThumbImgIndex(i);
+              }}
+              onError={(e) => { e.target.src = imageNotFound }}
+              // no onLoad here anymore — see note below
+            />
+          );
+        })}
+      {filteredVideos?.map((data, i) => (
+        <div
+          key={i}
+          style={{ position: "relative", display: "flex", justifyContent: "center", alignItems: "center" }}
+          onClick={() => setSelectedThumbImg({ link: { imageUrl: data, extension: "mp4" }, type: "vid" })}
+        >
+          <video
+            src={data}
+            autoPlay
+            loop
+            className="dt_prod_thumb_img"
+            onError={(e) => { e.target.poster = imageNotFound }}
+          />
+          <IoIosPlayCircle className="Dt_palyCircle" />
+        </div>
+      ))}
+    </div>
+  </div>
+</div>
               <div className="srprodetail2">
                 <div className="srprodetail2-cont">
                   <p className="smilingProdutDetltTitle">{formatTitleLine(singleProd?.TitleLine) ? `${singleProd?.TitleLine ?? ""}` : ''}</p>
@@ -1726,9 +1724,9 @@ const ProductDetail = ({ storeinit,
                                 onChange={(e) => handleCustomChange(e, "cs")}
                                 style={{ marginLeft: "35px" }}
                               >
-                                {csQcCombo.map((ele) => (
+                                {csQcCombo.map((ele, i) => (
                                   <option
-                                    key={ele?.QualityId}
+                                    key={i}
                                     value={`${ele?.Quality},${ele?.color}`}
                                   >{`${ele?.Quality},${ele?.color}`}</option>
                                 ))}
@@ -1840,32 +1838,32 @@ const ProductDetail = ({ storeinit,
                         Metal Purity:{" "}
                         <span className="part1_value">{singleProd?.IsMrpBase === 1 ? singleProd?.MetalTypePurity : selectMtType}</span>
                       </span> : null}
-                      {(singleProd?.IsMrpBase !== 1) ? <sapn className="part1_key">
+                      {(singleProd?.IsMrpBase !== 1) ? <span className="part1_key">
                         Metal Color:{" "}
                         <span className="part1_value">{mtColorLocal?.filter(
                           (ele) => ele?.colorcode == metalColor
                         )[0]?.metalcolorname}</span>
-                      </sapn> : null}
+                      </span> : null}
 
                       {(storeInit?.IsDiamondCustomization === 1 &&
-                        diaQcCombo?.length > 0 && diaList?.length && singleProd?.DiaQuaCol !== "" && selectDiaQc && singleProd?.IsMrpBase !== 1) ? <sapn className="part1_key">
+                        diaQcCombo?.length > 0 && diaList?.length && singleProd?.DiaQuaCol !== "" && selectDiaQc && singleProd?.IsMrpBase !== 1) ? <span className="part1_key">
                         Diamond Quality Color:{" "}
                         <span className="part1_value">{`${selectDiaQc}`}</span>
-                      </sapn> : null}
+                      </span> : null}
 
-                      {storeInit?.IsB2BWebsite == 0 ? <sapn className="part1_key">
+                      {storeInit?.IsB2BWebsite == 0 ? <span className="part1_key">
                         Gross Wt:{" "}
                         <span className="part1_value">
                           {(singleProd1?.Gwt ?? singleProd?.Gwt)?.toFixed(3)}
                         </span>
-                      </sapn> : null}
+                      </span> : null}
 
-                      <sapn className="part1_key">
+                      <span className="part1_key">
                         Net Wt:{" "}
                         <span className="part1_value">
                           {(singleProd1?.Nwt ?? singleProd?.Nwt)?.toFixed(3)}
                         </span>
-                      </sapn>
+                      </span>
 
 
                     </div>
@@ -2149,8 +2147,8 @@ const ProductDetail = ({ storeinit,
                   <li className="dt_deatil_proDeatilList">Color</li>
                   <li className="dt_deatil_proDeatilList">Pcs / Wt</li>
                 </ul>
-                {diaList?.map((data) => (
-                  <ul className="dt_mt_detail_title_ul">
+                {diaList?.map((data,i) => (
+                  <ul className="dt_mt_detail_title_ul" key={i}>
                     <li className="dt_deatil_proDeatilList1">{data?.F}</li>
                     <li className="dt_deatil_proDeatilList1">{data?.H}</li>
                     <li className="dt_deatil_proDeatilList1">{data?.J}</li>
@@ -2766,7 +2764,7 @@ const ProductDetail = ({ storeinit,
                 </Swiper>
               </div>
             </div>}
-          
+
         </div>)
       }
     </>

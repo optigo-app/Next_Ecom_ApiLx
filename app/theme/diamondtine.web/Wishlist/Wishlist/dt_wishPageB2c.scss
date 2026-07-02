@@ -1,0 +1,295 @@
+@import '../../../scss/variable.scss';
+
+.dt_MainWishDiv {
+  font-family: $primaryFontFamily;
+  color: $titleColor;
+
+  .bg-imageCart {
+    position: relative;
+    height: 140px;
+    background: none;
+    background-position: 50%;
+    background-size: cover;
+    font-family: $primaryFontFamily;
+
+    .overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+    }
+
+    .text-container {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 100%;
+      text-align: center;
+      color: #000;
+      transform: translate(-50%, -50%);
+      z-index: 1;
+    }
+
+    .dt_WishdesignCounttext {
+      color: #000;
+      font-size: $fontSize7;
+      text-transform: capitalize;
+    }
+  }
+
+  .cart {
+    display: flex;
+    flex-direction: row;
+    margin-inline: 20%;
+    margin-top: 50px;
+    gap: 10px;
+
+    .cart-items {
+      width: 100%;
+      margin-bottom: 20px;
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+
+        th,
+        tr {
+          padding: 10px;
+          text-align: left;
+          border-bottom: 1px solid #ddd;
+        }
+
+        .product {
+          display: flex;
+          align-items: center;
+          width: 350px;
+          height: 160px;
+          margin: 0;
+          padding: 0;
+
+          img {
+            max-width: 160px;
+            max-height: 160px;
+            width: 100%;
+          }
+
+          .product-details {
+            p {
+              margin: 0;
+              font-size: $fontSize1;
+              margin-left: 15px;
+            }
+          }
+        }
+
+        .total {
+          color: rgb(168, 128, 124);
+          font-weight: 500;
+
+          .dt_Wl-CartbtnDiv {
+            text-align: center;
+            margin-bottom: 10px;
+            padding: 0;
+            margin: 0;
+
+            .dt_Wl-Cartbtn {
+              width: 150px;
+              height: 30px;
+              font-size: $fontSize2;
+              font-weight: 600;
+              color: $btn1bgColor;
+              background: none;
+              border: none;
+              text-transform: capitalize !important;
+              cursor: pointer;
+
+              &:hover {
+                color: $btn1FontColor;
+                background-color: $btn1bgColor;
+              }
+            }
+          }
+        }
+
+        .dt_quantity {
+          .dt_cartB2c-quantity {
+            display: flex;
+            width: 130px;
+            height: 45px;
+            border: 1px solid #ccc;
+            font-family: $primaryFontFamily;
+
+            .input {
+              width: 50%;
+              margin: 0;
+              padding: 0;
+              text-align: center;
+              border: none;
+              font-family: $primaryFontFamily;
+              color: $titleColor;
+            }
+
+            a.bttn,
+            .bttn {
+              width: 50%;
+              padding: 0;
+              text-align: center;
+              color: $titleColor;
+              background-color: white;
+              font-size: 24px;
+              cursor: pointer;
+              border: none;
+              font-family: $primaryFontFamily;
+              box-shadow: none;
+            }
+          }
+        }
+
+        .remove {
+          button {
+            background-color: transparent;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+          }
+        }
+      }
+    }
+  }
+
+  .dt_browseBtnMore {
+    width: 220px;
+    height: 50px;
+    margin-bottom: 50px;
+    border: 1px solid #7f8538;
+    background: none;
+    color: #a8807c;
+    font-size: 15px;
+    font-weight: 500;
+    outline: none;
+  }
+}
+
+@media (max-width: 1550px) and (min-width: 1401px) {
+  .dt_MainWishDiv {
+    .cart {
+      .cart-items {
+        table {
+          .product {
+            width: 300px;
+
+            .product-details {
+              p {
+                margin: 0;
+                font-size: $fontSize1;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 1200px) and (min-width: 1100px) {
+  .dt_MainWishDiv {
+    .cart {
+      .cart-items {
+        table {
+          .product {
+            width: 250px;
+
+            .product-details {
+              p {
+                margin: 0;
+                font-size: $fontSize1;
+              }
+            }
+          }
+
+          .price {
+            font-size: $fontSize2;
+          }
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 1099px) and (min-width: 1000px) {
+  .dt_MainWishDiv {
+    .cart {
+      .cart-items {
+        table {
+          .product {
+            width: 250px;
+
+            .product-details {
+              p {
+                margin: 0;
+                font-size: $fontSize1;
+              }
+            }
+          }
+
+          .price {
+            font-size: $fontSize2;
+          }
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 999px) {
+  .dt_MainWishDiv {
+    padding-top: 57px;
+
+    .cart {
+      flex-direction: row;
+
+      .cart-items {
+        .price {
+          font-size: $fontSize2;
+          font-weight: 600;
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 1400px) {
+  .dt_MainWishDiv {
+    .cart {
+      margin-inline: 10%;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .dt_MainWishDiv {
+    .cart {
+      flex-direction: column;
+
+      .cart-items {
+        table {
+
+          th,
+          td {
+            padding: 5px;
+          }
+        }
+      }
+
+      .cart-totals {
+        padding: 10px;
+
+        button {
+          padding: 5px;
+        }
+      }
+    }
+  }
+}

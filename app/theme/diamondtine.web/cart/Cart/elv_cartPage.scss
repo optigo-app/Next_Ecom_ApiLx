@@ -288,11 +288,12 @@
 
     .elv_cartDetailsData_div {
         width: 100%;
+        padding: 0px 100px;
         display: flex;
         justify-content: space-between;
 
         .elv_CartProducts_div {
-            width: 72%;
+            width: 69% !important;
             display: flex;
             flex-wrap: wrap;
             gap: 7px;
@@ -411,7 +412,7 @@
         }
 
         .elv_CartSingleProducts_div {
-            width: 27%;
+            width: 30% !important;
         }
     }
 
@@ -422,7 +423,7 @@
         // align-items: end;
 
         .elv_Cart-imageDiv {
-            border-radius: 20px;
+            border-radius: 0px !important;
             width: 100%;
             height: 100%;
             overflow: hidden;
@@ -431,7 +432,8 @@
 
             .elv_cartImage {
                 width: 100%;
-                height: 380px;
+                height: 430px !important;
+                border: 1px solid #e8e8e8;
                 object-fit: contain;
                 text-indent: -100vw;
                 overflow: hidden;
@@ -785,10 +787,11 @@
 }
 
 .elv_option label {
-  font-size: 13px;
+  font-size: 15px !important;
   font-weight: 600;
   letter-spacing: 0.3px;
-  color: #4e4e4e;
+  color: #000000 !important;
+  font-weight: bold;
 }
 
 /* ---- MODERN SELECT ---- */
@@ -796,7 +799,7 @@
   width: 100%;
   padding: 10px 12px;
   font-size: 14px;
-  border-radius: 8px;
+  border-radius: 0px !important;
   border: 1px solid #d8d8d8;
   background: #fff !important;
   color: #222;

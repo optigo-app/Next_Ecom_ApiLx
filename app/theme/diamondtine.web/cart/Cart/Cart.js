@@ -253,7 +253,7 @@ const ElveeCartPage = ({ storeinit, visiterId }) => {
   }, []);
 
   const handleMoveToOrder = () => {
-    navigate("/Delivery", { replace: true });
+    navigate("/delivery", { replace: true });
     sessionStorage.setItem("iscartData", randomNumber);
   };
 
@@ -333,7 +333,7 @@ const ElveeCartPage = ({ storeinit, visiterId }) => {
         width: " 100%",
         height: "100vh",
         zIndex: "100",
-        background: "#83838333",
+      
       }}
     >
       <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh" }}>
@@ -350,6 +350,7 @@ const ElveeCartPage = ({ storeinit, visiterId }) => {
           boxSizing: 'border-box',
           px: { xs: 1, sm: 2, md: 4 },
           width: "100%",
+          // background: "#fdf6f6",
         }}
       >
         {hasItems && <CartHeader   count={finalCartData.length} AddOrderRemark={handleOrderRemarkFun} handleRemoveAll={handleConfirmRemoveAll} totalPrice={getTotalPrice[0]?.total} CurrencyCode={loginUserDetail?.CurrencyCode ?? CurrencyData?.CurrencyCode} IsPriceShow={storeinit?.IsPriceShow == 1} handleMoveToOrder={handleDiscountModalOpen} handleOpen1={handleOpen1} handleClose1={handleClose1} orderRemark={orderRemark} OrderMessage={orderRemark ? "View & Edit Order Remark" : "Add Order Remark"} openClearAllModal={handleOpen} closeClearAllModal={handleClose} summary={summary} />}
@@ -362,9 +363,11 @@ const ElveeCartPage = ({ storeinit, visiterId }) => {
                   <div className="elv_CartProducts_div">
                     <Grid container spacing={1.5}
                       sx={{
-                        width: '100%'
+                        width: '100%',
+                        
                       }}
-                    >
+                    ><div class="dt3_tablelable" style={{width:"100%",display:"flex",justifyContent:"space-around",fontWeight:"500",fontSize:"20px"}}><p>Image</p><p>Product Details</p><p>Price</p><p>Total Price</p></div>
+                    
                       <CartList items={finalCartData} CartCardImageFunc={CartCardImageFunc} showRemark={showRemark} productRemark={productRemark} CurrencyData={CurrencyData} decodeEntities={decodeEntities} onSelect={handleSelectItem} selectedItem={selectedItem} selectedItems={selectedItems} multiSelect={multiSelect} border={border} handleBorder={handleBorder} onRemove={handleRemoveItem} handleAddReamrk={handleAddReamrk} handleRemarkChange={handleRemarkChange} handleSave={handleSave} handleCancel={handleCancel} openHandleUpdateCartModal={handleOpenModal} showRemark1={showRemark1} handleClose1={handleClose1} />
                     </Grid>
                   </div>

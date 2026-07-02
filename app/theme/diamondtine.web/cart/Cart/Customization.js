@@ -185,20 +185,20 @@ const Customization = ({ ispriceloding, selectedItem, qtyCount, handleIncrement,
                 px: 4,
                 fontSize: "0.95rem",
                 fontWeight: 600,
-                borderRadius: "12px",
+         
                 background: "#fff",
-                backdropFilter: "blur(8px)",
+       
                 color: "#111",
                 textTransform: "none",
-                boxShadow: "0 2px 6px rgba(0,0,0,0.08)",
+                boxShadow:"none",
+                
                 transition: "all 0.25s ease",
                 "&:hover": {
-                  background: "rgba(255,255,255,0.9)",
-                  boxShadow: "0 3px 8px rgba(0,0,0,0.12)",
+                  boxShadow: "0 2px 6px rgba(0,0,0,0.08)",
                 },
               }}
             >
-              Apply
+              Save
             </Button>
           </div>
         </div>
@@ -221,7 +221,7 @@ const Customization = ({ ispriceloding, selectedItem, qtyCount, handleIncrement,
                     <Box
                       sx={{
                         border: "1px solid #c4c4c4",
-                        borderRadius: "4px",
+                      
                         padding: "8px 14px",
                         backgroundColor: "#fff",
                         minHeight: "40px",
@@ -245,7 +245,7 @@ const Customization = ({ ispriceloding, selectedItem, qtyCount, handleIncrement,
                     <Box
                       sx={{
                         border: "1px solid #c4c4c4",
-                        borderRadius: "4px",
+                    
                         padding: "8px 14px",
                         backgroundColor: "#fff",
                         minHeight: "40px",
@@ -262,14 +262,14 @@ const Customization = ({ ispriceloding, selectedItem, qtyCount, handleIncrement,
 
                 {/* 3. Diamond */}
                 {(selectedItem?.Dwt != "0" || selectedItem?.Dpcs != "0") && (
-                  <Grid item xs={12} sm={6}>
+                  <Grid item xs={12} sm={12}>
                     <Typography variant="caption" sx={{ fontWeight: "bold", mb: 0.5, display: "block", textTransform: "uppercase", color: "#7d7d7d" }}>
                       Diamond:
                     </Typography>
                     <Box
                       sx={{
                         border: "1px solid #c4c4c4",
-                        borderRadius: "4px",
+                        
                         padding: "8px 14px",
                         backgroundColor: "#fff",
                         minHeight: "40px",
@@ -293,7 +293,7 @@ const Customization = ({ ispriceloding, selectedItem, qtyCount, handleIncrement,
                     <Box
                       sx={{
                         border: "1px solid #c4c4c4",
-                        borderRadius: "4px",
+                      
                         padding: "8px 14px",
                         backgroundColor: "#fff",
                         minHeight: "40px",
@@ -317,7 +317,7 @@ const Customization = ({ ispriceloding, selectedItem, qtyCount, handleIncrement,
                     <Box
                       sx={{
                         border: "1px solid #c4c4c4",
-                        borderRadius: "4px",
+                       
                         padding: "8px 14px",
                         backgroundColor: "#fff",
                         minHeight: "40px",
@@ -382,7 +382,7 @@ const Customization = ({ ispriceloding, selectedItem, qtyCount, handleIncrement,
                       variant="contained"
                       onClick={() => handleUpdateCart(selectedItem)}
                       sx={{
-                        borderRadius: "20px",
+                     
                         padding: "6px 30px",
                         textTransform: "none",
                         fontWeight: "bold",

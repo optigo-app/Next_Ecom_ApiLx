@@ -7,7 +7,8 @@
 
 $backgroundColor: var(--background-color);
 // $backgroundColor:  storeInit?.IsPLW == 1 ? #c4cfdb :#c0bbb1 ;
-$btn1bgColor: #fff;
+ 
+$btn1bgColor: #a8807c;
 $btn1ActivebgColor: #7d7f85;
 
 @keyframes scaleUpDown {
@@ -94,7 +95,7 @@ $footertextcolor: black;
 $sliderbar: #08054c;
 $btnBg: #08054c;
 $btncolor: white;
-$authbtnbg: #000 !important;
+$authbtnbg: #a8807c ;
 $authbtncolor: white;
 $authbg: white;
 $footertextcolor: white;
