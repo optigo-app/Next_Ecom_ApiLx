@@ -1,0 +1,792 @@
+// @use "../../../../theme/malakanJwewls.web/style/variable.scss" as *;
+@import "../../../../theme/malakanJwewls.web/style/variable.scss";
+
+.mala_headerMain_div {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+
+  .mala_Top_header {
+    height: 220px;
+    background-color: $backgroundColor;
+  }
+
+  .mala_Top_header_menu_main {
+    padding-inline: 0%;
+    display: flex;
+    height: 100%;
+    justify-content: center;
+    margin-top: 26px;
+  }
+
+  .mala_Top_header_menu_main_sub {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .mala_Top_header_sub {
+    position: relative;
+    z-index: 111;
+  }
+
+  .mala_Top_header_logo_div {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-top: 20px;
+    height: 120px;
+    padding: 0 4%;
+
+    @media screen and (max-width:1200px) {
+      justify-content: space-between;
+      flex-direction: row-reverse;
+    }
+
+    @media screen and (max-width:768px) {
+      padding-bottom: 30px;
+      // padding-top: 0px;
+    }
+  }
+
+  .mala_logo_header {
+    object-fit: contain;
+    max-width: 1000px;
+  }
+
+  .smiling_Top_header_div3 {
+    width: 35%;
+    display: flex;
+    align-items: center;
+  }
+
+  .nav_ul_shop {
+    list-style: none;
+    display: flex;
+    align-items: center;
+    margin: 0px;
+    padding: 0px;
+    gap: 40px;
+    font-weight: 900;
+    // gap: 60px;
+  }
+
+  .nav_li_smining_shop{
+    color: $menuTextColor;
+    // color: white;
+    font-size: $fontSize3;
+    // font-size: $fontSize2; // privaa 
+    font-weight: 600;
+    letter-spacing: 1px;
+    position: relative;
+    display: inline-block;
+    height: 50px;
+    font-family: $primaryFontFamily;
+    display: flex;
+    align-items: center;
+
+    @media screen and (min-width: 1200px) and (max-width: 1700px) {
+      color: "#EAEAEA";
+    }
+  }
+
+  .nav_li_smining_shop::before {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 0%;
+    height: 1px;
+    font-family: $primaryFontFamily;
+    background-color:  "#EAEAEA";
+    transition: width 0.3s ease-out;
+  }
+
+  .nav_li_smining_shop:hover::before {
+    width: 100%;
+    left: 0;
+    right: auto;
+    transition: width 0.3s ease-out;
+  }
+
+  // .nav_li_smining_shop:hover {
+  //   height: 50px;
+  //   // width: 110px;
+  //   display: flex;
+  //   align-items: center;
+  // }
+
+  .nav_li_smining_Icone {
+    // privaa
+    // color: $hoverTextColor;
+    color: $menuTextColor;
+    // color: white;
+    font-size: $fontSize1;
+    font-weight: 500;
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+  }
+
+  .nav_li_smining {
+    color: $menuTextColor;
+    // color: white;
+    font-size: $fontSize2;
+    font-weight: 600;
+    letter-spacing: 1px;
+    position: relative;
+    display: inline-block;
+    height: 50px;
+    font-family: $primaryFontFamily;
+    display: flex;
+    align-items: center;
+
+    // &:hover {
+    //   color: $hoverTextColor;
+    // }
+  }
+
+  .nav_li_smining::before {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 0%;
+    height: 1px;
+    font-family: $primaryFontFamily;
+    background-color:  "#EAEAEA";
+    transition: width 0.3s ease-out;
+  }
+
+  .nav_li_smining:hover::before {
+    width: 100%;
+    left: 0;
+    right: auto;
+    transition: width 0.3s ease-out;
+  }
+
+  .malkan_logo_nav {
+    color: $menuTextColor;
+    // color: white;
+
+    // &:hover {
+    //   color: $hoverTextColor;
+    // }
+  }
+
+  .nav_li_smining_Fixed_Icone {
+    color: black;
+    font-size: 13px;
+    font-weight: 500;
+    position: relative;
+    display: inline-block;
+  }
+
+  .nav_li_smining_Fixed {
+    color: black;
+    font-size: $fontSize2;
+    font-weight: 500;
+    letter-spacing: 1px;
+    position: relative;
+    display: inline-block;
+    font-family: $primaryFontFamily;
+  }
+
+  .mala_close_icon {
+    color: "#EAEAEA";
+  }
+
+  .nav_li_smining_Fixed::before {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 0%;
+    height: 1px;
+    background-color: #7d7f85;
+    transition: width 0.3s ease-out;
+  }
+
+  .nav_li_smining_Fixed:hover::before {
+    width: 100%;
+    left: 0;
+    right: auto;
+    transition: width 0.3s ease-out;
+  }
+
+  .mala_logo_header_Fixed {
+    object-fit: contain;
+    max-width: 500px;
+  }
+
+  .stam_Top_Header_fixed_main {
+    width: 100%;
+    background-color: $stambackcolor;
+    display: flex;
+    align-items: center;
+    text-align: center;
+    transform: translateY(-300px);
+    height: 110px;
+  }
+
+  .stam_Top_Header_fixed_main.fixed {
+    position: fixed;
+    top: 0;
+    box-shadow: 0 2px 5px rgba(20, 19, 19, 0.1);
+    z-index: 1000;
+    transform: translateY(0px);
+    transition: all 0.7s ease;
+    height: 110px;
+  }
+
+  .stam_A_link {
+    text-decoration: none;
+    // color: $homePageTopTextColor !important;
+    color: $menuTextColor !important;
+    font-family: $primaryFontFamily;
+    // color: white;
+
+    // just for privaa
+
+    // &:hover {
+    //   color: $hoverTextColor !important;
+    // }
+  }
+
+  .mala_A_linkFixed {
+    text-decoration: none;
+    color: $menuTextColor;
+    // color: white;
+  }
+
+  /// open dropdownList
+  .shop-dropdown {
+    height: auto;
+    width: 100%;
+    position: absolute;
+    background: #fff;
+    top: 72px;
+    left: 0;
+    display: none;
+    transition: all 0.5s ease;
+    box-shadow: rgba(50, 50, 93, 0.25) 0px 30px 60px -12px inset, rgba(0, 0, 0, 0.3) 0px 18px 36px -18px inset;
+  }
+
+  .shop-dropdown.open {
+    display: block;
+    position: absolute;
+    z-index: 111111;
+    width: 88%;
+    margin-left: 6%;
+    margin-top: 150px;
+    transition: all 0.5s ease;
+  }
+
+  .shop-dropdown.open.fixed {
+    position: fixed;
+    // top: 50px;
+    box-shadow: 0 2px 5px rgba(20, 19, 19, 0.1);
+    z-index: 1000;
+    transform: translateY(0px);
+    transition: all 0.4s ease;
+    height: 60px;
+  }
+
+  .muilistMenutext {
+    font-family: $primaryFontFamily;
+    font-size: 12px !important;
+    font-weight: 600;
+    margin: 5px 5px 5px 0px;
+    text-decoration: underline;
+  }
+
+  .mala_menuSubTitle {
+    font-size: 11px;
+    font-family: $primaryFontFamily;
+    text-decoration: none;
+
+    // just for privaa
+    // color: $hoverTextColor;
+
+    // p {
+    //   color: $hoverTextColor;
+    // }
+    color: $menuTextColor;
+
+    p {
+      color: $menuTextColor;
+    }
+  }
+
+  .muilist2ndSubMenutext {
+    font-family: $primaryFontFamily;
+    font-size: 11px;
+    margin: 5px;
+    cursor: pointer;
+  }
+
+  .muilist2ndSubMenutext:hover {
+    color: $homePageTopTextColor;
+  }
+
+  .mala_underline_button {
+    background-color: transparent;
+    border: none;
+    font-family: $primaryFontFamily;
+    outline: none;
+    cursor: pointer;
+    width: 80px;
+    height: 25px;
+    margin: 15px 0px 0px 6px;
+    font-size: 13px;
+    text-decoration: underline;
+
+    // just for privaa
+    // color: $hoverTextColor;
+    color: $menuTextColor;
+  }
+
+  .mala_listMain {
+    display: flex;
+    flex-flow: column wrap;
+    height: 350px;
+    width: 100%;
+    margin-right: 20px !important;
+  }
+
+  .srm_MobileSiderBarMain {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 80%;
+    height: 150%;
+
+    // just for privaa
+    // background-color: #F5FDFF;
+    background-color: $backgroundColor;
+    z-index: 999999999999;
+    transition: all 0.9s ease-in-out;
+    box-shadow: rgba(0, 0, 0, 0.04) 0px 3px 5px;
+  }
+
+  //search box styling......
+  .mala_smlingSearchoverlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: 100vh;
+    right: 0;
+    background-color: rgba(0, 0, 0, 0.4);
+    display: flex;
+    z-index: 999;
+    font-family: $primaryFontFamilyMedium;
+  }
+
+  .mala_smlingTopSerachOver {
+    height: 70px;
+    background-color: white;
+    width: 100%;
+    margin: 10px 100px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .mala_serachinputBoxOverly {
+    width: 95%;
+    height: 50px;
+    border: none;
+    outline: none;
+    letter-spacing: 1.5px;
+  }
+
+  .mala_smlingTopSerachOver-Fixed {
+    height: 60px;
+    background-color: white;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .mala_smlingSearchoverlayNew {
+    position: relative;
+    transform: translateY(-200px);
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 150%;
+    background-color: rgba(0, 0, 0, 0.4);
+    display: flex;
+    z-index: 999;
+    font-family: $primaryFontFamilyMedium;
+  }
+
+  .mala_smlingSearchoverlayNew.fixed {
+    position: fixed;
+    top: 0;
+    left: 0;
+    box-shadow: 0 2px 5px rgba(20, 19, 19, 0.1);
+    z-index: 1000;
+    transform: translateY(0px);
+    transition: all 0.4s ease;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.4);
+    display: flex;
+    transform: translateY(0px);
+    transition: all 0.4s ease;
+  }
+
+  .Smining-Top-Header-fixed-main.fixed.searchoverly {
+    z-index: -500 !important;
+  }
+
+  .srm_MobileSiderBarMain::-webkit-scrollbar {
+    display: none !important;
+  }
+
+  .mala_showDropOptionMainDiv {
+    overflow: auto;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    background-color: $menuBgColor;
+    color: $menuTextColor;
+    letter-spacing: 0.5px;
+  }
+
+  .mala_headerOptionSingleDiv {
+    // jist for privaa
+    // border-right: 1px solid $hoverTextColor;
+    border-right: 1px solid $menuTextColor;
+    padding-left: 30px;
+    min-width: fit-content;
+
+    &:last-child {
+      border-right: none;
+    }
+  }
+
+  .muIconeMobileHeader {
+    color:  "#EAEAEA";
+  }
+
+  .mala_showDropOptionMainDiv::-webkit-scrollbar {
+    height: 10px !important;
+  }
+
+  .badgeColor .MuiBadge-badge {
+    background-color: #c0bbb1 !important;
+  }
+
+  .badgeColorFix .MuiBadge-badge {
+    // privaa
+    // background-color: $hoverTextColor !important;
+    // color: white !important;
+    background-color: white !important;
+    color: #c0bbb1 !important;
+    margin-left: 10px !important;
+  }
+
+  .malkan_sec_menu {
+    // privaa
+    // color: $hoverTextColor;
+    color: $menuTextColor;
+    // color: white;
+    font-size: 12px;
+    font-family: $primaryFontFamily !important;
+    font-weight: 500;
+    letter-spacing: 1px;
+  }
+
+  .mala_mobile_viewAllBtn {
+    border: none;
+    background-color: transparent;
+    // privaa
+    // color: $hoverTextColor;
+    color: $menuTextColor;
+    // color: white;
+    text-decoration: underline;
+    font-size: 12px;
+    font-family: $primaryFontFamily !important;
+    font-weight: 500;
+    letter-spacing: 1px;
+  }
+
+  .mala_mobile_subMenu {
+    margin: 0px 0px 0px 15px;
+    padding-block: 5px;
+    // privaa
+    // color: $hoverTextColor;
+    color: $menuTextColor;
+    // color: #f6f6f6;
+    font-family: $primaryFontFamily;
+  }
+
+  .mala_mobile_list_bar {
+    padding: 5px;
+    // privaa
+    // border-bottom: 1px solid $hoverTextColor;
+    border-bottom: 1px solid $menuTextColor;
+  }
+
+  .mala_mobile_search {
+    height: 20px;
+    cursor: pointer;
+    // privaa
+    // color: $hoverTextColor;
+    color: $menuTextColor;
+    width: 20px;
+  }
+
+  .mlakna_mob_search {
+    display: flex;
+    // privaa
+    // border-bottom: 1px solid $hoverTextColor;
+    border-bottom: 1px solid white;
+    font-family: $primaryFontFamily ;
+    // border: 1px solid $hoverTextColor;
+    border: 1px solid white;
+    padding: 12px 8px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 5px 5px 2rem 5px;
+
+    input {
+      width: 100%;
+      border: none;
+      outline: none;
+      font-weight: 500;
+      // privaa
+      // color: $hoverTextColor;
+      color: $menuTextColor;
+      // color: white;
+      font-size: 12px;
+      background: transparent;
+      letter-spacing: 1.2px;
+    }
+  }
+
+  .mobileSideBarSearch::placeholder {
+    // privaa
+    // color: $hoverTextColor;
+    color: $menuTextColor;
+    // color: white;
+  }
+
+  .mala_mobileHeader_top_div1 {
+    display: flex;
+    align-items: center;
+    justify-content: start;
+  }
+
+
+  @media screen and (max-width: 1700px) {
+    .mala_Top_header_menu_main_sub {
+      width: 40% !important;
+    }
+
+    .smiling_Top_header_div3 {
+      width: 40% !important;
+    }
+  }
+
+  @media screen and (max-width: 1650px) {
+    .mala_headerOptionSingleDiv {
+      min-width: 250px !important;
+    }
+  }
+
+  @media screen and (max-width: 1500px) {
+    .mala_headerOptionSingleDiv {
+      min-width: 200px !important;
+    }
+
+    .mala_Top_header_menu_main_sub {
+      width: 45% !important;
+    }
+
+    .smiling_Top_header_div3 {
+      width: 45% !important;
+    }
+
+    .nav_li_smining {
+      letter-spacing: 0px !important;
+    }
+    .nav_li_smining_shop {
+      letter-spacing: 0px !important;
+    }
+  }
+
+  @media screen and (max-width: 1390px) {
+    .nav_li_smining {
+      font-size: 12px !important;
+    }
+    .nav_li_smining_shop {
+      font-size: 12px !important;
+    }
+
+    .nav_li_smining_Fixed {
+      font-size: 12px !important;
+    }
+  }
+
+  @media screen and (min-width: 1201px) {
+    .nav_ul_shop_menu_Mobile {
+      display: none;
+    }
+  }
+
+  @media screen and (max-width: 1200px) {
+    .mala_Top_header_menu_main {
+      display: none !important;
+    }
+
+    .mala_mobileHeader_top_div1 {
+      width: 33.33%;
+
+      @media screen and (max-width:768px) {
+        width: 12%;
+      }
+    }
+
+    .mala_mobileHeader_top_div2_web {
+      width: 33.33%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .mala_mobileHeader_top_div2_mobile {
+      width: 33.33%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .mala_mobileHeader_top_div3 {
+      width: 33.33%;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+    }
+
+    .mala_Top_header {
+      height: 80px !important;
+    }
+
+    .muilistMenutext {
+      text-decoration: none;
+    }
+
+    .srm_MobileSiderBarMain {
+      height: 100%;
+      width: 50%;
+      overflow: scroll;
+      color: white !important;
+      box-shadow: rgba(17, 17, 26, 0.05) 0px 4px 16px, rgba(17, 17, 26, 0.05) 0px 8px 32px;
+
+      @media screen and (max-width:1200px) {
+        width: 48%;
+      }
+
+      @media screen and (max-width:1008px) {
+        width: 60%;
+      }
+
+      @media screen and (max-width:800px) {
+        width: 70%;
+      }
+
+      @media screen and (max-width:420px) {
+        width: 95%;
+      }
+    }
+
+    .nav_li_smining_shop {
+      display: none;
+    }
+
+    .nav_li_smining_Mobile {
+      display: none;
+    }
+
+    .nav_ul_shop_menu_Mobile {
+      padding: 0px;
+      margin: 0px !important;
+      list-style: none;
+      // position: absolute;
+      // right: 43px;
+      // @media screen and (max-width:420px) {
+      // right: 30px;
+      // }
+    }
+
+    .mala_menuStaicMobile {
+      margin: 0px;
+      // privaa
+      // color: $hoverTextColor;
+      color: $menuTextColor;
+      // color: white;
+      padding: 5px 0px 5px 15px;
+      font-family: $primaryFontFamily !important;
+      font-weight: 800;
+      letter-spacing: 1px;
+    }
+
+    .mala_menuStaicMobilePage {
+      margin: 0px;
+      border-bottom: 1px solid white;
+      // privaa
+      // color: $hoverTextColor;
+      color: $menuTextColor;
+      // color: white;
+      padding: 5px 0px 5px 20px;
+      font-family: $primaryFontFamily;
+      letter-spacing: 1px;
+    }
+
+    .mala_menuStaicMobilePageLink {
+      margin: 0px;
+      // privaa
+      // color: $hoverTextColor;
+      color: $menuTextColor;
+      // color: white;
+      font-weight: 800;
+      padding: 5px 0px 5px 20px;
+      font-family: $primaryFontFamily;
+      letter-spacing: 1px;
+    }
+
+    .mala_ListMenuSiderMobile {
+      margin-top: 0px !important;
+    }
+
+    .smiling_Top_header_div3 {
+      padding-right: 5px;
+    }
+  }
+
+  @media screen and (min-width: 501px) {
+    .mala_logo_header_Mobile {
+      display: none !important;
+    }
+
+    .mala_mobileHeader_top_div2_mobile {
+      display: none !important;
+    }
+  }
+
+  @media screen and (max-width: 500px) {
+    .mala_logo_header_webLogo {
+      display: none !important;
+    }
+
+    .mala_mobileHeader_top_div2_web {
+      display: none !important;
+    }
+  }
+}

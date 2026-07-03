@@ -27,6 +27,10 @@ export const themeMap = {
     // page: "elvee.web",
     page: LocalSetup,
   },
+  "nxtmalakanJwewls.web": {
+    // page: "elvee.web",
+    page: LocalSetup,
+  },
   'nxthoq.web': {
     page: "hoq.web",
   },

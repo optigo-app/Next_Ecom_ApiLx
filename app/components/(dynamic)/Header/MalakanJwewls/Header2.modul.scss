@@ -1,0 +1,375 @@
+@use "../../../../theme/malakanJwewls.web/style/variable.scss" as *;
+
+.mala_header2_mainDiv {
+
+    .smiling_Top_header {
+        height: 80px;
+        background-color: $backgroundColor;
+    }
+
+    .smiling_Top_header_sub {
+        padding-inline: 6%;
+        display: flex;
+        height: 100%;
+    }
+
+    .smiling_Top_header_div1 {
+        width: 50%;
+        display: flex;
+        align-items: center;
+    }
+
+    .smiling_Top_header_div2 {
+        width: 7%;
+        display: flex;
+    }
+
+    .mala_logo_header {
+        object-fit: contain;
+        max-width: 110px;
+    }
+
+    .smiling_Top_header_div3 {
+        width: 42%;
+        justify-content: flex-end;
+        display: flex;
+        align-items: center;
+    }
+
+    .nav_ul_shop {
+        list-style: none;
+        display: flex;
+        align-items: center;
+        margin: 0px;
+        padding: 0px;
+        gap: 20px;
+    }
+
+    .nav_li_smining_shop:hover {
+        height: 150px;
+        // width: 110px;
+        display: flex;
+        align-items: center;
+    }
+
+
+    .nav_li_smining_Icone {
+        color: white;
+        font-size: $fontSize1;
+        font-weight: 500;
+        position: relative;
+        display: inline-block;
+    }
+
+    .nav_li_smining {
+        color: white;
+        font-size: $fontSize2;
+        font-weight: 500;
+        letter-spacing: 1px;
+        position: relative;
+        display: inline-block;
+        font-family: $primaryFontFamily;
+    }
+
+    .nav_li_smining::before {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        width: 0%;
+        height: 1px;
+        background-color: white;
+        transition: width 0.3s ease-out;
+    }
+
+    .nav_li_smining:hover::before {
+        width: 100%;
+        left: 0;
+        right: auto;
+        transition: width 0.3s ease-out;
+    }
+
+    .nav_li_smining_Fixed_Icone {
+        color: #7d7f85;
+        font-size: 13px;
+        font-weight: 500;
+        position: relative;
+        display: inline-block;
+    }
+
+    .nav_li_smining_Fixed {
+        color: #7d7f85;
+        font-size: 13px;
+        font-weight: 500;
+        position: relative;
+        display: inline-block;
+    }
+
+    .nav_li_smining_Fixed::before {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        width: 0%;
+        height: 1px;
+        background-color: #7d7f85;
+        transition: width 0.3s ease-out;
+    }
+
+    .nav_li_smining_Fixed:hover::before {
+        width: 100%;
+        left: 0;
+        right: auto;
+        transition: width 0.3s ease-out;
+    }
+
+    .mala_logo_header_Fixed {
+        object-fit: contain;
+        max-width: 60px;
+    }
+
+    .Smining-Top-Header-fixed-main {
+        width: 100%;
+        background-color: white;
+        display: flex;
+        align-items: center;
+        text-align: center;
+        transform: translateY(-200px);
+        height: 60px;
+    }
+
+    .Smining-Top-Header-fixed-main.fixed {
+        position: fixed;
+        top: 0;
+        box-shadow: 0 2px 5px rgba(20, 19, 19, 0.1);
+        z-index: 1000;
+        transform: translateY(0px);
+        transition: all 0.4s ease;
+        height: 60px;
+    }
+
+
+    /// open dropdownList 
+    .shop-dropdown {
+        height: auto;
+        width: 100%;
+        position: absolute;
+        background: #fff;
+        top: 72px;
+        left: 0;
+        display: none;
+        transition: all 0.5s ease;
+        box-shadow: 0 0 25px 0 rgba(200, 200, 200, .5);
+    }
+
+    .shop-dropdown.open {
+        display: block;
+        position: absolute;
+        z-index: 111111;
+        width: 88%;
+        margin-left: 6%;
+        margin-top: 5px;
+        transition: all 0.5s ease;
+    }
+
+    .shop-dropdown.open.fixed {
+        position: fixed;
+        top: 0;
+        box-shadow: 0 2px 5px rgba(20, 19, 19, 0.1);
+        z-index: 1000;
+        transform: translateY(0px);
+        transition: all 0.4s ease;
+        height: 60px;
+    }
+
+    .muilistMenutext {
+        font-size: 15px !important;
+        font-weight: 600;
+        margin: 5px 5px 5px 0px;
+        text-decoration: underline;
+    }
+
+    .mala_menuSubTitle {
+        font-size: 13px;
+        text-decoration: none;
+    }
+
+    .muilist2ndSubMenutext {
+        font-size: 12px;
+        margin: 5px;
+        cursor: pointer;
+    }
+
+    .muilist2ndSubMenutext:hover {
+        color: black;
+
+    }
+
+    .mala_underline_button {
+        background-color: transparent;
+        border: none;
+        outline: none;
+        cursor: pointer;
+        border: 1px solid lightgray;
+        width: 80px;
+        height: 25px;
+        margin-top: 15px;
+    }
+
+    .mala_listMain {
+        display: flex;
+        flex-flow: column wrap;
+        height: 350px;
+        margin-right: 20px !important;
+    }
+
+
+
+    .srm_MobileSiderBarMain {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 150%;
+        background-color: rgba(192, 187, 177, 1.8);
+        z-index: 999999999999;
+        transition: all 0.9s ease-in-out;
+    }
+
+
+    //search box styling......
+    .mala_smlingSearchoverlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 150%;
+        background-color: rgba(0, 0, 0, 0.40);
+        display: flex;
+        z-index: 999;
+    }
+
+    .mala_smlingTopSerachOver {
+        height: 70px;
+        background-color: white;
+        width: 100%;
+        margin: 10px 100px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .mala_serachinputBoxOverly {
+        width: 95%;
+        height: 50px;
+        border: none;
+        outline: none;
+    }
+
+
+
+    .mala_smlingTopSerachOver-Fixed {
+        height: 60px;
+        background-color: white;
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .mala_smlingSearchoverlayNew {
+        position: relative;
+        transform: translateY(-200px);
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 150%;
+        background-color: rgba(0, 0, 0, 0.40);
+        display: flex;
+        z-index: 999;
+    }
+
+    .mala_smlingSearchoverlayNew.fixed {
+        position: fixed;
+        top: 0;
+        left: 0;
+        box-shadow: 0 2px 5px rgba(20, 19, 19, 0.1);
+        z-index: 1000;
+        transform: translateY(0px);
+        transition: all 0.4s ease;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.40);
+        display: flex;
+        transform: translateY(0px);
+        transition: all 0.4s ease;
+    }
+
+    .Smining-Top-Header-fixed-main.fixed.searchoverly {
+        z-index: -500 !important;
+    }
+
+
+
+
+    .badgeColor .MuiBadge-badge {
+        background-color: #c0bbb1 !important;
+    }
+
+    .badgeColorFix .MuiBadge-badge {
+        background-color: white !important;
+        color: #c0bbb1 !important;
+    }
+
+    @media screen and (min-width:1201px) {
+
+        .nav_ul_shop_menu_Mobile {
+            display: none;
+        }
+    }
+
+    @media screen and (max-width:1200px) {
+
+
+        .smiling_Top_header_sub {
+            padding-inline: 1% !important;
+        }
+
+        .nav_li_smining_shop {
+            display: none;
+        }
+
+        .nav_li_smining_Mobile {
+            display: none;
+        }
+
+        .nav_ul_shop_menu_Mobile {
+            padding: 0px;
+        }
+
+        .mala_menuStaicMobile {
+            margin: 0px;
+            color: white;
+            padding: 5px 0px 5px 15px;
+        }
+
+        .mala_menuStaicMobilePage {
+            margin: 0px;
+            border-bottom: 1px solid white;
+            color: white;
+            padding: 5px 0px 5px 20px;
+        }
+
+        .mala_menuStaicMobilePageLink {
+            margin: 0px;
+            color: white;
+            font-weight: 500;
+            padding: 5px 0px 5px 20px;
+        }
+
+        .mala_ListMenuSiderMobile {
+            margin-top: 0px !important;
+        }
+
+    }
+}

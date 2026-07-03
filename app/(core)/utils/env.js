@@ -11,7 +11,8 @@ export const WEBSITE_DOMAINS = {
   ELVEEWEB: "nxtelvee.web",
   FGSTOREMAPP: 'nxt09.optigoapps.com',
   DIAMONDINEWEB: "nxtdiamondtine.web",
+  MALAKANJWEWLSWEB: "nxtmalakanJwewls.web",
 };
 
-export const NEXT_APP_WEB = WEBSITE_DOMAINS.DIAMONDINEWEB;
+export const NEXT_APP_WEB = WEBSITE_DOMAINS.ELVEEWEB;
 export const NEXT_PUBLIC_SITE_URL = NEXT_APP_WEB;

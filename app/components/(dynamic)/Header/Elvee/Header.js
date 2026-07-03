@@ -24,7 +24,7 @@ import { readCache, writeCache } from "@/app/(core)/cache_utility/cacheActions";
 
 
 const ElveeBaseHeader = ({ hidden, storeInit, logos }) => {
-  const { islogin, loginUserDetail, setislogin, cartCountNum, wishCountNum } = useStore();
+  const { islogin, loginUserDetail, setislogin, cartCountNum, wishCountNum, authChecked } = useStore();
   const Router = useNextRouterLikeRR().push;
   const navigate = url => Router(url);
   const [burgerMenu, setBurgerMenu] = useState(false);
@@ -228,6 +228,8 @@ const ElveeBaseHeader = ({ hidden, storeInit, logos }) => {
       finalId = loginUserDetail?.id || "0";
     }
 
+  
+
     const pricingContext = getPricingContext(loginUserDetail, storeInit, islogin);
     let cacheKey = "";
     if (pricingContext) {
@@ -351,51 +353,66 @@ const ElveeBaseHeader = ({ hidden, storeInit, logos }) => {
   }, []);
 
 
-
   const HandleMoveToMenu = (MenuId) => {
-    navigate("/");
+    console.log("click");
     setMenuId(MenuId);
   };
 
-  useLayoutEffect(() => {
-    const scrollToElement = () => {
-      const targetElement = document.querySelector(`[name='${Menu}']`);
+  const scrollToElement = () => {
+    const targetElement = document.querySelector(`[name='${Menu}']`);
 
-      if (targetElement) {
-        const rect = targetElement.getBoundingClientRect();
-        const offsetTop = window.pageYOffset + rect.top;
-        let top = 135;
-        if (Menu === "elveeGiftMainId") {
-          top = 70;
-        }
-
-        window.scrollTo({
-          top: offsetTop - top,
-          behavior: "smooth",
-        });
-        setMenuId("");
+    if (targetElement) {
+      const rect = targetElement.getBoundingClientRect();
+      const offsetTop = window.pageYOffset + rect.top;
+      console.log(rect,offsetTop,"tt")
+      let top = 135;
+      if (Menu === "elveeGiftMainId") {
+        top = 70;
       }
-    };
 
-    if (Menu !== "") {
-      const timeoutId = setTimeout(() => {
-        scrollToElement();
-        const targetElement = document.querySelector(`[name='${Menu}']`);
-        if (targetElement) {
-          const resizeObserver = new ResizeObserver(() => {
-            scrollToElement();
-          });
-
-          resizeObserver.observe(targetElement);
-          return () => resizeObserver.disconnect();
-        }
-      }, 300);
-
-      return () => clearTimeout(timeoutId);
+      window.scrollTo({
+        top: offsetTop - top,
+        behavior: "smooth",
+      });
+      setMenuId("");
     }
-  }, [Menu, location]);
+  };
 
+  useEffect(() => {
+    if (!Menu) return;
+  
+    const timeoutId = setTimeout(() => {
+      const targetElement = document.querySelector(
+        `[name='${Menu}']`
+      );
+  
+      if (!targetElement) return;
+  
+      const offset =
+        Menu === "elveeGiftMainId"
+          ? 70
+          : 135;
+  
+      const y =
+        targetElement.getBoundingClientRect().top +
+        window.pageYOffset -
+        offset;
+  
+      window.scrollTo({
+        top: y,
+        behavior: "smooth",
+      });
+  
+      setMenuId("");
+    }, 80);
+  
+    return () => clearTimeout(timeoutId);
+  }, [Menu]);
+
+  
   if (hidden) return null;
+  
+ 
 
   return (
     <>

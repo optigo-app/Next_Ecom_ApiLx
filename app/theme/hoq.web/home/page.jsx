@@ -42,7 +42,7 @@ const HoqHome = cache(async () => {
           {storeData?.IsHomeNewArrival === 1 && <NewArrival data={newArrivalBanner} storeData={storeData} />}
           {storeData?.IsHomeDesignSet === 1 && <Collection data={lookbookBanner} storeInit={storeData} />}
           <FeaturedBrand assetBase={assetBase} />
-          <ReviewTab />
+          {/* <ReviewTab /> */}
           {storeData?.IsHomeAlbum === 1 && <CategoryTab storeData={storeData} />}
           {storeData?.IsHomeBestSeller === 1 && <BestSellerSection data={bestsellerBanner} storeData={storeData} />}
           <ImageBannerTab assetsBase={assetBase} />
@@ -58,7 +58,7 @@ const HoqHome = cache(async () => {
           {storeData?.IsHomeNewArrival === 1 && <NewArrival data={newArrivalBanner} storeData={storeData} />}
           {storeData?.IsHomeDesignSet === 1 && <Collection data={lookbookBanner} storeInit={storeData} />}
           <FeaturedBrand assetBase={assetBase} />
-          <ReviewTab />
+          {/* <ReviewTab /> */}
           {storeData?.IsHomeAlbum === 1 && <CategoryTab storeData={storeData} />}
           {storeData?.IsHomeBestSeller === 1 && <BestSellerSection data={bestsellerBanner} storeData={storeData} />}
           <ImageBannerTab assetsBase={assetBase} />
