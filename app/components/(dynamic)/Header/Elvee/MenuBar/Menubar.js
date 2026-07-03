@@ -17,8 +17,10 @@ const Menubar = ({ storeinit, logos }) => {
     const { islogin, cartCountNum, wishCountNum } = useStore();
     const [toggle, setToggle] = useState(false);
     const [menuToggle, setMenuToggle] = useState(false);
-    const Router = useNextRouterLikeRR().push;
+    const locationRd = useNextRouterLikeRR();
+    const Router = locationRd.push;
     const navigation = (url) => Router(url);
+    const location = locationRd.pathname;
 
     const compnyLogo = logos?.web;
 
@@ -176,20 +178,19 @@ const Menubar = ({ storeinit, logos }) => {
     };
 
     function ScrollToView(param) {
-        if (navigation("/")) {
-            sessionStorage.setItem("scrollParam", param);
-            navigation("/");
+        if (location !== "/") {
+            navigation(`/?scroll=${param}`);
             setToggle(false);
             return;
         }
-        const element = document?.getElementById(param);
+        const element = document?.getElementById(param) || document?.querySelector(`[name='${param}']`);
         if (element) {
-            element.scrollIntoView({
+            const offset = param === "elveeGiftMainId" ? 70 : 135;
+            const y = element.getBoundingClientRect().top + window.pageYOffset - offset;
+            window.scrollTo({
+                top: y,
                 behavior: "smooth",
-                block: "start",
-                inline: "nearest",
             });
-            setToggle(false);
         }
         setToggle(false);
     }
