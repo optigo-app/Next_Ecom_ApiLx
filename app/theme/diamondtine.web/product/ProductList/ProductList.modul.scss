@@ -1,4 +1,4 @@
-@import "../../../scss/variable";
+@use "../../style/variable" as *;
 
 .finejwelery {
     text-transform: uppercase;
