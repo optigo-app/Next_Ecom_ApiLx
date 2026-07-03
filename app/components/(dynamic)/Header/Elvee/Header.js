@@ -16,7 +16,7 @@ import { RxCross1 } from "react-icons/rx";
 import Pako from "pako";
 import { useStore } from "@/app/(core)/contexts/StoreProvider";
 import { useNextRouterLikeRR } from "@/app/(core)/hooks/useLocationRd";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import { clearSession } from "@/app/(core)/utils/FetchSessionData";
 import { getPricingContext, buildMenuCacheKey } from "@/app/(core)/cache_utility/CacheBuilder";
 import { readCache, writeCache } from "@/app/(core)/cache_utility/cacheActions";
@@ -41,6 +41,7 @@ const ElveeBaseHeader = ({ hidden, storeInit, logos }) => {
   const compnyLogo = logos?.web;
   const compnyLogoM = logos?.mobile;
   const location = usePathname();
+  const searchParams = useSearchParams();
   const [Menu, setMenuId] = useState("");
 
   const handleIconClick = () => {
@@ -369,20 +370,34 @@ const ElveeBaseHeader = ({ hidden, storeInit, logos }) => {
   }, []);
 
   useEffect(() => {
-    window.scroll({
-      top: 0,
-      behavior: "smooth",
-    });
-  }, []);
+    if (location === "/") {
+      const scrollTarget = searchParams.get("scroll");
+      if (scrollTarget) {
+        window.history.replaceState(null, "", "/");
+        setTimeout(() => {
+          setMenuId(scrollTarget);
+        }, 100);
+      } else {
+        window.scroll({
+          top: 0,
+          behavior: "smooth",
+        });
+      }
+    }
+  }, [location, searchParams]);
 
 
   const HandleMoveToMenu = (MenuId) => {
-    console.log("click");
-    setMenuId(MenuId);
+    console.log("click", MenuId);
+    if (location === "/") {
+      setMenuId(MenuId);
+    } else {
+      navigate(`/?scroll=${MenuId}`);
+    }
   };
 
   const scrollToElement = () => {
-    const targetElement = document.querySelector(`[name='${Menu}']`);
+    const targetElement = document.querySelector(`[name='${Menu}']`) || document.getElementById(Menu);
 
     if (targetElement) {
       const rect = targetElement.getBoundingClientRect();
@@ -404,32 +419,32 @@ const ElveeBaseHeader = ({ hidden, storeInit, logos }) => {
   useEffect(() => {
     if (!Menu) return;
   
-    const timeoutId = setTimeout(() => {
-      const targetElement = document.querySelector(
-        `[name='${Menu}']`
-      );
+    let attempts = 0;
+    const intervalId = setInterval(() => {
+      const targetElement = document.querySelector(`[name='${Menu}']`) || document.getElementById(Menu);
+      attempts++;
   
-      if (!targetElement) return;
+      if (targetElement) {
+        clearInterval(intervalId);
+        setTimeout(() => {
+          const stableElement = document.querySelector(`[name='${Menu}']`) || document.getElementById(Menu);
+          if (stableElement) {
+            const offset = Menu === "elveeGiftMainId" ? 70 : 135;
+            const y = stableElement.getBoundingClientRect().top + window.pageYOffset - offset;
+            window.scrollTo({
+              top: y,
+              behavior: "smooth",
+            });
+          }
+          setMenuId("");
+        }, 100);
+      } else if (attempts >= 80) { // Max 4 seconds (80 * 50ms)
+        clearInterval(intervalId);
+        setMenuId("");
+      }
+    }, 50);
   
-      const offset =
-        Menu === "elveeGiftMainId"
-          ? 70
-          : 135;
-  
-      const y =
-        targetElement.getBoundingClientRect().top +
-        window.pageYOffset -
-        offset;
-  
-      window.scrollTo({
-        top: y,
-        behavior: "smooth",
-      });
-  
-      setMenuId("");
-    }, 80);
-  
-    return () => clearTimeout(timeoutId);
+    return () => clearInterval(intervalId);
   }, [Menu]);
 
   
