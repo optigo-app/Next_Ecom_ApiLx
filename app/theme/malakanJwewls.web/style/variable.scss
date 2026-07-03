@@ -1,0 +1,116 @@
+//backgroundcolors
+
+:root {
+  --primary-background-smr: black;
+  --primary-color-smr: black;
+}
+
+$backgroundColor: var(--background-color);
+// $backgroundColor:  storeInit?.IsPLW == 1 ? #c4cfdb :#c0bbb1 ;
+$menuTextColor: #fff;
+$homePageTopTextColor: #EAEAEA;
+$rown: "Playfair Display" ;
+$menuBgColor: #90969f;
+$stambackcolor: #fff2e6;
+$btn1bgColor: #a8807c;
+$btn1ActivebgColor: #7d7f85;
+
+@keyframes scaleUpDown {
+  0% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.1);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+//fontcolors
+$primaryfontcolor: #8f8c8be6;
+$primaryfontcolor2: #7d7f85;
+// $primaryfontcolor:#8f8c8b;
+$homePageFontColor: #7d7f85;
+$titleColor: #7d7f85;
+$btn1FontColor: #7d7f85;
+$btn1hoverColor: #7d7f85;
+$btn1hoverFontColor: #fff;
+$primaryfontcolorLight: #7d7f856e;
+//fontFamily
+$homePageFontFamily: "Poppins", serif;
+$primaryFontFamily: "Poppins", serif;
+$primaryFontFamilyMedium: "Poppins", serif;
+$Pfonts: "Poppins", serif;
+$Pratafonts: "Poppins", serif;
+$fontSansSerif: "Poppins", serif;
+//fontSize
+$fontSize0: 10px;
+$fontSize1: 12px;
+$fontSize2: 14px;
+$fontSize3: 16px;
+$fontSize4: 18px;
+$fontSize5: 22px;
+$fontSize6: 28px;
+$fontSize7: 35px;
+$fontSize8: 40px;
+
+// Sonasons theme
+// $primaryBorderColor: #e1e1e1;
+// $primaryBorderColor2: #42424233;
+// $bgColor: black; // Light gray background
+// $textColor: #1b1212; // Dark gray text color
+// $menuColor: #7d7f85;
+// $navbarbg: black;
+// $navbarcolor: white;
+// $badgecolor: white;
+// $badgetxtcolor: black;
+// $footerbg: black;
+// $footertextcolor: white;
+// $sliderbar: #7d7f85;
+// $btnBg: black;
+// $btncolor: white;
+// $authbtnbg: black;
+// $authbtncolor: white;
+// $authbg: white;
+// $footertextcolor: white;
+// $menutitle: black;
+// $defaultbtncolor: black;
+
+// sonasons themes ends
+
+// omjiyas theme
+// #08054C
+
+$primaryBorderColor: #e1e1e1;
+$primaryBorderColor2: #42424233;
+$bgColor: #08054c; // Light gray background
+$textColor: #1b1212; // Dark gray text color
+$menuColor: #1b1212;
+$navbarbg: white;
+$navbarcolor: black;
+$badgecolor: white;
+$badgetxtcolor: black;
+$footerbg: black;
+$footertextcolor: black;
+$sliderbar: #08054c;
+$btnBg: #08054c;
+$btncolor: white;
+$authbtnbg: #a8807c ;
+$authbtncolor: white;
+$authbg: white;
+$footertextcolor: white;
+$menutitle: black;
+$defaultbtncolor: black;
+
+
+
+
+$btn1bgColor: #a8807c;
+$btn1ActivebgColor: #a8807c;
+$btn1FontColor: #fff;
+$btn1hoverColor: #fff;
+$btn1hoverFontColor: #a8807c;
+$homePageColor: #f0e0e0;

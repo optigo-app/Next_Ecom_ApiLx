@@ -20,12 +20,12 @@ export const themeMap = {
     page: "fgstore.mapp",
   },
   "nxtelvee.web": {
-    page: "elvee.web",
-    // page: LocalSetup,
-  },
-  "nxtdiamondtine.web": {
     // page: "elvee.web",
     page: LocalSetup,
+  },
+  "nxtdiamondtine.web": {
+    page: "diamondtine.web",
+    // page: LocalSetup,
   },
   "nxtmalakanJwewls.web": {
     // page: "elvee.web",

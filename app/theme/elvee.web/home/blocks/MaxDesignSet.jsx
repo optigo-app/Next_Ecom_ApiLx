@@ -215,7 +215,7 @@ const MaxDesignSet = ({ data, storeInit }) => {
             bgcolor: "#fff",
         }}>
             <HeroContainer>
-                <HeroImage src={data?.image[0]} alt="Lookbook" />
+                <HeroImage src="WebSiteStaticImage/Banner/lookbookbanner2.webp" alt="Lookbook" />
 
                 <MagazineTitle>
                     Complete<br />Your Look

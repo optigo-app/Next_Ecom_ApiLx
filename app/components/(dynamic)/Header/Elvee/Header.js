@@ -23,6 +23,7 @@ import { readCache, writeCache } from "@/app/(core)/cache_utility/cacheActions";
 
 
 
+
 const ElveeBaseHeader = ({ hidden, storeInit, logos }) => {
   const { islogin, loginUserDetail, setislogin, cartCountNum, wishCountNum, authChecked } = useStore();
   const Router = useNextRouterLikeRR().push;
@@ -369,15 +370,33 @@ const ElveeBaseHeader = ({ hidden, storeInit, logos }) => {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  // useEffect(() => {
+  //   if (location === "/") {
+  //     const scrollTarget = searchParams.get("scroll");
+  //     if (scrollTarget) {
+  //       window.history.replaceState(null, "", "/");
+  //       setTimeout(() => {
+  //         setMenuId(scrollTarget);
+  //       }, 100);
+  //     } else {
+  //       window.scroll({
+  //         top: 0,
+  //         behavior: "smooth",
+  //       });
+  //     }
+  //   }
+  // }, [location, searchParams]);
   useEffect(() => {
     if (location === "/") {
       const scrollTarget = searchParams.get("scroll");
+  
       if (scrollTarget) {
         window.history.replaceState(null, "", "/");
+  
         setTimeout(() => {
           setMenuId(scrollTarget);
         }, 100);
-      } else {
+      } else if (!window.location.hash) {
         window.scroll({
           top: 0,
           behavior: "smooth",
@@ -447,6 +466,27 @@ const ElveeBaseHeader = ({ hidden, storeInit, logos }) => {
     return () => clearInterval(intervalId);
   }, [Menu]);
 
+  // const handleLoginSuccess = () => {
+  //   const redirect = searchParams.get("redirect");
+  
+  //   navigate(redirect || "/");
+  // };
+
+  const handleProductClick = () => {
+    const LoginUser = JSON.parse(sessionStorage.getItem("LoginUser"));
+  
+    if (!LoginUser) {
+      const redirectUrl = `/LoginOption?LoginRedirect=${encodeURIComponent(
+        "/#ShopeByCategory"
+      )}`;
+  
+      navigate(redirectUrl, { replace: true });
+      return;
+    }
+  
+    navigate("/#ShopeByCategory", { replace: true });
+  };
+
   
   if (hidden) return null;
   
@@ -501,7 +541,8 @@ const ElveeBaseHeader = ({ hidden, storeInit, logos }) => {
                       className="el_whioutL_li"
                       style={{ cursor: "pointer" }}
                       // onClick={() => ScrollToView("elveeGiftMainId")}
-                      onClick={() => HandleMoveToMenu("elveeGiftMainId")}
+                      // onClick={() => HandleMoveToMenu("elveeGiftMainId")}
+                      onClick={() => handleProductClick()}
                     >
                       Product
                     </h4>

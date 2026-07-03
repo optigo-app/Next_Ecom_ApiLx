@@ -1,0 +1,65 @@
+.dt_faqMaindiv {
+
+    padding-top: 30px;
+    
+    .smiling-FaqMain {
+        margin-inline: 6%;
+        background-color: white;
+    }
+
+    .dt_FaqSubDivMain{
+        margin-inline: 6%;
+    }
+
+    .smiling-FaqSubMain {
+        padding-inline: 32%;
+    }
+
+    .smiling-FaqMainTitle {
+        color: #7d7f85;
+        font-family: 'FreightDispProBook-Regular,Times New Roman,serif';
+        font-size: 40px;
+    }
+
+    .smiling-FaqMainSubTitle {
+        color: #7d7f85;
+        font-family: "Poppins", sans-serif;
+        ;
+        font-size: 25px;
+    }
+
+    .smiling-FaqMainDesc {
+        color: #7d7f85;
+        font-size: 14px;
+        letter-spacing: 0.5px;
+        font-weight: 400;
+    }
+
+    .dt_Term_Sub_Set{
+        text-align: justify;
+    }
+
+    @media screen and (max-width: 1000px) {
+        padding-top: 80px !important;
+
+        .dt_Faq_Sub_Set {
+            margin-inline: 1% !important;
+        }
+
+        .dt_Faq_container {
+            padding: 30px 20px 20px 20px !important;
+        }
+    }
+
+    @media screen and (max-width:1200px) {
+        .smiling-FaqMain {
+            margin-inline: 2%;
+
+        }
+
+        .smiling-FaqSubMain {
+            padding-inline: 5%;
+
+        }
+    }
+}

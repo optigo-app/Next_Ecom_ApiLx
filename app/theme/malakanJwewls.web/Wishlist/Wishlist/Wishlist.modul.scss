@@ -1,0 +1,1114 @@
+@use "../../style/variable.scss" as *;
+
+.elv_wishlist_main_div {
+    margin-inline: 5%;
+    background-color: #fff;
+
+    .elv_wishlist_div {
+        margin-top: 2rem;
+
+        .elv_wishlist_header_title {
+            color: #7d7f85;
+            font-size: 35px;
+            padding-top: 30px;
+            text-align: center;
+            width: 100%;
+        }
+
+        .elv_wishlist_header_title_hidden {
+            color: #212529;
+            text-transform: uppercase;
+            text-overflow: ellipsis;
+            overflow: hidden;
+            visibility: hidden;
+            opacity: 0.7;
+            font-size: 14px;
+            text-align: center;
+            margin-block: 1.3rem;
+        }
+
+
+
+        .elv_wishlist_main_grid {
+            display: flex;
+            align-items: center;
+        }
+
+        .elv_wishlist_card_main_div {
+            display: flex;
+            flex-wrap: wrap;
+            margin-inline: 5%;
+            align-items: center;
+            margin-bottom: 20px;
+            margin-top: 30px;
+            width: 100%;
+        }
+
+        .elv_wishlist_card_div {
+            border: 1px solid #7d7f85;
+            margin: 5px;
+            position: relative;
+            width: 100%;
+        }
+
+        .elv_wishlist_cancel {
+            position: absolute;
+            cursor: pointer;
+            right: 0;
+            margin: 10px;
+        }
+
+        .elv_wishlist_image {
+            width: 100%;
+            height: 22rem;
+            object-fit: cover;
+        }
+
+        // .elv_wishlist_card_prod_title {
+        //     color: #212529;
+        //     text-transform: uppercase;
+        //     text-overflow: ellipsis;
+        //     overflow: hidden;
+        //     opacity: 0.7;
+        //     font-size: 14px;
+        //     text-align: center;
+        // }
+
+
+        .elv_wishlist_atc_button {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 1rem;
+        }
+
+        .elv_wishlist_btn {
+            font-size: 14px;
+            font-weight: 500;
+            height: 32px;
+            background: none;
+            border: 1px solid black;
+            text-align: center;
+            width: 60%;
+        }
+    }
+
+}
+
+.elv_wish_card {
+    text-align: center;
+
+    .elv_wishlist_card_prod_title {
+        color: #1f1919;
+        font-size: 14px;
+        visibility: visible;
+        width: 100%;
+        display: inline-block;
+        padding-inline: 15px;
+        letter-spacing: 0.35px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    @media (max-width: 425px) {
+        .elv_wishlist_card_prod_title {
+            color: #1f1919;
+            font-size: 14px;
+            visibility: hidden;
+            display: inline-block;
+            letter-spacing: 0.35px;
+        }
+    }
+
+    .elv_wishlist_card_prod_title_hidden {
+        color: #1f1919;
+        font-size: 14px;
+        visibility: hidden;
+        display: inline-block;
+        letter-spacing: 0.35px;
+    }
+}
+
+// skelton scss
+
+.elv_addwishlistSkeltonMainBox {
+    padding: 0px 60px;
+
+    .elv_addwishlistSkelton {
+        height: 450px;
+        box-shadow: none !important;
+
+        .elv_addwishlistSkelton {
+            background-color: #f6f6f6 !important;
+        }
+    }
+}
+
+@media(max-width:650px) {
+    .elv_addwishlistSkeltonMainBox {
+        padding: 0px 10px;
+    }
+
+    .elv_addwishlistSkelton {
+        height: 250px !important;
+    }
+}
+
+// Browze more
+
+
+.elv_noWishlistData {
+    text-align: center;
+    height: 100%;
+    margin-bottom: 155px;
+
+    .elv_title {
+        color: $titleColor;
+        font-size: $fontSize6;
+    }
+
+    .elv_desc {
+        color: $titleColor;
+        font-size: $fontSize4;
+    }
+
+    .elv_browseOurCollectionbtn {
+        background-color: #7d7f85;
+        border: none;
+        color: #fff;
+        font-size: 15px;
+        font-weight: 500;
+        height: 50px;
+        outline: none;
+        width: 220px;
+    }
+}
+
+
+// Smiling rocks to Elvee
+
+.elv_wishlist_buttons {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 2rem;
+    gap: 1rem;
+    // margin-bottom: 1rem;
+
+    .elv_wishlist_clearAll_btn {
+        background-color: transparent;
+        outline: 0px;
+        margin: 0px;
+        text-decoration: none;
+        font-weight: 500;
+        font-size: 0.875rem;
+        display: flex;
+        align-items: center;
+        line-height: 1.75;
+        letter-spacing: 0.02857em;
+        text-transform: uppercase;
+        min-width: 64px;
+        padding: 10px 25px;
+        border-radius: 4px;
+        border: 1px solid gray;
+        color: #7d7f85;
+        transition: 0.2s ease-in;
+
+        &:hover {
+            color: rgb(25, 118, 210);
+            background-color: #f5f5f5;
+        }
+    }
+
+    .elv_wishlist_atcall_btn {
+        background-color: transparent;
+        outline: 0px;
+        margin: 0px;
+        text-decoration: none;
+        font-weight: 500;
+        font-size: 0.875rem;
+        display: flex;
+        align-items: center;
+        line-height: 1.75;
+        letter-spacing: 0.02857em;
+        text-transform: uppercase;
+        min-width: 64px;
+        padding: 10px 16px;
+        border-radius: 4px;
+        border: 1px solid gray;
+        color: #7d7f85;
+        transition: 0.2s ease-in;
+
+        &:hover {
+            color: rgb(25, 118, 210);
+            background-color: #f5f5f5;
+        }
+    }
+}
+
+
+.elv_WlListCard {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    /* Ensures all cards are at least the same height */
+    justify-content: space-between;
+    box-shadow: rgba(0, 0, 0, 0.02) 0px 1px 3px 0px, rgba(27, 31, 35, 0.15) 0px 0px 0px 1px !important;
+
+    .cardContent {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+    }
+
+    .elv_WlListImage {
+        width: 100%;
+        height: 380px;
+        object-fit: contain;
+        cursor: pointer;
+
+        @media (max-width: 1700px) {
+            height: 350px;
+        }
+
+        @media (max-width: 1500px) {
+            height: 330px;
+        }
+
+        @media (max-width: 1200px) {
+            height: 300px;
+        }
+
+    }
+
+    .cardText {
+        flex: 1;
+        padding: 10px;
+        max-height: 150px;
+        height: 110px;
+    }
+}
+
+
+.elv_WlMainPageDiv {
+    background-color: #fff;
+    // margin-inline: 12%;
+}
+
+@media(max-width:1200px) {
+    .elv_WlMainPageDiv {
+        margin-inline: 1% !important;
+    }
+}
+
+.elv_WlMainPage {
+    display: flex;
+    gap: 30px;
+    margin-bottom: -8%;
+}
+
+.elv_WlBtnGroupMainDiv {
+    text-align: center;
+    padding-top: 10px;
+
+    .elv_Wl-title {
+        color: $titleColor;
+        padding-bottom: 35px;
+        font-size: $fontSize8;
+    }
+
+    .elv_WlButton-group {
+        display: flex;
+        gap: 1rem;
+        justify-content: space-between;
+        margin-bottom: 2rem;
+
+        .elv_ReomoveAllWLbtn {
+            display: flex;
+            align-items: center;
+            margin-inline: 6%;
+            font-size: $fontSize1;
+            color: $titleColor !important;
+            text-decoration-color: $titleColor !important;
+        }
+
+        .elv_WlAddToCartBtn {
+            background-color: $btn1hoverColor;
+            color: $btn1hoverFontColor;
+            font-size: $fontSize2;
+            border: none;
+            outline: none;
+            height: 45px;
+            border-radius: 5px;
+            width: 200px;
+            font-weight: 500;
+            margin-inline: 6%;
+            cursor: pointer;
+            transition: background-color 0.3s;
+
+            &:hover {
+                background-color: #666;
+            }
+
+
+            &.elv_cartActivebtn {
+                background-color: $btn1ActivebgColor;
+                color: $btn1hoverFontColor;
+            }
+        }
+    }
+}
+
+
+.elv_noWishlistData {
+    text-align: center;
+    height: 100%;
+    margin-bottom: 155px;
+
+    .elv_title {
+        color: $titleColor;
+        font-size: $fontSize6;
+    }
+
+    .elv_desc {
+        color: $titleColor;
+        font-size: $fontSize4;
+    }
+
+    .elv_browseOurCollectionbtn {
+        background-color: #7d7f85;
+        border: none;
+        color: #fff;
+        font-size: 15px;
+        font-weight: 500;
+        height: 50px;
+        outline: none;
+        width: 220px;
+    }
+}
+
+.elv_WlListData {
+    padding: 30px 0px 200px 0px;
+    margin-bottom: -8%;
+}
+
+.elv_WlListCard {
+    box-shadow: rgba(0, 0, 0, 0.02) 0px 1px 3px 0px, rgba(27, 31, 35, 0.15) 0px 0px 0px 1px !important;
+    position: relative;
+
+}
+
+.elv_wishDT {
+    font-size: $fontSize1;
+}
+
+.closeWlIconDiv {
+    position: absolute;
+    top: 0;
+    right: 0;
+    background: #c9c9c9;
+    color: #fff;
+}
+
+.closeWlIcon {
+    cursor: pointer;
+}
+
+.elv_Wl-CartbtnDiv {
+    text-align: center;
+    margin-bottom: 10px;
+
+    .elv_Wl-Cartbtn {
+        width: 150px;
+        height: 30px;
+        font-size: $fontSize2;
+        color: $titleColor;
+        font-weight: 500;
+        border: none;
+        background: none;
+        text-transform: capitalize !important;
+        cursor: pointer;
+
+        &:hover {
+            color: $btn1hoverFontColor;
+            background-color: $btn1ActivebgColor;
+        }
+    }
+}
+
+.elv_wishlist_atc_button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 1rem;
+}
+
+.elv_wishlist_btn {
+    font-size: 14px;
+    font-weight: 500;
+    height: 32px;
+    background: none;
+    border: 1px solid black;
+    text-align: center;
+    width: 60%;
+}
+
+.elv_card-ContentData {
+    text-align: center;
+    color: $titleColor !important;
+    font-size: $fontSize1 !important;
+    padding-bottom: 6px;
+}
+
+.elv_WlTitleline {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 100%;
+}
+
+.elv_Productlists_lists_header_breadcrumb {
+    display: flex;
+    justify-content: space-between;
+    background: $backgroundColor;
+    padding: 20px 0px 20px 40px;
+    margin-top: 3rem;
+}
+
+
+.elv_Productlists_details_1 {
+    text-transform: uppercase;
+    font-size: 30px;
+}
+
+.elv_Productlists_details {
+    font-size: 20px;
+    font-weight: 500;
+    letter-spacing: 1px;
+    color: #AF8238;
+}
+
+.elv_Productlists_lists_header_logo {
+    padding-right: 20px;
+}
+
+.elv_Productslists_lists_name {
+    margin-top: 30px;
+}
+
+.elv_Productlist_ptitle {
+    font-size: 50px;
+    font-weight: 600;
+    margin-bottom: 0;
+}
+
+.elv_Productlist_logo {
+    width: 70px;
+    height: 100px;
+    margin-right: 30px;
+}
+
+.elv_cardContent {
+    padding: 5px !important;
+}
+
+.elv_wishlist_card_weights_1 {
+    display: flex;
+    flex-direction: column;
+    font-size: 11px;
+    // font-weight: 600;
+}
+
+.elv_wishlist_card_weights_2 {
+    display: flex;
+    flex-direction: column;
+    font-size: 12px;
+    text-align: right;
+}
+
+@media (max-width: 1750px) {
+    .WlBtnGroupMainDiv {
+        .elv_WlButton-group {
+            .elv_WlAddToCartBtn {
+                width: 140px;
+                font-size: $fontSize1;
+            }
+        }
+    }
+
+    .elv_cardContent {
+        padding: 0 !important;
+
+        .elv_wishlist_card_weights {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .elv_wishlist_card_weights_1 {
+            margin-left: 8px;
+        }
+
+        .elv_wishlist_card_weights_2 {
+            margin-right: 8px;
+        }
+
+
+        .elv_pipes {
+            margin: 0 5px;
+        }
+
+        .cardText {
+            padding: 2px;
+        }
+
+        .cardText p {
+            font-size: $fontSize1 !important;
+        }
+
+        .cardText p span {
+            font-size: $fontSize1 !important;
+        }
+    }
+}
+
+@media (max-width: 1350px) {
+    .WlBtnGroupMainDiv {
+        .elv_WlButton-group {
+            .elv_WlAddToCartBtn {
+                width: 140px;
+                font-size: $fontSize1;
+            }
+        }
+    }
+
+    .elv_cardContent {
+        padding: 0 !important;
+
+        .elv_pipes {
+            margin: 0 5px;
+        }
+
+        .cardText {
+            padding: 2px;
+        }
+
+        .cardText p {
+            font-size: $fontSize0 !important;
+        }
+
+        .cardText p span {
+            font-size: $fontSize0 !important;
+        }
+    }
+}
+
+@media (max-width: 1050px) {
+    .WlBtnGroupMainDiv {
+        .elv_WlButton-group {
+            .elv_WlAddToCartBtn {
+                width: 140px;
+                font-size: $fontSize1;
+            }
+        }
+    }
+
+    .elv_cardContent {
+        padding: 0 !important;
+
+        .elv_pipes {
+            margin: 0 5px;
+        }
+
+        .cardText {
+            padding: 2px;
+        }
+
+        .cardText p {
+            font-size: $fontSize0 !important;
+        }
+
+        .cardText p span {
+            font-size: $fontSize0 !important;
+        }
+    }
+}
+
+
+@media (max-width: 768px) {
+    .elv_WlListData {
+        padding: 30px 2px 100px 2px;
+        margin-bottom: -8%;
+    }
+
+    .elv_card-ContentData .elv_DesignNoTExt .elv_Wl-Cartbtn {
+        font-size: $fontSize2 !important;
+    }
+}
+
+@media (max-width: 600px) {
+    .elv_WlListData {
+        padding: 30px 2px 100px 2px;
+        margin-bottom: -8%;
+    }
+
+    .WlBtnGroupMainDiv {
+        .elv_WlButton-group {
+            .elv_WlAddToCartBtn {
+                width: 120px;
+                font-size: $fontSize1;
+            }
+        }
+    }
+
+    .elv_card-ContentData {
+        font-size: $fontSize1 !important;
+    }
+
+    .elv_DesignNoTExt {
+        font-size: $fontSize1 !important;
+    }
+
+    .elv_Wl-Cartbtn {
+        font-size: $fontSize1 !important;
+        text-align: center;
+        width: 100% !important;
+    }
+
+    .elv_wishlist_atc_button {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin: 1rem;
+    }
+
+    .elv_wishlist_btn {
+        font-size: 12px;
+        font-weight: 500;
+        height: 32px;
+        background: none;
+        border: 1px solid black;
+        text-align: center;
+        width: 100%;
+    }
+
+
+    .elv_cardContent {
+        padding: 0 !important;
+
+        .elv_currencyFont {
+            // margin-left: 40px;
+        }
+
+        .elv_pipes {
+            margin: 0 5px;
+        }
+
+        .cardText {
+            padding: 2px;
+        }
+
+        .cardText p {
+            font-size: $fontSize0 !important;
+        }
+
+        .cardText p span {
+            font-size: $fontSize0 !important;
+        }
+    }
+}
+
+@media (max-width: 425px) {
+    .elv_Productlists_details_1 {
+        font-size: 20px;
+    }
+}
+
+@media (max-width: 320px) {
+
+    .elv_WlListData {
+        padding: 30px 10px 100px 10px;
+        margin-bottom: -8%;
+    }
+
+    .WlBtnGroupMainDiv {
+        .elv_WlButton-group {
+            .elv_WlAddToCartBtn {
+                width: 100px !important;
+                font-size: $fontSize0 !important;
+                height: 34px !important;
+            }
+        }
+    }
+
+    .elv_card-ContentData {
+        font-size: $fontSize1 !important;
+    }
+
+    .elv_DesignNoTExt {
+        font-size: $fontSize1 !important;
+    }
+
+    .elv_Wl-Cartbtn {
+        font-size: $fontSize1 !important;
+        text-align: center;
+        width: 100% !important;
+    }
+
+    .elv_cardContent {
+        padding: 0 !important;
+
+        .elv_currencyFont {
+            // margin-left: 40px;
+        }
+
+        .elv_pipes {
+            margin: 0 5px;
+        }
+
+        .cardText {
+            padding: 2px;
+        }
+
+        .cardText p {
+            font-size: $fontSize0 !important;
+        }
+
+        .cardText p span {
+            font-size: $fontSize0 !important;
+        }
+    }
+}
+
+
+
+
+// skelton scss
+
+.elv_addwishlistSkeltonMainBox {
+    padding: 0px 0px;
+
+    .elv_addwishlistSkelton {
+        height: 450px;
+        box-shadow: none !important;
+
+        .elv_addwishlistSkelton {
+            background-color: #f6f6f6 !important;
+        }
+    }
+}
+
+@media(max-width:650px) {
+    .elv_addwishlistSkeltonMainBox {
+        padding: 0px 10px;
+    }
+
+    .elv_addwishlistSkelton {
+        height: 250px !important;
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+.dt_MainWishDiv {
+    font-family: $primaryFontFamily;
+    color: $titleColor;
+  
+    .bg-imageCart {
+      position: relative;
+      height: 140px;
+      background: none;
+      background-position: 50%;
+      background-size: cover;
+      font-family: $primaryFontFamily;
+  
+      .overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -1;
+      }
+  
+      .text-container {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 100%;
+        text-align: center;
+        color: #000;
+        transform: translate(-50%, -50%);
+        z-index: 1;
+      }
+  
+      .dt_WishdesignCounttext {
+        color: #000;
+        font-size: $fontSize7;
+        text-transform: capitalize;
+      }
+    }
+  
+    .cart {
+      display: flex;
+      flex-direction: row;
+      margin-inline: 20%;
+      margin-top: 50px;
+      gap: 10px;
+  
+      .cart-items {
+        width: 100%;
+        margin-bottom: 20px;
+  
+        table {
+          width: 100%;
+          border-collapse: collapse;
+  
+          th,
+          tr {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+          }
+  
+          .product {
+            display: flex;
+            align-items: center;
+            width: 350px;
+            height: 160px;
+            margin: 0;
+            padding: 0;
+  
+            img {
+              max-width: 160px;
+              max-height: 160px;
+              width: 100%;
+            }
+  
+            .product-details {
+              p {
+                margin: 0;
+                font-size: $fontSize1;
+                margin-left: 15px;
+              }
+            }
+          }
+  
+          .total {
+            color: rgb(168, 128, 124);
+            font-weight: 500;
+  
+            .dt_Wl-CartbtnDiv {
+              text-align: center;
+              margin-bottom: 10px;
+              padding: 0;
+              margin: 0;
+  
+              .dt_Wl-Cartbtn {
+                width: 150px;
+                height: 30px;
+                font-size: $fontSize2;
+                font-weight: 600;
+                color: $btn1bgColor;
+                background: none;
+                border: none;
+                text-transform: capitalize !important;
+                cursor: pointer;
+  
+                &:hover {
+                  color: $btn1FontColor;
+                  background-color: $btn1bgColor;
+                }
+              }
+            }
+          }
+  
+          .dt_quantity {
+            .dt_cartB2c-quantity {
+              display: flex;
+              width: 130px;
+              height: 45px;
+              border: 1px solid #ccc;
+              font-family: $primaryFontFamily;
+  
+              .input {
+                width: 50%;
+                margin: 0;
+                padding: 0;
+                text-align: center;
+                border: none;
+                font-family: $primaryFontFamily;
+                color: $titleColor;
+              }
+  
+              a.bttn,
+              .bttn {
+                width: 50%;
+                padding: 0;
+                text-align: center;
+                color: $titleColor;
+                background-color: white;
+                font-size: 24px;
+                cursor: pointer;
+                border: none;
+                font-family: $primaryFontFamily;
+                box-shadow: none;
+              }
+            }
+          }
+  
+          .remove {
+            button {
+              background-color: transparent;
+              border: none;
+              font-size: 20px;
+              cursor: pointer;
+            }
+          }
+        }
+      }
+    }
+  
+    .dt_browseBtnMore {
+      width: 220px;
+      height: 50px;
+      margin-bottom: 50px;
+      border: 1px solid #7f8538;
+      background: none;
+      color: #a8807c;
+      font-size: 15px;
+      font-weight: 500;
+      outline: none;
+    }
+  }
+  
+  @media (max-width: 1550px) and (min-width: 1401px) {
+    .dt_MainWishDiv {
+      .cart {
+        .cart-items {
+          table {
+            .product {
+              width: 300px;
+  
+              .product-details {
+                p {
+                  margin: 0;
+                  font-size: $fontSize1;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  
+  @media (max-width: 1200px) and (min-width: 1100px) {
+    .dt_MainWishDiv {
+      .cart {
+        .cart-items {
+          table {
+            .product {
+              width: 250px;
+  
+              .product-details {
+                p {
+                  margin: 0;
+                  font-size: $fontSize1;
+                }
+              }
+            }
+  
+            .price {
+              font-size: $fontSize2;
+            }
+          }
+        }
+      }
+    }
+  }
+  
+  @media (max-width: 1099px) and (min-width: 1000px) {
+    .dt_MainWishDiv {
+      .cart {
+        .cart-items {
+          table {
+            .product {
+              width: 250px;
+  
+              .product-details {
+                p {
+                  margin: 0;
+                  font-size: $fontSize1;
+                }
+              }
+            }
+  
+            .price {
+              font-size: $fontSize2;
+            }
+          }
+        }
+      }
+    }
+  }
+  
+  @media (max-width: 999px) {
+    .dt_MainWishDiv {
+      padding-top: 57px;
+  
+      .cart {
+        flex-direction: row;
+  
+        .cart-items {
+          .price {
+            font-size: $fontSize2;
+            font-weight: 600;
+          }
+        }
+      }
+    }
+  }
+  
+  @media (max-width: 1400px) {
+    .dt_MainWishDiv {
+      .cart {
+        margin-inline: 10%;
+      }
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .dt_MainWishDiv {
+      .cart {
+        flex-direction: column;
+  
+        .cart-items {
+          table {
+  
+            th,
+            td {
+              padding: 5px;
+            }
+          }
+        }
+  
+        .cart-totals {
+          padding: 10px;
+  
+          button {
+            padding: 5px;
+          }
+        }
+      }
+    }
+  }

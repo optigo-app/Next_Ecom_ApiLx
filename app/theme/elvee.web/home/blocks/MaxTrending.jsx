@@ -178,7 +178,7 @@ const MaxTrending = ({ data, storeInit }) => {
                 {/* Left: Large Banner */}
                 <Grid item size={{ xs: 12, md: 6 }}>
                     <BannerContainer onClick={() => push(`/p/Trending/?T=${btoa("Trending")}`)}>
-                        <img src={data?.image[0]} alt="Trending Banner" loading="lazy" />
+                        <img src="WebSiteStaticImage/Banner/trendingbanner2.webp" alt="Trending Banner" loading="lazy" />
                         <BannerOverlay>
                             <Button
                                 variant="contained"

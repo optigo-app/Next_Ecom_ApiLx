@@ -1,3 +1,5 @@
+
+
 import React from "react";
 import { getStoreInit } from "@/app/(core)/utils/GlobalFunctions/GlobalFunctions";
 import { generatePageMetadata } from "@/app/(core)/utils/HeadMeta";
@@ -17,6 +19,7 @@ import MaxBrandMarquee from "./blocks/MaxBrandMarquee";
 import MaxPhysicalStore from "./blocks/MaxPhysicalStore";
 import MaxNewsletter from "./blocks/MaxNewsletter";
 import SocialMediaVideoSection from "./blocks/SocialMedia";
+import { cookies } from "next/headers";
 
 
 import PromoComponent1 from "./blocks/PromoComponent/PromoComponent/PromoComponent1"  
@@ -33,8 +36,10 @@ export const metadata = generatePageMetadata(pages["/"], "Sonasons");
 
 const SonasonsHome = async () => {
   const storeData = await getStoreInit();
+  const  islogin  = cookies().get("LoginUser");
   const { bestsellerBanner, newArrivalBanner, trendingBanner, lookbookBanner } = useHomeBannerImages({ host: assetBase });
 
+console.log("TCL: SonasonsHome -> islogin",islogin )
   return (
     <Box
       sx={{
@@ -45,13 +50,14 @@ const SonasonsHome = async () => {
       }}
     >
       <TopSection />
-      {isOldElvee && 
+      { !islogin && 
       <>
+      
        <BrandInfoMarquee assetBase={assetBase} />
        <PromoComponent1  />
        <BrandsComponent />
        <PromoComponent2 />
-       {/* <OldCollection /> */}
+  
        <Craftmenship />
        <GaleryView />
        <CompanyData />
@@ -64,7 +70,7 @@ const SonasonsHome = async () => {
 
 
 
-      { !isOldElvee && 
+      { islogin && 
       <>
       
       <CategoryBlock assetBase={assetBase} storeInit={storeData} />
