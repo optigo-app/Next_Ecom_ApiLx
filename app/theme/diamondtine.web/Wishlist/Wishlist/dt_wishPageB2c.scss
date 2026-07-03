@@ -1,4 +1,4 @@
-@import '../../../scss/variable.scss';
+@use '../../style/variable.scss' as *;
 
 .dt_MainWishDiv {
   font-family: $primaryFontFamily;
