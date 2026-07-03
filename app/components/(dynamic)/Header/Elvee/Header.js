@@ -113,24 +113,41 @@ const ElveeBaseHeader = ({ hidden, storeInit, logos }) => {
   // We do NOT put storeInit in the dependency array — it is a server-side object
   // whose reference changes on every render, which would cause an infinite loop.
   // Instead we guard with a ref so the fetch only fires once per login state change.
+  // useEffect(() => {
+  //   if (!storeInit) return;
+  //   const isB2C = storeInit?.IsB2BWebsite === 0;
+  //   const isB2B = storeInit?.IsB2BWebsite === 1;
+  //   const isUserLogin = islogin || (typeof window !== "undefined" && Cookies.get("userLoginCookie"));
+
+  //   if (isB2C && !hasFetched.current) {
+  //     hasFetched.current = true;
+  //     getMenuApi();
+  //   } else if (isB2B && isUserLogin && !hasFetched.current) {
+  //     hasFetched.current = true;
+  //     getMenuApi();
+  //   } else if (isB2B && !isUserLogin) {
+  //     // Reset so menu re-fetches after login
+  //     hasFetched.current = false;
+  //   }
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [islogin]);
   useEffect(() => {
     if (!storeInit) return;
     const isB2C = storeInit?.IsB2BWebsite === 0;
     const isB2B = storeInit?.IsB2BWebsite === 1;
     const isUserLogin = islogin || (typeof window !== "undefined" && Cookies.get("userLoginCookie"));
-
+  
     if (isB2C && !hasFetched.current) {
       hasFetched.current = true;
       getMenuApi();
-    } else if (isB2B && isUserLogin && !hasFetched.current) {
+    } else if (isB2B && isUserLogin && loginUserDetail?.id && !hasFetched.current) {
       hasFetched.current = true;
       getMenuApi();
     } else if (isB2B && !isUserLogin) {
-      // Reset so menu re-fetches after login
       hasFetched.current = false;
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [islogin]);
+  }, [islogin, loginUserDetail]);
 
   useEffect(() => {
     const uniqueMenuIds = [...new Set(menuData?.map((item) => item?.menuid))];
@@ -222,11 +239,17 @@ const ElveeBaseHeader = ({ hidden, storeInit, logos }) => {
     const { IsB2BWebsite } = storeInit;
     const visiterID = Cookies.get("visiterId");
     let finalId;
+    
+    
+    console.log("TCL: getMenuApi -> loginUserDetail", loginUserDetail)
     if (IsB2BWebsite === 0) {
       finalId = islogin === false ? visiterID : loginUserDetail?.id || "0";
     } else {
       finalId = loginUserDetail?.id || "0";
     }
+
+    
+   
 
   
 
@@ -837,8 +860,9 @@ const ElveeBaseHeader = ({ hidden, storeInit, logos }) => {
 
         <div className={`el_shop_dropdown ${expandedMenu !== null ? "open" : ""}`} onMouseEnter={() => handleMouseEnter(hoveredIndex)} onMouseLeave={handleMouseLeave} onClick={() => handleMouseLeave()}>
           <div className={`el_shop_dropdown_1 ${expandedMenu !== null ? "open" : ""}`} draggable={false} onContextMenu={(e) => e.preventDefault()}>
-            <img src={`${storImagePath()}/images/Menu/Menu1.jpg`} alt="Image 1" className="dropdown-image-1" draggable={false} onContextMenu={(e) => e.preventDefault()} />
-            <img src={`${storImagePath()}/images/Menu/Menu2.jpg`} alt="Image 2" className="dropdown-image-2" draggable={false} onContextMenu={(e) => e.preventDefault()} />
+           {console.log("storImagePath", storImagePath())}
+            <img src={`WebSiteStaticImage/images/Menu/menu1.webp`}  alt="Image 1" className="dropdown-image-1" draggable={false} onContextMenu={(e) => e.preventDefault()} />
+            <img src={`WebSiteStaticImage/images/Menu/menu2.webp`} alt="Image 2" className="dropdown-image-2" draggable={false} onContextMenu={(e) => e.preventDefault()} />
           </div>
           <div
             style={{
