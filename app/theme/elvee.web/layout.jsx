@@ -25,7 +25,6 @@ const layout = async ({ children }) => {
 
         {isOldElvee ? <OldHeader hidden={false} logos={logos} storeInit={storeData} /> : <ElveeBaseHeader hidden={false} logos={logos} storeInit={storeData} />}
 
-
         <Box sx={{ flex: 1, display: "flex", flexDirection: "column" }}>
           <Suspense fallback={<Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", flex: 1, minHeight: "90vh" }}></Box>}>{children}</Suspense>
         </Box>

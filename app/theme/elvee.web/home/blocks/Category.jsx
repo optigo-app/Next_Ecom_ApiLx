@@ -270,7 +270,8 @@ const CategoryBlock = ({ assetBase, storeInit }) => {
     return map[normalized] || `/fallback.jpg`;
   };
 
-
+   
+   console.log("TCL: CategoryBlock -> assetBase", `${assetBase}/images/Category/Bangle.webp`)
   const images = {
     collectionImages: buildNormalizedMap({
       Duometrik: `${assetBase}/images/Collection/Duometrik.jpg`,
@@ -283,6 +284,7 @@ const CategoryBlock = ({ assetBase, storeInit }) => {
       Petalush: `${assetBase}/images/Collection/Petalush.webp`,
       Petalyn: `${assetBase}/images/Collection/Petalyn.webp`,
       Velar: `${assetBase}/images/Collection/Velar.webp`,
+      Bangle: `${assetBase}/images/Category/Bangle.webp`,
     }),
 
     categoryImages: buildNormalizedMap({
@@ -310,14 +312,17 @@ const CategoryBlock = ({ assetBase, storeInit }) => {
       Bellucci: `${assetBase}/images/Collection/Bellucci.webp`,
       Claire: `${assetBase}/images/Collection/Claire.webp`,
       Euclid: `${assetBase}/images/Collection/Euclid.webp`,
+      Bangle: `${assetBase}/images/Category/Earring.webp`,
     }),
     categoryImages: buildNormalizedMap({
-      Ring: `${assetBase}/images/Category/Ring.webp`,
-      Bracelet: `${assetBase}/images/Category/Bracelet.webp`,
+      Ring: `${assetBase}/images/Category/Bracelet.webp`,
+      Bracelet: `${assetBase}/images/Category/Ring.webp`,
       Earring: `${assetBase}/images/Category/Earring.webp`,
       Necklace: `${assetBase}/images/Category/Necklace.webp`,
-      Mangalsutra: `${assetBase}/images/Category/Mangalsutra.webp`,
-      Pendant: `${assetBase}/images/Category/Pendant.webp`,
+      Mangalsutra: `${assetBase}/images/Category/earing1.webp`,
+      Pendant: `${assetBase}/images/Category/pendent.webp`,
+      Bangle: `${assetBase}/images/Category/Bangle.webp`,
+      Pendant_Set: `${assetBase}/images/Category/pendentset.webp`,
     }),
   }
 
@@ -345,7 +350,7 @@ const CategoryBlock = ({ assetBase, storeInit }) => {
   };
 
   return (
-    <Box sx={{ backgroundColor: "#ffffff", minHeight: "100vh", width: "100%", pb: 8 }}>
+    <Box id="ShopeByCategory" sx={{ backgroundColor: "#ffffff", minHeight: "100vh", width: "100%", pb: 8 }}>
       {/* Category Section */}
       {SectionData?.category?.length > 0 && <Box sx={{ px: { xs: 2, sm: 3, md: 4 }, mt: 8, position: "relative" }}>
         <SectionHeader>

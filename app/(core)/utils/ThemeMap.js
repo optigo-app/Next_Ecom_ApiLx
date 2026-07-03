@@ -24,8 +24,8 @@ export const themeMap = {
     // page: LocalSetup,
   },
   "nxtdiamondtine.web": {
-    // page: "elvee.web",
-    page: LocalSetup,
+    page: "diamondtine.web",
+    // page: LocalSetup,
   },
   "nxtmalakanJwewls.web": {
     // page: "elvee.web",

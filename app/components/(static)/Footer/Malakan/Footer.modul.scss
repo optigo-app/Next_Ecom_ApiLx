@@ -1,0 +1,167 @@
+@import "../../../../theme/malakanJwewls.web/style/variable.scss";
+
+.mala_Footer1_main {
+  background-color: #f8f5f3;
+  padding-top: 60px;
+  padding-inline: 20px;
+  padding-bottom: 30px;
+  font-family: $primaryFontFamilyMedium;
+  color: rgb(56, 56, 56);
+
+  @media screen and (max-width:768px) {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    text-align: center !important;
+  }
+
+  .mala_footer_bottom_line {
+    margin-top: 3rem;
+    text-align: center;
+    font-size: $fontSize2;
+  }
+
+  .footerBottomMain {
+    display: flex;
+    align-items: start;
+    justify-content: center;
+
+    @media screen and (max-width:768px) {
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .mala_FooterLogo_div {
+      flex: 1;
+      display: flex;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+    }
+
+    .mala_footerOptions {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 1rem;
+      align-items: center;
+      justify-items: center;
+      text-align: left !important;
+      flex: 1;
+      padding: 1rem;
+      margin-left: 2rem;
+
+      @media screen and (max-width:768px) {
+        padding: 1rem;
+        margin-left: 0rem;
+      }
+
+      .footer_menu_malkan {
+        flex: 1;
+        text-align: left;
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        width: 100%;
+        padding-left: 1rem;
+
+        @media screen and (max-width:768px) {
+          padding-left: 0rem;
+          text-align: center;
+          align-items: center;
+          justify-content: center;
+        }
+      }
+
+      p {
+        font-size: 11px;
+        margin: 0;
+        font-weight: 500;
+        padding: 0;
+        cursor: pointer;
+        letter-spacing: 1.5px;
+      }
+    }
+
+    .mala_footerIconMain {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+
+      .icons_sm {
+        display: flex;
+
+        .footerSocialIcon {
+          height: 45px;
+          width: 45px;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          margin: 0 5px;
+
+          img {
+            width: 24px;
+            height: 24px;
+            object-fit: cover;
+            mix-blend-mode: multiply;
+          }
+        }
+      }
+
+      .malakan-main_foo {
+        margin-left: 5px;
+        padding-top: 5px;
+
+        @media screen and (max-width:768px) {
+          text-align: center;
+          margin: 0;
+          /* background-color: red; */
+          display: flex;
+          align-items: center;
+          flex-direction: column;
+          justify-content: center;
+        }
+      }
+
+      .malkan-footerOfficeDesc {
+        margin: 0 5px;
+        font-size: 12px;
+        color: #333;
+        display: flex;
+        align-items: flex-start;
+        margin-bottom: 8px;
+
+        .mala_location-icon {
+          margin-top: 5px;
+        }
+
+        @media (max-width: 1000px) {
+          margin-top: 0;
+        }
+
+        .fooetr_address_malkan {
+          max-width: 250px;
+        }
+
+        &>span {
+          margin-left: 8px;
+          /* Space between the icon and the text */
+        }
+
+        & a {
+          color: #333;
+          /* Link color */
+          text-decoration: none;
+
+          /* Remove underline from links */
+          &:hover {
+            text-decoration: underline;
+            /* Underline on hover */
+          }
+        }
+      }
+    }
+  }
+
+}
