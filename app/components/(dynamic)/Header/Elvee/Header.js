@@ -875,7 +875,6 @@ const ElveeBaseHeader = ({ hidden, storeInit, logos }) => {
 
         <div className={`el_shop_dropdown ${expandedMenu !== null ? "open" : ""}`} onMouseEnter={() => handleMouseEnter(hoveredIndex)} onMouseLeave={handleMouseLeave} onClick={() => handleMouseLeave()}>
           <div className={`el_shop_dropdown_1 ${expandedMenu !== null ? "open" : ""}`} draggable={false} onContextMenu={(e) => e.preventDefault()}>
-           {console.log("storImagePath", storImagePath())}
             <img src={`WebSiteStaticImage/images/Menu/menu1.webp`}  alt="Image 1" className="dropdown-image-1" draggable={false} onContextMenu={(e) => e.preventDefault()} />
             <img src={`WebSiteStaticImage/images/Menu/menu2.webp`} alt="Image 2" className="dropdown-image-2" draggable={false} onContextMenu={(e) => e.preventDefault()} />
           </div>
