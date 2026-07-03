@@ -353,55 +353,66 @@ const ElveeBaseHeader = ({ hidden, storeInit, logos }) => {
   }, []);
 
 
-
   const HandleMoveToMenu = (MenuId) => {
-    navigate("/");
+    console.log("click");
     setMenuId(MenuId);
   };
 
-  useLayoutEffect(() => {
-    const scrollToElement = () => {
-      const targetElement = document.querySelector(`[name='${Menu}']`);
+  const scrollToElement = () => {
+    const targetElement = document.querySelector(`[name='${Menu}']`);
 
-      if (targetElement) {
-        const rect = targetElement.getBoundingClientRect();
-        const offsetTop = window.pageYOffset + rect.top;
-        let top = 135;
-        if (Menu === "elveeGiftMainId") {
-          top = 70;
-        }
-
-        window.scrollTo({
-          top: offsetTop - top,
-          behavior: "smooth",
-        });
-        setMenuId("");
+    if (targetElement) {
+      const rect = targetElement.getBoundingClientRect();
+      const offsetTop = window.pageYOffset + rect.top;
+      console.log(rect,offsetTop,"tt")
+      let top = 135;
+      if (Menu === "elveeGiftMainId") {
+        top = 70;
       }
-    };
 
-    if (Menu !== "") {
-      const timeoutId = setTimeout(() => {
-        scrollToElement();
-        const targetElement = document.querySelector(`[name='${Menu}']`);
-        if (targetElement) {
-          const resizeObserver = new ResizeObserver(() => {
-            scrollToElement();
-          });
-
-          resizeObserver.observe(targetElement);
-          return () => resizeObserver.disconnect();
-        }
-      }, 300);
-
-      return () => clearTimeout(timeoutId);
+      window.scrollTo({
+        top: offsetTop - top,
+        behavior: "smooth",
+      });
+      setMenuId("");
     }
-  }, [Menu, location]);
+  };
 
+  useEffect(() => {
+    if (!Menu) return;
+  
+    const timeoutId = setTimeout(() => {
+      const targetElement = document.querySelector(
+        `[name='${Menu}']`
+      );
+  
+      if (!targetElement) return;
+  
+      const offset =
+        Menu === "elveeGiftMainId"
+          ? 70
+          : 135;
+  
+      const y =
+        targetElement.getBoundingClientRect().top +
+        window.pageYOffset -
+        offset;
+  
+      window.scrollTo({
+        top: y,
+        behavior: "smooth",
+      });
+  
+      setMenuId("");
+    }, 80);
+  
+    return () => clearTimeout(timeoutId);
+  }, [Menu]);
+
+  
   if (hidden) return null;
   
-  console.log("TCL: ElveeBaseHeader -> authChecked", authChecked)
-
-  if (!authChecked) return null; 
+ 
 
   return (
     <>

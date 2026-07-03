@@ -14,5 +14,5 @@ export const WEBSITE_DOMAINS = {
   MALAKANJWEWLSWEB: "nxtmalakanJwewls.web",
 };
 
-export const NEXT_APP_WEB = WEBSITE_DOMAINS.HOQ;
+export const NEXT_APP_WEB = WEBSITE_DOMAINS.ELVEEWEB;
 export const NEXT_PUBLIC_SITE_URL = NEXT_APP_WEB;

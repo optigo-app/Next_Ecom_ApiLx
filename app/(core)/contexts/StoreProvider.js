@@ -24,25 +24,10 @@ export function StoreProvider({ children, storeInit }) {
   const [user, setUser] = useState(null);
   const [cartCountNum, setCartCountNum] = useState(0);
   const [wishCountNum, setWishCountNum] = useState(0);
-  // const [loginUserDetail, setLoginUserDetail] = useState(null);
-  // const [islogin, setislogin] = useState(false);
+  const [loginUserDetail, setLoginUserDetail] = useState(null);
+  const [islogin, setislogin] = useState(false);
   const [cartOpenStateB2C, setCartOpenStateB2C] = useState(false);
   const [SoketData, setSoketData] = useState([]);
-  // const [authChecked, setAuthChecked] = useState(false);
-  const [loginUserDetail, setLoginUserDetail] = useState(() => {
-    if (typeof window === "undefined") return null;
-    return getSession("loginUserDetail") || null;
-  });
-  
-  const [islogin, setislogin] = useState(() => {
-    if (typeof window === "undefined") return false;
-    const storedDetail = getSession("loginUserDetail");
-    const cookie = Cookies.get("userLoginCookie");
-    return !!(storedDetail || cookie);
-  });
-  
-  // authChecked can now just always be true on the client
-  const [authChecked, setAuthChecked] = useState(() => typeof window !== "undefined");
 
   const finalId = useMemo(() => {
     const loginUserDetail = getSession("loginUserDetail");
@@ -71,7 +56,14 @@ export function StoreProvider({ children, storeInit }) {
     }
   }, [finalId]);
 
-  
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const storedDetail = getSession("loginUserDetail");
+    if (storedDetail) {
+      setLoginUserDetail(storedDetail);
+      setislogin(true);
+    }
+  }, []);
 
   const value = {
     user,
@@ -90,8 +82,6 @@ export function StoreProvider({ children, storeInit }) {
     setSoketData,
     finalId,
     storeInit,
-    authChecked,        
-    setAuthChecked,
   };
 
   return (
