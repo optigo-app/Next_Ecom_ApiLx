@@ -36,17 +36,17 @@ import { useStore } from "@/app/(core)/contexts/StoreProvider";
 
 
 
-const PremiumFooter = ({ logos }) => {
+const PremiumFooter = ({ logos, storeData, companyInfoData: companyInfoDataProp }) => {
     const [email, setEmail] = useState('');
-    const [companyInfoData, setCompanuInfoData] = useState();
+    const [companyInfoData, setCompanuInfoData] = useState(companyInfoDataProp);
     const [socialMediaData, setSocialMediaData] = useState([]);
     const [loading, setLoading] = useState(false);
     const [result, setResult] = useState();
     const Router = useNextRouterLikeRR().push;
     const navigation = url => Router(url);
     // const isLogin = useRecoilState(el_loginState)
-    const { islogin } = useStore();
-    const storeInit = JSON?.parse(sessionStorage?.getItem("storeInit"));
+    const { islogin, storeInit: storeInitContext } = useStore();
+    const storeInit = storeData || storeInitContext || (typeof window !== "undefined" ? JSON?.parse(sessionStorage?.getItem("storeInit")) : null);
     const [selectedFooteVal, setSelectedVal] = useState(0);
     const year = React.useMemo(() => new Date().getFullYear(), []);
 
