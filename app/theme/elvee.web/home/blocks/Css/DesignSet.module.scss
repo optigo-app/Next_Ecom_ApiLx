@@ -1,0 +1,368 @@
+@import "../../../style/variable.scss";
+
+.smr_DesignSet2MainDiv {
+    .imgBG {
+        object-fit: contain;
+        height: 100%;
+        width: 100%;
+    }
+
+    .maindiv {
+        width: 100%;
+        height: 100%;
+        position: relative;
+    }
+
+    .smr1_desognSetTitle {
+        // color: $homePageFontColor;
+        // font-family: $homePageFontFamily;
+        font-size: 28px;
+        text-align: center;
+        margin: 0px;
+        color: $textColor;
+        font-size: 27px;
+        font-family: $Pratafonts !important;
+        font-weight: 500 !important;
+        margin-block: 2%;
+
+        a {
+            font-weight: 300 !important;
+        }
+    }
+
+    .smr_designSetViewmoreBtn_2 {
+        margin-left: 12px;
+        font-size: 18px;
+        color: gray;
+    }
+
+    .card {
+        width: 310px;
+        height: 350px;
+        border: 1px solid #e8e8e8;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: center;
+        padding: 5px;
+        background-color: white;
+
+        @media (max-width: 1450px) {
+            width: 252px;
+            height: 305px;
+        }
+
+        @media (max-width: 1300px) {
+            width: 210px;
+            height: 280px;
+        }
+
+        @media (max-width: 1024px) {
+            width: 200px;
+            height: 265px;
+        }
+
+        @media (max-width: 987px) {
+            width: 180px;
+            height: 245px;
+        }
+
+        @media (max-width: 987px) {
+            width: 180px;
+            height: 245px;
+        }
+
+        @media (max-width: 940px) {
+            width: 170px;
+            height: 235px;
+        }
+
+        @media (max-width: 768px) {
+            width: 145px;
+            height: 205px;
+        }
+    }
+
+    .cardimg {
+        width: 100%;
+        object-fit: contain;
+        max-width: 250px;
+
+        @media (max-width: 1450px) {
+            max-width: 200px;
+        }
+
+        @media (max-width: 1300px) {
+            max-width: 160px;
+        }
+
+        @media (max-width: 840px) {
+            max-width: 140px;
+        }
+
+        @media (max-width: 768px) {
+            max-width: 110px;
+        }
+    }
+
+    .subimgpart {
+        position: absolute;
+        top: 30%;
+        right: 7%;
+        z-index: 1;
+
+        @media (max-width: 1800px) {
+            top: 25%;
+        }
+
+        @media (max-width: 1650px) {
+            top: 21%;
+        }
+
+        @media (max-width: 1500px) {
+            top: 19%;
+        }
+
+        @media (max-width: 1450px) {
+            top: 20%;
+        }
+
+        @media (max-width: 1350px) {
+            top: 18%;
+        }
+
+        @media (max-width: 1300px) {
+            top: 20%;
+        }
+
+        @media (max-width: 1100px) {
+            top: 17%;
+        }
+
+        @media (max-width: 1020px) {
+            top: 17%;
+        }
+
+        @media (max-width: 987px) {
+            top: 15%;
+        }
+
+        @media (max-width: 950px) {
+            top: 18%;
+        }
+
+        @media (max-width: 883px) {
+            top: 18%;
+        }
+
+        @media (max-width: 768px) {
+            top: 17%;
+        }
+
+        @media (max-width: 670px) {
+            top: 15%;
+        }
+
+        @media (max-width: 650px) {
+            top: 15%;
+        }
+    }
+
+    .btnflex {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-top: 10px;
+    }
+
+    @media (max-width: 950px) and (min-width: 650px) {
+        .btnflex {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            transform: translateY(-50%);
+            pointer-events: none;
+            /* Ensures clicks only go to buttons */
+        }
+
+        .btncst {
+            position: absolute;
+            background-color: rgba(0, 0, 0, 0.5);
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            cursor: pointer;
+            font-size: 18px;
+            pointer-events: all;
+        }
+
+        .btncst:first-child {
+            left: -34px;
+            padding: 0;
+            background-color: #F0F0F0;
+        }
+
+        .btncst:last-child {
+            right: -34px;
+            padding: 0;
+            background-color: #F0F0F0;
+        }
+    }
+
+
+    .fs1 {
+        margin: 4px 0;
+        font-size: $fontSize1;
+        color: $titleColor;
+        font-family: $primaryFontFamily;
+        text-align: center;
+        letter-spacing: 0.5px;
+    }
+
+    .fs2 p {
+        margin: 4px 0;
+        font-size: $fontSize2;
+        color: $titleColor;
+        font-family: $primaryFontFamily;
+        font-weight: bold;
+        text-align: center;
+        letter-spacing: 1.2px;
+    }
+
+    .fs3 {
+        color: $titleColor;
+        font-size: $fontSize1;
+        font-family: $primaryFontFamily;
+        letter-spacing: 1.2px;
+        text-decoration: underline;
+        text-decoration-color: $titleColor;
+        margin-top: 10px;
+        text-align: center;
+        cursor: pointer;
+    }
+
+    .btncst {
+        height: 30px;
+        width: 30px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 12px;
+        font-weight: bold;
+        color: #989898;
+        border: 0.5px solid #989898;
+        outline: none;
+    }
+
+    .btncst:hover {
+        color: #5f5e5e;
+    }
+
+    .centerall {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        .smr_ds2ImageDiv {
+            background-color: #f1f1f1;
+            padding: 20px;
+
+            @media (max-width: 987px) {
+                padding: 10px;
+            }
+        }
+    }
+
+    .swiper-button-prev,
+    .swiper-button-next {
+        background-color: #dadada;
+        color: rgba(0, 0, 0, 0.5);
+        padding: 10px;
+        border-radius: 50%;
+        z-index: 1;
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        &:after {
+            font-size: 16px;
+        }
+
+        @media (max-width: 576px) {
+            width: 30px;
+            height: 30px;
+
+            &:after {
+                font-size: 14px;
+            }
+        }
+    }
+
+    .swiper_w {
+        width: 100%;
+
+        @media (max-width: 768px) {
+            width: 134px;
+        }
+
+        @media (max-width: 650px) {
+            width: 100%;
+        }
+    }
+
+    @media (max-width: 1024px) {
+        .smr1_desognSetTitle {
+            font-size: 18px !important;
+            margin-block: 2%;
+        }
+    }
+
+    // @media (max-width: 768px) {
+    //   .subimgpart {
+    //     top: 7%;
+    //     right: 4%;
+    //   }
+
+    //   .card {
+    //     width: 200px;
+    //     height: 285px;
+    //   }
+    // }
+
+    @media (max-width: 650px) {
+        .card {
+            width: 100%;
+            height: auto !important;
+            padding: 22px;
+            box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px !important;
+        }
+
+        .subimgpart {
+            position: inherit;
+            top: 0;
+            right: 0;
+            width: 230px;
+            margin: auto;
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+
+        .cardimg {
+            max-width: 100%;
+        }
+
+        .fs1,
+        .fs3 {
+            font-size: $fontSize2;
+        }
+
+        .fs2 p {
+            font-size: $fontSize3;
+        }
+    }
+}

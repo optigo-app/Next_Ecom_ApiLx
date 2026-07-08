@@ -299,7 +299,7 @@ const PremiumFooter = ({ logos, storeData, companyInfoData: companyInfoDataProp 
                         </Box>
                     </Grid>
 
-                    <Grid item xs={12} lg={3}>
+                    <Grid item   size={{ xs: 12,sm:4, lg: 2 }}>
                         <Box
                             sx={{
                                 pr: { lg: 4 },
@@ -329,7 +329,7 @@ const PremiumFooter = ({ logos, storeData, companyInfoData: companyInfoDataProp 
                                     mt: 1
                                 }}
                             >
-                                 
+
                                     <Box sx={{ display: "flex", flexDirection: "column", gap: 1.5 }}>
                                         {/* US Office Address */}
                                         <Box sx={{ display: "flex", alignItems: "flex-start", gap: 1.2 }}>
@@ -348,7 +348,7 @@ const PremiumFooter = ({ logos, storeData, companyInfoData: companyInfoDataProp 
                                                     fontSize: { xs: '0.875rem', md: '0.9375rem' },
                                                 }}
                                             >
-                                                1177 6th Avenue, Suite 5099, New York, NY 10036
+                                                D-Block G20, ITC( International Trade Centre), Majura Gate, Ring Road,
                                             </Typography>
                                         </Box>
 
@@ -364,7 +364,7 @@ const PremiumFooter = ({ logos, storeData, companyInfoData: companyInfoDataProp 
                                                 component="span"
                                                 sx={{ color: '#656565bf', fontSize: { xs: '0.875rem', md: '0.9375rem' }, }}
                                             >
-                                                (646) 284-4466
+                                                +919099887762
                                             </Typography>
                                         </Box>
 
@@ -383,7 +383,7 @@ const PremiumFooter = ({ logos, storeData, companyInfoData: companyInfoDataProp 
                                                     fontSize: { xs: '0.875rem', md: '0.9375rem' },
                                                 }}
                                             >
-                                                Contact.usa@elveepromise.com
+                                                hello@optigoapps.com
                                             </Typography>
                                         </Box>
                                     </Box>
