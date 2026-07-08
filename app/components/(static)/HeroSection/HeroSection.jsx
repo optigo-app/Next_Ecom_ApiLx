@@ -6,9 +6,6 @@ export default async function TopSection() {
   const banners = await getHomeBannerImages({ host: assetBase });
   const videoUrl = banners?.mainBanner?.video?.[0] ? banners.mainBanner.video[0].replace(".mp4", ".webm") : null;
 
-  
-  console.log("TCL: TopSection -> videoUrl", videoUrl)
-
   return (
     <Box
       component="section"

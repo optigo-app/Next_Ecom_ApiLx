@@ -4,7 +4,7 @@ import React from "react";
 import { getStoreInit } from "@/app/(core)/utils/GlobalFunctions/GlobalFunctions";
 import { generatePageMetadata } from "@/app/(core)/utils/HeadMeta";
 import { pages } from "@/app/(core)/utils/pages";
-import { isOldElvee } from "@/app/(core)/constants/ElveeFlag";
+import { isOldElvee,isVimalDiamond } from "@/app/(core)/constants/ElveeFlag";
 import { Box } from "@mui/material";
 import TopSection from "@/app/components/(static)/HeroSection/HeroSection";
 import useHomeBannerImages from "@/app/(core)/utils/Glob_Functions/ThemesBanner/ThemesBanner";
@@ -19,6 +19,7 @@ import MaxBrandMarquee from "./blocks/MaxBrandMarquee";
 import MaxPhysicalStore from "./blocks/MaxPhysicalStore";
 import MaxNewsletter from "./blocks/MaxNewsletter";
 import SocialMediaVideoSection from "./blocks/SocialMedia";
+import SingleStore from "./blocks/SingleStore";
 import { cookies } from "next/headers";
 
 
@@ -57,7 +58,8 @@ console.log("TCL: SonasonsHome -> islogin",islogin )
        <PromoComponent1  />
        <BrandsComponent />
        <PromoComponent2 />
-  
+       {isVimalDiamond && <MaxDesignSet />}
+       {isVimalDiamond && <SingleStore />}
        <Craftmenship />
        <GaleryView />
        <CompanyData />

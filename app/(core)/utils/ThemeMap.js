@@ -1,4 +1,4 @@
-import { LocalSetup } from "@/app/env";
+ import { LocalSetup } from "@/app/env";
 
 export const themeMap = {
   "nxt10.optigoapps.com": {
@@ -8,8 +8,8 @@ export const themeMap = {
     page: "hoq.web",
   },
   "nxtsonasons.web": {
-    page: "fgstore.mapp",
-    // page: LocalSetup,
+    // page: "fgstore.mapp",
+    page: LocalSetup,
   },
   // local dev
   "nxtmobileapp.web": {

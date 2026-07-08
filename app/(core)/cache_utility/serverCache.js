@@ -33,7 +33,7 @@ export async function getCache(key, ttlMs = defaultTTL) {
     try {
       const cached = JSON.parse(fs.readFileSync(file, "utf8"));
       if (now - cached.timestamp < ttlMs) {
-        console.log(`💾 [CACHE HIT - DISK] ${key}`);
+        // console.log(`💾 [CACHE HIT - DISK] ${key}`);
         return cached.data;
       }
       console.log(`⏰ [CACHE EXPIRED] ${key}`);
