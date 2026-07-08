@@ -64,9 +64,9 @@ const Theme = {
 }
 
 export function getLogos() {
-  return Theme.hoq;
+  return Theme.Sonasons;
 }
 
 export function getHoqLogos() {
-  return Theme.hoq;
+  return Theme.Sonasons;
 }

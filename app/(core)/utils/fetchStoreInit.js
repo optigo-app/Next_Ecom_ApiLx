@@ -50,7 +50,6 @@ export async function fetchStoreInitData(req) {
     }
 
     const finalUrl = baseUrl;
-    console.log(baseUrl, "baseUrl")
     const response = await fetch(finalUrl);
     if (!response.ok) throw new Error(`HTTP error ${response.status}`);
     const jsonData = await response.json();

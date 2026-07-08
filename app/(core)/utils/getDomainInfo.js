@@ -9,7 +9,6 @@ export async function getDomainInfo() {
                 const { headers } = await import("next/headers");
                 headerList = await headers();
             } catch (e) {
-                console.warn("😉 ~ getDomainInfo ~ headers() not available, using fallback.");
                 return {
                     hostname: NEXT_APP_WEB,
                     protocol: process.env.NODE_ENV === "development" ? "http:" : "https:",
@@ -17,7 +16,6 @@ export async function getDomainInfo() {
             }
 
             const rawHost = headerList?.get("x-forwarded-host") || headerList?.get("host") || "";
-            console.log("🚀 ~ getDomainInfo ~ rawHost:", rawHost)
             const rawProto = headerList?.get("x-forwarded-proto") || "https";
 
             return {
@@ -31,7 +29,6 @@ export async function getDomainInfo() {
             protocol,
         };
     } catch (error) {
-        console.error("😉 ~ getDomainInfo ~ error:", error);
         return {
             hostname: NEXT_APP_WEB,
             protocol:
