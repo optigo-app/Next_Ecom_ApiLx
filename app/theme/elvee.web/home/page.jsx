@@ -31,7 +31,8 @@ import Craftmenship from "./blocks/Craftmenship/Craftmenship"
 import GaleryView from "./blocks/GaleryView/GaleryView"
 import CompanyData from "./blocks/ComapnayData/CompanyData"
 import AffiliationData from "./blocks/PromoComponent/BrandsComponent/AffiliationData"
- 
+import MaxCategories from "./blocks/MaxCategories"
+ import ProductTypeSlider from "./blocks/ProductTypeSlider"
 
 export const metadata = generatePageMetadata(pages["/"], "Sonasons");
 
@@ -55,6 +56,8 @@ console.log("TCL: SonasonsHome -> islogin",islogin )
       <>
       
        <BrandInfoMarquee assetBase={assetBase} />
+       {isVimalDiamond && <MaxCategories assetBase={assetBase} storeInit={storeData} /> }
+       {isVimalDiamond && <ProductTypeSlider assetBase={assetBase} storeInit={storeData} />}
        <PromoComponent1  />
        <BrandsComponent />
        <PromoComponent2 />
@@ -75,7 +78,9 @@ console.log("TCL: SonasonsHome -> islogin",islogin )
       { islogin && 
       <>
       
-      <CategoryBlock assetBase={assetBase} storeInit={storeData} />
+       {isVimalDiamond ? <MaxCategories assetBase={assetBase} storeInit={storeData} /> : <CategoryBlock assetBase={assetBase} storeInit={storeData} />}
+       {isVimalDiamond  && <ProductTypeSlider assetBase={assetBase} storeInit={storeData} />}
+       <ProductTypeSlider assetBase={assetBase} storeInit={storeData} />
       <MaxBestSeller storeInit={storeData} />
       <MaxAlbum storeInit={storeData} />
       <MaxTrendingView data={trendingBanner} storeInit={storeData} />

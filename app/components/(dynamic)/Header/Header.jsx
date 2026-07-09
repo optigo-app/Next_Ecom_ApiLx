@@ -50,7 +50,7 @@ const Header = ({ storeinit, logos }) => {
   const lastFetchedPackageIdRef = useRef(null);
 
   const fetchData = useCallback(() => {
-    const value = window.__LOGIN_USER__ || getSession("LoginUser");
+    const value = window.__LOGIN_USER__ || getSession("LoginUser") ;
     setislogin(value);
   }, [setislogin]);
 
@@ -69,7 +69,8 @@ const Header = ({ storeinit, logos }) => {
       // Read directly from source to avoid race condition with React state
       const resolvedDetail =
         (typeof window !== "undefined" && window.__LOGIN_USER_DETAIL__) ||
-        getSession("loginUserDetail") ||
+        // getSession("loginUserDetail") ||
+        (await getSessionAsync("loginUserDetail", 2000)) ||
         loginUserDetail;
       let finalID;
       if (storeinit?.IsB2BWebsite === 0) {
@@ -405,7 +406,13 @@ const Header = ({ storeinit, logos }) => {
   const searchDataFucn = (e) => {
     if (e.key === "Enter") {
       if (searchText) {
-        let loginInfo = JSON.parse(sessionStorage.getItem("loginUserDetail"));
+        // let loginInfo = JSON.parse(sessionStorage.getItem("loginUserDetail"));
+        let loginInfo = {};
+        try {
+          loginInfo = JSON.parse(sessionStorage.getItem("loginUserDetail")) || {};
+        } catch {
+          loginInfo = {};
+        }
         let storeInit = storeinit;
         let obj = {
           a: "",
@@ -428,7 +435,13 @@ const Header = ({ storeinit, logos }) => {
 
   const clickSearch = () => {
     if (searchText) {
-      let loginInfo = JSON.parse(sessionStorage.getItem("loginUserDetail"));
+      // let loginInfo = JSON.parse(sessionStorage.getItem("loginUserDetail"));
+      let loginInfo = {};
+      try {
+        loginInfo = JSON.parse(sessionStorage.getItem("loginUserDetail")) || {};
+      } catch {
+        loginInfo = {};
+      }
       let storeInit = storeinit;
       let obj = {
         a: "",
@@ -449,7 +462,7 @@ const Header = ({ storeinit, logos }) => {
 
   const toggleCartDrawer = () => {
     setIsCartOpen((prevState) => !prevState);
-    const isCartDrawerOpen = JSON.parse(sessionStorage.getItem("isCartDrawer"));
+    const isCartDrawerOpen = JSON.parse(sessionStorage.getItem("isCartDrawer")) ;
     sessionStorage.setItem("isCartDrawer", !isCartDrawerOpen);
     setCartOpenState((prevState) => !prevState);
   };
@@ -986,7 +999,7 @@ const Header = ({ storeinit, logos }) => {
                       <li>
                         <Badge badgeContent={wishCountNum} max={1000} overlap={"rectangular"} color="secondary" className="badgeColorFix smr_mobileHideIcone">
                           <Tooltip title="WishList">
-                            <li className="nav_li_smining_Icone" onClick={() => navigate("/myWishList")}>
+                            <div className="nav_li_smining_Icone" onClick={() => navigate("/myWishList")}>
                               <StarBorderRoundedIcon
                                 style={{
                                   height: "20px",
@@ -994,7 +1007,7 @@ const Header = ({ storeinit, logos }) => {
                                   width: "20px",
                                 }}
                               />
-                            </li>
+                            </div>
                           </Tooltip>
                         </Badge>
                       </li>
@@ -1449,8 +1462,11 @@ const TopNavBar = ({ menuItems = [], handelMenu = () => { } }) => {
 const HoverMenu = ({ selectedData, handelMenu, expandedMenu, hoveredIndex, handleMouseEnter, handleMouseLeave }) => {
   const SliderbannerImages = [`/WebSiteStaticImage/1.png`, `/WebSiteStaticImage/2.png`];
 
-  if (expandedMenu === null || expandedMenu === undefined || selectedData?.param1[0].param1dataname === "") {
-    return;
+  // if (expandedMenu === null || expandedMenu === undefined || selectedData?.param1[0]?.param1dataname === "") {
+  //   return;
+  // }
+  if (!expandedMenu || !selectedData?.param1?.length || selectedData.param1[0]?.param1dataname === "") {
+    return null;
   }
 
   return (

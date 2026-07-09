@@ -26,8 +26,16 @@ import { readCache, writeCache } from "@/app/(core)/cache_utility/cacheActions";
 
 const ElveeBaseHeader = ({ hidden, storeInit, logos }) => {
   const { islogin, loginUserDetail, setislogin, cartCountNum, wishCountNum, authChecked } = useStore();
-  const Router = useNextRouterLikeRR().push;
-  const navigate = url => Router(url);
+  // const Router = useNextRouterLikeRR().push;
+  // const navigate = url => Router(url);
+  const router = useNextRouterLikeRR();
+  const navigate = (url, opts) => {
+    if (opts?.replace) {
+      router.replace(url);
+    } else {
+      router.push(url);
+    }
+  };
   const [burgerMenu, setBurgerMenu] = useState(false);
   const [burgerMenu1, setBurgerMenu1] = useState(false);
   const [mobilenav, setMobilenav] = useState(false);
