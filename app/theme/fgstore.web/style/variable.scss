@@ -53,50 +53,70 @@ $fontSize6: 28px;
 $fontSize7: 35px;
 $fontSize8: 40px;
 
-// Sonasons theme
-$primaryBorderColor: #e1e1e1;
-$primaryBorderColor2: #42424233;
-$bgColor: black; // Light gray background
-$textColor: #1b1212; // Dark gray text color
-$menuColor: #7d7f85;
-$navbarbg: black;
-$navbarcolor: white;
-$badgecolor: white;
-$badgetxtcolor: black;
-$footerbg: black;
-$footertextcolor: white;
-$sliderbar: #7d7f85;
-$btnBg: black;
-$btncolor: white;
-$authbtnbg: black;
-$authbtncolor: white;
-$authbg: white;
-$footertextcolor: white;
-$menutitle: black;
-$defaultbtncolor: black;
+:root {
+  // Default / Sonasons theme
+  --primaryBorderColor: #e1e1e1;
+  --primaryBorderColor2: #42424233;
+  --bgColor: black;
+  --textColor: #1b1212;
+  --menuColor: #7d7f85;
+  --navbarbg: black;
+  --navbarcolor: white;
+  --badgecolor: white;
+  --badgetxtcolor: black;
+  --footerbg: black;
+  --footertextcolor: white;
+  --sliderbar: #7d7f85;
+  --btnBg: black;
+  --btncolor: white;
+  --authbtnbg: black;
+  --authbtncolor: white;
+  --authbg: white;
+  --menutitle: black;
+  --defaultbtncolor: black;
+}
 
-// sonasons themes ends
+[data-brand="omjiyas"],
+[data-brand="omjiyansh"] {
+  // Omjiyas theme
+  --primaryBorderColor: #e1e1e1;
+  --primaryBorderColor2: #42424233;
+  --bgColor: #08054c;
+  --textColor: #1b1212;
+  --menuColor: #1b1212;
+  --navbarbg: white;
+  --navbarcolor: black;
+  --badgecolor: white;
+  --badgetxtcolor: black;
+  --footerbg: black;
+  --footertextcolor: black;
+  --sliderbar: #08054c;
+  --btnBg: #08054c;
+  --btncolor: white;
+  --authbtnbg: #08054c;
+  --authbtncolor: white;
+  --authbg: white;
+  --menutitle: black;
+  --defaultbtncolor: black;
+}
 
-// omjiyas theme
-// #08054C
+$primaryBorderColor: var(--primaryBorderColor);
+$primaryBorderColor2: var(--primaryBorderColor2);
+$bgColor: var(--bgColor);
+$textColor: var(--textColor);
+$menuColor: var(--menuColor);
+$navbarbg: var(--navbarbg);
+$navbarcolor: var(--navbarcolor);
+$badgecolor: var(--badgecolor);
+$badgetxtcolor: var(--badgetxtcolor);
+$footerbg: var(--footerbg);
+$footertextcolor: var(--footertextcolor);
+$sliderbar: var(--sliderbar);
+$btnBg: var(--btnBg);
+$btncolor: var(--btncolor);
+$authbtnbg: var(--authbtnbg);
+$authbtncolor: var(--authbtncolor);
+$authbg: var(--authbg);
+$menutitle: var(--menutitle);
+$defaultbtncolor: var(--defaultbtncolor);
 
-// $primaryBorderColor: #e1e1e1;
-// $primaryBorderColor2: #42424233;
-// $bgColor: #08054c; // Light gray background
-// $textColor: #1b1212; // Dark gray text color
-// $menuColor: #1b1212;
-// $navbarbg: white;
-// $navbarcolor: black;
-// $badgecolor: white;
-// $badgetxtcolor: black;
-// $footerbg: black;
-// $footertextcolor: black;
-// $sliderbar: #08054c;
-// $btnBg: #08054c;
-// $btncolor: white;
-// $authbtnbg: #08054c;
-// $authbtncolor: white;
-// $authbg: white;
-// $footertextcolor: white;
-// $menutitle: black;
-// $defaultbtncolor: black;
