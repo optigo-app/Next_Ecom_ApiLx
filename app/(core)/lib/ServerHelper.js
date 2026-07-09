@@ -1,6 +1,8 @@
 // app/(core)/lib/ServerHelper.js
 import { headers } from "next/headers";
 import { NEXT_APP_WEB } from "../utils/env";
+import { activeBrand } from "@/app/env";
+import { AppConfig } from "../constants/AppConfig";
 
 /**
  * Safe host getter (server only).
@@ -28,7 +30,10 @@ export function getProtocol(host) {
 
 export function storImagePath(host) {
   const protocol = getProtocol(host);
-  const base = host.includes("localhost") || host.includes("zen") ? NEXT_APP_WEB : NEXT_APP_WEB;
+  const base =
+    host.includes("localhost") || host.includes("zen")
+      ? NEXT_APP_WEB
+      : NEXT_APP_WEB;
   // return `${protocol}://${base}/WebSiteStaticImage`;
   return `WebSiteStaticImage`;
 }
@@ -45,13 +50,10 @@ const Theme = {
     web: "/WebSiteStaticImage/logoIcon/webLogo.png",
     mobile: "/WebSiteStaticImage/logoIcon/mobileLogo.png",
   },
-  // omjiyansh: {
-  //   web: "/WebSiteStaticImage/logoIcon/om/webLogo.png",
-  //   mobile: "/WebSiteStaticImage/logoIcon/om/mobileLogo.png",
-  // },
   omjiyansh: {
     web: "/WebSiteStaticImage/logoIcon/om/new/om-jiyansh-jewel pvt ltd final logo.png",
-    mobile: "/WebSiteStaticImage/logoIcon/om/new/om-jiyansh-jewel pvt ltd final logo.png",
+    mobile:
+      "/WebSiteStaticImage/logoIcon/om/new/om-jiyansh-jewel pvt ltd final logo.png",
   },
   hoq: {
     web: "/WebSiteStaticImage/logoIcon/webLogo1.png",
@@ -61,12 +63,66 @@ const Theme = {
     web: "/WebSiteStaticImage/logoIcon/webLogo.png",
     mobile: "/WebSiteStaticImage/logoIcon/mobileLogo.png",
   },
-}
+};
 
 export function getLogos() {
+  const config = AppConfig[activeBrand];
+  if (config?.web && config?.mobile) {
+    return {
+      web: config.web,
+      mobile: config.mobile,
+    };
+  }
+
+  const brand = activeBrand === "omjiyas" ? "omjiyansh" : activeBrand;
+  if (Theme[brand]) {
+    return Theme[brand];
+  }
+  if (brand.toLowerCase().includes("sonasons")) {
+    return Theme.Sonasons;
+  }
+  if (brand.toLowerCase().includes("elvee")) {
+    return Theme.Elvee;
+  }
+  if (brand.toLowerCase().includes("hoq")) {
+    return Theme.hoq;
+  }
   return Theme.Sonasons;
 }
 
 export function getHoqLogos() {
+  const config = AppConfig[activeBrand];
+  if (config?.web && config?.mobile) {
+    return {
+      web: config.web,
+      mobile: config.mobile,
+    };
+  }
+
+  const brand = activeBrand === "omjiyas" ? "omjiyansh" : activeBrand;
+  if (Theme[brand]) {
+    return Theme[brand];
+  }
+  if (brand.toLowerCase().includes("sonasons")) {
+    return Theme.Sonasons;
+  }
+  if (brand.toLowerCase().includes("elvee")) {
+    return Theme.Elvee;
+  }
+  if (brand.toLowerCase().includes("hoq")) {
+    return Theme.hoq;
+  }
   return Theme.Sonasons;
 }
+
+// // export const LocalSetup = "fgstore.mapp";
+// export const LocalSetup = "fgstore.web";
+// // export const LocalSetup = "hoq.web";
+// // export const LocalSetup = "elvee.web";
+// // export const LocalSetup = "diamondtine.web";
+// // export const LocalSetup = "malakanJwewls.web";
+
+// // export const activeBrand = "shreediamond"
+// export const activeBrand = "SonasonsApp"
+// // export const activeBrand = "EliorApp"
+// // export const activeBrand = "omjiyas"

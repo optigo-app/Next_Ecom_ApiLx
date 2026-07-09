@@ -5,9 +5,7 @@ export const LocalSetup = "fgstore.web";
 // export const LocalSetup = "diamondtine.web";
 // export const LocalSetup = "malakanJwewls.web";
 
-
-
 // export const activeBrand = "shreediamond"
-export const activeBrand = "SonasonsApp"
+export const activeBrand = "SonasonsApp";
 // export const activeBrand = "EliorApp"
 // export const activeBrand = "omjiyas"
