@@ -63,8 +63,15 @@ const Theme = {
     web: "/WebSiteStaticImage/logoIcon/webLogo.png",
     mobile: "/WebSiteStaticImage/logoIcon/mobileLogo.png",
   },
+  vimalgoldanddiamond: {
+    web: "/WebSiteStaticImage/logoIcon/vimal/webLogo.png",
+    mobile: "/WebSiteStaticImage/logoIcon/vimal/mobileLogo.png",
+    favicon: "/WebSiteStaticImage/logoIcon/vimal/favicon.ico",
+    meta: "/WebSiteStaticImage/logoIcon/vimal/MetaShareImage.jpg",
+    
+  },
 };
-
+ 
 export function getLogos() {
   const config = AppConfig[activeBrand];
   if (config?.web && config?.mobile) {

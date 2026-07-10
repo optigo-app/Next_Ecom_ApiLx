@@ -18,9 +18,8 @@ import { defaultFont } from "./(core)/assets/FontSetup";
 import { BroadcasterProvider } from "@/app/(core)/contexts/BoardCastContext";
 import {
   isOmJiyansh,
-  ActiveFavicon,
-  DEFAULT_JEWELRY_DESCRIPTION,
-  DEFAULT_JEWELRY_KEYWORDS,
+  ActiveMeta,
+
   getSiteDetails,
 } from "./(core)/seo";
 
@@ -38,18 +37,18 @@ export async function generateMetadata() {
   return generatePageMetadata(
     {
       metadataBase: new URL(siteUrl),
-      title: storeInit?.ufcc,
-      description: DEFAULT_JEWELRY_DESCRIPTION,
-      keywords: DEFAULT_JEWELRY_KEYWORDS,
-      ogImage: storeInit?.ogImage,
+      title: ActiveMeta?.metaData?.title || storeInit?.ufcc,
+      description: ActiveMeta?.metaData?.description,
+      keywords: ActiveMeta?.metaData?.keywords,
+      ogImage: ActiveMeta?.metaData?.ogImage || storeInit?.ogImage,
       ufcc: storeInit?.ufcc,
       websiteName: storeInit?.BrowserTitle,
       siteName: siteName,
       siteUrl: siteUrl,
       icons: {
-        icon: ActiveFavicon,
-        shortcut: ActiveFavicon,
-        apple: ActiveFavicon,
+        icon: ActiveMeta.ico,
+        shortcut: ActiveMeta.ico,
+        apple: ActiveMeta.ico,
       },
     },
     isOmJiyansh,

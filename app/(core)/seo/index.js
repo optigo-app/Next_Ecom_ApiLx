@@ -2,12 +2,12 @@ import { headers } from "next/headers";
 import { activeBrand } from "@/app/env";
 import { AppConfig } from "../constants/AppConfig";
 
-export const DEFAULT_JEWELRY_DESCRIPTION =
-  "Discover timeless jewelry crafted with precision and elegance. Explore gold, diamond, and silver collections designed for everyday wear and special occasions, with trusted quality and exceptional craftsmanship.";
-export const DEFAULT_JEWELRY_KEYWORDS =
-  "jewelry online, gold jewelry, diamond jewelry, silver jewelry, fine jewelry, bridal jewelry, earrings, rings, necklaces, bracelets, luxury jewelry, handcrafted jewelry";
+ 
+export const ActiveMeta = AppConfig[activeBrand];
 
-export const ActiveFavicon = AppConfig[activeBrand].ico;
+// export const ActiveDescription = AppConfig[activeBrand]?.metaData?.description;
+
+// export const ActiveKeywords = AppConfig[activeBrand]?.metaData?.keywords;
 
 export const isOmJiyansh = activeBrand === "omjiyas";
 
