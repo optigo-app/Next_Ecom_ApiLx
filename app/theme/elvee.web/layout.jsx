@@ -11,7 +11,8 @@ import ElveeBaseHeader from "@/app/components/(dynamic)/Header/Elvee/Header";
 import OldHeader from "@/app/components/(dynamic)/Header/Elvee/Header";
 import MaxNavbar from "@/app/components/(dynamic)/Header/Elvee/New/MaxMenu";
 import { BroadcasterProvider } from "@/app/(core)/contexts/BoardCastContext";
-import { isOldElvee } from "@/app/(core)/constants/ElveeFlag";
+import { isOldElvee, isVimalDiamond } from "@/app/(core)/constants/ElveeFlag";
+import AnnouncementBar from "./home/blocks/AnnouncementBar";
 
 const layout = async ({ children }) => {
   const storeData = await getStoreInit();
@@ -22,9 +23,10 @@ const layout = async ({ children }) => {
   return (
     <>
       <Box sx={{ display: "flex", flexDirection: "column", minHeight: "100vh", width: "100%" }}>
+        <AnnouncementBar />
 
-        {isOldElvee ? <OldHeader hidden={false} logos={logos} storeInit={storeData} /> : <ElveeBaseHeader hidden={false} logos={logos} storeInit={storeData} />}
-
+        {isOldElvee ? <OldHeader hidden={false} logos={logos} storeInit={storeData} /> : isVimalDiamond ? <MaxNavbar hidden={false} logos={logos} storeInit={storeData} /> : <ElveeBaseHeader hidden={false} logos={logos} storeInit={storeData} />}
+        
         <Box sx={{ flex: 1, display: "flex", flexDirection: "column" }}>
           <Suspense fallback={<Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", flex: 1, minHeight: "90vh" }}></Box>}>{children}</Suspense>
         </Box>

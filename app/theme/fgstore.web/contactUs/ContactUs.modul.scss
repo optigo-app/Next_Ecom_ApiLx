@@ -146,7 +146,8 @@
     transition: all 0.3s ease;
 
     &:hover:not(:disabled) {
-      background-color: color.adjust($authbtnbg, $lightness: 5%);
+      // background-color: color.adjust($authbtnbg, $lightness: 5%);
+      background-color: color.adjust(#000000, $lightness: 5%);
       transform: translateY(-2px);
       box-shadow: 0 5px 15px rgba(0,0,0,0.1);
     }
