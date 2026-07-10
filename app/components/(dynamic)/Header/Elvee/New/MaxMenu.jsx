@@ -550,7 +550,7 @@ const MaxNavbar = ({ storeinit, logos }) => {
                                                                     bottom: -20,
                                                                     left: "0%",
                                                                     right: "0%",
-                                                                    height: 35,
+                                                                    // height: 35,
                                                                     width: "100%",
                                                                     bgcolor: "transparent",
                                                                     transition: "width 0.3s ease",

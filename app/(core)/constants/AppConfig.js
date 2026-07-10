@@ -5,6 +5,8 @@
  * Updated: 2026-04-03
  */
 
+ 
+
 export const AppConfig = {
     Sonasons: {
         ico: "/optigo_favicon.ico",
@@ -13,26 +15,61 @@ export const AppConfig = {
         static_block: {
             block1: "",
         },
+        metaData:{
+            description:"Discover timeless jewelry crafted with precision and elegance. Explore gold, diamond, and silver collections designed for everyday wear and special occasions, with trusted quality and exceptional craftsmanship.",
+            keywords:"jewelry online, gold jewelry, diamond jewelry, silver jewelry, fine jewelry, bridal jewelry, earrings, rings, necklaces, bracelets, luxury jewelry, handcrafted jewelry",
+            title:"",
+            ogImage: "",
+
+        }
     },
     omjiyas: {
         ico: "/WebSiteStaticImage/logoIcon/om/new/favicon.ico",
         web: "/WebSiteStaticImage/logoIcon/om/new/om-jiyansh-jewel pvt ltd final logo.png",
         mobile: "/WebSiteStaticImage/logoIcon/om/new/om-jiyansh-jewel pvt ltd final logo.png",
+        metaData:{
+            description:"Discover timeless jewelry crafted with precision and elegance. Explore gold, diamond, and silver collections designed for everyday wear and special occasions, with trusted quality and exceptional craftsmanship.",
+            keywords:"jewelry online, gold jewelry, diamond jewelry, silver jewelry, fine jewelry, bridal jewelry, earrings, rings, necklaces, bracelets, luxury jewelry, handcrafted jewelry",
+            title:"",
+            ogImage: "",
+
+        }
     },
     omjiyansh: {
         ico: "/WebSiteStaticImage/logoIcon/om/new/favicon.ico",
         web: "/WebSiteStaticImage/logoIcon/om/new/om-jiyansh-jewel pvt ltd final logo.png",
         mobile: "/WebSiteStaticImage/logoIcon/om/new/om-jiyansh-jewel pvt ltd final logo.png",
+        metaData:{
+            description:"Discover timeless jewelry crafted with precision and elegance. Explore gold, diamond, and silver collections designed for everyday wear and special occasions, with trusted quality and exceptional craftsmanship.",
+            keywords:"jewelry online, gold jewelry, diamond jewelry, silver jewelry, fine jewelry, bridal jewelry, earrings, rings, necklaces, bracelets, luxury jewelry, handcrafted jewelry",
+            title:"",
+            ogImage: "",
+
+        }
     },
     hoq: {
         ico: "/optigo_favicon.ico",
         web: "/WebSiteStaticImage/logoIcon/webLogo1.png",
         mobile: "/WebSiteStaticImage/logoIcon/mobileLogo2.png",
+        metaData:{
+            description:"Discover timeless jewelry crafted with precision and elegance. Explore gold, diamond, and silver collections designed for everyday wear and special occasions, with trusted quality and exceptional craftsmanship.",
+            keywords:"jewelry online, gold jewelry, diamond jewelry, silver jewelry, fine jewelry, bridal jewelry, earrings, rings, necklaces, bracelets, luxury jewelry, handcrafted jewelry",
+            title:"",
+            ogImage: "",
+
+        }
     },
     shreediamond: {
         ico: "/WebSiteStaticImage/mobile/shreedia/favicon.ico",
         web: "/WebSiteStaticImage/mobile/shreedia/webLogo.png",
         mobile: "/WebSiteStaticImage/mobile/shreedia/mobileLogo.png",
+        metaData:{
+            description:"Discover timeless jewelry crafted with precision and elegance. Explore gold, diamond, and silver collections designed for everyday wear and special occasions, with trusted quality and exceptional craftsmanship.",
+            keywords:"jewelry online, gold jewelry, diamond jewelry, silver jewelry, fine jewelry, bridal jewelry, earrings, rings, necklaces, bracelets, luxury jewelry, handcrafted jewelry",
+            title:"",
+            ogImage: "",
+
+        },
         static_block: {
             block1: "/WebSiteStaticImage/mobile/shreedia/shree_diamond_trendingbanner1.png",
         },
@@ -265,6 +302,13 @@ export const AppConfig = {
         ico: "/optigo_favicon.ico",
         web: "/WebSiteStaticImage/logoIcon/webLogo.png",
         mobile: "/WebSiteStaticImage/logoIcon/mobileLogo.png",
+        metaData:{
+            description:"Discover timeless jewelry crafted with precision and elegance. Explore gold, diamond, and silver collections designed for everyday wear and special occasions, with trusted quality and exceptional craftsmanship.",
+            keywords:"jewelry online, gold jewelry, diamond jewelry, silver jewelry, fine jewelry, bridal jewelry, earrings, rings, necklaces, bracelets, luxury jewelry, handcrafted jewelry",
+            title:"",
+            ogImage: "",
+
+        },
         static_block: {
             block1: "/WebSiteStaticImage/mobile/sonasons/sonasons_67459687_RG_SIO2X1.webp",
         },
@@ -314,6 +358,13 @@ export const AppConfig = {
         ico: "/WebSiteStaticImage/logoIcon/elior/favicon.ico",
         web: "/WebSiteStaticImage/logoIcon/elior/webLogo.png",
         mobile: "/WebSiteStaticImage/logoIcon/elior/mobileLogo.png",
+        metaData:{
+            description:"Discover timeless jewelry crafted with precision and elegance. Explore gold, diamond, and silver collections designed for everyday wear and special occasions, with trusted quality and exceptional craftsmanship.",
+            keywords:"jewelry online, gold jewelry, diamond jewelry, silver jewelry, fine jewelry, bridal jewelry, earrings, rings, necklaces, bracelets, luxury jewelry, handcrafted jewelry",
+            title:"",
+            ogImage: "",
+
+        },
         static_block: {
             block1: "/WebSiteStaticImage/mobile/sonasons/sonasons_67459687_RG_SIO2X1.webp",
         },
@@ -546,6 +597,19 @@ export const AppConfig = {
                 phone: "+91 88669 37682",
                 email: "eliorjewel@gmail.com"
             }
+        }
+    },
+    vimalgoldanddiamond: {
+        web: "/WebSiteStaticImage/logoIcon/vimal/webLogo.png",
+        mobile: "/WebSiteStaticImage/logoIcon/vimal/mobileLogo.png",
+        ico: "/WebSiteStaticImage/logoIcon/vimal/favicon.ico",
+        
+        metaData:{
+            title: "Vimal Gold and Diamond",
+            description:"Discover handcrafted diamond, gold & polki jewellery, designed for elegance. 26 years of trust and timeless craftsmanship.",
+            keywords:"Vimal Gold and Diamond, gold jewellery, diamond jewellery, polki jewellery, handcrafted jewellery, luxury jewelry, timeless craftsmanship",
+            ogImage: "/WebSiteStaticImage/logoIcon/vimal/MetaShareImage.jpg",
+
         }
     },
 };
