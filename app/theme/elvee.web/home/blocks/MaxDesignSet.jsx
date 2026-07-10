@@ -230,8 +230,12 @@ const MaxDesignSet = ({ data }) => {
     return results[0]?.length > 1;
   };
 
+  if(designSetList?.length !== 0 ){
+    return null;
+  }
   
   
+   
 
   return (
     <Box
@@ -240,7 +244,7 @@ const MaxDesignSet = ({ data }) => {
       sx={{
         width: '95%',
         margin: '0 auto',
-        padding: { xs: '20px 0', md: '60px 0' },
+        padding: designSetList?.length !== 0 ? { xs: '20px 0', md: '60px 0' } : { xs: '0px 0', md: '0px 0' },
         boxSizing: 'border-box'
       }}
     >

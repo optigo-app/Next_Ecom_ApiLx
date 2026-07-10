@@ -281,7 +281,7 @@ const MaxNavbar = ({ storeinit, logos }) => {
     };
 
     const getMenuApi = async () => {
-        const { IsB2BWebsite } = storeinit;
+        const { IsB2BWebsite } = storeinit || {};
         const visiterID = Cookies.get("visiterId");
         let finalId;
         if (IsB2BWebsite === 0) {
