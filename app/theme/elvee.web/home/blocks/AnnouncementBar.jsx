@@ -9,10 +9,10 @@ const BrandInfoMarquee = () => {
   
   // Custom text array based on your layout image
   const items = useMemo(() => [
-    "Monsoon SALE: UP TO 50% OFF SELECTED ITEMS",
-    "Monsoon SALE: UP TO 50% OFF SELECTED ITEMS",
-    "Monsoon SALE: UP TO 50% OFF SELECTED ITEMS",
-    "Monsoon SALE: UP TO 50% OFF SELECTED ITEMS"
+    " Flat 5% Making Charges on 22KT Antique Gold Jewellery",
+    " Flat 5% Making Charges on 22KT Antique Gold Jewellery",
+    " Flat 5% Making Charges on 22KT Antique Gold Jewellery",
+    " Flat 5% Making Charges on 22KT Antique Gold Jewellery"
   ], []);
 
   // Multiplied items array for continuous scrolling behavior

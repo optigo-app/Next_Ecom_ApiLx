@@ -3,6 +3,9 @@ import React, { useEffect, useState, useCallback } from 'react';
 import './AppointmentPage.scss';
 import AppointmentForm from './AppointmentForm';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
+import {   isVimalDiamond } from "@/app/(core)/constants/ElveeFlag";
+import VimalAppointment from './VimalAppointment';
+
 
 export const services = [
     {
@@ -90,57 +93,64 @@ const AppointmentPage = ({ assetBase }) => {
         router.push(pathname);
     }
 
-    return (
-        <div className="smr_appointment-page">
-            <div
-                className="smr_bg-imageCart"
-                style={{
-                    backgroundImage: `url(${assetBase}/Appointment/MainBanner.png)`,
-                }}
-            >
-                <div className="smr_overlay" />
-                <div className="smr_text-container">
-                    <div className="smr_textContainerData">
-                        <h1
-                            className="smr_designCounttext"
-                        >
-                            BOOK AN APPOINTMENT<br />
-                        </h1>
-                    </div>
-                </div>
-            </div>
-            <p className="smr_intro">
-                Welcome to Sonasons your premier destination for exquisite labgrown diamonds.
-                Schedule an appointment today to experience the brilliance and beauty of our lab-grown diamonds and let Sonasons help you find the perfect piece to cherish forever.
-                Experience the brilliance of lab-grown diamonds with Sonasons.
-                Book an appointment now to view our exquisite collection and discover the sustainable and ethical beauty of labgrown diamonds.
-            </p>
-            <div className="smr_itemsMainDiv">
-                {Object.keys(selectedItem).length === 0 &&
-                    <div className="smr_itemsSubDiv">
-                        <h3>The kind of jewelry you are interested in?</h3>
-                        <div className="smr_items-grid">
-                            {items.map(item => {
-                                const image = `${assetBase}${item?.image}`;
-                                return <div className="smr_item-card" key={item.id}>
-                                    <div className="smr_imageDiv">
-                                        <img src={image} alt={item?.title} />
-                                    </div>
-                                    <div className="smr_item-content">
-                                        <h2>{item?.title}</h2>
-                                        <button className='smr_btn_a' onClick={() => hanldeBook(item)}>BOOK NOW</button>
-                                    </div>
-                                </div>
-                            })}
+    if(isVimalDiamond){
+        return <VimalAppointment />
+    }else{
+        return (
+            <div className="smr_appointment-page">
+                <div
+                    className="smr_bg-imageCart"
+                    style={{
+                        backgroundImage: `url(${assetBase}/Appointment/MainBanner.png)`,
+                    }}
+                >
+                    <div className="smr_overlay" />
+                    <div className="smr_text-container">
+                        <div className="smr_textContainerData">
+                            <h1
+                                className="smr_designCounttext"
+                            >
+                                BOOK AN APPOINTMENT<br />
+                            </h1>
                         </div>
                     </div>
-                }
-                {Object.keys(selectedItem).length !== 0 &&
-                    <AppointmentForm selectedItem={selectedItem} setSelectedItem={handleClearSelection} />
-                }
+                </div>
+                <p className="smr_intro">
+                    Welcome to Sonasons your premier destination for exquisite labgrown diamonds.
+                    Schedule an appointment today to experience the brilliance and beauty of our lab-grown diamonds and let Sonasons help you find the perfect piece to cherish forever.
+                    Experience the brilliance of lab-grown diamonds with Sonasons.
+                    Book an appointment now to view our exquisite collection and discover the sustainable and ethical beauty of labgrown diamonds.
+                </p>
+                <div className="smr_itemsMainDiv">
+                    {Object.keys(selectedItem).length === 0 &&
+                        <div className="smr_itemsSubDiv">
+                            <h3>The kind of jewelry you are interested in?</h3>
+                            <div className="smr_items-grid">
+                                {items.map(item => {
+                                    const image = `${assetBase}${item?.image}`;
+                                    return <div className="smr_item-card" key={item.id}>
+                                        <div className="smr_imageDiv">
+                                            <img src={image} alt={item?.title} />
+                                        </div>
+                                        <div className="smr_item-content">
+                                            <h2>{item?.title}</h2>
+                                            <button className='smr_btn_a' onClick={() => hanldeBook(item)}>BOOK NOW</button>
+                                        </div>
+                                    </div>
+                                })}
+                            </div>
+                        </div>
+                    }
+                    {Object.keys(selectedItem).length !== 0 &&
+                        <AppointmentForm selectedItem={selectedItem} setSelectedItem={handleClearSelection} />
+                    }
+                </div>
             </div>
-        </div>
-    );
+        );
+
+    }
+
+    
 };
 
 export default AppointmentPage;
