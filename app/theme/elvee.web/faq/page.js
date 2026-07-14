@@ -119,4 +119,4 @@ export default function TermsAndConditions() {
       </Container>
     </Box>
   );
-}
+}   
