@@ -6,17 +6,14 @@ import Marquee from "react-fast-marquee";
 const BrandInfoMarquee = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
-
+  
   // Custom text array based on your layout image
-  const items = useMemo(
-    () => [
-      "Monsoon SALE: UP TO 50% OFF SELECTED ITEMS",
-      "Monsoon SALE: UP TO 50% OFF SELECTED ITEMS",
-      "Monsoon SALE: UP TO 50% OFF SELECTED ITEMS",
-      "Monsoon SALE: UP TO 50% OFF SELECTED ITEMS",
-    ],
-    [],
-  );
+  const items = useMemo(() => [
+    " Flat 5% Making Charges on 22KT Antique Gold Jewellery",
+    " Flat 5% Making Charges on 22KT Antique Gold Jewellery",
+    " Flat 5% Making Charges on 22KT Antique Gold Jewellery",
+    " Flat 5% Making Charges on 22KT Antique Gold Jewellery"
+  ], []);
 
   // Multiplied items array for continuous scrolling behavior
   const marqueeData = useMemo(() => [...items, ...items, ...items], [items]);
@@ -27,15 +24,17 @@ const BrandInfoMarquee = () => {
         width: "100%",
         position: "relative",
         bgcolor: "#1f3e09", // Dark aesthetic background
-        height: "50px", // Compact height ideal for an announcement bar
+        height: "50px",      // Compact height ideal for an announcement bar
         display: "flex",
         alignItems: "center",
         overflow: "hidden",
       }}
     >
-      <Marquee
-        gradient={false}
-        speed={isMobile ? 30 : 50}
+       
+
+      <Marquee 
+        gradient={false} 
+        speed={isMobile ? 30 : 50} 
         pauseOnHover={true} // Pauses automatically on cursor hover
       >
         <Box
@@ -63,14 +62,14 @@ const BrandInfoMarquee = () => {
                   justifyContent: "center",
                 }}
               >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width={18}
-                  height={18}
-                  viewBox="0 0 24 24"
+                <svg 
+                  xmlns="http://www.w3.org/2000/svg" 
+                  width={18} 
+                  height={18} 
+                  viewBox="0 0 24 24" 
                   fill="#00A8E8" // Bright cyan/blue bolt matches image
                 >
-                  <path d="M13 2v9h5L11 22v-9H6l7-11z" />
+                  <path d="M13 2v9h5L11 22v-9H6l7-11z"/>
                 </svg>
               </Box>
 
@@ -82,7 +81,7 @@ const BrandInfoMarquee = () => {
                   color: "#FFFFFF", // Clear crisp white text
                   whiteSpace: "nowrap",
                   textTransform: "uppercase",
-                  fontFamily: "sans-serif",
+                  fontFamily: "sans-serif"
                 }}
               >
                 {text}

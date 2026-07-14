@@ -172,16 +172,16 @@ const PremiumFooter = ({ logos, storeData, companyInfoData: companyInfoDataProp 
                 { label: 'Blogs', href: '/blogs' },
                 // { label: 'History', href: '/history' },
                 { label: 'Contact Us', href: '/contactUs' },
-                { label: 'Terms and Conditions', href: '/term&condition' },
+                { label: 'Terms and Conditions', href: '/terms-and-conditions' },
             ],
         },
         {
             title: 'CUSTOMER CARE',
             links: [
-                { label: 'Customer Services', href: '/customerServices' },
+                { label: 'Customer Services', href: '/customer-service' },
                 { label: 'Book an Appoinment', href: '/appointment' },
-                { label: 'Customize', href: '/customize' },
-                { label: 'FAQ', href: '/faqs' },
+                { label: 'Customize', href: '/customization' },
+                { label: 'FAQ', href: '/faq' },
             ],
         },
     ];
