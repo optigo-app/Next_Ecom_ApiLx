@@ -64,6 +64,8 @@ export const IsUserLoggedIn = async () => {
 export const getAboutUsContent = async () => {
   try {
     const filePath = path.join(process.cwd(), "public", "WebSiteStaticImage", "html", ActiveTheme.aboutus.omjiyas);
+    
+    console.log("TCL: getAboutUsContent ->filePath ", filePath)
     const htmlContent = await fs.promises.readFile(filePath, "utf-8");
     return htmlContent;
   } catch (error) {
@@ -83,6 +85,20 @@ export const getPrivacyHoqContent = async () => {
   }
 };
 
+export const getVimalAboutContent = async () => {
+  try {
+    const filePath = path.join(process.cwd(), "public", "WebSiteStaticImage", "html", "vimalabout.html");
+    
+ 
+    const htmlContent = await fs.promises.readFile(filePath, "utf-8");
+    return htmlContent;
+  } catch (error) {
+    console.error("Error loading VimalAbout HTML file:", error);
+    return null;
+  }
+};
+
+
 export const getTermsHoqContent = async () => {
   try {
     const filePath = path.join(process.cwd(), "public", "WebSiteStaticImage", "html", "termshoq.html");
@@ -91,7 +107,7 @@ export const getTermsHoqContent = async () => {
     const htmlContent = await fs.promises.readFile(filePath, "utf-8");
     return htmlContent;
   } catch (error) {
-    console.error("Error loading AboutUs HTML file:", error);
+    console.error("Error loading Terms HTML file:", error);
     return null;
   }
 };
