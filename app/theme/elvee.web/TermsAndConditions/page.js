@@ -1,4 +1,6 @@
 import "./termsPage.scss";
+import Terms from "./Terms.jsx";
+import { isOldElvee, isVimalDiamond } from "@/app/(core)/constants/ElveeFlag";
 
 const SonasonstermsData = {
   introduction: {
@@ -270,35 +272,45 @@ const ActiveThemeName = "omjiyas";
 
 export default function TermsAndConditions() {
   const termsData = ActiveThemeName === "omjiyas" ? OmjiyanshTermsData : SonasonstermsData;
-  return (
-    <div className="fg_smr_about_mainDiv">
-      <div className="daimondsEveryAbout">
-        <div className="smr_daimondsEveryAbout_sub" style={{ paddingBottom: "80px", minHeight: "400px" }}>
-          <div className="smr-terms">
-            <main className="smr-main">
-              <h1 className="smr-title">Terms and Conditions</h1>
 
-              <div className="smr-content">
-                <p className="smr-introduction">{termsData.introduction.text}</p>
 
-                {termsData.sections.map((section, index) => (
-                  <section key={index} className="smr-section">
-                    <h2 className="smr-section-title">{section.title}</h2>
-                    {section.content.map((item, itemIndex) => (
-                      <div key={itemIndex} className="smr-section-content">
-                        {item.subtitle && <h3 className="smr-subtitle">{item.subtitle}</h3>}
-                        <p className="smr-text">{item.text}</p>
-                      </div>
-                    ))}
-                  </section>
-                ))}
-                <p className="smr-conclusion">{termsData.conclusion.text}</p>
-              </div>
-            </main>
+  if(isVimalDiamond){
+    return <Terms />
+   }
+   else{
+    return (
+      <div className="fg_smr_about_mainDiv">
+        <div className="daimondsEveryAbout">
+          <div className="smr_daimondsEveryAbout_sub" style={{ paddingBottom: "80px", minHeight: "400px" }}>
+            <div className="smr-terms">
+              <main className="smr-main">
+                <h1 className="smr-title">Terms and Conditions</h1>
+  
+                <div className="smr-content">
+                  <p className="smr-introduction">{termsData.introduction.text}</p>
+  
+                  {termsData.sections.map((section, index) => (
+                    <section key={index} className="smr-section">
+                      <h2 className="smr-section-title">{section.title}</h2>
+                      {section.content.map((item, itemIndex) => (
+                        <div key={itemIndex} className="smr-section-content">
+                          {item.subtitle && <h3 className="smr-subtitle">{item.subtitle}</h3>}
+                          <p className="smr-text">{item.text}</p>
+                        </div>
+                      ))}
+                    </section>
+                  ))}
+                  <p className="smr-conclusion">{termsData.conclusion.text}</p>
+                </div>
+              </main>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-  );
+    );
+
+   }
+
+ 
 }
 
