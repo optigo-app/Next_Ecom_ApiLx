@@ -19,10 +19,6 @@ const publicPages = ["/", "/LoginOption", "/forgotPass", "/privacyPolicy", "/abo
   "/privacy-policy",
   "/support",
   "/why-quality-matters",
-  "/blogs",
-  "/blogs/:id",
-  "/customer-service",
-  "/faq",
   ...restrictedPaths];
 
 const protectedPages = ["/account", "/delivery", "/payment", "/confirmation", "/accountdwsr", "account", "delivery", "payment", "confirmation"];
@@ -155,7 +151,7 @@ export function AuthProvider({ children, storeInit, theme }) {
 
     if (storeInit?.IsB2BWebsite === 1) {
       if (islogin === false) {
-        const isShopPage = pathname === "/p" || pathname.startsWith("/p/") || pathname === "/d" || pathname === "/blogs/" || pathname.startsWith("/d/") || pathname === "/cartPage" || pathname.startsWith("/cartPage/");
+        const isShopPage = pathname === "/p" || pathname.startsWith("/p/") || pathname === "/d" || pathname.startsWith("/d/") || pathname === "/cartPage" || pathname.startsWith("/cartPage/");
         const isPublicPage = publicPages.some((page) => pathname === page || pathname.startsWith(page + "/"));
         if (isShopPage) {
           const redirectUrl = `/LoginOption?LoginRedirect=${encodeURIComponent(fullPath)}`;

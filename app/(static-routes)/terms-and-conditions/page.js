@@ -4,6 +4,6 @@ import { themeMap } from "@/app/(core)/utils/ThemeMap";
 export default async function Page() {
   const theme = await getActiveTheme();
   const themeData = themeMap[theme];
-  const Terms = (await import(`@/app/theme/${themeData.page}/TermsAndConditions/page.js`)).default;
-  return <Terms />;
+  const AboutUs = (await import(`@/app/theme/${themeData.page}/TermsAndConditions/page.js`)).default;
+  return <AboutUs />;
 }
