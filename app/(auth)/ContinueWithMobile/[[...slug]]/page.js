@@ -3,6 +3,7 @@ import React from "react";
 import { themeMap } from "@/app/(core)/utils/ThemeMap";
 import { getStoreInit, IsUserLoggedIn } from "@/app/(core)/utils/GlobalFunctions/GlobalFunctions";
 import { redirect } from "next/navigation";
+import { resolveContinueWithMobile } from "@/app/(core)/utils/ThemeRouteResolver";
 
 const page = async ({ params, searchParams }) => {
   if (await IsUserLoggedIn()) {
@@ -13,7 +14,7 @@ const page = async ({ params, searchParams }) => {
   const storeInit = await getStoreInit();
 
   const themeData = themeMap[theme];
-  const ContinueWithMobile = (await import(`@/app/theme/${themeData.page}/Auth/ContinueWithMobile/page.js`)).default;
+  const ContinueWithMobile = await resolveContinueWithMobile(themeData.page);
   return <ContinueWithMobile params={awaitedParams} searchParams={awaitedSearchParams} storeInit={storeInit} />;
 };
 

@@ -54,7 +54,6 @@ const ShopHeader = ({
 }) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
-  console.log(decodedSearchResult, "decodedSearchResult")
   const decodedStr = Array.isArray(decodedSearchResult)
     ? decodedSearchResult.join(",").toLowerCase()
     : typeof decodedSearchResult === "string"
@@ -120,63 +119,18 @@ const ShopHeader = ({
         </Box>
 
         {/* RIGHT SECTION */}
+        {/* RIGHT SECTION */}
         {!isBelow768 && (
           <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
             {/* Sorting Menu */}
-            <FormControl
-              variant="filled"
-              size="small"
-              sx={{
-                minWidth: 120,
-                "& .MuiFilledInput-root": {
-                  backgroundColor: "transparent",
-                  borderRadius: "8px",
-                  "&:before, &:after": { display: "none" },
-                  "&:hover": { backgroundColor: "transparent" },
-                  "&.Mui-focused": {
-                    backgroundColor: "transparent",
-                    border: "1px solid transparent",
-                    color: "#000",
-                  },
-                },
-              }}
-            >
-              {/* <InputLabel>Sorting</InputLabel> */}
-              <Select
-                value={sortingSelect}
-                onChange={(e) => {
-                  handleSortby(e);
-                  handleChangeTrend(e);
-                  setIsOnlyProdLoading(true);
-                }}
-                IconComponent={ExpandMoreIcon}
-                disableUnderline
-                sx={{
-                  fontSize: "14px",
-                  color: "#111",
-                  "& .MuiSelect-icon": {
-                    fontSize: "20px", // change size
-                    right: 8, // adjust horizontal position
-                    color: "#111", // icon color
-                    top: 19,
-                  },
-                }}
-                MenuProps={MenuProps}
-              >
-                {hasCollection && <MenuItem value="design set">Design Set</MenuItem>}
-                <MenuItem value="Recommended">Recommended</MenuItem>
-                <MenuItem value="New">New</MenuItem>
-                <MenuItem value="Trending">Trending</MenuItem>
-                <MenuItem value="Bestseller">Bestseller</MenuItem>
-                {hasNewArrival && <MenuItem value="design set">Design Set</MenuItem>}
-                {storeinit?.IsStockWebsite === 1 && <MenuItem value="In Stock">In Stock</MenuItem>}
-                <MenuItem value="PRICE LOW TO HIGH">Price Low to High</MenuItem>
-                <MenuItem value="PRICE HIGH TO LOW">Price High to Low</MenuItem>
-              </Select>
-            </FormControl>
-
-            {/* Metal */}
-            {storeinit?.IsMetalCustomization === 1 && (
+            {isFiltering ? (
+              <Skeleton
+                variant="rectangular"
+                width={120}
+                height={36}
+                sx={{ bgcolor: "#e6e6e6", borderRadius: "4px" }}
+              />
+            ) : (
               <FormControl
                 variant="filled"
                 size="small"
@@ -195,11 +149,12 @@ const ShopHeader = ({
                   },
                 }}
               >
-                {/* <InputLabel>Metal</InputLabel> */}
+                {/* <InputLabel>Sorting</InputLabel> */}
                 <Select
-                  value={selectedMetalId}
+                  value={sortingSelect}
                   onChange={(e) => {
-                    setSelectedMetalId(e.target.value);
+                    handleSortby(e);
+                    handleChangeTrend(e);
                     setIsOnlyProdLoading(true);
                   }}
                   IconComponent={ExpandMoreIcon}
@@ -216,63 +171,135 @@ const ShopHeader = ({
                   }}
                   MenuProps={MenuProps}
                 >
-                  {metalType?.map((item, index) => (
-                    <MenuItem key={index} value={item?.Metalid}>
-                      {item?.metaltype}
-                    </MenuItem>
-                  ))}
+                  {hasCollection && <MenuItem value="design set">Design Set</MenuItem>}
+                  <MenuItem value="Recommended">Recommended</MenuItem>
+                  <MenuItem value="New">New</MenuItem>
+                  <MenuItem value="Trending">Trending</MenuItem>
+                  <MenuItem value="Bestseller">Bestseller</MenuItem>
+                  {hasNewArrival && <MenuItem value="design set">Design Set</MenuItem>}
+                  {storeinit?.IsStockWebsite === 1 && <MenuItem value="In Stock">In Stock</MenuItem>}
+                  <MenuItem value="PRICE LOW TO HIGH">Price Low to High</MenuItem>
+                  <MenuItem value="PRICE HIGH TO LOW">Price High to Low</MenuItem>
                 </Select>
               </FormControl>
             )}
+
+            {/* Metal */}
+            {storeinit?.IsMetalCustomization === 1 && (
+              isFiltering || metalType?.length === 0 ? (
+                <Skeleton
+                  variant="rectangular"
+                  width={120}
+                  height={36}
+                  sx={{ bgcolor: "#e6e6e6", borderRadius: "4px" }}
+                />
+              ) : (
+                <FormControl
+                  variant="filled"
+                  size="small"
+                  sx={{
+                    minWidth: 120,
+                    "& .MuiFilledInput-root": {
+                      backgroundColor: "transparent",
+                      borderRadius: "8px",
+                      "&:before, &:after": { display: "none" },
+                      "&:hover": { backgroundColor: "transparent" },
+                      "&.Mui-focused": {
+                        backgroundColor: "transparent",
+                        border: "1px solid transparent",
+                        color: "#000",
+                      },
+                    },
+                  }}
+                >
+                  {/* <InputLabel>Metal</InputLabel> */}
+                  <Select
+                    value={selectedMetalId !== undefined && selectedMetalId !== null ? String(selectedMetalId) : ""}
+                    onChange={(e) => {
+                      setSelectedMetalId(Number(e.target.value) || e.target.value);
+                      setIsOnlyProdLoading(true);
+                    }}
+                    IconComponent={ExpandMoreIcon}
+                    disableUnderline
+                    sx={{
+                      fontSize: "14px",
+                      color: "#111",
+                      "& .MuiSelect-icon": {
+                        fontSize: "20px", // change size
+                        right: 8, // adjust horizontal position
+                        color: "#111", // icon color
+                        top: 19,
+                      },
+                    }}
+                    MenuProps={MenuProps}
+                  >
+                    {metalType?.map((item, index) => (
+                      <MenuItem key={index} value={item?.Metalid !== undefined && item?.Metalid !== null ? String(item?.Metalid) : ""}>
+                        {item?.metaltype}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              )
+            )}
+
             {/* Diamond */}
             {storeinit?.IsDiamondCustomization === 1 && (
-              <FormControl
-                variant="filled"
-                size="small"
-                sx={{
-                  minWidth: 120,
-                  "& .MuiFilledInput-root": {
-                    backgroundColor: "transparent",
-                    borderRadius: "8px",
-                    "&:before, &:after": { display: "none" },
-                    "&:hover": { backgroundColor: "transparent" },
-                    "&.Mui-focused": {
-                      backgroundColor: "transparent",
-                      border: "1px solid transparent",
-                      color: "#000",
-                    },
-                  },
-                }}
-              >
-                {/* <InputLabel>Diamond</InputLabel> */}
-                <Select
-                  value={selectedDiaId}
-                  onChange={(e) => {
-                    setSelectedDiaId(e.target.value);
-                    setIsOnlyProdLoading(true);
-                  }}
-                  IconComponent={ExpandMoreIcon}
-                  disableUnderline
+              isFiltering || diamondType?.length === 0 ? (
+                <Skeleton
+                  variant="rectangular"
+                  width={120}
+                  height={36}
+                  sx={{ bgcolor: "#e6e6e6", borderRadius: "4px" }}
+                />
+              ) : (
+                <FormControl
+                  variant="filled"
+                  size="small"
                   sx={{
-                    fontSize: "14px",
-                    color: "#111",
-
-                    "& .MuiSelect-icon": {
-                      fontSize: "20px", // change size
-                      right: 8, // adjust horizontal position
-                      color: "#111", // icon color
-                      top: 19,
+                    minWidth: 120,
+                    "& .MuiFilledInput-root": {
+                      backgroundColor: "transparent",
+                      borderRadius: "8px",
+                      "&:before, &:after": { display: "none" },
+                      "&:hover": { backgroundColor: "transparent" },
+                      "&.Mui-focused": {
+                        backgroundColor: "transparent",
+                        border: "1px solid transparent",
+                        color: "#000",
+                      },
                     },
                   }}
-                  MenuProps={MenuProps}
                 >
-                  {diamondType?.map((item, index) => (
-                    <MenuItem key={index} value={`${item?.QualityId},${item?.ColorId}`}>
-                      {`${item.Quality}#${item?.color}`}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
+                  {/* <InputLabel>Diamond</InputLabel> */}
+                  <Select
+                    value={selectedDiaId !== undefined && selectedDiaId !== null ? String(selectedDiaId) : ""}
+                    onChange={(e) => {
+                      setSelectedDiaId(e.target.value);
+                      setIsOnlyProdLoading(true);
+                    }}
+                    IconComponent={ExpandMoreIcon}
+                    disableUnderline
+                    sx={{
+                      fontSize: "14px",
+                      color: "#111",
+                      "& .MuiSelect-icon": {
+                        fontSize: "20px", // change size
+                        right: 8, // adjust horizontal position
+                        color: "#111", // icon color
+                        top: 19,
+                      },
+                    }}
+                    MenuProps={MenuProps}
+                  >
+                    {diamondType?.map((item, index) => (
+                      <MenuItem key={index} value={item?.QualityId !== undefined && item?.ColorId !== undefined ? `${item.QualityId},${item.ColorId}` : ""}>
+                        {`${item.Quality}#${item?.color}`}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              )
             )}
           </Box>
         )}

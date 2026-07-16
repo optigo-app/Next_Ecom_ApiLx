@@ -12,6 +12,7 @@ const WishToggleButton = ({ productData, wishArr, handleCartandWish }) => {
 
   return (
     <Box
+      onClick={(e) => e.stopPropagation()}
       sx={{
         position: "absolute",
         top: 16,

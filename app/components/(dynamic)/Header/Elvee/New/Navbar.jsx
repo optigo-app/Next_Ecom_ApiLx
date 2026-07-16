@@ -35,10 +35,11 @@ import { useBroadcaster } from "@/app/(core)/contexts/BoardCastContext";
 import { useStore } from "@/app/(core)/contexts/StoreProvider";
 import { useSyncStore } from "@/app/(core)/hooks/useStore";
 import { useNextRouterLikeRR } from "@/app/(core)/hooks/useLocationRd";
+import { useMaster } from "@/app/(core)/contexts/MasterProvider";
 import { usePathname } from "next/navigation";
 import { clearSession, getSession } from "@/app/(core)/utils/FetchSessionData";
 
-const ElveePreNavbar = ({ storeinit, logos }) => {
+const ElveePreNavbar = ({ storeInit: storeinit, logos }) => {
   const {
     islogin,
     setislogin,
@@ -49,6 +50,8 @@ const ElveePreNavbar = ({ storeinit, logos }) => {
     setCartOpenStateB2C,
     loginUserDetail,
   } = useStore();
+
+  const { clearAllCacheData } = useMaster();
 
   const setSyncProductList = useSyncStore((state) => state.setSyncProductList);
 
@@ -416,6 +419,11 @@ const ElveePreNavbar = ({ storeinit, logos }) => {
     sessionStorage.removeItem("UploadLogicalPath");
     sessionStorage.removeItem("registerMobile");
     sessionStorage.removeItem("allproductlist");
+    
+    if (clearAllCacheData) {
+      clearAllCacheData();
+    }
+    
     sessionStorage.clear();
     window.location.replace("/");
     clearSession();

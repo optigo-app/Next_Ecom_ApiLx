@@ -15,8 +15,10 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import {
   sonasonsFaqs
 } from "@/app/components/(static)/Constants/FaqList";
+import { getBrandConfig } from "@/app/(core)/constants/BrandConfig";
 
 export default function TermsAndConditions() {
+  const brand = getBrandConfig();
   
 
   return (
@@ -113,7 +115,7 @@ export default function TermsAndConditions() {
         {/* Footer Attribution */}
         <Box sx={{ mt: 5, textAlign: 'center' }}>
           <Typography variant="caption" sx={{ color: '#94a3b8', fontWeight: '500' }}>
-          Still have questions? Contact Sonasons customer support — we’re happy to help.
+          Still have questions? Contact {brand.name} customer support — we’re happy to help.
           </Typography>
         </Box>
       </Container>

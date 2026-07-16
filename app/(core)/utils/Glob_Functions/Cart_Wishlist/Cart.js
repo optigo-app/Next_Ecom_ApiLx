@@ -812,6 +812,7 @@ const useCart = () => {
         i: cartData?.MetalColorid,
         l: cartData?.ImageExtension,
         count: cartData?.ImageCount,
+        ArticleNo: cartData?.ArticleNo,
       };
       createAndNavigate(obj);
     } else {
@@ -826,6 +827,7 @@ const useCart = () => {
         i: cartData?.MetalColorid,
         l: cartData?.ImageExtension,
         count: cartData?.ImageCount,
+        ArticleNo: cartData?.ArticleNo,
       };
       createAndNavigate(obj);
     }

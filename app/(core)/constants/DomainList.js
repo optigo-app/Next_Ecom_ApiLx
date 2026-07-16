@@ -1,6 +1,14 @@
-export const localHosts = ["localhost", "nxtsonasons.web", "nxthoq.web", "nxtelvee.web", "nxtmobileapp.web", "nzen", "nxt10.optigoapps.com"];
-
-
+export const localHosts = [
+  "localhost",
+  "nxtsonasons.web",
+  "nxthoq.web",
+  "nxtelvee.web",
+  "nxtmobileapp.web",
+  "nzen",
+  "nxt10.optigoapps.com",
+  "nxt09.optigoapps.com",
+  "beluxjewel.web",
+];
 
 export const isLocalHost = (cleanHost) => {
   return (

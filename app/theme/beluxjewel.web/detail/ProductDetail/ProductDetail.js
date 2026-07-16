@@ -4,7 +4,7 @@ import './ProductDetail.modul.scss'
 import Cookies from 'js-cookie'
 import { Box, Grid, useMediaQuery } from '@mui/material';
 import Pako from 'pako';
-import { SingleProdListAPI } from '@/app/(core)/utils/API/SingleProdListAPI/SingleProdListAPI';
+import { SingleArticleProdListAPI } from '@/app/(core)/utils/API/ArticleSingleProdListAPI/ArticleSingleProdListAPI';
 import { getSizeData } from '@/app/(core)/utils/API/CartAPI/GetCategorySizeAPI';
 import { MetalTypeComboAPI } from '@/app/(core)/utils/API/Combo/MetalTypeComboAPI';
 import { DiamondQualityColorComboAPI } from '@/app/(core)/utils/API/Combo/DiamondQualityColorComboAPI';
@@ -48,7 +48,7 @@ const ProductDetail = ({ storeinit,
   const [maxWidth1400, setMaxWidth1400] = useState(false);
   const [maxWidth1000, setMaxWidth1000] = useState(false);
   const [decodeUrl, setDecodeUrl] = useState({})
-  const [storeInit, setStoreInit] = useState({});
+  const [storeInit, setStoreInit] = useState(storeinit || {});
   const [loginData, setLoginData] = useState({});
   const [sizeData, setSizeData] = useState();
   const [singleProd, setSingleProd] = useState({});
@@ -69,7 +69,7 @@ const ProductDetail = ({ storeinit,
   const [selectCsQC, setSelectCsQC] = useState();
   const [metalWiseColorImg, setMetalWiseColorImg] = useState([]);
   const [metalColorCombo, setMetalColorCombo] = useState([]);
-  const [isPriceloading, setisPriceLoading] = useState(false);
+  const [isPriceloading, setisPriceLoading] = useState(true);
   const [selectedThumbImg, setSelectedThumbImg] = useState({})
   const [pdThumbImg, setPdThumbImg] = useState([]);
   const [thumbImgIndex, setThumbImgIndex] = useState()
@@ -318,7 +318,8 @@ const ProductDetail = ({ storeinit,
       Misc_Cost: singleProd?.Misc_Cost ?? singleProd1?.Misc_Cost,
       Misc_SettingCost: singleProd?.Misc_SettingCost ?? singleProd1?.Misc_SettingCost,
       Other_Cost: singleProd?.Other_Cost ?? singleProd1?.Other_Cost,
-      SolPrice: singleProd?.SolPric ?? singleProd1?.SolPrice
+      SolPrice: singleProd?.SolPric ?? singleProd1?.SolPrice,
+      ArticleNo: singleProd?.ArticleNo
     }
 
     if (cartFlag) {
@@ -338,7 +339,7 @@ const ProductDetail = ({ storeinit,
       }
     }
     else {
-      let res1 = await RemoveCartAndWishAPI("Cart", singleProd?.autocode, cookie);
+      let res1 = await RemoveCartAndWishAPI("Cart", singleProd?.autocode, cookie, false, "", singleProd?.ArticleNo);
       if (res1) {
         try {
           let cartC = res1?.Data?.rd[0]?.Cartlistcount;
@@ -412,8 +413,8 @@ const ProductDetail = ({ storeinit,
       Misc_Cost: singleProd?.Misc_Cost ?? singleProd1?.Misc_Cost,
       Misc_SettingCost: singleProd?.Misc_SettingCost ?? singleProd1?.Misc_SettingCost,
       Other_Cost: singleProd?.Other_Cost ?? singleProd1?.Other_Cost,
-      SolPrice: singleProd?.SolPric ?? singleProd1?.SolPrice
-
+      SolPrice: singleProd?.SolPric ?? singleProd1?.SolPrice,
+      ArticleNo: singleProd?.ArticleNo
     };
 
     if (e.target.checked === true) {
@@ -432,7 +433,7 @@ const ProductDetail = ({ storeinit,
       }
     }
     else {
-      let res1 = await RemoveCartAndWishAPI("Wish", singleProd?.autocode, cookie);
+      let res1 = await RemoveCartAndWishAPI("Wish", singleProd?.autocode, cookie, false, "", singleProd?.ArticleNo);
       if (res1) {
         try {
           let cartC = res1?.Data?.rd[0]?.Cartlistcount;
@@ -607,7 +608,7 @@ const ProductDetail = ({ storeinit,
       // step 4 
       setSingleProd1({})
       setSingleProd({})
-      await SingleProdListAPI(decodeobj, sizeData, obj, cookie)
+      await SingleArticleProdListAPI(decodeobj, sizeData, obj, cookie)
         .then(async (res) => {
           if (res) {
             setSingleProd(res?.pdList[0]);
@@ -619,6 +620,7 @@ const ProductDetail = ({ storeinit,
 
             if (!res?.pdList[0]) {
               setisPriceLoading(false);
+              setloadingdata(false);
               setIsDataFound(true);
             }
             else {
@@ -677,7 +679,11 @@ const ProductDetail = ({ storeinit,
 
           return res;
         })
-        .catch((err) => console.log("err", err));
+        .catch((err) => {
+          console.log("err", err);
+          setisPriceLoading(false);
+          setloadingdata(false);
+        });
     };
 
     FetchProductData();
@@ -1165,11 +1171,12 @@ const ProductDetail = ({ storeinit,
 
     let prod = {
       a: singleProd?.autocode,
-      b: singleProd?.designno
+      b: singleProd?.designno,
+      ArticleNo: singleProd?.ArticleNo
     }
 
     setisPriceLoading(true)
-    const res = await SingleProdListAPI(prod, (size ?? sizeData), obj, cookie)
+    const res = await SingleArticleProdListAPI(prod, (size ?? sizeData), obj, cookie)
     if (res) {
       setSingleProd1(res?.pdList[0])
     }

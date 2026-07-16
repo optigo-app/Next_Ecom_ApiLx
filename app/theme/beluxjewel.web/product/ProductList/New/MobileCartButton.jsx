@@ -11,7 +11,7 @@ const MobileCartToggleButton = ({ productData, cartArr, handleCartandWish }) => 
             : false;
 
     return (
-        <Box>
+        <Box onClick={(e) => e.stopPropagation()}>
             <AnimatePresence mode="wait">
                 <motion.div
                     key={isInCart ? "in-cart" : "not-in-cart"}
