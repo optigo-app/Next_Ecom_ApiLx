@@ -1,7 +1,7 @@
 import { getSession } from "../../FetchSessionData";
 import { CommonAPI } from "../CommonAPI/CommonAPI";
 
-export const RemoveCartAndWishAPI = async (type, autocode, visiterId, isFromStock = false, stockno) => {
+export const RemoveCartAndWishAPI = async (type, autocode, visiterId, isFromStock = false, stockno, ArticleNo) => {
 
   const UserEmail = getSession("registerEmail");
   const storeInit = getSession('storeInit');
@@ -20,7 +20,8 @@ export const RemoveCartAndWishAPI = async (type, autocode, visiterId, isFromStoc
     "Cartidlist": "",
     "isdelete_all": 0,
     "stockno": `${stockno ?? ""}`,
-    "DomainForNo": `${storeInit?.DomainForNo ?? ""}`
+    "DomainForNo": `${storeInit?.DomainForNo ?? ""}`,
+    ...(ArticleNo && { "ArticleNo": ArticleNo })
   }
   let removeApiObj1 = {
     "ForEvt": `${type}`,
@@ -31,7 +32,8 @@ export const RemoveCartAndWishAPI = async (type, autocode, visiterId, isFromStoc
     "Cartidlist": "",
     "isdelete_all": 0,
     "stockno": `${stockno ?? ""}`,
-    "DomainForNo": `${storeInit?.DomainForNo ?? ""}`
+    "DomainForNo": `${storeInit?.DomainForNo ?? ""}`,
+    ...(ArticleNo && { "ArticleNo": ArticleNo })
   }
 
   let DataObj = isFromStock == true ? removeApiObj1 : removeApiObj

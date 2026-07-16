@@ -3,6 +3,7 @@ import { getStoreInit, IsUserLoggedIn } from "@/app/(core)/utils/GlobalFunctions
 import { themeMap } from "@/app/(core)/utils/ThemeMap";
 import { redirect } from "next/navigation";
 import React from "react";
+import { resolveForgotPassword } from "@/app/(core)/utils/ThemeRouteResolver";
 
 
 const page = async ({ params, searchParams }) => {
@@ -14,7 +15,7 @@ const page = async ({ params, searchParams }) => {
   const [awaitedParams, awaitedSearchParams] = await Promise.all([params, searchParams]);
   const storeInit = await getStoreInit();
 
-  const ForgotPassword = (await import(`@/app/theme/${themeData.page}/Auth/ForgotPassword/page.js`)).default;
+  const ForgotPassword = await resolveForgotPassword(themeData.page);
   return <ForgotPassword params={awaitedParams} searchParams={awaitedSearchParams} storeInit={storeInit} />;
 };
 

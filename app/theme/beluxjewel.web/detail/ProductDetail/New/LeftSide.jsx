@@ -49,39 +49,36 @@ const LeftSide = ({ HandleImageDialogOpen = () => { }, loading = false, media, i
 
   if (media !== null && isMediaReady && mediaBuildDone && media.length === 0) {
     return (
-      <>
-        <Grid item size={{
-          xs: 12,
-          sm: 12,
-          md: 6
-        }} >
-          <Box
-            sx={{
-              width: "100%",
-              minHeight: 300,
-              bgcolor: "#f7f7f7",
-              borderRadius: 3,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              flexDirection: "column",
-            }}
-          >
+      <Grid size={{ xs: 12, sm: 12, md: 6 }} >
+        <Grid container spacing={1.5}>
+          <Grid item size={{ xs: 6 }}>
             <Box
-              component="img"
-              src={noImageFound}
-              alt=""
               sx={{
+                position: "relative",
                 width: "100%",
-                height: "100%",
-                objectFit: "contain",
-                transition: "all 0.25s ease",
-                display: "block",
+                borderRadius: 3,
+                overflow: "hidden",
+                border: "1px solid #f2f0ee33",
+                bgcolor: '#fff9f266'
               }}
-            />
-          </Box>
+            >
+              <Box
+                component="img"
+                src={noImageFound}
+                alt="No Image Available"
+                sx={{
+                  width: "100%",
+                  height: "100%",
+                  objectFit: "contain",
+                  aspectRatio: { xs: "3/4", sm: "1/1.25", md: "1/1.3" },
+                  display: "block",
+                  mixBlendMode: "multiply",
+                }}
+              />
+            </Box>
+          </Grid>
         </Grid>
-      </>
+      </Grid>
     );
   }
 

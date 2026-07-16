@@ -122,7 +122,7 @@ const ProductList = ({ storeinit,
   const [allFilter, setAllFilter] = useState([]);
   const [filterChecked, setFilterChecked] = useState({});
   const [prodListType, setprodListType] = useState();
-  const [isProdLoading, setIsProdLoading] = useState(false);
+  const [isProdLoading, setIsProdLoading] = useState(true);
   const [isOnlyProdLoading, setIsOnlyProdLoading] = useState(true);
   const [locationKey, setLocationKey] = useState();
   const [sortBySelect, setSortBySelect] = useState("Recommended");
@@ -167,6 +167,9 @@ const ProductList = ({ storeinit,
   const [appliedRange3, setAppliedRange3] = useState(null);
   const { broadcast } = useBroadcaster();
   const lastSyncData = useSyncDataStore((s) => s.syncData);
+  const isFirstComboRun = useRef(true);
+  const lastFetchedComboRef = useRef(null);
+  const isInitialLoadRef = useRef(true);
 
   const anyFilterApplied = useMemo(() => {
     const isFilterChecked = Object.values(filterChecked).some((ele) => ele.checked);
@@ -228,7 +231,8 @@ const ProductList = ({ storeinit,
       d: selectedDiaId,
       c: selectedCsId,
       g: detailsMenu,
-      img: `${storeinit?.CDNDesignImageFol}${productData?.designno}~1.${productData?.ImageExtension}`
+      img: `${storeinit?.CDNDesignImageFol}${productData?.designno}~1.${productData?.ImageExtension}`,
+      ArticleNo: productData?.ArticleNo
     };
 
     let encodeObj = compressAndEncode(JSON.stringify(obj));
@@ -640,12 +644,33 @@ const ProductList = ({ storeinit,
     }
   }, [selectedDiaId]);
 
+  useEffect(() => {
+    if (typeof window !== "undefined" && !isOnlyProdLoading && !isProdLoading && productListData?.length > 0) {
+      const scrollToDesign = sessionStorage.getItem("scroll_to_product");
+      if (scrollToDesign) {
+        const timer = setTimeout(() => {
+          const element = document.getElementById(`product-card-${scrollToDesign}`);
+          if (element) {
+            element.scrollIntoView({ behavior: "smooth", block: "nearest" });
+            sessionStorage.removeItem("scroll_to_product");
+          }
+        }, 150);
+        return () => clearTimeout(timer);
+      }
+    }
+  }, [productListData, isOnlyProdLoading, isProdLoading]);
+
   let result = ParseAndDecodeSearchParams(searchParams);
 
   useEffect(() => {
     const fetchData = async () => {
+      isInitialLoadRef.current = true;
+      setIsOnlyProdLoading(true);
+      setIsProdLoading(true);
+      setProductListData([]);
       try {
         let obj = { mt: selectedMetalId, dia: selectedDiaId, cs: selectedCsId };
+        lastFetchedComboRef.current = obj;
         let UrlVal = result;
         let MenuVal = "";
         let SearchVar = "";
@@ -767,6 +792,7 @@ const ProductList = ({ storeinit,
       }
       setIsProdLoading(false);
       setIsOnlyProdLoading(false);
+      isInitialLoadRef.current = false;
     };
 
     fetchData();
@@ -776,10 +802,14 @@ const ProductList = ({ storeinit,
     }
     setCurrPage(1);
     setInputPage(1);
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth",
-    });
+    
+    const scrollToDesign = sessionStorage.getItem("scroll_to_product");
+    if (!scrollToDesign) {
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth",
+      });
+    }
   }, [location, syncProductList.ts]);
 
   // useEffect(() => {
@@ -969,6 +999,7 @@ const ProductList = ({ storeinit,
   };
 
   const handelCustomCombo = (obj) => {
+    lastFetchedComboRef.current = obj;
     let output = FilterValueWithCheckedOnly();
     setProductListData([]);
     if (location?.state?.SearchVal === undefined) {
@@ -1006,19 +1037,45 @@ const ProductList = ({ storeinit,
   };
 
   useEffect(() => {
+    if (isFirstComboRun.current) {
+      isFirstComboRun.current = false;
+      return;
+    }
+    if (isInitialLoadRef.current) {
+      return;
+    }
     const obj = { mt: selectedMetalId, dia: selectedDiaId, cs: selectedCsId };
+
+    if (
+      lastFetchedComboRef.current &&
+      String(lastFetchedComboRef.current.mt) === String(selectedMetalId) &&
+      String(lastFetchedComboRef.current.dia) === String(selectedDiaId) &&
+      String(lastFetchedComboRef.current.cs) === String(selectedCsId)
+    ) {
+      return;
+    }
+
+    lastFetchedComboRef.current = obj;
     sessionStorage.setItem("short_cutCombo_val", JSON.stringify(obj));
 
     if (loginUserDetail && Object.keys(loginUserDetail).length > 0) {
       if (selectedMetalId != undefined || selectedDiaId != undefined || selectedCsId != undefined) {
-        if (loginUserDetail.MetalId !== selectedMetalId || loginUserDetail.cmboDiaQCid !== selectedDiaId || loginUserDetail.cmboCSQCid != selectedCsId) {
-          handelCustomCombo(obj);
+        if (
+          String(loginUserDetail.MetalId) !== String(selectedMetalId) ||
+          String(loginUserDetail.cmboDiaQCid) !== String(selectedDiaId) ||
+          String(loginUserDetail.cmboCSQCid) !== String(selectedCsId)
+        ) {
+            (obj);
         }
       }
     } else {
       if (storeinit && Object.keys(storeinit).length > 0) {
         if (selectedMetalId != undefined || selectedDiaId != undefined || selectedCsId != undefined) {
-          if (storeinit?.MetalId !== selectedMetalId || storeinit?.cmboDiaQCid !== selectedDiaId || storeinit?.cmboCSQCid !== selectedCsId) {
+          if (
+            String(storeinit?.MetalId) !== String(selectedMetalId) ||
+            String(storeinit?.cmboDiaQCid) !== String(selectedDiaId) ||
+            String(storeinit?.cmboCSQCid) !== String(selectedCsId)
+          ) {
             handelCustomCombo(obj);
           }
         }
@@ -1095,6 +1152,7 @@ const ProductList = ({ storeinit,
       Misc_SettingCost: ele?.Misc_SettingCost,
       Other_Cost: ele?.Other_Cost,
       SolPrice: ele?.SolPrice,
+      ArticleNo: ele?.ArticleNo
     };
 
     if (type === "Wish") {
@@ -1127,7 +1185,7 @@ const ProductList = ({ storeinit,
         })
         .catch((err) => console.log("addtocartwishErr", err));
     } else {
-      await RemoveCartAndWishAPI(type, ele?.autocode, cookie)
+      await RemoveCartAndWishAPI(type, ele?.autocode, cookie, false, "", ele?.ArticleNo)
         .then((res1) => {
           if (res1) {
             let cartC = res1?.Data?.rd[0]?.Cartlistcount;
@@ -2031,7 +2089,8 @@ const ProductList = ({ storeinit,
       c: selectedCsId,
       f: output,
       g: detailsMenu,
-      img: imageUrl ?? `${storeinit?.CDNDesignImageFol}${productData?.designno}~1.${productData?.ImageExtension}`
+      img: imageUrl ?? `${storeinit?.CDNDesignImageFol}${productData?.designno}~1.${productData?.ImageExtension}`,
+      ArticleNo: productData?.ArticleNo
     };
     // compressAndEncode(JSON.stringify(obj))
 
@@ -2039,15 +2098,14 @@ const ProductList = ({ storeinit,
 
     let encodeObj = compressAndEncode(JSON.stringify(obj));
 
-    // navigate.push(
-    //   `/d/${productData?.TitleLine.replace(/\s+/g, `_`)}${productData?.TitleLine?.length > 0 ? "_" : ""
-    //   }${productData?.designno}?p=${encodeObj}`
-    // );
-    // navigate.push(`/d/${formatRedirectTitleLine(productData?.TitleLine)}${productData?.designno}?p=${encodeObj}`);
+    // Save target designno in sessionStorage to restore scroll position later
+    if (typeof window !== "undefined") {
+      sessionStorage.setItem("scroll_to_product", productData?.ArticleNo);
+    }
 
     const url = `/d/${formatRedirectTitleLine(productData?.TitleLine)}${productData?.designno}?p=${encodeObj}`;
 
-    window.open(url, "_blank");
+    navigate.push(url);
   };
 
   const handleBreadcums = (mparams, isCollectionMenu) => {

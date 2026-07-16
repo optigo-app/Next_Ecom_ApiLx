@@ -9,7 +9,7 @@ import { AppConfig } from "../constants/AppConfig";
  */
 export async function getHost() {
   try {
-    const h = headers();
+    const h = await headers();
     const host = h.get("host");
     if (host) return host;
   } catch {

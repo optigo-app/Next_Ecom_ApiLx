@@ -12,13 +12,15 @@ import {
   Divider
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import { getBrandConfig } from "@/app/(core)/constants/BrandConfig";
 
 export default function TermsAndConditions() {
+  const brand = getBrandConfig();
   const termsData = [
     {
       id: 'panel1',
       title: 'TERMS AND CONDITIONS ACCEPTANCE',
-      content: 'Before using our website located at https://vimalgoldanddiamond.com/ and any associated websites linked to it, please read these Terms and Conditions carefully. By accessing or using our website, you agree to be bound by the terms outlined below.'
+      content: `Before using our website located at ${brand.website} and any associated websites linked to it, please read these Terms and Conditions carefully. By accessing or using our website, you agree to be bound by the terms outlined below.`
     },
     {
       id: 'panel2',
@@ -43,7 +45,7 @@ export default function TermsAndConditions() {
     {
       id: 'panel6',
       title: 'CUSTOMER RESPONSIBILITIES',
-      content: 'Customers are responsible for maintaining the confidentiality of their account information and for providing accurate and complete details during transactions. Vimal Gold & Diamond is not liable for issues arising from incorrect information.'
+      content: `Customers are responsible for maintaining the confidentiality of their account information and for providing accurate and complete details during transactions. ${brand.name} is not liable for issues arising from incorrect information.`
     },
     {
       id: 'panel7',
@@ -150,7 +152,7 @@ export default function TermsAndConditions() {
         {/* Footer Attribution */}
         <Box sx={{ mt: 5, textAlign: 'center' }}>
           <Typography variant="caption" sx={{ color: '#94a3b8', fontWeight: '500' }}>
-            &copy; {new Date().getFullYear()} Vimal Gold &amp; Diamond. All rights reserved.
+            &copy; {new Date().getFullYear()} {brand.name}. All rights reserved.
           </Typography>
         </Box>
       </Container>

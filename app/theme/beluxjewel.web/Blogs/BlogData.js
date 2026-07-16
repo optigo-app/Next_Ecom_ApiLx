@@ -1,7 +1,6 @@
-// BlogData.js
-// Common structured data for all blog posts.
-// Each blog object follows the same schema so the UI can render any blog
-// using a single reusable template/component.
+import { getBrandConfig } from "@/app/(core)/constants/BrandConfig";
+
+const brand = getBrandConfig();
 
 export const blogData = [
   {
@@ -18,7 +17,7 @@ export const blogData = [
       "Buying Guide",
       "India",
     ],
-    author: "Vimal Gold & Diamonds",
+    author: brand.name,
     publishedDate: "2025-01-01",
     readTime: "8 min read",
     featuredImage: "",
@@ -169,9 +168,9 @@ export const blogData = [
     conclusion:
       "Buying diamond jewellery is a meaningful investment that combines beauty, craftsmanship, and emotion. By understanding the 4Cs, choosing certified diamonds, selecting the right gold purity, and purchasing from a trusted jeweller, you can enjoy jewellery that remains timeless for years to come.",
     cta: {
-      heading: "Vimal Gold & Diamonds",
+      heading: brand.name,
       text:
-        "At Vimal Gold & Diamonds, we believe every customer deserves complete transparency and expert guidance. Our carefully curated collection of certified diamond jewellery is designed to celebrate life's most precious moments with elegance and confidence.",
+        `At ${brand.name}, we believe every customer deserves complete transparency and expert guidance. Our carefully curated collection of certified diamond jewellery is designed to celebrate life's most precious moments with elegance and confidence.`,
     },
   },
 
@@ -188,7 +187,7 @@ export const blogData = [
       "Diamond Comparison",
       "Buying Guide",
     ],
-    author: "Vimal Gold & Diamonds",
+    author: brand.name,
     publishedDate: "2025-01-08",
     readTime: "7 min read",
     featuredImage: "",
@@ -377,9 +376,9 @@ export const blogData = [
     conclusion:
       "Choosing between a natural diamond and a lab-grown diamond is a personal decision. Both offer exceptional beauty, brilliance, and durability. The key is to understand their differences and select the option that best reflects your priorities. If you value rarity, heritage, and timeless significance, a natural diamond remains a classic choice. If your focus is maximizing size and value within your budget, a lab-grown diamond may be an excellent alternative.",
     cta: {
-      heading: "Vimal Gold & Diamonds",
+      heading: brand.name,
       text:
-        "At Vimal Gold & Diamonds, we believe informed customers make the best decisions. Our team is committed to providing transparent guidance, certified diamonds, and beautifully crafted jewellery to help you celebrate every milestone with confidence.",
+        `At ${brand.name}, we believe informed customers make the best decisions. Our team is committed to providing transparent guidance, certified diamonds, and beautifully crafted jewellery to help you celebrate every milestone with confidence.`,
     },
   },
 ];

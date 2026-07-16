@@ -2,6 +2,7 @@ import { getActiveTheme } from "@/app/(core)/lib/getActiveTheme";
 import { themeMap } from "@/app/(core)/utils/ThemeMap";
 import { getStoreInit } from "@/app/(core)/utils/GlobalFunctions/GlobalFunctions";
 import { headers } from "next/headers";
+import { resolveProductDetail } from "@/app/(core)/utils/ThemeRouteResolver";
 import {
   getDynamicMetadata,
   generateWebSiteJsonLd,
@@ -54,7 +55,7 @@ export default async function Page({ params, searchParams }) {
     const theme = await getActiveTheme().catch(() => "default");
     const themeData = themeMap[theme] || themeMap["default"];
 
-    const DetailPage = (await import(`@/app/theme/${themeData.page}/detail/page.jsx`)).default;
+    const DetailPage = await resolveProductDetail(themeData.page);
 
     const [awaitedParams, awaitedSearchParams, headerList] = await Promise.all([
       params || {},

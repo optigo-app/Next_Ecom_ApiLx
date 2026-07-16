@@ -12,6 +12,7 @@ const CartToggleButton = ({ productData, cartArr, handleCartandWish }) => {
 
   return (
     <Box
+      onClick={(e) => e.stopPropagation()}
       sx={{
         position: "absolute",
         bottom: 14,

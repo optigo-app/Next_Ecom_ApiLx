@@ -3,6 +3,7 @@ import { IsUserLoggedIn } from "@/app/(core)/utils/GlobalFunctions/GlobalFunctio
 import { redirect } from "next/navigation";
 import { themeMap } from "@/app/(core)/utils/ThemeMap";
 import React from "react";
+import { resolveRegister } from "@/app/(core)/utils/ThemeRouteResolver";
 
 const page = async ({ params, searchParams }) => {
   if (await IsUserLoggedIn()) {
@@ -11,7 +12,7 @@ const page = async ({ params, searchParams }) => {
   const theme = await getActiveTheme();
   const themeData = themeMap[theme];
   const [awaitedParams, awaitedSearchParams] = await Promise.all([params, searchParams]);
-  const Register = (await import(`@/app/theme/${themeData.page}/Auth/Register/page.js`)).default;
+  const Register = await resolveRegister(themeData.page);
   return <Register params={awaitedParams} searchParams={awaitedSearchParams} />;
 };
 

@@ -1,18 +1,31 @@
-'use client'
+"use client";
 import { useMemo, useState, useEffect } from "react";
-import { Box, Grid, Card, CardMedia, CardContent, Typography, IconButton, Chip, useMediaQuery, Button } from "@mui/material";
+import {
+  Box,
+  Grid,
+  Card,
+  CardMedia,
+  CardContent,
+  Typography,
+  IconButton,
+  Chip,
+  useMediaQuery,
+  Button,
+} from "@mui/material";
 import { motion } from "framer-motion";
 import ProductSkeleton from "./Skeleton";
 import { useTheme } from "@emotion/react";
 import "./index.scss";
-import { formatter, formatTitleLine } from "@/app/(core)/utils/Glob_Functions/GlobalFunction";
+import {
+  formatter,
+  formatTitleLine,
+} from "@/app/(core)/utils/Glob_Functions/GlobalFunction";
 import CartToggleButton from "./CartToggleButton";
 import WishToggleButton from "./WishToggleButton";
 import MobileCartToggleButton from "./MobileCartButton";
 
 const IsSetupFor = true;
-const noImageFound = '/image-not-found.jpg';
-
+const noImageFound = "/image-not-found.jpg";
 
 const ChipBar = (title, bgcolor, position) => {
   return (
@@ -81,7 +94,16 @@ const MotionCard = motion(Card);
 const JewelryProductGrid = ({
   storeinit,
   loginUserDetail,
-  productListData, isFiltering, handleMoveToDetail = () => { }, showFilter, filter, filterData, handleCartandWish = () => { }, cartArr, wishArr }) => {
+  productListData,
+  isFiltering,
+  handleMoveToDetail = () => {},
+  showFilter,
+  filter,
+  filterData,
+  handleCartandWish = () => {},
+  cartArr,
+  wishArr,
+}) => {
   const theme = useTheme();
   const isMedium = useMediaQuery("(max-width:1000px)");
   const isMobile = useMediaQuery("(max-width: 640px)");
@@ -120,15 +142,56 @@ const JewelryProductGrid = ({
     >
       <Box sx={{ position: "relative", zIndex: 1 }}>
         <Grid container spacing={{ xs: 1, sm: 1, md: 1 }}>
-          {(isFiltering ? Array.from(new Array(12)) : productListData).map((item, index) => (
-            <Grid item key={item?.id || index} size={{
-              xs: 6,
-              sm: 6,
-              md: isMedium ? 6 : 3
-            }}>
-              {isFiltering ? <ProductSkeleton key={index} /> : <ProductCard product={item} index={index} key={index} StoreInit={storeinit} productData={item} handleCartandWish={handleCartandWish} cartArr={cartArr} wishArr={wishArr} loginCurrency={loginUserDetail} imageUrl={getDynamicImages(item?.designno, item?.ImageExtension)} videoUrl={getDynamicVideo(item?.designno, item?.VideoCount, item?.VideoExtension)} RollImageUrl={getDynamicRollImages(item?.designno, item?.ImageCount, item?.ImageExtension)} handleMoveToDetail={handleMoveToDetail} ImageCount={item?.ImageCount} VideoCount={item?.VideoCount} showFilter={showFilter} filter={filter} filterData={filterData} isMobile={isMobile} />}
-            </Grid>
-          ))}
+          {(isFiltering ? Array.from(new Array(12)) : productListData).map(
+            (item, index) => (
+              <Grid
+                item
+                key={item?.id || index}
+                size={{
+                  xs: 6,
+                  sm: 6,
+                  md: isMedium ? 6 : 3,
+                }}
+              >
+                {isFiltering ? (
+                  <ProductSkeleton key={index} />
+                ) : (
+                  <ProductCard
+                    product={item}
+                    index={index}
+                    key={index}
+                    StoreInit={storeinit}
+                    productData={item}
+                    handleCartandWish={handleCartandWish}
+                    cartArr={cartArr}
+                    wishArr={wishArr}
+                    loginCurrency={loginUserDetail}
+                    imageUrl={getDynamicImages(
+                      item?.designno,
+                      item?.ImageExtension,
+                    )}
+                    videoUrl={getDynamicVideo(
+                      item?.designno,
+                      item?.VideoCount,
+                      item?.VideoExtension,
+                    )}
+                    RollImageUrl={getDynamicRollImages(
+                      item?.designno,
+                      item?.ImageCount,
+                      item?.ImageExtension,
+                    )}
+                    handleMoveToDetail={handleMoveToDetail}
+                    ImageCount={item?.ImageCount}
+                    VideoCount={item?.VideoCount}
+                    showFilter={showFilter}
+                    filter={filter}
+                    filterData={filterData}
+                    isMobile={isMobile}
+                  />
+                )}
+              </Grid>
+            ),
+          )}
         </Grid>
       </Box>
     </Box>
@@ -137,8 +200,27 @@ const JewelryProductGrid = ({
 
 export default JewelryProductGrid;
 
-const ProductCard = ({ product, index, productData, StoreInit, calcVal, videoUrl, handleCartandWish,
-  cartArr, wishArr, RollImageUrl, imageUrl, handleMoveToDetail, loginCurrency, showFilter, filter, filterData, ImageCount, VideoCount, isMobile }) => {
+const ProductCard = ({
+  product,
+  index,
+  productData,
+  StoreInit,
+  calcVal,
+  videoUrl,
+  handleCartandWish,
+  cartArr,
+  wishArr,
+  RollImageUrl,
+  imageUrl,
+  handleMoveToDetail,
+  loginCurrency,
+  showFilter,
+  filter,
+  filterData,
+  ImageCount,
+  VideoCount,
+  isMobile,
+}) => {
   const cardVariants = {
     hidden: {
       opacity: 0,
@@ -150,17 +232,25 @@ const ProductCard = ({ product, index, productData, StoreInit, calcVal, videoUrl
       y: 0,
       scale: 1,
       transition: {
-        duration: 0.5,
-        delay: index * 0.1,
+        duration: 0.25,
+        delay: Math.min(index * 0.02, 0.15),
         ease: [0.25, 0.46, 0.45, 0.94],
       },
     },
   };
 
-  const hasUpperTags = productData?.IsInReadyStock == 1 || productData?.IsBestSeller == 1 || productData?.IsTrending == 1 || productData?.IsNewArrival == 1;
+  const hasUpperTags =
+    productData?.IsInReadyStock == 1 ||
+    productData?.IsBestSeller == 1 ||
+    productData?.IsTrending == 1 ||
+    productData?.IsNewArrival == 1;
+
+  const Article = productData?.ArticleNo;
+  const DesignNo = productData?.designno;
 
   return (
     <MotionCard
+      id={`product-card-${Article}`}
       variants={cardVariants}
       initial="hidden"
       animate="visible"
@@ -183,7 +273,7 @@ const ProductCard = ({ product, index, productData, StoreInit, calcVal, videoUrl
             xs: "3 / 4",
             sm: "1 / 1.25",
             md: "1 / 1.2",
-            lg: "1/1.18"
+            lg: "1/1.18",
           },
           bgcolor: "#fff9f266",
         }}
@@ -314,7 +404,11 @@ const ProductCard = ({ product, index, productData, StoreInit, calcVal, videoUrl
 
         {!isMobile && (
           <Box>
-            <CartToggleButton productData={productData} cartArr={cartArr} handleCartandWish={handleCartandWish} />
+            <CartToggleButton
+              productData={productData}
+              cartArr={cartArr}
+              handleCartandWish={handleCartandWish}
+            />
           </Box>
         )}
         {/* --- UPPER BOX --- */}
@@ -333,7 +427,10 @@ const ProductCard = ({ product, index, productData, StoreInit, calcVal, videoUrl
           {productData?.IsBestSeller == 1 && ChipBar("Best Seller")}
           {productData?.IsTrending == 1 && ChipBar("Trending")}
           {productData?.IsNewArrival == 1 && ChipBar("New", "#163164")}
-          {!IsSetupFor && !hasUpperTags && productData?.MakeType && ChipBar(productData.MakeType, "bottom")}
+          {!IsSetupFor &&
+            !hasUpperTags &&
+            productData?.MakeType &&
+            ChipBar(productData.MakeType, "bottom")}
         </Box>
 
         {hasUpperTags && (
@@ -348,11 +445,17 @@ const ProductCard = ({ product, index, productData, StoreInit, calcVal, videoUrl
               gap: 0.8,
             }}
           >
-            {!IsSetupFor && productData?.MakeType && ChipBar(productData.MakeType, "bottom")}
+            {!IsSetupFor &&
+              productData?.MakeType &&
+              ChipBar(productData.MakeType, "bottom")}
           </Box>
         )}
 
-        <WishToggleButton productData={productData} wishArr={wishArr} handleCartandWish={handleCartandWish} />
+        <WishToggleButton
+          productData={productData}
+          wishArr={wishArr}
+          handleCartandWish={handleCartandWish}
+        />
       </Box>
 
       <CardContent
@@ -368,7 +471,12 @@ const ProductCard = ({ product, index, productData, StoreInit, calcVal, videoUrl
         <Typography
           variant="body1"
           sx={{
-            fontSize: { xs: "0.82rem", sm: "0.9rem", md: "0.94rem", lg: "1rem" },
+            fontSize: {
+              xs: "0.82rem",
+              sm: "0.9rem",
+              md: "0.94rem",
+              lg: "1rem",
+            },
             fontWeight: 300,
             lineHeight: 1.35,
             color: "#050505",
@@ -388,7 +496,9 @@ const ProductCard = ({ product, index, productData, StoreInit, calcVal, videoUrl
             visibility: productData?.TitleLine ? "visible" : "hidden",
           }}
         >
-          {productData?.TitleLine ? formatTitleLine(productData?.TitleLine) : " "}
+          {productData?.TitleLine
+            ? formatTitleLine(productData?.TitleLine)
+            : " "}
         </Typography>
 
         <Box sx={{ mt: 1 }}>
@@ -406,7 +516,7 @@ const ProductCard = ({ product, index, productData, StoreInit, calcVal, videoUrl
                     textTransform: "uppercase",
                   }}
                 >
-                  {productData?.designno}
+                  {Article}
                 </Typography>
               </Box>
             </Grid>
@@ -421,13 +531,18 @@ const ProductCard = ({ product, index, productData, StoreInit, calcVal, videoUrl
                   justifyContent: "flex-end",
                 }}
               >
-                {StoreInit?.IsDiamondWeight == 1 && Number(productData?.Dwt) !== 0 ? (
+                {StoreInit?.IsDiamondWeight == 1 &&
+                Number(productData?.Dwt) !== 0 ? (
                   <>
                     <Typography
                       variant="body2"
                       sx={{
                         fontWeight: 300,
-                        fontSize: { xs: "0.62rem", sm: "0.8rem", md: "0.85rem" },
+                        fontSize: {
+                          xs: "0.62rem",
+                          sm: "0.8rem",
+                          md: "0.85rem",
+                        },
                         color: "#000",
                         letterSpacing: "0.02em",
                       }}
@@ -439,12 +554,18 @@ const ProductCard = ({ product, index, productData, StoreInit, calcVal, videoUrl
                       variant="body2"
                       sx={{
                         fontWeight: 300,
-                        fontSize: { xs: "0.62rem", sm: "0.8rem", md: "0.85rem" },
+                        fontSize: {
+                          xs: "0.62rem",
+                          sm: "0.8rem",
+                          md: "0.85rem",
+                        },
                         color: "#000",
                       }}
                     >
                       {productData?.Dwt?.toFixed(3)}
-                      {StoreInit?.IsDiamondPcs === 1 ? `/${productData?.Dpcs}` : null}
+                      {StoreInit?.IsDiamondPcs === 1
+                        ? `/${productData?.Dpcs}`
+                        : null}
                     </Typography>
                   </>
                 ) : (
@@ -473,7 +594,10 @@ const ProductCard = ({ product, index, productData, StoreInit, calcVal, videoUrl
                   >
                     <span
                       dangerouslySetInnerHTML={{
-                        __html: decodeEntities(loginCurrency?.CurrencyCode ?? StoreInit?.CurrencyCode)
+                        __html: decodeEntities(
+                          loginCurrency?.CurrencyCode ??
+                            StoreInit?.CurrencyCode,
+                        ),
                       }}
                       style={{ paddingRight: "0.4rem" }}
                     />
@@ -528,7 +652,11 @@ const ProductCard = ({ product, index, productData, StoreInit, calcVal, videoUrl
 
             {isMobile && (
               <Grid item size={{ xs: 12, sm: 12 }} position={"relative"}>
-                <MobileCartToggleButton productData={productData} cartArr={cartArr} handleCartandWish={handleCartandWish} />
+                <MobileCartToggleButton
+                  productData={productData}
+                  cartArr={cartArr}
+                  handleCartandWish={handleCartandWish}
+                />
               </Grid>
             )}
           </Grid>
@@ -539,4 +667,3 @@ const ProductCard = ({ product, index, productData, StoreInit, calcVal, videoUrl
     </MotionCard>
   );
 };
-

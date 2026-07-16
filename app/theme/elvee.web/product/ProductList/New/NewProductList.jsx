@@ -150,8 +150,8 @@ const ProductCard = ({ product, index, productData, StoreInit, calcVal, videoUrl
       y: 0,
       scale: 1,
       transition: {
-        duration: 0.5,
-        delay: index * 0.1,
+        duration: 0.25,
+        delay: Math.min(index * 0.02, 0.15),
         ease: [0.25, 0.46, 0.45, 0.94],
       },
     },
@@ -161,6 +161,7 @@ const ProductCard = ({ product, index, productData, StoreInit, calcVal, videoUrl
 
   return (
     <MotionCard
+      id={`product-card-${productData?.designno}`}
       variants={cardVariants}
       initial="hidden"
       animate="visible"

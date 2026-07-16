@@ -2,6 +2,7 @@ import { getActiveTheme } from "@/app/(core)/lib/getActiveTheme";
 import { themeMap } from "@/app/(core)/utils/ThemeMap";
 import { getStoreInit } from "@/app/(core)/utils/GlobalFunctions/GlobalFunctions";
 import { headers } from "next/headers";
+import { resolveProductList } from "@/app/(core)/utils/ThemeRouteResolver";
 import {
   getDynamicMetadata,
   generateCollectionJsonLd,
@@ -55,7 +56,7 @@ export default async function Page({ params, searchParams }) {
 
     let Product;
     try {
-      Product = (await import(`@/app/theme/${themeData.page}/product/page.jsx`)).default;
+      Product = await resolveProductList(themeData.page);
     } catch (e) {
       console.error("Failed to load theme-specific product page:", e);
       return <div style={{ padding: "50px", textAlign: "center" }}>Unable to load product list. Please try again later.</div>;

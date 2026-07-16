@@ -11,7 +11,7 @@ import ChatMenu from "@/app/components/(static)/ChatMenu/ChatMenu";
 import PremiumFooter from "@/app/components/(static)/Footer/FooterV2";
 import { activeBrand } from "@/app/env";
 import ElveeBaseHeader from "@/app/components/(dynamic)/Header/Elvee/Header";
-// import ElveePreNavbar from "@/app/components/(dynamic)/Header/Elvee/New/Navbar";
+import ElveePreNavbar from "@/app/components/(dynamic)/Header/Elvee/New/Navbar";
 import OldHeader from "@/app/components/(dynamic)/Header/Elvee/Header";
 import MaxNavbar from "@/app/components/(dynamic)/Header/Elvee/New/MaxMenu";
 import { BroadcasterProvider } from "@/app/(core)/contexts/BoardCastContext";
@@ -35,15 +35,19 @@ const layout = async ({ children }) => {
           width: "100%",
         }}
       >
-        <AnnouncementBar />
+        {/* <AnnouncementBar /> */}
+        {/* <OldHeader hidden={false} logos={logos} storeInit={storeData} />
+        <MaxNavbar hidden={false} logos={logos} storeInit={storeData} /> */}
+        {/* <ElveeBaseHeader hidden={false} logos={logos} storeInit={storeData} /> */}
+        <ElveePreNavbar hidden={false} logos={logos} storeInit={storeData} />
 
-        {isOldElvee ? (
+        {/* {isOldElvee ? (
           <OldHeader hidden={false} logos={logos} storeInit={storeData} />
         ) : isVimalDiamond ? (
           <MaxNavbar hidden={false} logos={logos} storeInit={storeData} />
         ) : (
           <ElveeBaseHeader hidden={false} logos={logos} storeInit={storeData} />
-        )}
+        )} */}
 
         <Box sx={{ flex: 1, display: "flex", flexDirection: "column" }}>
           <Suspense
@@ -62,7 +66,7 @@ const layout = async ({ children }) => {
             {children}
           </Suspense>
         </Box>
-        {activeBrand === "omjiyas" ? (
+        {/* {activeBrand === "omjiyas" ? (
           <PremiumFooter
             companyInfoData={companyInfoData}
             storeData={storeData}
@@ -76,7 +80,13 @@ const layout = async ({ children }) => {
             extraFlag={extraFlag}
             logos={logos}
           />
-        )}
+        )} */}
+        <FooterNew
+          companyInfoData={companyInfoData}
+          storeData={storeData}
+          extraFlag={extraFlag}
+          logos={logos}
+        />
 
         <ChatMenu />
       </Box>

@@ -438,6 +438,7 @@ const Usewishlist = () => {
       const obj = {
         a: wishtData?.stockno,
         b: wishtData?.shapename,
+        ArticleNo: wishtData?.ArticleNo,
       };
 
       let encodeObj = compressAndEncode(JSON.stringify(obj));
@@ -456,6 +457,7 @@ const Usewishlist = () => {
         i: wishtData?.MetalColorid,
         l: wishtData?.ImageExtension,
         count: wishtData?.ImageCount,
+        ArticleNo: wishtData?.ArticleNo,
       }
       compressAndEncode(JSON.stringify(obj))
       let encodeObj = compressAndEncode(JSON.stringify(obj))
