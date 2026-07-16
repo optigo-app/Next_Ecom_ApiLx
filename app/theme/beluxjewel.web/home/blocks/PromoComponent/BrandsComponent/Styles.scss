@@ -1,0 +1,289 @@
+@use '../../../../style/variable.scss' as *;
+
+.mainAffiliDiv {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.brandsCompoents_div {
+    text-align: center;
+    margin: 50px 0px 50px 0px !important;
+
+    @media (max-width: 1200px) {
+        margin: 50px 0px 40px 0px !important;
+    }
+
+    // margin: 50px 0px 65px 0px !important;
+
+    .elv_brand_title_h3 {
+        font-size: 28px;
+        font-weight: 600;
+        text-transform: capitalize;
+        line-height: 2px;
+        margin-bottom: 0.5rem;
+        font-family: $homePageFontFamily;
+        color: rgba(29, 50, 88, 0.8) !important;
+    }
+
+    .elv_brand_subtitle_p {
+        font-size: 15px;
+        line-height: 35px;
+        text-transform: uppercase;
+        font-family: $homePageFontFamily;
+        color: rgba(29, 50, 88, 0.8) !important;
+    }
+}
+
+.brandsComponentClass {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 6rem;
+    margin-block: 3rem;
+
+    @media (max-width: 1200px) {
+        margin-block: 2rem;
+    }
+}
+
+.affilitionImg {
+    object-fit: contain;
+    width: 10%;
+}
+
+.affiliation-slide {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.affiliation-image {
+    width: 150px;
+    height: 100px;
+    object-fit: contain;
+    border-radius: 5px;
+}
+
+.affli_swiper {
+    width: 100%;
+    margin: auto;
+}
+
+
+.elv_affi_div {
+    text-align: center;
+    margin: 80px 0px 50px 0px !important;
+
+    .elv_AffiliationComponents {
+        color: rgba(29, 50, 88, 0.8) !important;
+        font-size: 28px;
+        font-weight: 600;
+        text-transform: capitalize;
+        line-height: 2px;
+        margin-bottom: 0.8rem;
+        font-family: $homePageFontFamily;
+
+        @media (max-width: 500px) {
+            font-size: 24px;
+        }
+
+        @media (max-width: 350px) {
+            font-size: 24px;
+        }
+    }
+
+    .elv_affi_subtitle {
+        font-size: 14px;
+        text-transform: uppercase;
+        font-family: $homePageFontFamily;
+
+        @media (max-width: 500px) {
+            font-size: 13px;
+        }
+
+        @media (max-width: 350px) {
+            font-size: 12px;
+        }
+    }
+}
+
+.elv_affi_cards {
+    width: 18rem;
+    height: 10rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.affli_swiper {
+    margin-inline: 2%;
+
+    .swiper-slide {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+}
+
+
+@media (min-width: 446px) and (max-width: 768px) {
+    .brandsComponentClass {
+        width: 100%;
+        overflow: auto;
+        display: flex !important;
+        gap: 0px !important;
+        margin-block: -1rem !important;
+
+        img {
+            width: 100% !important;
+            height: 60px;
+            object-fit: cover;
+            margin-inline: 4px;
+        }
+
+        &::-webkit-scrollbar {
+            display: none;
+        }
+
+        justify-content: start !important;
+    }
+
+    .AffiliationClassComponents {
+        width: 100%;
+        overflow: auto;
+        display: flex !important;
+        justify-content: start !important;
+    }
+
+    .AffiliationComponents {
+        margin: 50px 0px 20px 0px !important
+    }
+
+    .mainAffiliDiv {
+        display: block !important;
+        text-align: center;
+    }
+
+    .affilitionImg {
+        margin-inline: 1%;
+        width: 17% !important;
+        // margin-right: 20px !important;
+    }
+
+    .brandsCompoents_div {
+        font-size: 16px;
+    }
+
+    /* .elv_affi_cards {
+        width: 21rem;
+    } */
+}
+
+
+@media (max-width: 445px) {
+    .brandsComponentClass {
+        width: 100%;
+        overflow: auto;
+        display: flex !important;
+        justify-content: start !important;
+        align-items: center !important;
+        gap: 0px;
+        margin-block: -1rem !important;
+
+        img {
+            width: 100% !important;
+            height: 60px;
+            object-fit: cover;
+            // border: 2px solid #ddd;
+            margin-inline: 4px;
+        }
+
+        &::-webkit-scrollbar {
+            display: none;
+        }
+    }
+
+    /* .elv_affi_cards {
+        width: 2rem;
+    } */
+
+    .AffiliationClassComponents {
+        width: 100%;
+        overflow: auto;
+        display: flex !important;
+        justify-content: start !important;
+    }
+
+    .AffiliationComponents {
+        margin: 50px 0px 20px 0px !important
+    }
+
+    .mainAffiliDiv {
+        display: block !important;
+        text-align: center;
+    }
+
+    .affilitionImg {
+        margin-inline: 3%;
+        width: 25% !important;
+        // margin-right: 20px !important;
+    }
+
+    .brandsCompoents_div {
+        font-size: 16px;
+    }
+}
+
+@media (max-width: 500px) {
+    .brandsCompoents_div {
+
+        .elv_brand_title_h3 {
+            font-size: 21px;
+        }
+
+        .elv_brand_subtitle_p {
+            font-size: 13px;
+        }
+    }
+}
+
+@media (max-width: 350px) {
+    .brandsCompoents_div {
+
+        .elv_brand_title_h3 {
+            font-size: 19px;
+        }
+
+        .elv_brand_subtitle_p {
+            font-size: 12px;
+        }
+    }
+}
+
+@media (min-width: 768px) and (max-width: 1200px) {
+    .brandsComponentClass {
+        // width: fit-content;
+        gap: 3rem;
+    }
+
+    .affilitionImg {
+        // margin-right: 50px !important;
+    }
+}
+
+@media (max-width: 375px) {
+    .elv_affi_cards {
+        width: 100%;
+    }
+}
+
+@media (max-width: 320px) {
+    .elv_affi_cards {
+        width: 100%;
+    }
+}
+
+.mySwiper_affli {
+    margin-inline: 4%;
+}

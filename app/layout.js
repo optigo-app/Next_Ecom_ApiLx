@@ -16,12 +16,7 @@ import { AuthProvider } from "./(core)/contexts/AuthProvider";
 import { EmotionRegistry } from "./(core)/contexts/EmotionRegistry";
 import { defaultFont } from "./(core)/assets/FontSetup";
 import { BroadcasterProvider } from "@/app/(core)/contexts/BoardCastContext";
-import {
-  isOmJiyansh,
-  ActiveMeta,
-
-  getSiteDetails,
-} from "./(core)/seo";
+import { isOmJiyansh, ActiveMeta, getSiteDetails } from "./(core)/seo";
 
 export const viewport = {
   width: "device-width",
