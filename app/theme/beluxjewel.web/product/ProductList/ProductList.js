@@ -1,9 +1,19 @@
-'use client';
+"use client";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import "./ProductList.modul.scss";
 import { styled } from "@mui/material/styles";
 import Typography from "@mui/material/Typography";
-import { Button, Divider, Drawer, IconButton, PaginationItem, Skeleton, Stack, useMediaQuery, useTheme } from "@mui/material";
+import {
+  Button,
+  Divider,
+  Drawer,
+  IconButton,
+  PaginationItem,
+  Skeleton,
+  Stack,
+  useMediaQuery,
+  useTheme,
+} from "@mui/material";
 import debounce from "lodash.debounce";
 import _ from "lodash";
 import { Accordion, Box, FormControlLabel, Input, Slider } from "@mui/material";
@@ -20,7 +30,10 @@ import { ColorStoneQualityColorComboAPI } from "@/app/(core)/utils/API/Combo/Col
 import { MetalColorCombo } from "@/app/(core)/utils/API/Combo/MetalColorCombo";
 import { CartAndWishListAPI } from "@/app/(core)/utils/API/CartAndWishList/CartAndWishListAPI";
 import { RemoveCartAndWishAPI } from "@/app/(core)/utils/API/RemoveCartandWishAPI/RemoveCartAndWishAPI";
-import { formatRedirectTitleLine, formatter } from "@/app/(core)/utils/Glob_Functions/GlobalFunction";
+import {
+  formatRedirectTitleLine,
+  formatter,
+} from "@/app/(core)/utils/Glob_Functions/GlobalFunction";
 import useGlobalPreventSave from "@/app/(core)/utils/Glob_Functions/useGlobalPreventSave";
 import FilterSidebar from "./New/NewSideFilter";
 import ShopHeader from "./New/ShopHeader";
@@ -38,10 +51,7 @@ import { usePathname, useSearchParams } from "next/navigation";
 import { useNextRouterLikeRR } from "@/app/(core)/hooks/useLocationRd";
 import { ParseAndDecodeSearchParams } from "@/app/(core)/utils/GlobalFunctions/Parser";
 
-const ProductList = ({ storeinit,
-  searchParams,
-  params
-}) => {
+const ProductList = ({ storeinit, searchParams, params }) => {
   const { setCartCountNum, setWishCountNum, loginUserDetail } = useStore();
   const location = usePathname();
   let cookie = Cookies.get("visiterId");
@@ -53,7 +63,6 @@ const ProductList = ({ storeinit,
   const isBelow768 = useMediaQuery("(max-width:768px)");
   const searchParamsHook = useSearchParams();
   const [baseUrl, setBaseUrl] = useState("");
-
 
   let drawerWidth;
 
@@ -74,10 +83,14 @@ const ProductList = ({ storeinit,
     { name: "Product", url: fullUrl },
   ];
 
-
   useEffect(() => {
     if (typeof window !== "undefined") {
-      sessionStorage.setItem("breadcrumbData", JSON.stringify(`${baseUrl}${window.location.pathname}${window.location.search}`));
+      sessionStorage.setItem(
+        "breadcrumbData",
+        JSON.stringify(
+          `${baseUrl}${window.location.pathname}${window.location.search}`,
+        ),
+      );
     }
   }, []);
 
@@ -141,8 +154,12 @@ const ProductList = ({ storeinit,
   const [afterFilterCount, setAfterFilterCount] = useState();
   const [filterDiamondSlider, setFilterDiamondSlider] = useState([]);
   const [detailsMenu, setDetailsMenu] = useState();
-  const [selectedMetalId, setSelectedMetalId] = useState(loginUserDetail?.MetalId);
-  const [selectedDiaId, setSelectedDiaId] = useState(loginUserDetail?.cmboDiaQCid);
+  const [selectedMetalId, setSelectedMetalId] = useState(
+    loginUserDetail?.MetalId,
+  );
+  const [selectedDiaId, setSelectedDiaId] = useState(
+    loginUserDetail?.cmboDiaQCid,
+  );
 
   const [isClearAllClicked, setIsClearAllClicked] = useState(false);
   const [selectedCsId, setSelectedCsId] = useState(loginUserDetail?.cmboCSQCid);
@@ -172,27 +189,57 @@ const ProductList = ({ storeinit,
   const isInitialLoadRef = useRef(true);
 
   const anyFilterApplied = useMemo(() => {
-    const isFilterChecked = Object.values(filterChecked).some((ele) => ele.checked);
+    const isFilterChecked = Object.values(filterChecked).some(
+      (ele) => ele.checked,
+    );
 
-    const diafilter = filterData?.find((ele) => ele?.Name === "Diamond")?.options;
+    const diafilter = filterData?.find(
+      (ele) => ele?.Name === "Diamond",
+    )?.options;
     const netfilter = filterData?.find((ele) => ele?.Name === "NetWt")?.options;
-    const grossfilter = filterData?.find((ele) => ele?.Name === "Gross")?.options;
+    const grossfilter = filterData?.find(
+      (ele) => ele?.Name === "Gross",
+    )?.options;
 
     const diaOptions = diafilter ? JSON.parse(diafilter)[0] : null;
     const netOptions = netfilter ? JSON.parse(netfilter)[0] : null;
     const grossOptions = grossfilter ? JSON.parse(grossfilter)[0] : null;
 
-    const isSliderChanged = (
-      (diaOptions && JSON.stringify(sliderValue) !== JSON.stringify(diaOptions.Min != null && diaOptions.Max != null ? [diaOptions.Min, diaOptions.Max] : [])) ||
-      (netOptions && JSON.stringify(sliderValue1) !== JSON.stringify(netOptions.Min != null && netOptions.Max != null ? [netOptions.Min, netOptions.Max] : [])) ||
-      (grossOptions && JSON.stringify(sliderValue2) !== JSON.stringify(grossOptions.Min != null && grossOptions.Max != null ? [grossOptions.Min, grossOptions.Max] : []))
-    );
+    const isSliderChanged =
+      (diaOptions &&
+        JSON.stringify(sliderValue) !==
+          JSON.stringify(
+            diaOptions.Min != null && diaOptions.Max != null
+              ? [diaOptions.Min, diaOptions.Max]
+              : [],
+          )) ||
+      (netOptions &&
+        JSON.stringify(sliderValue1) !==
+          JSON.stringify(
+            netOptions.Min != null && netOptions.Max != null
+              ? [netOptions.Min, netOptions.Max]
+              : [],
+          )) ||
+      (grossOptions &&
+        JSON.stringify(sliderValue2) !==
+          JSON.stringify(
+            grossOptions.Min != null && grossOptions.Max != null
+              ? [grossOptions.Min, grossOptions.Max]
+              : [],
+          ));
 
-    const isInputPriceApplied = JSON.stringify(inputPrice) !== JSON.stringify(["", ""]);
+    const isInputPriceApplied =
+      JSON.stringify(inputPrice) !== JSON.stringify(["", ""]);
 
     return isFilterChecked || isSliderChanged || isInputPriceApplied;
-  }, [filterChecked, sliderValue, sliderValue1, sliderValue2, inputPrice, filterData]);
-
+  }, [
+    filterChecked,
+    sliderValue,
+    sliderValue1,
+    sliderValue2,
+    inputPrice,
+    filterData,
+  ]);
 
   let maxwidth464px = useMediaQuery("(max-width:464px)");
 
@@ -232,7 +279,7 @@ const ProductList = ({ storeinit,
       c: selectedCsId,
       g: detailsMenu,
       img: `${storeinit?.CDNDesignImageFol}${productData?.designno}~1.${productData?.ImageExtension}`,
-      ArticleNo: productData?.ArticleNo
+      ArticleNo: productData?.ArticleNo,
     };
 
     let encodeObj = compressAndEncode(JSON.stringify(obj));
@@ -273,21 +320,40 @@ const ProductList = ({ storeinit,
   };
 
   function parseRangeData(filterData, name, sliderValue, inputValue) {
-    const target = filterData?.find((ele) => ele?.Name === (name == "Dia" ? "Diamond" : name == "net" ? "NetWt" : name));
-    const options = target?.options?.length > 0 ? JSON.parse(target.options)[0] : {};
+    const target = filterData?.find(
+      (ele) =>
+        ele?.Name ===
+        (name == "Dia" ? "Diamond" : name == "net" ? "NetWt" : name),
+    );
+    const options =
+      target?.options?.length > 0 ? JSON.parse(target.options)[0] : {};
 
-    const isChanged = JSON.stringify(sliderValue) !== JSON.stringify([options?.Min, options?.Max]);
+    const isChanged =
+      JSON.stringify(sliderValue) !==
+      JSON.stringify([options?.Min, options?.Max]);
 
     return {
-      [`${name != "Dia" ? name.toLowerCase() : name}Min`]: isChanged ? (sliderValue[0] !== inputValue[0] ? sliderValue[0] : inputValue[0]) : "",
-      [`${name != "Dia" ? name.toLowerCase() : name}Max`]: isChanged ? (sliderValue[1] !== inputValue[1] ? sliderValue[1] : inputValue[1]) : "",
+      [`${name != "Dia" ? name.toLowerCase() : name}Min`]: isChanged
+        ? sliderValue[0] !== inputValue[0]
+          ? sliderValue[0]
+          : inputValue[0]
+        : "",
+      [`${name != "Dia" ? name.toLowerCase() : name}Max`]: isChanged
+        ? sliderValue[1] !== inputValue[1]
+          ? sliderValue[1]
+          : inputValue[1]
+        : "",
     };
   }
 
   const FilterValueWithCheckedOnly = () => {
-    const onlyTrueFilterValue = Object.values(filterChecked).filter((ele) => ele.checked);
+    const onlyTrueFilterValue = Object.values(filterChecked).filter(
+      (ele) => ele.checked,
+    );
 
-    const priceValues = onlyTrueFilterValue.filter((item) => item.type === "Price").map((item) => item.value);
+    const priceValues = onlyTrueFilterValue
+      .filter((item) => item.type === "Price")
+      .map((item) => item.value);
 
     const output = {};
 
@@ -304,7 +370,11 @@ const ProductList = ({ storeinit,
       output[item.type] += `${item.id}, `;
     });
 
-    if (priceValues.length > 0 && inputPrice[0] !== "" && inputPrice[1] !== "") {
+    if (
+      priceValues.length > 0 &&
+      inputPrice[0] !== "" &&
+      inputPrice[1] !== ""
+    ) {
       setPriceRangeValue(["", ""]);
       setInputPrice(["", ""]);
       setIsReset(false);
@@ -322,7 +392,10 @@ const ProductList = ({ storeinit,
     const metalId = loginUserDetail?.MetalId ?? storeinit?.MetalId;
     const diaId = loginUserDetail?.cmboDiaQCid ?? storeinit?.cmboDiaQCid;
 
-    if (metalId && (selectedMetalId === undefined || selectedMetalId === null)) {
+    if (
+      metalId &&
+      (selectedMetalId === undefined || selectedMetalId === null)
+    ) {
       setSelectedMetalId(metalId);
     }
     if (diaId && (selectedDiaId === undefined || selectedDiaId === null)) {
@@ -332,7 +405,9 @@ const ProductList = ({ storeinit,
     let NewArrivalVar = "";
     const UrlVal = Array.isArray(result) ? result : [];
 
-    const mEntry = UrlVal.find((s) => typeof s === "string" && s.startsWith("M="));
+    const mEntry = UrlVal.find(
+      (s) => typeof s === "string" && s.startsWith("M="),
+    );
     let hasCollection = false;
     if (mEntry) {
       try {
@@ -341,7 +416,7 @@ const ProductList = ({ storeinit,
         if (decoded.includes("newarrival") || decoded.includes("new arrival")) {
           NewArrivalVar = "New";
         }
-      } catch (_) { }
+      } catch (_) {}
     }
 
     UrlVal.forEach((ele) => {
@@ -371,15 +446,37 @@ const ProductList = ({ storeinit,
 
       // FIX 2026-04-29: location is usePathname() — no .key property exists.
       // locationKey is set from location (pathname string) on navigation.
-      if (location === locationKey && (Object.keys(filterChecked)?.length > 0 || isClearAllClicked === true)) {
-        const DiaRange = parseRangeData(filterData, "Dia", sliderValue, inputDia);
-        const grossRange = parseRangeData(filterData, "Gross", sliderValue2, inputGross);
-        const netRange = parseRangeData(filterData, "net", sliderValue1, inputNet);
+      if (
+        location === locationKey &&
+        (Object.keys(filterChecked)?.length > 0 || isClearAllClicked === true)
+      ) {
+        const DiaRange = parseRangeData(
+          filterData,
+          "Dia",
+          sliderValue,
+          inputDia,
+        );
+        const grossRange = parseRangeData(
+          filterData,
+          "Gross",
+          sliderValue2,
+          inputGross,
+        );
+        const netRange = parseRangeData(
+          filterData,
+          "net",
+          sliderValue1,
+          inputNet,
+        );
 
-        const inputPriceField = JSON.stringify(inputPrice) !== JSON.stringify(["", ""]);
+        const inputPriceField =
+          JSON.stringify(inputPrice) !== JSON.stringify(["", ""]);
 
         if (inputPriceField) {
-          const pricerange = { PriceMin: inputPrice[0], PriceMax: inputPrice[1] };
+          const pricerange = {
+            PriceMin: inputPrice[0],
+            PriceMax: inputPrice[1],
+          };
           if (!output?.Price?.length) {
             output = { ...output, ...pricerange };
           }
@@ -389,7 +486,17 @@ const ProductList = ({ storeinit,
         setInputPage(1);
         setIsOnlyProdLoading(true);
 
-        ProductListApi(output, 1, obj, prodListType, cookie, sortBySelect, DiaRange, netRange, grossRange)
+        ProductListApi(
+          output,
+          1,
+          obj,
+          prodListType,
+          cookie,
+          sortBySelect,
+          DiaRange,
+          netRange,
+          grossRange,
+        )
           .then((res) => {
             if (res) {
               setProductListData(res?.pdList);
@@ -628,11 +735,17 @@ const ProductList = ({ storeinit,
     let diamondTypeDrpdown = getSession("diamondQualityColorCombo");
     if (diamondTypeDrpdown) {
       setDiamondType(diamondTypeDrpdown);
-      setClarity(diamondTypeDrpdown?.[0]?.Quality + "#" + diamondTypeDrpdown?.[0]?.color);
+      setClarity(
+        diamondTypeDrpdown?.[0]?.Quality + "#" + diamondTypeDrpdown?.[0]?.color,
+      );
 
-      // If selectedDiaId is just a number and not the combined string format, 
+      // If selectedDiaId is just a number and not the combined string format,
       // try to find a default or set to first item to ensure it's visible in the dropdown
-      if (selectedDiaId && !String(selectedDiaId).includes(",") && diamondTypeDrpdown.length > 0) {
+      if (
+        selectedDiaId &&
+        !String(selectedDiaId).includes(",") &&
+        diamondTypeDrpdown.length > 0
+      ) {
         const firstCombo = `${diamondTypeDrpdown[0].QualityId},${diamondTypeDrpdown[0].ColorId}`;
         setSelectedDiaId(firstCombo);
       }
@@ -645,11 +758,18 @@ const ProductList = ({ storeinit,
   }, [selectedDiaId]);
 
   useEffect(() => {
-    if (typeof window !== "undefined" && !isOnlyProdLoading && !isProdLoading && productListData?.length > 0) {
+    if (
+      typeof window !== "undefined" &&
+      !isOnlyProdLoading &&
+      !isProdLoading &&
+      productListData?.length > 0
+    ) {
       const scrollToDesign = sessionStorage.getItem("scroll_to_product");
       if (scrollToDesign) {
         const timer = setTimeout(() => {
-          const element = document.getElementById(`product-card-${scrollToDesign}`);
+          const element = document.getElementById(
+            `product-card-${scrollToDesign}`,
+          );
           if (element) {
             element.scrollIntoView({ behavior: "smooth", block: "nearest" });
             sessionStorage.removeItem("scroll_to_product");
@@ -676,9 +796,9 @@ const ProductList = ({ storeinit,
         let SearchVar = "";
         let productlisttype;
         let NewArrivalVar = "";
-        let TrendingVar = '';
-        let BestSellerVar = '';
-        let AlbumVar = '';
+        let TrendingVar = "";
+        let BestSellerVar = "";
+        let AlbumVar = "";
         const hasCollection = result?.includes("collection");
         UrlVal.forEach((ele) => {
           let firstChar = ele.charAt(0);
@@ -693,13 +813,13 @@ const ProductList = ({ storeinit,
             case "S":
               SearchVar = ele;
               break;
-            case 'T':
+            case "T":
               TrendingVar = ele;
               break;
-            case 'B':
+            case "B":
               BestSellerVar = ele;
               break;
-            case 'A':
+            case "A":
               AlbumVar = ele;
               break;
 
@@ -724,14 +844,14 @@ const ProductList = ({ storeinit,
           productlisttype = NewArrivalVar.split("=")[1];
         }
         if (TrendingVar) {
-          productlisttype = TrendingVar.split("=")[1]
+          productlisttype = TrendingVar.split("=")[1];
         }
         if (BestSellerVar) {
-          productlisttype = BestSellerVar.split("=")[1]
+          productlisttype = BestSellerVar.split("=")[1];
         }
 
         if (AlbumVar) {
-          productlisttype = AlbumVar.split("=")[1]
+          productlisttype = AlbumVar.split("=")[1];
         }
 
         setprodListType(productlisttype);
@@ -742,13 +862,38 @@ const ProductList = ({ storeinit,
           ? "New"
           : hasCollection
             ? "Design Set"
-            : sortBySelect ?? "Recommended";
+            : (sortBySelect ?? "Recommended");
 
-        const DiaRange = parseRangeData(filterData, "Dia", sliderValue, inputDia);
-        const grossRange = parseRangeData(filterData, "Gross", sliderValue2, inputGross);
-        const netRange = parseRangeData(filterData, "net", sliderValue1, inputNet);
+        const DiaRange = parseRangeData(
+          filterData,
+          "Dia",
+          sliderValue,
+          inputDia,
+        );
+        const grossRange = parseRangeData(
+          filterData,
+          "Gross",
+          sliderValue2,
+          inputGross,
+        );
+        const netRange = parseRangeData(
+          filterData,
+          "net",
+          sliderValue1,
+          inputNet,
+        );
 
-        const res = await ProductListApi({}, 1, obj, productlisttype, cookie, effectiveSortBy, DiaRange, netRange, grossRange);
+        const res = await ProductListApi(
+          {},
+          1,
+          obj,
+          productlisttype,
+          cookie,
+          effectiveSortBy,
+          DiaRange,
+          netRange,
+          grossRange,
+        );
         const res1 = await FilterListAPI(productlisttype, cookie);
         if (res) {
           setProductListData(res?.pdList);
@@ -757,13 +902,31 @@ const ProductList = ({ storeinit,
 
         if (res1) {
           setFilterData(res1);
-          let priceFilter = JSON.parse(res1?.filter((ele) => ele.Name == "Price")[0]?.options)[0];
+          let priceFilter = JSON.parse(
+            res1?.filter((ele) => ele.Name == "Price")[0]?.options,
+          )[0];
           setFilterPriceSlider(priceFilter);
-          let diafilter = res1?.filter((ele) => ele?.Name == "Diamond")[0]?.options?.length > 0 ? JSON.parse(res1?.filter((ele) => ele?.Name == "Diamond")[0]?.options)[0] : [];
+          let diafilter =
+            res1?.filter((ele) => ele?.Name == "Diamond")[0]?.options?.length >
+            0
+              ? JSON.parse(
+                  res1?.filter((ele) => ele?.Name == "Diamond")[0]?.options,
+                )[0]
+              : [];
 
-          let diafilter1 = res1?.filter((ele) => ele?.Name == "NetWt")[0]?.options?.length > 0 ? JSON.parse(res1?.filter((ele) => ele?.Name == "NetWt")[0]?.options)[0] : [];
+          let diafilter1 =
+            res1?.filter((ele) => ele?.Name == "NetWt")[0]?.options?.length > 0
+              ? JSON.parse(
+                  res1?.filter((ele) => ele?.Name == "NetWt")[0]?.options,
+                )[0]
+              : [];
 
-          let diafilter2 = res1?.filter((ele) => ele?.Name == "Gross")[0]?.options?.length > 0 ? JSON.parse(res1?.filter((ele) => ele?.Name == "Gross")[0]?.options)[0] : [];
+          let diafilter2 =
+            res1?.filter((ele) => ele?.Name == "Gross")[0]?.options?.length > 0
+              ? JSON.parse(
+                  res1?.filter((ele) => ele?.Name == "Gross")[0]?.options,
+                )[0]
+              : [];
 
           // const highestPrice = res?.pdList?.reduce((max, item) => {
           //   return Math.max(max, item?.UnitCostWithMarkUpIncTax);
@@ -779,12 +942,36 @@ const ProductList = ({ storeinit,
           // setPriceRangeValue([lowestPrice, highestPrice]);
           // setInputPrice([lowestPrice, highestPrice])
 
-          setSliderValue(diafilter?.Min != null || diafilter?.Max != null ? [diafilter.Min, diafilter.Max] : []);
-          setInputDia(diafilter?.Min != null || diafilter?.Max != null ? [diafilter.Min, diafilter.Max] : []);
-          setSliderValue1(diafilter1?.Min != null || diafilter1?.Max != null ? [diafilter1?.Min, diafilter1?.Max] : []);
-          setInputNet(diafilter1?.Min != null || diafilter1?.Max != null ? [diafilter1?.Min, diafilter1?.Max] : []);
-          setSliderValue2(diafilter2?.Min != null || diafilter2?.Max != null ? [diafilter2?.Min, diafilter2?.Max] : []);
-          setInputGross(diafilter2?.Min != null || diafilter2?.Max != null ? [diafilter2?.Min, diafilter2?.Max] : []);
+          setSliderValue(
+            diafilter?.Min != null || diafilter?.Max != null
+              ? [diafilter.Min, diafilter.Max]
+              : [],
+          );
+          setInputDia(
+            diafilter?.Min != null || diafilter?.Max != null
+              ? [diafilter.Min, diafilter.Max]
+              : [],
+          );
+          setSliderValue1(
+            diafilter1?.Min != null || diafilter1?.Max != null
+              ? [diafilter1?.Min, diafilter1?.Max]
+              : [],
+          );
+          setInputNet(
+            diafilter1?.Min != null || diafilter1?.Max != null
+              ? [diafilter1?.Min, diafilter1?.Max]
+              : [],
+          );
+          setSliderValue2(
+            diafilter2?.Min != null || diafilter2?.Max != null
+              ? [diafilter2?.Min, diafilter2?.Max]
+              : [],
+          );
+          setInputGross(
+            diafilter2?.Min != null || diafilter2?.Max != null
+              ? [diafilter2?.Min, diafilter2?.Max]
+              : [],
+          );
           // setFilterDiamondSlider([diaFilter?.Min, diaFilter?.Max]);
         }
       } catch (error) {
@@ -802,7 +989,7 @@ const ProductList = ({ storeinit,
     }
     setCurrPage(1);
     setInputPage(1);
-    
+
     const scrollToDesign = sessionStorage.getItem("scroll_to_product");
     if (!scrollToDesign) {
       window.scrollTo({
@@ -848,7 +1035,8 @@ const ProductList = ({ storeinit,
         behavior: "smooth",
       });
     }, 100);
-    const inputPriceField = JSON.stringify(inputPrice) !== JSON.stringify(["", ""]);
+    const inputPriceField =
+      JSON.stringify(inputPrice) !== JSON.stringify(["", ""]);
 
     if (inputPriceField) {
       const pricerange = { PriceMin: inputPrice[0], PriceMax: inputPrice[1] };
@@ -856,11 +1044,26 @@ const ProductList = ({ storeinit,
     }
 
     const DiaRange = parseRangeData(filterData, "Dia", sliderValue, inputDia);
-    const grossRange = parseRangeData(filterData, "Gross", sliderValue2, inputGross);
+    const grossRange = parseRangeData(
+      filterData,
+      "Gross",
+      sliderValue2,
+      inputGross,
+    );
     const netRange = parseRangeData(filterData, "net", sliderValue1, inputNet);
 
     // ProductListApi(output, value, obj, prodListType, cookie, sortBySelect)
-    ProductListApi(output, value, obj, prodListType, cookie, sortBySelect, DiaRange, netRange, grossRange)
+    ProductListApi(
+      output,
+      value,
+      obj,
+      prodListType,
+      cookie,
+      sortBySelect,
+      DiaRange,
+      netRange,
+      grossRange,
+    )
       .then((res) => {
         if (res) {
           setProductListData(res?.pdList);
@@ -917,7 +1120,10 @@ const ProductList = ({ storeinit,
         .then((response) => {
           if (response?.Data?.rd) {
             let data = response?.Data?.rd;
-            sessionStorage.setItem("diamondQualityColorCombo", JSON.stringify(data));
+            sessionStorage.setItem(
+              "diamondQualityColorCombo",
+              JSON.stringify(data),
+            );
             setDiamondType(data);
           }
         })
@@ -931,7 +1137,10 @@ const ProductList = ({ storeinit,
         .then((response) => {
           if (response?.Data?.rd) {
             let data = response?.Data?.rd;
-            sessionStorage.setItem("ColorStoneQualityColorCombo", JSON.stringify(data));
+            sessionStorage.setItem(
+              "ColorStoneQualityColorCombo",
+              JSON.stringify(data),
+            );
             setCsQcCombo(data);
           }
         })
@@ -953,8 +1162,6 @@ const ProductList = ({ storeinit,
     }
   };
 
-
-
   useEffect(() => {
     callAllApi();
   }, [loginUserDetail]);
@@ -968,10 +1175,16 @@ const ProductList = ({ storeinit,
     let obj = { mt: selectedMetalId, dia: selectedDiaId, cs: selectedCsId };
 
     const DiaRange = parseRangeData(filterData, "Dia", sliderValue, inputDia);
-    const grossRange = parseRangeData(filterData, "Gross", sliderValue2, inputGross);
+    const grossRange = parseRangeData(
+      filterData,
+      "Gross",
+      sliderValue2,
+      inputGross,
+    );
     const netRange = parseRangeData(filterData, "net", sliderValue1, inputNet);
 
-    const inputPriceField = JSON.stringify(inputPrice) !== JSON.stringify(["", ""]);
+    const inputPriceField =
+      JSON.stringify(inputPrice) !== JSON.stringify(["", ""]);
 
     if (inputPriceField) {
       const pricerange = { PriceMin: inputPrice[0], PriceMax: inputPrice[1] };
@@ -984,7 +1197,17 @@ const ProductList = ({ storeinit,
     setIsOnlyProdLoading(true);
     let sortby = e.target?.value;
 
-    await ProductListApi(output, 1, obj, prodListType, cookie, sortby, DiaRange, netRange, grossRange)
+    await ProductListApi(
+      output,
+      1,
+      obj,
+      prodListType,
+      cookie,
+      sortby,
+      DiaRange,
+      netRange,
+      grossRange,
+    )
       .then((res) => {
         if (res) {
           setProductListData(res?.pdList);
@@ -1004,10 +1227,21 @@ const ProductList = ({ storeinit,
     setProductListData([]);
     if (location?.state?.SearchVal === undefined) {
       const DiaRange = parseRangeData(filterData, "Dia", sliderValue, inputDia);
-      const grossRange = parseRangeData(filterData, "Gross", sliderValue2, inputGross);
-      const netRange = parseRangeData(filterData, "net", sliderValue1, inputNet);
+      const grossRange = parseRangeData(
+        filterData,
+        "Gross",
+        sliderValue2,
+        inputGross,
+      );
+      const netRange = parseRangeData(
+        filterData,
+        "net",
+        sliderValue1,
+        inputNet,
+      );
 
-      const inputPriceField = JSON.stringify(inputPrice) !== JSON.stringify(["", ""]);
+      const inputPriceField =
+        JSON.stringify(inputPrice) !== JSON.stringify(["", ""]);
 
       if (inputPriceField) {
         const pricerange = { PriceMin: inputPrice[0], PriceMax: inputPrice[1] };
@@ -1018,7 +1252,17 @@ const ProductList = ({ storeinit,
       setInputPage(1);
 
       setIsOnlyProdLoading(true);
-      ProductListApi(output, 1, obj, prodListType, cookie, sortBySelect, DiaRange, netRange, grossRange)
+      ProductListApi(
+        output,
+        1,
+        obj,
+        prodListType,
+        cookie,
+        sortBySelect,
+        DiaRange,
+        netRange,
+        grossRange,
+      )
         .then((res) => {
           if (res) {
             setProductListData(res?.pdList);
@@ -1059,18 +1303,26 @@ const ProductList = ({ storeinit,
     sessionStorage.setItem("short_cutCombo_val", JSON.stringify(obj));
 
     if (loginUserDetail && Object.keys(loginUserDetail).length > 0) {
-      if (selectedMetalId != undefined || selectedDiaId != undefined || selectedCsId != undefined) {
+      if (
+        selectedMetalId != undefined ||
+        selectedDiaId != undefined ||
+        selectedCsId != undefined
+      ) {
         if (
           String(loginUserDetail.MetalId) !== String(selectedMetalId) ||
           String(loginUserDetail.cmboDiaQCid) !== String(selectedDiaId) ||
           String(loginUserDetail.cmboCSQCid) !== String(selectedCsId)
         ) {
-            (obj);
+          obj;
         }
       }
     } else {
       if (storeinit && Object.keys(storeinit).length > 0) {
-        if (selectedMetalId != undefined || selectedDiaId != undefined || selectedCsId != undefined) {
+        if (
+          selectedMetalId != undefined ||
+          selectedDiaId != undefined ||
+          selectedCsId != undefined
+        ) {
           if (
             String(storeinit?.MetalId) !== String(selectedMetalId) ||
             String(storeinit?.cmboDiaQCid) !== String(selectedDiaId) ||
@@ -1091,27 +1343,106 @@ const ProductList = ({ storeinit,
 
   const handelFilterClearAll = () => {
     // setAfterCountStatus(true);
-    let diafilter = filterData?.filter((ele) => ele?.Name == "Diamond")[0]?.options?.length > 0 ? JSON.parse(filterData?.filter((ele) => ele?.Name == "Diamond")[0]?.options)[0] : [];
-    let diafilter1 = filterData?.filter((ele) => ele?.Name == "NetWt")[0]?.options?.length > 0 ? JSON.parse(filterData?.filter((ele) => ele?.Name == "NetWt")[0]?.options)[0] : [];
-    let diafilter2 = filterData?.filter((ele) => ele?.Name == "Gross")[0]?.options?.length > 0 ? JSON.parse(filterData?.filter((ele) => ele?.Name == "Gross")[0]?.options)[0] : [];
-    const isFilterChecked = Object.values(filterChecked).some((ele) => ele.checked);
-    const isSliderChanged = JSON.stringify(sliderValue) !== JSON.stringify(diafilter?.Min != null || diafilter?.Max != null ? [diafilter?.Min, diafilter?.Max] : []) || JSON.stringify(sliderValue1) !== JSON.stringify(diafilter1?.Min != null || diafilter1?.Max != null ? [diafilter1?.Min, diafilter1?.Max] : []) || JSON.stringify(sliderValue2) !== JSON.stringify(diafilter2?.Min != null || diafilter2?.Max != null ? [diafilter2?.Min, diafilter2?.Max] : []);
+    let diafilter =
+      filterData?.filter((ele) => ele?.Name == "Diamond")[0]?.options?.length >
+      0
+        ? JSON.parse(
+            filterData?.filter((ele) => ele?.Name == "Diamond")[0]?.options,
+          )[0]
+        : [];
+    let diafilter1 =
+      filterData?.filter((ele) => ele?.Name == "NetWt")[0]?.options?.length > 0
+        ? JSON.parse(
+            filterData?.filter((ele) => ele?.Name == "NetWt")[0]?.options,
+          )[0]
+        : [];
+    let diafilter2 =
+      filterData?.filter((ele) => ele?.Name == "Gross")[0]?.options?.length > 0
+        ? JSON.parse(
+            filterData?.filter((ele) => ele?.Name == "Gross")[0]?.options,
+          )[0]
+        : [];
+    const isFilterChecked = Object.values(filterChecked).some(
+      (ele) => ele.checked,
+    );
+    const isSliderChanged =
+      JSON.stringify(sliderValue) !==
+        JSON.stringify(
+          diafilter?.Min != null || diafilter?.Max != null
+            ? [diafilter?.Min, diafilter?.Max]
+            : [],
+        ) ||
+      JSON.stringify(sliderValue1) !==
+        JSON.stringify(
+          diafilter1?.Min != null || diafilter1?.Max != null
+            ? [diafilter1?.Min, diafilter1?.Max]
+            : [],
+        ) ||
+      JSON.stringify(sliderValue2) !==
+        JSON.stringify(
+          diafilter2?.Min != null || diafilter2?.Max != null
+            ? [diafilter2?.Min, diafilter2?.Max]
+            : [],
+        );
 
-    const isInputFields = JSON.stringify(inputPrice) !== JSON.stringify(["", ""]);
+    const isInputFields =
+      JSON.stringify(inputPrice) !== JSON.stringify(["", ""]);
 
     // if (Object.values(filterChecked).filter((ele) => ele.checked)?.length > 0) {
     if (isFilterChecked || isSliderChanged || isInputFields) {
-      let diafilter = filterData?.filter((ele) => ele?.Name == "Diamond")[0]?.options?.length > 0 ? JSON.parse(filterData?.filter((ele) => ele?.Name == "Diamond")[0]?.options)[0] : [];
-      let diafilter1 = filterData?.filter((ele) => ele?.Name == "NetWt")[0]?.options?.length > 0 ? JSON.parse(filterData?.filter((ele) => ele?.Name == "NetWt")[0]?.options)[0] : [];
-      let diafilter2 = filterData?.filter((ele) => ele?.Name == "Gross")[0]?.options?.length > 0 ? JSON.parse(filterData?.filter((ele) => ele?.Name == "Gross")[0]?.options)[0] : [];
-      setSliderValue(diafilter?.Min != null || diafilter?.Max != null ? [diafilter.Min, diafilter.Max] : []);
-      setSliderValue1(diafilter1?.Min != null || diafilter1?.Max != null ? [diafilter1?.Min, diafilter1?.Max] : []);
-      setSliderValue2(diafilter2?.Min != null || diafilter2?.Max != null ? [diafilter2?.Min, diafilter2?.Max] : []);
+      let diafilter =
+        filterData?.filter((ele) => ele?.Name == "Diamond")[0]?.options
+          ?.length > 0
+          ? JSON.parse(
+              filterData?.filter((ele) => ele?.Name == "Diamond")[0]?.options,
+            )[0]
+          : [];
+      let diafilter1 =
+        filterData?.filter((ele) => ele?.Name == "NetWt")[0]?.options?.length >
+        0
+          ? JSON.parse(
+              filterData?.filter((ele) => ele?.Name == "NetWt")[0]?.options,
+            )[0]
+          : [];
+      let diafilter2 =
+        filterData?.filter((ele) => ele?.Name == "Gross")[0]?.options?.length >
+        0
+          ? JSON.parse(
+              filterData?.filter((ele) => ele?.Name == "Gross")[0]?.options,
+            )[0]
+          : [];
+      setSliderValue(
+        diafilter?.Min != null || diafilter?.Max != null
+          ? [diafilter.Min, diafilter.Max]
+          : [],
+      );
+      setSliderValue1(
+        diafilter1?.Min != null || diafilter1?.Max != null
+          ? [diafilter1?.Min, diafilter1?.Max]
+          : [],
+      );
+      setSliderValue2(
+        diafilter2?.Min != null || diafilter2?.Max != null
+          ? [diafilter2?.Min, diafilter2?.Max]
+          : [],
+      );
       setPriceRangeValue(["", ""]);
       setInputPrice(["", ""]);
-      setInputDia(diafilter?.Min != null || diafilter?.Max != null ? [diafilter.Min, diafilter.Max] : []);
-      setInputNet(diafilter1?.Min != null || diafilter1?.Max != null ? [diafilter1?.Min, diafilter1?.Max] : []);
-      setInputGross(diafilter2?.Min != null || diafilter2?.Max != null ? [diafilter2?.Min, diafilter2?.Max] : []);
+      setInputDia(
+        diafilter?.Min != null || diafilter?.Max != null
+          ? [diafilter.Min, diafilter.Max]
+          : [],
+      );
+      setInputNet(
+        diafilter1?.Min != null || diafilter1?.Max != null
+          ? [diafilter1?.Min, diafilter1?.Max]
+          : [],
+      );
+      setInputGross(
+        diafilter2?.Min != null || diafilter2?.Max != null
+          ? [diafilter2?.Min, diafilter2?.Max]
+          : [],
+      );
       setAppliedRange1(["", ""]);
       setAppliedRange2(["", ""]);
       setAppliedRange3(["", ""]);
@@ -1120,7 +1451,11 @@ const ProductList = ({ storeinit,
       setShow2(false);
       setIsReset(false);
       setFilterChecked({});
-      if (Object.keys(filterChecked).length > 0 || isSliderChanged || isInputFields) {
+      if (
+        Object.keys(filterChecked).length > 0 ||
+        isSliderChanged ||
+        isInputFields
+      ) {
         setIsClearAllClicked(true);
       }
     }
@@ -1152,7 +1487,7 @@ const ProductList = ({ storeinit,
       Misc_SettingCost: ele?.Misc_SettingCost,
       Other_Cost: ele?.Other_Cost,
       SolPrice: ele?.SolPrice,
-      ArticleNo: ele?.ArticleNo
+      ArticleNo: ele?.ArticleNo,
     };
 
     if (type === "Wish") {
@@ -1177,15 +1512,34 @@ const ProductList = ({ storeinit,
             setWishCountNum(wishC);
             setCartCountNum(cartC);
             if (type === "Cart") {
-              broadcast("UPDATE_CART_COUNT", cartC, prodObj?.autocode, "cart", true);
+              broadcast(
+                "UPDATE_CART_COUNT",
+                cartC,
+                prodObj?.autocode,
+                "cart",
+                true,
+              );
             } else {
-              broadcast("UPDATE_WISH_COUNT", wishC, prodObj?.autocode, "wish", true);
+              broadcast(
+                "UPDATE_WISH_COUNT",
+                wishC,
+                prodObj?.autocode,
+                "wish",
+                true,
+              );
             }
           }
         })
         .catch((err) => console.log("addtocartwishErr", err));
     } else {
-      await RemoveCartAndWishAPI(type, ele?.autocode, cookie, false, "", ele?.ArticleNo)
+      await RemoveCartAndWishAPI(
+        type,
+        ele?.autocode,
+        cookie,
+        false,
+        "",
+        ele?.ArticleNo,
+      )
         .then((res1) => {
           if (res1) {
             let cartC = res1?.Data?.rd[0]?.Cartlistcount;
@@ -1193,9 +1547,21 @@ const ProductList = ({ storeinit,
             setWishCountNum(wishC);
             setCartCountNum(cartC);
             if (type === "Cart") {
-              broadcast("UPDATE_CART_COUNT", cartC, prodObj?.autocode, "cart", false);
+              broadcast(
+                "UPDATE_CART_COUNT",
+                cartC,
+                prodObj?.autocode,
+                "cart",
+                false,
+              );
             } else {
-              broadcast("UPDATE_WISH_COUNT", wishC, prodObj?.autocode, "wish", false);
+              broadcast(
+                "UPDATE_WISH_COUNT",
+                wishC,
+                prodObj?.autocode,
+                "wish",
+                false,
+              );
             }
           }
         })
@@ -1233,7 +1599,8 @@ const ProductList = ({ storeinit,
     setCurrPage(1);
     setInputPage(1);
 
-    const inputPriceField = JSON.stringify(inputPrice) !== JSON.stringify(["", ""]);
+    const inputPriceField =
+      JSON.stringify(inputPrice) !== JSON.stringify(["", ""]);
 
     if (inputPriceField) {
       const pricerange = { PriceMin: inputPrice[0], PriceMax: inputPrice[1] };
@@ -1241,10 +1608,25 @@ const ProductList = ({ storeinit,
     }
 
     const DiaRange = parseRangeData(filterData, "Dia", Rangeval, inputDia);
-    const grossRange = parseRangeData(filterData, "Gross", sliderValue2, inputGross);
+    const grossRange = parseRangeData(
+      filterData,
+      "Gross",
+      sliderValue2,
+      inputGross,
+    );
     const netRange = parseRangeData(filterData, "net", sliderValue1, inputNet);
 
-    await ProductListApi(output, 1, obj, prodListType, cookie, sortBySelect, DiaRange, netRange, grossRange)
+    await ProductListApi(
+      output,
+      1,
+      obj,
+      prodListType,
+      cookie,
+      sortBySelect,
+      DiaRange,
+      netRange,
+      grossRange,
+    )
       .then((res) => {
         if (res) {
           setProductListData(res?.pdList);
@@ -1272,7 +1654,8 @@ const ProductList = ({ storeinit,
     let output = FilterValueWithCheckedOnly();
     let obj = { mt: selectedMetalId, dia: selectedDiaId, cs: selectedCsId };
 
-    const inputPriceField = JSON.stringify(inputPrice) !== JSON.stringify(["", ""]);
+    const inputPriceField =
+      JSON.stringify(inputPrice) !== JSON.stringify(["", ""]);
 
     if (inputPriceField) {
       const pricerange = { PriceMin: inputPrice[0], PriceMax: inputPrice[1] };
@@ -1280,13 +1663,28 @@ const ProductList = ({ storeinit,
     }
 
     const DiaRange = parseRangeData(filterData, "Dia", sliderValue, inputDia);
-    const grossRange = parseRangeData(filterData, "Gross", sliderValue2, inputGross);
+    const grossRange = parseRangeData(
+      filterData,
+      "Gross",
+      sliderValue2,
+      inputGross,
+    );
     const netRange = parseRangeData(filterData, "net", Rangeval1, inputNet);
 
     setCurrPage(1);
     setInputPage(1);
 
-    await ProductListApi(output, 1, obj, prodListType, cookie, sortBySelect, DiaRange, netRange, grossRange)
+    await ProductListApi(
+      output,
+      1,
+      obj,
+      prodListType,
+      cookie,
+      sortBySelect,
+      DiaRange,
+      netRange,
+      grossRange,
+    )
       .then((res) => {
         if (res) {
           setProductListData(res?.pdList);
@@ -1313,7 +1711,8 @@ const ProductList = ({ storeinit,
     let output = FilterValueWithCheckedOnly();
     let obj = { mt: selectedMetalId, dia: selectedDiaId, cs: selectedCsId };
 
-    const inputPriceField = JSON.stringify(inputPrice) !== JSON.stringify(["", ""]);
+    const inputPriceField =
+      JSON.stringify(inputPrice) !== JSON.stringify(["", ""]);
 
     if (inputPriceField) {
       const pricerange = { PriceMin: inputPrice[0], PriceMax: inputPrice[1] };
@@ -1321,13 +1720,28 @@ const ProductList = ({ storeinit,
     }
 
     const DiaRange = parseRangeData(filterData, "Dia", sliderValue, inputDia);
-    const grossRange = parseRangeData(filterData, "Gross", Rangeval2, inputGross);
+    const grossRange = parseRangeData(
+      filterData,
+      "Gross",
+      Rangeval2,
+      inputGross,
+    );
     const netRange = parseRangeData(filterData, "net", sliderValue1, inputNet);
 
     setCurrPage(1);
     setInputPage(1);
 
-    await ProductListApi(output, 1, obj, prodListType, cookie, sortBySelect, DiaRange, netRange, grossRange)
+    await ProductListApi(
+      output,
+      1,
+      obj,
+      prodListType,
+      cookie,
+      sortBySelect,
+      DiaRange,
+      netRange,
+      grossRange,
+    )
       .then((res) => {
         if (res) {
           setProductListData(res?.pdList);
@@ -1366,11 +1780,20 @@ const ProductList = ({ storeinit,
     }
   }, [lastSyncData]);
 
-  const debouncedRangeFilterApi = useMemo(() => debounce((value) => handleRangeFilterApi(value), 500), []);
+  const debouncedRangeFilterApi = useMemo(
+    () => debounce((value) => handleRangeFilterApi(value), 500),
+    [],
+  );
 
-  const debouncedRangeFilterApi1 = useMemo(() => debounce((value) => handleRangeFilterApi1(value), 500), []);
+  const debouncedRangeFilterApi1 = useMemo(
+    () => debounce((value) => handleRangeFilterApi1(value), 500),
+    [],
+  );
 
-  const debouncedRangeFilterApi2 = useMemo(() => debounce((value) => handleRangeFilterApi2(value), 500), []);
+  const debouncedRangeFilterApi2 = useMemo(
+    () => debounce((value) => handleRangeFilterApi2(value), 500),
+    [],
+  );
 
   const handleSliderChange = (event, newValue) => {
     setSliderValue(newValue);
@@ -1388,7 +1811,8 @@ const ProductList = ({ storeinit,
   const debounceTimeout = useRef(null);
 
   const handleInputChange = (index) => (event) => {
-    const newValue = event.target.value === "" ? "" : Number(event.target.value);
+    const newValue =
+      event.target.value === "" ? "" : Number(event.target.value);
     const newSliderValue = [...sliderValue];
     newSliderValue[index] = newValue;
     setSliderValue(newSliderValue);
@@ -1400,7 +1824,8 @@ const ProductList = ({ storeinit,
   };
 
   const handleInputChange1 = (index) => (event) => {
-    const newValue = event.target.value === "" ? "" : Number(event.target.value);
+    const newValue =
+      event.target.value === "" ? "" : Number(event.target.value);
     const newSliderValue = [...sliderValue1];
     newSliderValue[index] = newValue;
     setSliderValue1(newSliderValue);
@@ -1412,7 +1837,8 @@ const ProductList = ({ storeinit,
   };
 
   const handleInputChange2 = (index) => (event) => {
-    const newValue = event.target.value === "" ? "" : Number(event.target.value);
+    const newValue =
+      event.target.value === "" ? "" : Number(event.target.value);
     const updatedSlider = [...sliderValue2];
     updatedSlider[index] = newValue;
     setSliderValue2(updatedSlider);
@@ -1424,7 +1850,18 @@ const ProductList = ({ storeinit,
     }, 1000); // adjust delay if needed
   };
 
-  const resetRangeFilter = async ({ filterName, setSliderValue, setTempSliderValue, handleRangeFilterApi, prodListType, cookie, setIsShowBtn, show, setShow, setAppliedRange }) => {
+  const resetRangeFilter = async ({
+    filterName,
+    setSliderValue,
+    setTempSliderValue,
+    handleRangeFilterApi,
+    prodListType,
+    cookie,
+    setIsShowBtn,
+    show,
+    setShow,
+    setAppliedRange,
+  }) => {
     try {
       const res1 = await FilterListAPI(prodListType, cookie);
       const optionsRaw = res1?.find((f) => f?.Name === filterName)?.options;
@@ -1445,7 +1882,18 @@ const ProductList = ({ storeinit,
     }
   };
 
-  const RangeFilterView = ({ ele, sliderValue, setSliderValue, handleRangeFilterApi, prodListType, cookie, setShow, show, setAppliedRange1, appliedRange1 }) => {
+  const RangeFilterView = ({
+    ele,
+    sliderValue,
+    setSliderValue,
+    handleRangeFilterApi,
+    prodListType,
+    cookie,
+    setShow,
+    show,
+    setAppliedRange1,
+    appliedRange1,
+  }) => {
     const parsedOptions = JSON.parse(ele?.options || "[]")?.[0] || {};
     const min = Number(parsedOptions.Min || 0); // Ensure min is a number
     const max = Number(parsedOptions.Max || 100);
@@ -1454,7 +1902,9 @@ const ProductList = ({ storeinit,
     const inputRefs = useRef([]);
 
     useEffect(() => {
-      inputRefs.current = tempSliderValue.map((_, i) => inputRefs.current[i] ?? React.createRef());
+      inputRefs.current = tempSliderValue.map(
+        (_, i) => inputRefs.current[i] ?? React.createRef(),
+      );
     }, [tempSliderValue]);
 
     const handleKeyDown = (index) => (e) => {
@@ -1478,19 +1928,28 @@ const ProductList = ({ storeinit,
       const updated = [...tempSliderValue];
       updated[index] = value;
       setTempSliderValue(updated);
-      setIsShowBtn(updated[0] !== sliderValue[0] || updated[1] !== sliderValue[1]);
+      setIsShowBtn(
+        updated[0] !== sliderValue[0] || updated[1] !== sliderValue[1],
+      );
     };
 
     const handleSliderChange = (_, newValue) => {
       setTempSliderValue(newValue);
-      setIsShowBtn(newValue[0] !== sliderValue[0] || newValue[1] !== sliderValue[1]);
+      setIsShowBtn(
+        newValue[0] !== sliderValue[0] || newValue[1] !== sliderValue[1],
+      );
     };
 
     const handleSave = () => {
       const [minDiaWt, maxDiaWt] = tempSliderValue;
 
       // Empty or undefined
-      if (minDiaWt == null || maxDiaWt == null || minDiaWt === "" || maxDiaWt === "") {
+      if (
+        minDiaWt == null ||
+        maxDiaWt == null ||
+        minDiaWt === "" ||
+        maxDiaWt === ""
+      ) {
         toast.error("Please enter valid range values.", {
           hideProgressBar: true,
           duration: 5000,
@@ -1573,18 +2032,41 @@ const ProductList = ({ storeinit,
               width: "100%",
             }}
           >
-            <Typography variant="caption" color="text.secondary" fontSize="11px">
+            <Typography
+              variant="caption"
+              color="text.secondary"
+              fontSize="11px"
+            >
               {appliedRange1[0] !== "" ? `Min: ${appliedRange1[0]}` : ""}
             </Typography>
-            <Typography variant="caption" color="text.secondary" fontSize="11px">
+            <Typography
+              variant="caption"
+              color="text.secondary"
+              fontSize="11px"
+            >
               {appliedRange1[1] !== "" ? `Max: ${appliedRange1[1]}` : ""}
             </Typography>
           </div>
         )}
 
-        <Slider value={tempSliderValue} onChange={handleSliderChange} min={min} max={max} step={0.001} disableSwap valueLabelDisplay="off" sx={{ marginTop: 1, transition: "all 0.2s ease-out" }} />
+        <Slider
+          value={tempSliderValue}
+          onChange={handleSliderChange}
+          min={min}
+          max={max}
+          step={0.001}
+          disableSwap
+          valueLabelDisplay="off"
+          sx={{ marginTop: 1, transition: "all 0.2s ease-out" }}
+        />
 
-        <div style={{ display: "flex", gap: "10px", justifyContent: "space-around" }}>
+        <div
+          style={{
+            display: "flex",
+            gap: "10px",
+            justifyContent: "space-around",
+          }}
+        >
           {tempSliderValue.map((val, index) => (
             <Input
               key={index}
@@ -1645,7 +2127,12 @@ const ProductList = ({ storeinit,
             </Button>
           )}
           {isShowBtn && (
-            <Button variant="outlined" sx={{ paddingBottom: "0" }} onClick={handleSave} color="success">
+            <Button
+              variant="outlined"
+              sx={{ paddingBottom: "0" }}
+              onClick={handleSave}
+              color="success"
+            >
               Apply
             </Button>
           )}
@@ -1654,7 +2141,18 @@ const ProductList = ({ storeinit,
     );
   };
 
-  const RangeFilterView1 = ({ ele, sliderValue1, setSliderValue1, handleRangeFilterApi1, prodListType, cookie, show1, setShow1, setAppliedRange2, appliedRange2 }) => {
+  const RangeFilterView1 = ({
+    ele,
+    sliderValue1,
+    setSliderValue1,
+    handleRangeFilterApi1,
+    prodListType,
+    cookie,
+    show1,
+    setShow1,
+    setAppliedRange2,
+    appliedRange2,
+  }) => {
     const parsedOptions = JSON.parse(ele?.options || "[]")?.[0] || {};
     const min = parsedOptions.Min || "";
     const max = parsedOptions.Max || "";
@@ -1663,7 +2161,9 @@ const ProductList = ({ storeinit,
     const inputRefs = useRef([]);
 
     useEffect(() => {
-      inputRefs.current = tempSliderValue.map((_, i) => inputRefs.current[i] ?? React.createRef());
+      inputRefs.current = tempSliderValue.map(
+        (_, i) => inputRefs.current[i] ?? React.createRef(),
+      );
     }, [tempSliderValue]);
 
     const handleKeyDown = (index) => (e) => {
@@ -1689,22 +2189,32 @@ const ProductList = ({ storeinit,
     }, [sliderValue1]);
 
     const handleInputChange = (index) => (event) => {
-      const newValue = event.target.value === "" ? "" : Number(event.target.value);
+      const newValue =
+        event.target.value === "" ? "" : Number(event.target.value);
       const updated = [...tempSliderValue];
       updated[index] = newValue;
       setTempSliderValue(updated);
-      setIsShowBtn(updated[0] !== sliderValue1[0] || updated[1] !== sliderValue1[1]);
+      setIsShowBtn(
+        updated[0] !== sliderValue1[0] || updated[1] !== sliderValue1[1],
+      );
     };
 
     const handleSliderChange = (_, newValue) => {
       setTempSliderValue(newValue);
-      setIsShowBtn(newValue[0] !== sliderValue1[0] || newValue[1] !== sliderValue1[1]);
+      setIsShowBtn(
+        newValue[0] !== sliderValue1[0] || newValue[1] !== sliderValue1[1],
+      );
     };
 
     const handleSave = () => {
       const [minNetWt, maxNetWt] = tempSliderValue;
 
-      if (minNetWt == null || maxNetWt == null || minNetWt === "" || maxNetWt === "") {
+      if (
+        minNetWt == null ||
+        maxNetWt == null ||
+        minNetWt === "" ||
+        maxNetWt === ""
+      ) {
         toast.error("Please enter valid range values.", {
           hideProgressBar: true,
           duration: 5000,
@@ -1773,11 +2283,28 @@ const ProductList = ({ storeinit,
     return (
       <div style={{ position: "relative" }}>
         {appliedRange2 && (
-          <div style={{ display: "flex", justifyContent: "space-between", marginTop: "4px", position: "absolute", top: "-12px", width: "100%" }}>
-            <Typography variant="caption" color="text.secondary" fontSize="11px">
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              marginTop: "4px",
+              position: "absolute",
+              top: "-12px",
+              width: "100%",
+            }}
+          >
+            <Typography
+              variant="caption"
+              color="text.secondary"
+              fontSize="11px"
+            >
               {appliedRange2[0] !== "" ? `Min: ${appliedRange2[0]}` : ""}
             </Typography>
-            <Typography variant="caption" color="text.secondary" fontSize="11px">
+            <Typography
+              variant="caption"
+              color="text.secondary"
+              fontSize="11px"
+            >
               {appliedRange2[1] !== "" ? `Max: ${appliedRange2[1]}` : ""}
             </Typography>
           </div>
@@ -1797,7 +2324,13 @@ const ProductList = ({ storeinit,
             "& .MuiSlider-valueLabel": { display: "none" },
           }}
         />
-        <div style={{ display: "flex", gap: "10px", justifyContent: "space-around" }}>
+        <div
+          style={{
+            display: "flex",
+            gap: "10px",
+            justifyContent: "space-around",
+          }}
+        >
           {tempSliderValue.map((val, index) => (
             <Input
               key={index}
@@ -1857,7 +2390,12 @@ const ProductList = ({ storeinit,
             </Button>
           )}
           {isShowBtn && (
-            <Button variant="outlined" sx={{ paddingBottom: "0" }} onClick={handleSave} color="success">
+            <Button
+              variant="outlined"
+              sx={{ paddingBottom: "0" }}
+              onClick={handleSave}
+              color="success"
+            >
               Apply
             </Button>
           )}
@@ -1866,7 +2404,18 @@ const ProductList = ({ storeinit,
     );
   };
 
-  const RangeFilterView2 = ({ ele, sliderValue2, setSliderValue2, handleRangeFilterApi2, prodListType, cookie, show2, setShow2, setAppliedRange3, appliedRange3 }) => {
+  const RangeFilterView2 = ({
+    ele,
+    sliderValue2,
+    setSliderValue2,
+    handleRangeFilterApi2,
+    prodListType,
+    cookie,
+    show2,
+    setShow2,
+    setAppliedRange3,
+    appliedRange3,
+  }) => {
     const parsedOptions = JSON.parse(ele?.options || "[]")?.[0] || {};
     const min = parsedOptions.Min ?? "";
     const max = parsedOptions.Max ?? "";
@@ -1875,7 +2424,9 @@ const ProductList = ({ storeinit,
     const inputRefs = useRef([]);
 
     useEffect(() => {
-      inputRefs.current = tempSliderValue.map((_, i) => inputRefs.current[i] ?? React.createRef());
+      inputRefs.current = tempSliderValue.map(
+        (_, i) => inputRefs.current[i] ?? React.createRef(),
+      );
     }, [tempSliderValue]);
 
     const handleKeyDown = (index) => (e) => {
@@ -1895,23 +2446,33 @@ const ProductList = ({ storeinit,
     }, [sliderValue2]);
 
     const handleInputChange = (index) => (event) => {
-      const newValue = event.target.value === "" ? "" : Number(event.target.value);
+      const newValue =
+        event.target.value === "" ? "" : Number(event.target.value);
       const updated = [...tempSliderValue];
       updated[index] = newValue;
       setTempSliderValue(updated);
-      setIsShowBtn(updated[0] !== sliderValue2[0] || updated[1] !== sliderValue2[1]);
+      setIsShowBtn(
+        updated[0] !== sliderValue2[0] || updated[1] !== sliderValue2[1],
+      );
     };
 
     const handleSliderChange = (_, newValue) => {
       setTempSliderValue(newValue);
-      setIsShowBtn(newValue[0] !== sliderValue2[0] || newValue[1] !== sliderValue2[1]);
+      setIsShowBtn(
+        newValue[0] !== sliderValue2[0] || newValue[1] !== sliderValue2[1],
+      );
     };
 
     const handleSave = () => {
       const [minWeight, maxWeight] = tempSliderValue;
 
       // Validation: Empty or undefined
-      if (minWeight == null || maxWeight == null || minWeight === "" || maxWeight === "") {
+      if (
+        minWeight == null ||
+        maxWeight == null ||
+        minWeight === "" ||
+        maxWeight === ""
+      ) {
         toast.error("Please enter valid range values.", {
           hideProgressBar: true,
           duration: 5000,
@@ -1984,11 +2545,28 @@ const ProductList = ({ storeinit,
     return (
       <div style={{ position: "relative" }}>
         {appliedRange3 && (
-          <div style={{ display: "flex", justifyContent: "space-between", marginTop: "4px", position: "absolute", top: "-12px", width: "100%" }}>
-            <Typography variant="caption" color="text.secondary" fontSize="11px">
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              marginTop: "4px",
+              position: "absolute",
+              top: "-12px",
+              width: "100%",
+            }}
+          >
+            <Typography
+              variant="caption"
+              color="text.secondary"
+              fontSize="11px"
+            >
               {appliedRange3[0] !== "" ? `Min: ${appliedRange3[0]}` : ""}
             </Typography>
-            <Typography variant="caption" color="text.secondary" fontSize="11px">
+            <Typography
+              variant="caption"
+              color="text.secondary"
+              fontSize="11px"
+            >
               {appliedRange3[1] !== "" ? `Max: ${appliedRange3[1]}` : ""}
             </Typography>
           </div>
@@ -2009,7 +2587,13 @@ const ProductList = ({ storeinit,
           }}
         />
 
-        <div style={{ display: "flex", gap: "10px", justifyContent: "space-around" }}>
+        <div
+          style={{
+            display: "flex",
+            gap: "10px",
+            justifyContent: "space-around",
+          }}
+        >
           {tempSliderValue.map((val, index) => (
             <Input
               key={index}
@@ -2070,7 +2654,12 @@ const ProductList = ({ storeinit,
             </Button>
           )}
           {isShowBtn && (
-            <Button variant="outlined" sx={{ paddingBottom: "0" }} onClick={handleSave} color="success">
+            <Button
+              variant="outlined"
+              sx={{ paddingBottom: "0" }}
+              onClick={handleSave}
+              color="success"
+            >
               Apply
             </Button>
           )}
@@ -2089,8 +2678,11 @@ const ProductList = ({ storeinit,
       c: selectedCsId,
       f: output,
       g: detailsMenu,
-      img: imageUrl ?? `${storeinit?.CDNDesignImageFol}${productData?.designno}~1.${productData?.ImageExtension}`,
-      ArticleNo: productData?.ArticleNo
+      img:
+        imageUrl ??
+        `${storeinit?.CDNDesignImageFol}${productData?.designno}~1.${productData?.ImageExtension}`,
+      ArticleNo: productData?.ArticleNo,
+      ArticleId: productData?.ArticleId ?? null, // pass clicked article id for default customizer selection
     };
     // compressAndEncode(JSON.stringify(obj))
 
@@ -2131,9 +2723,21 @@ const ProductList = ({ storeinit,
 
     let finalData = { ...KeyObj, ...ValObj };
 
-    const queryParameters1 = [finalData?.FilterKey && `${finalData.FilterVal}`, finalData?.FilterKey1 && `${finalData.FilterVal1}`, finalData?.FilterKey2 && `${finalData.FilterVal2}`].filter(Boolean).join("/");
+    const queryParameters1 = [
+      finalData?.FilterKey && `${finalData.FilterVal}`,
+      finalData?.FilterKey1 && `${finalData.FilterVal1}`,
+      finalData?.FilterKey2 && `${finalData.FilterVal2}`,
+    ]
+      .filter(Boolean)
+      .join("/");
 
-    const queryParameters = [finalData?.FilterKey && `${finalData.FilterVal}`, finalData?.FilterKey1 && `${finalData.FilterVal1}`, finalData?.FilterKey2 && `${finalData.FilterVal2}`].filter(Boolean).join(",");
+    const queryParameters = [
+      finalData?.FilterKey && `${finalData.FilterVal}`,
+      finalData?.FilterKey1 && `${finalData.FilterVal1}`,
+      finalData?.FilterKey2 && `${finalData.FilterVal2}`,
+    ]
+      .filter(Boolean)
+      .join(",");
 
     const otherparamUrl = Object.entries({
       b: finalData?.FilterKey,
@@ -2158,9 +2762,12 @@ const ProductList = ({ storeinit,
   const DynamicListPageTitleLineFunc = () => {
     // FIX 2026-04-29: location is plain pathname string from usePathname().
     // Use window.location.search to get the query string safely.
-    const searchStr = typeof window !== "undefined" ? window.location.search : "";
+    const searchStr =
+      typeof window !== "undefined" ? window.location.search : "";
     if (searchStr.charAt(1) === "S") {
-      return decodeURIComponent(location?.split("/")[2]) || "ELvee Jewels Pvt. Ltd.";
+      return (
+        decodeURIComponent(location?.split("/")[2]) || "ELvee Jewels Pvt. Ltd."
+      );
     } else {
       const menuName = BreadCumsObj()?.menuname;
       return menuName ? menuName : "ELvee Jewels Pvt. Ltd.";
@@ -2170,7 +2777,8 @@ const ProductList = ({ storeinit,
   const BreadCumsObj = () => {
     // FIX 2026-04-29: location is a plain pathname string like "/p/MenuName/Rings/..."
     // window.location.search holds "?M=encodedBase64"
-    const searchStr = typeof window !== "undefined" ? window.location.search : "";
+    const searchStr =
+      typeof window !== "undefined" ? window.location.search : "";
     let BreadCum;
     try {
       BreadCum = decodeURI(atob(searchStr.slice(3)))?.split("/");
@@ -2189,13 +2797,17 @@ const ProductList = ({ storeinit,
     let result =
       updatedBreadCum &&
       Object.entries(updatedBreadCum)?.reduce((acc, [key, value], index) => {
-        acc[`FilterKey${index === 0 ? "" : index}`] = key.charAt(0).toUpperCase() + key.slice(1);
+        acc[`FilterKey${index === 0 ? "" : index}`] =
+          key.charAt(0).toUpperCase() + key.slice(1);
         acc[`FilterVal${index === 0 ? "" : index}`] = value;
         return acc;
       }, {});
 
     result = result || {};
-    result.menuname = decodeURI(location)?.slice(3)?.slice(0, -1)?.split("/")[0];
+    result.menuname = decodeURI(location)
+      ?.slice(3)
+      ?.slice(0, -1)
+      ?.split("/")[0];
 
     return result;
   };
@@ -2237,18 +2849,74 @@ const ProductList = ({ storeinit,
   }));
 
   const showClearAllButton = () => {
-    let diafilter = filterData?.filter((ele) => ele?.Name == "Diamond")[0]?.options?.length > 0 ? JSON.parse(filterData?.filter((ele) => ele?.Name == "Diamond")[0]?.options)[0] : [];
-    let diafilter1 = filterData?.filter((ele) => ele?.Name == "NetWt")[0]?.options?.length > 0 ? JSON.parse(filterData?.filter((ele) => ele?.Name == "NetWt")[0]?.options)[0] : [];
-    let diafilter2 = filterData?.filter((ele) => ele?.Name == "Gross")[0]?.options?.length > 0 ? JSON.parse(filterData?.filter((ele) => ele?.Name == "Gross")[0]?.options)[0] : [];
-    const isFilterChecked = Object.values(filterChecked).some((ele) => ele.checked);
-    const isSliderChanged = JSON.stringify(sliderValue) !== JSON.stringify(diafilter?.Min != null || diafilter?.Max != null ? [diafilter?.Min, diafilter?.Max] : []) || JSON.stringify(sliderValue1) !== JSON.stringify(diafilter1?.Min != null || diafilter1?.Max != null ? [diafilter1?.Min, diafilter1?.Max] : []) || JSON.stringify(sliderValue2) !== JSON.stringify(diafilter2?.Min != null || diafilter2?.Max != null ? [diafilter2?.Min, diafilter2?.Max] : []);
+    let diafilter =
+      filterData?.filter((ele) => ele?.Name == "Diamond")[0]?.options?.length >
+      0
+        ? JSON.parse(
+            filterData?.filter((ele) => ele?.Name == "Diamond")[0]?.options,
+          )[0]
+        : [];
+    let diafilter1 =
+      filterData?.filter((ele) => ele?.Name == "NetWt")[0]?.options?.length > 0
+        ? JSON.parse(
+            filterData?.filter((ele) => ele?.Name == "NetWt")[0]?.options,
+          )[0]
+        : [];
+    let diafilter2 =
+      filterData?.filter((ele) => ele?.Name == "Gross")[0]?.options?.length > 0
+        ? JSON.parse(
+            filterData?.filter((ele) => ele?.Name == "Gross")[0]?.options,
+          )[0]
+        : [];
+    const isFilterChecked = Object.values(filterChecked).some(
+      (ele) => ele.checked,
+    );
+    const isSliderChanged =
+      JSON.stringify(sliderValue) !==
+        JSON.stringify(
+          diafilter?.Min != null || diafilter?.Max != null
+            ? [diafilter?.Min, diafilter?.Max]
+            : [],
+        ) ||
+      JSON.stringify(sliderValue1) !==
+        JSON.stringify(
+          diafilter1?.Min != null || diafilter1?.Max != null
+            ? [diafilter1?.Min, diafilter1?.Max]
+            : [],
+        ) ||
+      JSON.stringify(sliderValue2) !==
+        JSON.stringify(
+          diafilter2?.Min != null || diafilter2?.Max != null
+            ? [diafilter2?.Min, diafilter2?.Max]
+            : [],
+        );
 
-    const isInputFields = JSON.stringify(inputPrice) !== JSON.stringify(["", ""]);
+    const isInputFields =
+      JSON.stringify(inputPrice) !== JSON.stringify(["", ""]);
 
     return isFilterChecked || isSliderChanged || isInputFields;
   };
 
-  const PriceRangeInputs = ({ priceValue, setpriceValue, lowestPrice, highestPrice, setLowestPrice, setHighestPrice, setProductListData, setAfterFilterCount, setPriceRangeValue, setIsOnlyProdLoading, selectedMetalId, selectedDiaId, selectedCsId, prodListType, cookie, filterChecked, isReset, setIsReset }) => {
+  const PriceRangeInputs = ({
+    priceValue,
+    setpriceValue,
+    lowestPrice,
+    highestPrice,
+    setLowestPrice,
+    setHighestPrice,
+    setProductListData,
+    setAfterFilterCount,
+    setPriceRangeValue,
+    setIsOnlyProdLoading,
+    selectedMetalId,
+    selectedDiaId,
+    selectedCsId,
+    prodListType,
+    cookie,
+    filterChecked,
+    isReset,
+    setIsReset,
+  }) => {
     const [initialPriceValue] = useState(priceValue); // store initial price range only once
     const [tempPriceRange, setTempPriceRange] = useState(priceValue);
     const [isShowBtn, setIsShowBtn] = useState(false);
@@ -2267,7 +2935,9 @@ const ProductList = ({ storeinit,
     };
 
     useEffect(() => {
-      const hasPriceChecked = Object.values(filterChecked).some((item) => item.type === "Price" && item.checked);
+      const hasPriceChecked = Object.values(filterChecked).some(
+        (item) => item.type === "Price" && item.checked,
+      );
 
       if (hasPriceChecked) {
         setTempPriceRange(priceValue);
@@ -2281,17 +2951,32 @@ const ProductList = ({ storeinit,
       setTempPriceRange(updatedRange);
 
       // Show apply/reset button only if values are changed from initial
-      setIsShowBtn(updatedRange[0] !== initialPriceValue[0] || updatedRange[1] !== initialPriceValue[1]);
+      setIsShowBtn(
+        updatedRange[0] !== initialPriceValue[0] ||
+          updatedRange[1] !== initialPriceValue[1],
+      );
     };
 
     const DiaRange = parseRangeData(filterData, "Dia", sliderValue, inputDia);
-    const grossRange = parseRangeData(filterData, "Gross", sliderValue2, inputGross);
+    const grossRange = parseRangeData(
+      filterData,
+      "Gross",
+      sliderValue2,
+      inputGross,
+    );
     const netRange = parseRangeData(filterData, "net", sliderValue1, inputNet);
 
     const handleApply = async () => {
       const [min, max] = tempPriceRange;
 
-      if (min == null || max == null || min === "" || max === "" || min === undefined || max === undefined) {
+      if (
+        min == null ||
+        max == null ||
+        min === "" ||
+        max === "" ||
+        min === undefined ||
+        max === undefined
+      ) {
         toast.error("Please enter valid range values.", {
           hideProgressBar: true,
           duration: 5000,
@@ -2345,7 +3030,8 @@ const ProductList = ({ storeinit,
 
       let output = FilterValueWithCheckedOnly();
 
-      const inputPriceField = JSON.stringify(tempPriceRange) !== JSON.stringify(["", ""]);
+      const inputPriceField =
+        JSON.stringify(tempPriceRange) !== JSON.stringify(["", ""]);
 
       if (inputPriceField) {
         const pricerange = { PriceMin: min, PriceMax: max };
@@ -2365,7 +3051,17 @@ const ProductList = ({ storeinit,
       });
 
       try {
-        const res = await ProductListApi(output, 1, obj, prodListType, cookie, sortBySelect, DiaRange, netRange, grossRange);
+        const res = await ProductListApi(
+          output,
+          1,
+          obj,
+          prodListType,
+          cookie,
+          sortBySelect,
+          DiaRange,
+          netRange,
+          grossRange,
+        );
 
         if (res) {
           setProductListData(res?.pdList);
@@ -2391,7 +3087,8 @@ const ProductList = ({ storeinit,
 
       let output = FilterValueWithCheckedOnly();
 
-      const inputPriceField = JSON.stringify(tempPriceRange) !== JSON.stringify(["", ""]);
+      const inputPriceField =
+        JSON.stringify(tempPriceRange) !== JSON.stringify(["", ""]);
 
       if (inputPriceField) {
         const pricerange = {};
@@ -2399,13 +3096,26 @@ const ProductList = ({ storeinit,
       }
 
       try {
-        const res = await ProductListApi(output, 1, obj, prodListType, cookie, sortBySelect, DiaRange, netRange, grossRange);
+        const res = await ProductListApi(
+          output,
+          1,
+          obj,
+          prodListType,
+          cookie,
+          sortBySelect,
+          DiaRange,
+          netRange,
+          grossRange,
+        );
         if (res) {
           const productList = res?.pdList || [];
           setProductListData(productList);
           setAfterFilterCount(res?.pdResp?.rd1[0]?.designcount);
 
-          const high = productList.reduce((max, item) => Math.max(max, item.UnitCostWithMarkUpIncTax), 0);
+          const high = productList.reduce(
+            (max, item) => Math.max(max, item.UnitCostWithMarkUpIncTax),
+            0,
+          );
           const low = productList.reduce((min, item) => {
             const value = item.UnitCostWithMarkUpIncTax;
             return value > 0 ? Math.min(min, value) : min;
@@ -2432,12 +3142,24 @@ const ProductList = ({ storeinit,
     };
 
     return (
-      <Box sx={{ border: "1px solid #ddd", borderRadius: 2, padding: 2, width: "100%" }}>
+      <Box
+        sx={{
+          border: "1px solid #ddd",
+          borderRadius: 2,
+          padding: 2,
+          width: "100%",
+        }}
+      >
         <Typography variant="subtitle1" fontWeight={600} mb={1}>
           Price Range
         </Typography>
         <Divider sx={{ mb: 2 }} />
-        <Stack direction="row" spacing={2} justifyContent="space-between" alignItems="center">
+        <Stack
+          direction="row"
+          spacing={2}
+          justifyContent="space-between"
+          alignItems="center"
+        >
           <Box sx={{ flex: 1 }}>
             <Typography variant="caption" color="text.secondary" mb={0.5}>
               Min Price
@@ -2455,10 +3177,11 @@ const ProductList = ({ storeinit,
                 },
               }}
               sx={{
-                "& input::-webkit-outer-spin-button, & input::-webkit-inner-spin-button": {
-                  WebkitAppearance: "none",
-                  margin: 0,
-                },
+                "& input::-webkit-outer-spin-button, & input::-webkit-inner-spin-button":
+                  {
+                    WebkitAppearance: "none",
+                    margin: 0,
+                  },
               }}
             />
           </Box>
@@ -2480,10 +3203,11 @@ const ProductList = ({ storeinit,
                 },
               }}
               sx={{
-                "& input::-webkit-outer-spin-button, & input::-webkit-inner-spin-button": {
-                  WebkitAppearance: "none",
-                  margin: 0,
-                },
+                "& input::-webkit-outer-spin-button, & input::-webkit-inner-spin-button":
+                  {
+                    WebkitAppearance: "none",
+                    margin: 0,
+                  },
               }}
             />
           </Box>
@@ -2510,7 +3234,9 @@ const ProductList = ({ storeinit,
       <title>{DynamicListPageTitleLineFunc()}</title>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(generateBreadcrumbJsonLd(breadcrumbData)) }}
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(generateBreadcrumbJsonLd(breadcrumbData)),
+        }}
       />
       <Box
         sx={{
@@ -2519,10 +3245,17 @@ const ProductList = ({ storeinit,
           background: "#fff",
           width: "100%",
           minHeight: "100vh",
-          boxSizing: 'border-box'
+          boxSizing: "border-box",
         }}
       >
-        <BreadCrumbBar productListData={productListData} decodeURIComponent={decodeURIComponent} IsBreadCumShow={IsBreadCumShow} BreadCumsObj={BreadCumsObj} handleBreadcums={handleBreadcums} isFiltering={isOnlyProdLoading || isProdLoading} />
+        <BreadCrumbBar
+          productListData={productListData}
+          decodeURIComponent={decodeURIComponent}
+          IsBreadCumShow={IsBreadCumShow}
+          BreadCumsObj={BreadCumsObj}
+          handleBreadcums={handleBreadcums}
+          isFiltering={isOnlyProdLoading || isProdLoading}
+        />
 
         <Drawer
           anchor="left"
@@ -2645,16 +3378,40 @@ const ProductList = ({ storeinit,
           handelFilterClearAll={handelFilterClearAll}
         />
 
-        {!isOnlyProdLoading && productListData.length == 0 ? <NoProductFound /> : <JewelryProductGrid
-          productListData={productListData} isFiltering={isOnlyProdLoading || isProdLoading} handleMoveToDetail={handleMoveToDetail}
-          showFilter={showFilter} filter={filter} filterData={filterData} handleCartandWish={handleCartandWish}
-          cartArr={cartArr} wishArr={wishArr}
-          storeinit={storeinit}
-          loginUserDetail={loginUserDetail}
-        />
-        }
+        {!isOnlyProdLoading && productListData.length == 0 ? (
+          <NoProductFound />
+        ) : (
+          <JewelryProductGrid
+            productListData={productListData}
+            isFiltering={isOnlyProdLoading || isProdLoading}
+            handleMoveToDetail={handleMoveToDetail}
+            showFilter={showFilter}
+            filter={filter}
+            filterData={filterData}
+            handleCartandWish={handleCartandWish}
+            cartArr={cartArr}
+            wishArr={wishArr}
+            storeinit={storeinit}
+            loginUserDetail={loginUserDetail}
+          />
+        )}
 
-        {storeinit?.IsProductListPagination == 1 && Math.ceil(afterFilterCount / storeinit.PageSize) > 1 && <NewPagination currentPage={currPage} totalItems={afterFilterCount} itemsPerPage={storeinit.PageSize} onPageChange={handelPageChange} inputPage={inputPage} setInputPage={setInputPage} handlePageInputChange={handlePageInputChange} maxwidth464px={maxwidth464px} totalPages={totalPages} currPage={currPage} isShowButton={false} />}
+        {storeinit?.IsProductListPagination == 1 &&
+          Math.ceil(afterFilterCount / storeinit.PageSize) > 1 && (
+            <NewPagination
+              currentPage={currPage}
+              totalItems={afterFilterCount}
+              itemsPerPage={storeinit.PageSize}
+              onPageChange={handelPageChange}
+              inputPage={inputPage}
+              setInputPage={setInputPage}
+              handlePageInputChange={handlePageInputChange}
+              maxwidth464px={maxwidth464px}
+              totalPages={totalPages}
+              currPage={currPage}
+              isShowButton={false}
+            />
+          )}
       </Box>
     </>
   );

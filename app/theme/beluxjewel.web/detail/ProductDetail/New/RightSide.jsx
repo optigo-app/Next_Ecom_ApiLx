@@ -54,6 +54,12 @@ const RightSide = ({
   addToCardFlag,
   handleWishList,
   wishListFlag,
+  // Customizer drawer props
+  rd1 = [],
+  rd2 = [],
+  defaultArticleId,
+  customizationDetail,
+  onCustomizerConfirm,
 }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [isCustomizerOpen, setIsCustomizerOpen] = useState(false);
@@ -66,6 +72,27 @@ const RightSide = ({
     return isNaN(num) ? 0 : num;
   };
   const isLoading = isPriceloading || pdLoadImage || loadingdata;
+
+  // Derive article-specific metal info from rd1 using defaultArticleId
+  const defaultArticle =
+    rd1?.find((r) => r.ArticleId === defaultArticleId) || rd1?.[0] || null;
+
+  // Prioritize active combination details from customizationDetail state
+  const activeArticle = customizationDetail || defaultArticle;
+
+  // Derive default diamond quality from rd2 for the activeArticle ArticleId
+  const defaultDiaStone =
+    rd2?.find(
+      (r) =>
+        r.ArticleId === activeArticle?.ArticleId &&
+        r.StoneTypeid !== 4 &&
+        r.StoneTypeid !== 5,
+    ) || null;
+  const defaultDiaQcLabel =
+    activeArticle?.DiaQCLabel ||
+    (defaultDiaStone
+      ? `${defaultDiaStone.Quality?.toUpperCase()}-${defaultDiaStone.Color?.toUpperCase()}`
+      : null);
 
   const decodeEntities = (html) => {
     var txt = document.createElement("textarea");
@@ -124,7 +151,7 @@ const RightSide = ({
               mb: 0.5,
             }}
           >
-            {DesignNo}
+            {activeArticle?.ArticleNo || DesignNo}
           </Typography>
 
           {/* Title and Actions */}
@@ -216,8 +243,8 @@ const RightSide = ({
               ) : (
                 <span>
                   {formatter(
-                    singleProd1?.UnitCostWithMarkUp ??
-                      singleProd?.UnitCostWithMarkUp ??
+                    activeArticle?.UnitCostWithmarkup ??
+                      activeArticle?.TotalUnitCost ??
                       0,
                   )}
                 </span>
@@ -250,7 +277,7 @@ const RightSide = ({
                   ) : singleProd?.IsMrpBase === 1 ? (
                     singleProd?.MetalTypePurity || "-"
                   ) : (
-                    metalType || "-"
+                    activeArticle?.MetalType || "-"
                   )}
                 </Typography>
               </Grid>
@@ -270,20 +297,13 @@ const RightSide = ({
                   {isLoading ? (
                     <Skeleton variant="text" width={60} />
                   ) : (
-                    getSession("MetalColorCombo")?.find(
-                      (ele) => ele?.colorcode == metalColor,
-                    )?.metalcolorname || "-"
+                    activeArticle?.MetalColor || "-"
                   )}
                 </Typography>
               </Grid>
 
-              {/* Diamond QC */}
-              {storeInit?.IsDiamondCustomization === 1 &&
-              (isLoading ||
-                (diaQcCombo?.length > 0 &&
-                  diaList?.length > 0 &&
-                  singleProd?.DiaQuaCol !== "" &&
-                  selectDiaQc)) ? (
+              {/* Diamond QC — article based from rd2 */}
+              {(isLoading || defaultDiaQcLabel) && (
                 <Grid
                   item
                   size={{
@@ -291,22 +311,18 @@ const RightSide = ({
                   }}
                 >
                   <Typography sx={{ fontSize: "14px", color: "#666" }}>
-                    Diamond Quality Color
+                    Diamond Quality
                   </Typography>
 
                   <Typography sx={{ fontSize: "15px", fontWeight: 600 }}>
                     {isLoading ? (
                       <Skeleton variant="text" width={80} />
-                    ) : singleProd?.IsMrpBase === 1 ? (
-                      singleProd?.DiaQuaCol || "-"
-                    ) : selectDiaQc !== "undefined,undefined" ? (
-                      selectDiaQc
                     ) : (
-                      `${diaQcCombo?.[0]?.Quality || "-"},${diaQcCombo?.[0]?.color || "-"}`
+                      defaultDiaQcLabel || "-"
                     )}
                   </Typography>
                 </Grid>
-              ) : null}
+              )}
 
               {/* Net Weight */}
               {storeInit?.IsMetalWeight === 1 && (
@@ -323,8 +339,13 @@ const RightSide = ({
                   <Typography sx={{ fontSize: "15px", fontWeight: 600 }}>
                     {isLoading ? (
                       <Skeleton variant="text" width={50} />
-                    ) : singleProd1?.Nwt != null || singleProd?.Nwt != null ? (
-                      (singleProd1?.Nwt ?? singleProd?.Nwt)?.toFixed(3)
+                    ) : activeArticle?.NetWeight != null ? (
+                      Number(activeArticle.NetWeight).toFixed(3)
+                    ) : singleProd1?.NetWeight != null ||
+                      singleProd?.NetWeight != null ? (
+                      (
+                        singleProd1?.NetWeight ?? singleProd?.NetWeight
+                      )?.toFixed(3)
                     ) : (
                       "-"
                     )}
@@ -424,12 +445,12 @@ const RightSide = ({
           )}
 
           {/* Material Customization */}
-          <Divider sx={{ mb: 2 }} />
-          {storeInit?.IsProductWebCustomization == 1 && (
+          {/* <Divider sx={{ mb: 2 }} /> */}
+          {/* {storeInit?.IsProductWebCustomization == 1 && (
             <Box sx={{ width: "100%", mt: 2 }}>
-              <Grid container spacing={2}>
-                {/* ===================== METAL TYPE ===================== */}
-                {metalTypeCombo?.length > 0 &&
+              <Grid container spacing={2}> */}
+          {/* ===================== METAL TYPE ===================== */}
+          {/* {metalTypeCombo?.length > 0 &&
                   storeInit?.IsMetalCustomization === 1 && (
                     <Grid
                       item
@@ -476,10 +497,10 @@ const RightSide = ({
                         </Select>
                       )}
                     </Grid>
-                  )}
+                  )} */}
 
-                {/* ===================== METAL COLOR ===================== */}
-                {metalColorCombo?.length > 0 &&
+          {/* ===================== METAL COLOR ===================== */}
+          {/* {metalColorCombo?.length > 0 &&
                   storeInit?.IsMetalTypeWithColor === 1 && (
                     <Grid
                       item
@@ -535,10 +556,10 @@ const RightSide = ({
                         </Select>
                       )}
                     </Grid>
-                  )}
+                  )} */}
 
-                {/* ===================== DIAMOND ===================== */}
-                {storeInit?.IsDiamondCustomization === 1 &&
+          {/* ===================== DIAMOND ===================== */}
+          {/* {storeInit?.IsDiamondCustomization === 1 &&
                   diaQcCombo?.length > 0 &&
                   diaList?.length > 0 && (
                     <Grid
@@ -583,10 +604,10 @@ const RightSide = ({
                         </Select>
                       )}
                     </Grid>
-                  )}
+                  )} */}
 
-                {/* ===================== COLOR STONE ===================== */}
-                {storeInit?.IsCsCustomization === 1 &&
+          {/* ===================== COLOR STONE ===================== */}
+          {/* {storeInit?.IsCsCustomization === 1 &&
                   selectCsQC?.length > 0 &&
                   csList?.filter((ele) => ele?.D !== "MISC")?.length > 0 && (
                     <Grid
@@ -631,9 +652,9 @@ const RightSide = ({
                         </Select>
                       )}
                     </Grid>
-                  )}
+                  )} */}
 
-                {/* ===================== SIZE =====================
+          {/* ===================== SIZE =====================
                                 {SizeSorting?.length > 0 && (
                                     <Grid item size={{
                                     xs={12} sm={6}}>
@@ -661,9 +682,9 @@ const RightSide = ({
                                         )}
                                     </Grid>
                                 )} */}
-              </Grid>
+          {/* </Grid>
             </Box>
-          )}
+          )} */}
           {storeInit?.IsProductWebCustomization === 1 && (
             <Box sx={{ width: "100%", mt: 3, mb: 1 }}>
               <Button
@@ -695,6 +716,12 @@ const RightSide = ({
           <CustomizerDrawer
             open={isCustomizerOpen}
             onClose={() => setIsCustomizerOpen(false)}
+            rd1={rd1}
+            rd2={rd2}
+            defaultArticleId={defaultArticleId}
+            onConfirm={onCustomizerConfirm}
+            storeInit={storeInit}
+            loginData={loginData}
           />
 
           {/* Action Buttons */}

@@ -30,6 +30,7 @@ export async function fetchStoreInitData(req) {
       cleanHost === "localhost" ||
       cleanHost === "127.0.0.1" ||
       cleanHost.endsWith(".localhost") ||
+      cleanHost === "92.168.0.153" ||
       isNgrok;
 
     if (!hostname) hostname = NEXT_APP_WEB;

@@ -1,121 +1,417 @@
-import React, { useState } from "react";
+"use client";
+import React, { useState, useMemo, useEffect } from "react";
 import {
   Drawer,
   Box,
   Typography,
   IconButton,
   Button,
-  Grid,
-  Link,
   Divider,
+  Chip,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import DiamondIcon from "@mui/icons-material/Diamond";
+import { formatter } from "@/app/(core)/utils/Glob_Functions/GlobalFunction";
 
-// British Jewel Navy Blue design system
+// ── Brand design tokens ─────────────────────────────────────────────────────
 const colors = {
-  primary: "#0B2F83", // British Jewel Navy Blue
-  accent: "#0B2F83", // Navy Blue Accent
-  accentLight: "#F0F4FC", // Soft light blue background for selected items
-  textDark: "#102A43", // Slate Dark Text
-  textMuted: "#627D98", // Slate Muted Text
-  alertText: "#D32F2F", // Alert red
-  borderLight: "#D9E2EC", // Light border
-  buttonHover: "#082360", // Darker Navy Hover
+  primary: "#0B2F83",
+  accentLight: "#F0F4FC",
+  textDark: "#102A43",
+  textMuted: "#627D98",
+  alertRed: "#D32F2F",
+  borderLight: "#D9E2EC",
+  btnHover: "#082360",
 };
 
-// Mock data based on the screenshot
-const sizes = [
-  { value: 5, mm: "44.8 mm", status: "Made to Order" },
-  { value: 6, mm: "45.9 mm", status: "Made to Order" },
-  { value: 7, mm: "47.1 mm", status: "Made to Order" },
-  { value: 8, mm: "48.1 mm", status: "Only 1 left!" },
-  { value: 9, mm: "49.0 mm", status: "Only 1 left!" },
-  { value: 10, mm: "50.0 mm", status: "Only 1 left!" },
-  { value: 11, mm: "50.9 mm", status: "Only 1 left!" },
-  { value: 12, mm: "51.8 mm", status: "Only 1 left!" },
-  { value: 13, mm: "52.8 mm", status: "Made to Order" },
-  { value: 14, mm: "54.0 mm", status: "Made to Order" },
-  { value: 15, mm: "55.0 mm", status: "Made to Order" },
-  { value: 16, mm: "55.9 mm", status: "Made to Order" },
-  { value: 17, mm: "56.9 mm", status: "Made to Order" },
-  { value: 18, mm: "57.8 mm", status: "Made to Order" },
-  { value: 19, mm: "59.1 mm", status: "Made to Order" },
-  { value: 20, mm: "60.0 mm", status: "Made to Order" },
-  { value: 21, mm: "60.9 mm", status: "Made to Order" },
-  { value: 22, mm: "61.9 mm", status: "Made to Order" },
-  { value: 23, mm: "62.8 mm", status: "Made to Order" },
-  { value: 24, mm: "63.8 mm", status: "Only 1 left!" },
-];
+// Metal color → visual swatch
+const METAL_SWATCH = {
+  Yellow: "linear-gradient(135deg, #f5d060 0%, #e8a900 100%)",
+  White: "linear-gradient(135deg, #f0f0f0 0%, #c8c8c8 100%)",
+  Rose: "linear-gradient(135deg, #f2b8b8 0%, #c97878 100%)",
+  "Rose Gold": "linear-gradient(135deg, #f2b8b8 0%, #c97878 100%)",
+  Pink: "linear-gradient(135deg, #f2b8b8 0%, #e57373 100%)",
+};
 
-export default function CustomizerDrawer({ open, onClose }) {
-  const [selectedMetal, setSelectedMetal] = useState("9 KT Yellow");
-  const [selectedDiamond, setSelectedDiamond] = useState("FG-SI");
-  const [selectedSize, setSelectedSize] = useState(12);
+// Quality badge colors
+const QUALITY_COLOR_MAP = {
+  PD: "#9c7b4e",
+  IJ: "#1e5fa8",
+  FG: "#2e7d32",
+  EF: "#6a1b9a",
+};
 
-  // Selection Card component
-  const CustomSelectionCard = ({ label, subtext, selected, onClick }) => (
+// ── Sub-components ───────────────────────────────────────────────────────────
+
+const SectionLabel = ({ children }) => (
+  <Typography
+    sx={{
+      fontWeight: 700,
+      fontSize: "11px",
+      color: colors.textMuted,
+      textTransform: "uppercase",
+      letterSpacing: "0.1em",
+      mb: 1.5,
+    }}
+  >
+    {children}
+  </Typography>
+);
+
+const MetalCard = ({ combo, isSelected, onClick }) => {
+  const swatch =
+    METAL_SWATCH[combo.MetalColor] || "linear-gradient(135deg,#ccc,#999)";
+  return (
     <Box
       onClick={onClick}
       sx={{
         cursor: "pointer",
-        border: `1.5px solid ${selected ? colors.accent : colors.borderLight}`,
-        backgroundColor: selected ? colors.accentLight : "#FFFFFF",
-        borderRadius: "10px",
-        padding: "14px 18px",
+        border: `2px solid ${isSelected ? colors.primary : colors.borderLight}`,
+        backgroundColor: isSelected ? colors.accentLight : "#fff",
+        borderRadius: "14px",
+        px: 2,
+        py: 1.5,
         display: "flex",
-        flexDirection: "column",
         alignItems: "center",
-        justifyContent: "center",
-        width: "125px",
-        textAlign: "center",
+        gap: 1.2,
         position: "relative",
-        transition: "all 0.25s cubic-bezier(0.4, 0, 0.2, 1)",
-        boxShadow: selected ? "0 0 12px rgba(11, 47, 131, 0.25)" : "none", // Elegant selection glow
+        transition: "all 0.22s cubic-bezier(0.4, 0, 0.2, 1)",
+        boxShadow: isSelected
+          ? "0 0 0 3px rgba(11,47,131,0.14), 0 4px 18px rgba(11,47,131,0.1)"
+          : "0 1px 4px rgba(0,0,0,0.06)",
         "&:hover": {
-          borderColor: colors.accent,
-          boxShadow: selected ? "0 0 12px rgba(11, 47, 131, 0.3)" : "0 4px 12px rgba(11, 47, 131, 0.08)",
+          borderColor: colors.primary,
+          boxShadow: "0 4px 18px rgba(11,47,131,0.12)",
+          transform: "translateY(-1px)",
         },
       }}
     >
-      {selected && (
+      {isSelected && (
         <CheckCircleIcon
           sx={{
             position: "absolute",
-            top: -6,
-            right: -6,
+            top: -8,
+            right: -8,
             fontSize: "18px",
-            color: colors.accent,
-            backgroundColor: "#FFFFFF",
+            color: colors.primary,
+            bgcolor: "#fff",
+            borderRadius: "50%",
+            zIndex: 1,
+          }}
+        />
+      )}
+      {/* Metal swatch circle */}
+      <Box
+        sx={{
+          width: 16,
+          height: 16,
+          borderRadius: "50%",
+          background: swatch,
+          border: "1.5px solid rgba(0,0,0,0.12)",
+          flexShrink: 0,
+          boxShadow: "0 1px 3px rgba(0,0,0,0.15)",
+        }}
+      />
+      <Box>
+        <Typography
+          sx={{
+            fontWeight: 700,
+            fontSize: "12.5px",
+            color: isSelected ? colors.primary : colors.textDark,
+            textTransform: "uppercase",
+            letterSpacing: "0.04em",
+            lineHeight: 1.2,
+          }}
+        >
+          {combo.MetalType}
+        </Typography>
+        <Typography
+          sx={{
+            fontSize: "10px",
+            color: colors.textMuted,
+            fontWeight: 500,
+            lineHeight: 1.2,
+          }}
+        >
+          {combo.MetalColor}
+        </Typography>
+      </Box>
+    </Box>
+  );
+};
+
+const SizePill = ({ size, isSelected, onClick }) => (
+  <Box
+    onClick={onClick}
+    sx={{
+      cursor: "pointer",
+      minWidth: 52,
+      height: 52,
+      px: 2, // Added horizontal padding to fit text like 'One Size'
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      borderRadius: "10px",
+      border: `2px solid ${isSelected ? colors.primary : colors.borderLight}`,
+      backgroundColor: isSelected ? colors.accentLight : "#fff",
+      fontWeight: 700,
+      fontSize: "14px",
+      color: isSelected ? colors.primary : colors.textDark,
+      transition: "all 0.15s ease",
+      boxShadow: isSelected
+        ? "0 0 0 3px rgba(11,47,131,0.12)"
+        : "0 1px 4px rgba(0,0,0,0.05)",
+      "&:hover": { borderColor: colors.primary, transform: "translateY(-1px)" },
+    }}
+  >
+    {size}
+  </Box>
+);
+
+const QualityCard = ({ combo, isSelected, onClick }) => {
+  const key = `${combo.Quality}-${combo.Color}`;
+  const badgeColor = QUALITY_COLOR_MAP[combo.Quality] || colors.textMuted;
+  return (
+    <Box
+      onClick={onClick}
+      sx={{
+        cursor: "pointer",
+        border: `2px solid ${isSelected ? colors.primary : colors.borderLight}`,
+        backgroundColor: isSelected ? colors.accentLight : "#fff",
+        borderRadius: "14px",
+        px: 2.5,
+        py: 1.5,
+        position: "relative",
+        transition: "all 0.22s cubic-bezier(0.4, 0, 0.2, 1)",
+        boxShadow: isSelected
+          ? "0 0 0 3px rgba(11,47,131,0.14), 0 4px 18px rgba(11,47,131,0.1)"
+          : "0 1px 4px rgba(0,0,0,0.06)",
+        "&:hover": {
+          borderColor: colors.primary,
+          boxShadow: "0 4px 18px rgba(11,47,131,0.12)",
+          transform: "translateY(-1px)",
+        },
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        textAlign: "center",
+        minWidth: 80,
+      }}
+    >
+      {isSelected && (
+        <CheckCircleIcon
+          sx={{
+            position: "absolute",
+            top: -8,
+            right: -8,
+            fontSize: "18px",
+            color: colors.primary,
+            bgcolor: "#fff",
             borderRadius: "50%",
           }}
         />
       )}
       <Typography
         sx={{
-          fontWeight: 700,
-          fontSize: "13px",
-          color: selected ? colors.primary : colors.textDark, // High contrast text selection
+          fontWeight: 800,
+          fontSize: "15px",
+          color: isSelected ? colors.primary : badgeColor,
           textTransform: "uppercase",
-          letterSpacing: "0.03em",
+          letterSpacing: "0.06em",
+          lineHeight: 1.2,
         }}
       >
-        {label}
+        {combo.Quality}
       </Typography>
-      {subtext && (
+      <Typography
+        sx={{
+          fontSize: "10px",
+          color: colors.textMuted,
+          fontWeight: 600,
+          mt: 0.3,
+          textTransform: "uppercase",
+          letterSpacing: "0.04em",
+        }}
+      >
+        {combo.Color}
+      </Typography>
+      {combo.StoneTypeName && (
         <Typography
           sx={{
-            fontSize: "10px",
-            color: subtext.includes("1") ? colors.alertText : colors.textMuted,
-            mt: 0.8,
-            fontWeight: 600,
+            fontSize: "9px",
+            color: colors.borderLight,
+            mt: 0.2,
+            fontWeight: 500,
           }}
         >
-          {subtext}
+          {combo.StoneTypeName}
         </Typography>
       )}
     </Box>
   );
+};
+
+// ── Main Drawer Component ─────────────────────────────────────────────────────
+export default function CustomizerDrawer({
+  open,
+  onClose,
+  rd1 = [],
+  rd2 = [],
+  defaultArticleId,
+  onConfirm,
+  storeInit,
+  loginData,
+}) {
+  const [selectedMetal, setSelectedMetal] = useState(null);
+  const [selectedSize, setSelectedSize] = useState(null);
+  const [selectedDiaQc, setSelectedDiaQc] = useState(null);
+
+  // ── 1. Unique metal combos (MetalTypeId + MetalColorId as key) ─────────────
+  const metalCombos = useMemo(() => {
+    const seen = new Set();
+    return rd1.filter((row) => {
+      const key = `${row.MetalTypeId}-${row.MetalColorId}`;
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
+  }, [rd1]);
+
+  // ── 2. Set defaults from defaultArticleId or first combo when drawer opens ──
+  useEffect(() => {
+    if (!open || !metalCombos.length) return;
+
+    let targetMetal = metalCombos[0];
+    let targetSize = null;
+
+    if (defaultArticleId) {
+      const defArt = rd1.find((r) => r.ArticleId === defaultArticleId);
+      if (defArt) {
+        const found = metalCombos.find(
+          (m) =>
+            m.MetalTypeId === defArt.MetalTypeId &&
+            m.MetalColorId === defArt.MetalColorId,
+        );
+        if (found) targetMetal = found;
+        if (defArt.Size) targetSize = defArt.Size;
+      }
+    }
+
+    setSelectedMetal(targetMetal);
+    setSelectedSize(targetSize);
+  }, [open, metalCombos, defaultArticleId, rd1]);
+
+  // ── 3. Articles matching selected metal ────────────────────────────────────
+  const matchingArticles = useMemo(() => {
+    if (!selectedMetal) return [];
+    return rd1.filter(
+      (r) =>
+        r.MetalTypeId === selectedMetal.MetalTypeId &&
+        r.MetalColorId === selectedMetal.MetalColorId,
+    );
+  }, [rd1, selectedMetal]);
+
+  // ── 4. Available sizes for selected metal ──────────────────────────────────
+  const availableSizes = useMemo(
+    () => matchingArticles.map((r) => r.Size).filter(Boolean),
+    [matchingArticles],
+  );
+
+  // ── 5. Reset / set size when metal changes ─────────────────────────────────
+  useEffect(() => {
+    if (!selectedMetal) return;
+    if (availableSizes.length > 0) {
+      setSelectedSize((prev) =>
+        availableSizes.includes(prev) ? prev : availableSizes[0],
+      );
+    } else {
+      setSelectedSize(null);
+    }
+  }, [selectedMetal]); // intentionally only dep on selectedMetal
+
+  // ── 6. Active article (metal + size) ──────────────────────────────────────
+  const activeArticle = useMemo(() => {
+    if (selectedSize) {
+      return (
+        matchingArticles.find((r) => r.Size === selectedSize) ||
+        matchingArticles[0]
+      );
+    }
+    return matchingArticles[0] || null;
+  }, [matchingArticles, selectedSize]);
+
+  const stoneQualityCombos = useMemo(() => {
+    const matchingIds = new Set(matchingArticles.map((r) => r.ArticleId));
+    const seen = new Set();
+    return rd2
+      .filter((r) => {
+        if (!matchingIds.has(r.ArticleId)) return false;
+        if (r.StoneTypeid === 4 || r.StoneTypeid === 5) return false;
+        // normalize key to uppercase to dedupe casing variants
+        const key = `${r.Quality?.toUpperCase()}-${r.Color?.toUpperCase()}`;
+        if (seen.has(key)) return false;
+        seen.add(key);
+        return true;
+      })
+      .map((r) => ({
+        ...r,
+        // Expose normalized keys so QualityCard / key comparisons are consistent
+        Quality: r.Quality?.toUpperCase(),
+        Color: r.Color?.toUpperCase(),
+      }));
+  }, [rd2, matchingArticles]);
+
+  // ── 8. Set default dia quality from defaultArticleId, else first combo ─────
+  useEffect(() => {
+    if (!stoneQualityCombos.length) {
+      setSelectedDiaQc(null);
+      return;
+    }
+    // If we have a defaultArticleId, find its first qualifying stone entry
+    if (defaultArticleId && rd2.length) {
+      const defStone = rd2.find(
+        (r) =>
+          r.ArticleId === defaultArticleId &&
+          r.StoneTypeid !== 4 &&
+          r.StoneTypeid !== 5,
+      );
+      if (defStone) {
+        // Key must be uppercase to match stoneQualityCombos entries
+        const key = `${defStone.Quality?.toUpperCase()}-${defStone.Color?.toUpperCase()}`;
+        const exists = stoneQualityCombos.find(
+          (c) => `${c.Quality}-${c.Color}` === key,
+        );
+        if (exists) {
+          setSelectedDiaQc(key);
+          return;
+        }
+      }
+    }
+    // Fallback: first combo
+    setSelectedDiaQc(
+      `${stoneQualityCombos[0].Quality}-${stoneQualityCombos[0].Color}`,
+    );
+  }, [stoneQualityCombos]); // intentional — reset when combos change
+
+  // ── Handlers ──────────────────────────────────────────────────────────────
+  const handleMetalSelect = (combo) => setSelectedMetal(combo);
+
+  const handleConfirm = () => {
+    onConfirm?.(
+      activeArticle?.ArticleId,
+      selectedSize,
+      selectedDiaQc,
+      selectedMetal,
+    );
+    onClose();
+  };
+
+  // ── Derived display ───────────────────────────────────────────────────────
+  const price =
+    activeArticle?.UnitCostWithmarkup ?? activeArticle?.TotalUnitCost ?? 0;
+  const CurrencyCode = loginData?.CurrencyCode ?? storeInit?.CurrencyCode ?? "";
+  const hasData = metalCombos.length > 0;
 
   return (
     <Drawer
@@ -123,275 +419,332 @@ export default function CustomizerDrawer({ open, onClose }) {
       open={open}
       onClose={onClose}
       sx={{
-        zIndex: 99999, // Drawer Modal ka z-index
+        zIndex: 99999,
         "& .MuiDrawer-paper": {
-          width: { xs: "100%", sm: "700px" },
+          width: { xs: "100%", sm: "600px" },
           height: "100%",
-          boxShadow: "-10px 0px 40px rgba(0, 0, 0, 0.08)",
           display: "flex",
           flexDirection: "column",
-          bgcolor: "#FAF9F6",
+          bgcolor: "#F8F7F4",
           zIndex: 99999,
+          boxShadow: "-12px 0 48px rgba(0,0,0,0.12)",
         },
       }}
     >
-      {/* Drawer Header */}
+      {/* ── Header ────────────────────────────────────────────────────────── */}
       <Box
         sx={{
           p: 3,
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
           borderBottom: `1px solid ${colors.borderLight}`,
-          bgcolor: "#FFFFFF",
+          bgcolor: "#fff",
+          flexShrink: 0,
+          display: "flex",
+          flexDirection: "column",
+          gap: 2,
         }}
       >
-        <Box>
-          <Typography
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "flex-start",
+          }}
+        >
+          <Box>
+            <Typography
+              sx={{
+                fontSize: "10px",
+                color: colors.textMuted,
+                fontWeight: 700,
+                textTransform: "uppercase",
+                letterSpacing: "0.1em",
+              }}
+            >
+              Customize Your Piece
+            </Typography>
+            {price > 0 && storeInit?.IsPriceShow == 1 && (
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "baseline",
+                  gap: 1,
+                  mt: 0.5,
+                }}
+              >
+                <Typography
+                  sx={{
+                    fontSize: "22px",
+                    fontWeight: 800,
+                    color: colors.textDark,
+                    letterSpacing: "-0.3px",
+                  }}
+                >
+                  {CurrencyCode} {formatter(price)}
+                </Typography>
+              </Box>
+            )}
+          </Box>
+          <IconButton
+            onClick={onClose}
             sx={{
-              fontSize: "11px",
-              color: colors.textMuted,
-              fontWeight: 600,
-              textTransform: "uppercase",
-              letterSpacing: "0.05em",
+              color: colors.textDark,
+              bgcolor: "#f5f5f5",
+              "&:hover": { bgcolor: "#ececec" },
+              width: 36,
+              height: 36,
             }}
           >
-            Estimated Price
-          </Typography>
-          <Box
-            sx={{ display: "flex", alignItems: "baseline", gap: 1.5, mt: 0.5 }}
-          >
-            <Typography
-              sx={{
-                fontSize: "22px",
-                fontWeight: 700,
-                color: colors.textDark,
-                fontFamily: "Outfit, sans-serif",
-              }}
-            >
-              ₹10,152
-            </Typography>
-            <Typography
-              sx={{
-                fontSize: "14px",
-                color: colors.textMuted,
-                textDecoration: "line-through",
-                fontFamily: "Outfit, sans-serif",
-              }}
-            >
-              ₹14,458
-            </Typography>
-          </Box>
+            <CloseIcon sx={{ fontSize: 18 }} />
+          </IconButton>
         </Box>
-        <IconButton
-          onClick={onClose}
-          sx={{ color: colors.textDark }}
-        >
-          <CloseIcon />
-        </IconButton>
+
+        {/* ── Selection Summary ─────────────────────────────────────── */}
+        {activeArticle && (
+          <Box>
+            <Typography
+              sx={{
+                fontSize: "9px",
+                color: colors.textMuted,
+                fontWeight: 700,
+                textTransform: "uppercase",
+                letterSpacing: "0.08em",
+                mb: 1,
+              }}
+            >
+              Selected Config
+            </Typography>
+            <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.8 }}>
+              <Chip
+                label={`${activeArticle.MetalType} · ${activeArticle.MetalColor}`}
+                size="small"
+                sx={{
+                  bgcolor: "#fff",
+                  fontSize: "11px",
+                  fontWeight: 600,
+                  color: colors.textDark,
+                  border: `1px solid ${colors.borderLight}`,
+                  borderRadius: "6px",
+                  height: "24px",
+                }}
+              />
+              {selectedSize && (
+                <Chip
+                  label={`Size ${selectedSize}`}
+                  size="small"
+                  sx={{
+                    bgcolor: "#fff",
+                    fontSize: "11px",
+                    fontWeight: 600,
+                    color: colors.textDark,
+                    border: `1px solid ${colors.borderLight}`,
+                    borderRadius: "6px",
+                    height: "24px",
+                  }}
+                />
+              )}
+              {selectedDiaQc && (
+                <Chip
+                  label={selectedDiaQc.replace("-", " · ")}
+                  size="small"
+                  sx={{
+                    bgcolor: "#fff",
+                    fontSize: "11px",
+                    fontWeight: 600,
+                    color: colors.textDark,
+                    border: `1px solid ${colors.borderLight}`,
+                    borderRadius: "6px",
+                    height: "24px",
+                  }}
+                />
+              )}
+              <Chip
+                label={`Art# ${activeArticle.ArticleId}`}
+                size="small"
+                sx={{
+                  bgcolor: colors.primary,
+                  color: "#fff",
+                  fontSize: "11px",
+                  fontWeight: 700,
+                  borderRadius: "6px",
+                  height: "24px",
+                }}
+              />
+            </Box>
+          </Box>
+        )}
       </Box>
 
-      {/* Scrollable Customization Content */}
+      {/* ── Scrollable Content ────────────────────────────────────────────── */}
       <Box sx={{ flex: 1, overflowY: "auto", px: 3.5, py: 3 }}>
-        {/* Section 1: Choice of Metal */}
-        <Box sx={{ mb: 4 }}>
-          <Typography
-            sx={{
-              fontWeight: 700,
-              fontSize: "13px",
-              color: colors.textDark,
-              textTransform: "uppercase",
-              letterSpacing: "0.06em",
-              mb: 1.5,
-            }}
-          >
-            Choice of Metal
-          </Typography>
-          <Box sx={{ display: "flex", gap: 2 }}>
-            <CustomSelectionCard
-              label="9 KT Yellow"
-              subtext="Only 1 left!"
-              selected={selectedMetal === "9 KT Yellow"}
-              onClick={() => setSelectedMetal("9 KT Yellow")}
-            />
-            <CustomSelectionCard
-              label="14 KT Yellow"
-              subtext="Made to Order"
-              selected={selectedMetal === "14 KT Yellow"}
-              onClick={() => setSelectedMetal("14 KT Yellow")}
-            />
-          </Box>
-        </Box>
-
-        {/* Section 2: Diamond Quality */}
-        <Box sx={{ mb: 4 }}>
+        {!hasData ? (
           <Box
             sx={{
               display: "flex",
-              justifyContent: "space-between",
+              flexDirection: "column",
               alignItems: "center",
-              mb: 1.5,
+              justifyContent: "center",
+              height: "60%",
+              gap: 2,
+              opacity: 0.5,
             }}
           >
-            <Typography
-              sx={{
-                fontWeight: 700,
-                fontSize: "13px",
-                color: colors.textDark,
-                textTransform: "uppercase",
-                letterSpacing: "0.06em",
-              }}
-            >
-              Diamond Quality
+            <DiamondIcon sx={{ fontSize: 48, color: colors.borderLight }} />
+            <Typography sx={{ fontSize: "13px", color: colors.textMuted }}>
+              Loading customization options…
             </Typography>
-            <Link
-              href="#"
-              underline="none"
-              sx={{
-                fontSize: "11px",
-                fontWeight: 600,
-                color: colors.accent,
-                letterSpacing: "0.5px",
-                "&:hover": { textDecoration: "underline" },
-              }}
-            >
-              DIAMOND GUIDE
-            </Link>
           </Box>
-          <Box sx={{ display: "flex", gap: 2 }}>
-            <CustomSelectionCard
-              label="FG-SI"
-              subtext="Only 1 left!"
-              selected={selectedDiamond === "FG-SI"}
-              onClick={() => setSelectedDiamond("FG-SI")}
-            />
-          </Box>
-        </Box>
+        ) : (
+          <>
+            {/* ── Section 1: Choice of Metal ────────────────────────────── */}
+            <Box sx={{ mb: 4 }}>
+              <SectionLabel>Choice of Metal</SectionLabel>
+              <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1.5 }}>
+                {metalCombos.map((combo) => {
+                  const isSelected =
+                    selectedMetal?.MetalTypeId === combo.MetalTypeId &&
+                    selectedMetal?.MetalColorId === combo.MetalColorId;
+                  return (
+                    <MetalCard
+                      key={`${combo.MetalTypeId}-${combo.MetalColorId}`}
+                      combo={combo}
+                      isSelected={isSelected}
+                      onClick={() => handleMetalSelect(combo)}
+                    />
+                  );
+                })}
+              </Box>
+            </Box>
 
-        {/* Section 3: Select Size Grid */}
-        <Box sx={{ mb: 2 }}>
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              mb: 1.5,
-            }}
-          >
-            <Typography
-              sx={{
-                fontWeight: 700,
-                fontSize: "13px",
-                color: colors.textDark,
-                textTransform: "uppercase",
-                letterSpacing: "0.06em",
-              }}
-            >
-              Select Size
-            </Typography>
-            <Link
-              href="#"
-              underline="none"
-              sx={{
-                fontSize: "11px",
-                fontWeight: 600,
-                color: colors.accent,
-                letterSpacing: "0.5px",
-                "&:hover": { textDecoration: "underline" },
-              }}
-            >
-              SIZE GUIDE
-            </Link>
-          </Box>
+            <Divider sx={{ mb: 3.5, borderColor: colors.borderLight }} />
 
-          <Grid container spacing={1}>
-            {sizes.map((item) => {
-              const isSelected = selectedSize === item.value;
-              const isUrgent = item.status.includes("1");
-
-              return (
-                <Grid size={{ xs: 2.4, sm: 2.4 }} key={item.value}>
-                  <Box
-                    onClick={() => setSelectedSize(item.value)}
+            {/* ── Section 2: Size ───────────────────────────────────────── */}
+            {availableSizes.length > 0 ? (
+              <Box sx={{ mb: 4 }}>
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    mb: 1.5,
+                  }}
+                >
+                  <SectionLabel>Select Size</SectionLabel>
+                  <Typography
                     sx={{
+                      fontSize: "10px",
+                      color: colors.primary,
+                      fontWeight: 700,
                       cursor: "pointer",
-                      border: `1.5px solid ${isSelected ? colors.accent : colors.borderLight}`,
-                      backgroundColor: isSelected ? colors.accentLight : "#FFFFFF",
-                      borderRadius: "8px",
-                      padding: "10px 4px",
-                      textAlign: "center",
-                      display: "flex",
-                      flexDirection: "column",
-                      justifyContent: "center",
-                      minHeight: "72px",
-                      transition: "all 0.15s ease",
-                      boxShadow: isSelected ? "0 0 10px rgba(11, 47, 131, 0.2)" : "none", // Subtle selection glow
-                      "&:hover": {
-                        borderColor: colors.accent,
-                        boxShadow: isSelected ? "0 0 10px rgba(11, 47, 131, 0.25)" : "0 3px 8px rgba(11, 47, 131, 0.05)",
-                      },
+                      letterSpacing: "0.06em",
+                      textTransform: "uppercase",
                     }}
                   >
-                    <Typography
-                      sx={{
-                        fontWeight: 700,
-                        fontSize: "14px",
-                        color: colors.textDark,
-                        lineHeight: 1.2,
-                      }}
-                    >
-                      {item.value}
-                    </Typography>
-                    <Typography
-                      sx={{
-                        fontSize: "10px",
-                        color: colors.textMuted,
-                        my: 0.3,
-                        fontWeight: 500,
-                      }}
-                    >
-                      {item.mm}
-                    </Typography>
-                    <Typography
-                      sx={{
-                        fontSize: "9px",
-                        fontWeight: 600,
-                        color: isUrgent ? colors.alertText : colors.textMuted,
-                        lineHeight: 1.1,
-                      }}
-                    >
-                      {item.status}
-                    </Typography>
-                  </Box>
-                </Grid>
-              );
-            })}
-          </Grid>
-        </Box>
+                    Size Guide
+                  </Typography>
+                </Box>
+                <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
+                  {availableSizes.map((size) => (
+                    <SizePill
+                      key={size}
+                      size={size}
+                      isSelected={selectedSize === size}
+                      onClick={() => setSelectedSize(size)}
+                    />
+                  ))}
+                </Box>
+              </Box>
+            ) : (
+              <Box sx={{ mb: 4 }}>
+                <SectionLabel>Size</SectionLabel>
+                <Typography
+                  sx={{
+                    fontSize: "13px",
+                    color: colors.textMuted,
+                    fontWeight: 500,
+                  }}
+                >
+                  Size not available
+                </Typography>
+              </Box>
+            )}
+
+            <Divider sx={{ mb: 3.5, borderColor: colors.borderLight }} />
+
+            {/* ── Section 3: Diamond Quality ────────────────────────────── */}
+            {stoneQualityCombos.length > 0 && (
+              <Box sx={{ mb: 4 }}>
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    mb: 1.5,
+                  }}
+                >
+                  <SectionLabel>Diamond Quality</SectionLabel>
+                  <Typography
+                    sx={{
+                      fontSize: "10px",
+                      color: colors.primary,
+                      fontWeight: 700,
+                      cursor: "pointer",
+                      letterSpacing: "0.06em",
+                      textTransform: "uppercase",
+                    }}
+                  >
+                    Diamond Guide
+                  </Typography>
+                </Box>
+                <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1.5 }}>
+                  {stoneQualityCombos.map((combo) => {
+                    const key = `${combo.Quality}-${combo.Color}`;
+                    return (
+                      <QualityCard
+                        key={key}
+                        combo={combo}
+                        isSelected={selectedDiaQc === key}
+                        onClick={() => setSelectedDiaQc(key)}
+                      />
+                    );
+                  })}
+                </Box>
+              </Box>
+            )}
+            {/* End of content */}
+          </>
+        )}
       </Box>
 
-      {/* Persistent Bottom Action Bar */}
+      {/* ── Sticky Bottom Action Bar ─────────────────────────────────────── */}
       <Box
         sx={{
           p: 3,
           borderTop: `1px solid ${colors.borderLight}`,
-          backgroundColor: "#FFFFFF",
+          backgroundColor: "#fff",
+          flexShrink: 0,
         }}
       >
         <Button
           fullWidth
           variant="contained"
-          onClick={onClose}
+          onClick={handleConfirm}
+          disabled={!activeArticle}
           sx={{
             backgroundColor: colors.primary,
-            color: "#FFFFFF",
-            "&:hover": { backgroundColor: colors.buttonHover },
-            borderRadius: "8px",
-            paddingY: "14px",
-            fontWeight: 600,
+            color: "#fff",
+            "&:hover": { backgroundColor: colors.btnHover },
+            "&:disabled": {
+              backgroundColor: colors.borderLight,
+              color: colors.textMuted,
+            },
+            borderRadius: "10px",
+            py: 1.8,
+            fontWeight: 700,
             fontSize: "13px",
-            letterSpacing: "0.08em",
+            letterSpacing: "0.1em",
             textTransform: "uppercase",
+            boxShadow: "0 4px 18px rgba(11,47,131,0.25)",
+            transition: "all 0.2s ease",
           }}
         >
           Confirm Customisation
