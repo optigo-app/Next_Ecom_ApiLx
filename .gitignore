@@ -70,9 +70,11 @@ vs
 .sqlite
 sqlite
 
-
+ports.json
 
 /ref/
 ref/
 .ref/
+GsapList.mdx
+ref/GsapList.mdx
 
