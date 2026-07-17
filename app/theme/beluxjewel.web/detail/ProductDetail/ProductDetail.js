@@ -2,7 +2,13 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import "./ProductDetail.modul.scss";
 import Cookies from "js-cookie";
-import { Box, Grid, useMediaQuery, CircularProgress, Typography } from "@mui/material";
+import {
+  Box,
+  Grid,
+  useMediaQuery,
+  CircularProgress,
+  Typography,
+} from "@mui/material";
 import Pako from "pako";
 import { SingleArticleProdListAPI } from "@/app/(core)/utils/API/ArticleSingleProdListAPI/ArticleSingleProdListAPI";
 import { getSizeData } from "@/app/(core)/utils/API/CartAPI/GetCategorySizeAPI";
@@ -712,7 +718,9 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
             if (res?.pdResp?.rd2?.length) setRd2Data(res?.pdResp?.rd2);
 
             // Compute initial customization details based on URL's ArticleId or decoded parameters
-            const initialArticleId = decodeobj?.ArticleId ? parseInt(decodeobj?.ArticleId, 10) : null;
+            const initialArticleId = decodeobj?.ArticleId
+              ? parseInt(decodeobj?.ArticleId, 10)
+              : null;
             const initialArticle =
               res?.pdResp?.rd1?.find((r) => r.ArticleId === initialArticleId) ||
               res?.pdResp?.rd1?.[0];
@@ -723,20 +731,29 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
                   r.StoneTypeid === 1,
               );
               const csStone = res?.pdResp?.rd2?.find(
-                (r) => r.ArticleId === initialArticle.ArticleId && r.StoneTypeid === 2,
+                (r) =>
+                  r.ArticleId === initialArticle.ArticleId &&
+                  r.StoneTypeid === 2,
               );
               setCustomizationDetail({
                 ...initialArticle,
                 ArticleId: initialArticle.ArticleId,
                 ArticleNo: initialArticle.ArticleNo,
-                autocode: initialArticle.autocode || res?.pdList[0]?.autocode || "",
+                autocode:
+                  initialArticle.autocode || res?.pdList[0]?.autocode || "",
                 Metalid: initialArticle.MetalTypeId,
                 MetalColorId: initialArticle.MetalColorId,
                 MetalType: initialArticle.MetalType,
                 MetalColor: initialArticle.MetalColor,
-                DiaQCid: diaStone ? `${diaStone.QualityId},${diaStone.ColorId}` : "0,0",
-                DiaQCLabel: diaStone ? `${diaStone.Quality}-${diaStone.Color}` : null,
-                CsQCid: csStone ? `${csStone.QualityId},${csStone.ColorId}` : "0,0",
+                DiaQCid: diaStone
+                  ? `${diaStone.QualityId},${diaStone.ColorId}`
+                  : "0,0",
+                DiaQCLabel: diaStone
+                  ? `${diaStone.Quality}-${diaStone.Color}`
+                  : null,
+                CsQCid: csStone
+                  ? `${csStone.QualityId},${csStone.ColorId}`
+                  : "0,0",
                 Size: initialArticle.Size,
                 NetWeight: initialArticle.NetWeight,
               });
@@ -1278,28 +1295,34 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
     }
 
     // Normalize targetSize: treat empty / dash as empty string
-    const normalizedTargetSize = (targetSize === "-" || targetSize === "" || !targetSize) ? "" : targetSize;
+    const normalizedTargetSize =
+      targetSize === "-" || targetSize === "" || !targetSize ? "" : targetSize;
 
     // Find the matching article in rd1Data based on target customizations
     let matchedArticle = rd1Data?.find((r) => {
-      const matchMetal = r.MetalType?.toUpperCase() === targetMetalType?.toUpperCase();
-      const matchColor = r.MetalColor?.toUpperCase() === targetMetalColor?.toUpperCase();
-      const rSize = (r.Size === "-" || r.Size === "" || !r.Size) ? "" : r.Size;
+      const matchMetal =
+        r.MetalType?.toUpperCase() === targetMetalType?.toUpperCase();
+      const matchColor =
+        r.MetalColor?.toUpperCase() === targetMetalColor?.toUpperCase();
+      const rSize = r.Size === "-" || r.Size === "" || !r.Size ? "" : r.Size;
       return matchMetal && matchColor && rSize === normalizedTargetSize;
     });
 
     // Fallback 1: match metal and color only, grab first available size
     if (!matchedArticle) {
       matchedArticle = rd1Data?.find((r) => {
-        const matchMetal = r.MetalType?.toUpperCase() === targetMetalType?.toUpperCase();
-        const matchColor = r.MetalColor?.toUpperCase() === targetMetalColor?.toUpperCase();
+        const matchMetal =
+          r.MetalType?.toUpperCase() === targetMetalType?.toUpperCase();
+        const matchColor =
+          r.MetalColor?.toUpperCase() === targetMetalColor?.toUpperCase();
         return matchMetal && matchColor;
       });
     }
 
     // Fallback 2: fallback to default / first article
     if (!matchedArticle) {
-      matchedArticle = rd1Data?.find((r) => r.ArticleId === defaultArticleId) || rd1Data?.[0];
+      matchedArticle =
+        rd1Data?.find((r) => r.ArticleId === defaultArticleId) || rd1Data?.[0];
     }
 
     // Resolve stones for the matched article from rd2Data
@@ -1309,9 +1332,7 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
 
     if (matchedArticle && rd2Data?.length) {
       const diaStone = rd2Data.find(
-        (r) =>
-          r.ArticleId === matchedArticle.ArticleId &&
-          r.StoneTypeid === 1,
+        (r) => r.ArticleId === matchedArticle.ArticleId && r.StoneTypeid === 1,
       );
       if (diaStone) {
         diaQcVal = `${diaStone.QualityId ?? 0},${diaStone.ColorId ?? 0}`;
@@ -1319,9 +1340,7 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
       }
 
       const csStone = rd2Data.find(
-        (r) =>
-          r.ArticleId === matchedArticle.ArticleId &&
-          r.StoneTypeid === 2,
+        (r) => r.ArticleId === matchedArticle.ArticleId && r.StoneTypeid === 2,
       );
       if (csStone) {
         csQcVal = `${csStone.QualityId ?? 0},${csStone.ColorId ?? 0}`;
@@ -1333,9 +1352,25 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
       setDefaultArticleId(matchedArticle.ArticleId);
     }
 
-    const targetAutocode = matchedArticle?.autocode || rd1Data?.[0]?.autocode || singleProd?.autocode || singleProd1?.autocode || decodeUrl?.a || "";
-    const targetDesignNo = matchedArticle?.designno || rd1Data?.[0]?.designno || singleProd?.designno || singleProd1?.designno || decodeUrl?.b || "";
-    const activeArticleNo = matchedArticle?.ArticleNo || decodeUrl?.ArticleNo || singleProd?.ArticleNo || "";
+    const targetAutocode =
+      matchedArticle?.autocode ||
+      rd1Data?.[0]?.autocode ||
+      singleProd?.autocode ||
+      singleProd1?.autocode ||
+      decodeUrl?.a ||
+      "";
+    const targetDesignNo =
+      matchedArticle?.designno ||
+      rd1Data?.[0]?.designno ||
+      singleProd?.designno ||
+      singleProd1?.designno ||
+      decodeUrl?.b ||
+      "";
+    const activeArticleNo =
+      matchedArticle?.ArticleNo ||
+      decodeUrl?.ArticleNo ||
+      singleProd?.ArticleNo ||
+      "";
 
     setCustomizationDetail({
       ...matchedArticle,
@@ -1360,7 +1395,9 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
     };
 
     let obj = {
-      mt: matchedArticle?.MetalTypeId || (loginUserDetail?.MetalId ?? storeinit?.MetalId),
+      mt:
+        matchedArticle?.MetalTypeId ||
+        (loginUserDetail?.MetalId ?? storeinit?.MetalId),
       diaQc: diaQcVal,
       csQc: csQcVal,
     };
@@ -1412,13 +1449,20 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
   }, [initialDecodeUrl]);
 
   // Handler called when user confirms selection in the customizer drawer
-  const handleCustomizerConfirm = async (articleId, size, diaQcKey, metalCombo) => {
+  const handleCustomizerConfirm = async (
+    articleId,
+    size,
+    diaQcKey,
+    metalCombo,
+  ) => {
     const mTypeLocal = getSession("metalTypeCombo") || [];
     const diaQcLocal = getSession("diamondQualityColorCombo") || [];
     const csQcLocal = getSession("ColorStoneQualityColorCombo") || [];
 
     // Find metal by MetalType name (mapped from combo)
-    const metalArr = mTypeLocal.find((ele) => ele?.metaltype === metalCombo?.MetalType);
+    const metalArr = mTypeLocal.find(
+      (ele) => ele?.metaltype === metalCombo?.MetalType,
+    );
 
     // Resolve current dia/cs or keep existing selection
     const [dq, dc] = diaQcKey ? diaQcKey.split("-") : [null, null];
@@ -1442,9 +1486,15 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
     if (articleId) setDefaultArticleId(articleId);
 
     // Find selected article object from rd1Data to pass correct ArticleNo
-    const selectedArticleObj = rd1Data?.find((r) => r.ArticleId === articleId) || rd1Data?.[0];
-    const targetArticleNo = selectedArticleObj?.ArticleNo || singleProd?.ArticleNo || "";
-    const targetAutocode = selectedArticleObj?.autocode || rd1Data?.[0]?.autocode || singleProd?.autocode || "";
+    const selectedArticleObj =
+      rd1Data?.find((r) => r.ArticleId === articleId) || rd1Data?.[0];
+    const targetArticleNo =
+      selectedArticleObj?.ArticleNo || singleProd?.ArticleNo || "";
+    const targetAutocode =
+      selectedArticleObj?.autocode ||
+      rd1Data?.[0]?.autocode ||
+      singleProd?.autocode ||
+      "";
 
     setCustomizationDetail({
       ...selectedArticleObj,
@@ -1689,7 +1739,7 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
               width: "100%",
             }}
           >
-            <Grid container spacing={{ xs: 2, md: 4 }}>
+            <Grid container spacing={{ xs: 1, md: 1 }}>
               <LeftSide
                 loading={loadingdata}
                 media={
@@ -1780,7 +1830,7 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
                 />
               )}
 
-            {storeInit?.IsProductDetailDesignSet === 1 &&
+            {/* {storeInit?.IsProductDetailDesignSet === 1 &&
               designSetList?.length > 0 &&
               designSetList?.[0]?.stat_code != 1005 && (
                 <DesignSet
@@ -1790,7 +1840,7 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
                   loginInfo={loginData}
                   storeInit={storeInit}
                 />
-              )}
+              )} */}
           </Box>
           <PreviewDialog
             media={[
