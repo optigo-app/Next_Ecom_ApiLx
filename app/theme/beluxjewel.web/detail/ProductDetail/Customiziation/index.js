@@ -268,14 +268,23 @@ export default function CustomizerDrawer({
   const [selectedDiaQc, setSelectedDiaQc] = useState(null);
   const [selectedOrigin, setSelectedOrigin] = useState("Natural");
 
-  // ── 1. Unique metal combos (MetalTypeId + MetalColorId as key) ─────────────
+  // ── 1. Unique metal combos (MetalTypeId + MetalColorId as key) sorted by Karat ──
   const metalCombos = useMemo(() => {
     const seen = new Set();
-    return rd1.filter((row) => {
+    const unique = rd1.filter((row) => {
       const key = `${row.MetalTypeId}-${row.MetalColorId}`;
       if (seen.has(key)) return false;
       seen.add(key);
       return true;
+    });
+
+    return unique.sort((a, b) => {
+      const getKarat = (str) => {
+        if (!str) return 0;
+        const match = str.match(/\d+/);
+        return match ? parseInt(match[0], 10) : 0;
+      };
+      return getKarat(a.MetalType) - getKarat(b.MetalType);
     });
   }, [rd1]);
 
