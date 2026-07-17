@@ -312,11 +312,20 @@ export default function CustomizerDrawer({
     );
   }, [rd1, selectedMetal]);
 
-  // ── 4. Available sizes for selected metal ──────────────────────────────────
-  const availableSizes = useMemo(
-    () => matchingArticles.map((r) => r.Size).filter(Boolean),
-    [matchingArticles],
-  );
+  // ── 4. Available sizes for selected metal (Unique & Sorted) ────────────────
+  const availableSizes = useMemo(() => {
+    const sizes = Array.from(
+      new Set(matchingArticles.map((r) => r.Size).filter(Boolean)),
+    );
+    return sizes.sort((a, b) => {
+      const numA = parseFloat(a);
+      const numB = parseFloat(b);
+      if (!isNaN(numA) && !isNaN(numB)) {
+        return numA - numB;
+      }
+      return String(a).localeCompare(String(b));
+    });
+  }, [matchingArticles]);
 
   // ── 5. Reset / set size when metal changes ─────────────────────────────────
   useEffect(() => {
@@ -347,7 +356,7 @@ export default function CustomizerDrawer({
     return rd2
       .filter((r) => {
         if (!matchingIds.has(r.ArticleId)) return false;
-        if (r.StoneTypeid === 4 || r.StoneTypeid === 5) return false;
+        if (r.StoneTypeid !== 1) return false;
         // normalize key to uppercase to dedupe casing variants
         const key = `${r.Quality?.toUpperCase()}-${r.Color?.toUpperCase()}`;
         if (seen.has(key)) return false;
@@ -371,10 +380,7 @@ export default function CustomizerDrawer({
     // If we have a defaultArticleId, find its first qualifying stone entry
     if (defaultArticleId && rd2.length) {
       const defStone = rd2.find(
-        (r) =>
-          r.ArticleId === defaultArticleId &&
-          r.StoneTypeid !== 4 &&
-          r.StoneTypeid !== 5,
+        (r) => r.ArticleId === defaultArticleId && r.StoneTypeid === 1,
       );
       if (defStone) {
         // Key must be uppercase to match stoneQualityCombos entries
