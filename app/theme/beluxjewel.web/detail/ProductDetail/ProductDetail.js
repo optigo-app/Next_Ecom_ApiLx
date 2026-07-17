@@ -720,8 +720,7 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
               const diaStone = res?.pdResp?.rd2?.find(
                 (r) =>
                   r.ArticleId === initialArticle.ArticleId &&
-                  r.StoneTypeid !== 4 &&
-                  r.StoneTypeid !== 5,
+                  r.StoneTypeid === 1,
               );
               const csStone = res?.pdResp?.rd2?.find(
                 (r) => r.ArticleId === initialArticle.ArticleId && r.StoneTypeid === 2,
@@ -1312,8 +1311,7 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
       const diaStone = rd2Data.find(
         (r) =>
           r.ArticleId === matchedArticle.ArticleId &&
-          r.StoneTypeid !== 4 &&
-          r.StoneTypeid !== 5,
+          r.StoneTypeid === 1,
       );
       if (diaStone) {
         diaQcVal = `${diaStone.QualityId ?? 0},${diaStone.ColorId ?? 0}`;

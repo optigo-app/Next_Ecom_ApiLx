@@ -83,10 +83,7 @@ const RightSide = ({
   // Derive default diamond quality from rd2 for the activeArticle ArticleId
   const defaultDiaStone =
     rd2?.find(
-      (r) =>
-        r.ArticleId === activeArticle?.ArticleId &&
-        r.StoneTypeid !== 4 &&
-        r.StoneTypeid !== 5,
+      (r) => r.ArticleId === activeArticle?.ArticleId && r.StoneTypeid === 1,
     ) || null;
   const defaultDiaQcLabel =
     activeArticle?.DiaQCLabel ||
@@ -128,7 +125,7 @@ const RightSide = ({
             },
           }}
         >
-          <Typography
+          {/* <Typography
             variant="caption"
             sx={{
               color: "#757575",
@@ -140,7 +137,7 @@ const RightSide = ({
             }}
           >
             Collection: {collection}
-          </Typography>
+          </Typography> */}
           <Typography
             variant="body2"
             sx={{
