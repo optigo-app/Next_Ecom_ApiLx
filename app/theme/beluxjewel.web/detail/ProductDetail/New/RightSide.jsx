@@ -107,21 +107,21 @@ const RightSide = ({
         item
         size={{
           xs: 12,
-          md: 6,
+          md: 5,
         }}
       >
         <Box
           sx={{
             position: "sticky",
-            top: 100,
+            top: 150,
             height: "fit-content",
             width: "100%",
             px: {
               xs: 1, // mobile
               sm: 2, // small screens
               md: 4, // tablets
-              lg: 8, // laptops
-              xl: 15, // large desktops
+              lg: 5, // laptops
+              xl: 6, // large desktops
             },
           }}
         >
@@ -320,6 +320,28 @@ const RightSide = ({
                   </Typography>
                 </Grid>
               )}
+
+              {/* Diamond Origin */}
+              <Grid
+                item
+                size={{
+                  xs: 6,
+                }}
+              >
+                <Typography sx={{ fontSize: "14px", color: "#666" }}>
+                  Diamond Origin
+                </Typography>
+                <Typography sx={{ fontSize: "15px", fontWeight: 600 }}>
+                  {isLoading ? (
+                    <Skeleton variant="text" width={80} />
+                  ) : defaultDiaStone?.MaterialTypeName &&
+                    defaultDiaStone.MaterialTypeName.trim() !== "" ? (
+                    defaultDiaStone.MaterialTypeName
+                  ) : (
+                    "Natural"
+                  )}
+                </Typography>
+              </Grid>
 
               {/* Net Weight */}
               {storeInit?.IsMetalWeight === 1 && (

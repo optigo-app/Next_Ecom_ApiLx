@@ -266,6 +266,7 @@ export default function CustomizerDrawer({
   const [selectedMetal, setSelectedMetal] = useState(null);
   const [selectedSize, setSelectedSize] = useState(null);
   const [selectedDiaQc, setSelectedDiaQc] = useState(null);
+  const [selectedOrigin, setSelectedOrigin] = useState("Natural");
 
   // ── 1. Unique metal combos (MetalTypeId + MetalColorId as key) ─────────────
   const metalCombos = useMemo(() => {
@@ -278,12 +279,47 @@ export default function CustomizerDrawer({
     });
   }, [rd1]);
 
+  // ── 1b. Enhance matchingArticles with their diamond's MaterialTypeName from rd2
+  const matchingArticlesWithOrigin = useMemo(() => {
+    if (!rd1?.length) return [];
+    // Filter matching articles for selected metal
+    const matching = selectedMetal
+      ? rd1.filter(
+          (r) =>
+            r.MetalTypeId === selectedMetal.MetalTypeId &&
+            r.MetalColorId === selectedMetal.MetalColorId,
+        )
+      : [];
+
+    return matching.map((art) => {
+      const diaStone = rd2.find(
+        (stone) => stone.ArticleId === art.ArticleId && stone.StoneTypeid === 1,
+      );
+      const rawOrigin = diaStone?.MaterialTypeName;
+      const normalizedOrigin =
+        rawOrigin && rawOrigin.trim() !== "" ? rawOrigin : "Natural";
+      return {
+        ...art,
+        MaterialTypeName: normalizedOrigin,
+      };
+    });
+  }, [rd1, selectedMetal, rd2]);
+
+  // ── 1c. Unique Diamond Origin values for matching articles
+  const availableOrigins = useMemo(() => {
+    const origins = matchingArticlesWithOrigin.map(
+      (art) => art.MaterialTypeName,
+    );
+    return Array.from(new Set(origins));
+  }, [matchingArticlesWithOrigin]);
+
   // ── 2. Set defaults from defaultArticleId or first combo when drawer opens ──
   useEffect(() => {
     if (!open || !metalCombos.length) return;
 
     let targetMetal = metalCombos[0];
     let targetSize = null;
+    let targetOrigin = "Natural";
 
     if (defaultArticleId) {
       const defArt = rd1.find((r) => r.ArticleId === defaultArticleId);
@@ -295,27 +331,31 @@ export default function CustomizerDrawer({
         );
         if (found) targetMetal = found;
         if (defArt.Size) targetSize = defArt.Size;
+
+        const defStone = rd2.find(
+          (s) => s.ArticleId === defaultArticleId && s.StoneTypeid === 1,
+        );
+        if (
+          defStone?.MaterialTypeName &&
+          defStone.MaterialTypeName.trim() !== ""
+        ) {
+          targetOrigin = defStone.MaterialTypeName;
+        }
       }
     }
 
     setSelectedMetal(targetMetal);
     setSelectedSize(targetSize);
-  }, [open, metalCombos, defaultArticleId, rd1]);
+    setSelectedOrigin(targetOrigin);
+  }, [open, metalCombos, defaultArticleId, rd1, rd2]);
 
-  // ── 3. Articles matching selected metal ────────────────────────────────────
-  const matchingArticles = useMemo(() => {
-    if (!selectedMetal) return [];
-    return rd1.filter(
-      (r) =>
-        r.MetalTypeId === selectedMetal.MetalTypeId &&
-        r.MetalColorId === selectedMetal.MetalColorId,
-    );
-  }, [rd1, selectedMetal]);
-
-  // ── 4. Available sizes for selected metal (Unique & Sorted) ────────────────
+  // ── 4. Available sizes for selected metal and origin (Unique & Sorted) ──────
   const availableSizes = useMemo(() => {
+    const matchingOriginArticles = matchingArticlesWithOrigin.filter(
+      (r) => r.MaterialTypeName === selectedOrigin,
+    );
     const sizes = Array.from(
-      new Set(matchingArticles.map((r) => r.Size).filter(Boolean)),
+      new Set(matchingOriginArticles.map((r) => r.Size).filter(Boolean)),
     );
     return sizes.sort((a, b) => {
       const numA = parseFloat(a);
@@ -325,9 +365,9 @@ export default function CustomizerDrawer({
       }
       return String(a).localeCompare(String(b));
     });
-  }, [matchingArticles]);
+  }, [matchingArticlesWithOrigin, selectedOrigin]);
 
-  // ── 5. Reset / set size when metal changes ─────────────────────────────────
+  // ── 5. Reset / set size when metal or origin changes ───────────────────────
   useEffect(() => {
     if (!selectedMetal) return;
     if (availableSizes.length > 0) {
@@ -337,21 +377,31 @@ export default function CustomizerDrawer({
     } else {
       setSelectedSize(null);
     }
-  }, [selectedMetal]); // intentionally only dep on selectedMetal
+  }, [selectedMetal, selectedOrigin, availableSizes]);
 
-  // ── 6. Active article (metal + size) ──────────────────────────────────────
+  // ── 6. Active article (metal + size + origin) ──────────────────────────────
   const activeArticle = useMemo(() => {
-    if (selectedSize) {
-      return (
-        matchingArticles.find((r) => r.Size === selectedSize) ||
-        matchingArticles[0]
+    let found = matchingArticlesWithOrigin.find(
+      (r) => r.Size === selectedSize && r.MaterialTypeName === selectedOrigin,
+    );
+    if (!found) {
+      found = matchingArticlesWithOrigin.find(
+        (r) => r.MaterialTypeName === selectedOrigin,
       );
     }
-    return matchingArticles[0] || null;
-  }, [matchingArticles, selectedSize]);
+    if (!found) {
+      found = matchingArticlesWithOrigin.find((r) => r.Size === selectedSize);
+    }
+    return found || matchingArticlesWithOrigin[0] || null;
+  }, [matchingArticlesWithOrigin, selectedSize, selectedOrigin]);
 
+  // ── 7. Stone Quality options for selected metal & origin ───────────────────
   const stoneQualityCombos = useMemo(() => {
-    const matchingIds = new Set(matchingArticles.map((r) => r.ArticleId));
+    const matchingIds = new Set(
+      matchingArticlesWithOrigin
+        .filter((r) => r.MaterialTypeName === selectedOrigin)
+        .map((r) => r.ArticleId),
+    );
     const seen = new Set();
     return rd2
       .filter((r) => {
@@ -369,7 +419,7 @@ export default function CustomizerDrawer({
         Quality: r.Quality?.toUpperCase(),
         Color: r.Color?.toUpperCase(),
       }));
-  }, [rd2, matchingArticles]);
+  }, [rd2, matchingArticlesWithOrigin, selectedOrigin]);
 
   // ── 8. Set default dia quality from defaultArticleId, else first combo ─────
   useEffect(() => {
@@ -563,6 +613,21 @@ export default function CustomizerDrawer({
                   }}
                 />
               )}
+              {selectedOrigin && (
+                <Chip
+                  label={selectedOrigin}
+                  size="small"
+                  sx={{
+                    bgcolor: "#fff",
+                    fontSize: "11px",
+                    fontWeight: 600,
+                    color: colors.textDark,
+                    border: `1px solid ${colors.borderLight}`,
+                    borderRadius: "6px",
+                    height: "24px",
+                  }}
+                />
+              )}
               <Chip
                 label={`Art# ${activeArticle.ArticleId}`}
                 size="small"
@@ -621,9 +686,131 @@ export default function CustomizerDrawer({
               </Box>
             </Box>
 
-            <Divider sx={{ mb: 3.5, borderColor: colors.borderLight }} />
+            {availableOrigins.length > 0 && (
+              <Divider sx={{ mb: 3.5, borderColor: colors.borderLight }} />
+            )}
 
-            {/* ── Section 2: Size ───────────────────────────────────────── */}
+            {/* ── Section: Diamond Origin ────────────────────────────── */}
+            {availableOrigins.length > 0 && (
+              <Box sx={{ mb: 4 }}>
+                <SectionLabel>Diamond Origin</SectionLabel>
+                <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1.5 }}>
+                  {availableOrigins.map((origin) => {
+                    const isSelected = selectedOrigin === origin;
+                    return (
+                      <Box
+                        key={origin}
+                        onClick={() => setSelectedOrigin(origin)}
+                        sx={{
+                          cursor: "pointer",
+                          border: `2px solid ${isSelected ? colors.primary : colors.borderLight}`,
+                          backgroundColor: isSelected
+                            ? colors.accentLight
+                            : "#fff",
+                          borderRadius: "14px",
+                          px: 3.5,
+                          py: 1.8,
+                          position: "relative",
+                          transition: "all 0.22s cubic-bezier(0.4, 0, 0.2, 1)",
+                          boxShadow: isSelected
+                            ? "0 0 0 3px rgba(11,47,131,0.14), 0 4px 18px rgba(11,47,131,0.1)"
+                            : "0 1px 4px rgba(0,0,0,0.06)",
+                          "&:hover": {
+                            borderColor: colors.primary,
+                            boxShadow: "0 4px 18px rgba(11,47,131,0.12)",
+                            transform: "translateY(-1px)",
+                          },
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          minWidth: 110,
+                        }}
+                      >
+                        {isSelected && (
+                          <CheckCircleIcon
+                            sx={{
+                              position: "absolute",
+                              top: -8,
+                              right: -8,
+                              fontSize: "18px",
+                              color: colors.primary,
+                              bgcolor: "#fff",
+                              borderRadius: "50%",
+                              zIndex: 1,
+                            }}
+                          />
+                        )}
+                        <Typography
+                          sx={{
+                            fontWeight: 800,
+                            fontSize: "13px",
+                            color: isSelected
+                              ? colors.primary
+                              : colors.textDark,
+                            textTransform: "uppercase",
+                            letterSpacing: "0.05em",
+                            lineHeight: 1.2,
+                          }}
+                        >
+                          {origin}
+                        </Typography>
+                      </Box>
+                    );
+                  })}
+                </Box>
+              </Box>
+            )}
+
+            {stoneQualityCombos.length > 0 && (
+              <Divider sx={{ mb: 3.5, borderColor: colors.borderLight }} />
+            )}
+
+            {/* ── Section 2: Diamond Quality ────────────────────────────── */}
+            {stoneQualityCombos.length > 0 && (
+              <Box sx={{ mb: 4 }}>
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    mb: 1.5,
+                  }}
+                >
+                  <SectionLabel>Diamond Quality</SectionLabel>
+                  <Typography
+                    sx={{
+                      fontSize: "10px",
+                      color: colors.primary,
+                      fontWeight: 700,
+                      cursor: "pointer",
+                      letterSpacing: "0.06em",
+                      textTransform: "uppercase",
+                    }}
+                  >
+                    Diamond Guide
+                  </Typography>
+                </Box>
+                <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1.5 }}>
+                  {stoneQualityCombos.map((combo) => {
+                    const key = `${combo.Quality}-${combo.Color}`;
+                    return (
+                      <QualityCard
+                        key={key}
+                        combo={combo}
+                        isSelected={selectedDiaQc === key}
+                        onClick={() => setSelectedDiaQc(key)}
+                      />
+                    );
+                  })}
+                </Box>
+              </Box>
+            )}
+
+            {availableSizes.length > 0 && (
+              <Divider sx={{ mb: 3.5, borderColor: colors.borderLight }} />
+            )}
+            {/* ── Section 3: Size ───────────────────────────────────────── */}
+
             {availableSizes.length > 0 ? (
               <Box sx={{ mb: 4 }}>
                 <Box
@@ -674,48 +861,6 @@ export default function CustomizerDrawer({
               </Box>
             )}
 
-            <Divider sx={{ mb: 3.5, borderColor: colors.borderLight }} />
-
-            {/* ── Section 3: Diamond Quality ────────────────────────────── */}
-            {stoneQualityCombos.length > 0 && (
-              <Box sx={{ mb: 4 }}>
-                <Box
-                  sx={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    mb: 1.5,
-                  }}
-                >
-                  <SectionLabel>Diamond Quality</SectionLabel>
-                  <Typography
-                    sx={{
-                      fontSize: "10px",
-                      color: colors.primary,
-                      fontWeight: 700,
-                      cursor: "pointer",
-                      letterSpacing: "0.06em",
-                      textTransform: "uppercase",
-                    }}
-                  >
-                    Diamond Guide
-                  </Typography>
-                </Box>
-                <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1.5 }}>
-                  {stoneQualityCombos.map((combo) => {
-                    const key = `${combo.Quality}-${combo.Color}`;
-                    return (
-                      <QualityCard
-                        key={key}
-                        combo={combo}
-                        isSelected={selectedDiaQc === key}
-                        onClick={() => setSelectedDiaQc(key)}
-                      />
-                    );
-                  })}
-                </Box>
-              </Box>
-            )}
             {/* End of content */}
           </>
         )}
