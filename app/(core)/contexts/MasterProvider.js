@@ -29,7 +29,11 @@ export const MasterProvider = ({
   getCompanyInfoData,
   getStoreInit,
   getMyAccountFlags,
+  theme,
 }) => {
+  // When the active theme is "beluxjewel.web" we skip all Master API calls
+  // (combo lists, paymaster, etc.) because that theme manages its own data flow.
+  const isBelux = theme === "beluxjewel.web";
   if (typeof window !== "undefined") {
     window.__STORE_INIT__ = getStoreInit;
     window.__LOGIN_USER__ =
@@ -109,7 +113,12 @@ export const MasterProvider = ({
     }
 
     if (storeInitData) {
-      callAllApi();
+      if (isBelux) {
+        // Skip all combo/master API calls for beluxjewel.web theme
+        setIsMasterReady(true);
+      } else {
+        callAllApi();
+      }
     }
   };
 
@@ -121,8 +130,11 @@ export const MasterProvider = ({
     }
   }, [getStoreInit, getMyAccountFlags]);
 
-  // Paymaster fetch
+  // Paymaster fetch — skipped for beluxjewel.web theme
   useEffect(() => {
+    if (isBelux) {
+      return; // beluxjewel.web does not use paymaster
+    }
     const fetchData = async () => {
       try {
         const storedPayMaster = getSession("payMaster");
@@ -147,9 +159,9 @@ export const MasterProvider = ({
       }
     };
 
-    const timer = setTimeout(fetchData, 100); // Reduced from 2000 to 100
+    const timer = setTimeout(fetchData, 100);
     return () => clearTimeout(timer);
-  }, []);
+  }, [isBelux]);
 
   console.log(typeof window !== "undefined");
   const callAllApi = async () => {

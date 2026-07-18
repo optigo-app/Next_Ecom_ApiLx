@@ -20,7 +20,6 @@ import MobileMenu from "./MobileMenu";
 import RightSideMenu from "./RightSideMenu";
 import Cookies from "js-cookie";
 import { GetMenuAPI } from "@/app/(core)/utils/API/GetMenuAPI/GetMenuAPI";
-import { GETProductType } from "@/app/(core)/utils/API/GETProductType/GETProductType";
 import SearchBarToggle from "./SearchBarToggle";
 import DrawerSearchBar from "./DrawerSearchbar";
 import { Masonry } from "@mui/lab";
@@ -49,6 +48,7 @@ const BeluxNavbar = ({ storeInit: storeinit, logos }) => {
     setWishCountNum,
     setCartOpenStateB2C,
     loginUserDetail,
+    finalId,
   } = useStore();
 
   const { clearAllCacheData } = useMaster();
@@ -69,7 +69,6 @@ const BeluxNavbar = ({ storeInit: storeinit, logos }) => {
   const compnyLogo = logos?.web;
   const compnyLogoM = logos?.mobile;
 
-  // UI State
   const [expandedMenu, setExpandedMenu] = useState(null);
   const [menuLoading, setMenuLoading] = useState(true);
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -77,35 +76,15 @@ const BeluxNavbar = ({ storeInit: storeinit, logos }) => {
   const [menuStack, setMenuStack] = useState([]);
   const [hoveredItem, setHoveredItem] = useState(null);
   const [isScrolled, setIsScrolled] = useState(false);
-  // tracks if announcement bar (36px) has scrolled out of view
   const [announcementGone, setAnnouncementGone] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const [DrawerSearchOpen, setDrawerSearchOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
 
-  // Data State
-  const [multiMenuData, setMultiMenuData] = useState({});
-
-  // 1. Dynamic Menu State (Product Types: Diamond, Gold)
-  const [DynamicMenu, setDynamicMenu] = useState(() => {
-    try {
-      const raw = getSession("DyamicMenuList");
-      return raw ? raw : [];
-    } catch (e) {
-      return [];
-    }
-  });
-
-  // 2. Selected Tab State
-  const [selectedProductType, setSelectedProductType] = useState(() => {
-    return getSession("selectedTabPersistence") || null;
-  });
+  const [menuItems, setMenuItems] = useState([]);
 
   const controls = useAnimation();
-  const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
   const IsB2BWebsiteChek = storeinit?.IsB2BWebsite;
-
-  // --- Initial Setup (Logo, Counts, Scroll) ---
 
   useEffect(() => {
     if (location === "/") {
@@ -118,7 +97,6 @@ const BeluxNavbar = ({ storeInit: storeinit, logos }) => {
     }
   }, [location]);
 
-  // Track when announcement bar (36px) has scrolled away
   useEffect(() => {
     const onScroll = () => setAnnouncementGone(window.scrollY > 36);
     onScroll(); // run once on mount
@@ -145,174 +123,46 @@ const BeluxNavbar = ({ storeInit: storeinit, logos }) => {
     });
   }, [isHovered, isScrolled, controls]);
 
-  // =========================================================================
-  //  STEP 1: FETCH PRODUCT TYPES (Diamond, Gold, etc.)
-  // =========================================================================
   useEffect(() => {
     let isMounted = true;
 
-    const fetchProductTypes = async () => {
-      const visiterID = Cookies.get("visiterId");
-      let finalId;
-      if (storeinit?.IsB2BWebsite === 0) {
-        finalId = islogin === false ? visiterID : loginUserDetail?.id || "0";
-      } else {
-        finalId = loginUserDetail?.id || "0";
-      }
+    const loadMenu = async () => {
+      const cacheKey = `beluxMenu_${finalId}`;
+      let menuData = getSession(cacheKey);
 
-      // B. Fetch or Get from Session
-      const sessionMenu = getSession("DyamicMenuList");
-      if (sessionMenu && sessionMenu !== "[]" && sessionMenu !== "null") {
-        if (isMounted) setDynamicMenu(sessionMenu);
-      } else {
+      if (!menuData || menuData === "[]" || menuData === "null") {
         try {
-          const res = await GETProductType(finalId);
-          if (res?.Data?.rd) {
-            sessionStorage.setItem(
-              "DyamicMenuList",
-              JSON.stringify(res.Data.rd),
-            );
-            if (isMounted) setDynamicMenu(res.Data.rd);
-          }
-        } catch (err) {
-          console.warn("Error fetching Product Types", err);
-        }
-      }
-    };
-
-    fetchProductTypes();
-
-    return () => {
-      isMounted = false;
-    };
-  }, [islogin]);
-
-  // =========================================================================
-  //  STEP 2: FETCH SPECIFIC MENUS (Only after DynamicMenu exists)
-  // =========================================================================
-  useEffect(() => {
-    let isMounted = true;
-
-    // If no product types, we can't fetch menus.
-    if (!DynamicMenu || DynamicMenu.length === 0) {
-      setMenuLoading(false);
-      return;
-    }
-
-    const fetchSpecificMenus = async () => {
-      setMenuLoading(true);
-
-      // A. Handle Default Selection IMMEDIATELY
-      const savedType = getSession("selectedTabPersistence");
-      const isValidSaved =
-        savedType &&
-        DynamicMenu.some((item) => item.ProductTypeName === savedType);
-
-      let typeToUse = isValidSaved
-        ? savedType
-        : DynamicMenu[0]?.ProductTypeName;
-
-      if (!selectedProductType || selectedProductType !== typeToUse) {
-        if (isMounted) setSelectedProductType(typeToUse);
-        sessionStorage.setItem("selectedTabPersistence", typeToUse);
-      }
-
-      const visiterID = Cookies.get("visiterId");
-
-      let finalId;
-      if (storeinit?.IsB2BWebsite === 0) {
-        finalId = islogin === false ? visiterID : loginUserDetail?.id || "0";
-      } else {
-        finalId = loginUserDetail?.id || "0";
-      }
-
-      // C. Fetch Menu for the first item only
-      const topMenus = DynamicMenu.slice(0, 1);
-
-      const fetchWithRetry = async (menuName, id, retries = 3) => {
-        const uniqueCacheKey = `cachedMenu_${menuName}_${id}`;
-        const cachedRaw = getSession(uniqueCacheKey);
-        if (cachedRaw) return cachedRaw;
-
-        try {
-          const res = await GetMenuAPI(id, menuName);
+          const res = await GetMenuAPI(finalId);
           const rawData = res?.Data?.rd || [];
           if (rawData.length > 0) {
-            sessionStorage.setItem(uniqueCacheKey, JSON.stringify(rawData));
-            return rawData;
+            sessionStorage.setItem(cacheKey, JSON.stringify(rawData));
+            menuData = rawData;
           }
-          throw new Error("Empty data");
         } catch (err) {
-          if (retries > 0 && isMounted) {
-            await wait(1000);
-            return fetchWithRetry(menuName, id, retries - 1);
-          }
-          return [];
+          console.warn("[Navbar] GetMenuAPI failed", err);
         }
-      };
-
-      try {
-        const results = await Promise.all(
-          topMenus.map(async (menuItem) => {
-            const data = await fetchWithRetry(
-              menuItem.ProductTypeName,
-              finalId,
-            );
-            return { name: menuItem.ProductTypeName, data: data };
-          }),
-        );
-
-        if (isMounted) {
-          const processedData = {};
-          results.forEach((res) => {
-            processedData[res.name] = buildMenuItems(res.data);
-          });
-          setMultiMenuData(processedData);
-        }
-      } catch (error) {
-        console.error("Critical error in menu fetching:", error);
-      } finally {
-        if (isMounted) setMenuLoading(false);
       }
+
+      if (isMounted && menuData?.length) {
+        setMenuItems(buildMenuItems(menuData));
+      }
+
+      if (isMounted) setMenuLoading(false);
     };
 
-    fetchSpecificMenus();
+    setMenuLoading(true);
+    loadMenu();
 
     return () => {
       isMounted = false;
     };
-  }, [DynamicMenu, islogin]); // DEPENDENCY: Runs when DynamicMenu populates
+    // Intentional: only re-run when the user identity changes (login/logout)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [islogin, loginUserDetail]);
 
   const currentMenuItems = useMemo(() => {
-    const key = selectedProductType || DynamicMenu?.[0]?.ProductTypeName;
-    if (!key) return [];
-    const items = multiMenuData[key] || [];
-    console.log("Navbar Debug - Selected Product Type:", key);
-    console.log("Navbar Debug - Menu Items:", items);
-    return items;
-  }, [selectedProductType, multiMenuData, DynamicMenu]);
-
-  // const handleTabChange = (typeName) => {
-  //     setSelectedProductType(typeName);
-  //     sessionStorage.setItem("selectedTabPersistence", typeName);
-  //     setSyncProductList({
-  //       ProductType: typeName,
-  //       Source: "navbar",
-  //       ts: Date.now(),
-  //     });
-  // };
-  const handleTabChange = (typeName) => {
-    if (selectedProductType === typeName) return;
-
-    setSelectedProductType(typeName);
-    sessionStorage.setItem("selectedTabPersistence", typeName);
-
-    setSyncProductList({
-      ProductType: typeName,
-      Source: "navbar",
-      ts: Date.now(), // event trigger
-    });
-  };
+    return menuItems;
+  }, [menuItems]);
 
   const handelMenu = (param, param1, param2, event, isFilterKey2Ignore) => {
     if (
@@ -1158,10 +1008,10 @@ const BeluxNavbar = ({ storeInit: storeinit, logos }) => {
           islogin={islogin}
           storeinit={storeinit}
           IsB2BWebsiteChek={IsB2BWebsiteChek}
-          DynamicMenu={DynamicMenu}
-          selectedProductType={selectedProductType}
-          handleTabChange={handleTabChange}
-          showProductTypeTabs={true}
+          DynamicMenu={[]}
+          selectedProductType={null}
+          handleTabChange={() => {}}
+          showProductTypeTabs={false}
         />
       </Drawer>
     </>
