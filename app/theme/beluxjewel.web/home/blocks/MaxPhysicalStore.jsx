@@ -5,160 +5,208 @@ import {
   Container,
   Typography,
   Button,
-  ThemeProvider,
-  createTheme,
-  Divider,
+  Grid,
   Stack,
-  styled,
+  Divider,
 } from "@mui/material";
 import LocationOnOutlinedIcon from "@mui/icons-material/LocationOnOutlined";
 import PhoneOutlinedIcon from "@mui/icons-material/PhoneOutlined";
 import AccessTimeOutlinedIcon from "@mui/icons-material/AccessTimeOutlined";
-
-const StoreImageWrapper = styled(Box)(({ theme }) => ({
-  width: "75%",
-  height: "650px",
-  position: "relative",
-  overflow: "hidden",
-  boxShadow: "0 20px 40px rgba(0,0,0,0.08)",
-  borderRadius: "12px",
-  [theme.breakpoints.down("md")]: {
-    width: "100%",
-    height: "450px",
-    borderRadius: "0px",
-  },
-}));
-
-const InfoCard = styled(Box)(({ theme }) => ({
-  position: "absolute",
-  bottom: "-8%",
-  right: "0",
-  width: "42%",
-  backgroundColor: "#FFFFFF",
-  padding: theme.spacing(6),
-  zIndex: 2,
-  boxShadow: "0 15px 45px rgba(0,0,0,0.08)",
-  boxSizing: "border-box",
-  border: "1px solid #eaeaea",
-  borderRadius: "12px",
-  [theme.breakpoints.down("md")]: {
-    position: "relative",
-    width: "92%",
-    margin: "-80px auto 0",
-    bottom: "auto",
-    right: "auto",
-    padding: theme.spacing(4, 3),
-    borderRadius: "12px",
-    boxShadow: "0 -10px 30px rgba(0,0,0,0.05)",
-  },
-}));
-
-// ─── Helpers ─────────────────────────────────────────────────────────────────
-
-const DetailItem = ({ Icon, text }) => (
-  <Stack direction="row" spacing={2} alignItems="flex-start" sx={{ mb: 3 }}>
-    <Icon sx={{ color: "#555555", fontSize: "1.2rem", mt: 0.5 }} />
-    <Typography variant="body2">{text}</Typography>
-  </Stack>
-);
-
-// ─── Main Component ──────────────────────────────────────────────────────────
+import "./PhysicalStore.scss";
 
 export default function MaxPhysicalStore() {
   return (
     <Box
+      className="physicalStoreContainer"
       sx={{
-        bgcolor: "background.default",
-        py: { xs: 6, md: 10 },
-        overflow: "hidden",
+        py: { xs: 8, md: 12 },
       }}
     >
-      <Container maxWidth="lg" sx={{ px: { xs: 2, sm: 3, md: 4 } }}>
-        {/* Content Stack */}
-        <Box
-          sx={{
-            position: "relative",
-            display: "flex",
-            flexDirection: "column",
-            mt: 4,
-          }}
-        >
-          <StoreImageWrapper>
+      <Box>
+        <Grid container spacing={{ xs: 4, md: 8 }} alignItems="center">
+          {/* Left Column: Image */}
+          <Grid
+            item
+            size={{
+              xs: 12,
+              md: 6,
+            }}
+          >
             <Box
-              component="img"
-              src="/store.png"
-              alt="Luxury Boutique Interior"
               sx={{
                 width: "100%",
-                height: "100%",
-                objectFit: "cover",
-                transition: "transform 2s ease",
-                "&:hover": { transform: "scale(1.03)" },
+                height: { xs: "350px", sm: "450px", md: "720px" },
+                overflow: "hidden",
+                borderRadius: "1px", // Minimalist sharp edges like Brilliant Earth
+                boxShadow: "0 8px 30px rgba(0,0,0,0.04)",
               }}
-            />
-          </StoreImageWrapper>
-
-          <InfoCard>
-            <Typography variant="overline" display="block" sx={{ mb: 1.5 }}>
-              SURAT, INDIA
-            </Typography>
-            <Typography variant="h2" sx={{ mb: 3.5 }}>
-              Gujarat High Jewelry Studio
-            </Typography>
-
-            <Divider sx={{ mb: 4, opacity: 0.6 }} />
-
-            <DetailItem
-              Icon={LocationOnOutlinedIcon}
-              text="Plot No. A-14 to A-18,
-Sunrise Business Park,
-Canal Road,
-Cocoa, Surat,
-Gujarat 395009,
-India"
-            />
-
-            <DetailItem
-              Icon={AccessTimeOutlinedIcon}
-              text="Mon - Sun : 11:00 AM to 9:00 PM"
-            />
-
-            <DetailItem
-              Icon={PhoneOutlinedIcon}
-              text={
-                <span style={{ fontWeight: 600, color: "#1A1A1A" }}>
-                  +91 12346567891
-                </span>
-              }
-            />
-
-            <Box sx={{ mt: 5 }}>
-              <Button
-                variant="contained"
-                fullWidth
+            >
+              <Box
+                component="img"
+                src="/store.png"
+                alt="Luxury Boutique Interior"
                 sx={{
-                  bgcolor: "#1A1A1A",
-                  color: "#FFF",
-                  py: 1.8,
-                  fontSize: "0.85rem",
+                  width: "100%",
+                  height: "100%",
+                  objectFit: "cover",
+                  transition: "transform 1.5s ease",
+                  "&:hover": { transform: "scale(1.05)" },
+                }}
+              />
+            </Box>
+          </Grid>
+
+          {/* Right Column: Content */}
+          <Grid
+            item
+            size={{
+              xs: 12,
+              md: 6,
+            }}
+          >
+            <Box sx={{ pr: { md: 4 } }}>
+              <Typography
+                variant="overline"
+                className="physicalStoreOverline"
+                sx={{
+                  letterSpacing: "0.15em",
                   fontWeight: 600,
-                  letterSpacing: "1px",
-                  borderRadius: "8px",
-                  textTransform: "uppercase",
-                  transition: "all 0.3s ease",
-                  "&:hover": {
-                    bgcolor: "#000000",
-                    transform: "translateY(-2px)",
-                    boxShadow: "0 5px 15px rgba(0,0,0,0.15)",
-                  },
+                  fontSize: "0.85rem",
+                  mb: 1.5,
+                  display: "block",
                 }}
               >
-                PLAN YOUR VISIT
-              </Button>
+                OUR SHOWROOM
+              </Typography>
+
+              <Typography
+                variant="h3"
+                className="physicalStoreTitle"
+                sx={{
+                  fontFamily: "Prata, Playfair Display, serif",
+                  fontWeight: 400,
+                  fontSize: { xs: "2rem", md: "2.4rem" },
+                  lineHeight: 1.3,
+                  mb: 2,
+                }}
+              >
+                We're Here for You, In Person and Online
+              </Typography>
+
+              <Typography
+                variant="body1"
+                className="physicalStoreBody"
+                sx={{
+                  fontSize: "1rem",
+                  lineHeight: 1.6,
+                  mb: 4,
+                }}
+              >
+                Whether it's at a store near you or online, we curate your
+                appointment just for you.
+              </Typography>
+
+              <Divider className="physicalStoreDivider" sx={{ mb: 4 }} />
+
+              {/* Showroom Details */}
+              <Stack spacing={2.5} sx={{ mb: 4 }}>
+                <Stack direction="row" spacing={2} alignItems="flex-start">
+                  <LocationOnOutlinedIcon
+                    className="physicalStoreIcon"
+                    sx={{ fontSize: "1.3rem", mt: "2px" }}
+                  />
+                  <Box>
+                    <Typography
+                      variant="subtitle2"
+                      className="physicalStoreDetailText"
+                      sx={{ fontWeight: 600, mb: 0.5 }}
+                    >
+                      Gujarat High Jewelry Studio
+                    </Typography>
+                    <Typography
+                      variant="body2"
+                      className="physicalStoreDetailSubtext"
+                      sx={{ lineHeight: 1.6 }}
+                    >
+                      Plot No. A-14 to A-18, Sunrise Business Park, Canal Road,
+                      Cocoa, Surat, Gujarat 395009, India
+                    </Typography>
+                  </Box>
+                </Stack>
+
+                <Stack direction="row" spacing={2} alignItems="flex-start">
+                  <AccessTimeOutlinedIcon
+                    className="physicalStoreIcon"
+                    sx={{ fontSize: "1.3rem", mt: "2px" }}
+                  />
+                  <Box>
+                    <Typography
+                      variant="body2"
+                      className="physicalStoreDetailSubtext"
+                      sx={{ lineHeight: 1.6 }}
+                    >
+                      Mon - Sun : 11:00 AM to 9:00 PM
+                    </Typography>
+                  </Box>
+                </Stack>
+
+                <Stack direction="row" spacing={2} alignItems="flex-start">
+                  <PhoneOutlinedIcon
+                    className="physicalStoreIcon"
+                    sx={{ fontSize: "1.3rem", mt: "2px" }}
+                  />
+                  <Box>
+                    <Typography
+                      variant="body2"
+                      className="physicalStoreDetailText"
+                      sx={{ fontWeight: 600 }}
+                    >
+                      +91 12346567891
+                    </Typography>
+                  </Box>
+                </Stack>
+              </Stack>
+
+              {/* Actions */}
+              <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
+                <Button
+                  variant="outlined"
+                  fullWidth
+                  className="physicalStoreButton"
+                  sx={{
+                    borderRadius: "0px",
+                    py: 1.6,
+                    fontSize: "0.85rem",
+                    fontWeight: 600,
+                    letterSpacing: "1.5px",
+                    textTransform: "uppercase",
+                    transition: "all 0.3s ease",
+                  }}
+                >
+                  Visit Showroom
+                </Button>
+                <Button
+                  variant="outlined"
+                  fullWidth
+                  className="physicalStoreButton"
+                  sx={{
+                    borderRadius: "0px",
+                    py: 1.6,
+                    fontSize: "0.85rem",
+                    fontWeight: 600,
+                    letterSpacing: "1.5px",
+                    textTransform: "uppercase",
+                    transition: "all 0.3s ease",
+                  }}
+                >
+                  Book Appointment
+                </Button>
+              </Stack>
             </Box>
-          </InfoCard>
-        </Box>
-      </Container>
+          </Grid>
+        </Grid>
+      </Box>
     </Box>
   );
 }
+

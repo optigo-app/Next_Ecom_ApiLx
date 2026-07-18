@@ -14,7 +14,7 @@ import { StoreProvider } from "./(core)/contexts/StoreProvider";
 import { themeMap } from "./(core)/utils/ThemeMap";
 import { AuthProvider } from "./(core)/contexts/AuthProvider";
 import { EmotionRegistry } from "./(core)/contexts/EmotionRegistry";
-import { defaultFont } from "./(core)/assets/FontSetup";
+import { defaultFont, defaultFontVariable } from "./(core)/assets/FontSetup";
 import { BroadcasterProvider } from "@/app/(core)/contexts/BoardCastContext";
 import { isOmJiyansh, ActiveMeta, getSiteDetails } from "./(core)/seo";
 
@@ -69,6 +69,7 @@ export default async function RootLayout({ children }) {
     name: siteName,
     url: siteUrl,
   };
+  
 
   return (
     <html lang="en" data-brand={activeBrand}>
@@ -80,7 +81,7 @@ export default async function RootLayout({ children }) {
       </head>
       <BroadcasterProvider>
         <EmotionRegistry>
-          <body className={`${defaultFont.variable}`}>
+          <body className={`${defaultFont.variable}`} style={{ '--font-default': `var(${defaultFontVariable})` }}>
             <MasterProvider
               getCompanyInfoData={companyInfo}
               getStoreInit={storeInit}

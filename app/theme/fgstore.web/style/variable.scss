@@ -100,6 +100,31 @@ $fontSize8: 40px;
   --defaultbtncolor: black;
 }
 
+[data-brand="beluxjewel"],
+[data-brand="beluxjewel"]{
+$primaryBorderColor: #e1e1e1;
+$primaryBorderColor2: #42424233;
+$bgColor: #114D6E; // Light gray background
+$textColor: #1b1212; // Dark gray text color
+$menuColor: #1b1212;
+$navbarbg: white;
+$navbarcolor: black;
+$badgecolor: #114D6E;
+$badgetxtcolor: black;
+$footerbg: black;
+$footertextcolor: black;
+$sliderbar: #08054c;
+$btnBg: #114D6E;
+$btncolor: white;
+$authbtnbg: #114D6E  ;
+$authbtncolor: white;
+$authbg: white;
+$footertextcolor: white;
+$menutitle: black;
+$defaultbtncolor: black;
+$topbar: #114D6E;
+}
+
 $primaryBorderColor: var(--primaryBorderColor);
 $primaryBorderColor2: var(--primaryBorderColor2);
 $bgColor: var(--bgColor);

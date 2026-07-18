@@ -267,7 +267,7 @@ const ProductCard = ({
           position: "relative",
           width: "100%",
           height: "100%",
-          borderRadius: 4,
+          borderRadius: 1,
           overflow: "hidden",
           aspectRatio: {
             xs: "3 / 4",
@@ -275,7 +275,7 @@ const ProductCard = ({
             md: "1 / 1.2",
             lg: "1/1.18",
           },
-          bgcolor: "#fff9f266",
+          bgcolor: "#f0f0f05d",
         }}
       >
         {/* Main Image */}

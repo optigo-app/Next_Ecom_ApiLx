@@ -1,5 +1,11 @@
-"use client"
-import React, { useRef, useState, useEffect, useMemo, useCallback } from "react";
+"use client";
+import React, {
+  useRef,
+  useState,
+  useEffect,
+  useMemo,
+  useCallback,
+} from "react";
 import {
   Box,
   Typography,
@@ -19,8 +25,13 @@ import { useNextRouterLikeRR } from "@/app/(core)/hooks/useLocationRd";
 import { HomeCategoryApi } from "@/app/(core)/utils/API/Home/HomeCategoryApi/HomeCategoryApi";
 import { useStore } from "@/app/(core)/contexts/StoreProvider";
 import { HomeCollectionApi } from "@/app/(core)/utils/API/Home/HomeCollectionApi/HomeCollectionApi";
-import { normalizeALC, buildAlbumCacheKey, getPricingContext } from "@/app/(core)/cache_utility/CacheBuilder";
+import {
+  normalizeALC,
+  buildAlbumCacheKey,
+  getPricingContext,
+} from "@/app/(core)/cache_utility/CacheBuilder";
 import { readCache, writeCache } from "@/app/(core)/cache_utility/cacheActions";
+import SpireBox from "./Svg";
 
 const SkeletonCard = () => (
   <Box sx={{ width: "100%" }}>
@@ -38,7 +49,7 @@ const SkeletonCard = () => (
         mt: 2,
         mx: "auto",
         width: "60%",
-        height: 24
+        height: 24,
       }}
     />
   </Box>
@@ -48,7 +59,7 @@ const SkeletonCard = () => (
 const StyledCard = styled(Card)(({ theme }) => ({
   position: "relative",
   overflow: "hidden",
-  borderRadius: "8px",
+  borderRadius: "1px",
   backgroundColor: "transparent",
   boxShadow: "none",
   cursor: "pointer",
@@ -59,7 +70,7 @@ const StyledCard = styled(Card)(({ theme }) => ({
   },
 
   "&:hover img": {
-    transform: "scale(1.05)",
+    transform: "scale(1.1)",
   },
 }));
 
@@ -67,15 +78,15 @@ const CategoryImageWrapper = styled(Box)(({ theme }) => ({
   width: "100%",
   height: "100%",
   aspectRatio: "3/3.5", // 🔥 BEST FIX (auto responsive)
-  borderRadius: "8px",
+  borderRadius: "1px",
   overflow: "hidden",
 }));
 
 const CategoryImage = styled("img")({
   width: "100%",
   height: "100%",
-  objectFit: "cover", // 🔥 keeps layout clean  
-  borderRadius: 4,
+  objectFit: "cover", // 🔥 keeps layout clean
+  borderRadius: 1,
   transition: "transform 0.4s ease",
 });
 
@@ -116,33 +127,32 @@ const NavButton = styled(IconButton)(({ theme }) => ({
   },
 }));
 
-
 const fallbackCollection = {
-  "Status": "200",
-  "Message": "Success",
-  "Data": {
-    "rd": [
+  Status: "200",
+  Message: "Success",
+  Data: {
+    rd: [
       {
-        "CollectionName": "Glossy"
+        CollectionName: "Glossy",
       },
       {
-        "CollectionName": "arista"
+        CollectionName: "arista",
       },
       {
-        "CollectionName": "Artifact"
+        CollectionName: "Artifact",
       },
       {
-        "CollectionName": "Bellucci"
+        CollectionName: "Bellucci",
       },
       {
-        "CollectionName": "Claire"
+        CollectionName: "Claire",
       },
       {
-        "CollectionName": "Euclid"
-      }
-    ]
-  }
-}
+        CollectionName: "Euclid",
+      },
+    ],
+  },
+};
 
 const CategoryBlock = ({ assetBase, storeInit }) => {
   const { finalId, islogin, loginUserDetail } = useStore();
@@ -159,54 +169,61 @@ const CategoryBlock = ({ assetBase, storeInit }) => {
     collection: [],
   });
 
-  const pricingContext = useMemo(() => getPricingContext(loginUserDetail, storeInit, islogin), [loginUserDetail, storeInit, islogin]);
+  const pricingContext = useMemo(
+    () => getPricingContext(loginUserDetail, storeInit, islogin),
+    [loginUserDetail, storeInit, islogin],
+  );
   const isFetchingRef = useRef(false);
   const lastRequestKeyRef = useRef("");
 
-  const fetchAndSetCategories = useCallback(async (finalID, cacheKey) => {
-    if (!pricingContext || !pricingContext.PackageId || isFetchingRef.current) return;
+  const fetchAndSetCategories = useCallback(
+    async (finalID, cacheKey) => {
+      if (!pricingContext || !pricingContext.PackageId || isFetchingRef.current)
+        return;
 
-    isFetchingRef.current = true;
-    setLoading(true);
+      isFetchingRef.current = true;
+      setLoading(true);
 
-    try {
-      const cacheRes = await readCache(cacheKey);
+      try {
+        const cacheRes = await readCache(cacheKey);
 
-      if (cacheRes?.cached && Array.isArray(cacheRes.data)) {
-        console.log("[CategoryBlock] Serving from cache");
+        if (cacheRes?.cached && Array.isArray(cacheRes.data)) {
+          console.log("[CategoryBlock] Serving from cache");
+          setSectionData({
+            collection: fallbackCollection.Data.rd,
+            category: cacheRes.data,
+          });
+          setLoading(false);
+          isFetchingRef.current = false;
+          return;
+        }
+
+        console.log("[CategoryBlock] Cache miss, calling API...");
+        const categoryList = await HomeCategoryApi(finalID);
+        const apiData = categoryList?.Data?.rd || [];
+
         setSectionData({
           collection: fallbackCollection.Data.rd,
-          category: cacheRes.data,
+          category: apiData,
+        });
+
+        if (apiData.length > 0) {
+          writeCache(cacheKey, apiData).catch(console.error);
+        }
+        setLoading(false);
+        isFetchingRef.current = false;
+      } catch (error) {
+        console.error("[CategoryBlock] Error fetching category:", error);
+        setSectionData({
+          collection: fallbackCollection.Data.rd,
+          category: [],
         });
         setLoading(false);
         isFetchingRef.current = false;
-        return;
       }
-
-      console.log("[CategoryBlock] Cache miss, calling API...");
-      const categoryList = await HomeCategoryApi(finalID);
-      const apiData = categoryList?.Data?.rd || [];
-
-      setSectionData({
-        collection: fallbackCollection.Data.rd,
-        category: apiData,
-      });
-
-      if (apiData.length > 0) {
-        writeCache(cacheKey, apiData).catch(console.error);
-      }
-      setLoading(false);
-      isFetchingRef.current = false;
-    } catch (error) {
-      console.error("[CategoryBlock] Error fetching category:", error);
-      setSectionData({
-        collection: fallbackCollection.Data.rd,
-        category: [],
-      });
-      setLoading(false);
-      isFetchingRef.current = false;
-    }
-  }, [pricingContext, storeInit]);
+    },
+    [pricingContext, storeInit],
+  );
 
   useEffect(() => {
     if (!pricingContext || !storeInit) return;
@@ -214,7 +231,13 @@ const CategoryBlock = ({ assetBase, storeInit }) => {
     const fetchData = async () => {
       const visitorId = finalId || "0";
       const keyALC = normalizeALC("");
-      const { key } = buildAlbumCacheKey("fg_category", storeInit, pricingContext, visitorId, keyALC);
+      const { key } = buildAlbumCacheKey(
+        "fg_category",
+        storeInit,
+        pricingContext,
+        visitorId,
+        keyALC,
+      );
 
       if (isFetchingRef.current || lastRequestKeyRef.current === key) return;
       lastRequestKeyRef.current = key;
@@ -236,9 +259,18 @@ const CategoryBlock = ({ assetBase, storeInit }) => {
       FilterVal2: "",
     };
     sessionStorage.setItem("menuparams", JSON.stringify(finalData));
-    const queryParameters1 = [finalData?.FilterKey && `${finalData.FilterVal}`, finalData?.FilterKey1 && `${finalData.FilterVal1}`, finalData?.FilterKey2 && `${finalData.FilterVal2}`].filter(Boolean).join("/");
-    const queryParameters = [finalData?.FilterKey && `${finalData.FilterVal}`, finalData?.FilterKey1 && `${finalData.FilterVal1}`, finalData?.FilterKey2 && `${finalData.FilterVal2}`]
-      .join(",");
+    const queryParameters1 = [
+      finalData?.FilterKey && `${finalData.FilterVal}`,
+      finalData?.FilterKey1 && `${finalData.FilterVal1}`,
+      finalData?.FilterKey2 && `${finalData.FilterVal2}`,
+    ]
+      .filter(Boolean)
+      .join("/");
+    const queryParameters = [
+      finalData?.FilterKey && `${finalData.FilterVal}`,
+      finalData?.FilterKey1 && `${finalData.FilterVal1}`,
+      finalData?.FilterKey2 && `${finalData.FilterVal2}`,
+    ].join(",");
     const otherparamUrl = Object.entries({
       b: finalData?.FilterKey,
       g: finalData?.FilterKey1,
@@ -248,13 +280,14 @@ const CategoryBlock = ({ assetBase, storeInit }) => {
       .map(([key, value]) => value)
       .filter(Boolean)
       .join(",");
-    const paginationParam = [`page=${finalData.page ?? 1}`, `size=${finalData.size ?? 50}`].join("&");
+    const paginationParam = [
+      `page=${finalData.page ?? 1}`,
+      `size=${finalData.size ?? 50}`,
+    ].join("&");
     let menuEncoded = `${queryParameters}/${otherparamUrl}`;
     const url = `/p/${finalData?.menuname}/${queryParameters1}/?M=${btoa(menuEncoded)}`;
     navigate.push(url);
   };
-
-
 
   const buildNormalizedMap = (obj) => {
     const map = {};
@@ -270,8 +303,10 @@ const CategoryBlock = ({ assetBase, storeInit }) => {
     return map[normalized] || `/fallback.jpg`;
   };
 
-   
-   console.log("TCL: CategoryBlock -> assetBase", `${assetBase}/images/Category/Bangle.webp`)
+  console.log(
+    "TCL: CategoryBlock -> assetBase",
+    `${assetBase}/images/Category/Bangle.webp`,
+  );
   const images = {
     collectionImages: buildNormalizedMap({
       Duometrik: `${assetBase}/images/Collection/Duometrik.jpg`,
@@ -324,12 +359,9 @@ const CategoryBlock = ({ assetBase, storeInit }) => {
       Bangle: `${assetBase}/images/Category/Bangle.webp`,
       Pendant_Set: `${assetBase}/images/Category/pendentset.webp`,
     }),
-  }
+  };
 
   const ImgesPick = true ? ImagesDemo : images;
-
-
-
 
   // Swiper config shared for both
   const swiperConfig = {
@@ -350,173 +382,211 @@ const CategoryBlock = ({ assetBase, storeInit }) => {
   };
 
   return (
-    <Box id="ShopeByCategory" sx={{ backgroundColor: "#ffffff", minHeight: "100vh", width: "100%", pb: 8 }}>
+    <Box
+      id="ShopeByCategory"
+      sx={{
+        backgroundColor: "#ffffff",
+        minHeight: "100vh",
+        width: "100%",
+        pb: 8,
+      }}
+    >
       {/* Category Section */}
-      {SectionData?.category?.length > 0 && <Box sx={{ px: { xs: 2, sm: 3, md: 4 }, mt: 8, position: "relative" }}>
-        <SectionHeader>
-          <SectionTitle>Shop by Category</SectionTitle>
-        </SectionHeader>
+      {SectionData?.category?.length > 0 && (
+        <Box sx={{ px: { xs: 2, sm: 3, md: 4 }, mt: 5, position: "relative" }}>
+          <SectionHeader>
+            <SectionTitle
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                gap: "0.5rem",
+              }}
+            >
+              <SpireBox />
+              Shop by Category
+            </SectionTitle>
+          </SectionHeader>
 
-        {loading ? (
-          <Box
-            sx={{
-              display: 'grid',
-              gridTemplateColumns: {
-                xs: 'repeat(2, 1fr)',
-                sm: 'repeat(3, 1fr)',
-                md: 'repeat(5, 1fr)'
-              },
-              gap: 3,
-              mb: 4
-            }}
-          >
-            {[...Array(5)].map((_, i) => (
-              <SkeletonCard key={i} />
-            ))}
-          </Box>
-        ) : (
-          SectionData?.category?.length > 0 && (
-            <>
-              <NavButton ref={categoryPrevRef} sx={{ left: 14 }}>
-                <ChevronLeft size={20} />
-              </NavButton>
-              <NavButton ref={categoryNextRef} sx={{ right: 14 }}>
-                <ChevronRight size={20} />
-              </NavButton>
+          {loading ? (
+            <Box
+              sx={{
+                display: "grid",
+                gridTemplateColumns: {
+                  xs: "repeat(2, 1fr)",
+                  sm: "repeat(3, 1fr)",
+                  md: "repeat(5, 1fr)",
+                },
+                gap: 3,
+                mb: 4,
+              }}
+            >
+              {[...Array(5)].map((_, i) => (
+                <SkeletonCard key={i} />
+              ))}
+            </Box>
+          ) : (
+            SectionData?.category?.length > 0 && (
+              <>
+                <NavButton ref={categoryPrevRef} sx={{ left: 14 }}>
+                  <ChevronLeft size={20} />
+                </NavButton>
+                <NavButton ref={categoryNextRef} sx={{ right: 14 }}>
+                  <ChevronRight size={20} />
+                </NavButton>
 
-              <Swiper
-                {...swiperConfig}
-                style={{ paddingBottom: '10px' }}
-                navigation={{
-                  prevEl: categoryPrevRef.current,
-                  nextEl: categoryNextRef.current,
-                }}
-                onBeforeInit={(swiper) => {
-                  swiper.params.navigation.prevEl = categoryPrevRef.current;
-                  swiper.params.navigation.nextEl = categoryNextRef.current;
-                }}
-              >
-                {SectionData.category.map((category) => (
-                  <SwiperSlide key={category.id}>
-                    <StyledCard
-                      onClick={() => handleNavigate(category?.CategoryName, "ct")}
-                    >
-                      <CategoryImageWrapper>
-                        <CategoryImage
-                          src={getImage(ImgesPick.categoryImages, category?.CategoryName)}
-                          alt={category?.CategoryName}
-                        />
-                      </CategoryImageWrapper>
-                      <CategoryLabel>{category?.CategoryName}</CategoryLabel>
-                    </StyledCard>
-                  </SwiperSlide>
-                ))}
-              </Swiper>
-            </>
-          )
-        )}
-      </Box>}
+                <Swiper
+                  {...swiperConfig}
+                  style={{ paddingBottom: "10px" }}
+                  navigation={{
+                    prevEl: categoryPrevRef.current,
+                    nextEl: categoryNextRef.current,
+                  }}
+                  onBeforeInit={(swiper) => {
+                    swiper.params.navigation.prevEl = categoryPrevRef.current;
+                    swiper.params.navigation.nextEl = categoryNextRef.current;
+                  }}
+                >
+                  {SectionData.category.map((category) => (
+                    <SwiperSlide key={category.id}>
+                      <StyledCard
+                        onClick={() =>
+                          handleNavigate(category?.CategoryName, "ct")
+                        }
+                      >
+                        <CategoryImageWrapper>
+                          <CategoryImage
+                            src={getImage(
+                              ImgesPick.categoryImages,
+                              category?.CategoryName,
+                            )}
+                            alt={category?.CategoryName}
+                          />
+                        </CategoryImageWrapper>
+                        <CategoryLabel>{category?.CategoryName}</CategoryLabel>
+                      </StyledCard>
+                    </SwiperSlide>
+                  ))}
+                </Swiper>
+              </>
+            )
+          )}
+        </Box>
+      )}
 
       {/* Collection Section */}
-      {SectionData?.collection?.length > 0 && <Box
-        sx={{
-          px: { xs: 2, sm: 3, md: 4 },
-          bgcolor: "#e4e4e445",
-          position: "relative",
-          mt: 8,
-          py: 4
-        }}
-      >
-        <SectionHeader>
-          <SectionTitle>Collections</SectionTitle>
-        </SectionHeader>
+      {SectionData?.collection?.length > 0 && (
+        <Box
+          sx={{
+            px: { xs: 2, sm: 3, md: 4 },
+            bgcolor: "#e4e4e445",
+            position: "relative",
+            mt: 8,
+            py: 4,
+          }}
+        >
+          <SectionHeader>
+            <SectionTitle
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                gap: "0.5rem",
+              }}
+            >
+              <SpireBox />
+              Collections
+            </SectionTitle>
+          </SectionHeader>
 
-        {loading ? (
-          <Box
-            sx={{
-              display: 'grid',
-              gridTemplateColumns: {
-                xs: 'repeat(2, 1fr)',
-                sm: 'repeat(3, 1fr)',
-                md: 'repeat(5, 1fr)'
-              },
-              gap: 3,
-              mb: 4
-            }}
-          >
-            {[...Array(5)].map((_, i) => (
-              <SkeletonCard key={i} />
-            ))}
-          </Box>
-        ) : (
-          SectionData?.collection?.length > 0 && (
-            <>
-              <NavButton ref={collectionPrevRef} sx={{ left: 14 }}>
-                <ChevronLeft size={20} />
-              </NavButton>
-              <NavButton ref={collectionNextRef} sx={{ right: 14 }}>
-                <ChevronRight size={20} />
-              </NavButton>
+          {loading ? (
+            <Box
+              sx={{
+                display: "grid",
+                gridTemplateColumns: {
+                  xs: "repeat(2, 1fr)",
+                  sm: "repeat(3, 1fr)",
+                  md: "repeat(5, 1fr)",
+                },
+                gap: 3,
+                mb: 4,
+              }}
+            >
+              {[...Array(5)].map((_, i) => (
+                <SkeletonCard key={i} />
+              ))}
+            </Box>
+          ) : (
+            SectionData?.collection?.length > 0 && (
+              <>
+                <NavButton ref={collectionPrevRef} sx={{ left: 14 }}>
+                  <ChevronLeft size={20} />
+                </NavButton>
+                <NavButton ref={collectionNextRef} sx={{ right: 14 }}>
+                  <ChevronRight size={20} />
+                </NavButton>
 
-              <Swiper
-                {...swiperConfig}
-                navigation={{
-                  prevEl: collectionPrevRef.current,
-                  nextEl: collectionNextRef.current,
-                }}
-                onBeforeInit={(swiper) => {
-                  swiper.params.navigation.prevEl = collectionPrevRef.current;
-                  swiper.params.navigation.nextEl = collectionNextRef.current;
-                }}
-              >
-                {SectionData.collection.map((collection) => (
-                  <SwiperSlide key={collection?.CollectionName}>
-                    <StyledCard
-                      onClick={() =>
-                        handleNavigate(collection?.CollectionName, "c")
-                      }
-                    >
-                      <CategoryImageWrapper>
-                        <CategoryImage
-                          sx={{ borderRadius: 0 }}
-                          src={getImage(ImgesPick.collectionImages, collection?.CollectionName)}
-                          alt={collection?.CollectionName}
-                        />
-                        <Box
-                          className="overlay"
-                          sx={{
-                            position: "absolute",
-                            inset: 0,
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            background: "rgba(0,0,0,0.35)",
-                            backdropFilter: "blur(2px)",
-                            opacity: 0,
-                            transition: "all 0.3s ease",
-                          }}
-                        >
-                          <Typography
+                <Swiper
+                  {...swiperConfig}
+                  navigation={{
+                    prevEl: collectionPrevRef.current,
+                    nextEl: collectionNextRef.current,
+                  }}
+                  onBeforeInit={(swiper) => {
+                    swiper.params.navigation.prevEl = collectionPrevRef.current;
+                    swiper.params.navigation.nextEl = collectionNextRef.current;
+                  }}
+                >
+                  {SectionData.collection.map((collection) => (
+                    <SwiperSlide key={collection?.CollectionName}>
+                      <StyledCard
+                        onClick={() =>
+                          handleNavigate(collection?.CollectionName, "c")
+                        }
+                      >
+                        <CategoryImageWrapper>
+                          <CategoryImage
+                            sx={{ borderRadius: 0 }}
+                            src={getImage(
+                              ImgesPick.collectionImages,
+                              collection?.CollectionName,
+                            )}
+                            alt={collection?.CollectionName}
+                          />
+                          <Box
+                            className="overlay"
                             sx={{
-                              color: "#fff",
-                              fontSize: "1rem",
-                              fontWeight: 600,
-                              letterSpacing: "1px",
-                              textTransform: "uppercase",
+                              position: "absolute",
+                              inset: 0,
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              background: "rgba(0,0,0,0.35)",
+                              backdropFilter: "blur(2px)",
+                              opacity: 0,
+                              transition: "all 0.3s ease",
                             }}
                           >
-                            {collection?.CollectionName}
-                          </Typography>
-                        </Box>
-                      </CategoryImageWrapper>
-                    </StyledCard>
-                  </SwiperSlide>
-                ))}
-              </Swiper>
-            </>
-          )
-        )}
-      </Box>}
+                            <Typography
+                              sx={{
+                                color: "#fff",
+                                fontSize: "1rem",
+                                fontWeight: 600,
+                                letterSpacing: "1px",
+                                textTransform: "uppercase",
+                              }}
+                            >
+                              {collection?.CollectionName}
+                            </Typography>
+                          </Box>
+                        </CategoryImageWrapper>
+                      </StyledCard>
+                    </SwiperSlide>
+                  ))}
+                </Swiper>
+              </>
+            )
+          )}
+        </Box>
+      )}
     </Box>
   );
 };

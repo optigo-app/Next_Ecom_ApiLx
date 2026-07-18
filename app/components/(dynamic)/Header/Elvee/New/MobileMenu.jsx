@@ -58,10 +58,10 @@ const MobileMenu = ({
     islogin,
     storeinit,
     IsB2BWebsiteChek,
-    // New Props
     DynamicMenu,
     selectedProductType,
-    handleTabChange
+    handleTabChange,
+    showProductTypeTabs = false
 }) => {
 
     if (activeMenu) {
@@ -219,7 +219,7 @@ const MobileMenu = ({
         <List sx={{ pt: 0, bgcolor: "#fff" }}>
 
             {/* PRODUCT TYPE TABS (Diamond, Gold, etc) */}
-            {DynamicMenu && DynamicMenu?.length > 0 && (
+            {showProductTypeTabs && DynamicMenu && DynamicMenu?.length > 0 && (
                 <Box sx={{
                     display: 'flex',
                     overflowX: 'auto',

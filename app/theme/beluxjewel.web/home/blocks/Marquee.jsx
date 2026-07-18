@@ -6,7 +6,16 @@ import Marquee from "react-fast-marquee";
 const BrandInfoMarquee = ({ assetBase }) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
-  const items = useMemo(() => ["100% Certified Jewellery", "Free Shipping Across India", "Easy 7 Days Return", "Trusted by 1L+ Customers", "Premium Quality Craftsmanship"], []);
+  const items = useMemo(
+    () => [
+      "100% Certified Jewellery",
+      "Free Shipping Across India",
+      "Easy 7 Days Return",
+      "Trusted by 1L+ Customers",
+      "Premium Quality Craftsmanship",
+    ],
+    [],
+  );
 
   return (
     <Box
@@ -30,7 +39,6 @@ const BrandInfoMarquee = ({ assetBase }) => {
           width: "80px",
           zIndex: 2,
           pointerEvents: "none",
-          background: "linear-gradient(to right, #f8f6f4 40%, transparent)",
         }}
       />
 
@@ -83,8 +91,19 @@ const BrandInfoMarquee = ({ assetBase }) => {
                   opacity: 0.8,
                 }}
               >
-                <svg xmlns="http://www.w3.org/2000/svg" width={25} height={25} viewBox="0 0 16 16">
-                  <g fill="none" stroke="#5b72ff" strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width={25}
+                  height={25}
+                  viewBox="0 0 16 16"
+                >
+                  <g
+                    fill="none"
+                    stroke="#114D6E"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={1.5}
+                  >
                     <path d="m13.75 7.75h-12"></path>
                     <path d="m7.75 1.75v12"></path>
                     <path d="m4.25 11.25 7-7"></path>

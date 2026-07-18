@@ -39,7 +39,7 @@ import { useMaster } from "@/app/(core)/contexts/MasterProvider";
 import { usePathname } from "next/navigation";
 import { clearSession, getSession } from "@/app/(core)/utils/FetchSessionData";
 
-const ElveePreNavbar = ({ storeInit: storeinit, logos }) => {
+const BeluxNavbar = ({ storeInit: storeinit, logos }) => {
   const {
     islogin,
     setislogin,
@@ -77,6 +77,8 @@ const ElveePreNavbar = ({ storeInit: storeinit, logos }) => {
   const [menuStack, setMenuStack] = useState([]);
   const [hoveredItem, setHoveredItem] = useState(null);
   const [isScrolled, setIsScrolled] = useState(false);
+  // tracks if announcement bar (36px) has scrolled out of view
+  const [announcementGone, setAnnouncementGone] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const [DrawerSearchOpen, setDrawerSearchOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
@@ -116,16 +118,23 @@ const ElveePreNavbar = ({ storeInit: storeinit, logos }) => {
     }
   }, [location]);
 
+  // Track when announcement bar (36px) has scrolled away
+  useEffect(() => {
+    const onScroll = () => setAnnouncementGone(window.scrollY > 36);
+    onScroll(); // run once on mount
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
   useEffect(() => {
     controls.start({
       backgroundColor:
         isHovered || isScrolled ? "#ffffff" : "rgba(255,255,255,0)",
       color: isHovered || isScrolled ? "#000000" : "#ffffff",
-      boxShadow:
+      borderBottom:
         isHovered || isScrolled
-          ? "0 6px 30px rgba(0,0,0,0.08)"
-          : "0 0px 0px rgba(0,0,0,0)",
-      backdropFilter: isHovered || isScrolled ? "blur(8px)" : "blur(0px)",
+          ? "1px solid #e2e2e2c0"
+          : "1px solid transparent",
       transition: {
         type: "spring",
         stiffness: 45,
@@ -217,8 +226,8 @@ const ElveePreNavbar = ({ storeInit: storeinit, logos }) => {
         finalId = loginUserDetail?.id || "0";
       }
 
-      // C. Fetch Menus for top 3 items
-      const topMenus = DynamicMenu.slice(0, 3);
+      // C. Fetch Menu for the first item only
+      const topMenus = DynamicMenu.slice(0, 1);
 
       const fetchWithRetry = async (menuName, id, retries = 3) => {
         const uniqueCacheKey = `cachedMenu_${menuName}_${id}`;
@@ -277,7 +286,10 @@ const ElveePreNavbar = ({ storeInit: storeinit, logos }) => {
   const currentMenuItems = useMemo(() => {
     const key = selectedProductType || DynamicMenu?.[0]?.ProductTypeName;
     if (!key) return [];
-    return multiMenuData[key] || [];
+    const items = multiMenuData[key] || [];
+    console.log("Navbar Debug - Selected Product Type:", key);
+    console.log("Navbar Debug - Menu Items:", items);
+    return items;
   }, [selectedProductType, multiMenuData, DynamicMenu]);
 
   // const handleTabChange = (typeName) => {
@@ -463,37 +475,33 @@ const ElveePreNavbar = ({ storeInit: storeinit, logos }) => {
     {
       id: 0,
       gradient: {
-        bg: "linear-gradient(135deg, #FFF5F8 0%, #FDECF2 40%, #F8DDE7 100%)",
-        color: "#7A3E55",
-        border: "#f4c7d8",
-        borderDark: "#C97A96",
+        bg: "linear-gradient(135deg, #114D6E 0%, #114D6E 40%, #114D6E 100%)",
+        color: "#114D6E",
+        border: "#114D6E",
+        borderDark: "#114D6E",
       },
     },
-    {
-      id: 1,
-      gradient: {
-        bg: "linear-gradient(135deg, #FFF4DA 0%, #F7E6BC 45%, #E8CF92 100%)",
-        color: "#7A5A21",
-        border: "#e8cf92",
-        borderDark: "#B8933A",
-      },
-    },
-    {
-      id: 2,
-      gradient: {
-        bg: "linear-gradient(135deg, #F1FFF7 0%, #E2F7ED 45%, #CFF2DF 100%)",
-        color: "#2A6F56",
-        border: "#b4e4cc",
-        borderDark: "#4C9B7A",
-      },
-    },
+    // {
+    //   id: 1,
+    //   gradient: {
+    //     bg: "linear-gradient(135deg, #FFF4DA 0%, #F7E6BC 45%, #E8CF92 100%)",
+    //     color: "#7A5A21",
+    //     border: "#e8cf92",
+    //     borderDark: "#B8933A",
+    //   },
+    // },
+    // {
+    //   id: 2,
+    //   gradient: {
+    //     bg: "linear-gradient(135deg, #F1FFF7 0%, #E2F7ED 45%, #CFF2DF 100%)",
+    //     color: "#2A6F56",
+    //     border: "#b4e4cc",
+    //     borderDark: "#4C9B7A",
+    //   },
+    // },
   ];
 
-  const activeTabIndex = useMemo(() => {
-    return DynamicMenu?.slice(0, 3)?.findIndex(
-      (item) => item.ProductTypeName === selectedProductType,
-    );
-  }, [DynamicMenu, selectedProductType]);
+  const activeTabIndex = 0;
 
   const activeTabStyle = tabsData[activeTabIndex] || {};
 
@@ -601,81 +609,6 @@ const ElveePreNavbar = ({ storeInit: storeinit, logos }) => {
                 <Box>
                   <Box>
                     {!isMobile && !is1400px && (
-                      <Box
-                        sx={{
-                          display: "flex",
-                          justifyContent: "center",
-                          gap: 3,
-                          py: 1,
-                        }}
-                      >
-                        {DynamicMenu?.slice(0, 3).map((item, i) => {
-                          const isActive =
-                            selectedProductType === item.ProductTypeName;
-                          return (
-                            <Box
-                              key={item.ProductTypeName}
-                              onClick={() =>
-                                handleTabChange(item.ProductTypeName)
-                              }
-                              sx={{
-                                position: "relative",
-                                px: 1.5,
-                                py: 0.6,
-                                cursor: "pointer",
-                                borderRadius: 999,
-                                overflow: "hidden",
-                              }}
-                            >
-                              {isActive && (
-                                <motion.div
-                                  layoutId="productType-pill"
-                                  transition={{
-                                    type: "spring",
-                                    stiffness: 420,
-                                    damping: 30,
-                                  }}
-                                  style={{
-                                    position: "absolute",
-                                    inset: 0,
-                                    borderRadius: 999,
-                                    background: tabsData[i]?.gradient.bg,
-                                    color: tabsData[i]?.gradient.color,
-                                    zIndex: 0,
-                                  }}
-                                />
-                              )}
-                              <Typography
-                                sx={{
-                                  position: "relative",
-                                  zIndex: 1,
-                                  fontSize: "0.72rem",
-                                  fontWeight: isActive ? 700 : 500,
-                                  letterSpacing: 1,
-                                  textTransform: "uppercase",
-                                  color:
-                                    isHovered || isScrolled
-                                      ? isActive
-                                        ? "#000"
-                                        : "#6f6f6f"
-                                      : isActive
-                                        ? tabsData[i]?.gradient.color
-                                        : "rgba(255,255,255,0.75)",
-                                  transition: "color 0.2s ease",
-                                  userSelect: "none",
-                                }}
-                              >
-                                {item.ProductTypeName}
-                              </Typography>
-                            </Box>
-                          );
-                        })}
-                      </Box>
-                    )}
-                  </Box>
-
-                  <Box>
-                    {!isMobile && !is1400px && (
                       <>
                         <Box
                           sx={{
@@ -730,11 +663,11 @@ const ElveePreNavbar = ({ storeInit: storeinit, logos }) => {
                                   }}
                                   sx={{
                                     px: 2,
-                                    py: 3,
+                                    py: 2.5,
                                     bgcolor: "transparent",
                                     border: "none",
                                     cursor: "pointer",
-                                    fontSize: "0.84rem",
+                                    fontSize: "0.95rem",
                                     fontWeight: 500,
                                     letterSpacing: 0.8,
                                     textDecoration: "none",
@@ -745,7 +678,7 @@ const ElveePreNavbar = ({ storeInit: storeinit, logos }) => {
                                     "&::after": {
                                       content: '""',
                                       position: "absolute",
-                                      top: 45,
+                                      top: 40,
                                       left: "50%",
                                       transform: "translateX(-50%)",
                                       width:
@@ -775,13 +708,13 @@ const ElveePreNavbar = ({ storeInit: storeinit, logos }) => {
                                   {item.param1 &&
                                     hoveredItem === item?.menuname && (
                                       <>
+                                        {/* Invisible bridge — keeps hover alive as mouse moves to dropdown */}
                                         <Box
                                           sx={{
                                             position: "fixed",
-                                            top: "100%",
+                                            top: announcementGone ? 84 : 120,
                                             left: "50%",
                                             transform: "translateX(-50%)",
-                                            mt: 0,
                                             width: {
                                               xs: "95vw",
                                               sm: "85vw",
@@ -790,8 +723,7 @@ const ElveePreNavbar = ({ storeInit: storeinit, logos }) => {
                                               xl: "1400px",
                                             },
                                             maxWidth: "1400px",
-                                            height: "24px",
-                                            boxShadow: "none",
+                                            height: "8px",
                                             bgcolor: "transparent",
                                           }}
                                           onMouseEnter={() =>
@@ -801,6 +733,7 @@ const ElveePreNavbar = ({ storeInit: storeinit, logos }) => {
                                             setHoveredItem(null)
                                           }
                                         />
+                                        {/* Dropdown panel */}
                                         <Box
                                           onMouseEnter={() =>
                                             setHoveredItem(item?.menuname)
@@ -810,12 +743,14 @@ const ElveePreNavbar = ({ storeInit: storeinit, logos }) => {
                                           }
                                           sx={{
                                             position: "fixed",
-                                            top: "100%",
+                                            top: announcementGone ? 92 : 128,
                                             left: "50%",
                                             transform: "translateX(-50%)",
-                                            mt: 1,
+                                            mt: 0,
                                             bgcolor: "#fff",
-                                            borderRadius: 8,
+                                            border: "none",
+                                            borderBottom: `3px solid ${activeTabStyle?.gradient?.borderDark || "#C97A96"}`,
+                                            borderRadius: "0 0 8px 8px",
                                             boxShadow:
                                               "0 20px 60px rgba(0,0,0,0.15)",
                                             width: {
@@ -852,8 +787,6 @@ const ElveePreNavbar = ({ storeInit: storeinit, logos }) => {
                                               background: `radial-gradient( ellipse at top, ${activeTabStyle?.gradient?.color}90, transparent )`,
                                               filter: "blur(55px)",
                                               pointerEvents: "none",
-                                              borderTopLeftRadius: 8,
-                                              borderTopRightRadius: 8,
                                             },
                                           }}
                                         >
@@ -1080,6 +1013,31 @@ const ElveePreNavbar = ({ storeInit: storeinit, logos }) => {
                               <Box sx={{ position: "relative" }}>
                                 <Box
                                   component={Link}
+                                  href="/collection"
+                                  sx={{
+                                    px: 2,
+                                    py: 3,
+                                    bgcolor: "transparent",
+                                    border: "none",
+                                    cursor: "pointer",
+                                    fontSize: "0.8125rem",
+                                    fontWeight: 500,
+                                    letterSpacing: 0.8,
+                                    textDecoration: "none",
+                                    transition: "all 0.2s ease",
+                                    position: "relative",
+                                    color:
+                                      isHovered || isScrolled ? "#000" : "#fff",
+                                    outline: "none",
+                                    boxShadow: "none",
+                                  }}
+                                >
+                                  Collection
+                                </Box>
+                              </Box>
+                              <Box sx={{ position: "relative" }}>
+                                <Box
+                                  component={Link}
                                   href="/offers"
                                   sx={{
                                     px: 2,
@@ -1116,8 +1074,6 @@ const ElveePreNavbar = ({ storeInit: storeinit, logos }) => {
                 IsB2BWebsiteChek={IsB2BWebsiteChek}
                 storeinit={storeinit}
                 handleLogout={handleLogout}
-                DynamicMenu={DynamicMenu?.slice(0, 3)}
-                handleTabChange={handleTabChange}
                 islogin={islogin}
                 isMobile={isMobile}
                 cartCount={cartCountNum}
@@ -1205,10 +1161,11 @@ const ElveePreNavbar = ({ storeInit: storeinit, logos }) => {
           DynamicMenu={DynamicMenu}
           selectedProductType={selectedProductType}
           handleTabChange={handleTabChange}
+          showProductTypeTabs={true}
         />
       </Drawer>
     </>
   );
 };
 
-export default ElveePreNavbar;
+export default BeluxNavbar;

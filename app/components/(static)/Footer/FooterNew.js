@@ -29,6 +29,7 @@ import Link from "next/link";
 import { IoMdMail } from "react-icons/io";
 import { useNextRouterLikeRR } from "@/app/(core)/hooks/useLocationRd";
 import { useStore } from "@/app/(core)/contexts/StoreProvider";
+import "./Footer.scss";
 
 const PremiumFooter = ({
   logos,
@@ -191,6 +192,7 @@ const PremiumFooter = ({
   return (
     <Box
       component="footer"
+      className="footerMain"
       sx={{
         pt: { xs: 4, md: 6, lg: 8 },
         pb: { xs: 4, md: 5 },

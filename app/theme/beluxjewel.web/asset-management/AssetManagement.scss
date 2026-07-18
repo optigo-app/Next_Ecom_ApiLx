@@ -1,0 +1,53 @@
+@use "../style/variable.scss" as *;
+
+.assetContainer {
+  background-color: #ffffff;
+  min-height: 100vh;
+}
+
+.assetHeader {
+  border-bottom: 1px solid #eaeaea;
+  background-color: #fbfbfb;
+}
+
+.assetTitle {
+  color: #1a1a1a !important;
+}
+
+.assetOverline {
+  color: $btnBg !important;
+}
+
+.assetCard {
+  background-color: #ffffff;
+  border: 1px solid #eaeaea;
+  border-radius: 1px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+
+  &:hover {
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.06);
+    border-color: #1a1a1a;
+  }
+}
+
+.assetCardTitle {
+  color: #1a1a1a !important;
+}
+
+.assetCardSpec {
+  color: #666666 !important;
+}
+
+.assetDownloadButton {
+  border-radius: 0px !important;
+  border-color: #eaeaea !important;
+  color: #1a1a1a !important;
+  font-weight: 600 !important;
+
+  &:hover {
+    background-color: #1a1a1a !important;
+    color: #ffffff !important;
+    border-color: #1a1a1a !important;
+  }
+}

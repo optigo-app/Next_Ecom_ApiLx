@@ -32,7 +32,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: $authbtnbg;
+    background-color: $authbtnbg !important;
     color: $authbtncolor;
 
     margin-inline: 7px;
@@ -46,7 +46,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: $authbtnbg;
+    background-color: $authbtnbg !important;
     color: $authbtncolor;
     margin-inline: 7px;
     height: 55px;
