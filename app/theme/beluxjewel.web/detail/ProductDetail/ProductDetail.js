@@ -266,7 +266,7 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
       )?.colorcode;
       setMetalColor(getCurrentMetalColor);
     }
-  }, [singleProd]);
+  }, [singleProd, metalTypeCombo, metalColorCombo]);
 
   // useEffect(() => {
   //   const isInCart = singleProd?.IsInCart === 0 ? false : true;
@@ -287,6 +287,14 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
   }, [singleProd, singleProd1]);
 
   const handleCart = async (cartFlag) => {
+    console.log(
+      "handleCart debug - singleProd:",
+      singleProd,
+      "singleProd1:",
+      singleProd1,
+      "customizationDetail:",
+      customizationDetail,
+    );
     const metal =
       metalTypeCombo?.find((ele) => {
         return ele?.metaltype == metalType;
@@ -314,33 +322,82 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
       }) ?? metalColorCombo;
 
     const prodObj = {
-      autocode: singleProd?.autocode,
-      Metalid: metal?.Metalid,
-      MetalColorId: mcArr?.id ?? singleProd?.MetalColorid,
-      DiaQCid: `${dia?.QualityId ?? 0},${dia?.ColorId ?? 0}`,
-      CsQCid: `${cs?.QualityId ?? 0},${cs?.ColorId ?? 0}`,
-      Size: sizeData ?? singleProd?.DefaultSize,
-      Unitcost: singleProd1?.UnitCost ?? singleProd?.UnitCost,
-      markup: singleProd1?.DesignMarkUp ?? singleProd?.DesignMarkUp,
+      autocode:
+        customizationDetail?.autocode ||
+        singleProd1?.autocode ||
+        singleProd?.autocode,
+      Metalid: customizationDetail?.MetalTypeId || metal?.Metalid,
+      MetalColorId:
+        customizationDetail?.MetalColorId ||
+        mcArr?.id ||
+        singleProd?.MetalColorid,
+      DiaQCid:
+        customizationDetail?.DiaQCid ||
+        `${dia?.QualityId ?? 0},${dia?.ColorId ?? 0}`,
+      CsQCid:
+        customizationDetail?.CsQCid ||
+        `${cs?.QualityId ?? 0},${cs?.ColorId ?? 0}`,
+      Size: sizeData ?? customizationDetail?.Size ?? singleProd?.DefaultSize,
+      Unitcost:
+        customizationDetail?.TotalUnitCost ||
+        singleProd1?.UnitCost ||
+        singleProd?.UnitCost,
+      markup:
+        customizationDetail?.MarkUp ||
+        singleProd1?.DesignMarkUp ||
+        singleProd?.DesignMarkUp,
       UnitCostWithmarkup:
-        singleProd1?.UnitCostWithMarkUp ?? singleProd?.UnitCostWithMarkUp,
+        customizationDetail?.UnitCostWithmarkup ||
+        customizationDetail?.TotalUnitCost ||
+        singleProd1?.UnitCostWithMarkUp ||
+        singleProd?.UnitCostWithMarkUp,
       Remark: "",
-      Metal_Cost: singleProd?.Metal_Cost ?? singleProd1?.Metal_Cost,
-      Labour_Cost: singleProd?.Labour_Cost ?? singleProd1?.Labour_Cost,
-      Diamond_Cost: singleProd?.Diamond_Cost ?? singleProd1?.Diamond_Cost,
+      Metal_Cost:
+        customizationDetail?.TotalMetalCost ||
+        singleProd?.Metal_Cost ||
+        singleProd1?.Metal_Cost,
+      Labour_Cost:
+        customizationDetail?.TotalMakingCost ||
+        singleProd?.Labour_Cost ||
+        singleProd1?.Labour_Cost,
+      Diamond_Cost:
+        customizationDetail?.TotalDiamondCost ||
+        singleProd?.Diamond_Cost ||
+        singleProd1?.Diamond_Cost,
       Diamond_SettingCost:
-        singleProd?.Diamond_SettingCost ?? singleProd1?.Diamond_SettingCost,
+        customizationDetail?.TotalDiaSettingCost ||
+        singleProd?.Diamond_SettingCost ||
+        singleProd1?.Diamond_SettingCost,
       ColorStone_Cost:
-        singleProd?.ColorStone_Cost ?? singleProd1?.ColorStone_Cost,
+        customizationDetail?.TotalColorStoneCost ||
+        singleProd?.ColorStone_Cost ||
+        singleProd1?.ColorStone_Cost,
       ColorStone_SettingCost:
-        singleProd?.ColorStone_SettingCost ??
+        customizationDetail?.TotalCSSettingCost ||
+        singleProd?.ColorStone_SettingCost ||
         singleProd1?.ColorStone_SettingCost,
-      Misc_Cost: singleProd?.Misc_Cost ?? singleProd1?.Misc_Cost,
+      Misc_Cost:
+        customizationDetail?.TotalMiscCost ||
+        singleProd?.Misc_Cost ||
+        singleProd1?.Misc_Cost,
       Misc_SettingCost:
-        singleProd?.Misc_SettingCost ?? singleProd1?.Misc_SettingCost,
-      Other_Cost: singleProd?.Other_Cost ?? singleProd1?.Other_Cost,
-      SolPrice: singleProd?.SolPric ?? singleProd1?.SolPrice,
+        customizationDetail?.TotalSettingCost ||
+        singleProd?.Misc_SettingCost ||
+        singleProd1?.Misc_SettingCost,
+      Other_Cost:
+        customizationDetail?.TotalOtherCost ||
+        singleProd?.Other_Cost ||
+        singleProd1?.Other_Cost,
+      SolPrice:
+        customizationDetail?.SolPrice ||
+        singleProd?.SolPric ||
+        singleProd1?.SolPrice,
       ArticleNo: customizationDetail?.ArticleNo || singleProd?.ArticleNo || "",
+      ArticleId:
+        customizationDetail?.ArticleId ||
+        singleProd1?.ArticleId ||
+        singleProd?.ArticleId ||
+        0,
     };
 
     if (cartFlag) {
@@ -396,6 +453,14 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
   };
 
   const handleWishList = async (e, elv) => {
+    console.log(
+      "handleWishList debug - singleProd:",
+      singleProd,
+      "singleProd1:",
+      singleProd1,
+      "customizationDetail:",
+      customizationDetail,
+    );
     setWishListFlag(e?.target?.checked);
 
     let storeinitInside = storeinit;
@@ -426,39 +491,94 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
     })[0];
 
     let prodObj = {
-      autocode: singleProd?.autocode,
-      Metalid: metal?.length
-        ? metal[0]?.Metalid
-        : (logininfoInside?.MetalId ?? storeinitInside?.MetalId),
-      MetalColorId: mcArr?.id ?? singleProd?.MetalColorid,
-      DiaQCid: dia?.length
-        ? `${dia[0]?.QualityId},${dia[0]?.ColorId}`
-        : (logininfoInside?.cmboDiaQCid ?? storeinitInside?.cmboDiaQCid),
-      CsQCid: cs?.length
-        ? `${cs[0]?.QualityId},${cs[0]?.ColorId}`
-        : (logininfoInside?.cmboCSQCid ?? storeinitInside?.cmboCSQCid),
-      Size: sizeData ?? singleProd1?.DefaultSize ?? singleProd?.DefaultSize,
-      Unitcost: singleProd1?.UnitCost ?? singleProd?.UnitCost,
-      markup: singleProd1?.DesignMarkUp ?? singleProd?.DesignMarkUp,
+      autocode:
+        customizationDetail?.autocode ||
+        singleProd1?.autocode ||
+        singleProd?.autocode,
+      Metalid:
+        customizationDetail?.MetalTypeId ||
+        (metal?.length
+          ? metal[0]?.Metalid
+          : (logininfoInside?.MetalId ?? storeinitInside?.MetalId)),
+      MetalColorId:
+        customizationDetail?.MetalColorId ||
+        mcArr?.id ||
+        singleProd?.MetalColorid,
+      DiaQCid:
+        customizationDetail?.DiaQCid ||
+        (dia?.length
+          ? `${dia[0]?.QualityId},${dia[0]?.ColorId}`
+          : (logininfoInside?.cmboDiaQCid ?? storeinitInside?.cmboDiaQCid)),
+      CsQCid:
+        customizationDetail?.CsQCid ||
+        (cs?.length
+          ? `${cs[0]?.QualityId},${cs[0]?.ColorId}`
+          : (logininfoInside?.cmboCSQCid ?? storeinitInside?.cmboCSQCid)),
+      Size:
+        sizeData ??
+        customizationDetail?.Size ??
+        singleProd1?.DefaultSize ??
+        singleProd?.DefaultSize,
+      Unitcost:
+        customizationDetail?.TotalUnitCost ||
+        singleProd1?.UnitCost ||
+        singleProd?.UnitCost,
+      markup:
+        customizationDetail?.MarkUp ||
+        singleProd1?.DesignMarkUp ||
+        singleProd?.DesignMarkUp,
       UnitCostWithmarkup:
-        singleProd1?.UnitCostWithMarkUp ?? singleProd?.UnitCostWithMarkUp,
+        customizationDetail?.UnitCostWithmarkup ||
+        customizationDetail?.TotalUnitCost ||
+        singleProd1?.UnitCostWithMarkUp ||
+        singleProd?.UnitCostWithMarkUp,
       Remark: "",
-      Metal_Cost: singleProd?.Metal_Cost ?? singleProd1?.Metal_Cost,
-      Labour_Cost: singleProd?.Labour_Cost ?? singleProd1?.Labour_Cost,
-      Diamond_Cost: singleProd?.Diamond_Cost ?? singleProd1?.Diamond_Cost,
+      Metal_Cost:
+        customizationDetail?.TotalMetalCost ||
+        singleProd?.Metal_Cost ||
+        singleProd1?.Metal_Cost,
+      Labour_Cost:
+        customizationDetail?.TotalMakingCost ||
+        singleProd?.Labour_Cost ||
+        singleProd1?.Labour_Cost,
+      Diamond_Cost:
+        customizationDetail?.TotalDiamondCost ||
+        singleProd?.Diamond_Cost ||
+        singleProd1?.Diamond_Cost,
       Diamond_SettingCost:
-        singleProd?.Diamond_SettingCost ?? singleProd1?.Diamond_SettingCost,
+        customizationDetail?.TotalDiaSettingCost ||
+        singleProd?.Diamond_SettingCost ||
+        singleProd1?.Diamond_SettingCost,
       ColorStone_Cost:
-        singleProd?.ColorStone_Cost ?? singleProd1?.ColorStone_Cost,
+        customizationDetail?.TotalColorStoneCost ||
+        singleProd?.ColorStone_Cost ||
+        singleProd1?.ColorStone_Cost,
       ColorStone_SettingCost:
-        singleProd?.ColorStone_SettingCost ??
+        customizationDetail?.TotalCSSettingCost ||
+        singleProd?.ColorStone_SettingCost ||
         singleProd1?.ColorStone_SettingCost,
-      Misc_Cost: singleProd?.Misc_Cost ?? singleProd1?.Misc_Cost,
+      Misc_Cost:
+        customizationDetail?.TotalMiscCost ||
+        singleProd?.Misc_Cost ||
+        singleProd1?.Misc_Cost,
       Misc_SettingCost:
-        singleProd?.Misc_SettingCost ?? singleProd1?.Misc_SettingCost,
-      Other_Cost: singleProd?.Other_Cost ?? singleProd1?.Other_Cost,
-      SolPrice: singleProd?.SolPric ?? singleProd1?.SolPrice,
+        customizationDetail?.TotalSettingCost ||
+        singleProd?.Misc_SettingCost ||
+        singleProd1?.Misc_SettingCost,
+      Other_Cost:
+        customizationDetail?.TotalOtherCost ||
+        singleProd?.Other_Cost ||
+        singleProd1?.Other_Cost,
+      SolPrice:
+        customizationDetail?.SolPrice ||
+        singleProd?.SolPric ||
+        singleProd1?.SolPrice,
       ArticleNo: customizationDetail?.ArticleNo || singleProd?.ArticleNo || "",
+      ArticleId:
+        customizationDetail?.ArticleId ||
+        singleProd1?.ArticleId ||
+        singleProd?.ArticleId ||
+        0,
     };
 
     if (e.target.checked === true) {
