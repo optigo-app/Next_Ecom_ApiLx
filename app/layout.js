@@ -86,6 +86,7 @@ export default async function RootLayout({ children }) {
               getCompanyInfoData={companyInfo}
               getStoreInit={storeInit}
               getMyAccountFlags={myAccountFlags}
+              theme={themeData?.page}
             >
               <StoreProvider storeInit={storeInit}>
                 <AuthProvider theme={themeData?.page} storeInit={storeInit}>

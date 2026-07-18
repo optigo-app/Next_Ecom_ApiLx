@@ -136,28 +136,37 @@ const MetalCard = ({ combo, isSelected, onClick }) => {
         >
           {combo.MetalColor}
         </Typography>
+        <Typography
+          sx={{
+            fontSize: "9.5px",
+            fontWeight: 600,
+            color: combo.inStockLabel === "In Stock" ? "#2e7d32" : colors.textMuted,
+            lineHeight: 1.3,
+            mt: 0.2,
+          }}
+        >
+          {combo.inStockLabel || "Made to Order"}
+        </Typography>
       </Box>
     </Box>
   );
 };
 
-const SizePill = ({ size, isSelected, onClick }) => (
+const SizePill = ({ sizeObj, isSelected, onClick }) => (
   <Box
     onClick={onClick}
     sx={{
       cursor: "pointer",
-      minWidth: 52,
-      height: 52,
-      px: 2, // Added horizontal padding to fit text like 'One Size'
+      minWidth: 60,
+      px: 2,
+      py: 1,
       display: "flex",
+      flexDirection: "column",
       alignItems: "center",
       justifyContent: "center",
       borderRadius: "10px",
       border: `2px solid ${isSelected ? colors.primary : colors.borderLight}`,
       backgroundColor: isSelected ? colors.accentLight : "#fff",
-      fontWeight: 700,
-      fontSize: "14px",
-      color: isSelected ? colors.primary : colors.textDark,
       transition: "all 0.15s ease",
       boxShadow: isSelected
         ? "0 0 0 3px rgba(11,47,131,0.12)"
@@ -165,7 +174,27 @@ const SizePill = ({ size, isSelected, onClick }) => (
       "&:hover": { borderColor: colors.primary, transform: "translateY(-1px)" },
     }}
   >
-    {size}
+    <Typography
+      sx={{
+        fontWeight: 700,
+        fontSize: "14px",
+        color: isSelected ? colors.primary : colors.textDark,
+        lineHeight: 1.2,
+      }}
+    >
+      {sizeObj.size}
+    </Typography>
+    <Typography
+      sx={{
+        fontSize: "9.5px",
+        fontWeight: 600,
+        color: sizeObj.inStockLabel === "In Stock" ? "#2e7d32" : colors.textMuted,
+        lineHeight: 1.3,
+        mt: 0.3,
+      }}
+    >
+      {sizeObj.inStockLabel || "Made to Order"}
+    </Typography>
   </Box>
 );
 
@@ -236,18 +265,16 @@ const QualityCard = ({ combo, isSelected, onClick }) => {
       >
         {combo.Color}
       </Typography>
-      {combo.StoneTypeName && (
-        <Typography
-          sx={{
-            fontSize: "9px",
-            color: colors.borderLight,
-            mt: 0.2,
-            fontWeight: 500,
-          }}
-        >
-          {combo.StoneTypeName}
-        </Typography>
-      )}
+      <Typography
+        sx={{
+          fontSize: "9.5px",
+          fontWeight: 600,
+          color: combo.inStockLabel === "In Stock" ? "#2e7d32" : colors.textMuted,
+          mt: 0.4,
+        }}
+      >
+        {combo.inStockLabel || "Made to Order"}
+      </Typography>
     </Box>
   );
 };
@@ -266,7 +293,7 @@ export default function CustomizerDrawer({
   const [selectedMetal, setSelectedMetal] = useState(null);
   const [selectedSize, setSelectedSize] = useState(null);
   const [selectedDiaQc, setSelectedDiaQc] = useState(null);
-  const [selectedOrigin, setSelectedOrigin] = useState("Natural");
+  const [selectedOrigin, setSelectedOrigin] = useState(null);
 
   // ── 1. Unique metal combos (MetalTypeId + MetalColorId as key) sorted by Karat ──
   const metalCombos = useMemo(() => {
@@ -278,14 +305,25 @@ export default function CustomizerDrawer({
       return true;
     });
 
-    return unique.sort((a, b) => {
-      const getKarat = (str) => {
-        if (!str) return 0;
-        const match = str.match(/\d+/);
-        return match ? parseInt(match[0], 10) : 0;
-      };
-      return getKarat(a.MetalType) - getKarat(b.MetalType);
-    });
+    return unique
+      .sort((a, b) => {
+        const getKarat = (str) => {
+          if (!str) return 0;
+          const match = str.match(/\d+/);
+          return match ? parseInt(match[0], 10) : 0;
+        };
+        return getKarat(a.MetalType) - getKarat(b.MetalType);
+      })
+      .map((combo) => {
+        // Check if any article with this metal has InStock === 1
+        const hasStock = rd1.some(
+          (r) =>
+            r.MetalTypeId === combo.MetalTypeId &&
+            r.MetalColorId === combo.MetalColorId &&
+            r.InStock === 1,
+        );
+        return { ...combo, inStockLabel: hasStock ? "In Stock" : "Made to Order" };
+      });
   }, [rd1]);
 
   // ── 1b. Enhance matchingArticles with their diamond's MaterialTypeName from rd2
@@ -306,7 +344,11 @@ export default function CustomizerDrawer({
       );
       const rawOrigin = diaStone?.MaterialTypeName;
       const normalizedOrigin =
-        rawOrigin && rawOrigin.trim() !== "" ? rawOrigin : "Natural";
+        rawOrigin && rawOrigin.trim() !== ""
+          ? rawOrigin
+          : diaStone
+            ? "Natural"
+            : null;
       return {
         ...art,
         MaterialTypeName: normalizedOrigin,
@@ -316,9 +358,9 @@ export default function CustomizerDrawer({
 
   // ── 1c. Unique Diamond Origin values for matching articles
   const availableOrigins = useMemo(() => {
-    const origins = matchingArticlesWithOrigin.map(
-      (art) => art.MaterialTypeName,
-    );
+    const origins = matchingArticlesWithOrigin
+      .map((art) => art.MaterialTypeName)
+      .filter((o) => o !== null && o !== undefined);
     return Array.from(new Set(origins));
   }, [matchingArticlesWithOrigin]);
 
@@ -328,7 +370,7 @@ export default function CustomizerDrawer({
 
     let targetMetal = metalCombos[0];
     let targetSize = null;
-    let targetOrigin = "Natural";
+    let targetOrigin = availableOrigins.length > 0 ? availableOrigins[0] : null;
 
     if (defaultArticleId) {
       const defArt = rd1.find((r) => r.ArticleId === defaultArticleId);
@@ -349,6 +391,8 @@ export default function CustomizerDrawer({
           defStone.MaterialTypeName.trim() !== ""
         ) {
           targetOrigin = defStone.MaterialTypeName;
+        } else if (defStone) {
+          targetOrigin = "Natural";
         }
       }
     }
@@ -363,25 +407,38 @@ export default function CustomizerDrawer({
     const matchingOriginArticles = matchingArticlesWithOrigin.filter(
       (r) => r.MaterialTypeName === selectedOrigin,
     );
-    const sizes = Array.from(
-      new Set(matchingOriginArticles.map((r) => r.Size).filter(Boolean)),
-    );
-    return sizes.sort((a, b) => {
-      const numA = parseFloat(a);
-      const numB = parseFloat(b);
-      if (!isNaN(numA) && !isNaN(numB)) {
-        return numA - numB;
+    // Build unique sizes preserving per-size InStock from rd1
+    const sizeMap = new Map();
+    matchingOriginArticles.forEach((art) => {
+      if (!art.Size) return;
+      const rd1Article = rd1.find((a) => a.ArticleId === art.ArticleId);
+      const isInStock = rd1Article?.InStock === 1;
+      if (!sizeMap.has(art.Size)) {
+        sizeMap.set(art.Size, isInStock);
+      } else if (isInStock) {
+        // If any article with this size is in stock, mark as in stock
+        sizeMap.set(art.Size, true);
       }
-      return String(a).localeCompare(String(b));
     });
-  }, [matchingArticlesWithOrigin, selectedOrigin]);
+    return Array.from(sizeMap.entries())
+      .map(([size, inStock]) => ({
+        size,
+        inStockLabel: inStock ? "In Stock" : "Made to Order",
+      }))
+      .sort((a, b) => {
+        const numA = parseFloat(a.size);
+        const numB = parseFloat(b.size);
+        if (!isNaN(numA) && !isNaN(numB)) return numA - numB;
+        return String(a.size).localeCompare(String(b.size));
+      });
+  }, [matchingArticlesWithOrigin, selectedOrigin, rd1]);
 
   // ── 5. Reset / set size when metal or origin changes ───────────────────────
   useEffect(() => {
     if (!selectedMetal) return;
     if (availableSizes.length > 0) {
       setSelectedSize((prev) =>
-        availableSizes.includes(prev) ? prev : availableSizes[0],
+        availableSizes.find((s) => s.size === prev) ? prev : availableSizes[0].size,
       );
     } else {
       setSelectedSize(null);
@@ -422,13 +479,28 @@ export default function CustomizerDrawer({
         seen.add(key);
         return true;
       })
-      .map((r) => ({
-        ...r,
-        // Expose normalized keys so QualityCard / key comparisons are consistent
-        Quality: r.Quality?.toUpperCase(),
-        Color: r.Color?.toUpperCase(),
-      }));
-  }, [rd2, matchingArticlesWithOrigin, selectedOrigin]);
+      .map((r) => {
+        // Check if any article carrying this diamond quality is InStock
+        const articlesWithThisQuality = rd2
+          .filter(
+            (s) =>
+              s.StoneTypeid === 1 &&
+              s.Quality?.toUpperCase() === r.Quality?.toUpperCase() &&
+              s.Color?.toUpperCase() === r.Color?.toUpperCase() &&
+              matchingIds.has(s.ArticleId),
+          )
+          .map((s) => s.ArticleId);
+        const hasStock = rd1.some(
+          (a) => articlesWithThisQuality.includes(a.ArticleId) && a.InStock === 1,
+        );
+        return {
+          ...r,
+          Quality: r.Quality?.toUpperCase(),
+          Color: r.Color?.toUpperCase(),
+          inStockLabel: hasStock ? "In Stock" : "Made to Order",
+        };
+      });
+  }, [rd2, rd1, matchingArticlesWithOrigin, selectedOrigin]);
 
   // ── 8. Set default dia quality from defaultArticleId, else first combo ─────
   useEffect(() => {
@@ -844,13 +916,13 @@ export default function CustomizerDrawer({
                     Size Guide
                   </Typography>
                 </Box>
-                <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
-                  {availableSizes.map((size) => (
+                <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1.5 }}>
+                  {availableSizes.map((sizeObj) => (
                     <SizePill
-                      key={size}
-                      size={size}
-                      isSelected={selectedSize === size}
-                      onClick={() => setSelectedSize(size)}
+                      key={sizeObj.size}
+                      sizeObj={sizeObj}
+                      isSelected={selectedSize === sizeObj.size}
+                      onClick={() => setSelectedSize(sizeObj.size)}
                     />
                   ))}
                 </Box>

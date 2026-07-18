@@ -319,7 +319,7 @@ const RightSide = ({
               </Grid>
 
               {/* Diamond QC — article based from rd2 */}
-              {(isLoading || defaultDiaQcLabel) && (
+              {(isLoading || defaultDiaStone) && (
                 <Grid
                   item
                   size={{
@@ -341,26 +341,28 @@ const RightSide = ({
               )}
 
               {/* Diamond Origin */}
-              <Grid
-                item
-                size={{
-                  xs: 6,
-                }}
-              >
-                <Typography sx={{ fontSize: "14px", color: "#666" }}>
-                  Diamond Origin
-                </Typography>
-                <Typography sx={{ fontSize: "15px", fontWeight: 600 }}>
-                  {isLoading ? (
-                    <Skeleton variant="text" width={80} />
-                  ) : defaultDiaStone?.MaterialTypeName &&
-                    defaultDiaStone.MaterialTypeName.trim() !== "" ? (
-                    defaultDiaStone.MaterialTypeName
-                  ) : (
-                    "Natural"
-                  )}
-                </Typography>
-              </Grid>
+              {(isLoading || defaultDiaStone) && (
+                <Grid
+                  item
+                  size={{
+                    xs: 6,
+                  }}
+                >
+                  <Typography sx={{ fontSize: "14px", color: "#666" }}>
+                    Diamond Origin
+                  </Typography>
+                  <Typography sx={{ fontSize: "15px", fontWeight: 600 }}>
+                    {isLoading ? (
+                      <Skeleton variant="text" width={80} />
+                    ) : defaultDiaStone?.MaterialTypeName &&
+                      defaultDiaStone.MaterialTypeName.trim() !== "" ? (
+                      defaultDiaStone.MaterialTypeName
+                    ) : (
+                      "Natural"
+                    )}
+                  </Typography>
+                </Grid>
+              )}
 
               {/* Net Weight */}
               {storeInit?.IsMetalWeight === 1 && (
