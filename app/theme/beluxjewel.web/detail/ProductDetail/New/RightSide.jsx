@@ -60,6 +60,7 @@ const RightSide = ({
   defaultArticleId,
   customizationDetail,
   onCustomizerConfirm,
+  rd1CartMap = {},
 }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [isCustomizerOpen, setIsCustomizerOpen] = useState(false);
@@ -97,8 +98,26 @@ const RightSide = ({
     return txt.value;
   };
 
+  // Per-article cart/wish status: check rd1CartMap first, then fall back to optimistic flags
+  const activeArticleId = activeArticle?.ArticleId;
+  const articleCartEntry = rd1CartMap[activeArticleId];
+
+  // isAddedToCart: prefer rd1CartMap truth, then optimistic addToCardFlag, then singleProd initial state
   const isAddedToCart =
-    addToCardFlag !== null ? addToCardFlag : singleProd?.IsInCart === 1;
+    addToCardFlag !== null
+      ? addToCardFlag
+      : articleCartEntry != null
+        ? articleCartEntry.IsInCart === 1
+        : singleProd?.IsInCart === 1;
+
+  // wishlist checked: prefer rd1CartMap truth, then optimistic wishListFlag, then singleProd
+  const isInWishlist =
+    wishListFlag !== null
+      ? wishListFlag
+      : articleCartEntry != null
+        ? articleCartEntry.IsInWish === 1
+        : singleProd?.IsInWish === 1;
+
   const CurrencyCode = loginData?.loginData ?? storeInit?.CurrencyCode;
 
   return (
@@ -374,7 +393,7 @@ const RightSide = ({
             </Grid>
           </Box>
           {/* Size Selector */}
-          {SizeSorting?.length > 0 && (
+          {/* {SizeSorting?.length > 0 && (
             <Box sx={{ mb: 3 }}>
               <Divider sx={{ mb: 2 }} />
               <Box
@@ -398,7 +417,6 @@ const RightSide = ({
                 </Typography>
               </Box>
 
-              {/* Size Pills */}
               {singleProd?.IsMrpBase === 1 ? (
                 <Box
                   sx={{
@@ -442,7 +460,6 @@ const RightSide = ({
                         fontSize: "13px",
                         fontWeight: 600,
 
-                        // SELECTED STYLE (BLACK BUTTON + WHITE TEXT)
                         bgcolor: sizeData === ele?.sizename ? "#000" : "#fff",
                         color: sizeData === ele?.sizename ? "#fff" : "#000",
                         border:
@@ -461,7 +478,7 @@ const RightSide = ({
                 </Box>
               )}
             </Box>
-          )}
+          )} */}
 
           {/* Material Customization */}
           {/* <Divider sx={{ mb: 2 }} /> */}
@@ -816,7 +833,7 @@ const RightSide = ({
                     }}
                   />
                 }
-                checked={wishListFlag ?? singleProd?.IsInWish == 1}
+                checked={isInWishlist}
                 onChange={(e) => handleWishList(e, singleProd)}
                 sx={{
                   height: 54,
@@ -827,28 +844,18 @@ const RightSide = ({
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
-                  backgroundColor:
-                    (wishListFlag ?? singleProd?.IsInWish == 1)
-                      ? "#fff"
-                      : "#fff",
-                  color:
-                    (wishListFlag ?? singleProd?.IsInWish == 1)
-                      ? "#fff"
-                      : "#0A1F47",
+                  backgroundColor: isInWishlist ? "#fff" : "#fff",
+                  color: isInWishlist ? "#fff" : "#0A1F47",
                   boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
                   transition: "0.25s ease",
                   "&.Mui-checked": {
-                    // backgroundColor: "#b3905c",
                     color: "#fff",
                     borderColor: "#927038",
                   },
 
                   // Force icon color inheritance
                   "& .MuiSvgIcon-root": {
-                    color:
-                      (wishListFlag ?? singleProd?.IsInWish == 1)
-                        ? "#fff"
-                        : "#0A1F47",
+                    color: isInWishlist ? "#fff" : "#0A1F47",
                   },
                 }}
               />

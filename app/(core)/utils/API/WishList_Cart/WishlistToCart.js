@@ -53,6 +53,9 @@ export const handleWishlistToCartAPI = async (param, item, visiterId) => {
         WebDiscount: islogin ? `${data?.WebDiscount ?? 0}` : `${0}`,
         IsZeroPriceProductShow: `${storeInit?.IsZeroPriceProductShow ?? 0}`,
         IsSolitaireWebsite: `${storeInit?.IsSolitaireWebsite ?? 0}`,
+        ArticleNo: `${item?.ArticleNo ?? ""}`,
+        ArticleId: `${item?.ArticleId ?? ""}`,
+        autocode: `${item?.autocode ?? ""}`,
         ...Policys,
       });
     }

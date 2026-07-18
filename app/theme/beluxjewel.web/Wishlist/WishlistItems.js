@@ -159,7 +159,7 @@ const WishlistItems = ({
                     variant="body2"
                     className="smr_card-ContentData smr_WlTitleline"
                   >
-                    {item?.designno != "" && item?.designno}
+                    {item?.ArticleNo != "" && item?.ArticleNo}
                     {formatTitleLine(item?.TitleLine) && " - " + item?.TitleLine}
                   </Typography>
                   <Typography variant="body2" className="smr_card-ContentData">

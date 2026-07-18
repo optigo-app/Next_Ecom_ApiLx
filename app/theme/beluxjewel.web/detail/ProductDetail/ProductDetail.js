@@ -95,6 +95,8 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
   const [rd1Data, setRd1Data] = useState([]);
   const [rd2Data, setRd2Data] = useState([]);
   const [customizationDetail, setCustomizationDetail] = useState(null);
+  // Per-article cart/wishlist status map: { [ArticleId]: { IsInCart, IsInWish, CartId } }
+  const [rd1CartMap, setRd1CartMap] = useState({});
   const Navigate = useNextRouterLikeRR();
   const [isImageDialogOpen, setIsImageDialogOpen] = useState(false);
   const [SelectedImageIndex, setSelectedImageIndex] = useState(null);
@@ -266,7 +268,7 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
       )?.colorcode;
       setMetalColor(getCurrentMetalColor);
     }
-  }, [singleProd]);
+  }, [singleProd, metalTypeCombo, metalColorCombo]);
 
   // useEffect(() => {
   //   const isInCart = singleProd?.IsInCart === 0 ? false : true;
@@ -285,6 +287,12 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
       setAddToCartFlag(null);
     }
   }, [singleProd, singleProd1]);
+
+  // Reset optimistic flags when the active article changes so rd1CartMap is consulted
+  useEffect(() => {
+    setAddToCartFlag(null);
+    setWishListFlag(null);
+  }, [customizationDetail?.ArticleId]);
 
   const handleCart = async (cartFlag) => {
     const metal =
@@ -314,34 +322,88 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
       }) ?? metalColorCombo;
 
     const prodObj = {
-      autocode: singleProd?.autocode,
-      Metalid: metal?.Metalid,
-      MetalColorId: mcArr?.id ?? singleProd?.MetalColorid,
-      DiaQCid: `${dia?.QualityId ?? 0},${dia?.ColorId ?? 0}`,
-      CsQCid: `${cs?.QualityId ?? 0},${cs?.ColorId ?? 0}`,
-      Size: sizeData ?? singleProd?.DefaultSize,
-      Unitcost: singleProd1?.UnitCost ?? singleProd?.UnitCost,
-      markup: singleProd1?.DesignMarkUp ?? singleProd?.DesignMarkUp,
+      autocode:
+        customizationDetail?.autocode ||
+        singleProd1?.autocode ||
+        singleProd?.autocode,
+      Metalid: customizationDetail?.MetalTypeId || metal?.Metalid,
+      MetalColorId:
+        customizationDetail?.MetalColorId ||
+        mcArr?.id ||
+        singleProd?.MetalColorid,
+      DiaQCid:
+        customizationDetail?.DiaQCid ||
+        `${dia?.QualityId ?? 0},${dia?.ColorId ?? 0}`,
+      CsQCid:
+        customizationDetail?.CsQCid ||
+        `${cs?.QualityId ?? 0},${cs?.ColorId ?? 0}`,
+      Size: sizeData ?? customizationDetail?.Size ?? singleProd?.DefaultSize,
+      Unitcost:
+        customizationDetail?.TotalUnitCost ||
+        singleProd1?.UnitCost ||
+        singleProd?.UnitCost,
+      markup:
+        customizationDetail?.MarkUp ||
+        singleProd1?.DesignMarkUp ||
+        singleProd?.DesignMarkUp,
       UnitCostWithmarkup:
-        singleProd1?.UnitCostWithMarkUp ?? singleProd?.UnitCostWithMarkUp,
+        customizationDetail?.UnitCostWithmarkup ||
+        customizationDetail?.TotalUnitCost ||
+        singleProd1?.UnitCostWithMarkUp ||
+        singleProd?.UnitCostWithMarkUp,
       Remark: "",
-      Metal_Cost: singleProd?.Metal_Cost ?? singleProd1?.Metal_Cost,
-      Labour_Cost: singleProd?.Labour_Cost ?? singleProd1?.Labour_Cost,
-      Diamond_Cost: singleProd?.Diamond_Cost ?? singleProd1?.Diamond_Cost,
+      Metal_Cost:
+        customizationDetail?.TotalMetalCost ||
+        singleProd?.Metal_Cost ||
+        singleProd1?.Metal_Cost,
+      Labour_Cost:
+        customizationDetail?.TotalMakingCost ||
+        singleProd?.Labour_Cost ||
+        singleProd1?.Labour_Cost,
+      Diamond_Cost:
+        customizationDetail?.TotalDiamondCost ||
+        singleProd?.Diamond_Cost ||
+        singleProd1?.Diamond_Cost,
       Diamond_SettingCost:
-        singleProd?.Diamond_SettingCost ?? singleProd1?.Diamond_SettingCost,
+        customizationDetail?.TotalDiaSettingCost ||
+        singleProd?.Diamond_SettingCost ||
+        singleProd1?.Diamond_SettingCost,
       ColorStone_Cost:
-        singleProd?.ColorStone_Cost ?? singleProd1?.ColorStone_Cost,
+        customizationDetail?.TotalColorStoneCost ||
+        singleProd?.ColorStone_Cost ||
+        singleProd1?.ColorStone_Cost,
       ColorStone_SettingCost:
-        singleProd?.ColorStone_SettingCost ??
+        customizationDetail?.TotalCSSettingCost ||
+        singleProd?.ColorStone_SettingCost ||
         singleProd1?.ColorStone_SettingCost,
-      Misc_Cost: singleProd?.Misc_Cost ?? singleProd1?.Misc_Cost,
+      Misc_Cost:
+        customizationDetail?.TotalMiscCost ||
+        singleProd?.Misc_Cost ||
+        singleProd1?.Misc_Cost,
       Misc_SettingCost:
-        singleProd?.Misc_SettingCost ?? singleProd1?.Misc_SettingCost,
-      Other_Cost: singleProd?.Other_Cost ?? singleProd1?.Other_Cost,
-      SolPrice: singleProd?.SolPric ?? singleProd1?.SolPrice,
+        customizationDetail?.TotalSettingCost ||
+        singleProd?.Misc_SettingCost ||
+        singleProd1?.Misc_SettingCost,
+      Other_Cost:
+        customizationDetail?.TotalOtherCost ||
+        singleProd?.Other_Cost ||
+        singleProd1?.Other_Cost,
+      SolPrice:
+        customizationDetail?.SolPrice ||
+        singleProd?.SolPric ||
+        singleProd1?.SolPrice,
       ArticleNo: customizationDetail?.ArticleNo || singleProd?.ArticleNo || "",
+      ArticleId:
+        customizationDetail?.ArticleId ||
+        singleProd1?.ArticleId ||
+        singleProd?.ArticleId ||
+        0,
     };
+
+    const activeArticleId =
+      customizationDetail?.ArticleId ||
+      singleProd1?.ArticleId ||
+      singleProd?.ArticleId;
 
     if (cartFlag) {
       let res = await CartAndWishListAPI("Cart", prodObj, cookie);
@@ -349,8 +411,20 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
         try {
           let cartC = res?.Data?.rd[0]?.Cartlistcount;
           let wishC = res?.Data?.rd[0]?.Wishlistcount;
+          const newCartId = res?.Data?.rd[0]?.CartId;
           setWishCountNum(wishC);
           setCartCountNum(cartC);
+          // Update per-article cart map
+          if (activeArticleId) {
+            setRd1CartMap((prev) => ({
+              ...prev,
+              [activeArticleId]: {
+                ...prev[activeArticleId],
+                IsInCart: 1,
+                CartId: newCartId ?? prev[activeArticleId]?.CartId ?? 0,
+              },
+            }));
+          }
           broadcast(
             "UPDATE_CART_COUNT",
             cartC,
@@ -358,20 +432,22 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
             "cart",
             true,
           );
-          // broadcast('UPDATE_WISH_COUNT', wishC, prodObj?.autocode ,"wish", true);
         } catch (error) {
           console.log("err", error);
         }
         setAddToCartFlag(cartFlag);
       }
     } else {
+      const cartEntry = rd1CartMap[activeArticleId];
+      const cartIdToRemove = cartEntry?.CartId;
       let res1 = await RemoveCartAndWishAPI(
         "Cart",
-        singleProd?.autocode,
+        customizationDetail?.autocode || singleProd?.autocode,
         cookie,
         false,
         "",
         customizationDetail?.ArticleNo || singleProd?.ArticleNo || "",
+        cartIdToRemove,
       );
       if (res1) {
         try {
@@ -379,6 +455,17 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
           let wishC = res1?.Data?.rd[0]?.Wishlistcount;
           setWishCountNum(wishC);
           setCartCountNum(cartC);
+          // Clear per-article cart entry
+          if (activeArticleId) {
+            setRd1CartMap((prev) => ({
+              ...prev,
+              [activeArticleId]: {
+                ...prev[activeArticleId],
+                IsInCart: 0,
+                CartId: 0,
+              },
+            }));
+          }
           broadcast(
             "UPDATE_CART_COUNT",
             cartC,
@@ -386,7 +473,6 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
             "cart",
             false,
           );
-          // broadcast('UPDATE_WISH_COUNT', wishC, prodObj?.autocode ,"wish", false);
         } catch (error) {
           console.log("err", error);
         }
@@ -426,40 +512,100 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
     })[0];
 
     let prodObj = {
-      autocode: singleProd?.autocode,
-      Metalid: metal?.length
-        ? metal[0]?.Metalid
-        : (logininfoInside?.MetalId ?? storeinitInside?.MetalId),
-      MetalColorId: mcArr?.id ?? singleProd?.MetalColorid,
-      DiaQCid: dia?.length
-        ? `${dia[0]?.QualityId},${dia[0]?.ColorId}`
-        : (logininfoInside?.cmboDiaQCid ?? storeinitInside?.cmboDiaQCid),
-      CsQCid: cs?.length
-        ? `${cs[0]?.QualityId},${cs[0]?.ColorId}`
-        : (logininfoInside?.cmboCSQCid ?? storeinitInside?.cmboCSQCid),
-      Size: sizeData ?? singleProd1?.DefaultSize ?? singleProd?.DefaultSize,
-      Unitcost: singleProd1?.UnitCost ?? singleProd?.UnitCost,
-      markup: singleProd1?.DesignMarkUp ?? singleProd?.DesignMarkUp,
+      autocode:
+        customizationDetail?.autocode ||
+        singleProd1?.autocode ||
+        singleProd?.autocode,
+      Metalid:
+        customizationDetail?.MetalTypeId ||
+        (metal?.length
+          ? metal[0]?.Metalid
+          : (logininfoInside?.MetalId ?? storeinitInside?.MetalId)),
+      MetalColorId:
+        customizationDetail?.MetalColorId ||
+        mcArr?.id ||
+        singleProd?.MetalColorid,
+      DiaQCid:
+        customizationDetail?.DiaQCid ||
+        (dia?.length
+          ? `${dia[0]?.QualityId},${dia[0]?.ColorId}`
+          : (logininfoInside?.cmboDiaQCid ?? storeinitInside?.cmboDiaQCid)),
+      CsQCid:
+        customizationDetail?.CsQCid ||
+        (cs?.length
+          ? `${cs[0]?.QualityId},${cs[0]?.ColorId}`
+          : (logininfoInside?.cmboCSQCid ?? storeinitInside?.cmboCSQCid)),
+      Size:
+        sizeData ??
+        customizationDetail?.Size ??
+        singleProd1?.DefaultSize ??
+        singleProd?.DefaultSize,
+      Unitcost:
+        customizationDetail?.TotalUnitCost ||
+        singleProd1?.UnitCost ||
+        singleProd?.UnitCost,
+      markup:
+        customizationDetail?.MarkUp ||
+        singleProd1?.DesignMarkUp ||
+        singleProd?.DesignMarkUp,
       UnitCostWithmarkup:
-        singleProd1?.UnitCostWithMarkUp ?? singleProd?.UnitCostWithMarkUp,
+        customizationDetail?.UnitCostWithmarkup ||
+        customizationDetail?.TotalUnitCost ||
+        singleProd1?.UnitCostWithMarkUp ||
+        singleProd?.UnitCostWithMarkUp,
       Remark: "",
-      Metal_Cost: singleProd?.Metal_Cost ?? singleProd1?.Metal_Cost,
-      Labour_Cost: singleProd?.Labour_Cost ?? singleProd1?.Labour_Cost,
-      Diamond_Cost: singleProd?.Diamond_Cost ?? singleProd1?.Diamond_Cost,
+      Metal_Cost:
+        customizationDetail?.TotalMetalCost ||
+        singleProd?.Metal_Cost ||
+        singleProd1?.Metal_Cost,
+      Labour_Cost:
+        customizationDetail?.TotalMakingCost ||
+        singleProd?.Labour_Cost ||
+        singleProd1?.Labour_Cost,
+      Diamond_Cost:
+        customizationDetail?.TotalDiamondCost ||
+        singleProd?.Diamond_Cost ||
+        singleProd1?.Diamond_Cost,
       Diamond_SettingCost:
-        singleProd?.Diamond_SettingCost ?? singleProd1?.Diamond_SettingCost,
+        customizationDetail?.TotalDiaSettingCost ||
+        singleProd?.Diamond_SettingCost ||
+        singleProd1?.Diamond_SettingCost,
       ColorStone_Cost:
-        singleProd?.ColorStone_Cost ?? singleProd1?.ColorStone_Cost,
+        customizationDetail?.TotalColorStoneCost ||
+        singleProd?.ColorStone_Cost ||
+        singleProd1?.ColorStone_Cost,
       ColorStone_SettingCost:
-        singleProd?.ColorStone_SettingCost ??
+        customizationDetail?.TotalCSSettingCost ||
+        singleProd?.ColorStone_SettingCost ||
         singleProd1?.ColorStone_SettingCost,
-      Misc_Cost: singleProd?.Misc_Cost ?? singleProd1?.Misc_Cost,
+      Misc_Cost:
+        customizationDetail?.TotalMiscCost ||
+        singleProd?.Misc_Cost ||
+        singleProd1?.Misc_Cost,
       Misc_SettingCost:
-        singleProd?.Misc_SettingCost ?? singleProd1?.Misc_SettingCost,
-      Other_Cost: singleProd?.Other_Cost ?? singleProd1?.Other_Cost,
-      SolPrice: singleProd?.SolPric ?? singleProd1?.SolPrice,
+        customizationDetail?.TotalSettingCost ||
+        singleProd?.Misc_SettingCost ||
+        singleProd1?.Misc_SettingCost,
+      Other_Cost:
+        customizationDetail?.TotalOtherCost ||
+        singleProd?.Other_Cost ||
+        singleProd1?.Other_Cost,
+      SolPrice:
+        customizationDetail?.SolPrice ||
+        singleProd?.SolPric ||
+        singleProd1?.SolPrice,
       ArticleNo: customizationDetail?.ArticleNo || singleProd?.ArticleNo || "",
+      ArticleId:
+        customizationDetail?.ArticleId ||
+        singleProd1?.ArticleId ||
+        singleProd?.ArticleId ||
+        0,
     };
+
+    const activeArticleId =
+      customizationDetail?.ArticleId ||
+      singleProd1?.ArticleId ||
+      singleProd?.ArticleId;
 
     if (e.target.checked === true) {
       let res = await CartAndWishListAPI("Wish", prodObj, cookie);
@@ -469,7 +615,16 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
           let wishC = res?.Data?.rd[0]?.Wishlistcount;
           setWishCountNum(wishC);
           setCartCountNum(cartC);
-          //  broadcast('UPDATE_CART_COUNT', cartC , prodObj?.autocode ,"cart", true );
+          // Update per-article wish map
+          if (activeArticleId) {
+            setRd1CartMap((prev) => ({
+              ...prev,
+              [activeArticleId]: {
+                ...prev[activeArticleId],
+                IsInWish: 1,
+              },
+            }));
+          }
           broadcast(
             "UPDATE_WISH_COUNT",
             wishC,
@@ -484,7 +639,7 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
     } else {
       let res1 = await RemoveCartAndWishAPI(
         "Wish",
-        singleProd?.autocode,
+        customizationDetail?.autocode || singleProd?.autocode,
         cookie,
         false,
         "",
@@ -496,7 +651,16 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
           let wishC = res1?.Data?.rd[0]?.Wishlistcount;
           setWishCountNum(wishC);
           setCartCountNum(cartC);
-          //  broadcast('UPDATE_CART_COUNT', cartC , prodObj?.autocode ,"cart", false );
+          // Clear per-article wish entry
+          if (activeArticleId) {
+            setRd1CartMap((prev) => ({
+              ...prev,
+              [activeArticleId]: {
+                ...prev[activeArticleId],
+                IsInWish: 0,
+              },
+            }));
+          }
           broadcast(
             "UPDATE_WISH_COUNT",
             wishC,
@@ -714,7 +878,19 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
             setDiaList(res?.pdResp?.rd3);
             setCsList(res?.pdResp?.rd4);
             // Store all article combinations for the customizer drawer
-            if (res?.pdResp?.rd1?.length) setRd1Data(res?.pdResp?.rd1);
+            if (res?.pdResp?.rd1?.length) {
+              setRd1Data(res?.pdResp?.rd1);
+              // Build initial cart/wish status map from rd1
+              const initMap = {};
+              res.pdResp.rd1.forEach((r) => {
+                initMap[r.ArticleId] = {
+                  IsInCart: r.IsInCart ?? 0,
+                  IsInWish: r.IsInWish ?? 0,
+                  CartId: r.CartId ?? 0,
+                };
+              });
+              setRd1CartMap(initMap);
+            }
             if (res?.pdResp?.rd2?.length) setRd2Data(res?.pdResp?.rd2);
 
             // Compute initial customization details based on URL's ArticleId or decoded parameters
@@ -1801,6 +1977,7 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
                 rd2={rd2Data}
                 defaultArticleId={defaultArticleId}
                 customizationDetail={customizationDetail}
+                rd1CartMap={rd1CartMap}
                 onCustomizerConfirm={handleCustomizerConfirm}
               />
             </Grid>
