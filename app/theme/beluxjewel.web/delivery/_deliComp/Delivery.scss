@@ -33,7 +33,6 @@
   .smr_ContinueOrderbtn {
     height: 40px;
     width: 150px;
-    font-family: $homePageFontFamily !important;
     font-size: $fontSize3;
     background-color: $elecbtnbg;
     color: $elebtncolor !important;
@@ -53,7 +52,6 @@
 
 .smr_addressTextFields {
   margin-bottom: 18px !important;
-  font-family: $homePageFontFamily !important;
   color: $titleColor !important;
 
   .css-md26zr-MuiInputBase-root-MuiOutlinedInput-root {
@@ -63,12 +61,10 @@
 
 .smr_deliveryTitle {
   color: $titleColor;
-  font-family: $homePageFontFamily;
 }
 
 .smr_deliverydesc {
   color: $titleColor;
-  font-family: $homePageFontFamily;
 }
 
 .smr_AddrCard {
@@ -91,7 +87,6 @@
 
 .smr_defualt_addrSelected {
   padding: 3px 10px;
-  font-family: $homePageFontFamily !important;
   font-size: $fontSize3;
   color: $elebtncolor;
   background: $elecbtnbg;
@@ -112,13 +107,11 @@
 
 .smr_addrTypoTitle {
   color: $titleColor;
-  font-family: $homePageFontFamily !important;
   text-transform: capitalize;
 }
 
 .smr_addrTypo {
   color: $titleColor;
-  font-family: $homePageFontFamily !important;
   text-transform: capitalize;
 }
 
@@ -126,7 +119,6 @@
   .smr_AddNewAddrbtn {
     margin-right: 20px;
     height: 40px;
-    font-family: $homePageFontFamily !important;
     font-size: $fontSize3;
     padding: 0 15px;
     color: $elebtncolor;
@@ -155,7 +147,6 @@
   margin-right: 20px;
   height: 40px;
   width: 150px;
-  font-family: $homePageFontFamily !important;
   font-size: $fontSize3;
   color: $elebtncolor;
   background: $elecbtnbg;
@@ -167,32 +158,26 @@
     background-color 0.3s,
     color 0.3s;
 
-  // &:hover {
-  //   color: $btn1hoverFontColor;
-  //   background-color: $btn1ActivebgColor;
-  // }
+  &:hover {
+    background-color: #333;
+  }
 }
 
 .smr_Cancelbtn {
   margin-right: 20px;
   height: 40px;
   width: 150px;
-  font-family: $homePageFontFamily !important;
   font-size: $fontSize3;
-  color: $elebtncolor;
-  background: $elecbtnbg;
-  // border: 1px solid $btn1FontColor;
-  border: none;
+  color: #000;
+  background: #fff;
+  border: 1px solid #000;
   border-radius: 0px !important;
   cursor: pointer;
-  transition:
-    background-color 0.3s,
-    color 0.3s;
+  transition: all 0.2s ease-in-out;
 
-  // &:hover {
-  //   color: $btn1hoverFontColor;
-  //   background-color: $btn1ActivebgColor;
-  // }
+  &:hover {
+    background-color: #f5f5f5;
+  }
 }
 
 .smr_editDeleteBtngroup {

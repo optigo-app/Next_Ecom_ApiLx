@@ -289,12 +289,11 @@
     .elv_cartDetailsData_div {
         width: 100%;
         display: flex;
-        justify-content: space-between;
 
         .elv_CartProducts_div {
-            width: 72%;
+            // width: 72%;
+            width: 100%;
             display: flex;
-            flex-wrap: wrap;
             gap: 7px;
             flex-direction: row;
             height: 100%;
@@ -305,7 +304,6 @@
                 display: flex;
                 overflow: hidden;
                 position: relative;
-                width: 49%;
                 max-height: 12rem;
 
                 .elv_cardImage_div {
@@ -410,9 +408,9 @@
             }
         }
 
-        .elv_CartSingleProducts_div {
-            width: 27%;
-        }
+        // .elv_CartSingleProducts_div {
+        //     width: 27%;
+        // }
     }
 
     .elv_cart-container {

@@ -95,6 +95,8 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
   const [rd1Data, setRd1Data] = useState([]);
   const [rd2Data, setRd2Data] = useState([]);
   const [customizationDetail, setCustomizationDetail] = useState(null);
+  // Per-article cart/wishlist status map: { [ArticleId]: { IsInCart, IsInWish, CartId } }
+  const [rd1CartMap, setRd1CartMap] = useState({});
   const Navigate = useNextRouterLikeRR();
   const [isImageDialogOpen, setIsImageDialogOpen] = useState(false);
   const [SelectedImageIndex, setSelectedImageIndex] = useState(null);
@@ -286,15 +288,13 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
     }
   }, [singleProd, singleProd1]);
 
+  // Reset optimistic flags when the active article changes so rd1CartMap is consulted
+  useEffect(() => {
+    setAddToCartFlag(null);
+    setWishListFlag(null);
+  }, [customizationDetail?.ArticleId]);
+
   const handleCart = async (cartFlag) => {
-    console.log(
-      "handleCart debug - singleProd:",
-      singleProd,
-      "singleProd1:",
-      singleProd1,
-      "customizationDetail:",
-      customizationDetail,
-    );
     const metal =
       metalTypeCombo?.find((ele) => {
         return ele?.metaltype == metalType;
@@ -400,14 +400,31 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
         0,
     };
 
+    const activeArticleId =
+      customizationDetail?.ArticleId ||
+      singleProd1?.ArticleId ||
+      singleProd?.ArticleId;
+
     if (cartFlag) {
       let res = await CartAndWishListAPI("Cart", prodObj, cookie);
       if (res) {
         try {
           let cartC = res?.Data?.rd[0]?.Cartlistcount;
           let wishC = res?.Data?.rd[0]?.Wishlistcount;
+          const newCartId = res?.Data?.rd[0]?.CartId;
           setWishCountNum(wishC);
           setCartCountNum(cartC);
+          // Update per-article cart map
+          if (activeArticleId) {
+            setRd1CartMap((prev) => ({
+              ...prev,
+              [activeArticleId]: {
+                ...prev[activeArticleId],
+                IsInCart: 1,
+                CartId: newCartId ?? prev[activeArticleId]?.CartId ?? 0,
+              },
+            }));
+          }
           broadcast(
             "UPDATE_CART_COUNT",
             cartC,
@@ -415,20 +432,22 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
             "cart",
             true,
           );
-          // broadcast('UPDATE_WISH_COUNT', wishC, prodObj?.autocode ,"wish", true);
         } catch (error) {
           console.log("err", error);
         }
         setAddToCartFlag(cartFlag);
       }
     } else {
+      const cartEntry = rd1CartMap[activeArticleId];
+      const cartIdToRemove = cartEntry?.CartId;
       let res1 = await RemoveCartAndWishAPI(
         "Cart",
-        singleProd?.autocode,
+        customizationDetail?.autocode || singleProd?.autocode,
         cookie,
         false,
         "",
         customizationDetail?.ArticleNo || singleProd?.ArticleNo || "",
+        cartIdToRemove,
       );
       if (res1) {
         try {
@@ -436,6 +455,17 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
           let wishC = res1?.Data?.rd[0]?.Wishlistcount;
           setWishCountNum(wishC);
           setCartCountNum(cartC);
+          // Clear per-article cart entry
+          if (activeArticleId) {
+            setRd1CartMap((prev) => ({
+              ...prev,
+              [activeArticleId]: {
+                ...prev[activeArticleId],
+                IsInCart: 0,
+                CartId: 0,
+              },
+            }));
+          }
           broadcast(
             "UPDATE_CART_COUNT",
             cartC,
@@ -443,7 +473,6 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
             "cart",
             false,
           );
-          // broadcast('UPDATE_WISH_COUNT', wishC, prodObj?.autocode ,"wish", false);
         } catch (error) {
           console.log("err", error);
         }
@@ -453,14 +482,6 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
   };
 
   const handleWishList = async (e, elv) => {
-    console.log(
-      "handleWishList debug - singleProd:",
-      singleProd,
-      "singleProd1:",
-      singleProd1,
-      "customizationDetail:",
-      customizationDetail,
-    );
     setWishListFlag(e?.target?.checked);
 
     let storeinitInside = storeinit;
@@ -581,6 +602,11 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
         0,
     };
 
+    const activeArticleId =
+      customizationDetail?.ArticleId ||
+      singleProd1?.ArticleId ||
+      singleProd?.ArticleId;
+
     if (e.target.checked === true) {
       let res = await CartAndWishListAPI("Wish", prodObj, cookie);
       if (res) {
@@ -589,7 +615,16 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
           let wishC = res?.Data?.rd[0]?.Wishlistcount;
           setWishCountNum(wishC);
           setCartCountNum(cartC);
-          //  broadcast('UPDATE_CART_COUNT', cartC , prodObj?.autocode ,"cart", true );
+          // Update per-article wish map
+          if (activeArticleId) {
+            setRd1CartMap((prev) => ({
+              ...prev,
+              [activeArticleId]: {
+                ...prev[activeArticleId],
+                IsInWish: 1,
+              },
+            }));
+          }
           broadcast(
             "UPDATE_WISH_COUNT",
             wishC,
@@ -604,7 +639,7 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
     } else {
       let res1 = await RemoveCartAndWishAPI(
         "Wish",
-        singleProd?.autocode,
+        customizationDetail?.autocode || singleProd?.autocode,
         cookie,
         false,
         "",
@@ -616,7 +651,16 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
           let wishC = res1?.Data?.rd[0]?.Wishlistcount;
           setWishCountNum(wishC);
           setCartCountNum(cartC);
-          //  broadcast('UPDATE_CART_COUNT', cartC , prodObj?.autocode ,"cart", false );
+          // Clear per-article wish entry
+          if (activeArticleId) {
+            setRd1CartMap((prev) => ({
+              ...prev,
+              [activeArticleId]: {
+                ...prev[activeArticleId],
+                IsInWish: 0,
+              },
+            }));
+          }
           broadcast(
             "UPDATE_WISH_COUNT",
             wishC,
@@ -834,7 +878,19 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
             setDiaList(res?.pdResp?.rd3);
             setCsList(res?.pdResp?.rd4);
             // Store all article combinations for the customizer drawer
-            if (res?.pdResp?.rd1?.length) setRd1Data(res?.pdResp?.rd1);
+            if (res?.pdResp?.rd1?.length) {
+              setRd1Data(res?.pdResp?.rd1);
+              // Build initial cart/wish status map from rd1
+              const initMap = {};
+              res.pdResp.rd1.forEach((r) => {
+                initMap[r.ArticleId] = {
+                  IsInCart: r.IsInCart ?? 0,
+                  IsInWish: r.IsInWish ?? 0,
+                  CartId: r.CartId ?? 0,
+                };
+              });
+              setRd1CartMap(initMap);
+            }
             if (res?.pdResp?.rd2?.length) setRd2Data(res?.pdResp?.rd2);
 
             // Compute initial customization details based on URL's ArticleId or decoded parameters
@@ -1921,6 +1977,7 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
                 rd2={rd2Data}
                 defaultArticleId={defaultArticleId}
                 customizationDetail={customizationDetail}
+                rd1CartMap={rd1CartMap}
                 onCustomizerConfirm={handleCustomizerConfirm}
               />
             </Grid>

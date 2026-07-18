@@ -1,4 +1,4 @@
-'use client'
+"use client";
 import React, { useEffect, useState } from "react";
 import "./elv_cartPage.scss";
 import useCart from "@/app/(core)/utils/Glob_Functions/Cart_Wishlist/Cart";
@@ -9,7 +9,15 @@ import SelectedItemsModal from "./SelectedModal";
 import SellIcon from "@mui/icons-material/Sell";
 import Cookies from "js-cookie";
 import Button from "@mui/material/Button";
-import { Box, Breadcrumbs, CircularProgress, FormControl, Grid, Typography, useMediaQuery } from "@mui/material";
+import {
+  Box,
+  Breadcrumbs,
+  CircularProgress,
+  FormControl,
+  Grid,
+  Typography,
+  useMediaQuery,
+} from "@mui/material";
 import { GetCountAPI } from "@/app/(core)/utils/API/GetCount/GetCountAPI";
 import RemarkDialog from "./OrderRemarkDialog";
 import { formatter } from "@/app/(core)/utils/Glob_Functions/GlobalFunction";
@@ -26,7 +34,6 @@ import { useStore } from "@/app/(core)/contexts/StoreProvider";
 import { useNavigate } from "@/app/(core)/hooks/useLocationRd";
 import { getSession } from "@/app/(core)/utils/FetchSessionData";
 
-
 const IsSetupFor = false;
 
 const calculateOtherCost = (item) => {
@@ -41,8 +48,6 @@ const calculateOtherCost = (item) => {
     (Number(src?.Misc_SettingCost) || 0)
   );
 };
-
-
 
 const calcCartMasterSummary = (items) => {
   let finalCartAmt = 0;
@@ -80,9 +85,7 @@ const calcCartMasterSummary = (items) => {
     LabourCost += (Number(item?.Labour_Cost) || 0) * qty;
     ColorStoneCost += (Number(item?.ColorStone_Cost) || 0) * qty;
     OtherCost += calculateOtherCost(item) * qty;
-
   });
-
 
   // FIX: finalCartAmt must be calculated — it was commented out and always 0
   finalCartAmt = items.reduce((total, item) => {
@@ -91,10 +94,8 @@ const calcCartMasterSummary = (items) => {
     return total + cost * qty;
   }, 0);
 
-
   const dwtPerPiece = totalDpcs > 0 ? totalDwt / totalDpcs : 0;
   const cswtPerPiece = totalCSpcs > 0 ? totalCSwt / totalCSpcs : 0;
-
 
   const summary = {
     totalGwt,
@@ -111,7 +112,7 @@ const calcCartMasterSummary = (items) => {
     LabourCost,
     OtherCost,
     ColorStoneCost,
-    MiscCost
+    MiscCost,
   };
 
   sessionStorage.setItem("CartSummary", JSON.stringify(summary));
@@ -120,22 +121,62 @@ const calcCartMasterSummary = (items) => {
 };
 
 const ElveeCartPage = ({ storeinit, visiterId }) => {
-  const noImageFound = `image-not-found.jpg`
-  const { isloding,
-    shouldRecalculate, setShouldRecalculate,
-    ispriceloding, cartData, finalCartData, selectedItem, selectedItems, multiSelect, openModal, showRemark, productRemark, qtyCount, sizeCombo, CurrencyData, countData, mrpbasedPriceFlag, openMobileModal, setOpenMobileModal, isSelectedAll, handleSelectAll, handlecloseMobileModal, CartCardImageFunc, handleSelectItem, handleIncrement, handleDecrement, handleMultiSelectToggle, handleOpenModal, handleCloseModal, handleRemarkChange, handleSave, handleCancel, handleAddReamrk, handleRemoveItem, handleRemoveAll, handleUpdateCart, handleCancelUpdateCart, handleMetalTypeChange, handleMetalColorChange, handleDiamondChange, handleColorStoneChange, handleSizeChange, decodeEntities, handleMoveToDetail, handelMenu } =
-    useCart();
-  const { finalId, cartCountNum, setCartCountNum,
-    islogin,
-    loginUserDetail
-  } = useStore();
+  const noImageFound = `image-not-found.jpg`;
+  const {
+    isloding,
+    shouldRecalculate,
+    setShouldRecalculate,
+    ispriceloding,
+    cartData,
+    finalCartData,
+    selectedItem,
+    selectedItems,
+    multiSelect,
+    openModal,
+    showRemark,
+    productRemark,
+    qtyCount,
+    sizeCombo,
+    CurrencyData,
+    countData,
+    mrpbasedPriceFlag,
+    openMobileModal,
+    setOpenMobileModal,
+    isSelectedAll,
+    handleSelectAll,
+    handlecloseMobileModal,
+    CartCardImageFunc,
+    handleSelectItem,
+    handleIncrement,
+    handleDecrement,
+    handleMultiSelectToggle,
+    handleOpenModal,
+    handleCloseModal,
+    handleRemarkChange,
+    handleSave,
+    handleCancel,
+    handleAddReamrk,
+    handleRemoveItem,
+    handleRemoveAll,
+    handleUpdateCart,
+    handleCancelUpdateCart,
+    handleMetalTypeChange,
+    handleMetalColorChange,
+    handleDiamondChange,
+    handleColorStoneChange,
+    handleSizeChange,
+    decodeEntities,
+    handleMoveToDetail,
+    handelMenu,
+  } = useCart();
+  const { finalId, cartCountNum, setCartCountNum, islogin, loginUserDetail } =
+    useStore();
   const navigate = useNavigate();
   const isTabletResponsive = useMediaQuery("(max-width:1000px)");
   const isMobileResp1 = useMediaQuery("(max-width:800px)");
   const isMobileResp2 = useMediaQuery("(max-width:600px)");
   const isMobileResp3 = useMediaQuery("(max-width:425px)");
   useGlobalPreventSave();
-
 
   // FIX: Always derive totalPrice from finalCartData.
   // cartData is the raw API response and does NOT update when items are removed
@@ -144,9 +185,15 @@ const ElveeCartPage = ({ storeinit, visiterId }) => {
   const getTotalPrice = [];
   let totalPrice;
   if (storeinit?.Themeno === 3) {
-    totalPrice = finalCartData?.reduce((total, item) => total + (Number(item?.FinalCost) || 0), 0);
+    totalPrice = finalCartData?.reduce(
+      (total, item) => total + (Number(item?.FinalCost) || 0),
+      0,
+    );
   } else {
-    totalPrice = finalCartData?.reduce((total, item) => total + (Number(item?.FinalCost) || 0), 0);
+    totalPrice = finalCartData?.reduce(
+      (total, item) => total + (Number(item?.FinalCost) || 0),
+      0,
+    );
   }
   getTotalPrice.push({ total: totalPrice });
 
@@ -165,7 +212,6 @@ const ElveeCartPage = ({ storeinit, visiterId }) => {
   const [couponData, setCouponData] = useState([]);
   const { broadcast } = useBroadcaster(); // Get the broadcaster
   const [summary, setSummary] = useState(null);
-
 
   const fetchCouponData = async (finalID) => {
     const response = await DiscountMasterAPI(finalID);
@@ -217,7 +263,7 @@ const ElveeCartPage = ({ storeinit, visiterId }) => {
     if (returnValue?.msg == "success") {
       GetCountAPI(visiterId).then((res) => {
         setCartCountNum(res?.cartcount);
-        broadcast('UPDATE_CART_COUNT', res?.cartcount, "", "cart", "removeall");
+        broadcast("UPDATE_CART_COUNT", res?.cartcount, "", "cart", "removeall");
       });
     }
   };
@@ -258,7 +304,7 @@ const ElveeCartPage = ({ storeinit, visiterId }) => {
   };
 
   const handleDiscountModalOpen = () => {
-    if (IsSetupFor) {
+    if (true) {
       handleMoveToOrder();
       return;
     }
@@ -299,11 +345,11 @@ const ElveeCartPage = ({ storeinit, visiterId }) => {
   // Modified useEffect to calculate only on load or explicit update
 
   useEffect(() => {
-    console.log(shouldRecalculate, "shouldRecalculate")
+    console.log(shouldRecalculate, "shouldRecalculate");
     // Check if data exists AND if we are allowed to recalculate
     if (finalCartData?.length && shouldRecalculate) {
       const result = calcCartMasterSummary(finalCartData || []);
-      console.log(result, "result")
+      console.log(result, "result");
       setSummary(result);
 
       // Turn off recalculation until an update happens
@@ -321,54 +367,121 @@ const ElveeCartPage = ({ storeinit, visiterId }) => {
     boxShadow: 24,
     p: 4,
   };
-  const hasItems = React.useMemo(() => (storeinit?.Themeno === 3 ? finalCartData.length : cartData.length) > 0, [finalCartData.length, cartData.length, storeinit?.Themeno]);
+  const hasItems = React.useMemo(
+    () =>
+      (storeinit?.Themeno === 3 ? finalCartData.length : cartData.length) > 0,
+    [finalCartData.length, cartData.length, storeinit?.Themeno],
+  );
 
   if (!storeinit) {
     return null;
   }
 
   if (isloding) {
-    return <div
-      style={{
-        width: " 100%",
-        height: "100vh",
-        zIndex: "100",
-        background: "#83838333",
-      }}
-    >
-      <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh" }}>
-        <CircularProgress sx={{ color: "#2e2d2d" }} />
-      </Box>
-    </div>
+    return (
+      <div
+        style={{
+          width: " 100%",
+          height: "100vh",
+          zIndex: "100",
+          background: "#83838333",
+        }}
+      >
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            height: "100vh",
+          }}
+        >
+          <CircularProgress sx={{ color: "#2e2d2d" }} />
+        </Box>
+      </div>
+    );
   }
 
   return (
     <>
-      {openDiscountModal && <DiscountPopUp itemCount={finalCartData?.length} totalPrice={formatter(getTotalPrice[0]?.total)} CurrencyCode={loginUserDetail?.CurrencyCode ?? CurrencyData?.CurrencyCode} CouponList={couponData} open={openDiscountModal} onClose={handleDiscountModalClose} handleMoveToOrder={handleMoveToOrder} />}
+      {openDiscountModal && (
+        <DiscountPopUp
+          itemCount={finalCartData?.length}
+          totalPrice={formatter(getTotalPrice[0]?.total)}
+          CurrencyCode={
+            loginUserDetail?.CurrencyCode ?? CurrencyData?.CurrencyCode
+          }
+          CouponList={couponData}
+          open={openDiscountModal}
+          onClose={handleDiscountModalClose}
+          handleMoveToOrder={handleMoveToOrder}
+        />
+      )}
       <Box
         sx={{
-          boxSizing: 'border-box',
+          boxSizing: "border-box",
           px: { xs: 1, sm: 2, md: 4 },
           width: "100%",
         }}
       >
-        {hasItems && <CartHeader count={finalCartData.length} AddOrderRemark={handleOrderRemarkFun} handleRemoveAll={handleConfirmRemoveAll} totalPrice={getTotalPrice[0]?.total} CurrencyCode={loginUserDetail?.CurrencyCode ?? CurrencyData?.CurrencyCode} IsPriceShow={storeinit?.IsPriceShow == 1} handleMoveToOrder={handleDiscountModalOpen} handleOpen1={handleOpen1} handleClose1={handleClose1} orderRemark={orderRemark} OrderMessage={orderRemark ? "View & Edit Order Remark" : "Add Order Remark"} openClearAllModal={handleOpen} closeClearAllModal={handleClose} summary={summary} />}
+        {hasItems && (
+          <CartHeader
+            count={finalCartData.length}
+            AddOrderRemark={handleOrderRemarkFun}
+            handleRemoveAll={handleConfirmRemoveAll}
+            totalPrice={getTotalPrice[0]?.total}
+            CurrencyCode={
+              loginUserDetail?.CurrencyCode ?? CurrencyData?.CurrencyCode
+            }
+            IsPriceShow={storeinit?.IsPriceShow == 1}
+            handleMoveToOrder={handleDiscountModalOpen}
+            handleOpen1={handleOpen1}
+            handleClose1={handleClose1}
+            orderRemark={orderRemark}
+            OrderMessage={
+              orderRemark ? "View & Edit Order Remark" : "Add Order Remark"
+            }
+            openClearAllModal={handleOpen}
+            closeClearAllModal={handleClose}
+            summary={summary}
+          />
+        )}
 
         <div className="elv_Productlists_Main_div">
           <div className="elv_Productlists_lists_div">
             <div className="elv_Productlists_lists_header">
               {hasItems ? (
-                <div className="elv_cartDetailsData_div">
-                  <div className="elv_CartProducts_div">
-                    <Grid container spacing={1.5}
-                      sx={{
-                        width: '100%'
-                      }}
-                    >
-                      <CartList items={finalCartData} CartCardImageFunc={CartCardImageFunc} showRemark={showRemark} productRemark={productRemark} CurrencyData={CurrencyData} decodeEntities={decodeEntities} onSelect={handleSelectItem} selectedItem={selectedItem} selectedItems={selectedItems} multiSelect={multiSelect} border={border} handleBorder={handleBorder} onRemove={handleRemoveItem} handleAddReamrk={handleAddReamrk} handleRemarkChange={handleRemarkChange} handleSave={handleSave} handleCancel={handleCancel} openHandleUpdateCartModal={handleOpenModal} showRemark1={showRemark1} handleClose1={handleClose1} />
-                    </Grid>
-                  </div>
-                  <div className="elv_CartSingleProducts_div">
+                <>
+                  <Grid
+                    container
+                    spacing={1.5}
+                    sx={{
+                      width: "100%",
+                    }}
+                  >
+                    <CartList
+                      items={finalCartData}
+                      CartCardImageFunc={CartCardImageFunc}
+                      showRemark={showRemark}
+                      productRemark={productRemark}
+                      CurrencyData={CurrencyData}
+                      decodeEntities={decodeEntities}
+                      onSelect={handleSelectItem}
+                      selectedItem={selectedItem}
+                      selectedItems={selectedItems}
+                      multiSelect={multiSelect}
+                      border={border}
+                      handleBorder={handleBorder}
+                      onRemove={handleRemoveItem}
+                      handleAddReamrk={handleAddReamrk}
+                      handleRemarkChange={handleRemarkChange}
+                      handleSave={handleSave}
+                      handleCancel={handleCancel}
+                      openHandleUpdateCartModal={handleOpenModal}
+                      showRemark1={showRemark1}
+                      handleClose1={handleClose1}
+                    />
+                  </Grid>
+                  {/* <div className="elv_CartSingleProducts_div">
                     {!isTabletResponsive ? (
                       selectedItem && <CartDetails
                         count={finalCartData.length}
@@ -379,8 +492,8 @@ const ElveeCartPage = ({ storeinit, visiterId }) => {
                         <MobileCartDetails open={openMobileModal} handleClose={handlecloseMobileModal} ispriceloding={ispriceloding} selectedItem={selectedItem} CartCardImageFunc={CartCardImageFunc} handleIncrement={handleIncrement} handleDecrement={handleDecrement} qtyCount={qtyCount} multiSelect={multiSelect} sizeCombo={sizeCombo} CurrencyData={CurrencyData} mrpbasedPriceFlag={mrpbasedPriceFlag} handleMetalTypeChange={handleMetalTypeChange} handleMetalColorChange={handleMetalColorChange} handleDiamondChange={handleDiamondChange} handleColorStoneChange={handleColorStoneChange} handleSizeChange={handleSizeChange} decodeEntities={decodeEntities} onUpdateCart={handleUpdateCart} handleMoveToDetail={handleMoveToDetail} />
                       </div>
                     )}
-                  </div>
-                </div>
+                  </div> */}
+                </>
               ) : (
                 <EmptyCartUI handelMenu={handelMenu} />
               )}
@@ -389,8 +502,20 @@ const ElveeCartPage = ({ storeinit, visiterId }) => {
         </div>
       </Box>
 
-      <RemarkDialog open1={showRemark1} onClose1={handleClose1} remark1={orderRemark} onRemarkChange1={handleRemarkChangeInternal} onSave1={handleOrderRemarkFun} />
-      <ConfirmationDialog open={open} onClose={handleClose} onConfirm={handleCloseRemove} title={"Confirm"} content={"Are You Sure to Delete All these items?"} />
+      <RemarkDialog
+        open1={showRemark1}
+        onClose1={handleClose1}
+        remark1={orderRemark}
+        onRemarkChange1={handleRemarkChangeInternal}
+        onSave1={handleOrderRemarkFun}
+      />
+      <ConfirmationDialog
+        open={open}
+        onClose={handleClose}
+        onConfirm={handleCloseRemove}
+        title={"Confirm"}
+        content={"Are You Sure to Delete All these items?"}
+      />
     </>
   );
 };
