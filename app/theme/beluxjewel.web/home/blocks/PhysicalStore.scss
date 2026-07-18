@@ -1,0 +1,45 @@
+@use "../../style/variable.scss" as *;
+
+.physicalStoreContainer {
+  background-color: #ffffff;
+  border-top: 1px solid #eaeaea;
+}
+
+.physicalStoreOverline {
+  color: $btnBg !important;
+}
+
+.physicalStoreTitle {
+  color: #1a1a1a !important;
+}
+
+.physicalStoreBody {
+  color: #555555 !important;
+}
+
+.physicalStoreIcon {
+  color: $btnBg !important;
+}
+
+.physicalStoreDetailText {
+  color: #1a1a1a !important;
+}
+
+.physicalStoreDetailSubtext {
+  color: #666666 !important;
+}
+
+.physicalStoreButton {
+  color: #1a1a1a !important;
+  border-color: #1a1a1a !important;
+
+  &:hover {
+    background-color: #1a1a1a !important;
+    color: #ffffff !important;
+    border-color: #1a1a1a !important;
+  }
+}
+
+.physicalStoreDivider {
+  border-color: #eaeaea !important;
+}

@@ -9,7 +9,7 @@ const chipBaseStyles = {
   fontWeight: 500,
   color: "#444",
   backgroundColor: "#fafafa",
-  borderRadius: 15,
+  borderRadius: 0,
   border: "1px solid #e5e5e5",
   px: 1,
   height: 26, // 👈 reduced height (premium feel)
@@ -24,7 +24,7 @@ const chipPrimaryStyles = {
   fontWeight: 600,
   color: "#fff",
   backgroundColor: "#0a1f47",
-  borderRadius: 15,
+  borderRadius: 0,
   px: 1.2,
   height: 26,
   border: "1px solid #0a1f47",
@@ -39,8 +39,14 @@ const chipPrimaryStyles = {
 
 // #0a1f47
 
-
-const BreadCrumbBar = ({ isFiltering, decodeURIComponent, productListData, IsBreadCumShow, BreadCumsObj, handleBreadcums }) => {
+const BreadCrumbBar = ({
+  isFiltering,
+  decodeURIComponent,
+  productListData,
+  IsBreadCumShow,
+  BreadCumsObj,
+  handleBreadcums,
+}) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   // FIX 2026-04-29: usePathname() returns a plain string — it has NO .search or .pathname properties.
@@ -135,7 +141,7 @@ const BreadCrumbBar = ({ isFiltering, decodeURIComponent, productListData, IsBre
       )}
       {searchFirstChar === "A" && (
         <Chip
-          label={location?.split("/")[2]?.replaceAll('%20', '')}
+          label={location?.split("/")[2]?.replaceAll("%20", "")}
           size={isMobile ? "small" : "medium"}
           sx={chipPrimaryStyles}
         />
@@ -149,19 +155,18 @@ const BreadCrumbBar = ({ isFiltering, decodeURIComponent, productListData, IsBre
       )}
       {searchFirstChar === "T" && (
         <Chip
-          label={'Trending'}
+          label={"Trending"}
           size={isMobile ? "small" : "medium"}
           sx={chipBaseStyles}
         />
       )}
       {searchFirstChar === "B" && (
         <Chip
-          label={'Best Seller'}
+          label={"Best Seller"}
           size={isMobile ? "small" : "medium"}
           sx={chipBaseStyles}
         />
       )}
-
 
       {IsBreadCumShow && (
         <>
@@ -170,14 +175,16 @@ const BreadCrumbBar = ({ isFiltering, decodeURIComponent, productListData, IsBre
               <Chip
                 label={BreadCumsObj()?.menuname}
                 onClick={() =>
-                  handleBreadcums({
-                    [BreadCumsObj()?.FilterKey]: BreadCumsObj()?.FilterVal,
-                  }, BreadCumsObj()?.menuname?.toLowerCase() === "collection")
+                  handleBreadcums(
+                    {
+                      [BreadCumsObj()?.FilterKey]: BreadCumsObj()?.FilterVal,
+                    },
+                    BreadCumsObj()?.menuname?.toLowerCase() === "collection",
+                  )
                 }
                 size={isMobile ? "small" : "medium"}
                 clickable
                 sx={chipPrimaryStyles}
-
               />
 
               {BreadCumsObj()?.FilterVal1 && (
@@ -188,13 +195,13 @@ const BreadCrumbBar = ({ isFiltering, decodeURIComponent, productListData, IsBre
                     onClick={() =>
                       handleBreadcums({
                         [BreadCumsObj()?.FilterKey]: BreadCumsObj()?.FilterVal,
-                        [BreadCumsObj()?.FilterKey1]: BreadCumsObj()?.FilterVal1,
+                        [BreadCumsObj()?.FilterKey1]:
+                          BreadCumsObj()?.FilterVal1,
                       })
                     }
                     size={isMobile ? "small" : "medium"}
                     clickable
                     sx={chipPrimaryStyles}
-
                   />
                 </>
               )}
@@ -207,8 +214,10 @@ const BreadCrumbBar = ({ isFiltering, decodeURIComponent, productListData, IsBre
                     onClick={() =>
                       handleBreadcums({
                         [BreadCumsObj()?.FilterKey]: BreadCumsObj()?.FilterVal,
-                        [BreadCumsObj()?.FilterKey1]: BreadCumsObj()?.FilterVal1,
-                        [BreadCumsObj()?.FilterKey2]: BreadCumsObj()?.FilterVal2,
+                        [BreadCumsObj()?.FilterKey1]:
+                          BreadCumsObj()?.FilterVal1,
+                        [BreadCumsObj()?.FilterKey2]:
+                          BreadCumsObj()?.FilterVal2,
                       })
                     }
                     size={isMobile ? "small" : "medium"}

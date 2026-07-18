@@ -4,7 +4,7 @@
 
 
 .fg_smr_continuMobile {
-  background-color: $authbg;
+  background-color: $authbg !important;;
   height: 70vh;
   display: grid;
   align-content: center;
@@ -31,7 +31,7 @@
   .submitBtnForgot {
     height: 60px;
     width: 420px;
-    background-color: $authbtnbg;
+    background-color: $authbtnbg !important;;
     color: $authbtncolor;
     border: 0;
     margin-top: 10px;

@@ -1,97 +1,100 @@
 "use client";
-import { useMemo } from "react";
-import { Box, Typography, useTheme, useMediaQuery } from "@mui/material";
-import Marquee from "react-fast-marquee";
 
-const BrandInfoMarquee = () => {
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
-  
-  // Custom text array based on your layout image
-  const items = useMemo(() => [
-    " Flat 5% Making Charges on 22KT Antique Gold Jewellery",
-    " Flat 5% Making Charges on 22KT Antique Gold Jewellery",
-    " Flat 5% Making Charges on 22KT Antique Gold Jewellery",
-    " Flat 5% Making Charges on 22KT Antique Gold Jewellery"
-  ], []);
+import { useRef } from "react";
+import "./AnnouncementBar.scss";
+import { Box, IconButton, Typography } from "@mui/material";
+import ChevronLeftRoundedIcon from "@mui/icons-material/ChevronLeftRounded";
+import ChevronRightRoundedIcon from "@mui/icons-material/ChevronRightRounded";
 
-  // Multiplied items array for continuous scrolling behavior
-  const marqueeData = useMemo(() => [...items, ...items, ...items], [items]);
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Navigation, Autoplay } from "swiper/modules";
+
+import "swiper/css";
+
+const items = [
+  "NATURAL AND LAB-GROWN DIAMOND JEWELRY",
+  "FREE SHIPPING ON ALL ORDERS ABOVE $500",
+  "CUSTOM JEWELRY MANUFACTURING AVAILABLE",
+  "BOOK YOUR VIRTUAL APPOINTMENT TODAY",
+];
+
+export default function AnnouncementBar() {
+  const prevRef = useRef(null);
+  const nextRef = useRef(null);
 
   return (
     <Box
+      className="bar"
       sx={{
-        width: "100%",
-        position: "relative",
-        bgcolor: "#1f3e09", // Dark aesthetic background
-        height: "50px",      // Compact height ideal for an announcement bar
+        height: 36,
         display: "flex",
         alignItems: "center",
-        overflow: "hidden",
+        px: 2,
+        width: "100%",
+        marginBottom: "-1px",
       }}
     >
-       
-
-      <Marquee 
-        gradient={false} 
-        speed={isMobile ? 30 : 50} 
-        pauseOnHover={true} // Pauses automatically on cursor hover
+      <IconButton
+        ref={prevRef}
+        size="small"
+        sx={{ color: "white", p: 0, width: 28, height: 28, flexShrink: 0 }}
       >
-        <Box
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            gap: { xs: 4, sm: 8 }, // Controlled spacing between marquee nodes
-            px: { xs: 2, sm: 4 },
-          }}
-        >
-          {marqueeData.map((text, index) => (
-            <Box
-              key={index}
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                gap: 2, // Space between lightning bolt and text
-              }}
-            >
-              {/* 🔥 Lightning Bolt Divider Graphic */}
-              <Box
-                sx={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                <svg 
-                  xmlns="http://www.w3.org/2000/svg" 
-                  width={18} 
-                  height={18} 
-                  viewBox="0 0 24 24" 
-                  fill="#00A8E8" // Bright cyan/blue bolt matches image
-                >
-                  <path d="M13 2v9h5L11 22v-9H6l7-11z"/>
-                </svg>
-              </Box>
+        <ChevronLeftRoundedIcon fontSize="small" />
+      </IconButton>
 
+      <Box sx={{ flex: 1, minWidth: 0, mx: 2 }}>
+        <Swiper
+          modules={[Navigation, Autoplay]}
+          slidesPerView={1}
+          loop={items.length > 1}
+          speed={600}
+          allowTouchMove={true}
+          autoplay={{
+            delay: 3000,
+            disableOnInteraction: false,
+            pauseOnMouseEnter: true,
+          }}
+          navigation={{
+            prevEl: prevRef.current,
+            nextEl: nextRef.current,
+          }}
+          onBeforeInit={(swiper) => {
+            // @ts-ignore
+            swiper.params.navigation.prevEl = prevRef.current;
+            // @ts-ignore
+            swiper.params.navigation.nextEl = nextRef.current;
+          }}
+          style={{ width: "100%" }}
+        >
+          {items.map((item) => (
+            <SwiperSlide key={item}>
               <Typography
                 sx={{
-                  fontSize: { xs: "0.75rem", sm: "0.85rem" },
-                  fontWeight: 700,
-                  letterSpacing: 0.8,
-                  color: "#FFFFFF", // Clear crisp white text
-                  whiteSpace: "nowrap",
+                  textAlign: "center",
+                  fontSize: 13,
+                  fontWeight: 600,
+                  letterSpacing: "1.5px",
                   textTransform: "uppercase",
-                  fontFamily: "sans-serif"
+                  lineHeight: "36px",
+                  whiteSpace: "nowrap",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
                 }}
               >
-                {text}
+                {item}
               </Typography>
-            </Box>
+            </SwiperSlide>
           ))}
-        </Box>
-      </Marquee>
+        </Swiper>
+      </Box>
+
+      <IconButton
+        ref={nextRef}
+        size="small"
+        sx={{ color: "white", p: 0, width: 28, height: 28, flexShrink: 0 }}
+      >
+        <ChevronRightRoundedIcon fontSize="small" />
+      </IconButton>
     </Box>
   );
-};
-
-export default BrandInfoMarquee;
+}

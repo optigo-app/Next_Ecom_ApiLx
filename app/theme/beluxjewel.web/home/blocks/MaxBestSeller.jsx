@@ -1,25 +1,27 @@
 "use client";
 import { useEffect, useRef, useState, useMemo, useCallback } from "react";
-import {
-  Box,
-  Typography,
-  IconButton,
-  useTheme,
-  styled,
-} from "@mui/material";
+import { Box, Typography, IconButton, useTheme, styled } from "@mui/material";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { formatRedirectTitleLine, formatter } from "@/app/(core)/utils/Glob_Functions/GlobalFunction";
+import {
+  formatRedirectTitleLine,
+  formatter,
+} from "@/app/(core)/utils/Glob_Functions/GlobalFunction";
 import { Get_Tren_BestS_NewAr_DesigSet_Album } from "@/app/(core)/utils/API/Home/Get_Tren_BestS_NewAr_DesigSet_Album/Get_Tren_BestS_NewAr_DesigSet_Album";
 import Pako from "pako";
 import { useStore } from "@/app/(core)/contexts/StoreProvider";
 import { useNextRouterLikeRR } from "@/app/(core)/hooks/useLocationRd";
 import { HeaderV2 } from "./Header";
-import { normalizeALC, buildAlbumCacheKey, getPricingContext } from "@/app/(core)/cache_utility/CacheBuilder";
+import {
+  normalizeALC,
+  buildAlbumCacheKey,
+  getPricingContext,
+} from "@/app/(core)/cache_utility/CacheBuilder";
 import { readCache, writeCache } from "@/app/(core)/cache_utility/cacheActions";
+import SpireBox from "./Svg";
 
 // ─── Styled Components (mirrors Category.jsx) ────────────────────────────────
 
@@ -52,43 +54,54 @@ const MaxBestSeller = ({ storeInit }) => {
   const navigation = useNextRouterLikeRR();
   const { finalId, loginUserDetail, islogin } = useStore();
 
-  const pricingContext = useMemo(() => getPricingContext(loginUserDetail, storeInit, islogin), [loginUserDetail, storeInit, islogin]);
+  const pricingContext = useMemo(
+    () => getPricingContext(loginUserDetail, storeInit, islogin),
+    [loginUserDetail, storeInit, islogin],
+  );
   const isFetchingRef = useRef(false);
   const lastRequestKeyRef = useRef("");
 
   // ── API ──────────────────────────────────────────────────────────────────────
-  const fetchAndSetBestSellers = useCallback(async (finalID, cacheKey) => {
-    if (!pricingContext || !pricingContext.PackageId || isFetchingRef.current) return;
-
-    isFetchingRef.current = true;
-
-    try {
-      const cacheRes = await readCache(cacheKey);
-
-      if (cacheRes?.cached && Array.isArray(cacheRes.data)) {
-        console.log("[MaxBestSeller] Serving from cache");
-        setBestSellerData(cacheRes.data);
-        isFetchingRef.current = false;
+  const fetchAndSetBestSellers = useCallback(
+    async (finalID, cacheKey) => {
+      if (!pricingContext || !pricingContext.PackageId || isFetchingRef.current)
         return;
-      }
 
-      console.log("[MaxBestSeller] Cache miss, calling API...");
-      const response = await Get_Tren_BestS_NewAr_DesigSet_Album(storeInit, "GETBestSeller", finalID);
-      const apiData = response?.Data?.rd || [];
+      isFetchingRef.current = true;
 
-      if (apiData.length > 0) {
-        setBestSellerData(apiData);
-        writeCache(cacheKey, apiData).catch(console.error);
-      } else {
+      try {
+        const cacheRes = await readCache(cacheKey);
+
+        if (cacheRes?.cached && Array.isArray(cacheRes.data)) {
+          console.log("[MaxBestSeller] Serving from cache");
+          setBestSellerData(cacheRes.data);
+          isFetchingRef.current = false;
+          return;
+        }
+
+        console.log("[MaxBestSeller] Cache miss, calling API...");
+        const response = await Get_Tren_BestS_NewAr_DesigSet_Album(
+          storeInit,
+          "GETBestSeller",
+          finalID,
+        );
+        const apiData = response?.Data?.rd || [];
+
+        if (apiData.length > 0) {
+          setBestSellerData(apiData);
+          writeCache(cacheKey, apiData).catch(console.error);
+        } else {
+          setBestSellerData([]);
+        }
+        isFetchingRef.current = false;
+      } catch (err) {
+        console.log("[MaxBestSeller] Error in fetch:", err);
         setBestSellerData([]);
+        isFetchingRef.current = false;
       }
-      isFetchingRef.current = false;
-    } catch (err) {
-      console.log("[MaxBestSeller] Error in fetch:", err);
-      setBestSellerData([]);
-      isFetchingRef.current = false;
-    }
-  }, [pricingContext, storeInit]);
+    },
+    [pricingContext, storeInit],
+  );
 
   useEffect(() => {
     if (!pricingContext || !storeInit) return;
@@ -98,7 +111,13 @@ const MaxBestSeller = ({ storeInit }) => {
     const fetchData = async () => {
       const visitorId = finalId || "0";
       const keyALC = normalizeALC("");
-      const { key } = buildAlbumCacheKey("fg_bestseller", storeInit, pricingContext, visitorId, keyALC);
+      const { key } = buildAlbumCacheKey(
+        "fg_bestseller",
+        storeInit,
+        pricingContext,
+        visitorId,
+        keyALC,
+      );
 
       if (isFetchingRef.current || lastRequestKeyRef.current === key) return;
       lastRequestKeyRef.current = key;
@@ -148,7 +167,9 @@ const MaxBestSeller = ({ storeInit }) => {
     };
     sessionStorage.setItem("scrollToProduct1", `product-${index}`);
     const encodeObj = compressAndEncode(JSON.stringify(obj));
-    navigation.push(`/d/${formatRedirectTitleLine(titleLine)}${designNo}?p=${encodeObj}`);
+    navigation.push(
+      `/d/${formatRedirectTitleLine(titleLine)}${designNo}?p=${encodeObj}`,
+    );
   };
 
   // ── Early return ─────────────────────────────────────────────────────────────
@@ -162,11 +183,23 @@ const MaxBestSeller = ({ storeInit }) => {
         px: { xs: 2, sm: 3, md: 4 },
         width: "100%",
         position: "relative",
-        boxSizing: 'border-box'
+        boxSizing: "border-box",
       }}
     >
       {/* Section heading — same HeaderV2 as before */}
-      <HeaderV2 title="Best Seller" />
+      <HeaderV2
+        title="Best Seller"
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          gap: "0.5rem",
+        }}
+        icon={
+          <>
+            <SpireBox />
+          </>
+        }
+      />
 
       {/* Swiper wrapper with absolute nav buttons — mirrors Category.jsx */}
       <Box sx={{ position: "relative" }}>
@@ -205,7 +238,12 @@ const MaxBestSeller = ({ storeInit }) => {
             <SwiperSlide key={item.id ?? index} style={{ height: "auto" }}>
               <ProductCard
                 onClick={() =>
-                  handleNavigation(item?.designno, item?.autocode, item?.TitleLine, index)
+                  handleNavigation(
+                    item?.designno,
+                    item?.autocode,
+                    item?.TitleLine,
+                    index,
+                  )
                 }
                 item={item}
                 storeInit={storeInit}
@@ -300,7 +338,7 @@ const ProductCard = ({ item, storeInit, loginUserDetail, onClick }) => (
           opacity: 0,
           zIndex: 10,
           transition: "all 0.3s ease-in-out",
-          boxSizing: 'border-box'
+          boxSizing: "border-box",
         }}
       >
         <Typography

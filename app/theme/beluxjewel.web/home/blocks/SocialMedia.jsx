@@ -11,18 +11,15 @@ import YouTubeIcon from "@mui/icons-material/YouTube";
 import FacebookIcon from "@mui/icons-material/Facebook";
 import LinkedInIcon from "@mui/icons-material/LinkedIn";
 import PinterestIcon from "@mui/icons-material/Pinterest";
+import SpireBox from "./Svg";
 
 const VideoCard = styled(Box)(({ theme }) => ({
   position: "relative",
-  borderRadius: 1,
+  borderRadius: 0,
   overflow: "hidden",
   background: theme.palette.background.paper,
   cursor: "pointer",
   transition: "transform 0.25s ease",
-
-  "&:hover": {
-    transform: "translateY(-2px)",
-  },
 }));
 
 const IconWrapper = styled(Box)(({ theme }) => ({
@@ -93,13 +90,27 @@ export default function SocialMediaVideoSection({}) {
         mb: 5,
         boxSizing: "border-box",
         pt: 8,
+        pb: 8,
       }}
     >
-      <HeaderV2 title="Social Media" alignment="left" />
+      <HeaderV2
+        title="Social Media"
+        alignment="left"
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          gap: "0.5rem",
+        }}
+        icon={
+          <>
+            <SpireBox />
+          </>
+        }
+      />
 
       <Swiper
         loop
-        spaceBetween={16}
+        spaceBetween={4}
         modules={[Pagination]}
         breakpoints={{
           0: { slidesPerView: 1 },
@@ -133,7 +144,7 @@ export default function SocialMediaVideoSection({}) {
                     height: "530px",
                     display: "block",
                     objectFit: "cover",
-                    borderRadius: "14px",
+                    borderRadius: "1px",
                   }}
                 />
 

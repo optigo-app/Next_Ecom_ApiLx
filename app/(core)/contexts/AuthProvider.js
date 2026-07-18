@@ -25,7 +25,7 @@ const publicPages = ["/", "/LoginOption", "/forgotPass", "/privacyPolicy", "/abo
   "/faq",
   ...restrictedPaths];
 
-const protectedPages = ["/account", "/delivery", "/payment", "/confirmation", "/accountdwsr", "account", "delivery", "payment", "confirmation"];
+const protectedPages = ["/account", "/delivery", "/payment", "/confirmation", "/accountdwsr", "account", "delivery", "payment", "confirmation", "/asset-management", "asset-management"];
 
 const AuthContext = createContext(null);
 export function AuthProvider({ children, storeInit, theme }) {

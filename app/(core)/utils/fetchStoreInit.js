@@ -23,7 +23,6 @@ export async function fetchStoreInitData(req) {
     }
 
     const cleanHost = hostname.split(":")[0];
-    console.log(cleanHost, "cleanHost");
     const isNgrok =
       cleanHost.endsWith(".ngrok-free.app") || cleanHost.endsWith(".ngrok.io");
     const isLocalhost =

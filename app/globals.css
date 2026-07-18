@@ -1,7 +1,7 @@
 * {
   margin: 0;
   padding: 0;
-  font-family: var(--font-poppins), sans-serif !important;
+  font-family: var(--font-default), sans-serif !important;
   box-sizing: border-box;
 }
 html,
@@ -197,3 +197,4 @@ button,
   bottom: 72px !important;
   width: auto !important;
 }
+

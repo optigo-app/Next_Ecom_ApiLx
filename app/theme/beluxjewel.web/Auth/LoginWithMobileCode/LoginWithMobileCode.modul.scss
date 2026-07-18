@@ -2,7 +2,7 @@
 @use "../../style/variable.scss" as *;
 
 .fg_smr_loginmobileCodeMain {
-  background-color: $authbg;
+  background-color: $authbg !important;;
   height: 70vh;
   display: grid;
   align-content: center;
@@ -50,7 +50,7 @@
   .createBtnRegister {
     height: 60px;
     width: 420px;
-    background-color: $authbtnbg;
+    background-color: $authbtnbg !important;;
     color: $authbtncolor;
     border: 0;
     margin-top: 10px;
@@ -96,7 +96,7 @@
   .submitBtnForgot_for {
     height: 60px;
     width: 420px;
-    background-color: $authbtnbg;
+    background-color: $authbtnbg !important;;
     color: $authbtncolor;
     border: 0;
     margin-top: 10px;
