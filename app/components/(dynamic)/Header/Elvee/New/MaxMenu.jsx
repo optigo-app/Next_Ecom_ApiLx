@@ -66,6 +66,32 @@ const MaxNavbar = ({ storeinit, logos }) => {
   const [activeMenu, setActiveMenu] = useState(null);
   const [menuStack, setMenuStack] = useState([]);
   const [hoveredItem, setHoveredItem] = useState(null);
+  const hoverTimeoutRef = useRef(null);
+
+  const handleMenuMouseEnter = (menuname) => {
+    if (hoverTimeoutRef.current) {
+      clearTimeout(hoverTimeoutRef.current);
+      hoverTimeoutRef.current = null;
+    }
+    setHoveredItem(menuname);
+  };
+
+  const handleMenuMouseLeave = () => {
+    if (hoverTimeoutRef.current) {
+      clearTimeout(hoverTimeoutRef.current);
+    }
+    hoverTimeoutRef.current = setTimeout(() => {
+      setHoveredItem(null);
+    }, 250);
+  };
+
+  useEffect(() => {
+    return () => {
+      if (hoverTimeoutRef.current) {
+        clearTimeout(hoverTimeoutRef.current);
+      }
+    };
+  }, []);
   const [isScrolled, setIsScrolled] = useState(false);
   const controls = useAnimation();
   const [isHovered, setIsHovered] = useState(false);
@@ -590,9 +616,9 @@ const MaxNavbar = ({ storeinit, logos }) => {
                               key={index}
                               label={item?.menuname}
                               onMouseEnter={() =>
-                                setHoveredItem(item?.menuname)
+                                handleMenuMouseEnter(item?.menuname)
                               }
-                              onMouseLeave={() => setHoveredItem(null)}
+                              onMouseLeave={handleMenuMouseLeave}
                               onClick={(e) => {
                                 handelMenu(
                                   {
@@ -671,24 +697,21 @@ const MaxNavbar = ({ storeinit, logos }) => {
                                           right: 0,
                                           width: "100%",
                                           mt: 0,
-                                          height: "24px",
+                                          height: "28px",
                                           boxShadow: "none",
                                           bgcolor: "transparent",
+                                          zIndex: 1301,
                                         }}
                                         onMouseEnter={() => {
-                                          setHoveredItem(item?.menuname);
+                                          handleMenuMouseEnter(item?.menuname);
                                         }}
-                                        onMouseLeave={() => {
-                                          setHoveredItem(null);
-                                        }}
+                                        onMouseLeave={handleMenuMouseLeave}
                                       />
                                       <Box
                                         onMouseEnter={() => {
-                                          setHoveredItem(item?.menuname);
+                                          handleMenuMouseEnter(item?.menuname);
                                         }}
-                                        onMouseLeave={() => {
-                                          setHoveredItem(null);
-                                        }}
+                                        onMouseLeave={handleMenuMouseLeave}
                                         sx={{
                                           position: "fixed",
                                           top: { xs: 52, sm: 62 }, // The exact height of your Navbar

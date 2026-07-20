@@ -35,7 +35,7 @@ import { useStore } from "@/app/(core)/contexts/StoreProvider";
 import { useSyncStore } from "@/app/(core)/hooks/useStore";
 import { useNextRouterLikeRR } from "@/app/(core)/hooks/useLocationRd";
 import { useMaster } from "@/app/(core)/contexts/MasterProvider";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { clearSession, getSession } from "@/app/(core)/utils/FetchSessionData";
 
 const BeluxNavbar = ({ storeInit: storeinit, logos }) => {
@@ -62,6 +62,7 @@ const BeluxNavbar = ({ storeInit: storeinit, logos }) => {
   const is1400px = useMediaQuery(theme.breakpoints.down("1400"));
   const is768px = useMediaQuery("(max-width:428px)");
   const { broadcast } = useBroadcaster();
+  const router = useRouter();
   const Router = useNextRouterLikeRR().push;
   const navigate = (url) => Router(url);
   const location = usePathname();
@@ -75,6 +76,32 @@ const BeluxNavbar = ({ storeInit: storeinit, logos }) => {
   const [activeMenu, setActiveMenu] = useState(null);
   const [menuStack, setMenuStack] = useState([]);
   const [hoveredItem, setHoveredItem] = useState(null);
+  const hoverTimeoutRef = useRef(null);
+
+  const handleMenuMouseEnter = (menuname) => {
+    if (hoverTimeoutRef.current) {
+      clearTimeout(hoverTimeoutRef.current);
+      hoverTimeoutRef.current = null;
+    }
+    setHoveredItem(menuname);
+  };
+
+  const handleMenuMouseLeave = () => {
+    if (hoverTimeoutRef.current) {
+      clearTimeout(hoverTimeoutRef.current);
+    }
+    hoverTimeoutRef.current = setTimeout(() => {
+      setHoveredItem(null);
+    }, 250);
+  };
+
+  useEffect(() => {
+    return () => {
+      if (hoverTimeoutRef.current) {
+        clearTimeout(hoverTimeoutRef.current);
+      }
+    };
+  }, []);
   const [isScrolled, setIsScrolled] = useState(false);
   const [announcementGone, setAnnouncementGone] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
@@ -164,7 +191,7 @@ const BeluxNavbar = ({ storeInit: storeinit, logos }) => {
     return menuItems;
   }, [menuItems]);
 
-  const handelMenu = (param, param1, param2, event, isFilterKey2Ignore) => {
+  const getMenuUrl = (param, param1, param2, isFilterKey2Ignore) => {
     if (
       param?.menuname === "Collection" &&
       param?.key === "Auto" &&
@@ -172,77 +199,96 @@ const BeluxNavbar = ({ storeInit: storeinit, logos }) => {
       Object.keys(param1 || {}).length === 0 &&
       Object.keys(param2 || {}).length === 0
     ) {
-      event?.preventDefault();
-      navigate("/collection");
-      return;
+      return { url: "/collection", finalData: null };
     }
+
+    let finalData = {
+      menuname: param?.menuname ?? "",
+      FilterKey: param?.key ?? "",
+      FilterVal: param?.value ?? "",
+      FilterKey1:
+        isFilterKey2Ignore === 1 ? (param2?.key ?? "") : (param1?.key ?? ""),
+      FilterVal1:
+        isFilterKey2Ignore === 1
+          ? (param2?.value ?? "")
+          : (param1?.value ?? ""),
+      FilterKey2: isFilterKey2Ignore === 1 ? "" : (param2?.key ?? ""),
+      FilterVal2: isFilterKey2Ignore === 1 ? "" : (param2?.value ?? ""),
+    };
+
+    const queryParameters1 = [
+      finalData?.FilterKey && `${finalData.FilterVal}`,
+      finalData?.FilterKey1 && `${finalData.FilterVal1}`,
+      finalData?.FilterKey2 && `${finalData.FilterVal2}`,
+    ]
+      .filter(Boolean)
+      .join("/");
+
+    const queryParameters = [
+      finalData?.FilterKey && `${finalData.FilterVal}`,
+      finalData?.FilterKey1 && `${finalData.FilterVal1}`,
+      finalData?.FilterKey2 && `${finalData.FilterVal2}`,
+    ].join(",");
+
+    const otherparamUrl = Object.entries({
+      b: finalData?.FilterKey,
+      g: finalData?.FilterKey1,
+      c: finalData?.FilterKey2,
+    })
+      .filter(([key, value]) => value !== undefined)
+      .map(([key, value]) => value)
+      .filter(Boolean)
+      .join(",");
+
+    let menuEncoded = `${queryParameters}/${otherparamUrl}`;
+    const url = `/p/${finalData?.menuname}/${queryParameters1}/?M=${btoa(menuEncoded)}`;
+
+    return { url, finalData };
+  };
+
+  const prefetchedUrlsRef = useRef(new Set());
+
+  const handlePrefetch = (param, param1, param2, isFilterKey2Ignore) => {
+    try {
+      const { url } = getMenuUrl(param, param1, param2, isFilterKey2Ignore);
+      if (url && url !== "#" && !prefetchedUrlsRef.current.has(url)) {
+        prefetchedUrlsRef.current.add(url);
+        router.prefetch(url);
+      }
+    } catch (err) {
+      // ignore prefetch errors
+    }
+  };
+
+  const handelMenu = (param, param1, param2, event, isFilterKey2Ignore) => {
+    if (hoverTimeoutRef.current) {
+      clearTimeout(hoverTimeoutRef.current);
+      hoverTimeoutRef.current = null;
+    }
+    setHoveredItem(null);
+    setMobileOpen(false);
+    setActiveMenu(null);
+
     if (
-      event?.ctrlKey || // Ctrl key
-      event?.shiftKey || // Shift key
-      event?.metaKey || // Meta key (Command key on macOS)
-      (event?.button && event?.button === 1) // Middle mouse button
+      event?.ctrlKey ||
+      event?.shiftKey ||
+      event?.metaKey ||
+      (event?.button && event?.button === 1)
     ) {
       return;
-    } else {
-      event?.preventDefault();
-      let finalData = {
-        menuname: param?.menuname ?? "",
-        FilterKey: param?.key ?? "",
-        FilterVal: param?.value ?? "",
-        FilterKey1:
-          isFilterKey2Ignore === 1 ? (param2?.key ?? "") : (param1?.key ?? ""),
-        FilterVal1:
-          isFilterKey2Ignore === 1
-            ? (param2?.value ?? "")
-            : (param1?.value ?? ""),
-        FilterKey2: isFilterKey2Ignore === 1 ? "" : (param2?.key ?? ""),
-        FilterVal2: isFilterKey2Ignore === 1 ? "" : (param2?.value ?? ""),
-      };
-      sessionStorage.setItem("menuparams", JSON.stringify(finalData));
-
-      const queryParameters1 = [
-        finalData?.FilterKey && `${finalData.FilterVal}`,
-        finalData?.FilterKey1 && `${finalData.FilterVal1}`,
-        finalData?.FilterKey2 && `${finalData.FilterVal2}`,
-      ]
-        .filter(Boolean)
-        .join("/");
-
-      const queryParameters = [
-        finalData?.FilterKey && `${finalData.FilterVal}`,
-        finalData?.FilterKey1 && `${finalData.FilterVal1}`,
-        finalData?.FilterKey2 && `${finalData.FilterVal2}`,
-      ]
-        // .filter(Boolean)
-        .join(",");
-
-      const otherparamUrl = Object.entries({
-        b: finalData?.FilterKey,
-        g: finalData?.FilterKey1,
-        c: finalData?.FilterKey2,
-      })
-        .filter(([key, value]) => value !== undefined)
-        .map(([key, value]) => value)
-        .filter(Boolean)
-        .join(",");
-
-      const paginationParam = [
-        `page=${finalData.page ?? 1}`,
-        `size=${finalData.size ?? 50}`,
-      ].join("&");
-
-      // console.log("otherparamsUrl--", otherparamUrl);
-
-      let menuEncoded = `${queryParameters}/${otherparamUrl}`;
-      // const url = `/productlist?V=${queryParameters}/K=${otherparamUrl}`;
-      const url = `/p/${finalData?.menuname}/${queryParameters1}/?M=${btoa(menuEncoded)}`;
-
-      // let d = new Date();
-      // let randomno = Math.floor(Math.random() * 1000 * d.getMilliseconds() * d.getSeconds() * d.getDate() * d.getHours() * d.getMinutes())
-      navigate(url);
-      setMobileOpen(false);
-      setActiveMenu(null);
     }
+    event?.preventDefault();
+
+    const { url, finalData } = getMenuUrl(
+      param,
+      param1,
+      param2,
+      isFilterKey2Ignore,
+    );
+    if (finalData) {
+      sessionStorage.setItem("menuparams", JSON.stringify(finalData));
+    }
+    router.push(url);
   };
 
   const handleDrawerToggle = () => {
@@ -484,20 +530,25 @@ const BeluxNavbar = ({ storeInit: storeinit, logos }) => {
                               ))}
                             </Box>
                           ) : (
-                            currentMenuItems?.map((item, index) => (
-                              <Box
-                                key={index}
-                                onMouseEnter={() =>
-                                  setHoveredItem(item?.menuname)
-                                }
-                                onMouseLeave={() => setHoveredItem(null)}
-                                sx={{ position: "relative" }}
-                              >
+                            currentMenuItems?.map((item, index) => {
+                              const topUrl =
+                                getMenuUrl(
+                                  {
+                                    menuname: item?.menuname,
+                                    key: item?.param0name,
+                                    value: item?.param0dataname,
+                                  },
+                                  {},
+                                  {},
+                                  item?.IsFilterKey1Ignore,
+                                )?.url || "#";
+
+                              return (
                                 <Box
-                                  component={Link}
-                                  href="#"
-                                  onClick={(e) => {
-                                    handelMenu(
+                                  key={index}
+                                  onMouseEnter={() => {
+                                    handleMenuMouseEnter(item?.menuname);
+                                    handlePrefetch(
                                       {
                                         menuname: item?.menuname,
                                         key: item?.param0name,
@@ -505,332 +556,449 @@ const BeluxNavbar = ({ storeInit: storeinit, logos }) => {
                                       },
                                       {},
                                       {},
-                                      e,
                                       item?.IsFilterKey1Ignore,
                                     );
-                                    handleMouseLeave();
-                                    setHoveredItem(null);
                                   }}
-                                  sx={{
-                                    px: 2,
-                                    py: 2.5,
-                                    bgcolor: "transparent",
-                                    border: "none",
-                                    cursor: "pointer",
-                                    fontSize: "0.95rem",
-                                    fontWeight: 500,
-                                    letterSpacing: 0.8,
-                                    textDecoration: "none",
-                                    transition: "all 0.2s ease",
-                                    position: "relative",
-                                    color:
-                                      isHovered || isScrolled ? "#000" : "#fff",
-                                    "&::after": {
-                                      content: '""',
-                                      position: "absolute",
-                                      top: 40,
-                                      left: "50%",
-                                      transform: "translateX(-50%)",
-                                      width:
-                                        hoveredItem === item?.menuname
-                                          ? "80%"
-                                          : "0%",
-                                      height: 2,
-                                      background:
-                                        activeTabStyle?.gradient?.borderDark ||
-                                        "#000",
-                                      transition: "width 0.3s ease",
-                                    },
-                                    outline: "none",
-                                    boxShadow: "none",
-                                    "&:hover": {
+                                  onMouseLeave={handleMenuMouseLeave}
+                                  sx={{ position: "relative" }}
+                                >
+                                  <Box
+                                    component={Link}
+                                    href={topUrl}
+                                    onClick={(e) => {
+                                      handelMenu(
+                                        {
+                                          menuname: item?.menuname,
+                                          key: item?.param0name,
+                                          value: item?.param0dataname,
+                                        },
+                                        {},
+                                        {},
+                                        e,
+                                        item?.IsFilterKey1Ignore,
+                                      );
+                                    }}
+                                    sx={{
+                                      px: 2,
+                                      py: 2.5,
+                                      bgcolor: "transparent",
+                                      border: "none",
+                                      cursor: "pointer",
+                                      fontSize: "0.95rem",
+                                      fontWeight: 500,
+                                      letterSpacing: 0.8,
+                                      textDecoration: "none",
+                                      transition: "all 0.2s ease",
+                                      position: "relative",
                                       color:
                                         isHovered || isScrolled
                                           ? "#000"
                                           : "#fff",
-                                    },
-                                  }}
-                                >
-                                  {item?.menuname}
-                                </Box>
+                                      "&::after": {
+                                        content: '""',
+                                        position: "absolute",
+                                        top: 40,
+                                        left: "50%",
+                                        transform: "translateX(-50%)",
+                                        width:
+                                          hoveredItem === item?.menuname
+                                            ? "80%"
+                                            : "0%",
+                                        height: 2,
+                                        background:
+                                          activeTabStyle?.gradient
+                                            ?.borderDark || "#000",
+                                        transition: "width 0.3s ease",
+                                      },
+                                      outline: "none",
+                                      boxShadow: "none",
+                                      "&:hover": {
+                                        color:
+                                          isHovered || isScrolled
+                                            ? "#000"
+                                            : "#fff",
+                                      },
+                                    }}
+                                  >
+                                    {item?.menuname}
+                                  </Box>
 
-                                <AnimatePresence>
-                                  {item.param1 &&
-                                    hoveredItem === item?.menuname && (
-                                      <>
-                                        {/* Invisible bridge — keeps hover alive as mouse moves to dropdown */}
-                                        <Box
-                                          sx={{
-                                            position: "fixed",
-                                            top: announcementGone ? 84 : 120,
-                                            left: "50%",
-                                            transform: "translateX(-50%)",
-                                            width: {
-                                              xs: "95vw",
-                                              sm: "85vw",
-                                              md: "75vw",
-                                              lg: "70vw",
-                                              xl: "1400px",
-                                            },
-                                            maxWidth: "1400px",
-                                            height: "8px",
-                                            bgcolor: "transparent",
-                                          }}
-                                          onMouseEnter={() =>
-                                            setHoveredItem(item?.menuname)
-                                          }
-                                          onMouseLeave={() =>
-                                            setHoveredItem(null)
-                                          }
-                                        />
-                                        {/* Dropdown panel */}
-                                        <Box
-                                          onMouseEnter={() =>
-                                            setHoveredItem(item?.menuname)
-                                          }
-                                          onMouseLeave={() =>
-                                            setHoveredItem(null)
-                                          }
-                                          sx={{
-                                            position: "fixed",
-                                            top: announcementGone ? 92 : 128,
-                                            left: "50%",
-                                            transform: "translateX(-50%)",
-                                            mt: 0,
-                                            bgcolor: "#fff",
-                                            border: "none",
-                                            borderBottom: `3px solid ${activeTabStyle?.gradient?.borderDark || "#C97A96"}`,
-                                            borderRadius: "0 0 8px 8px",
-                                            boxShadow:
-                                              "0 20px 60px rgba(0,0,0,0.15)",
-                                            width: {
-                                              xs: "95vw",
-                                              sm: "85vw",
-                                              md: "75vw",
-                                              lg: "70vw",
-                                              xl: "1400px",
-                                            },
-                                            maxWidth: "1400px",
-                                            maxHeight: "80vh",
-                                            minHeight: "400px",
-                                            overflowY: "auto",
-                                            display: "flex",
-                                            zIndex: 1300,
-                                            animation: "fadeIn 0.25s ease",
-                                            scrollbarWidth: "thin",
-                                            scrollbarColor:
-                                              "#bfbfbf transparent",
-                                            "&::-webkit-scrollbar": {
-                                              width: "6px",
-                                            },
-                                            "&::-webkit-scrollbar-thumb": {
-                                              backgroundColor: "#bfbfbf",
-                                              borderRadius: "10px",
-                                            },
-                                            "&::before": {
-                                              content: '""',
-                                              position: "absolute",
-                                              top: 0,
-                                              left: 0,
-                                              right: 0,
-                                              height: "20px",
-                                              background: `radial-gradient( ellipse at top, ${activeTabStyle?.gradient?.color}90, transparent )`,
-                                              filter: "blur(55px)",
-                                              pointerEvents: "none",
-                                            },
-                                          }}
-                                        >
+                                  <AnimatePresence>
+                                    {item.param1 &&
+                                      hoveredItem === item?.menuname && (
+                                        <>
+                                          {/* Invisible bridge — keeps hover alive as mouse moves to dropdown */}
                                           <Box
                                             sx={{
-                                              flex: "1 1 auto",
+                                              position: "fixed",
+                                              top: announcementGone ? 75 : 110,
+                                              left: "50%",
+                                              transform: "translateX(-50%)",
+                                              width: {
+                                                xs: "95vw",
+                                                sm: "85vw",
+                                                md: "75vw",
+                                                lg: "70vw",
+                                                xl: "1400px",
+                                              },
+                                              maxWidth: "1400px",
+                                              height: "25px",
+                                              bgcolor: "transparent",
+                                              zIndex: 1301,
+                                            }}
+                                            onMouseEnter={() =>
+                                              handleMenuMouseEnter(
+                                                item?.menuname,
+                                              )
+                                            }
+                                            onMouseLeave={handleMenuMouseLeave}
+                                          />
+                                          {/* Dropdown panel */}
+                                          <Box
+                                            onMouseEnter={() =>
+                                              handleMenuMouseEnter(
+                                                item?.menuname,
+                                              )
+                                            }
+                                            onMouseLeave={handleMenuMouseLeave}
+                                            sx={{
+                                              position: "fixed",
+                                              top: announcementGone ? 92 : 128,
+                                              left: "50%",
+                                              transform: "translateX(-50%)",
+                                              mt: 0,
                                               bgcolor: "#fff",
-                                              p: { xs: 2, sm: 3, md: 4 },
-                                              width: "100%",
+                                              border: "none",
+                                              borderBottom: `3px solid ${activeTabStyle?.gradient?.borderDark || "#C97A96"}`,
+                                              borderRadius: "0 0 8px 8px",
+                                              boxShadow:
+                                                "0 20px 60px rgba(0,0,0,0.15)",
+                                              width: {
+                                                xs: "95vw",
+                                                sm: "85vw",
+                                                md: "75vw",
+                                                lg: "70vw",
+                                                xl: "1400px",
+                                              },
+                                              maxWidth: "1400px",
+                                              maxHeight: "80vh",
+                                              minHeight: "400px",
+                                              overflowY: "auto",
+                                              display: "flex",
+                                              zIndex: 1300,
+                                              animation: "fadeIn 0.25s ease",
+                                              scrollbarWidth: "thin",
+                                              scrollbarColor:
+                                                "#bfbfbf transparent",
+                                              "&::-webkit-scrollbar": {
+                                                width: "6px",
+                                              },
+                                              "&::-webkit-scrollbar-thumb": {
+                                                backgroundColor: "#bfbfbf",
+                                                borderRadius: "10px",
+                                              },
+                                              "&::before": {
+                                                content: '""',
+                                                position: "absolute",
+                                                top: 0,
+                                                left: 0,
+                                                right: 0,
+                                                height: "20px",
+                                                background: `radial-gradient( ellipse at top, ${activeTabStyle?.gradient?.color}90, transparent )`,
+                                                filter: "blur(55px)",
+                                                pointerEvents: "none",
+                                              },
                                             }}
                                           >
-                                            <Masonry
-                                              columns={{
-                                                xs: 2,
-                                                sm: 3,
-                                                md: 4,
-                                                lg: 6,
-                                              }}
-                                              spacing={1}
+                                            <Box
                                               sx={{
-                                                alignContent: "center",
-                                                alignItems: "center",
+                                                flex: "1 1 auto",
+                                                bgcolor: "#fff",
+                                                p: { xs: 2, sm: 3, md: 4 },
+                                                width: "100%",
                                               }}
                                             >
-                                              {item?.param1?.map(
-                                                (section, index) => (
-                                                  <Box
-                                                    key={index}
-                                                    sx={{
-                                                      breakInside: "avoid",
-                                                      marginBottom: 2,
-                                                      textAlign: "center",
-                                                    }}
-                                                  >
-                                                    <Typography
-                                                      component={Link}
-                                                      href="#"
-                                                      onClick={(e) => {
-                                                        e.stopPropagation();
-                                                        handelMenu(
-                                                          {
-                                                            menuname:
-                                                              item?.menuname,
-                                                            key: item?.param0name,
-                                                            value:
-                                                              item?.param0dataname,
-                                                          },
-                                                          {
-                                                            key: section?.param1name,
-                                                            value:
-                                                              section?.param1dataname,
-                                                          },
-                                                          {},
-                                                          e,
-                                                          section?.IsFilterKey1Ignore,
-                                                        );
-                                                        setHoveredItem(null);
-                                                      }}
-                                                      sx={{
-                                                        position: "relative",
-                                                        color:
-                                                          section?.menuname ===
-                                                          "Collection"
-                                                            ? "#535353"
-                                                            : "#141414",
-                                                        fontWeight:
-                                                          section?.menuname ===
-                                                          "Collection"
-                                                            ? 400
-                                                            : 700,
-                                                        display: "block",
-                                                        letterSpacing: 0.5,
-                                                        textTransform:
-                                                          "capitalize",
-                                                        mb:
-                                                          section?.menuname ===
-                                                          "Collection"
-                                                            ? 0
-                                                            : 1,
-                                                        wordWrap: "break-word",
-                                                        cursor: "pointer",
-                                                        textUnderlineOffset:
-                                                          "0.3rem",
-                                                        "&:hover": {
-                                                          textDecoration:
-                                                            "underline",
-                                                          textUnderlineOffset:
-                                                            "0.3rem",
+                                              <Masonry
+                                                columns={{
+                                                  xs: 2,
+                                                  sm: 3,
+                                                  md: 4,
+                                                  lg: 6,
+                                                }}
+                                                spacing={1}
+                                                sx={{
+                                                  alignContent: "center",
+                                                  alignItems: "center",
+                                                }}
+                                              >
+                                                {item?.param1?.map(
+                                                  (section, sectionIndex) => {
+                                                    const secUrl =
+                                                      getMenuUrl(
+                                                        {
+                                                          menuname:
+                                                            item?.menuname,
+                                                          key: item?.param0name,
+                                                          value:
+                                                            item?.param0dataname,
                                                         },
-                                                        fontSize: "0.92rem",
-                                                      }}
-                                                    >
-                                                      {section?.param1dataname}
-                                                    </Typography>
-                                                    <Box
-                                                      sx={{
-                                                        display: "flex",
-                                                        flexDirection: "column",
-                                                        gap: 0.8,
-                                                        alignItems: "center",
-                                                      }}
-                                                    >
-                                                      {section?.param2
-                                                        ?.filter(
-                                                          (p) =>
-                                                            p?.param2dataname &&
-                                                            p?.param2dataname.trim() !==
-                                                              "",
-                                                        )
-                                                        .map(
-                                                          (
-                                                            param2Item,
-                                                            param2Index,
-                                                          ) => (
-                                                            <Box
-                                                              key={param2Index}
-                                                              href="#"
-                                                              onClick={(e) => {
-                                                                e.stopPropagation();
-                                                                handelMenu(
-                                                                  {
-                                                                    menuname:
-                                                                      item?.menuname,
-                                                                    key: item?.param0name,
-                                                                    value:
-                                                                      item?.param0dataname,
-                                                                  },
-                                                                  {
-                                                                    key: section?.param1name,
-                                                                    value:
-                                                                      section?.param1dataname,
-                                                                  },
-                                                                  {
-                                                                    key: param2Item?.param2name,
-                                                                    value:
-                                                                      param2Item?.param2dataname,
-                                                                  },
-                                                                  e,
-                                                                  param2Item?.IsFilterKey2Ignore,
-                                                                );
-                                                                setHoveredItem(
-                                                                  null,
-                                                                );
-                                                              }}
-                                                              component={Link}
-                                                              sx={{
-                                                                position:
-                                                                  "relative",
-                                                                textAlign:
-                                                                  "left",
-                                                                px: 0,
-                                                                color:
-                                                                  "#535353",
-                                                                bgcolor:
-                                                                  "transparent",
-                                                                border: "none",
-                                                                cursor:
-                                                                  "pointer",
-                                                                fontSize:
-                                                                  "0.88rem",
-                                                                textDecoration:
-                                                                  "none",
-                                                                borderRadius: 1,
-                                                                transition:
-                                                                  "all 0.2s ease",
-                                                                "&:hover": {
-                                                                  color:
-                                                                    "#141414",
-                                                                  textDecoration:
-                                                                    "underline",
-                                                                  textUnderlineOffset:
-                                                                    "0.3rem",
-                                                                },
-                                                                outline: "none",
-                                                              }}
-                                                            >
+                                                        {
+                                                          key: section?.param1name,
+                                                          value:
+                                                            section?.param1dataname,
+                                                        },
+                                                        {},
+                                                        section?.IsFilterKey1Ignore,
+                                                      )?.url || "#";
+
+                                                    return (
+                                                      <Box
+                                                        key={sectionIndex}
+                                                        sx={{
+                                                          breakInside: "avoid",
+                                                          marginBottom: 2,
+                                                          textAlign: "center",
+                                                        }}
+                                                      >
+                                                        <Typography
+                                                          component={Link}
+                                                          href={secUrl}
+                                                          onMouseEnter={() =>
+                                                            handlePrefetch(
                                                               {
-                                                                param2Item?.param2dataname
-                                                              }
-                                                            </Box>
-                                                          ),
-                                                        )}
-                                                    </Box>
-                                                  </Box>
-                                                ),
-                                              )}
-                                            </Masonry>
+                                                                menuname:
+                                                                  item?.menuname,
+                                                                key: item?.param0name,
+                                                                value:
+                                                                  item?.param0dataname,
+                                                              },
+                                                              {
+                                                                key: section?.param1name,
+                                                                value:
+                                                                  section?.param1dataname,
+                                                              },
+                                                              {},
+                                                              section?.IsFilterKey1Ignore,
+                                                            )
+                                                          }
+                                                          onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            handelMenu(
+                                                              {
+                                                                menuname:
+                                                                  item?.menuname,
+                                                                key: item?.param0name,
+                                                                value:
+                                                                  item?.param0dataname,
+                                                              },
+                                                              {
+                                                                key: section?.param1name,
+                                                                value:
+                                                                  section?.param1dataname,
+                                                              },
+                                                              {},
+                                                              e,
+                                                              section?.IsFilterKey1Ignore,
+                                                            );
+                                                          }}
+                                                          sx={{
+                                                            position:
+                                                              "relative",
+                                                            color:
+                                                              section?.menuname ===
+                                                              "Collection"
+                                                                ? "#535353"
+                                                                : "#141414",
+                                                            fontWeight:
+                                                              section?.menuname ===
+                                                              "Collection"
+                                                                ? 400
+                                                                : 700,
+                                                            display: "block",
+                                                            letterSpacing: 0.5,
+                                                            textTransform:
+                                                              "capitalize",
+                                                            mb:
+                                                              section?.menuname ===
+                                                              "Collection"
+                                                                ? 0
+                                                                : 1,
+                                                            wordWrap:
+                                                              "break-word",
+                                                            cursor: "pointer",
+                                                            textUnderlineOffset:
+                                                              "0.3rem",
+                                                            "&:hover": {
+                                                              textDecoration:
+                                                                "underline",
+                                                              textUnderlineOffset:
+                                                                "0.3rem",
+                                                            },
+                                                            fontSize: "0.92rem",
+                                                          }}
+                                                        >
+                                                          {
+                                                            section?.param1dataname
+                                                          }
+                                                        </Typography>
+                                                        <Box
+                                                          sx={{
+                                                            display: "flex",
+                                                            flexDirection:
+                                                              "column",
+                                                            gap: 0.8,
+                                                            alignItems:
+                                                              "center",
+                                                          }}
+                                                        >
+                                                          {section?.param2
+                                                            ?.filter(
+                                                              (p) =>
+                                                                p?.param2dataname &&
+                                                                p?.param2dataname.trim() !==
+                                                                  "",
+                                                            )
+                                                            .map(
+                                                              (
+                                                                param2Item,
+                                                                param2Index,
+                                                              ) => {
+                                                                const subUrl =
+                                                                  getMenuUrl(
+                                                                    {
+                                                                      menuname:
+                                                                        item?.menuname,
+                                                                      key: item?.param0name,
+                                                                      value:
+                                                                        item?.param0dataname,
+                                                                    },
+                                                                    {
+                                                                      key: section?.param1name,
+                                                                      value:
+                                                                        section?.param1dataname,
+                                                                    },
+                                                                    {
+                                                                      key: param2Item?.param2name,
+                                                                      value:
+                                                                        param2Item?.param2dataname,
+                                                                    },
+                                                                    param2Item?.IsFilterKey2Ignore,
+                                                                  )?.url || "#";
+
+                                                                return (
+                                                                  <Box
+                                                                    key={
+                                                                      param2Index
+                                                                    }
+                                                                    href={
+                                                                      subUrl
+                                                                    }
+                                                                    onMouseEnter={() =>
+                                                                      handlePrefetch(
+                                                                        {
+                                                                          menuname:
+                                                                            item?.menuname,
+                                                                          key: item?.param0name,
+                                                                          value:
+                                                                            item?.param0dataname,
+                                                                        },
+                                                                        {
+                                                                          key: section?.param1name,
+                                                                          value:
+                                                                            section?.param1dataname,
+                                                                        },
+                                                                        {
+                                                                          key: param2Item?.param2name,
+                                                                          value:
+                                                                            param2Item?.param2dataname,
+                                                                        },
+                                                                        param2Item?.IsFilterKey2Ignore,
+                                                                      )
+                                                                    }
+                                                                    onClick={(
+                                                                      e,
+                                                                    ) => {
+                                                                      e.stopPropagation();
+                                                                      handelMenu(
+                                                                        {
+                                                                          menuname:
+                                                                            item?.menuname,
+                                                                          key: item?.param0name,
+                                                                          value:
+                                                                            item?.param0dataname,
+                                                                        },
+                                                                        {
+                                                                          key: section?.param1name,
+                                                                          value:
+                                                                            section?.param1dataname,
+                                                                        },
+                                                                        {
+                                                                          key: param2Item?.param2name,
+                                                                          value:
+                                                                            param2Item?.param2dataname,
+                                                                        },
+                                                                        e,
+                                                                        param2Item?.IsFilterKey2Ignore,
+                                                                      );
+                                                                    }}
+                                                                    component={
+                                                                      Link
+                                                                    }
+                                                                    sx={{
+                                                                      position:
+                                                                        "relative",
+                                                                      textAlign:
+                                                                        "left",
+                                                                      px: 0,
+                                                                      color:
+                                                                        "#535353",
+                                                                      bgcolor:
+                                                                        "transparent",
+                                                                      border:
+                                                                        "none",
+                                                                      cursor:
+                                                                        "pointer",
+                                                                      fontSize:
+                                                                        "0.88rem",
+                                                                      textDecoration:
+                                                                        "none",
+                                                                      borderRadius: 1,
+                                                                      transition:
+                                                                        "all 0.2s ease",
+                                                                      "&:hover":
+                                                                        {
+                                                                          color:
+                                                                            "#141414",
+                                                                          textDecoration:
+                                                                            "underline",
+                                                                          textUnderlineOffset:
+                                                                            "0.3rem",
+                                                                        },
+                                                                      outline:
+                                                                        "none",
+                                                                    }}
+                                                                  >
+                                                                    {
+                                                                      param2Item?.param2dataname
+                                                                    }
+                                                                  </Box>
+                                                                );
+                                                              },
+                                                            )}
+                                                        </Box>
+                                                      </Box>
+                                                    );
+                                                  },
+                                                )}
+                                              </Masonry>
+                                            </Box>
                                           </Box>
-                                        </Box>
-                                      </>
-                                    )}
-                                </AnimatePresence>
-                              </Box>
-                            ))
+                                        </>
+                                      )}
+                                  </AnimatePresence>
+                                </Box>
+                              );
+                            })
                           )}
 
                           {!menuLoading && islogin && (

@@ -45,7 +45,7 @@ export async function fetchStoreInitData(req) {
           baseUrl = `http://192.168.0.153/R50B3/UFS/StoreInit/${NEXT_APP_WEB}/StoreInit.json`;
         } else {
           console.log(cleanHost, "cleanHost  else ");
-          baseUrl = `http://192.168.0.153/R50B3/UFS/StoreInit/${cleanHost}/StoreInit.json`;
+          baseUrl = `https://cdnfs.optigoapps.com/content-global3/StoreInit/${hostname}/StoreInit.json`;
         }
       }
     } else if (isLocalhost) {
