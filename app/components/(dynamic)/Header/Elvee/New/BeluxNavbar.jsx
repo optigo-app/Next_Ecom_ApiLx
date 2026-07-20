@@ -136,10 +136,10 @@ const BeluxNavbar = ({ storeInit: storeinit, logos }) => {
       backgroundColor:
         isHovered || isScrolled ? "#ffffff" : "rgba(255,255,255,0)",
       color: isHovered || isScrolled ? "#000000" : "#ffffff",
-      borderBottom:
-        isHovered || isScrolled
-          ? "1px solid #e2e2e2c0"
-          : "1px solid transparent",
+      // borderBottom:
+      //   isHovered || isScrolled
+      //     ? "1px solid #e2e2e2c0"
+      //     : "1px solid transparent",
       transition: {
         type: "spring",
         stiffness: 45,
@@ -1013,7 +1013,7 @@ const BeluxNavbar = ({ storeInit: storeinit, logos }) => {
                                     bgcolor: "transparent",
                                     border: "none",
                                     cursor: "pointer",
-                                    fontSize: "0.8125rem",
+                                    fontSize: "0.95rem",
                                     fontWeight: 500,
                                     letterSpacing: 0.8,
                                     textDecoration: "none",
@@ -1038,7 +1038,7 @@ const BeluxNavbar = ({ storeInit: storeinit, logos }) => {
                                     bgcolor: "transparent",
                                     border: "none",
                                     cursor: "pointer",
-                                    fontSize: "0.8125rem",
+                                    fontSize: "0.95rem",
                                     fontWeight: 500,
                                     letterSpacing: 0.8,
                                     textDecoration: "none",
@@ -1053,7 +1053,7 @@ const BeluxNavbar = ({ storeInit: storeinit, logos }) => {
                                   Collection
                                 </Box>
                               </Box>
-                              <Box sx={{ position: "relative" }}>
+                              {/* <Box sx={{ position: "relative" }}>
                                 <Box
                                   component={Link}
                                   href="/offers"
@@ -1063,7 +1063,7 @@ const BeluxNavbar = ({ storeInit: storeinit, logos }) => {
                                     bgcolor: "transparent",
                                     border: "none",
                                     cursor: "pointer",
-                                    fontSize: "0.8125rem",
+                                   fontSize: "0.95rem",
                                     fontWeight: 500,
                                     letterSpacing: 0.8,
                                     textDecoration: "none",
@@ -1077,7 +1077,7 @@ const BeluxNavbar = ({ storeInit: storeinit, logos }) => {
                                 >
                                   Offers
                                 </Box>
-                              </Box>
+                              </Box> */}
                             </>
                           )}
                         </Box>
