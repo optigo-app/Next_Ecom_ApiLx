@@ -30,6 +30,13 @@ const nextConfig = {
           { key: 'Cache-Control', value: 'public, max-age=31536000, immutable' },
         ],
       },
+      {
+        // Home page HTML caching — 60s max-age, stale-while-revalidate for 1 day
+        source: '/',
+        headers: [
+          { key: 'Cache-Control', value: 'public, max-age=60, s-maxage=3600, stale-while-revalidate=86400' },
+        ],
+      },
     ];
   },
 

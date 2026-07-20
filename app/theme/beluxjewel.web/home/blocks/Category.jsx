@@ -381,14 +381,17 @@ const CategoryBlock = ({ assetBase, storeInit }) => {
     style: { paddingBottom: "30px", paddingTop: "10px" },
   };
 
+  if (!loading && !SectionData?.category?.length && !SectionData?.collection?.length) {
+    return null;
+  }
+
   return (
     <Box
       id="ShopeByCategory"
       sx={{
         backgroundColor: "#ffffff",
-        minHeight: "100vh",
         width: "100%",
-        pb: 8,
+        py: { xs: 4, md: 6 },
       }}
     >
       {/* Category Section */}

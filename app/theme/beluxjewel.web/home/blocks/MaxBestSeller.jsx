@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useRef, useState, useMemo, useCallback } from "react";
-import { Box, Typography, IconButton, useTheme, styled } from "@mui/material";
+import { Box, Typography, IconButton, useTheme, styled, Skeleton } from "@mui/material";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation } from "swiper/modules";
 import "swiper/css";
@@ -41,6 +41,36 @@ const NavButton = styled(IconButton)(({ theme }) => ({
   },
 }));
 
+const BestSellerSkeleton = () => (
+  <Box
+    sx={{
+      bgcolor: "#FFFFFF",
+      px: { xs: 2, sm: 3, md: 4 },
+      py: 4,
+      width: "100%",
+      boxSizing: "border-box",
+    }}
+  >
+    <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 3 }}>
+      <Skeleton variant="circular" width={24} height={24} />
+      <Skeleton variant="text" width={160} height={32} />
+    </Box>
+    <Box sx={{ display: "flex", gap: 2, overflow: "hidden" }}>
+      {[1, 2, 3, 4, 5].map((item) => (
+        <Box key={item} sx={{ flex: "1 1 20%", minWidth: 180 }}>
+          <Skeleton
+            variant="rectangular"
+            height={260}
+            sx={{ borderRadius: "8px", mb: 1.5 }}
+          />
+          <Skeleton variant="text" width="80%" height={20} />
+          <Skeleton variant="text" width="50%" height={18} />
+        </Box>
+      ))}
+    </Box>
+  </Box>
+);
+
 // ─── Main Component ───────────────────────────────────────────────────────────
 
 const MaxBestSeller = ({ storeInit }) => {
@@ -50,6 +80,7 @@ const MaxBestSeller = ({ storeInit }) => {
   const [imageUrl, setImageUrl] = useState();
   const [bestSellerData, setBestSellerData] = useState([]);
   const [validatedData, setValidatedData] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const navigation = useNextRouterLikeRR();
   const { finalId, loginUserDetail, islogin } = useStore();
@@ -76,6 +107,7 @@ const MaxBestSeller = ({ storeInit }) => {
           console.log("[MaxBestSeller] Serving from cache");
           setBestSellerData(cacheRes.data);
           isFetchingRef.current = false;
+          setLoading(false);
           return;
         }
 
@@ -94,10 +126,12 @@ const MaxBestSeller = ({ storeInit }) => {
           setBestSellerData([]);
         }
         isFetchingRef.current = false;
+        setLoading(false);
       } catch (err) {
         console.log("[MaxBestSeller] Error in fetch:", err);
         setBestSellerData([]);
         isFetchingRef.current = false;
+        setLoading(false);
       }
     },
     [pricingContext, storeInit],
@@ -173,7 +207,13 @@ const MaxBestSeller = ({ storeInit }) => {
   };
 
   // ── Early return ─────────────────────────────────────────────────────────────
-  if (!bestSellerData?.length) return null;
+  if (loading) {
+    return <BestSellerSkeleton />;
+  }
+
+  if (!bestSellerData?.length) {
+    return null;
+  }
 
   // ── Render ───────────────────────────────────────────────────────────────────
   return (
