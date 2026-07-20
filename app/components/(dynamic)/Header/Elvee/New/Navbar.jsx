@@ -36,10 +36,11 @@ import { useStore } from "@/app/(core)/contexts/StoreProvider";
 import { useSyncStore } from "@/app/(core)/hooks/useStore";
 import { useNextRouterLikeRR } from "@/app/(core)/hooks/useLocationRd";
 import { useMaster } from "@/app/(core)/contexts/MasterProvider";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { clearSession, getSession } from "@/app/(core)/utils/FetchSessionData";
 
 const ElveePreNavbar = ({ storeInit: storeinit, logos }) => {
+  const router = useRouter();
   const {
     islogin,
     setislogin,
@@ -76,6 +77,32 @@ const ElveePreNavbar = ({ storeInit: storeinit, logos }) => {
   const [activeMenu, setActiveMenu] = useState(null);
   const [menuStack, setMenuStack] = useState([]);
   const [hoveredItem, setHoveredItem] = useState(null);
+  const hoverTimeoutRef = useRef(null);
+
+  const handleMenuMouseEnter = (menuname) => {
+    if (hoverTimeoutRef.current) {
+      clearTimeout(hoverTimeoutRef.current);
+      hoverTimeoutRef.current = null;
+    }
+    setHoveredItem(menuname);
+  };
+
+  const handleMenuMouseLeave = () => {
+    if (hoverTimeoutRef.current) {
+      clearTimeout(hoverTimeoutRef.current);
+    }
+    hoverTimeoutRef.current = setTimeout(() => {
+      setHoveredItem(null);
+    }, 250);
+  };
+
+  useEffect(() => {
+    return () => {
+      if (hoverTimeoutRef.current) {
+        clearTimeout(hoverTimeoutRef.current);
+      }
+    };
+  }, []);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const [DrawerSearchOpen, setDrawerSearchOpen] = useState(false);
@@ -302,7 +329,7 @@ const ElveePreNavbar = ({ storeInit: storeinit, logos }) => {
     });
   };
 
-  const handelMenu = (param, param1, param2, event, isFilterKey2Ignore) => {
+  const getMenuUrl = (param, param1, param2, isFilterKey2Ignore) => {
     if (
       param?.menuname === "Collection" &&
       param?.key === "Auto" &&
@@ -310,77 +337,96 @@ const ElveePreNavbar = ({ storeInit: storeinit, logos }) => {
       Object.keys(param1 || {}).length === 0 &&
       Object.keys(param2 || {}).length === 0
     ) {
-      event?.preventDefault();
-      navigate("/collection");
-      return;
+      return { url: "/collection", finalData: null };
     }
+
+    let finalData = {
+      menuname: param?.menuname ?? "",
+      FilterKey: param?.key ?? "",
+      FilterVal: param?.value ?? "",
+      FilterKey1:
+        isFilterKey2Ignore === 1 ? (param2?.key ?? "") : (param1?.key ?? ""),
+      FilterVal1:
+        isFilterKey2Ignore === 1
+          ? (param2?.value ?? "")
+          : (param1?.value ?? ""),
+      FilterKey2: isFilterKey2Ignore === 1 ? "" : (param2?.key ?? ""),
+      FilterVal2: isFilterKey2Ignore === 1 ? "" : (param2?.value ?? ""),
+    };
+
+    const queryParameters1 = [
+      finalData?.FilterKey && `${finalData.FilterVal}`,
+      finalData?.FilterKey1 && `${finalData.FilterVal1}`,
+      finalData?.FilterKey2 && `${finalData.FilterVal2}`,
+    ]
+      .filter(Boolean)
+      .join("/");
+
+    const queryParameters = [
+      finalData?.FilterKey && `${finalData.FilterVal}`,
+      finalData?.FilterKey1 && `${finalData.FilterVal1}`,
+      finalData?.FilterKey2 && `${finalData.FilterVal2}`,
+    ].join(",");
+
+    const otherparamUrl = Object.entries({
+      b: finalData?.FilterKey,
+      g: finalData?.FilterKey1,
+      c: finalData?.FilterKey2,
+    })
+      .filter(([key, value]) => value !== undefined)
+      .map(([key, value]) => value)
+      .filter(Boolean)
+      .join(",");
+
+    let menuEncoded = `${queryParameters}/${otherparamUrl}`;
+    const url = `/p/${finalData?.menuname}/${queryParameters1}/?M=${btoa(menuEncoded)}`;
+
+    return { url, finalData };
+  };
+
+  const prefetchedUrlsRef = useRef(new Set());
+
+  const handlePrefetch = (param, param1, param2, isFilterKey2Ignore) => {
+    try {
+      const { url } = getMenuUrl(param, param1, param2, isFilterKey2Ignore);
+      if (url && url !== "#" && !prefetchedUrlsRef.current.has(url)) {
+        prefetchedUrlsRef.current.add(url);
+        router.prefetch(url);
+      }
+    } catch (err) {
+      // ignore prefetch errors
+    }
+  };
+
+  const handelMenu = (param, param1, param2, event, isFilterKey2Ignore) => {
+    if (hoverTimeoutRef.current) {
+      clearTimeout(hoverTimeoutRef.current);
+      hoverTimeoutRef.current = null;
+    }
+    setHoveredItem(null);
+    setMobileOpen(false);
+    setActiveMenu(null);
+
     if (
-      event?.ctrlKey || // Ctrl key
-      event?.shiftKey || // Shift key
-      event?.metaKey || // Meta key (Command key on macOS)
-      (event?.button && event?.button === 1) // Middle mouse button
+      event?.ctrlKey ||
+      event?.shiftKey ||
+      event?.metaKey ||
+      (event?.button && event?.button === 1)
     ) {
       return;
-    } else {
-      event?.preventDefault();
-      let finalData = {
-        menuname: param?.menuname ?? "",
-        FilterKey: param?.key ?? "",
-        FilterVal: param?.value ?? "",
-        FilterKey1:
-          isFilterKey2Ignore === 1 ? (param2?.key ?? "") : (param1?.key ?? ""),
-        FilterVal1:
-          isFilterKey2Ignore === 1
-            ? (param2?.value ?? "")
-            : (param1?.value ?? ""),
-        FilterKey2: isFilterKey2Ignore === 1 ? "" : (param2?.key ?? ""),
-        FilterVal2: isFilterKey2Ignore === 1 ? "" : (param2?.value ?? ""),
-      };
-      sessionStorage.setItem("menuparams", JSON.stringify(finalData));
-
-      const queryParameters1 = [
-        finalData?.FilterKey && `${finalData.FilterVal}`,
-        finalData?.FilterKey1 && `${finalData.FilterVal1}`,
-        finalData?.FilterKey2 && `${finalData.FilterVal2}`,
-      ]
-        .filter(Boolean)
-        .join("/");
-
-      const queryParameters = [
-        finalData?.FilterKey && `${finalData.FilterVal}`,
-        finalData?.FilterKey1 && `${finalData.FilterVal1}`,
-        finalData?.FilterKey2 && `${finalData.FilterVal2}`,
-      ]
-        // .filter(Boolean)
-        .join(",");
-
-      const otherparamUrl = Object.entries({
-        b: finalData?.FilterKey,
-        g: finalData?.FilterKey1,
-        c: finalData?.FilterKey2,
-      })
-        .filter(([key, value]) => value !== undefined)
-        .map(([key, value]) => value)
-        .filter(Boolean)
-        .join(",");
-
-      const paginationParam = [
-        `page=${finalData.page ?? 1}`,
-        `size=${finalData.size ?? 50}`,
-      ].join("&");
-
-      // console.log("otherparamsUrl--", otherparamUrl);
-
-      let menuEncoded = `${queryParameters}/${otherparamUrl}`;
-      // const url = `/productlist?V=${queryParameters}/K=${otherparamUrl}`;
-      const url = `/p/${finalData?.menuname}/${queryParameters1}/?M=${btoa(menuEncoded)}`;
-
-      // let d = new Date();
-      // let randomno = Math.floor(Math.random() * 1000 * d.getMilliseconds() * d.getSeconds() * d.getDate() * d.getHours() * d.getMinutes())
-      navigate(url);
-      setMobileOpen(false);
-      setActiveMenu(null);
     }
+    event?.preventDefault();
+
+    const { url, finalData } = getMenuUrl(
+      param,
+      param1,
+      param2,
+      isFilterKey2Ignore
+    );
+    if (finalData) {
+      sessionStorage.setItem("menuparams", JSON.stringify(finalData));
+    }
+    router.push(url);
   };
 
   const handleDrawerToggle = () => {
@@ -701,13 +747,13 @@ const ElveePreNavbar = ({ storeInit: storeinit, logos }) => {
                               ))}
                             </Box>
                           ) : (
-                            currentMenuItems?.map((item, index) => (
+                             currentMenuItems?.map((item, index) => (
                               <Box
                                 key={index}
                                 onMouseEnter={() =>
-                                  setHoveredItem(item?.menuname)
+                                  handleMenuMouseEnter(item?.menuname)
                                 }
-                                onMouseLeave={() => setHoveredItem(null)}
+                                onMouseLeave={handleMenuMouseLeave}
                                 sx={{ position: "relative" }}
                               >
                                 <Box
@@ -790,24 +836,21 @@ const ElveePreNavbar = ({ storeInit: storeinit, logos }) => {
                                               xl: "1400px",
                                             },
                                             maxWidth: "1400px",
-                                            height: "24px",
+                                            height: "28px",
                                             boxShadow: "none",
                                             bgcolor: "transparent",
+                                            zIndex: 1301,
                                           }}
                                           onMouseEnter={() =>
-                                            setHoveredItem(item?.menuname)
+                                            handleMenuMouseEnter(item?.menuname)
                                           }
-                                          onMouseLeave={() =>
-                                            setHoveredItem(null)
-                                          }
+                                          onMouseLeave={handleMenuMouseLeave}
                                         />
                                         <Box
                                           onMouseEnter={() =>
-                                            setHoveredItem(item?.menuname)
+                                            handleMenuMouseEnter(item?.menuname)
                                           }
-                                          onMouseLeave={() =>
-                                            setHoveredItem(null)
-                                          }
+                                          onMouseLeave={handleMenuMouseLeave}
                                           sx={{
                                             position: "fixed",
                                             top: "100%",
