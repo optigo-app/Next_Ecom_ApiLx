@@ -439,13 +439,18 @@ const ProductList = ({ storeinit, searchParams, params }) => {
   }, [location, loginUserDetail, storeinit]); // location is the pathname string — changes on navigation
 
   useEffect(() => {
+    if (
+      location === locationKey &&
+      (Object.keys(filterChecked)?.length > 0 || isClearAllClicked === true)
+    ) {
+      setIsOnlyProdLoading(true);
+    }
+
     // Avoid multiple calls by debouncing
     const debounceFilter = _.debounce(() => {
       let output = FilterValueWithCheckedOnly();
       let obj = { mt: selectedMetalId, dia: selectedDiaId, cs: selectedCsId };
 
-      // FIX 2026-04-29: location is usePathname() — no .key property exists.
-      // locationKey is set from location (pathname string) on navigation.
       if (
         location === locationKey &&
         (Object.keys(filterChecked)?.length > 0 || isClearAllClicked === true)
@@ -484,7 +489,6 @@ const ProductList = ({ storeinit, searchParams, params }) => {
 
         setCurrPage(1);
         setInputPage(1);
-        setIsOnlyProdLoading(true);
 
         ProductListApi(
           output,
@@ -883,7 +887,8 @@ const ProductList = ({ storeinit, searchParams, params }) => {
           inputNet,
         );
 
-        const res = await ProductListApi(
+        // 1. Fetch Product List (High Priority -> Renders products immediately)
+        ProductListApi(
           {},
           1,
           obj,
@@ -893,92 +898,92 @@ const ProductList = ({ storeinit, searchParams, params }) => {
           DiaRange,
           netRange,
           grossRange,
-        );
-        const res1 = await FilterListAPI(productlisttype, cookie);
-        if (res) {
-          setProductListData(res?.pdList);
-          setAfterFilterCount(res?.pdResp?.rd1[0]?.designcount);
-        }
+        )
+          .then((res) => {
+            if (res) {
+              setProductListData(res?.pdList);
+              setAfterFilterCount(res?.pdResp?.rd1[0]?.designcount);
+            }
+          })
+          .catch((err) => {
+            console.error("ProductListApi error:", err);
+          })
+          .finally(() => {
+            setIsProdLoading(false);
+            setIsOnlyProdLoading(false);
+          });
 
-        if (res1) {
-          setFilterData(res1);
-          let priceFilter = JSON.parse(
-            res1?.filter((ele) => ele.Name == "Price")[0]?.options,
-          )[0];
-          setFilterPriceSlider(priceFilter);
-          let diafilter =
-            res1?.filter((ele) => ele?.Name == "Diamond")[0]?.options?.length >
-            0
-              ? JSON.parse(
-                  res1?.filter((ele) => ele?.Name == "Diamond")[0]?.options,
-                )[0]
-              : [];
+        // 2. Fetch Filter Sidebar Options in Background (Completely Non-Blocking)
+        FilterListAPI(productlisttype, cookie)
+          .then((res1) => {
+            if (res1) {
+              setFilterData(res1);
+              let priceFilter = JSON.parse(
+                res1?.filter((ele) => ele.Name == "Price")[0]?.options,
+              )[0];
+              setFilterPriceSlider(priceFilter);
+              let diafilter =
+                res1?.filter((ele) => ele?.Name == "Diamond")[0]?.options
+                  ?.length > 0
+                  ? JSON.parse(
+                      res1?.filter((ele) => ele?.Name == "Diamond")[0]?.options,
+                    )[0]
+                  : [];
 
-          let diafilter1 =
-            res1?.filter((ele) => ele?.Name == "NetWt")[0]?.options?.length > 0
-              ? JSON.parse(
-                  res1?.filter((ele) => ele?.Name == "NetWt")[0]?.options,
-                )[0]
-              : [];
+              let diafilter1 =
+                res1?.filter((ele) => ele?.Name == "NetWt")[0]?.options
+                  ?.length > 0
+                  ? JSON.parse(
+                      res1?.filter((ele) => ele?.Name == "NetWt")[0]?.options,
+                    )[0]
+                  : [];
 
-          let diafilter2 =
-            res1?.filter((ele) => ele?.Name == "Gross")[0]?.options?.length > 0
-              ? JSON.parse(
-                  res1?.filter((ele) => ele?.Name == "Gross")[0]?.options,
-                )[0]
-              : [];
+              let diafilter2 =
+                res1?.filter((ele) => ele?.Name == "Gross")[0]?.options
+                  ?.length > 0
+                  ? JSON.parse(
+                      res1?.filter((ele) => ele?.Name == "Gross")[0]?.options,
+                    )[0]
+                  : [];
 
-          // const highestPrice = res?.pdList?.reduce((max, item) => {
-          //   return Math.max(max, item?.UnitCostWithMarkUpIncTax);
-          // }, 0);
-          // setHighestPrice(highestPrice);
-
-          // const lowestPrice = res?.pdList?.reduce((min, item) => {
-          //   const value = item?.UnitCostWithMarkUpIncTax;
-          //   return value > 0 ? Math.min(min, value) : min;
-          // }, Infinity);
-          // setLowestPrice(lowestPrice);
-
-          // setPriceRangeValue([lowestPrice, highestPrice]);
-          // setInputPrice([lowestPrice, highestPrice])
-
-          setSliderValue(
-            diafilter?.Min != null || diafilter?.Max != null
-              ? [diafilter.Min, diafilter.Max]
-              : [],
-          );
-          setInputDia(
-            diafilter?.Min != null || diafilter?.Max != null
-              ? [diafilter.Min, diafilter.Max]
-              : [],
-          );
-          setSliderValue1(
-            diafilter1?.Min != null || diafilter1?.Max != null
-              ? [diafilter1?.Min, diafilter1?.Max]
-              : [],
-          );
-          setInputNet(
-            diafilter1?.Min != null || diafilter1?.Max != null
-              ? [diafilter1?.Min, diafilter1?.Max]
-              : [],
-          );
-          setSliderValue2(
-            diafilter2?.Min != null || diafilter2?.Max != null
-              ? [diafilter2?.Min, diafilter2?.Max]
-              : [],
-          );
-          setInputGross(
-            diafilter2?.Min != null || diafilter2?.Max != null
-              ? [diafilter2?.Min, diafilter2?.Max]
-              : [],
-          );
-          // setFilterDiamondSlider([diaFilter?.Min, diaFilter?.Max]);
-        }
+              setSliderValue(
+                diafilter?.Min != null || diafilter?.Max != null
+                  ? [diafilter.Min, diafilter.Max]
+                  : [],
+              );
+              setInputDia(
+                diafilter?.Min != null || diafilter?.Max != null
+                  ? [diafilter.Min, diafilter.Max]
+                  : [],
+              );
+              setSliderValue1(
+                diafilter1?.Min != null || diafilter1?.Max != null
+                  ? [diafilter1?.Min, diafilter1?.Max]
+                  : [],
+              );
+              setInputNet(
+                diafilter1?.Min != null || diafilter1?.Max != null
+                  ? [diafilter1?.Min, diafilter1?.Max]
+                  : [],
+              );
+              setSliderValue2(
+                diafilter2?.Min != null || diafilter2?.Max != null
+                  ? [diafilter2?.Min, diafilter2?.Max]
+                  : [],
+              );
+              setInputGross(
+                diafilter2?.Min != null || diafilter2?.Max != null
+                  ? [diafilter2?.Min, diafilter2?.Max]
+                  : [],
+              );
+            }
+          })
+          .catch((err) => console.error("FilterListAPI error:", err));
       } catch (error) {
         console.error("Error fetching product list:", error);
+        setIsProdLoading(false);
+        setIsOnlyProdLoading(false);
       }
-      setIsProdLoading(false);
-      setIsOnlyProdLoading(false);
       isInitialLoadRef.current = false;
     };
 
@@ -997,23 +1002,7 @@ const ProductList = ({ storeinit, searchParams, params }) => {
         behavior: "smooth",
       });
     }
-  }, [location, syncProductList.ts]);
-
-  // useEffect(() => {
-  //   if (productListData?.length > 0) {
-  //     const high = productListData.reduce((max, item) => Math.max(max, item.UnitCostWithMarkUpIncTax), 0);
-  //     const low = productListData.reduce((min, item) => {
-  //       const value = item.UnitCostWithMarkUpIncTax;
-  //       return value > 0 ? Math.min(min, value) : min;
-  //     }, Infinity);
-
-  //     setLowestPrice(low);
-  //     setHighestPrice(high);
-
-  //     // Only set this once
-  //     setPriceRangeValue([low, high]);
-  //   }
-  // }, [productListData]);
+  }, [location, searchParamsHook, syncProductList.ts]);
 
   const decodeEntities = (html) => {
     var txt = document.createElement("textarea");
@@ -1024,7 +1013,6 @@ const ProductList = ({ storeinit, searchParams, params }) => {
   const handelPageChange = (event, value) => {
     let output = FilterValueWithCheckedOnly();
     let obj = { mt: selectedMetalId, dia: selectedDiaId, cs: selectedCsId };
-    // setIsProdLoading(true);
     setProductListData([]);
     setIsOnlyProdLoading(true);
     setCurrPage(value);
@@ -1052,7 +1040,6 @@ const ProductList = ({ storeinit, searchParams, params }) => {
     );
     const netRange = parseRangeData(filterData, "net", sliderValue1, inputNet);
 
-    // ProductListApi(output, value, obj, prodListType, cookie, sortBySelect)
     ProductListApi(
       output,
       value,
@@ -1074,7 +1061,6 @@ const ProductList = ({ storeinit, searchParams, params }) => {
       .catch((err) => console.log("err", err))
       .finally(() => {
         setTimeout(() => {
-          // setIsProdLoading(false);
           setIsOnlyProdLoading(false);
         }, 100);
       });
@@ -1095,76 +1081,93 @@ const ProductList = ({ storeinit, searchParams, params }) => {
     }
   };
 
-  const callAllApi = () => {
-    let mtTypeLocal = getSession("metalTypeCombo");
-    let diaQcLocal = getSession("diamondQualityColorCombo");
-    let csQcLocal = getSession("ColorStoneQualityColorCombo");
-    let mtColorLocal = getSession("MetalColorCombo");
+  // Article-based architecture: callAllApi & MetalColorCombo disabled for performance
+  // const callAllApi = async () => {
+  //   let mtTypeLocal = getSession("metalTypeCombo");
+  //   let diaQcLocal = getSession("diamondQualityColorCombo");
+  //   let csQcLocal = getSession("ColorStoneQualityColorCombo");
+  //   let mtColorLocal = getSession("MetalColorCombo");
+  //
+  //   const comboTasks = [];
+  //
+  //   if (!mtTypeLocal || mtTypeLocal?.length === 0) {
+  //     comboTasks.push(
+  //       MetalTypeComboAPI(cookie)
+  //         .then((response) => {
+  //           if (response?.Data?.rd) {
+  //             let data = response?.Data?.rd;
+  //             sessionStorage.setItem("metalTypeCombo", JSON.stringify(data));
+  //             setMetaltype(data);
+  //           }
+  //         })
+  //         .catch((err) => console.log("metalTypeCombo err", err)),
+  //     );
+  //   } else {
+  //     setMetaltype(mtTypeLocal);
+  //   }
+  //
+  //   if (!diaQcLocal || diaQcLocal?.length === 0) {
+  //     comboTasks.push(
+  //       DiamondQualityColorComboAPI()
+  //         .then((response) => {
+  //           if (response?.Data?.rd) {
+  //             let data = response?.Data?.rd;
+  //             sessionStorage.setItem(
+  //               "diamondQualityColorCombo",
+  //               JSON.stringify(data),
+  //             );
+  //             setDiamondType(data);
+  //           }
+  //         })
+  //         .catch((err) => console.log("diaQcCombo err", err)),
+  //     );
+  //   } else {
+  //     setDiamondType(diaQcLocal);
+  //   }
+  //
+  //   if (!csQcLocal || csQcLocal?.length === 0) {
+  //     comboTasks.push(
+  //       ColorStoneQualityColorComboAPI()
+  //         .then((response) => {
+  //           if (response?.Data?.rd) {
+  //             let data = response?.Data?.rd;
+  //             sessionStorage.setItem(
+  //               "ColorStoneQualityColorCombo",
+  //               JSON.stringify(data),
+  //             );
+  //             setCsQcCombo(data);
+  //           }
+  //         })
+  //         .catch((err) => console.log("csQcCombo err", err)),
+  //     );
+  //   } else {
+  //     setCsQcCombo(csQcLocal);
+  //   }
+  //
+  //   if (!mtColorLocal || mtColorLocal?.length === 0) {
+  //     comboTasks.push(
+  //       MetalColorCombo()
+  //         .then((response) => {
+  //           if (response?.Data?.rd) {
+  //             let data = response?.Data?.rd;
+  //             sessionStorage.setItem("MetalColorCombo", JSON.stringify(data));
+  //             setMetalColorCombo(data);
+  //           }
+  //         })
+  //         .catch((err) => console.log("metalColorCombo err", err)),
+  //     );
+  //   } else {
+  //     setMetalColorCombo(mtColorLocal);
+  //   }
+  //
+  //   if (comboTasks.length > 0) {
+  //     await Promise.allSettled(comboTasks);
+  //   }
+  // };
 
-    if (!mtTypeLocal || mtTypeLocal?.length === 0) {
-      MetalTypeComboAPI(cookie)
-        .then((response) => {
-          if (response?.Data?.rd) {
-            let data = response?.Data?.rd;
-            sessionStorage.setItem("metalTypeCombo", JSON.stringify(data));
-            setMetaltype(data);
-          }
-        })
-        .catch((err) => console.log(err));
-    } else {
-      setMetaltype(mtTypeLocal);
-    }
-
-    if (!diaQcLocal || diaQcLocal?.length === 0) {
-      DiamondQualityColorComboAPI()
-        .then((response) => {
-          if (response?.Data?.rd) {
-            let data = response?.Data?.rd;
-            sessionStorage.setItem(
-              "diamondQualityColorCombo",
-              JSON.stringify(data),
-            );
-            setDiamondType(data);
-          }
-        })
-        .catch((err) => console.log(err));
-    } else {
-      setDiamondType(diaQcLocal);
-    }
-
-    if (!csQcLocal || csQcLocal?.length === 0) {
-      ColorStoneQualityColorComboAPI()
-        .then((response) => {
-          if (response?.Data?.rd) {
-            let data = response?.Data?.rd;
-            sessionStorage.setItem(
-              "ColorStoneQualityColorCombo",
-              JSON.stringify(data),
-            );
-            setCsQcCombo(data);
-          }
-        })
-        .catch((err) => console.log(err));
-    } else {
-      setCsQcCombo(csQcLocal);
-    }
-
-    if (!mtColorLocal || mtColorLocal?.length === 0) {
-      MetalColorCombo()
-        .then((response) => {
-          if (response?.Data?.rd) {
-            let data = response?.Data?.rd;
-            sessionStorage.setItem("MetalColorCombo", JSON.stringify(data));
-            setMetalColorCombo(data);
-          }
-        })
-        .catch((err) => console.log(err));
-    }
-  };
-
-  useEffect(() => {
-    callAllApi();
-  }, [loginUserDetail]);
+  // useEffect(() => {
+  //   callAllApi();
+  // }, [loginUserDetail]);
 
   const handleSortby = async (e) => {
     setSortBySelect(e.target?.value);
@@ -3378,7 +3381,7 @@ const ProductList = ({ storeinit, searchParams, params }) => {
           handelFilterClearAll={handelFilterClearAll}
         />
 
-        {!isOnlyProdLoading && productListData.length == 0 ? (
+        {!isOnlyProdLoading && !isProdLoading && productListData.length == 0 ? (
           <NoProductFound />
         ) : (
           <JewelryProductGrid

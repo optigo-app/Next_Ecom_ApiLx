@@ -2,10 +2,6 @@ import { isLocalHost, localHosts } from "../constants/DomainList";
 import { NEXT_APP_WEB } from "./env";
 import { getDomainInfo } from "./getDomainInfo";
 
-const storeInitCache = new Map();
-const inFlightRequests = new Map();
-const CACHE_TTL_MS = 10 * 60 * 1000; // 10 minutes cache
-
 export async function fetchStoreInitData(req) {
   try {
     let baseUrl = "";
@@ -44,10 +40,11 @@ export async function fetchStoreInitData(req) {
         // baseUrl = `https://cdnfs.optigoapps.com/content-global3/StoreInit/shreediamond.optigoapps.com/StoreInit.json`;
         // baseUrl = `https://cdnfs.optigoapps.com/content-global3/StoreInit/nxt14.optigoapps.com/StoreInit.json`;
       } else {
-        if (isLocalHost(cleanHost)) {
+        if (cleanHost === "localhost") {
+          console.log(cleanHost, "cleanHost  if ");
           baseUrl = `http://192.168.0.153/R50B3/UFS/StoreInit/${NEXT_APP_WEB}/StoreInit.json`;
         } else {
-          console.log(isLocalHost(cleanHost), "cleanHost  else ");
+          console.log(cleanHost, "cleanHost  else ");
           baseUrl = `https://cdnfs.optigoapps.com/content-global3/StoreInit/${hostname}/StoreInit.json`;
         }
       }
@@ -58,32 +55,11 @@ export async function fetchStoreInitData(req) {
     }
 
     const finalUrl = baseUrl;
-
-    // Check memory cache
-    const cachedEntry = storeInitCache.get(finalUrl);
-    if (cachedEntry && Date.now() - cachedEntry.timestamp < CACHE_TTL_MS) {
-      return cachedEntry.data;
-    }
-
-    // Check in-flight promise
-    if (inFlightRequests.has(finalUrl)) {
-      return await inFlightRequests.get(finalUrl);
-    }
-
-    const fetchPromise = (async () => {
-      console.log(baseUrl, "baseUrl");
-      const response = await fetch(finalUrl);
-      if (!response.ok) throw new Error(`HTTP error ${response.status}`);
-      const jsonData = await response.json();
-      const result = jsonData || {};
-      storeInitCache.set(finalUrl, { data: result, timestamp: Date.now() });
-      return result;
-    })().finally(() => {
-      inFlightRequests.delete(finalUrl);
-    });
-
-    inFlightRequests.set(finalUrl, fetchPromise);
-    return await fetchPromise;
+    console.log(baseUrl, "baseUrl");
+    const response = await fetch(finalUrl);
+    if (!response.ok) throw new Error(`HTTP error ${response.status}`);
+    const jsonData = await response.json();
+    return jsonData || {};
   } catch (error) {
     console.error("❌ Error fetching StoreInit data:", error);
     return null;
