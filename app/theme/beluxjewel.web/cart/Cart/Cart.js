@@ -182,6 +182,7 @@ const ElveeCartPage = ({ storeinit, visiterId }) => {
   // cartData is the raw API response and does NOT update when items are removed
   // (handleRemoveItem only updates finalCartData). Using cartData here caused
   // the price to never drop after removal.
+  
   const getTotalPrice = [];
   let totalPrice;
   if (storeinit?.Themeno === 3) {
@@ -479,6 +480,7 @@ const ElveeCartPage = ({ storeinit, visiterId }) => {
                       openHandleUpdateCartModal={handleOpenModal}
                       showRemark1={showRemark1}
                       handleClose1={handleClose1}
+                      handleMoveToDetail={handleMoveToDetail}
                     />
                   </Grid>
                   {/* <div className="elv_CartSingleProducts_div">

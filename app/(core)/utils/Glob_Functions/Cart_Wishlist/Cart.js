@@ -813,6 +813,7 @@ const useCart = () => {
         l: cartData?.ImageExtension,
         count: cartData?.ImageCount,
         ArticleNo: cartData?.ArticleNo,
+        ArticleId: cartData?.ArticleId || cartData?.id,
       };
       createAndNavigate(obj);
     } else {
@@ -828,6 +829,7 @@ const useCart = () => {
         l: cartData?.ImageExtension,
         count: cartData?.ImageCount,
         ArticleNo: cartData?.ArticleNo,
+        ArticleId: cartData?.ArticleId || cartData?.id,
       };
       createAndNavigate(obj);
     }

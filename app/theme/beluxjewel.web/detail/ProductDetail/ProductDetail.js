@@ -899,7 +899,20 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
             ? parseInt(decodeobj?.ArticleId, 10)
             : null;
           const initialArticle =
-            res?.pdResp?.rd1?.find((r) => r.ArticleId === initialArticleId) ||
+            (initialArticleId != null &&
+              res?.pdResp?.rd1?.find(
+                (r) => r.ArticleId === initialArticleId || r.ArticleId == decodeobj?.ArticleId,
+              )) ||
+            (decodeobj?.ArticleNo &&
+              res?.pdResp?.rd1?.find(
+                (r) =>
+                  r.ArticleNo === decodeobj.ArticleNo ||
+                  r.ArticleNo?.toLowerCase() === String(decodeobj.ArticleNo).toLowerCase(),
+              )) ||
+            (decodeobj?.a &&
+              res?.pdResp?.rd1?.find(
+                (r) => r.autocode === decodeobj.a || r.autocode == decodeobj.a,
+              )) ||
             res?.pdResp?.rd1?.[0];
           if (initialArticle) {
             const diaStone = res?.pdResp?.rd2?.find(

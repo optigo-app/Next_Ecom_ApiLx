@@ -24,6 +24,7 @@ const CartList = ({
   handleRemarkChange,
   handleSave,
   handleCancel,
+  handleMoveToDetail,
 }) => {
   return (
     <>
@@ -66,6 +67,7 @@ const CartList = ({
             handleSave={handleSave}
             handleCancel={handleCancel}
             openHandleUpdateCartModal={openHandleUpdateCartModal}
+            handleMoveToDetail={handleMoveToDetail}
           />
         </Grid>
       ))}

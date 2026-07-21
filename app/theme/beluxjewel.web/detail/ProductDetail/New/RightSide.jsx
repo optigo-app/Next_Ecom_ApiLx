@@ -103,20 +103,20 @@ const RightSide = ({
   const activeArticleId = activeArticle?.ArticleId;
   const articleCartEntry = rd1CartMap[activeArticleId];
 
-  // isAddedToCart: prefer rd1CartMap truth, then optimistic addToCardFlag, then singleProd initial state
+  // isAddedToCart: prefer rd1CartMap truth for active article, then optimistic addToCardFlag, then singleProd
   const isAddedToCart =
-    addToCardFlag !== null
-      ? addToCardFlag
-      : articleCartEntry != null
-        ? articleCartEntry.IsInCart === 1
+    articleCartEntry != null
+      ? articleCartEntry.IsInCart === 1
+      : addToCardFlag !== null
+        ? addToCardFlag
         : singleProd?.IsInCart === 1;
 
-  // wishlist checked: prefer rd1CartMap truth, then optimistic wishListFlag, then singleProd
+  // wishlist checked: prefer rd1CartMap truth for active article, then optimistic wishListFlag, then singleProd
   const isInWishlist =
-    wishListFlag !== null
-      ? wishListFlag
-      : articleCartEntry != null
-        ? articleCartEntry.IsInWish === 1
+    articleCartEntry != null
+      ? articleCartEntry.IsInWish === 1
+      : wishListFlag !== null
+        ? wishListFlag
         : singleProd?.IsInWish === 1;
 
   const CurrencyCode = loginData?.loginData ?? storeInit?.CurrencyCode;
