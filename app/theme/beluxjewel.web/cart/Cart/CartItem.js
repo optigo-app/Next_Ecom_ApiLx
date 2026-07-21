@@ -50,6 +50,7 @@ const CartItem = ({
   handleSave,
   handleCancel,
   openHandleUpdateCartModal,
+  handleMoveToDetail,
 }) => {
   const [remark, setRemark] = useState(item.Remarks || "");
   const noImageFound = "/image-not-found.jpg";
@@ -152,6 +153,14 @@ const CartItem = ({
     });
   }, []);
 
+  const handleItemClick = () => {
+    if (typeof handleMoveToDetail === "function") {
+      handleMoveToDetail(item);
+    } else if (typeof onSelect === "function") {
+      onSelect(item);
+    }
+  };
+
   return (
     <Card
       elevation={0}
@@ -202,7 +211,9 @@ const CartItem = ({
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
+          cursor: "pointer",
         }}
+        onClick={handleItemClick}
       >
         {isLoading === true ? (
           <Skeleton
@@ -217,12 +228,12 @@ const CartItem = ({
             loading="eager"
             draggable={false}
             onContextMenu={(e) => e.preventDefault()}
-            onClick={() => onSelect(item)}
             sx={{
               width: "100%",
               height: "100%",
               objectFit: "contain",
               mixBlendMode: "multiply",
+              cursor: "pointer",
               "&:focus": { outline: "none" },
               "&:active": { outline: "none" },
             }}
@@ -253,6 +264,7 @@ const CartItem = ({
       >
         <Typography
           variant="body1"
+          onClick={handleItemClick}
           sx={{
             fontWeight: 600,
             lineHeight: 1.35,
@@ -263,6 +275,8 @@ const CartItem = ({
             overflow: "hidden",
             textOverflow: "ellipsis",
             minHeight: "1.3em",
+            cursor: "pointer",
+            "&:hover": { textDecoration: "underline" },
             fontSize: {
               xs: "0.82rem",
               sm: "0.9rem",
