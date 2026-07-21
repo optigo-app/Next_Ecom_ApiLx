@@ -6,8 +6,6 @@ const domainMap = {
   localhost: NEXT_APP_WEB,
 };
 
-
-
 export default async function middleware(req) {
   try {
     const { cookies, nextUrl } = req;
@@ -22,9 +20,21 @@ export default async function middleware(req) {
     }
 
     const response = NextResponse.next();
-    response.cookies.set("x-store-data", JSON.stringify(storeData?.rd?.[0] || {}), { httpOnly: false, path: "/" });
-    response.cookies.set("x-myAccountFlags-data", JSON.stringify(storeData?.rd1 || []), { httpOnly: false, path: "/" });
-    response.cookies.set("x-CompanyInfoData-data", JSON.stringify(storeData?.rd2?.[0] || {}), { httpOnly: false, path: "/" });
+    response.cookies.set(
+      "x-store-data",
+      JSON.stringify(storeData?.rd?.[0] || {}),
+      { httpOnly: false, path: "/" },
+    );
+    response.cookies.set(
+      "x-myAccountFlags-data",
+      JSON.stringify(storeData?.rd1 || []),
+      { httpOnly: false, path: "/" },
+    );
+    response.cookies.set(
+      "x-CompanyInfoData-data",
+      JSON.stringify(storeData?.rd2?.[0] || {}),
+      { httpOnly: false, path: "/" },
+    );
     return response;
   } catch (err) {
     console.error("Middleware fatal error:", err);

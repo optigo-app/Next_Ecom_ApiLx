@@ -1,15 +1,22 @@
 import { getSession } from "../../FetchSessionData";
-import { CommonAPI } from "../CommonAPI/CommonAPI"
-
+import { CommonAPI } from "../CommonAPI/CommonAPI";
 
 export const FilterListAPI = async (mainData, visiterId) => {
-
   const storeinit = getSession("storeInit");
   const loginInfo = getSession("loginUserDetail");
   const islogin = getSession("LoginUser") ?? false;
 
-  const customerId = (storeinit?.IsB2BWebsite == 0 && (islogin == false || islogin == null)) ? visiterId : loginInfo?.id ?? 0;
-  const customerEmail = (storeinit?.IsB2BWebsite == 0 && (islogin == false || islogin == null)) ? visiterId : loginInfo?.userid ?? "";
+  const isGuest =
+    storeinit?.IsB2BWebsite == 0 && (islogin == false || islogin == null);
+
+  const customerId =
+    storeinit?.IsB2BWebsite == 0 && (islogin == false || islogin == null)
+      ? visiterId
+      : (loginInfo?.id ?? 0);
+  const customerEmail =
+    storeinit?.IsB2BWebsite == 0 && (islogin == false || islogin == null)
+      ? visiterId
+      : (loginInfo?.userid ?? "");
 
   let MenuParams = {};
   let serachVar = "";
@@ -17,13 +24,13 @@ export const FilterListAPI = async (mainData, visiterId) => {
   if (Array.isArray(mainData)) {
     if (mainData?.length > 0) {
       Object.values(mainData[0]).forEach((ele, index) => {
-        let keyName = `FilterKey${index === 0 ? '' : index}`;
-        MenuParams[keyName] = ele?.replace(/%20/g, ' ') || "";
+        let keyName = `FilterKey${index === 0 ? "" : index}`;
+        MenuParams[keyName] = ele?.replace(/%20/g, " ") || "";
       });
 
       Object.values(mainData[1]).forEach((ele, index) => {
-        let keyName = `FilterVal${index === 0 ? '' : index}`;
-        MenuParams[keyName] = ele?.replace(/%20/g, ' ') || "";
+        let keyName = `FilterVal${index === 0 ? "" : index}`;
+        MenuParams[keyName] = ele?.replace(/%20/g, " ") || "";
       });
     }
   } else if (mainData) {
@@ -42,38 +49,58 @@ export const FilterListAPI = async (mainData, visiterId) => {
   }
 
   const data = {
-    "PackageId": loginInfo?.PackageId ?? storeinit?.PackageId ?? "",
-    "autocode": "",
-    "FrontEnd_RegNo": storeinit?.FrontEnd_RegNo ?? "",
-    "Customerid": customerId ?? 0,
-    "FilterKey": MenuParams?.FilterKey ?? "",
-    "FilterVal": MenuParams?.FilterVal ?? "",
-    "FilterKey1": MenuParams?.FilterKey1 ?? "",
-    "FilterVal1": MenuParams?.FilterVal1 ?? "",
-    "FilterKey2": MenuParams?.FilterKey2 ?? "",
-    "FilterVal2": MenuParams?.FilterVal2 ?? "",
+    PackageId: loginInfo?.PackageId ?? storeinit?.PackageId ?? "",
+    autocode: "",
+    FrontEnd_RegNo: storeinit?.FrontEnd_RegNo ?? "",
+    Customerid: customerId ?? 0,
+    FilterKey: MenuParams?.FilterKey ?? "",
+    FilterVal: MenuParams?.FilterVal ?? "",
+    FilterKey1: MenuParams?.FilterKey1 ?? "",
+    FilterVal1: MenuParams?.FilterVal1 ?? "",
+    FilterKey2: MenuParams?.FilterKey2 ?? "",
+    FilterVal2: MenuParams?.FilterVal2 ?? "",
     SearchKey: serachVar?.b ?? "",
     CurrencyRate: loginInfo?.CurrencyRate ?? storeinit?.CurrencyRate ?? "",
-    DomainForNo: storeinit?.DomainForNo ?? ""
-  }
-  let encData = btoa(JSON.stringify(data))
+    DomainForNo: storeinit?.DomainForNo ?? "",
+    Laboursetid: isGuest
+      ? (storeinit?.pricemanagement_laboursetid ?? "")
+      : (loginInfo?.pricemanagement_laboursetid ??
+        storeinit?.pricemanagement_laboursetid ??
+        ""),
+    diamondpricelistname: isGuest
+      ? (storeinit?.diamondpricelistname ?? "")
+      : (loginInfo?.diamondpricelistname ??
+        storeinit?.diamondpricelistname ??
+        ""),
+    colorstonepricelistname: isGuest
+      ? (storeinit?.colorstonepricelistname ?? "")
+      : (loginInfo?.colorstonepricelistname ??
+        storeinit?.colorstonepricelistname ??
+        ""),
+    SettingPriceUniqueNo: isGuest
+      ? (storeinit?.SettingPriceUniqueNo ?? "")
+      : (loginInfo?.SettingPriceUniqueNo ??
+        storeinit?.SettingPriceUniqueNo ??
+        ""),
+  };
+  let encData = btoa(JSON.stringify(data));
 
   let body = {
-    "con": `{\"id\":\"\",\"mode\":\"GETFILTERLIST\",\"appuserid\":\"${customerEmail ?? ""}\"}`,
-    "f": "onClickofMenuList (GETFILTERLIST)",
+    con: `{\"id\":\"\",\"mode\":\"GETFILTERLIST\",\"appuserid\":\"${customerEmail ?? ""}\"}`,
+    f: "onClickofMenuList (GETFILTERLIST)",
     // "dp": JSON.stringify(data),
     // "p": encData
-    "p": JSON.stringify(data)
-  }
+    p: JSON.stringify(data),
+  };
 
-  let finalfilterData
+  let finalfilterData;
 
   await CommonAPI(body).then((res) => {
     if (res) {
       // console.log("res",res);
       sessionStorage.setItem("AllFilter", JSON.stringify(res?.Data?.rd));
-      finalfilterData = res?.Data?.rd
+      finalfilterData = res?.Data?.rd;
     }
-  })
-  return finalfilterData
-}
+  });
+  return finalfilterData;
+};

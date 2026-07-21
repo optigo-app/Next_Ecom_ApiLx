@@ -33,6 +33,9 @@ import LeftSide from "./New/LeftSide";
 import RightSide from "./New/RightSide";
 import PreviewDialog from "./New/PreviewDialog";
 import ProductDetailsSection from "./New/ProductDetailsSection";
+import ExtraProductSections from "./New/ExtraProductSections";
+import CustomerReviews from "./New/CustomerReviews";
+import DetailPageSkeleton from "../DetailPageSkeleton";
 import { useBroadcaster } from "@/app/(core)/contexts/BoardCastContext";
 import { useSyncDataStore } from "@/app/(core)/hooks/useStore";
 import { useStore } from "@/app/(core)/contexts/StoreProvider";
@@ -854,161 +857,136 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
       };
 
       setisPriceLoading(true);
-      // step 4
       setSingleProd1({});
       setSingleProd({});
-      await SingleArticleProdListAPI(decodeobj, sizeData, obj, cookie)
-        .then(async (res) => {
-          if (res) {
-            setSingleProd(res?.pdList[0]);
 
-            if (res?.pdList?.length > 0) {
-              setisPriceLoading(false);
-              setloadingdata(false);
+      try {
+        const res = await SingleArticleProdListAPI(decodeobj, sizeData, obj, cookie);
+        if (res && res?.pdList) {
+          const prod = res?.pdList[0];
+          setSingleProd(prod);
+
+          if (res?.pdList?.length > 0) {
+            setisPriceLoading(false);
+            setloadingdata(false);
+            setIsDataFound(false);
+          } else {
+            setisPriceLoading(false);
+            setloadingdata(false);
+            setIsDataFound(true);
+            return;
+          }
+
+          setDiaList(res?.pdResp?.rd3);
+          setCsList(res?.pdResp?.rd4);
+
+          if (res?.pdResp?.rd1?.length) {
+            setRd1Data(res?.pdResp?.rd1);
+            const initMap = {};
+            res.pdResp.rd1.forEach((r) => {
+              initMap[r.ArticleId] = {
+                IsInCart: r.IsInCart ?? 0,
+                IsInWish: r.IsInWish ?? 0,
+                CartId: r.CartId ?? 0,
+              };
+            });
+            setRd1CartMap(initMap);
+          }
+          if (res?.pdResp?.rd2?.length) setRd2Data(res?.pdResp?.rd2);
+
+          const initialArticleId = decodeobj?.ArticleId
+            ? parseInt(decodeobj?.ArticleId, 10)
+            : null;
+          const initialArticle =
+            res?.pdResp?.rd1?.find((r) => r.ArticleId === initialArticleId) ||
+            res?.pdResp?.rd1?.[0];
+          if (initialArticle) {
+            const diaStone = res?.pdResp?.rd2?.find(
+              (r) =>
+                r.ArticleId === initialArticle.ArticleId &&
+                r.StoneTypeid === 1,
+            );
+            const csStone = res?.pdResp?.rd2?.find(
+              (r) =>
+                r.ArticleId === initialArticle.ArticleId &&
+                r.StoneTypeid === 2,
+            );
+            setCustomizationDetail({
+              ...initialArticle,
+              ArticleId: initialArticle.ArticleId,
+              ArticleNo: initialArticle.ArticleNo,
+              autocode:
+                initialArticle.autocode || prod?.autocode || "",
+              Metalid: initialArticle.MetalTypeId,
+              MetalColorId: initialArticle.MetalColorId,
+              MetalType: initialArticle.MetalType,
+              MetalColor: initialArticle.MetalColor,
+              DiaQCid: diaStone
+                ? `${diaStone.QualityId},${diaStone.ColorId}`
+                : "0,0",
+              DiaQCLabel: diaStone
+                ? `${diaStone.Quality}-${diaStone.Color}`
+                : null,
+              CsQCid: csStone
+                ? `${csStone.QualityId},${csStone.ColorId}`
+                : "0,0",
+              Size: initialArticle.Size,
+              NetWeight: initialArticle.NetWeight,
+            });
+          }
+
+          // ---------- Progressive Non-Blocking Parallel Secondary API Calls ----------
+          if (prod) {
+            // 1. Size Data
+            getSizeData(prod, cookie)
+              .then((sizeRes) => {
+                setSizeCombo(sizeRes?.Data);
+                let initialsize =
+                  prod && prod.DefaultSize !== ""
+                    ? prod.DefaultSize
+                    : sizeRes?.Data?.rd?.find((size) => size.IsDefaultSize === 1)
+                        ?.sizename === undefined
+                      ? sizeRes?.Data?.rd?.[0]?.sizename
+                      : sizeRes?.Data?.rd?.find((size) => size.IsDefaultSize === 1)
+                          ?.sizename;
+                setSizeData(initialsize);
+              })
+              .catch((err) => console.log("SizeErr", err));
+
+            // 2. Stock Items
+            if (storeinitInside?.IsStockWebsite === 1 && prod?.autocode) {
+              StockItemApi(prod.autocode, "stockitem", cookie)
+                .then((res) => setStockItemArr(res?.Data?.rd))
+                .catch((err) => console.log("stockItemErr", err));
             }
 
-            if (!res?.pdList[0]) {
-              setisPriceLoading(false);
-              setloadingdata(false);
-              setIsDataFound(true);
-            } else {
-              setIsDataFound(false);
+            // 3. Similar Products
+            if (storeinitInside?.IsProductDetailSimilarDesign === 1 && prod?.autocode) {
+              StockItemApi(prod.autocode, "similarbrand", obj, cookie)
+                .then((res) => setSimilarBrandArr(res?.Data?.rd))
+                .catch((err) => console.log("similarbrandErr", err));
             }
 
-            setDiaList(res?.pdResp?.rd3);
-            setCsList(res?.pdResp?.rd4);
-            // Store all article combinations for the customizer drawer
-            if (res?.pdResp?.rd1?.length) {
-              setRd1Data(res?.pdResp?.rd1);
-              // Build initial cart/wish status map from rd1
-              const initMap = {};
-              res.pdResp.rd1.forEach((r) => {
-                initMap[r.ArticleId] = {
-                  IsInCart: r.IsInCart ?? 0,
-                  IsInWish: r.IsInWish ?? 0,
-                  CartId: r.CartId ?? 0,
-                };
-              });
-              setRd1CartMap(initMap);
-            }
-            if (res?.pdResp?.rd2?.length) setRd2Data(res?.pdResp?.rd2);
-
-            // Compute initial customization details based on URL's ArticleId or decoded parameters
-            const initialArticleId = decodeobj?.ArticleId
-              ? parseInt(decodeobj?.ArticleId, 10)
-              : null;
-            const initialArticle =
-              res?.pdResp?.rd1?.find((r) => r.ArticleId === initialArticleId) ||
-              res?.pdResp?.rd1?.[0];
-            if (initialArticle) {
-              const diaStone = res?.pdResp?.rd2?.find(
-                (r) =>
-                  r.ArticleId === initialArticle.ArticleId &&
-                  r.StoneTypeid === 1,
-              );
-              const csStone = res?.pdResp?.rd2?.find(
-                (r) =>
-                  r.ArticleId === initialArticle.ArticleId &&
-                  r.StoneTypeid === 2,
-              );
-              setCustomizationDetail({
-                ...initialArticle,
-                ArticleId: initialArticle.ArticleId,
-                ArticleNo: initialArticle.ArticleNo,
-                autocode:
-                  initialArticle.autocode || res?.pdList[0]?.autocode || "",
-                Metalid: initialArticle.MetalTypeId,
-                MetalColorId: initialArticle.MetalColorId,
-                MetalType: initialArticle.MetalType,
-                MetalColor: initialArticle.MetalColor,
-                DiaQCid: diaStone
-                  ? `${diaStone.QualityId},${diaStone.ColorId}`
-                  : "0,0",
-                DiaQCLabel: diaStone
-                  ? `${diaStone.Quality}-${diaStone.Color}`
-                  : null,
-                CsQCid: csStone
-                  ? `${csStone.QualityId},${csStone.ColorId}`
-                  : "0,0",
-                Size: initialArticle.Size,
-                NetWeight: initialArticle.NetWeight,
-              });
+            // 4. Design Set List
+            if (storeinitInside?.IsProductDetailDesignSet === 1 && prod?.designno) {
+              DesignSetListAPI(obj1, prod.designno, cookie)
+                .then((res) => setDesignSetList(res?.Data?.rd))
+                .catch((err) => console.log("designsetErr", err));
             }
 
-            let prod = res?.pdList[0];
-
-            let resp = res;
-            if (resp) {
-              await getSizeData(resp?.pdList[0], cookie)
-                .then((sizeRes) => {
-                  setSizeCombo(sizeRes?.Data);
-
-                  let initialsize =
-                    prod && prod.DefaultSize !== ""
-                      ? prod.DefaultSize
-                      : sizeRes?.Data?.rd?.find(
-                            (size) => size.IsDefaultSize === 1,
-                          )?.sizename === undefined
-                        ? sizeRes?.Data?.rd?.[0]?.sizename
-                        : sizeRes?.Data?.rd?.find(
-                            (size) => size.IsDefaultSize === 1,
-                          )?.sizename;
-                  setSizeData(initialsize);
-                })
-                .catch((err) => console.log("SizeErr", err));
-
-              if (storeinitInside?.IsStockWebsite === 1) {
-                await StockItemApi(
-                  resp?.pdList[0]?.autocode,
-                  "stockitem",
-                  cookie,
-                )
-                  .then((res) => {
-                    setStockItemArr(res?.Data?.rd);
-                  })
-                  .catch((err) => console.log("stockItemErr", err));
-              }
-
-              if (storeinitInside?.IsProductDetailSimilarDesign === 1) {
-                await StockItemApi(
-                  resp?.pdList[0]?.autocode,
-                  "similarbrand",
-                  obj,
-                  cookie,
-                )
-                  .then((res) => {
-                    setSimilarBrandArr(res?.Data?.rd);
-                  })
-                  .catch((err) => console.log("similarbrandErr", err));
-              }
-
-              if (storeinitInside?.IsProductDetailDesignSet === 1) {
-                await DesignSetListAPI(obj1, resp?.pdList[0]?.designno, cookie)
-                  .then((res) => {
-                    setDesignSetList(res?.Data?.rd);
-                  })
-                  .catch((err) => console.log("designsetErr", err));
-              }
-
-              await SaveLastViewDesign(
-                cookie,
-                resp?.pdList[0]?.autocode,
-                resp?.pdList[0]?.designno,
-              )
-                .then((res) => {
-                  setSaveLastView(res?.Data?.rd);
-                })
+            // 5. Save Last View Design (Background)
+            if (prod?.autocode && prod?.designno) {
+              SaveLastViewDesign(cookie, prod.autocode, prod.designno)
+                .then((res) => setSaveLastView(res?.Data?.rd))
                 .catch((err) => console.log("saveLastView", err));
             }
           }
-
-          return res;
-        })
-        .catch((err) => {
-          console.log("err", err);
-          setisPriceLoading(false);
-          setloadingdata(false);
-        });
+        }
+      } catch (err) {
+        console.log("err", err);
+        setisPriceLoading(false);
+        setloadingdata(false);
+      }
     };
 
     FetchProductData();
@@ -1020,62 +998,75 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
   }, [location?.key]);
 
   const callAllApi = async () => {
-    if (!mTypeLocal || mTypeLocal?.length === 0) {
-      const res = await MetalTypeComboAPI(cookie);
-      if (res) {
-        let data = res?.Data?.rd;
-        sessionStorage.setItem("metalTypeCombo", JSON.stringify(data));
-        setMetalTypeCombo(data);
-      } else {
-        console.log("error");
-      }
+    let mtTypeLocal = getSession("metalTypeCombo");
+    let diaQcLocal = getSession("diamondQualityColorCombo");
+    let csQcLocal = getSession("ColorStoneQualityColorCombo");
+    let mtColorLocal = getSession("MetalColorCombo");
+
+    const comboTasks = [];
+
+    if (!mtTypeLocal || mtTypeLocal?.length === 0) {
+      comboTasks.push(
+        MetalTypeComboAPI(cookie)
+          .then((res) => {
+            if (res?.Data?.rd) {
+              sessionStorage.setItem("metalTypeCombo", JSON.stringify(res.Data.rd));
+              setMetalTypeCombo(res.Data.rd);
+            }
+          })
+          .catch((err) => console.log("metalTypeCombo err", err)),
+      );
     } else {
-      setMetalTypeCombo(mTypeLocal);
+      setMetalTypeCombo(mtTypeLocal);
     }
 
     if (!diaQcLocal || diaQcLocal?.length === 0) {
-      const res = await DiamondQualityColorComboAPI();
-      if (res) {
-        let data = res?.Data?.rd;
-        sessionStorage.setItem(
-          "diamondQualityColorCombo",
-          JSON.stringify(data),
-        );
-        setDiaQcCombo(data);
-      } else {
-        console.log("error");
-      }
+      comboTasks.push(
+        DiamondQualityColorComboAPI()
+          .then((res) => {
+            if (res?.Data?.rd) {
+              sessionStorage.setItem("diamondQualityColorCombo", JSON.stringify(res.Data.rd));
+              setDiaQcCombo(res.Data.rd);
+            }
+          })
+          .catch((err) => console.log("diaQcCombo err", err)),
+      );
     } else {
       setDiaQcCombo(diaQcLocal);
     }
 
     if (!csQcLocal || csQcLocal?.length === 0) {
-      const res = await ColorStoneQualityColorComboAPI();
-      if (res) {
-        let data = res?.Data?.rd;
-        sessionStorage.setItem(
-          "ColorStoneQualityColorCombo",
-          JSON.stringify(data),
-        );
-        setCsQcCombo(data);
-      } else {
-        console.log("error");
-      }
+      comboTasks.push(
+        ColorStoneQualityColorComboAPI()
+          .then((res) => {
+            if (res?.Data?.rd) {
+              sessionStorage.setItem("ColorStoneQualityColorCombo", JSON.stringify(res.Data.rd));
+              setCsQcCombo(res.Data.rd);
+            }
+          })
+          .catch((err) => console.log("csQcCombo err", err)),
+      );
     } else {
       setCsQcCombo(csQcLocal);
     }
 
     if (!mtColorLocal || mtColorLocal?.length === 0) {
-      const res = await MetalColorCombo(cookie);
-      if (res) {
-        let data = res?.Data?.rd;
-        sessionStorage.setItem("MetalColorCombo", JSON.stringify(data));
-        setMetalColorCombo(data);
-      } else {
-        console.log("error");
-      }
+      comboTasks.push(
+        MetalColorCombo(cookie)
+          .then((res) => {
+            if (res?.Data?.rd) {
+              sessionStorage.setItem("MetalColorCombo", JSON.stringify(res.Data.rd));
+              setMetalColorCombo(res.Data.rd);
+            }
+          })
+          .catch((err) => console.log("metalColorCombo err", err)),
+      );
     } else {
       setMetalColorCombo(mtColorLocal);
+    }
+
+    if (comboTasks.length > 0) {
+      await Promise.allSettled(comboTasks);
     }
   };
 
@@ -1866,31 +1857,7 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
   }, [lastSyncData]);
 
   if (loadingdata) {
-    return (
-      <Box
-        sx={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "center",
-          minHeight: "60vh",
-          width: "100%",
-          gap: 2,
-        }}
-      >
-        <CircularProgress sx={{ color: "#0B2F83" }} />
-        <Typography
-          sx={{
-            color: "#627D98",
-            fontSize: "14px",
-            fontWeight: 500,
-            fontFamily: "inherit",
-          }}
-        >
-          Loading product details...
-        </Typography>
-      </Box>
-    );
+    return <DetailPageSkeleton />;
   }
 
   return (
@@ -1982,6 +1949,9 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
               />
             </Grid>
             <ProductDetailsSection diaList={diaList} csList={csList} />
+            <ExtraProductSections
+              imgSrc={getImagesArr?.[0] || getImagesArr?.[1]}
+            />
 
             {stockItemArr?.length > 0 &&
               stockItemArr?.[0]?.stat_code != 1005 &&

@@ -2,7 +2,6 @@
 import { useMemo, useState, useEffect } from "react";
 import {
   Box,
-  Grid,
   Card,
   CardMedia,
   CardContent,
@@ -12,6 +11,7 @@ import {
   useMediaQuery,
   Button,
 } from "@mui/material";
+import Grid from "@mui/material/Grid";
 import { motion } from "framer-motion";
 import ProductSkeleton from "./Skeleton";
 import { useTheme } from "@emotion/react";
@@ -132,6 +132,9 @@ const JewelryProductGrid = ({
     return;
   };
 
+  const showSkeletons =
+    isFiltering || !productListData || productListData.length === 0;
+
   return (
     <Box
       sx={{
@@ -142,10 +145,9 @@ const JewelryProductGrid = ({
     >
       <Box sx={{ position: "relative", zIndex: 1 }}>
         <Grid container spacing={{ xs: 1, sm: 1, md: 1 }}>
-          {(isFiltering ? Array.from(new Array(12)) : productListData).map(
+          {(showSkeletons ? Array.from(new Array(12)) : productListData).map(
             (item, index) => (
               <Grid
-                item
                 key={item?.id || index}
                 size={{
                   xs: 6,
@@ -153,7 +155,7 @@ const JewelryProductGrid = ({
                   md: isMedium ? 6 : 3,
                 }}
               >
-                {isFiltering ? (
+                {showSkeletons ? (
                   <ProductSkeleton key={index} />
                 ) : (
                   <ProductCard
