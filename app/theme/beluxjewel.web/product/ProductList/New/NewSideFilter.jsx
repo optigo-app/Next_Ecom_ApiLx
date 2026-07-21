@@ -26,13 +26,25 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 const CustomFormControlLabel = styled(FormControlLabel)(({ theme }) => ({
     display: "flex",
     alignItems: "center",
-    marginRight: "20px",
-    fontSize: "16px",
-    color: "rgb(127, 125, 133)",
-    paddingBlock: "5px",
+    marginRight: "0px",
+    marginLeft: "0px",
+    fontSize: "14px",
+    fontWeight: 500,
+    color: "#222222",
+    paddingBlock: "3px",
     flexDirection: "row",
-    paddingLeft: '20px',
+    paddingLeft: "0px",
+    width: "100%",
 }));
+
+const formatFilterTitle = (str) => {
+    if (!str) return "";
+    return str
+        .toLowerCase()
+        .split(" ")
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(" ");
+};
 
 const MenuProps = {
     PaperProps: {
@@ -222,15 +234,15 @@ const FilterSidebar = ({
                         return (
                             <Accordion key={index} disableGutters elevation={0} sx={{ borderBottom: "1px solid #eee" }}>
                                 <AccordionSummary
-                                    expandIcon={<AddRoundedIcon sx={{ fontSize: 20, color: "#111" }} />}
+                                    expandIcon={<AddRoundedIcon sx={{ fontSize: 20, color: "#222" }} />}
                                     sx={{
                                         px: 0,
-                                        py: 2,
+                                        py: 1.5,
                                         "& .MuiAccordionSummary-content": { margin: 0 },
                                     }}
                                 >
-                                    <Typography sx={{ fontWeight: 600, fontSize: "16px", color: "#000" }}>
-                                        {item?.Fil_DisName}
+                                    <Typography sx={{ fontWeight: 600, fontSize: "15px", color: "#000", letterSpacing: "0.2px" }}>
+                                        {formatFilterTitle(item?.Fil_DisName)}
                                     </Typography>
                                 </AccordionSummary>
 
@@ -302,15 +314,15 @@ const FilterSidebar = ({
                         return (
                             <Accordion key={index} disableGutters elevation={0} sx={{ borderBottom: "1px solid #eee" }}>
                                 <AccordionSummary
-                                    expandIcon={<AddRoundedIcon sx={{ fontSize: 20, color: "#111" }} />}
+                                    expandIcon={<AddRoundedIcon sx={{ fontSize: 20, color: "#222" }} />}
                                     sx={{
                                         px: 0,
-                                        py: 2,
+                                        py: 1.5,
                                         "& .MuiAccordionSummary-content": { margin: 0 },
                                     }}
                                 >
-                                    <Typography sx={{ fontWeight: 600, fontSize: "16px", color: "#000" }}>
-                                        {item?.Fil_DisName}
+                                    <Typography sx={{ fontWeight: 600, fontSize: "15px", color: "#000", letterSpacing: "0.2px" }}>
+                                        {formatFilterTitle(item?.Fil_DisName)}
                                     </Typography>
                                 </AccordionSummary>
                                 <AccordionDetails
@@ -449,12 +461,12 @@ const FilterSidebar = ({
                                 <AccordionSummary
                                     sx={{
                                         px: 0,
-                                        py: 2,
+                                        py: 1.5,
                                         "& .MuiAccordionSummary-content": { margin: 0 },
                                     }}
-                                    expandIcon={<AddRoundedIcon sx={{ fontSize: 20, color: "#111", }} />}>
-                                    <Typography sx={{ fontWeight: 600, fontSize: "16px", color: "#000" }}>
-                                        {item?.Fil_DisName}
+                                    expandIcon={<AddRoundedIcon sx={{ fontSize: 20, color: "#222" }} />}>
+                                    <Typography sx={{ fontWeight: 600, fontSize: "15px", color: "#000", letterSpacing: "0.2px" }}>
+                                        {formatFilterTitle(item?.Fil_DisName)}
                                     </Typography>
                                 </AccordionSummary>
                                 <AccordionDetails sx={{ px: 2, display: "flex", flexDirection: "column", gap: 1 }}>
@@ -480,12 +492,12 @@ const FilterSidebar = ({
                                 <AccordionSummary
                                     sx={{
                                         px: 0,
-                                        py: 2,
+                                        py: 1.5,
                                         "& .MuiAccordionSummary-content": { margin: 0 },
                                     }}
-                                    expandIcon={<AddRoundedIcon sx={{ fontSize: 20, color: "#111" }} />}>
-                                    <Typography sx={{ fontWeight: 600, fontSize: "16px", color: "#000" }}>
-                                        {item?.Fil_DisName}
+                                    expandIcon={<AddRoundedIcon sx={{ fontSize: 20, color: "#222" }} />}>
+                                    <Typography sx={{ fontWeight: 600, fontSize: "15px", color: "#000", letterSpacing: "0.2px" }}>
+                                        {formatFilterTitle(item?.Fil_DisName)}
                                     </Typography>
                                 </AccordionSummary>
                                 <AccordionDetails sx={{ px: 2, display: "flex", flexDirection: "column", gap: 1 }}>
@@ -511,12 +523,12 @@ const FilterSidebar = ({
                                 <AccordionSummary
                                     sx={{
                                         px: 0,
-                                        py: 2,
+                                        py: 1.5,
                                         "& .MuiAccordionSummary-content": { margin: 0 },
                                     }}
-                                    expandIcon={<AddRoundedIcon sx={{ fontSize: 20, color: "#111" }} />}>
-                                    <Typography sx={{ fontWeight: 600, fontSize: "16px", color: "#000" }}>
-                                        {item?.Fil_DisName}
+                                    expandIcon={<AddRoundedIcon sx={{ fontSize: 20, color: "#222" }} />}>
+                                    <Typography sx={{ fontWeight: 600, fontSize: "15px", color: "#000", letterSpacing: "0.2px" }}>
+                                        {formatFilterTitle(item?.Fil_DisName)}
                                     </Typography>
                                 </AccordionSummary>
                                 <AccordionDetails sx={{ px: 2, display: "flex", flexDirection: "column", gap: 1 }}>
@@ -543,14 +555,14 @@ const FilterSidebar = ({
                 {isBelow768 && <Box>
                     <Accordion disableGutters elevation={0} sx={{ borderBottom: "1px solid #eee" }}>
                         <AccordionSummary
-                            expandIcon={<AddRoundedIcon sx={{ fontSize: 20, color: "#111" }} />}
+                            expandIcon={<AddRoundedIcon sx={{ fontSize: 20, color: "#222" }} />}
                             sx={{
                                 px: 0,
-                                py: 2,
+                                py: 1.5,
                                 "& .MuiAccordionSummary-content": { margin: 0 },
                             }}
                         >
-                            <Typography sx={{ fontWeight: 600, fontSize: "16px", color: "#000" }}>
+                            <Typography sx={{ fontWeight: 600, fontSize: "15px", color: "#000", letterSpacing: "0.2px" }}>
                                 Sorting
                             </Typography>
                         </AccordionSummary>
@@ -613,14 +625,14 @@ const FilterSidebar = ({
                     {storeInit?.IsMetalCustomization === 1 && (
                         <Accordion disableGutters elevation={0} sx={{ borderBottom: "1px solid #eee" }}>
                             <AccordionSummary
-                                expandIcon={<AddRoundedIcon sx={{ fontSize: 20, color: "#111" }} />}
+                                expandIcon={<AddRoundedIcon sx={{ fontSize: 20, color: "#222" }} />}
                                 sx={{
                                     px: 0,
-                                    py: 2,
+                                    py: 1.5,
                                     "& .MuiAccordionSummary-content": { margin: 0 },
                                 }}
                             >
-                                <Typography sx={{ fontWeight: 600, fontSize: "16px", color: "#000" }}>
+                                <Typography sx={{ fontWeight: 600, fontSize: "15px", color: "#000", letterSpacing: "0.2px" }}>
                                     Metal
                                 </Typography>
                             </AccordionSummary>
@@ -677,14 +689,14 @@ const FilterSidebar = ({
                     {storeInit?.IsDiamondCustomization === 1 && (
                         <Accordion disableGutters elevation={0} >
                             <AccordionSummary
-                                expandIcon={<AddRoundedIcon sx={{ fontSize: 20, color: "#111" }} />}
+                                expandIcon={<AddRoundedIcon sx={{ fontSize: 20, color: "#222" }} />}
                                 sx={{
                                     px: 0,
-                                    py: 2,
+                                    py: 1.5,
                                     "& .MuiAccordionSummary-content": { margin: 0 },
                                 }}
                             >
-                                <Typography sx={{ fontWeight: 600, fontSize: "16px", color: "#000" }}>
+                                <Typography sx={{ fontWeight: 600, fontSize: "15px", color: "#000", letterSpacing: "0.2px" }}>
                                     Diamond
                                 </Typography>
                             </AccordionSummary>
@@ -747,6 +759,7 @@ const FilterSidebar = ({
                     display: "flex",
                     justifyContent: "space-between",
                     alignItems: "center",
+                    gap: 1.5,
                     px: 2.5,
                     py: 2,
                     borderTop: "1px solid #eee",
@@ -755,17 +768,20 @@ const FilterSidebar = ({
             >
                 <Button
                     fullWidth
+                    variant="outlined"
                     sx={{
                         textTransform: "none",
-                        fontSize: "18px",
+                        fontSize: "14px",
                         fontWeight: 400,
-                        color: "#121212d9",
-                        textDecoration: "underline",
-                        "&:hover": { textDecoration: "underline", background: "transparent" },
+                        color: "#333",
+                        borderColor: "#e0e0e0",
+                        borderRadius: 0,
+                        py: 1.2,
+                        "&:hover": { borderColor: "#bbb", bgcolor: "#fafafa" },
                     }}
                     onClick={() => {
-                        handelFilterClearAll()
-                        onClose()
+                        handelFilterClearAll();
+                        onClose();
                     }}
                 >
                     Remove all
@@ -773,17 +789,17 @@ const FilterSidebar = ({
 
                 <Button
                     fullWidth
-                    variant="contained"
+                    variant="outlined"
                     sx={{
                         textTransform: "none",
-                        bgcolor: "transparent",
-                        color: "#121212d9",
+                        bgcolor: "#fff",
+                        color: "#111",
                         border: "1px solid #111",
                         borderRadius: 0,
-                        fontSize: "0.875rem",
-                        py: 1.5,
+                        fontSize: "14px",
+                        py: 1.2,
                         fontWeight: 500,
-                        "&:hover": { bgcolor: "transparent" },
+                        "&:hover": { bgcolor: "#111", color: "#fff", border: "1px solid #111" },
                     }}
                     onClick={() => onClose()}
                 >

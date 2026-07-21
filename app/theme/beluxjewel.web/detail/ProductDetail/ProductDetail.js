@@ -36,6 +36,7 @@ import ProductDetailsSection from "./New/ProductDetailsSection";
 import ExtraProductSections from "./New/ExtraProductSections";
 import CustomerReviews from "./New/CustomerReviews";
 import DetailPageSkeleton from "../DetailPageSkeleton";
+import DetailBreadcrumb from "./New/DetailBreadcrumb";
 import { useBroadcaster } from "@/app/(core)/contexts/BoardCastContext";
 import { useSyncDataStore } from "@/app/(core)/hooks/useStore";
 import { useStore } from "@/app/(core)/contexts/StoreProvider";
@@ -1882,6 +1883,12 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
               width: "100%",
             }}
           >
+            <DetailBreadcrumb
+              searchParams={searchParams}
+              singleProd={singleProd}
+              singleProd1={singleProd1}
+              loadingdata={loadingdata}
+            />
             <Grid container spacing={{ xs: 1, md: 1 }}>
               <LeftSide
                 loading={loadingdata}

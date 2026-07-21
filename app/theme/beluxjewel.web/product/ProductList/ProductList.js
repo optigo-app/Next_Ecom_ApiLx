@@ -2825,13 +2825,15 @@ const ProductList = ({ storeinit, searchParams, params }) => {
   const CustomLabel = ({ text }) => (
     <Typography
       sx={{
-        fontFamily: "sans-serif",
+        fontFamily: "inherit",
+        color: "#111",
+        fontWeight: 500,
         fontSize: {
-          xs: "14px !important", // Mobile screens
-          sm: "14px !important", // Tablets
-          md: "14px !important", // Desktop screens
-          lg: "13.6px !important", // Large desktops
-          xl: "15px !important", // Extra large screens
+          xs: "14px !important",
+          sm: "14px !important",
+          md: "14px !important",
+          lg: "13.6px !important",
+          xl: "14px !important",
         },
       }}
     >
@@ -2841,14 +2843,15 @@ const ProductList = ({ storeinit, searchParams, params }) => {
 
   const CustomFormControlLabel = styled(FormControlLabel)(({ theme }) => ({
     display: "flex",
-    justifyContent: "space-between",
     alignItems: "center",
-    marginInline: "20px",
-    fontSize: "16px",
-    fontFamily: "sans-serif",
-    color: "rgb(127, 125, 133)",
-    paddingBlock: "5px",
-    flexDirection: "row-reverse",
+    marginInline: "0px",
+    fontSize: "14px",
+    fontFamily: "inherit",
+    fontWeight: 500,
+    color: "#111111",
+    paddingBlock: "3px",
+    flexDirection: "row",
+    width: "100%",
   }));
 
   const showClearAllButton = () => {
