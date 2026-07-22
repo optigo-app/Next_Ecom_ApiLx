@@ -12,16 +12,16 @@
     font-weight: 500 !important;
   }
 
-  // Generic texts and spans
-  .MuiTypography-root,
-  .MuiTypography-body2,
-  span,
-  a {
+  // Generic texts and spans (excluding buttons)
+  .MuiTypography-root:not(.MuiButton-root),
+  .MuiTypography-body2:not(.MuiButton-root),
+  span:not(.MuiButton-root *),
+  a:not(.MuiButton-root) {
     color: $footerLinkColor !important;
   }
 
   // Hover states on link elements
-  a {
+  a:not(.MuiButton-root) {
     transition: color 0.2s ease;
     &:hover {
       color: $footerLinkHoverColor !important;
@@ -59,12 +59,22 @@
 
   // Sign Up Button styling
   .MuiButton-root {
-    background-color: $footerLinkHoverColor !important;
-    color: $footerBg !important;
+    background-color: #000000 !important;
+    color: #ffffff !important;
     border-radius: 0 !important;
     font-weight: 600 !important;
+    white-space: nowrap !important;
+    min-width: max-content !important;
+    
+    &, span, * {
+      color: #ffffff !important;
+    }
+
     &:hover {
-      background-color: rgba(255, 255, 255, 0.9) !important;
+      background-color: #222222 !important;
+      &, span, * {
+        color: #ffffff !important;
+      }
     }
   }
 
@@ -82,4 +92,4 @@
   .MuiDivider-root {
     border-color: $footerBorderColor !important;
   }
-}
+}

@@ -81,6 +81,7 @@ export function getLogos() {
     return {
       web: config.web,
       mobile: config.mobile,
+      transparent_mobile: config.transparent_mobile,
     };
   }
 

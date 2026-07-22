@@ -9,6 +9,12 @@ import {
   MenuItem,
   Skeleton,
   Checkbox,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableRow,
+  TableContainer,
 } from "@mui/material";
 
 import { LableField, MenuItemSx, SelectSx } from "../New/CustomField";
@@ -18,6 +24,7 @@ import FavoriteIcon from "@mui/icons-material/Favorite";
 import { motion } from "framer-motion";
 import { getSession } from "@/app/(core)/utils/FetchSessionData";
 import CustomizerDrawer from "../Customiziation";
+import ProductDetailsSection from "./ProductDetailsSection";
 
 const MotionButton = motion(Button);
 const MotionCheckbox = motion(Checkbox);
@@ -120,6 +127,74 @@ const RightSide = ({
         : singleProd?.IsInWish === 1;
 
   const CurrencyCode = loginData?.loginData ?? storeInit?.CurrencyCode;
+
+  const priceBreakupItems = [
+    {
+      label: "Metal",
+      cost: getCost(
+        activeArticle
+          ? activeArticle?.TotalMetalCost
+          : singleProd1?.Metal_Cost ?? singleProd?.Metal_Cost,
+      ),
+    },
+    {
+      label: "Diamond",
+      cost: getCost(
+        activeArticle
+          ? activeArticle?.TotalDiamondCost
+          : singleProd1?.Diamond_Cost ?? singleProd?.Diamond_Cost,
+      ),
+    },
+    {
+      label: "Stone",
+      cost: getCost(
+        activeArticle
+          ? activeArticle?.TotalColorStoneCost
+          : singleProd1?.ColorStone_Cost ?? singleProd?.ColorStone_Cost,
+      ),
+    },
+    {
+      label: "MISC",
+      cost: getCost(
+        activeArticle
+          ? activeArticle?.TotalMiscCost
+          : singleProd1?.Misc_Cost ?? singleProd?.Misc_Cost,
+      ),
+    },
+    {
+      label: "Labour",
+      cost: getCost(
+        activeArticle
+          ? activeArticle?.TotalMakingCost
+          : singleProd1?.Labour_Cost ?? singleProd?.Labour_Cost,
+      ),
+    },
+    {
+      label: "Other",
+      cost: activeArticle
+        ? getCost(activeArticle?.TotalOtherCost) +
+          getCost(activeArticle?.TotalSettingCost) +
+          getCost(activeArticle?.TotalDiamondhandlingCost) +
+          getCost(activeArticle?.TotalCSSettingCost) +
+          getCost(activeArticle?.TotalDiaSettingCost)
+        : getCost(singleProd1?.Other_Cost ?? singleProd?.Other_Cost) +
+          getCost(singleProd1?.Size_MarkUp ?? singleProd?.Size_MarkUp) +
+          getCost(
+            singleProd1?.DesignMarkUpAmount ?? singleProd?.DesignMarkUpAmount,
+          ) +
+          getCost(
+            singleProd1?.ColorStone_SettingCost ??
+              singleProd?.ColorStone_SettingCost,
+          ) +
+          getCost(
+            singleProd1?.Diamond_SettingCost ??
+              singleProd?.Diamond_SettingCost,
+          ) +
+          getCost(
+            singleProd1?.Misc_SettingCost ?? singleProd?.Misc_SettingCost,
+          ),
+    },
+  ].filter((item) => isLoading || item.cost !== 0);
 
   return (
     <>
@@ -1079,7 +1154,7 @@ const RightSide = ({
                   </Button>
                   <Button
                     disableRipple
-                    onClick={() => setActiveTab("shipping")}
+                    onClick={() => setActiveTab("pricebreakup")}
                     sx={{
                       py: 1.2,
                       px: 1,
@@ -1089,15 +1164,22 @@ const RightSide = ({
                       letterSpacing: "0.5px",
                       textTransform: "uppercase",
                       backgroundColor:
-                        activeTab === "shipping" ? "#000000" : "transparent",
-                      color: activeTab === "shipping" ? "#ffffff" : "#000000",
+                        activeTab === "pricebreakup" || activeTab === "shipping"
+                          ? "#000000"
+                          : "transparent",
+                      color:
+                        activeTab === "pricebreakup" || activeTab === "shipping"
+                          ? "#ffffff"
+                          : "#000000",
                       "&:hover": {
                         backgroundColor:
-                          activeTab === "shipping" ? "#000000" : "#e0e0e0",
+                          activeTab === "pricebreakup" || activeTab === "shipping"
+                            ? "#000000"
+                            : "#e0e0e0",
                       },
                     }}
                   >
-                    SHIPPING DETAILS
+                    PRICE BREAKUP
                   </Button>
                 </Box>
 
@@ -1430,452 +1512,128 @@ const RightSide = ({
                     </Box>
                   )}
 
-                  {activeTab === "shipping" && (
+                  {(activeTab === "shipping" || activeTab === "pricebreakup") && (
                     <Box>
-                      <Typography
-                        variant="body2"
-                        sx={{
-                          color: "#555555",
-                          fontSize: "13px",
-                          lineHeight: 1.6,
-                        }}
-                      >
-                        • Free insured standard shipping on all orders.
-                        <br />
-                        • Orders are dispatched within 2-3 business days.
-                        <br />• 7-day hassle-free return and exchange policy.
-                      </Typography>
+                      {storeInit?.IsPriceShow == 1 &&
+                        storeInit?.IsPriceBreakUp == 1 &&
+                        (activeArticle
+                          ? activeArticle?.IsMrpBase != 1
+                          : (singleProd ?? singleProd1)?.IsMrpBase != 1) &&
+                        priceBreakupItems.length > 0 && (
+                          <TableContainer
+                            sx={{
+                              border: "1px solid #E5E5E5",
+                              borderRadius: 0,
+                              overflow: "hidden",
+                              bgcolor: "#FFFFFF",
+                            }}
+                          >
+                            <Table size="small">
+                              <TableHead>
+                                <TableRow sx={{ bgcolor: "#FAFAFA" }}>
+                                  <TableCell
+                                    sx={{
+                                      fontWeight: 700,
+                                      color: "#666666",
+                                      fontSize: "11px",
+                                      py: 1,
+                                      px: 2,
+                                      textTransform: "uppercase",
+                                      letterSpacing: "0.5px",
+                                    }}
+                                  >
+                                    Component
+                                  </TableCell>
+                                  <TableCell
+                                    align="right"
+                                    sx={{
+                                      fontWeight: 700,
+                                      color: "#666666",
+                                      fontSize: "11px",
+                                      py: 1,
+                                      px: 2,
+                                      textTransform: "uppercase",
+                                      letterSpacing: "0.5px",
+                                    }}
+                                  >
+                                    Amount
+                                  </TableCell>
+                                </TableRow>
+                              </TableHead>
+                              <TableBody>
+                                {priceBreakupItems.map((item, index) => (
+                                  <TableRow
+                                    key={index}
+                                    sx={{
+                                      "&:hover": { bgcolor: "#FAF9F6" },
+                                      "&:last-child td": { borderBottom: 0 },
+                                    }}
+                                  >
+                                    <TableCell
+                                      sx={{
+                                        color: "#333333",
+                                        fontSize: "12px",
+                                        fontWeight: 600,
+                                        py: 1.2,
+                                        px: 2,
+                                      }}
+                                    >
+                                      {item.label}
+                                    </TableCell>
+                                    <TableCell
+                                      align="right"
+                                      sx={{
+                                        color: "#111111",
+                                        fontSize: "12px",
+                                        fontWeight: 600,
+                                        py: 1.2,
+                                        px: 2,
+                                      }}
+                                    >
+                                      {isLoading ? (
+                                        <Skeleton
+                                          variant="rounded"
+                                          width={80}
+                                          height={18}
+                                          sx={{ ml: "auto" }}
+                                        />
+                                      ) : (
+                                        <>
+                                          <span className="elv_currencyFont">
+                                            {loginData?.CurrencyCode ??
+                                              storeInit?.CurrencyCode}
+                                          </span>{" "}
+                                          {formatter(item.cost.toFixed(2))}
+                                        </>
+                                      )}
+                                    </TableCell>
+                                  </TableRow>
+                                ))}
+                              </TableBody>
+                            </Table>
+                          </TableContainer>
+                        )}
                     </Box>
                   )}
                 </Box>
+              </Box>
+
+              <Box
+                sx={{
+                  mt: 4,
+                }}
+              >
+                <ProductDetailsSection
+                  diaList={diaList}
+                  csList={csList}
+                  rd1={rd1}
+                  rd2={rd2}
+                  defaultArticleId={defaultArticleId}
+                  customizationDetail={customizationDetail}
+                />
               </Box>
             </Box>
           )}
-          {storeInit?.IsPriceShow == 1 &&
-            storeInit?.IsPriceBreakUp == 1 &&
-            (singleProd ?? singleProd1)?.IsMrpBase != 1 &&
-            (isLoading ||
-              getCost(singleProd1?.Metal_Cost ?? singleProd?.Metal_Cost) !==
-                0 ||
-              getCost(singleProd1?.Diamond_Cost ?? singleProd?.Diamond_Cost) !==
-                0 ||
-              getCost(
-                singleProd1?.ColorStone_Cost ?? singleProd?.ColorStone_Cost,
-              ) !== 0 ||
-              getCost(singleProd1?.Misc_Cost ?? singleProd?.Misc_Cost) !== 0 ||
-              getCost(singleProd1?.Labour_Cost ?? singleProd?.Labour_Cost) !==
-                0) && (
-              <Box>
-                <Divider sx={{ mb: 2, mt: 2 }} />
-
-                <Typography sx={{ fontSize: "14px", color: "#666", mb: 1 }}>
-                  Price Breakup :
-                </Typography>
-                <Box
-                  sx={{
-                    border: "1px solid #e0e0e0",
-                    borderRadius: 3,
-                    overflow: "hidden",
-                    bgcolor: "#fff",
-                    mb: 2,
-                  }}
-                >
-                  {/* Metal */}
-                  {(isLoading ||
-                    getCost(
-                      singleProd1?.Metal_Cost ?? singleProd?.Metal_Cost,
-                    ) !== 0) && (
-                    <Box
-                      sx={{
-                        display: "flex",
-                        borderBottom: "1px solid #e0e0e0",
-                      }}
-                    >
-                      <Box
-                        sx={{
-                          width: "120px",
-                          bgcolor: "#f5f5f5",
-                          p: 2,
-                          borderRight: "1px solid #e0e0e0",
-                        }}
-                      >
-                        <Typography
-                          variant="body2"
-                          sx={{
-                            color: "#616161",
-                            fontSize: "13px",
-                            fontWeight: 600,
-                          }}
-                        >
-                          Metal
-                        </Typography>
-                      </Box>
-                      <Box sx={{ flex: 1, p: 2 }}>
-                        <Typography
-                          variant="body2"
-                          sx={{ color: "#424242", fontSize: "13px" }}
-                        >
-                          {isLoading ? (
-                            <Skeleton
-                              variant="rounded"
-                              width={80}
-                              height={18}
-                            />
-                          ) : (
-                            <>
-                              <span className="elv_currencyFont">
-                                {loginData?.CurrencyCode ??
-                                  storeInit?.CurrencyCode}
-                              </span>{" "}
-                              {formatter(
-                                getCost(
-                                  singleProd1?.Metal_Cost ??
-                                    singleProd?.Metal_Cost,
-                                ).toFixed(2),
-                              )}
-                            </>
-                          )}
-                        </Typography>
-                      </Box>
-                    </Box>
-                  )}
-
-                  {/* Diamond */}
-                  {(isLoading ||
-                    getCost(
-                      singleProd1?.Diamond_Cost ?? singleProd?.Diamond_Cost,
-                    ) !== 0) && (
-                    <Box
-                      sx={{
-                        display: "flex",
-                        borderBottom: "1px solid #e0e0e0",
-                      }}
-                    >
-                      <Box
-                        sx={{
-                          width: "120px",
-                          bgcolor: "#f5f5f5",
-                          p: 2,
-                          borderRight: "1px solid #e0e0e0",
-                        }}
-                      >
-                        <Typography
-                          variant="body2"
-                          sx={{
-                            color: "#616161",
-                            fontSize: "13px",
-                            fontWeight: 600,
-                          }}
-                        >
-                          Diamond
-                        </Typography>
-                      </Box>
-                      <Box sx={{ flex: 1, p: 2 }}>
-                        <Typography
-                          variant="body2"
-                          sx={{ color: "#424242", fontSize: "13px" }}
-                        >
-                          {isLoading ? (
-                            <Skeleton
-                              variant="rounded"
-                              width={80}
-                              height={18}
-                            />
-                          ) : (
-                            <>
-                              <span className="elv_currencyFont">
-                                {loginData?.CurrencyCode ??
-                                  storeInit?.CurrencyCode}
-                              </span>{" "}
-                              {formatter(
-                                getCost(
-                                  singleProd1?.Diamond_Cost ??
-                                    singleProd?.Diamond_Cost,
-                                ).toFixed(2),
-                              )}
-                            </>
-                          )}
-                        </Typography>
-                      </Box>
-                    </Box>
-                  )}
-
-                  {/* Stone */}
-                  {(isLoading ||
-                    getCost(
-                      singleProd1?.ColorStone_Cost ??
-                        singleProd?.ColorStone_Cost,
-                    ) !== 0) && (
-                    <Box
-                      sx={{
-                        display: "flex",
-                        borderBottom: "1px solid #e0e0e0",
-                      }}
-                    >
-                      <Box
-                        sx={{
-                          width: "120px",
-                          bgcolor: "#f5f5f5",
-                          p: 2,
-                          borderRight: "1px solid #e0e0e0",
-                        }}
-                      >
-                        <Typography
-                          variant="body2"
-                          sx={{
-                            color: "#616161",
-                            fontSize: "13px",
-                            fontWeight: 600,
-                          }}
-                        >
-                          Stone
-                        </Typography>
-                      </Box>
-                      <Box sx={{ flex: 1, p: 2 }}>
-                        <Typography
-                          variant="body2"
-                          sx={{ color: "#424242", fontSize: "13px" }}
-                        >
-                          {isLoading ? (
-                            <Skeleton
-                              variant="rounded"
-                              width={80}
-                              height={18}
-                            />
-                          ) : (
-                            <>
-                              <span className="elv_currencyFont">
-                                {loginData?.CurrencyCode ??
-                                  storeInit?.CurrencyCode}
-                              </span>{" "}
-                              {formatter(
-                                getCost(
-                                  singleProd1?.ColorStone_Cost ??
-                                    singleProd?.ColorStone_Cost,
-                                ).toFixed(2),
-                              )}
-                            </>
-                          )}
-                        </Typography>
-                      </Box>
-                    </Box>
-                  )}
-
-                  {/* MISC */}
-                  {(isLoading ||
-                    getCost(singleProd1?.Misc_Cost ?? singleProd?.Misc_Cost) !==
-                      0) && (
-                    <Box
-                      sx={{
-                        display: "flex",
-                      }}
-                    >
-                      <Box
-                        sx={{
-                          width: "120px",
-                          bgcolor: "#f5f5f5",
-                          p: 2,
-                          borderRight: "1px solid #e0e0e0",
-                        }}
-                      >
-                        <Typography
-                          variant="body2"
-                          sx={{
-                            color: "#616161",
-                            fontSize: "13px",
-                            fontWeight: 600,
-                          }}
-                        >
-                          MISC
-                        </Typography>
-                      </Box>
-                      <Box sx={{ flex: 1, p: 2 }}>
-                        <Typography
-                          variant="body2"
-                          sx={{ color: "#424242", fontSize: "13px" }}
-                        >
-                          {isLoading ? (
-                            <Skeleton
-                              variant="rounded"
-                              width={80}
-                              height={18}
-                            />
-                          ) : (
-                            <>
-                              <span className="elv_currencyFont">
-                                {loginData?.CurrencyCode ??
-                                  storeInit?.CurrencyCode}
-                              </span>{" "}
-                              {formatter(
-                                getCost(
-                                  singleProd1?.Misc_Cost ??
-                                    singleProd?.Misc_Cost,
-                                ).toFixed(2),
-                              )}
-                            </>
-                          )}
-                        </Typography>
-                      </Box>
-                    </Box>
-                  )}
-
-                  {/* Labour */}
-                  {(isLoading ||
-                    getCost(
-                      singleProd1?.Labour_Cost ?? singleProd?.Labour_Cost,
-                    ) !== 0) && (
-                    <Box
-                      sx={{
-                        display: "flex",
-                        borderBottom: "1px solid #e0e0e0",
-                      }}
-                    >
-                      <Box
-                        sx={{
-                          width: "120px",
-                          bgcolor: "#f5f5f5",
-                          p: 2,
-                          borderRight: "1px solid #e0e0e0",
-                        }}
-                      >
-                        <Typography
-                          variant="body2"
-                          sx={{
-                            fontSize: "13px",
-                            color: "#616161",
-                            fontWeight: 600,
-                          }}
-                        >
-                          Labour
-                        </Typography>
-                      </Box>
-                      <Box sx={{ flex: 1, p: 2 }}>
-                        <Typography
-                          variant="body2"
-                          sx={{ color: "#424242", fontSize: "13px" }}
-                        >
-                          {isLoading ? (
-                            <Skeleton
-                              variant="rounded"
-                              width={80}
-                              height={18}
-                            />
-                          ) : (
-                            <>
-                              <span>
-                                {loginData?.CurrencyCode ??
-                                  storeInit?.CurrencyCode}
-                              </span>{" "}
-                              {formatter(
-                                getCost(
-                                  singleProd1?.Labour_Cost ??
-                                    singleProd?.Labour_Cost,
-                                ).toFixed(2),
-                              )}
-                            </>
-                          )}
-                        </Typography>
-                      </Box>
-                    </Box>
-                  )}
-
-                  {/* Other */}
-                  {(isLoading ||
-                    getCost(singleProd1?.Other_Cost ?? singleProd?.Other_Cost) +
-                      getCost(
-                        singleProd1?.Size_MarkUp ?? singleProd?.Size_MarkUp,
-                      ) +
-                      getCost(
-                        singleProd1?.DesignMarkUpAmount ??
-                          singleProd?.DesignMarkUpAmount,
-                      ) +
-                      getCost(
-                        singleProd1?.ColorStone_SettingCost ??
-                          singleProd?.ColorStone_SettingCost,
-                      ) +
-                      getCost(
-                        singleProd1?.Diamond_SettingCost ??
-                          singleProd?.Diamond_SettingCost,
-                      ) +
-                      getCost(
-                        singleProd1?.Misc_SettingCost ??
-                          singleProd?.Misc_SettingCost,
-                      ) !==
-                      0) && (
-                    <Box sx={{ display: "flex" }}>
-                      <Box
-                        sx={{
-                          width: "120px",
-                          bgcolor: "#f5f5f5",
-                          p: 2,
-                          borderRight: "1px solid #e0e0e0",
-                        }}
-                      >
-                        <Typography
-                          variant="body2"
-                          sx={{
-                            fontSize: "13px",
-                            color: "#616161",
-                            fontWeight: 600,
-                          }}
-                        >
-                          Other
-                        </Typography>
-                      </Box>
-                      <Box sx={{ flex: 1, p: 2 }}>
-                        <Typography
-                          variant="body2"
-                          sx={{ color: "#424242", fontSize: "13px" }}
-                        >
-                          {isLoading ? (
-                            <Skeleton
-                              variant="rounded"
-                              width={80}
-                              height={18}
-                            />
-                          ) : (
-                            <>
-                              <span className="elv_currencyFont">
-                                {loginData?.CurrencyCode ??
-                                  storeInit?.CurrencyCode}
-                              </span>{" "}
-                              {formatter(
-                                (
-                                  getCost(
-                                    singleProd1?.Other_Cost ??
-                                      singleProd?.Other_Cost,
-                                  ) +
-                                  getCost(
-                                    singleProd1?.Size_MarkUp ??
-                                      singleProd?.Size_MarkUp,
-                                  ) +
-                                  getCost(
-                                    singleProd1?.DesignMarkUpAmount ??
-                                      singleProd?.DesignMarkUpAmount,
-                                  ) +
-                                  getCost(
-                                    singleProd1?.ColorStone_SettingCost ??
-                                      singleProd?.ColorStone_SettingCost,
-                                  ) +
-                                  getCost(
-                                    singleProd1?.Diamond_SettingCost ??
-                                      singleProd?.Diamond_SettingCost,
-                                  ) +
-                                  getCost(
-                                    singleProd1?.Misc_SettingCost ??
-                                      singleProd?.Misc_SettingCost,
-                                  )
-                                ).toFixed(2),
-                              )}
-                            </>
-                          )}
-                        </Typography>
-                      </Box>
-                    </Box>
-                  )}
-                </Box>
-              </Box>
-            )}
         </Box>
       </Grid>
     </>

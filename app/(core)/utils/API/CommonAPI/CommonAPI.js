@@ -13,6 +13,15 @@ let SV_version = null;
 let storeInitCache = null;
 let initPromise = null;
 
+const applyStoreInitData = (data) => {
+  storeInitCache = data;
+  APIURL = data?.ApiUrl || {};
+  SV_DY = data?.sv;
+  SV_YearCode = data?.YearCode;
+  SV_Token = data?.token;
+  SV_version = data?.version;
+};
+
 export const getClientIpAddress = async () => {
   try {
     if (typeof window !== "undefined") {
@@ -39,6 +48,12 @@ const setApiUrl = async () => {
 
   apiUrlPromise = (async () => {
     try {
+      const existingStoreInit = getStoreInitData();
+      if (existingStoreInit && Object.keys(existingStoreInit).length > 0) {
+        applyStoreInitData(existingStoreInit);
+        return APIURL;
+      }
+
       let fetchUrl = `/api/store-init`;
       if (typeof window === "undefined") {
         const domainInfo = await getDomainInfo();
@@ -53,11 +68,7 @@ const setApiUrl = async () => {
       const cleanHost = hostname.split(":")[0];
 
       if (parseddata) {
-        APIURL = parseddata?.ApiUrl || {};
-        SV_DY = parseddata?.sv;
-        SV_YearCode = parseddata?.YearCode;
-        SV_Token = parseddata?.token;
-        SV_version = parseddata?.version;
+        applyStoreInitData(parseddata);
         return;
       }
 
@@ -79,9 +90,6 @@ const setApiUrl = async () => {
 
   return apiUrlPromise;
 };
-
-// Initial call
-setApiUrl();
 
 export const getStoreInitData = () => {
   if (typeof window !== "undefined") {
