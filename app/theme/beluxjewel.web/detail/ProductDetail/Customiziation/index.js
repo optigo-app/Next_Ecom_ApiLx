@@ -140,7 +140,8 @@ const MetalCard = ({ combo, isSelected, onClick }) => {
           sx={{
             fontSize: "9.5px",
             fontWeight: 600,
-            color: combo.inStockLabel === "In Stock" ? "#2e7d32" : colors.textMuted,
+            color:
+              combo.inStockLabel === "In Stock" ? "#2e7d32" : colors.textMuted,
             lineHeight: 1.3,
             mt: 0.2,
           }}
@@ -188,7 +189,8 @@ const SizePill = ({ sizeObj, isSelected, onClick }) => (
       sx={{
         fontSize: "9.5px",
         fontWeight: 600,
-        color: sizeObj.inStockLabel === "In Stock" ? "#2e7d32" : colors.textMuted,
+        color:
+          sizeObj.inStockLabel === "In Stock" ? "#2e7d32" : colors.textMuted,
         lineHeight: 1.3,
         mt: 0.3,
       }}
@@ -269,7 +271,8 @@ const QualityCard = ({ combo, isSelected, onClick }) => {
         sx={{
           fontSize: "9.5px",
           fontWeight: 600,
-          color: combo.inStockLabel === "In Stock" ? "#2e7d32" : colors.textMuted,
+          color:
+            combo.inStockLabel === "In Stock" ? "#2e7d32" : colors.textMuted,
           mt: 0.4,
         }}
       >
@@ -322,7 +325,10 @@ export default function CustomizerDrawer({
             r.MetalColorId === combo.MetalColorId &&
             r.InStock === 1,
         );
-        return { ...combo, inStockLabel: hasStock ? "In Stock" : "Made to Order" };
+        return {
+          ...combo,
+          inStockLabel: hasStock ? "In Stock" : "Made to Order",
+        };
       });
   }, [rd1]);
 
@@ -373,7 +379,7 @@ export default function CustomizerDrawer({
     let targetOrigin = availableOrigins.length > 0 ? availableOrigins[0] : null;
 
     if (defaultArticleId) {
-      const defArt = rd1.find((r) => r.ArticleId === defaultArticleId);
+      const defArt = rd1.find((r) => r.ArticleId == defaultArticleId);
       if (defArt) {
         const found = metalCombos.find(
           (m) =>
@@ -384,7 +390,7 @@ export default function CustomizerDrawer({
         if (defArt.Size) targetSize = defArt.Size;
 
         const defStone = rd2.find(
-          (s) => s.ArticleId === defaultArticleId && s.StoneTypeid === 1,
+          (s) => s.ArticleId == defaultArticleId && s.StoneTypeid === 1,
         );
         if (
           defStone?.MaterialTypeName &&
@@ -438,7 +444,9 @@ export default function CustomizerDrawer({
     if (!selectedMetal) return;
     if (availableSizes.length > 0) {
       setSelectedSize((prev) =>
-        availableSizes.find((s) => s.size === prev) ? prev : availableSizes[0].size,
+        availableSizes.find((s) => s.size === prev)
+          ? prev
+          : availableSizes[0].size,
       );
     } else {
       setSelectedSize(null);
@@ -491,7 +499,8 @@ export default function CustomizerDrawer({
           )
           .map((s) => s.ArticleId);
         const hasStock = rd1.some(
-          (a) => articlesWithThisQuality.includes(a.ArticleId) && a.InStock === 1,
+          (a) =>
+            articlesWithThisQuality.includes(a.ArticleId) && a.InStock === 1,
         );
         return {
           ...r,
@@ -502,19 +511,16 @@ export default function CustomizerDrawer({
       });
   }, [rd2, rd1, matchingArticlesWithOrigin, selectedOrigin]);
 
-  // ── 8. Set default dia quality from defaultArticleId, else first combo ─────
   useEffect(() => {
     if (!stoneQualityCombos.length) {
       setSelectedDiaQc(null);
       return;
     }
-    // If we have a defaultArticleId, find its first qualifying stone entry
     if (defaultArticleId && rd2.length) {
       const defStone = rd2.find(
-        (r) => r.ArticleId === defaultArticleId && r.StoneTypeid === 1,
+        (r) => r.ArticleId == defaultArticleId && r.StoneTypeid === 1,
       );
       if (defStone) {
-        // Key must be uppercase to match stoneQualityCombos entries
         const key = `${defStone.Quality?.toUpperCase()}-${defStone.Color?.toUpperCase()}`;
         const exists = stoneQualityCombos.find(
           (c) => `${c.Quality}-${c.Color}` === key,

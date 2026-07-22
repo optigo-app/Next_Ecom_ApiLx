@@ -36,6 +36,7 @@ const PremiumFooter = ({
   storeData,
   companyInfoData: companyInfoDataProp,
 }) => {
+  console.log(logos, "logoslogos");
   const [email, setEmail] = useState("");
   const [companyInfoData, setCompanuInfoData] = useState(companyInfoDataProp);
   const [socialMediaData, setSocialMediaData] = useState([]);
@@ -227,8 +228,8 @@ const PremiumFooter = ({
                 <Box component={Link} href="/" onClick={MoveToTop}>
                   <Box
                     component="img"
-                    src={logos?.web}
-                    alt="elvee"
+                    src={logos?.transparent_mobile}
+                    alt="footer_logo"
                     sx={{
                       width: "auto",
                       cursor: "pointer",
@@ -477,8 +478,11 @@ const PremiumFooter = ({
               onSubmit={handleSubmitNewlater}
               sx={{
                 display: "flex",
+                alignItems: "stretch",
                 gap: 0,
                 position: "relative",
+                width: "100%",
+                maxWidth: { xs: "100%", sm: "400px", lg: "100%" },
               }}
             >
               <TextField
@@ -489,33 +493,31 @@ const PremiumFooter = ({
                 type="email"
                 required
                 sx={{
+                  flex: 1,
+                  minWidth: 0,
                   "& .MuiOutlinedInput-root": {
-                    fontSize: "0.9375rem",
+                    fontSize: "0.875rem",
                     borderRadius: "0",
-                    color: "#656565",
                     transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
                     "& fieldset": {
                       border: "none",
-                      borderBottom: "1px solid #000000",
+                      borderBottom: "1px solid rgba(255, 255, 255, 0.3)",
                       borderRadius: "0",
                     },
-                    "&:hover": {
-                      backgroundColor: alpha("#ffffff", 0.05),
-                      "& fieldset": {
-                        borderColor: "none",
-                      },
+                    "&:hover fieldset": {
+                      borderBottomColor: "#ffffff",
                     },
-                    "&.Mui-focused": {
-                      backgroundColor: alpha("#ffffff", 0.05),
-                      "& fieldset": {
-                        borderColor: "#000000",
-                        borderWidth: "1px",
-                      },
+                    "&.Mui-focused fieldset": {
+                      borderBottomColor: "#ffffff",
+                      borderWidth: "1px",
                     },
                   },
                   "& .MuiOutlinedInput-input": {
-                    py: 1.5,
+                    py: 1.2,
+                    px: 1.5,
+                    color: "#ffffff",
                     "&::placeholder": {
+                      color: "rgba(255, 255, 255, 0.6)",
                       opacity: 1,
                     },
                   },
@@ -525,16 +527,21 @@ const PremiumFooter = ({
                 type="submit"
                 variant="contained"
                 sx={{
-                  backgroundColor: "#000000",
+                  backgroundColor: "#000000 !important",
+                  color: "#ffffff !important",
                   borderRadius: "0 !important",
-                  textTransform: "none",
+                  textTransform: "uppercase",
                   fontWeight: 600,
-                  fontSize: "0.9375rem",
+                  fontSize: "0.8125rem",
+                  letterSpacing: "0.05em",
+                  px: 2.5,
+                  whiteSpace: "nowrap !important",
+                  minWidth: "max-content !important",
+                  boxShadow: "none",
                   transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
                   "&:hover": {
-                    backgroundColor: "black",
+                    backgroundColor: "#222222 !important",
                   },
-                  width: "120px",
                 }}
               >
                 SIGN UP

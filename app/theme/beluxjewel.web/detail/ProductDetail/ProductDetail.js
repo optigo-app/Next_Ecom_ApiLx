@@ -252,7 +252,7 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
   useEffect(() => {
     setIsClamped(false);
     setIsExpanded(false);
-  }, [location?.key]);
+  }, [location, searchParams]);
 
   const mTypeLocal = getSession("metalTypeCombo");
   const diaQcLocal = getSession("diamondQualityColorCombo");
@@ -862,7 +862,12 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
       setSingleProd({});
 
       try {
-        const res = await SingleArticleProdListAPI(decodeobj, sizeData, obj, cookie);
+        const res = await SingleArticleProdListAPI(
+          decodeobj,
+          sizeData,
+          obj,
+          cookie,
+        );
         if (res && res?.pdList) {
           const prod = res?.pdList[0];
           setSingleProd(prod);
@@ -881,10 +886,28 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
           setDiaList(res?.pdResp?.rd3);
           setCsList(res?.pdResp?.rd4);
 
+          let mappedRd1 = [];
           if (res?.pdResp?.rd1?.length) {
-            setRd1Data(res?.pdResp?.rd1);
+            mappedRd1 = res.pdResp.rd1.map(r => {
+              const metalId = r.metaltypeid || r.MetalTypeId || r.Metalid;
+              const metalColorId = r.metalcolorid || r.MetalColorId;
+              const metalType = r.metal || r.metaltypename || r.MetalType || r.metalpurityname;
+              const metalColor = r.metalcolorname || r.MetalColor;
+              const netWeight = r.Nwt || r.NetWeight;
+              return {
+                ...r,
+                ArticleId: r.ArticleId || r.id,
+                MetalTypeId: metalId,
+                Metalid: metalId,
+                MetalColorId: metalColorId,
+                MetalType: metalType,
+                MetalColor: metalColor,
+                NetWeight: netWeight,
+              };
+            });
+            setRd1Data(mappedRd1);
             const initMap = {};
-            res.pdResp.rd1.forEach((r) => {
+            mappedRd1.forEach((r) => {
               initMap[r.ArticleId] = {
                 IsInCart: r.IsInCart ?? 0,
                 IsInWish: r.IsInWish ?? 0,
@@ -893,44 +916,51 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
             });
             setRd1CartMap(initMap);
           }
-          if (res?.pdResp?.rd2?.length) setRd2Data(res?.pdResp?.rd2);
+          if (res?.pdResp?.rd2?.length) {
+            const mappedRd2 = res.pdResp.rd2.map(r => ({
+              ...r,
+              ArticleId: r.ArticleId || r.id,
+            }));
+            setRd2Data(mappedRd2);
+          }
 
           const initialArticleId = decodeobj?.ArticleId
             ? parseInt(decodeobj?.ArticleId, 10)
             : null;
           const initialArticle =
             (initialArticleId != null &&
-              res?.pdResp?.rd1?.find(
-                (r) => r.ArticleId === initialArticleId || r.ArticleId == decodeobj?.ArticleId,
+              mappedRd1.find(
+                (r) =>
+                  r.ArticleId === initialArticleId ||
+                  r.ArticleId == decodeobj?.ArticleId,
               )) ||
             (decodeobj?.ArticleNo &&
-              res?.pdResp?.rd1?.find(
+              mappedRd1.find(
                 (r) =>
                   r.ArticleNo === decodeobj.ArticleNo ||
-                  r.ArticleNo?.toLowerCase() === String(decodeobj.ArticleNo).toLowerCase(),
+                  r.ArticleNo?.toLowerCase() ===
+                    String(decodeobj.ArticleNo).toLowerCase(),
               )) ||
             (decodeobj?.a &&
-              res?.pdResp?.rd1?.find(
+              mappedRd1.find(
                 (r) => r.autocode === decodeobj.a || r.autocode == decodeobj.a,
               )) ||
-            res?.pdResp?.rd1?.[0];
+            mappedRd1[0];
           if (initialArticle) {
+            setDefaultArticleId(initialArticle.ArticleId);
             const diaStone = res?.pdResp?.rd2?.find(
               (r) =>
-                r.ArticleId === initialArticle.ArticleId &&
-                r.StoneTypeid === 1,
+                r.ArticleId === initialArticle.ArticleId && r.StoneTypeid === 1,
             );
             const csStone = res?.pdResp?.rd2?.find(
               (r) =>
-                r.ArticleId === initialArticle.ArticleId &&
-                r.StoneTypeid === 2,
+                r.ArticleId === initialArticle.ArticleId && r.StoneTypeid === 2,
             );
             setCustomizationDetail({
               ...initialArticle,
               ArticleId: initialArticle.ArticleId,
               ArticleNo: initialArticle.ArticleNo,
-              autocode:
-                initialArticle.autocode || prod?.autocode || "",
+              autocode: initialArticle.autocode || prod?.autocode || "",
               Metalid: initialArticle.MetalTypeId,
               MetalColorId: initialArticle.MetalColorId,
               MetalType: initialArticle.MetalType,
@@ -955,14 +985,28 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
             getSizeData(prod, cookie)
               .then((sizeRes) => {
                 setSizeCombo(sizeRes?.Data);
+                const passedSize =
+                  decodeobj?.Size ||
+                  decodeobj?.g?.[0]?.[1] ||
+                  initialArticle?.Size;
+
+                const matchedSize = sizeRes?.Data?.rd?.find(
+                  (size) =>
+                    String(size.sizename).toLowerCase() ===
+                    String(passedSize).toLowerCase(),
+                )?.sizename;
+
                 let initialsize =
-                  prod && prod.DefaultSize !== ""
+                  matchedSize ||
+                  (prod && prod.DefaultSize !== ""
                     ? prod.DefaultSize
-                    : sizeRes?.Data?.rd?.find((size) => size.IsDefaultSize === 1)
-                        ?.sizename === undefined
+                    : sizeRes?.Data?.rd?.find(
+                          (size) => size.IsDefaultSize === 1,
+                        )?.sizename === undefined
                       ? sizeRes?.Data?.rd?.[0]?.sizename
-                      : sizeRes?.Data?.rd?.find((size) => size.IsDefaultSize === 1)
-                          ?.sizename;
+                      : sizeRes?.Data?.rd?.find(
+                          (size) => size.IsDefaultSize === 1,
+                        )?.sizename);
                 setSizeData(initialsize);
               })
               .catch((err) => console.log("SizeErr", err));
@@ -975,25 +1019,31 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
             }
 
             // 3. Similar Products
-            if (storeinitInside?.IsProductDetailSimilarDesign === 1 && prod?.autocode) {
+            if (
+              storeinitInside?.IsProductDetailSimilarDesign === 1 &&
+              prod?.autocode
+            ) {
               StockItemApi(prod.autocode, "similarbrand", obj, cookie)
                 .then((res) => setSimilarBrandArr(res?.Data?.rd))
                 .catch((err) => console.log("similarbrandErr", err));
             }
 
             // 4. Design Set List
-            if (storeinitInside?.IsProductDetailDesignSet === 1 && prod?.designno) {
-              DesignSetListAPI(obj1, prod.designno, cookie)
-                .then((res) => setDesignSetList(res?.Data?.rd))
-                .catch((err) => console.log("designsetErr", err));
-            }
+            // if (
+            //   storeinitInside?.IsProductDetailDesignSet === 1 &&
+            //   prod?.designno
+            // ) {
+            //   DesignSetListAPI(obj1, prod.designno, cookie)
+            //     .then((res) => setDesignSetList(res?.Data?.rd))
+            //     .catch((err) => console.log("designsetErr", err));
+            // }
 
             // 5. Save Last View Design (Background)
-            if (prod?.autocode && prod?.designno) {
-              SaveLastViewDesign(cookie, prod.autocode, prod.designno)
-                .then((res) => setSaveLastView(res?.Data?.rd))
-                .catch((err) => console.log("saveLastView", err));
-            }
+            // if (prod?.autocode && prod?.designno) {
+            //   SaveLastViewDesign(cookie, prod.autocode, prod.designno)
+            //     .then((res) => setSaveLastView(res?.Data?.rd))
+            //     .catch((err) => console.log("saveLastView", err));
+            // }
           }
         }
       } catch (err) {
@@ -1009,7 +1059,7 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
       top: 0,
       behavior: "smooth",
     });
-  }, [location?.key]);
+  }, [location, searchParams]);
 
   const callAllApi = async () => {
     let mtTypeLocal = getSession("metalTypeCombo");
@@ -1024,7 +1074,10 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
         MetalTypeComboAPI(cookie)
           .then((res) => {
             if (res?.Data?.rd) {
-              sessionStorage.setItem("metalTypeCombo", JSON.stringify(res.Data.rd));
+              sessionStorage.setItem(
+                "metalTypeCombo",
+                JSON.stringify(res.Data.rd),
+              );
               setMetalTypeCombo(res.Data.rd);
             }
           })
@@ -1039,7 +1092,10 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
         DiamondQualityColorComboAPI()
           .then((res) => {
             if (res?.Data?.rd) {
-              sessionStorage.setItem("diamondQualityColorCombo", JSON.stringify(res.Data.rd));
+              sessionStorage.setItem(
+                "diamondQualityColorCombo",
+                JSON.stringify(res.Data.rd),
+              );
               setDiaQcCombo(res.Data.rd);
             }
           })
@@ -1054,7 +1110,10 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
         ColorStoneQualityColorComboAPI()
           .then((res) => {
             if (res?.Data?.rd) {
-              sessionStorage.setItem("ColorStoneQualityColorCombo", JSON.stringify(res.Data.rd));
+              sessionStorage.setItem(
+                "ColorStoneQualityColorCombo",
+                JSON.stringify(res.Data.rd),
+              );
               setCsQcCombo(res.Data.rd);
             }
           })
@@ -1069,7 +1128,10 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
         MetalColorCombo(cookie)
           .then((res) => {
             if (res?.Data?.rd) {
-              sessionStorage.setItem("MetalColorCombo", JSON.stringify(res.Data.rd));
+              sessionStorage.setItem(
+                "MetalColorCombo",
+                JSON.stringify(res.Data.rd),
+              );
               setMetalColorCombo(res.Data.rd);
             }
           })
@@ -1267,7 +1329,7 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
   useEffect(() => {
     setPdLoadImage(true);
     ProdCardImageFunc();
-  }, [singleProd, location?.key]);
+  }, [singleProd, location, searchParams]);
 
   const handleMetalWiseColorImg = async (e) => {
     const selectedColorCode = e.target.value;
@@ -1600,8 +1662,33 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
     setnetWTData(res?.pdList[0]);
     setDiaList(res?.pdResp?.rd3);
     setCsList(res?.pdResp?.rd4);
-    if (res?.pdResp?.rd1?.length) setRd1Data(res?.pdResp?.rd1);
-    if (res?.pdResp?.rd2?.length) setRd2Data(res?.pdResp?.rd2);
+    if (res?.pdResp?.rd1?.length) {
+      const mappedRd1 = res.pdResp.rd1.map(r => {
+        const metalId = r.metaltypeid || r.MetalTypeId || r.Metalid;
+        const metalColorId = r.metalcolorid || r.MetalColorId;
+        const metalType = r.metal || r.metaltypename || r.MetalType || r.metalpurityname;
+        const metalColor = r.metalcolorname || r.MetalColor;
+        const netWeight = r.Nwt || r.NetWeight;
+        return {
+          ...r,
+          ArticleId: r.ArticleId || r.id,
+          MetalTypeId: metalId,
+          Metalid: metalId,
+          MetalColorId: metalColorId,
+          MetalType: metalType,
+          MetalColor: metalColor,
+          NetWeight: netWeight,
+        };
+      });
+      setRd1Data(mappedRd1);
+    }
+    if (res?.pdResp?.rd2?.length) {
+      const mappedRd2 = res.pdResp.rd2.map(r => ({
+        ...r,
+        ArticleId: r.ArticleId || r.id,
+      }));
+      setRd2Data(mappedRd2);
+    }
   };
 
   const SizeSorting = (SizeArr) => {
@@ -1968,7 +2055,6 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
                 onCustomizerConfirm={handleCustomizerConfirm}
               />
             </Grid>
-            <ProductDetailsSection diaList={diaList} csList={csList} />
             <ExtraProductSections
               imgSrc={getImagesArr?.[0] || getImagesArr?.[1]}
             />

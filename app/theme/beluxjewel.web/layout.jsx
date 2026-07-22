@@ -8,7 +8,6 @@ import { getLogos } from "@/app/(core)/lib/ServerHelper";
 import FooterNew from "@/app/components/(static)/Footer/FooterNew";
 import { Box } from "@mui/material";
 import ChatMenu from "@/app/components/(static)/ChatMenu/ChatMenu";
-import ElveePreNavbar from "@/app/components/(dynamic)/Header/Elvee/New/Navbar";
 import AnnouncementBar from "./home/blocks/AnnouncementBar";
 import BeluxNavbar from "@/app/components/(dynamic)/Header/Elvee/New/BeluxNavbar";
 

@@ -1,320 +1,321 @@
-
-import React from "react";
+import React, { useState } from "react";
 import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableRow,
-    Box,
-    Typography,
-    Paper,
-    Divider,
-    Chip,
-    TableContainer
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableRow,
+  Box,
+  Typography,
+  Chip,
+  TableContainer,
+  Collapse,
 } from "@mui/material";
-
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 
 const ProductDetailsSection = ({
-    diaList,
-    csList
+  diaList = [],
+  csList = [],
+  rd1 = [],
+  rd2 = [],
+  defaultArticleId,
+  customizationDetail,
 }) => {
-    const hasMisc = csList?.filter((ele) => ele?.D === "MISC")?.length > 0;
-    const hasColorStone = csList?.filter((ele) => ele?.D !== "MISC")?.length > 0;
+  const targetArticleId =
+    customizationDetail?.ArticleId || defaultArticleId || rd1?.[0]?.ArticleId;
 
-    return (
-        <Box sx={{
-            mt: 8, width: {
-                lg: '60%',
-                md: "70%",
-                sm: '100%',
-                xs: '100%'
-            }, mx: 'auto'
-        }}>
-            {(diaList?.length > 0 || hasMisc || hasColorStone) && (
-                <Box sx={{ mb: 3, textAlign: 'center', width: '100%' }}>
-                    <Typography
-                        variant="h5"
-                        sx={{
-                            fontWeight: 600,
-                            color: "#1a1a1a",
-                            letterSpacing: "-0.5px",
-                            display: "flex",
-                            alignItems: "center",
-                            gap: 1.5,
-                            textAlign: 'center'
-                        }}
-                    >
-                        Product Specifications
-                    </Typography>
-                    {/* <Divider sx={{ mt: 1.5, borderColor: "#e0e0e0" }} /> */}
-                </Box>
-            )}
+  const derivedStones = React.useMemo(() => {
+    if (!rd2?.length || !targetArticleId) return { dia: [], cs: [] };
 
-            {diaList?.length > 0 && (
-                <Box sx={{ mb: 3 }}>
-                    <DiamondTable list={diaList} details="Diamond Details" />
-                </Box>
-            )}
-
-            {hasColorStone && (
-                <Box sx={{ mb: 3 }}>
-                    <MiscTable list={csList} details="Color Stone Details" />
-                </Box>
-            )}
-
-            {hasMisc && (
-                <Box sx={{ mb: 3 }}>
-                    <MiscTable list={csList} details="MISC Details" />
-                </Box>
-            )}
-        </Box>
+    const articleStones = rd2.filter(
+      (r) => r.ArticleId == targetArticleId || r.id == targetArticleId,
     );
+
+    const dia = articleStones
+      .filter((r) => r.StoneTypeid === 1)
+      .map((r) => ({
+        F: r.ShapeName || r.Shape || r.F || "-",
+        H: r.QualityName || r.Quality || r.H || "-",
+        J: r.ColorName || r.Color || r.J || "-",
+        L: r.MMsize || r.Size || r.SizeName || r.L || "-",
+        M: Number(r.Pieces ?? r.Pcs ?? r.PcsCount ?? r.M ?? 0),
+        N: Number(r.Wt || r.Weight || r.N || 0),
+      }));
+
+    const cs = articleStones
+      .filter(
+        (r) => r.StoneTypeid === 2 || r.StoneTypeid === 3 || r.D === "MISC",
+      )
+      .map((r) => ({
+        F: r.ShapeName || r.Shape || r.F || "-",
+        H: r.QualityName || r.Quality || r.H || "-",
+        J: r.ColorName || r.Color || r.J || "-",
+        L: r.MMsize || r.Size || r.SizeName || r.L || "-",
+        M: Number(r.Pieces ?? r.Pcs ?? r.PcsCount ?? r.M ?? 0),
+        N: Number(r.Wt || r.Weight || r.N || 0),
+        D:
+          r.StoneTypeid === 3 || r.D === "MISC"
+            ? "MISC"
+            : r.D || r.StoneTypeName || "",
+      }));
+
+    return { dia, cs };
+  }, [rd2, targetArticleId]);
+
+  const finalDiaList = diaList?.length > 0 ? diaList : derivedStones.dia;
+  const finalCsList = csList?.length > 0 ? csList : derivedStones.cs;
+
+  const hasMisc = finalCsList?.filter((ele) => ele?.D === "MISC")?.length > 0;
+  const hasColorStone =
+    finalCsList?.filter((ele) => ele?.D !== "MISC")?.length > 0;
+
+  if (!finalDiaList?.length && !hasMisc && !hasColorStone) return null;
+
+  return (
+    <Box
+      sx={{
+        width: "100%",
+        mt: 2.5,
+        display: "flex",
+        flexDirection: "column",
+        gap: 1.5,
+      }}
+    >
+      {finalDiaList?.length > 0 && (
+        <CollapsibleSpecBox
+          list={finalDiaList}
+          title="Diamond Details"
+          isDiamond
+        />
+      )}
+
+      {hasColorStone && (
+        <CollapsibleSpecBox
+          list={finalCsList.filter((ele) => ele?.D !== "MISC")}
+          title="Color Stone Details"
+        />
+      )}
+
+      {hasMisc && (
+        <CollapsibleSpecBox
+          list={finalCsList.filter((ele) => ele?.D === "MISC")}
+          title="MISC Details"
+          isMisc
+        />
+      )}
+    </Box>
+  );
 };
 
 export default ProductDetailsSection;
 
-const DiamondTable = ({ list, details }) => {
-    const totalPcs = list?.reduce((acc, item) => acc + item?.M, 0);
-    const totalWt = list?.reduce((acc, item) => acc + item?.N, 0)?.toFixed(3);
+const CollapsibleSpecBox = ({
+  list = [],
+  title = "",
+  isDiamond = false,
+  isMisc = false,
+}) => {
+  const [open, setOpen] = useState(true);
 
-    return (
-        <Paper
-            elevation={0}
-            sx={{
-                border: "1px solid #e0e0e0",
-                borderRadius: 2,
-                overflow: "hidden",
-                transition: "box-shadow 0.3s ease",
-                "&:hover": {
-                    boxShadow: "0 4px 12px rgba(0,0,0,0.08)"
-                }
-            }}
+  const totalPcs = list?.reduce((acc, item) => acc + (Number(item?.M) || 0), 0);
+  const totalWt = list
+    ?.reduce((acc, item) => acc + (Number(item?.N) || 0), 0)
+    ?.toFixed(3);
+
+  return (
+    <Box
+      sx={{
+        border: "1px solid #E5E5E5",
+        borderRadius: 0,
+        overflow: "hidden",
+        bgcolor: "#FFFFFF",
+      }}
+    >
+      {/* Header Bar */}
+      <Box
+        onClick={() => setOpen((prev) => !prev)}
+        sx={{
+          px: 2,
+          py: 1.2,
+          bgcolor: "#F8F8F8",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          cursor: "pointer",
+          userSelect: "none",
+          "&:hover": { bgcolor: "#F0F0F0" },
+        }}
+      >
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            gap: 1.2,
+            flexWrap: "wrap",
+          }}
         >
-            <Box
-                sx={{
-                    px: 2,
-                    py: 2,
-                    bgcolor: "#fafafa",
-                    borderBottom: "1px solid #e0e0e0",
-                    display: "flex",
-                    alignItems: "center",
-                    flexWrap: "wrap",
-                    gap: 1.4
-                }}
-            >
-                <Typography
-                    sx={{
-                        fontWeight: 600,
-                        fontSize: "1rem",
-                        color: "#424242",
-                        display: "flex",
-                        alignItems: "center",
-                        gap: 1
-                    }}
-                >
-                    {details}
-                </Typography>
-
-                <Box sx={{ display: "flex", gap: 1.5, flexWrap: "wrap" }}>
-                    <Chip
-                        label={`${totalPcs} Pieces`}
-                        size="small"
-                        sx={{
-                            fontWeight: 600,
-                            fontSize: "0.76rem"
-                        }}
-                        color="default"
-                    />
-                    <Chip
-                        label={`${totalWt}ct`}
-                        size="small"
-                        sx={{
-                            fontWeight: 600,
-                            fontSize: "0.76rem"
-                        }}
-                        color="default"
-                    />
-                </Box>
-            </Box>
-
-            <TableContainer>
-                <Table size="small" sx={{ minWidth: { xs: 300, sm: 500 } }}>
-                    <TableHead>
-                        <TableRow sx={{ bgcolor: "#f5f5f5" }}>
-                            <TableCell sx={{ fontWeight: 600, color: "#616161", fontSize: "0.875rem" }}>
-                                Shape
-                            </TableCell>
-                            <TableCell sx={{ fontWeight: 600, color: "#616161", fontSize: "0.875rem" }}>
-                                Clarity
-                            </TableCell>
-                            <TableCell sx={{ fontWeight: 600, color: "#616161", fontSize: "0.875rem" }}>
-                                Color
-                            </TableCell>
-                                <TableCell sx={{ fontWeight: 600, color: "#616161", fontSize: "0.875rem" }}>
-                              Size
-                            </TableCell>
-                            <TableCell sx={{ fontWeight: 600, color: "#616161", fontSize: "0.875rem" }}>
-                                Pcs / Weight
-                            </TableCell>
-                        
-                        </TableRow>
-                    </TableHead>
-
-                    <TableBody>
-                        {list?.map((val, i) => (
-                            <TableRow
-                                key={i}
-                                sx={{
-                                    "&:hover": { bgcolor: "#fafafa" },
-                                    "&:last-child td": { borderBottom: 0 }
-                                }}
-                            >
-                                <TableCell sx={{ color: "#424242", fontSize: "0.875rem" }}>
-                                    {val?.F}
-                                </TableCell>
-                                <TableCell sx={{ color: "#424242", fontSize: "0.875rem" }}>
-                                    {val?.H}
-                                </TableCell>
-                                
-                                <TableCell sx={{ color: "#424242", fontSize: "0.875rem" }}>
-                                    {val?.J}
-                                </TableCell>
-                                 <TableCell sx={{ color: "#424242", fontSize: "0.875rem", fontWeight: 500 }}>
-                                    {`${val?.L}` ?? "-"}
-                                </TableCell>
-                                <TableCell sx={{ color: "#424242", fontSize: "0.875rem", fontWeight: 500 }}>
-                                    {`${val?.M} / ${val?.N.toFixed(3)}`}
-                                </TableCell>
-                                
-                            </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
-            </TableContainer>
-        </Paper>
-    );
-};
-
-const MiscTable = ({ list, details }) => {
-    const miscList = list?.filter((e) => e?.D === "MISC");
-    const colorStoneList = list?.filter((e) => e?.D !== "MISC");
-
-    const pcs = details.includes("MISC")
-        ? miscList.reduce((sum, x) => sum + x?.M, 0)
-        : colorStoneList.reduce((sum, x) => sum + x?.M, 0);
-
-    const wt = details.includes("MISC")
-        ? miscList.reduce((sum, x) => sum + x?.N, 0)?.toFixed(3)
-        : colorStoneList.reduce((sum, x) => sum + x?.N, 0)?.toFixed(3);
-
-    const renderList = details.includes("MISC") ? miscList : colorStoneList;
-
-    return (
-        <Paper
-            elevation={0}
+          <Typography
             sx={{
-                border: "1px solid #e0e0e0",
-                borderRadius: 2,
-                overflow: "hidden",
-                transition: "box-shadow 0.3s ease",
-                "&:hover": {
-                    boxShadow: "0 4px 12px rgba(0,0,0,0.08)"
-                }
+              fontSize: "14px",
+              fontWeight: 700,
+              letterSpacing: "0.5px",
+              textTransform: "uppercase",
+              color: "#111111",
             }}
-        >
-            <Box
-                sx={{
-                    px: 2,
-                    py: 2,
-                    bgcolor: "#fafafa",
-                    borderBottom: "1px solid #e0e0e0",
-                    display: "flex",
-                    alignItems: "center",
-                    flexWrap: "wrap",
-                    gap: 1.4
-                }}
-            >
-                <Typography
-                    sx={{
-                        fontWeight: 600,
-                        fontSize: "1rem",
-                        color: "#424242",
-                        display: "flex",
-                        alignItems: "center",
-                        gap: 1
-                    }}
+          >
+            {title}
+          </Typography>
+          <Box sx={{ display: "flex", gap: 0.8 }}>
+            <Chip
+              label={`${totalPcs} Pieces`}
+              size="small"
+              sx={{
+                height: 20,
+                fontSize: "10px",
+                fontWeight: 600,
+                bgcolor: "#EEEEEE",
+                color: "#333333",
+                borderRadius: 5,
+                border: "1px solid #E5E5E5",
+              }}
+            />
+            <Chip
+              label={`${totalWt} ${isMisc ? "gm" : "ct"}`}
+              size="small"
+              sx={{
+                height: 20,
+                fontSize: "10px",
+                fontWeight: 600,
+                bgcolor: "#EEEEEE",
+                color: "#333333",
+                borderRadius: 5,
+                border: "1px solid #E5E5E5",
+              }}
+            />
+          </Box>
+        </Box>
+        <Box sx={{ display: "flex", alignItems: "center", color: "#666666" }}>
+          {open ? (
+            <ExpandLessIcon sx={{ fontSize: 18 }} />
+          ) : (
+            <ExpandMoreIcon sx={{ fontSize: 18 }} />
+          )}
+        </Box>
+      </Box>
+
+      {/* Collapsible Table Content */}
+      <Collapse in={open}>
+        <TableContainer sx={{ borderTop: "1px solid #E5E5E5" }}>
+          <Table size="small" sx={{ minWidth: 280 }}>
+            <TableHead>
+              <TableRow sx={{ bgcolor: "#FAFAFA" }}>
+                <TableCell
+                  sx={{
+                    fontWeight: 700,
+                    color: "#666666",
+                    fontSize: "11px",
+                    py: 0.8,
+                    textTransform: "uppercase",
+                  }}
                 >
-                    {details}
-                </Typography>
-
-                <Box sx={{ display: "flex", gap: 1.5, flexWrap: "wrap" }}>
-                    <Chip
-                        label={`${pcs} Pieces`}
-                        size="small"
-                        sx={{
-                            fontWeight: 600,
-                            fontSize: "0.76rem"
-                        }}
-                        color="default"
-                    />
-                    <Chip
-                        label={`${wt}${details.includes("MISC") ? "gm" : "ct"}`}
-                        size="small"
-                        sx={{
-                            fontWeight: 600,
-                            fontSize: "0.76rem"
-                        }}
-                        color="default"
-                    />
-                </Box>
-            </Box>
-
-            <TableContainer>
-                <Table size="small" sx={{ minWidth: { xs: 300, sm: 500 } }}>
-                    <TableHead>
-                        <TableRow sx={{ bgcolor: "#f5f5f5" }}>
-                            <TableCell sx={{ fontWeight: 600, color: "#616161", fontSize: "0.875rem" }}>
-                                Shape
-                            </TableCell>
-                            <TableCell sx={{ fontWeight: 600, color: "#616161", fontSize: "0.875rem" }}>
-                                Clarity
-                            </TableCell>
-                            <TableCell sx={{ fontWeight: 600, color: "#616161", fontSize: "0.875rem" }}>
-                                Color
-                            </TableCell>
-                            <TableCell sx={{ fontWeight: 600, color: "#616161", fontSize: "0.875rem" }}>
-                                Pcs / Weight
-                            </TableCell>
-                        </TableRow>
-                    </TableHead>
-
-                    <TableBody>
-                        {renderList?.map((val, i) => (
-                            <TableRow
-                                key={i}
-                                sx={{
-                                    "&:hover": { bgcolor: "#fafafa" },
-                                    "&:last-child td": { borderBottom: 0 }
-                                }}
-                            >
-                                <TableCell sx={{ color: "#424242", fontSize: "0.875rem" }}>
-                                    {val?.F}
-                                </TableCell>
-                                <TableCell sx={{ color: "#424242", fontSize: "0.875rem" }}>
-                                    {val?.H}
-                                </TableCell>
-                                <TableCell sx={{ color: "#424242", fontSize: "0.875rem" }}>
-                                    {val?.J}
-                                </TableCell>
-                                <TableCell sx={{ color: "#424242", fontSize: "0.875rem", fontWeight: 500 }}>
-                                    {`${val?.M} / ${val?.N.toFixed(3)}`}
-                                </TableCell>
-                            </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
-            </TableContainer>
-        </Paper>
-    );
+                  Shape
+                </TableCell>
+                <TableCell
+                  sx={{
+                    fontWeight: 700,
+                    color: "#666666",
+                    fontSize: "11px",
+                    py: 0.8,
+                    textTransform: "uppercase",
+                  }}
+                >
+                  Clarity
+                </TableCell>
+                <TableCell
+                  sx={{
+                    fontWeight: 700,
+                    color: "#666666",
+                    fontSize: "11px",
+                    py: 0.8,
+                    textTransform: "uppercase",
+                  }}
+                >
+                  Color
+                </TableCell>
+                {isDiamond && (
+                  <TableCell
+                    sx={{
+                      fontWeight: 700,
+                      color: "#666666",
+                      fontSize: "11px",
+                      py: 0.8,
+                      textTransform: "uppercase",
+                    }}
+                  >
+                    Size
+                  </TableCell>
+                )}
+                <TableCell
+                  sx={{
+                    fontWeight: 700,
+                    color: "#666666",
+                    fontSize: "11px",
+                    py: 0.8,
+                    textTransform: "uppercase",
+                  }}
+                >
+                  Pcs / Wt
+                </TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {list?.map((val, i) => (
+                <TableRow
+                  key={i}
+                  sx={{
+                    "&:hover": { bgcolor: "#FAF9F6" },
+                    "&:last-child td": { borderBottom: 0 },
+                  }}
+                >
+                  <TableCell
+                    sx={{ color: "#333333", fontSize: "12px", py: 0.8 }}
+                  >
+                    {val?.F || "-"}
+                  </TableCell>
+                  <TableCell
+                    sx={{ color: "#333333", fontSize: "12px", py: 0.8 }}
+                  >
+                    {val?.H || "-"}
+                  </TableCell>
+                  <TableCell
+                    sx={{ color: "#333333", fontSize: "12px", py: 0.8 }}
+                  >
+                    {val?.J || "-"}
+                  </TableCell>
+                  {isDiamond && (
+                    <TableCell
+                      sx={{ color: "#333333", fontSize: "12px", py: 0.8 }}
+                    >
+                      {val?.L || "-"}
+                    </TableCell>
+                  )}
+                  <TableCell
+                    sx={{
+                      color: "#111111",
+                      fontSize: "12px",
+                      fontWeight: 600,
+                      py: 0.8,
+                    }}
+                  >
+                    {`${val?.M || 0} / ${Number(val?.N || 0).toFixed(3)}`}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </Collapse>
+    </Box>
+  );
 };

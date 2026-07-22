@@ -10,6 +10,7 @@ export const AppConfig = {
     ico: "/optigo_favicon.ico",
     web: "/WebSiteStaticImage/logoIcon/webLogo.png",
     mobile: "/WebSiteStaticImage/logoIcon/mobileLogo.png",
+    transparent_mobile: "/WebSiteStaticImage/logoIcon/sona/image.png",
     static_block: {
       block1: "",
     },
@@ -26,6 +27,7 @@ export const AppConfig = {
     ico: "/optigo_favicon.ico",
     web: "/WebSiteStaticImage/logoIcon/webLogo1.png",
     mobile: "/WebSiteStaticImage/logoIcon/mobileLogo2.png",
+    transparent_mobile: "/WebSiteStaticImage/logoIcon/image.png",
     static_block: {
       block1: "",
     },
