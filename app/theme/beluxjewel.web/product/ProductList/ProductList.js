@@ -887,98 +887,98 @@ const ProductList = ({ storeinit, searchParams, params }) => {
           inputNet,
         );
 
-        // 1. Fetch Product List (High Priority -> Renders products immediately)
-        ProductListApi(
-          {},
-          1,
-          obj,
-          productlisttype,
-          cookie,
-          effectiveSortBy,
-          DiaRange,
-          netRange,
-          grossRange,
-        )
-          .then((res) => {
-            if (res) {
-              setProductListData(res?.pdList);
-              setAfterFilterCount(res?.pdResp?.rd1[0]?.designcount);
-            }
-          })
-          .catch((err) => {
-            console.error("ProductListApi error:", err);
-          })
-          .finally(() => {
-            setIsProdLoading(false);
-            setIsOnlyProdLoading(false);
-          });
+        // 1. Fetch Product List (High Priority -> Renders products first)
+        try {
+          const res = await ProductListApi(
+            {},
+            1,
+            obj,
+            productlisttype,
+            cookie,
+            effectiveSortBy,
+            DiaRange,
+            netRange,
+            grossRange,
+          );
+          if (res) {
+            setProductListData(res?.pdList);
+            setAfterFilterCount(res?.pdResp?.rd1[0]?.designcount);
+          }
+        } catch (err) {
+          console.error("ProductListApi error:", err);
+        } finally {
+          setIsProdLoading(false);
+          setIsOnlyProdLoading(false);
+        }
 
-        // 2. Fetch Filter Sidebar Options in Background (Completely Non-Blocking)
-        FilterListAPI(productlisttype, cookie)
-          .then((res1) => {
-            if (res1) {
-              setFilterData(res1);
-              let priceFilter = JSON.parse(
-                res1?.filter((ele) => ele.Name == "Price")[0]?.options,
-              )[0];
-              setFilterPriceSlider(priceFilter);
-              let diafilter =
-                res1?.filter((ele) => ele?.Name == "Diamond")[0]?.options
-                  ?.length > 0
-                  ? JSON.parse(
-                      res1?.filter((ele) => ele?.Name == "Diamond")[0]?.options,
-                    )[0]
-                  : [];
+        // 2. Fetch Filter Sidebar Options AFTER ProductListApi completes with a 500ms delay (Prevents SQL query collision)
+        try {
+          await new Promise((resolve) => setTimeout(resolve, 500));
+          const res1 = await FilterListAPI(productlisttype, cookie);
+          if (res1) {
+            setFilterData(res1);
+            let priceFilter = JSON.parse(
+              res1?.filter((ele) => ele.Name == "Price")[0]?.options,
+            )[0];
+            setFilterPriceSlider(priceFilter);
+            let diafilter =
+              res1?.filter((ele) => ele?.Name == "Diamond")[0]?.options
+                ?.length > 0
+                ? JSON.parse(
+                    res1?.filter((ele) => ele?.Name == "Diamond")[0]?.options,
+                  )[0]
+                : [];
 
-              let diafilter1 =
-                res1?.filter((ele) => ele?.Name == "NetWt")[0]?.options
-                  ?.length > 0
-                  ? JSON.parse(
-                      res1?.filter((ele) => ele?.Name == "NetWt")[0]?.options,
-                    )[0]
-                  : [];
+            let diafilter1 =
+              res1?.filter((ele) => ele?.Name == "NetWt")[0]?.options?.length >
+              0
+                ? JSON.parse(
+                    res1?.filter((ele) => ele?.Name == "NetWt")[0]?.options,
+                  )[0]
+                : [];
 
-              let diafilter2 =
-                res1?.filter((ele) => ele?.Name == "Gross")[0]?.options
-                  ?.length > 0
-                  ? JSON.parse(
-                      res1?.filter((ele) => ele?.Name == "Gross")[0]?.options,
-                    )[0]
-                  : [];
+            let diafilter2 =
+              res1?.filter((ele) => ele?.Name == "Gross")[0]?.options?.length >
+              0
+                ? JSON.parse(
+                    res1?.filter((ele) => ele?.Name == "Gross")[0]?.options,
+                  )[0]
+                : [];
 
-              setSliderValue(
-                diafilter?.Min != null || diafilter?.Max != null
-                  ? [diafilter.Min, diafilter.Max]
-                  : [],
-              );
-              setInputDia(
-                diafilter?.Min != null || diafilter?.Max != null
-                  ? [diafilter.Min, diafilter.Max]
-                  : [],
-              );
-              setSliderValue1(
-                diafilter1?.Min != null || diafilter1?.Max != null
-                  ? [diafilter1?.Min, diafilter1?.Max]
-                  : [],
-              );
-              setInputNet(
-                diafilter1?.Min != null || diafilter1?.Max != null
-                  ? [diafilter1?.Min, diafilter1?.Max]
-                  : [],
-              );
-              setSliderValue2(
-                diafilter2?.Min != null || diafilter2?.Max != null
-                  ? [diafilter2?.Min, diafilter2?.Max]
-                  : [],
-              );
-              setInputGross(
-                diafilter2?.Min != null || diafilter2?.Max != null
-                  ? [diafilter2?.Min, diafilter2?.Max]
-                  : [],
-              );
-            }
-          })
-          .catch((err) => console.error("FilterListAPI error:", err));
+            setSliderValue(
+              diafilter?.Min != null || diafilter?.Max != null
+                ? [diafilter.Min, diafilter.Max]
+                : [],
+            );
+            setInputDia(
+              diafilter?.Min != null || diafilter?.Max != null
+                ? [diafilter.Min, diafilter.Max]
+                : [],
+            );
+            setSliderValue1(
+              diafilter1?.Min != null || diafilter1?.Max != null
+                ? [diafilter1?.Min, diafilter1?.Max]
+                : [],
+            );
+            setInputNet(
+              diafilter1?.Min != null || diafilter1?.Max != null
+                ? [diafilter1?.Min, diafilter1?.Max]
+                : [],
+            );
+            setSliderValue2(
+              diafilter2?.Min != null || diafilter2?.Max != null
+                ? [diafilter2?.Min, diafilter2?.Max]
+                : [],
+            );
+            setInputGross(
+              diafilter2?.Min != null || diafilter2?.Max != null
+                ? [diafilter2?.Min, diafilter2?.Max]
+                : [],
+            );
+          }
+        } catch (err) {
+          console.error("FilterListAPI error:", err);
+        }
       } catch (error) {
         console.error("Error fetching product list:", error);
         setIsProdLoading(false);

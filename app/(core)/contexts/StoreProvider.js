@@ -1,5 +1,11 @@
 "use client";
-import React, { createContext, useContext, useEffect, useMemo, useState } from "react";
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { ToastContainer, Zoom } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { getSession } from "../utils/FetchSessionData";
@@ -86,7 +92,16 @@ export function StoreProvider({ children, storeInit }) {
 
   return (
     <StoreContext.Provider value={value}>
-      {LocalSetup !== "fgstore.mapp" && <ToastContainer toastStyle={toastStyle} stacked={true} hideProgressBar={true} autoClose={1400} transition={Zoom} style={{ zIndex: "9999999999999999", fontFamily: "inherit" }} />}
+      {LocalSetup !== "fgstore.mapp" && (
+        <ToastContainer
+          toastStyle={toastStyle}
+          stacked={true}
+          hideProgressBar={true}
+          autoClose={1400}
+          transition={Zoom}
+          style={{ zIndex: "9999999999999999", fontFamily: "inherit" }}
+        />
+      )}
       {LocalSetup === "fgstore.mapp" && (
         <ToastContainer
           className="mobile_fgs_store_mapp"
@@ -106,7 +121,8 @@ export function StoreProvider({ children, storeInit }) {
             borderRadius: "20px",
             color: "#333",
             background: "#fff",
-            boxShadow: "0 4px 16px rgba(0,0,0,0.10), 0 1.5px 4px rgba(29,158,117,0.10)",
+            boxShadow:
+              "0 4px 16px rgba(0,0,0,0.10), 0 1.5px 4px rgba(29,158,117,0.10)",
             marginBottom: "6px",
             padding: "6px 10px !important",
           }}
