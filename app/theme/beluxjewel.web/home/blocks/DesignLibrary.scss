@@ -1,0 +1,65 @@
+@use "../../style/variable.scss" as *;
+
+.designLibContainer {
+  background-color: #fbfbfb;
+  border-top: 1px solid #eaeaea;
+  border-bottom: 1px solid #eaeaea;
+}
+
+.designLibOverline {
+  color: $btnBg !important;
+}
+
+.designLibTitle {
+  color: #1a1a1a !important;
+}
+
+.designLibBody {
+  color: #555555 !important;
+}
+
+.stackedCard {
+  border-radius: 8px;
+  overflow: hidden;
+  transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+  box-sizing: border-box;
+
+  &:hover {
+    transform: scale(1.03) translate(0, -5px) !important;
+    z-index: 6 !important;
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.12) !important;
+  }
+}
+
+.backCardLeft {
+  transition: transform 0.4s ease;
+}
+
+.backCardRight {
+  transition: transform 0.4s ease;
+}
+
+.frontCard {
+  border: 1.5px solid rgba(17, 77, 110, 0.3) !important;
+}
+
+.sparkleFloat {
+  animation: float 4s ease-in-out infinite;
+}
+
+.sparkleFloatSlow {
+  animation: float 6s ease-in-out infinite;
+}
+
+@keyframes float {
+  0% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-8px) rotate(8deg);
+  }
+  100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+}
+

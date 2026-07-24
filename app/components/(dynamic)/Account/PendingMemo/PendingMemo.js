@@ -1,12 +1,14 @@
 import React, { useEffect, useRef, useState } from "react";
-import "./PendingMemo.scss"
+import "./PendingMemo.scss";
 import {
   Box,
   Button,
   CircularProgress,
   TextField,
   Typography,
+  Chip,
 } from "@mui/material";
+import { BELUX_JEWEL } from "@/app/(core)/constants/ElveeFlag";
 import SearchIcon from "@mui/icons-material/Search";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
@@ -33,7 +35,13 @@ import FilterListIcon from "@mui/icons-material/FilterList";
 import { visuallyHidden } from "@mui/utils";
 import { CommonAPI } from "@/app/(core)/utils/API/CommonAPI/CommonAPI";
 import { FaBullseye } from "react-icons/fa";
-import { NumberWithCommas, checkMonth, customComparator_Col, sortByDate, stableSort } from "@/app/(core)/utils/Glob_Functions/AccountPages/AccountPage";
+import {
+  NumberWithCommas,
+  checkMonth,
+  customComparator_Col,
+  sortByDate,
+  stableSort,
+} from "@/app/(core)/utils/Glob_Functions/AccountPages/AccountPage";
 import moment from "moment";
 import Swal from "sweetalert2";
 import { getSalesReportData } from "@/app/(core)/utils/API/AccountTabs/salesReport";
@@ -62,7 +70,7 @@ function createData(
   CsPcs,
   CsWt,
   imgsrc,
-  Netwt_24k
+  Netwt_24k,
 ) {
   return {
     SrNo,
@@ -91,28 +99,38 @@ function createData(
 
 function parseCustomDate(dateString) {
   const months = {
-    Jan: 0, Feb: 1, Mar: 2, Apr: 3, May: 4, Jun: 5,
-    Jul: 6, Aug: 7, Sep: 8, Oct: 9, Nov: 10, Dec: 11
+    Jan: 0,
+    Feb: 1,
+    Mar: 2,
+    Apr: 3,
+    May: 4,
+    Jun: 5,
+    Jul: 6,
+    Aug: 7,
+    Sep: 8,
+    Oct: 9,
+    Nov: 10,
+    Dec: 11,
   };
-  const parts = dateString?.split(' ');
+  const parts = dateString?.split(" ");
   if (parts?.length !== 3) {
-    throw new Error('Invalid date format');
+    throw new Error("Invalid date format");
   }
   const day = parseInt(parts[0]);
   const month = months[parts[1].substring(0, 3)]; // Extract the first three characters of the month name
   const year = parseInt(parts[2]);
   if (isNaN(day) || isNaN(month) || isNaN(year)) {
-    throw new Error('Invalid date format');
+    throw new Error("Invalid date format");
   }
   return new Date(year, month, day);
 }
 function descendingComparator(a, b, orderBy) {
   if (!orderBy) return 0; // Add null check for orderBy
 
-  if (orderBy === 'EntryDate') {
+  if (orderBy === "EntryDate") {
     try {
-      const dateA = new Date(a[orderBy].split(' ').reverse().join(' '));
-      const dateB = new Date(b[orderBy].split(' ').reverse().join(' '));
+      const dateA = new Date(a[orderBy].split(" ").reverse().join(" "));
+      const dateB = new Date(b[orderBy].split(" ").reverse().join(" "));
 
       if (dateB < dateA) {
         return -1;
@@ -132,24 +150,23 @@ function descendingComparator(a, b, orderBy) {
       // }
       // return 0;
     } catch (error) {
-      console.error('Error parsing date:', error.message);
+      console.error("Error parsing date:", error.message);
       return 0;
     }
-
-  } else if (orderBy === 'MetalAmount' ||
+  } else if (
+    orderBy === "MetalAmount" ||
     orderBy === "Unit Cost" ||
-    orderBy === 'DiamondAmount' ||
-    orderBy === 'ColorStoneAmount' ||
-    orderBy === 'LabourAmount' ||
-    orderBy === 'OtherAmount' ||
-    orderBy === 'GrossWt' ||
-    orderBy === 'NetWt' ||
-    orderBy === 'DiaPcs' ||
-    orderBy === 'DiaWt' ||
-    orderBy === 'CsPcs' ||
-    orderBy === 'CsWt'
+    orderBy === "DiamondAmount" ||
+    orderBy === "ColorStoneAmount" ||
+    orderBy === "LabourAmount" ||
+    orderBy === "OtherAmount" ||
+    orderBy === "GrossWt" ||
+    orderBy === "NetWt" ||
+    orderBy === "DiaPcs" ||
+    orderBy === "DiaWt" ||
+    orderBy === "CsPcs" ||
+    orderBy === "CsWt"
   ) {
-
     const valueA = parseFloat(a[orderBy]) || 0;
     const valueB = parseFloat(b[orderBy]) || 0;
 
@@ -161,13 +178,17 @@ function descendingComparator(a, b, orderBy) {
     }
 
     return 0;
-
-  } else if ((orderBy === 'StockDocumentNo') || (orderBy === 'MetalType') || (orderBy === 'SKUNo') || (orderBy === 'designno')) {
+  } else if (
+    orderBy === "StockDocumentNo" ||
+    orderBy === "MetalType" ||
+    orderBy === "SKUNo" ||
+    orderBy === "designno"
+  ) {
     // Handle sorting for SKU# column
     return customComparator_Col(a[orderBy], b[orderBy]);
   } else {
-    const valueA = a[orderBy]?.toString()?.toLowerCase() || '';
-    const valueB = b[orderBy]?.toString()?.toLowerCase() || '';
+    const valueA = a[orderBy]?.toString()?.toLowerCase() || "";
+    const valueB = b[orderBy]?.toString()?.toLowerCase() || "";
 
     if (valueB < valueA) {
       return -1;
@@ -212,8 +233,10 @@ function EnhancedTableHead(props) {
               textAlign: headCell?.align || "left",
             }}
           >
-            {
-              (headCell?.id?.toLowerCase() === 'srno') ? `${headCell?.label}` : <TableSortLabel
+            {headCell?.id?.toLowerCase() === "srno" ? (
+              `${headCell?.label}`
+            ) : (
+              <TableSortLabel
                 active={orderBy === headCell.id}
                 direction={orderBy === headCell.id ? order : "asc"}
                 onClick={createSortHandler(headCell.id)}
@@ -222,11 +245,13 @@ function EnhancedTableHead(props) {
                 {headCell.label}
                 {orderBy === headCell.id ? (
                   <Box component="span" sx={visuallyHidden}>
-                    {order === "desc" ? "sorted descending" : "sorted ascending"}
+                    {order === "desc"
+                      ? "sorted descending"
+                      : "sorted ascending"}
                   </Box>
                 ) : null}
               </TableSortLabel>
-            }
+            )}
           </TableCell>
         ))}
       </TableRow>
@@ -327,12 +352,19 @@ const PendingMemo = () => {
     () =>
       stableSort(filterData, getComparator(order, orderBy)).slice(
         page * rowsPerPage,
-        page * rowsPerPage + rowsPerPage
+        page * rowsPerPage + rowsPerPage,
       ),
-    [order, orderBy, page, rowsPerPage, filterData]
+    [order, orderBy, page, rowsPerPage, filterData],
   );
 
-  const handleSearch = (eve, searchValue, fromDates, toDates, grossWtFrom, grossWtTo) => {
+  const handleSearch = (
+    eve,
+    searchValue,
+    fromDates,
+    toDates,
+    grossWtFrom,
+    grossWtTo,
+  ) => {
     setPage(0);
     let datass = [];
     let count = 0;
@@ -353,13 +385,12 @@ const PendingMemo = () => {
       let todates = `${toDates?.["$y"]}-${checkMonth(toDates?.["$M"])}-${toDates?.["$D"]}`;
 
       let cutDate = cutDates;
-      const dateString = cutDates.join(' ');
-      const formattedDate = moment(dateString).format('YYYY-MM-DD');
+      const dateString = cutDates.join(" ");
+      const formattedDate = moment(dateString).format("YYYY-MM-DD");
 
       cutDate = formattedDate;
       if (cutDate !== undefined) {
         if (!fromdates?.includes(undefined) && !todates?.includes(undefined)) {
-
           let fromdat = moment(fromdates);
           let todat = moment(todates);
           let cutDat = moment(cutDate);
@@ -369,16 +400,16 @@ const PendingMemo = () => {
               flags.toDate = true;
               flags.fromDate = true;
             }
-          }
-          else {
+          } else {
             setTimeout(() => {
               resetAllFilters();
               setFilterData(data);
-            }, 0)
+            }, 0);
           }
-
-        } else if (fromdates?.includes(undefined) && !todates?.includes(undefined)) {
-
+        } else if (
+          fromdates?.includes(undefined) &&
+          !todates?.includes(undefined)
+        ) {
           flags.toDate = true;
           flags.fromDate = true;
           count++;
@@ -386,12 +417,13 @@ const PendingMemo = () => {
             title: "Error !",
             text: "Enter Valid From Date",
             icon: "error",
-            confirmButtonText: "ok"
+            confirmButtonText: "ok",
           });
           resetAllFilters();
-
-        } else if (!fromdates?.includes(undefined) && todates?.includes(undefined)) {
-
+        } else if (
+          !fromdates?.includes(undefined) &&
+          todates?.includes(undefined)
+        ) {
           flags.toDate = true;
           flags.fromDate = true;
           count++;
@@ -399,37 +431,76 @@ const PendingMemo = () => {
             title: "Error !",
             text: "Enter Valid Date To",
             icon: "error",
-            confirmButtonText: "ok"
+            confirmButtonText: "ok",
           });
           resetAllFilters();
-        } else if (fromdates?.includes(undefined) && todates?.includes(undefined)) {
+        } else if (
+          fromdates?.includes(undefined) &&
+          todates?.includes(undefined)
+        ) {
           flags.toDate = true;
           flags.fromDate = true;
         }
       }
 
-
-
-
-      if (String(e?.SrNo)?.toLowerCase()?.includes(searchValue?.trim()?.toLowerCase()) ||
-        String(e?.EntryDate)?.toLowerCase()?.includes(searchValue?.trim()?.toLowerCase()) ||
-        String(e?.StockDocumentNo)?.toLowerCase()?.includes(searchValue?.trim()?.toLowerCase()) ||
-        String(e?.SKUNo)?.toLowerCase()?.includes(searchValue?.trim()?.toLowerCase()) ||
-        String(e?.designno)?.toLowerCase()?.includes(searchValue?.trim()?.toLowerCase()) ||
-        String(e?.MetalType)?.toLowerCase()?.includes(searchValue?.trim()?.toLowerCase()) ||
-        String(e?.MetalAmount)?.toLowerCase()?.includes(searchValue?.trim()?.toLowerCase()) ||
-        String(e?.DiamondAmount)?.toLowerCase()?.includes(searchValue?.trim()?.toLowerCase()) ||
-        String(e?.ColorStoneAmount)?.toLowerCase()?.includes(searchValue?.trim()?.toLowerCase()) ||
-        String(e?.LabourAmount)?.toLowerCase()?.includes(searchValue?.trim()?.toLowerCase()) ||
-        String(e?.OtherAmount)?.toLowerCase()?.includes(searchValue?.trim()?.toLowerCase()) ||
-        String(e?.UnitCost)?.toLowerCase()?.includes(searchValue?.trim()?.toLowerCase()) ||
-        String(e?.Category)?.toLowerCase()?.includes(searchValue?.trim()?.toLowerCase()) ||
-        String(e?.GrossWt)?.toLowerCase()?.includes(searchValue?.trim()?.toLowerCase()) ||
-        String(e?.NetWt)?.toLowerCase()?.includes(searchValue?.trim()?.toLowerCase()) ||
-        String(e?.DiaPcs)?.toLowerCase()?.includes(searchValue?.trim()?.toLowerCase()) ||
-        String(e?.DiaWt)?.toLowerCase()?.includes(searchValue?.trim()?.toLowerCase()) ||
-        String(e?.CsPcs)?.toLowerCase()?.includes(searchValue?.trim()?.toLowerCase()) ||
-        String(e?.CsWt)?.toLowerCase()?.includes(searchValue?.trim()?.toLowerCase()) ||
+      if (
+        String(e?.SrNo)
+          ?.toLowerCase()
+          ?.includes(searchValue?.trim()?.toLowerCase()) ||
+        String(e?.EntryDate)
+          ?.toLowerCase()
+          ?.includes(searchValue?.trim()?.toLowerCase()) ||
+        String(e?.StockDocumentNo)
+          ?.toLowerCase()
+          ?.includes(searchValue?.trim()?.toLowerCase()) ||
+        String(e?.SKUNo)
+          ?.toLowerCase()
+          ?.includes(searchValue?.trim()?.toLowerCase()) ||
+        String(e?.designno)
+          ?.toLowerCase()
+          ?.includes(searchValue?.trim()?.toLowerCase()) ||
+        String(e?.MetalType)
+          ?.toLowerCase()
+          ?.includes(searchValue?.trim()?.toLowerCase()) ||
+        String(e?.MetalAmount)
+          ?.toLowerCase()
+          ?.includes(searchValue?.trim()?.toLowerCase()) ||
+        String(e?.DiamondAmount)
+          ?.toLowerCase()
+          ?.includes(searchValue?.trim()?.toLowerCase()) ||
+        String(e?.ColorStoneAmount)
+          ?.toLowerCase()
+          ?.includes(searchValue?.trim()?.toLowerCase()) ||
+        String(e?.LabourAmount)
+          ?.toLowerCase()
+          ?.includes(searchValue?.trim()?.toLowerCase()) ||
+        String(e?.OtherAmount)
+          ?.toLowerCase()
+          ?.includes(searchValue?.trim()?.toLowerCase()) ||
+        String(e?.UnitCost)
+          ?.toLowerCase()
+          ?.includes(searchValue?.trim()?.toLowerCase()) ||
+        String(e?.Category)
+          ?.toLowerCase()
+          ?.includes(searchValue?.trim()?.toLowerCase()) ||
+        String(e?.GrossWt)
+          ?.toLowerCase()
+          ?.includes(searchValue?.trim()?.toLowerCase()) ||
+        String(e?.NetWt)
+          ?.toLowerCase()
+          ?.includes(searchValue?.trim()?.toLowerCase()) ||
+        String(e?.DiaPcs)
+          ?.toLowerCase()
+          ?.includes(searchValue?.trim()?.toLowerCase()) ||
+        String(e?.DiaWt)
+          ?.toLowerCase()
+          ?.includes(searchValue?.trim()?.toLowerCase()) ||
+        String(e?.CsPcs)
+          ?.toLowerCase()
+          ?.includes(searchValue?.trim()?.toLowerCase()) ||
+        String(e?.CsWt)
+          ?.toLowerCase()
+          ?.includes(searchValue?.trim()?.toLowerCase()) ||
         searchValue?.trim()?.toLowerCase() === ""
       ) {
         flags.searchValue = true;
@@ -489,11 +560,11 @@ const PendingMemo = () => {
           e?.CsPcs,
           e?.CsWt,
           e?.imgsrc,
-          e?.Netwt_24k
+          e?.Netwt_24k,
         );
+        dataObj.ArticleNo = e?.ArticleNo;
         datass?.push(dataObj);
       }
-
     });
     if (count === 0) {
       setFilterData(datass);
@@ -520,7 +591,6 @@ const PendingMemo = () => {
   const handleChangegrossWt = (eve) => {
     const { name, value } = eve?.target;
     setGrossWtInput({ ...grossWtInput, [name]: value });
-
   };
 
   const fetchData = async () => {
@@ -545,7 +615,12 @@ const PendingMemo = () => {
       // };
       // const response = await CommonAPI(body);
       // const response = await getSalesReportData(currencyRate, FrontEnd_RegNo, customerid, data);
-      const response = await getMemoReturnData(CurrencyRate, FrontEnd_RegNo, customerid, data);
+      const response = await getMemoReturnData(
+        CurrencyRate,
+        FrontEnd_RegNo,
+        customerid,
+        data,
+      );
       if (response.Data?.rd) {
         let datass = [];
         let totals = { ...total };
@@ -572,7 +647,7 @@ const PendingMemo = () => {
             e?.CsPcs,
             e?.CsWt,
             e?.imgsrc,
-            e?.Netwt_24k
+            e?.Netwt_24k,
           );
           totals.GrossWt += e?.GrossWt;
           totals.NetWt += e?.NetWt;
@@ -588,16 +663,17 @@ const PendingMemo = () => {
           totals.TotalAmount += e?.UnitCost;
           totals.Netwt_24k += e?.Netwt_24k;
           let findUniqueDesign = designLists?.findIndex(
-            (ele) => ele === e?.designno
+            (ele) => ele === e?.designno,
           );
           if (findUniqueDesign === -1) {
             designLists?.push(e?.designno);
           }
+          dataObj.ArticleNo = e?.ArticleNo;
           datass?.push(dataObj);
           hoverImg === "" && e?.imgsrc !== "" && setHoverImg(e?.imgsrc);
         });
         totals.uniqueDesigns = designLists?.length;
-        const sortedRows = sortByDate(datass, 'EntryDate');
+        const sortedRows = sortByDate(datass, "EntryDate");
         setData(sortedRows);
         setFilterData(sortedRows);
         setTotal(totals);
@@ -605,7 +681,6 @@ const PendingMemo = () => {
         setData([]);
         setFilterData([]);
       }
-
     } catch (error) {
       console.log("Error:", error);
     } finally {
@@ -616,7 +691,7 @@ const PendingMemo = () => {
   useEffect(() => {
     fetchData();
     let inputFrom = fromDateRef?.current?.querySelector(
-      ".MuiInputBase-root input"
+      ".MuiInputBase-root input",
     );
     if (inputFrom) {
       inputFrom.placeholder = "Date From";
@@ -629,7 +704,7 @@ const PendingMemo = () => {
 
   const scrollToTop = () => {
     // Find the table container element and set its scrollTop property to 0
-    const tableContainer = document.querySelector('.quotationJobSec');
+    const tableContainer = document.querySelector(".quotationJobSec");
     if (tableContainer) {
       tableContainer.scrollTop = 0;
     }
@@ -639,7 +714,7 @@ const PendingMemo = () => {
     <div className="memo_Account_SMR">
       <Box
         sx={{
-          p: 1
+          p: 1,
         }}
       >
         <Box
@@ -654,7 +729,7 @@ const PendingMemo = () => {
             className="salesReporttableWeb"
             sx={{ paddingBottom: "5px", paddingRight: "15px" }}
           >
-            <table style={{ minWidth: '850px' }}>
+            <table style={{ minWidth: "850px" }}>
               <tbody>
                 <tr>
                   <td>Total Gross Wt</td>
@@ -673,7 +748,9 @@ const PendingMemo = () => {
                     {" "}
                     {NumberWithCommas(total?.Netwt_24k, 3)}{" "}
                   </td>
-                  <td className="fw_bold">{NumberWithCommas(total?.NetWt, 3)}</td>
+                  <td className="fw_bold">
+                    {NumberWithCommas(total?.NetWt, 3)}
+                  </td>
                   <td className="fw_bold">
                     {NumberWithCommas(total?.DiaPcs, 0)} PCs/
                     {NumberWithCommas(total?.DiaWt, 3)} Ctw
@@ -685,9 +762,7 @@ const PendingMemo = () => {
                   <td className="fw_bold">
                     {NumberWithCommas(total?.uniqueDesigns, 0)}
                   </td>
-                  <td className="fw_bold">
-                    1
-                  </td>
+                  <td className="fw_bold">1</td>
                 </tr>
                 <tr>
                   {/* <td>Total Metal Amt</td>
@@ -750,8 +825,22 @@ const PendingMemo = () => {
               {NumberWithCommas(total?.TotalAmount, 2)}
             </Typography>
           </Box> */}
-          <Box className="salesReportImgSec" sx={{ width: "135px", height: "135px", paddingBottom: "20px", overflow: "hidden", }} >
-            <Box sx={{ border: "1px solid #d6d6d6", height: "117px", marginTop: "17px", }} >
+          <Box
+            className="salesReportImgSec"
+            sx={{
+              width: "135px",
+              height: "135px",
+              paddingBottom: "20px",
+              overflow: "hidden",
+            }}
+          >
+            <Box
+              sx={{
+                border: "1px solid #d6d6d6",
+                height: "117px",
+                marginTop: "17px",
+              }}
+            >
               {hoverImg !== "" && (
                 <img
                   src={hoverImg}
@@ -760,20 +849,75 @@ const PendingMemo = () => {
                   onError={(e) => {
                     e.target.src = "/image-not-found.jpg";
                   }}
-                  alt="pendingMemo" style={{ width: "100%", objectFit: "contain", minHeight: "114px", maxHeight: "114px", }} />
+                  alt="pendingMemo"
+                  style={{
+                    width: "100%",
+                    objectFit: "contain",
+                    minHeight: "114px",
+                    maxHeight: "114px",
+                  }}
+                />
               )}
             </Box>
           </Box>
         </Box>
         <Box sx={{ display: "flex", flexWrap: "wrap", alignItems: "center" }}>
-          <Box sx={{ paddingBottom: "15px", position: "relative", top: "-2px", paddingRight: "15px", }} >
-            <Button variant="contained" sx={{ background: "#7d7f85" }} className="muiSmilingRocksBtn" onClick={(eve) => resetAllFilters(eve)} >
+          <Box
+            sx={{
+              paddingBottom: "15px",
+              position: "relative",
+              top: "-2px",
+              paddingRight: "15px",
+            }}
+          >
+            <Button
+              variant="contained"
+              sx={{ background: "#7d7f85" }}
+              className="muiSmilingRocksBtn"
+              onClick={(eve) => resetAllFilters(eve)}
+            >
               All
             </Button>
           </Box>
-          <Box sx={{ display: "flex", alignItems: "center", position: "relative", maxWidth: "max-content", paddingBottom: "15px", paddingRight: "0", marginRight: "15px", }} className="searchbox" >
-            <TextField id="standard-basic" label="Search" variant="outlined" value={searchVal} onChange={(eve) => { setSearchVal(eve?.target?.value); handleSearch(eve, eve?.target?.value, fromDate, toDate, grossWtInput?.from, grossWtInput?.to); }} />
-            <Button sx={{ padding: 0, maxWidth: "max-content", minWidth: "max-content", position: "absolute", right: "8px", color: "#757575", }} >
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              position: "relative",
+              maxWidth: "max-content",
+              paddingBottom: "15px",
+              paddingRight: "0",
+              marginRight: "15px",
+            }}
+            className="searchbox"
+          >
+            <TextField
+              id="standard-basic"
+              label="Search"
+              variant="outlined"
+              value={searchVal}
+              onChange={(eve) => {
+                setSearchVal(eve?.target?.value);
+                handleSearch(
+                  eve,
+                  eve?.target?.value,
+                  fromDate,
+                  toDate,
+                  grossWtInput?.from,
+                  grossWtInput?.to,
+                );
+              }}
+            />
+            <Button
+              sx={{
+                padding: 0,
+                maxWidth: "max-content",
+                minWidth: "max-content",
+                position: "absolute",
+                right: "8px",
+                color: "#757575",
+              }}
+            >
               <SearchIcon />
             </Button>
           </Box>
@@ -787,22 +931,25 @@ const PendingMemo = () => {
                 className="quotationFilterDates"
                 onChange={(newValue) => {
                   if (newValue === null) {
-                    setFromDate(null)
+                    setFromDate(null);
                   } else {
-                    if (((newValue["$y"] <= 2099 && newValue["$y"] >= 1900) || newValue["$y"] < 1000) || isNaN(newValue["$y"])) {
-                      setFromDate(newValue)
+                    if (
+                      (newValue["$y"] <= 2099 && newValue["$y"] >= 1900) ||
+                      newValue["$y"] < 1000 ||
+                      isNaN(newValue["$y"])
+                    ) {
+                      setFromDate(newValue);
                     } else {
                       Swal.fire({
                         title: "Error !",
                         text: "Enter Valid Date To",
                         icon: "error",
-                        confirmButtonText: "ok"
+                        confirmButtonText: "ok",
                       });
                       resetAllFilters();
                     }
                   }
                 }}
-
               />
             </LocalizationProvider>
           </Box>
@@ -842,8 +989,22 @@ const PendingMemo = () => {
             <Button
               variant="contained"
               className="muiSmilingRocksBtn"
-              sx={{ padding: "7px 10px", minWidth: "max-content", background: "#7d7f85", }}
-              onClick={(eve) => handleSearch(eve, searchVal, fromDate, toDate, grossWtInput?.from, grossWtInput?.to)} >
+              sx={{
+                padding: "7px 10px",
+                minWidth: "max-content",
+                background: "#7d7f85",
+              }}
+              onClick={(eve) =>
+                handleSearch(
+                  eve,
+                  searchVal,
+                  fromDate,
+                  toDate,
+                  grossWtInput?.from,
+                  grossWtInput?.to,
+                )
+              }
+            >
               <SearchIcon sx={{ color: "#fff !important" }} />
             </Button>
           </Box>
@@ -874,20 +1035,46 @@ const PendingMemo = () => {
             <Button
               variant="contained"
               className="muiSmilingRocksBtn"
-              sx={{ padding: "7px 10px", minWidth: "max-content", background: "#7d7f85" }}
-              onClick={(eve) => handleSearch(eve, searchVal, fromDate, toDate, grossWtInput?.from, grossWtInput?.to)} >
+              sx={{
+                padding: "7px 10px",
+                minWidth: "max-content",
+                background: "#7d7f85",
+              }}
+              onClick={(eve) =>
+                handleSearch(
+                  eve,
+                  searchVal,
+                  fromDate,
+                  toDate,
+                  grossWtInput?.from,
+                  grossWtInput?.to,
+                )
+              }
+            >
               <SearchIcon sx={{ color: "#fff !important" }} />
             </Button>
           </Box>
         </Box>
         {isLoading ? (
-          <Box sx={{ display: "flex", justifyContent: "center", paddingTop: "10px" }} >
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              paddingTop: "10px",
+            }}
+          >
             <CircularProgress className="loadingBarManage" />
           </Box>
         ) : (
           <>
-            <Paper sx={{ width: "100%", mb: 2 }} className="salesReportTableSecWeb">
-              <TableContainer sx={{ maxHeight: 580, overflowX: "auto", overflowY: "auto" }} className="memoSeaction">
+            <Paper
+              sx={{ width: "100%", mb: 2 }}
+              className="salesReportTableSecWeb"
+            >
+              <TableContainer
+                sx={{ maxHeight: 580, overflowX: "auto", overflowY: "auto" }}
+                className="memoSeaction"
+              >
                 <Table sx={{ minWidth: 750 }} aria-labelledby="tableTitle">
                   <EnhancedTableHead
                     numSelected={selected.length}
@@ -906,12 +1093,47 @@ const PendingMemo = () => {
                           tabIndex={-1}
                           key={row.id}
                           sx={{ cursor: "pointer" }}
-                          onMouseEnter={(eve) => handleimageShow(eve, row?.imgsrc)} onMouseLeave={(eve) => handleimageShow(eve, row?.imgsrc)} >
-                          <TableCell id={labelId} scope="row" align="center"> {index + 1} </TableCell>
+                          onMouseEnter={(eve) =>
+                            handleimageShow(eve, row?.imgsrc)
+                          }
+                          onMouseLeave={(eve) =>
+                            handleimageShow(eve, row?.imgsrc)
+                          }
+                        >
+                          <TableCell id={labelId} scope="row" align="center">
+                            {" "}
+                            {index + 1}{" "}
+                          </TableCell>
                           <TableCell align="center">{row.EntryDate}</TableCell>
-                          <TableCell align="center"> {row.StockDocumentNo} </TableCell>
+                          <TableCell align="center">
+                            {" "}
+                            {row.StockDocumentNo}{" "}
+                          </TableCell>
                           <TableCell align="center">{row.SKUNo}</TableCell>
-                          <TableCell align="center">{row.designno}</TableCell>
+                          <TableCell align="center">
+                            <div
+                              style={{
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                gap: "8px",
+                              }}
+                            >
+                              <span>{row.designno}</span>
+                              {BELUX_JEWEL && row.ArticleNo && (
+                                <Chip
+                                  label={row.ArticleNo}
+                                  size="small"
+                                  variant="filled"
+                                  sx={{
+                                    borderRadius: "15px",
+                                    fontSize: "10px",
+                                    height: "20px",
+                                  }}
+                                />
+                              )}
+                            </div>
+                          </TableCell>
                           <TableCell align="center">{row.MetalType}</TableCell>
                           {/* <TableCell align="center">{row.MetalAmount}</TableCell>
                           <TableCell align="center">

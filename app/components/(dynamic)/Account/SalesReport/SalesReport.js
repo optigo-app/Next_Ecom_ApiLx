@@ -12,6 +12,7 @@ import {
   TextField,
   Typography,
   useMediaQuery,
+  Chip,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
@@ -35,6 +36,7 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
 import { headCells_SalesReport as headCells } from "@/app/(core)/utils/Glob_Functions/AccountPages/AccountPageColumns";
 import { getSession } from "@/app/(core)/utils/FetchSessionData";
+import { BELUX_JEWEL } from "@/app/(core)/constants/ElveeFlag";
 import { useStore } from "@/app/(core)/contexts/StoreProvider";
 
 function createData(
@@ -530,6 +532,7 @@ const SalesReport = () => {
           e?.Currencycode,
           e?.CurrencyExchRate
         );
+        dataObj.ArticleNo = e?.ArticleNo;
         datass?.push(dataObj);
       }
 
@@ -678,6 +681,7 @@ const SalesReport = () => {
 
           let findUniqueDesign = designLists?.findIndex((ele) => ele === e?.designno);
           if (findUniqueDesign === -1) { designLists?.push(e?.designno); }
+          dataObj.ArticleNo = e?.ArticleNo;
           datass?.push(dataObj);
           hoverImg === "" && e?.imgsrc !== "" && setHoverImg(e?.imgsrc);
 
@@ -1235,7 +1239,23 @@ const SalesReport = () => {
                           <TableCell align="center">{row.EntryDate}</TableCell>
                           <TableCell align="center">{row.StockDocumentNo} </TableCell>
                           <TableCell align="center">{row.SKUNo}</TableCell>
-                          <TableCell align="center">{row.designno}</TableCell>
+                          <TableCell align="center">
+                            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "8px" }}>
+                              <span>{row.designno}</span>
+                              {BELUX_JEWEL && row.ArticleNo && (
+                                <Chip
+                                  label={row.ArticleNo}
+                                  size="small"
+                                  variant="filled"
+                                  sx={{
+                                    borderRadius: "15px",
+                                    fontSize: "10px",
+                                    height: "20px",
+                                  }}
+                                />
+                              )}
+                            </div>
+                          </TableCell>
                           <TableCell align="center">{row.MetalType}</TableCell>
                           {IsPriceShow == 1 && <>  <TableCell align="center"><span dangerouslySetInnerHTML={{ __html: row?.Currencycode }}></span>&nbsp;{formatAmount(row.MetalAmount)}</TableCell>
                             <TableCell align="center"><span dangerouslySetInnerHTML={{ __html: row?.Currencycode }}></span>&nbsp; {formatAmount(row.DiamondAmount)} </TableCell>

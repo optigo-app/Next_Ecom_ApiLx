@@ -1,3 +1,8 @@
+import { getBrandConfig } from "../../../(core)/constants/BrandConfig";
+
+const brand = getBrandConfig();
+const Title = brand.name;
+
 export const productfaqData = [
   {
     question: "Are lab grown diamonds real diamonds?",
@@ -91,76 +96,64 @@ export const returnsExchangeFAQ = [
   },
 ];
 
-const Title="Vimal Gold & Diamond"
 export const sonasonsFaqs = [
   {
     question: `What type of jewellery does ${Title} specialize in?`,
-    answer:
-      `${Title} specializes in luxury gold, diamond, and precious stone jewellery, including bridal collections, everyday wear, high-fashion designs, and custom-made jewellery.`
+    answer: `${Title} specializes in luxury gold, diamond, and precious stone jewellery, including bridal collections, everyday wear, high-fashion designs, and custom-made jewellery.`,
   },
   {
     question: `Are ${Title} jewellery designs handmade?`,
-    answer:
-      `Yes, all ${Title} jewellery is meticulously handcrafted by skilled artisans using advanced techniques combined with traditional craftsmanship to ensure exceptional quality and detail.`
+    answer: `Yes, all ${Title} jewellery is meticulously handcrafted by skilled artisans using advanced techniques combined with traditional craftsmanship to ensure exceptional quality and detail.`,
   },
   {
     question: `Can I customize or design my own jewellery?`,
-    answer:
-      `Absolutely. ${Title} offers a bespoke jewellery design service where our expert designers work closely with you to create a unique piece tailored to your preferences, style, and budget.`
+    answer: `Absolutely. ${Title} offers a bespoke jewellery design service where our expert designers work closely with you to create a unique piece tailored to your preferences, style, and budget.`,
   },
   {
     question: `How do I place an order on the ${Title} website?`,
-    answer:
-      `You can browse our collections, select your preferred jewellery piece, and complete your purchase through our secure checkout process. An order confirmation will be sent once your order is placed.`
+    answer: `You can browse our collections, select your preferred jewellery piece, and complete your purchase through our secure checkout process. An order confirmation will be sent once your order is placed.`,
   },
   {
     question: "What payment methods are accepted?",
     answer:
-      "We accept major credit cards, debit cards, and other secure online payment methods through trusted payment gateways."
+      "We accept major credit cards, debit cards, and other secure online payment methods through trusted payment gateways.",
   },
   {
     question: "Is my online payment secure?",
-    answer:
-      `Yes. All transactions on the ${Title} website are protected using industry-standard SSL encryption and secure payment gateways to ensure your personal and financial information remains safe.`
+    answer: `Yes. All transactions on the ${Title} website are protected using industry-standard SSL encryption and secure payment gateways to ensure your personal and financial information remains safe.`,
   },
   {
     question: "Do you offer international shipping?",
-    answer:
-      `Yes, ${Title} offers international shipping. Delivery timelines, customs duties, and import taxes may vary depending on your location and are the responsibility of the customer.`
+    answer: `Yes, ${Title} offers international shipping. Delivery timelines, customs duties, and import taxes may vary depending on your location and are the responsibility of the customer.`,
   },
   {
     question: "How long does delivery take?",
     answer:
-      "Delivery timelines depend on your location and product availability. Ready products are usually dispatched within a few working days, while custom jewellery may require additional production time."
+      "Delivery timelines depend on your location and product availability. Ready products are usually dispatched within a few working days, while custom jewellery may require additional production time.",
   },
   {
     question: `What is ${Title}’s return policy?`,
-    answer:
-      `We offer returns within the specified return period, provided the jewellery is unused, in original condition, and includes all original packaging. Custom-made and personalized jewellery may not be eligible for returns.`
+    answer: `We offer returns within the specified return period, provided the jewellery is unused, in original condition, and includes all original packaging. Custom-made and personalized jewellery may not be eligible for returns.`,
   },
   {
     question: "Do your products come with a warranty?",
-    answer:
-      `Yes, ${Title} provides a limited warranty covering manufacturing defects in materials and workmanship. Normal wear and tear or damage caused by misuse is not covered.`
+    answer: `Yes, ${Title} provides a limited warranty covering manufacturing defects in materials and workmanship. Normal wear and tear or damage caused by misuse is not covered.`,
   },
   {
     question: "How should I care for my jewellery?",
     answer:
-      "We recommend storing jewellery in a dry, soft pouch and avoiding exposure to chemicals, perfumes, and excessive moisture. Regular cleaning and professional servicing will help maintain its beauty."
+      "We recommend storing jewellery in a dry, soft pouch and avoiding exposure to chemicals, perfumes, and excessive moisture. Regular cleaning and professional servicing will help maintain its beauty.",
   },
   {
     question: "Do you offer jewellery cleaning and repair services?",
-    answer:
-      `Yes, ${Title} provides professional jewellery cleaning, polishing, and repair services to help preserve the beauty and longevity of your jewellery.`
+    answer: `Yes, ${Title} provides professional jewellery cleaning, polishing, and repair services to help preserve the beauty and longevity of your jewellery.`,
   },
   {
     question: "Are the diamonds and gemstones certified?",
-    answer:
-      `All diamonds and gemstones used in ${Title} jewellery are ethically sourced and quality-checked. Certification details are provided where applicable.`
+    answer: `All diamonds and gemstones used in ${Title} jewellery are ethically sourced and quality-checked. Certification details are provided where applicable.`,
   },
   {
     question: `How can I contact ${Title} customer support?`,
-    answer:
-      `You can reach our customer support team through the Contact Us page on our website. Our team will be happy to assist you with any inquiries or concerns.`
-  }
+    answer: `You can reach our customer support team through the Contact Us page on our website. Our team will be happy to assist you with any inquiries or concerns.`,
+  },
 ];

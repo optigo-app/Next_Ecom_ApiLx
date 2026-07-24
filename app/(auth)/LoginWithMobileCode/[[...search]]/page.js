@@ -3,6 +3,7 @@ import { IsUserLoggedIn } from "@/app/(core)/utils/GlobalFunctions/GlobalFunctio
 import { redirect } from "next/navigation";
 import React from "react";
 import { themeMap } from "@/app/(core)/utils/ThemeMap";
+import { resolveLoginWithMobileCode } from "@/app/(core)/utils/ThemeRouteResolver";
 
 
 const page = async ({ params, searchParams }) => {
@@ -12,7 +13,7 @@ const page = async ({ params, searchParams }) => {
   const theme = await getActiveTheme();
   const themeData = themeMap[theme];
   const [awaitedParams, awaitedSearchParams] = await Promise.all([params, searchParams]);
-  const LoginWithMobileCode = (await import(`@/app/theme/${themeData.page}/Auth/LoginWithMobileCode/page.js`)).default;
+  const LoginWithMobileCode = await resolveLoginWithMobileCode(themeData.page);
   return <LoginWithMobileCode params={awaitedParams} searchParams={awaitedSearchParams} />;
 };
 

@@ -1,4 +1,4 @@
- import { LocalSetup } from "@/app/env";
+import { LocalSetup } from "@/app/env";
 
 export const themeMap = {
   "nxt10.optigoapps.com": {
@@ -33,7 +33,7 @@ export const themeMap = {
     // page: "elvee.web",
     page: LocalSetup,
   },
-  'nxthoq.web': {
+  "nxthoq.web": {
     page: "hoq.web",
   },
   "nxtjulian.web": {
@@ -46,16 +46,16 @@ export const themeMap = {
   "omjiyanshjewels.com": {
     page: "fgstore.web",
   },
-  'shreediamond.optigoapps.com': {
+  "shreediamond.optigoapps.com": {
     page: "fgstore.mapp",
   },
-  'elior.optigoapps.com': {
+  "elior.optigoapps.com": {
     page: "fgstore.mapp",
   },
-  'sonasons.optigoapps.com': {
+  "sonasons.optigoapps.com": {
     page: "fgstore.web",
   },
-  'nxt09.optigoapps.com': {
+  "nxt09.optigoapps.com": {
     page: "fgstore.mapp",
   },
   "2sonasons.optigoapps.com": {
@@ -66,5 +66,11 @@ export const themeMap = {
   },
   "appsonasons.optigoapps.com": {
     page: "fgstore.mapp",
+  },
+  "beluxjewel.web": {
+    page: "beluxjewel.web",
+  },
+  "nxt10.optigoapps.com": {
+    page: "beluxjewel.web",
   },
 };

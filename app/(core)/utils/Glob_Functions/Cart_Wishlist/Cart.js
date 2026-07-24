@@ -1,19 +1,19 @@
-import { useState, useEffect, useRef } from 'react';
-import { fetchCartDetails } from '@/app/(core)/utils/API/CartAPI/CartApi';
-import { handleProductRemark } from '@/app/(core)/utils/API/CartAPI/ProductRemarkAPIData';
-import { removeFromCartList } from '@/app/(core)/utils/API/RemoveCartAPI/RemoveCartAPI';
-import { updateQuantity } from '@/app/(core)/utils/API/CartAPI/QuantityAPI';
-import { getSizeData } from '@/app/(core)/utils/API/CartAPI/GetCategorySizeAPI';
-import { updateCartAPI } from '@/app/(core)/utils/API/CartAPI/UpdateCartAPI';
-import pako from 'pako';
-import { useMediaQuery } from '@mui/material';
+import { useState, useEffect, useRef } from "react";
+import { fetchCartDetails } from "@/app/(core)/utils/API/CartAPI/CartApi";
+import { handleProductRemark } from "@/app/(core)/utils/API/CartAPI/ProductRemarkAPIData";
+import { removeFromCartList } from "@/app/(core)/utils/API/RemoveCartAPI/RemoveCartAPI";
+import { updateQuantity } from "@/app/(core)/utils/API/CartAPI/QuantityAPI";
+import { getSizeData } from "@/app/(core)/utils/API/CartAPI/GetCategorySizeAPI";
+import { updateCartAPI } from "@/app/(core)/utils/API/CartAPI/UpdateCartAPI";
+import pako from "pako";
+import { useMediaQuery } from "@mui/material";
 import Cookies from "js-cookie";
-import { fetchSingleProdDT } from '@/app/(core)/utils/API/CartAPI/SingleProdDtAPI';
-import { formatRedirectTitleLine } from '@/app/(core)/utils/Glob_Functions/GlobalFunction';
-import { useNextRouterLikeRR } from '@/app/(core)/hooks/useLocationRd';
-import { useBroadcaster } from '@/app/(core)/contexts/BoardCastContext';
-import { LocalSetup } from '@/app/env';
-import { getSession } from '../../FetchSessionData';
+import { fetchSingleProdDT } from "@/app/(core)/utils/API/CartAPI/SingleProdDtAPI";
+import { formatRedirectTitleLine } from "@/app/(core)/utils/Glob_Functions/GlobalFunction";
+import { useNextRouterLikeRR } from "@/app/(core)/hooks/useLocationRd";
+import { useBroadcaster } from "@/app/(core)/contexts/BoardCastContext";
+import { LocalSetup } from "@/app/env";
+import { getSession } from "../../FetchSessionData";
 
 const useCart = () => {
   const location = useNextRouterLikeRR();
@@ -29,7 +29,7 @@ const useCart = () => {
   const [multiSelect, setMultiSelect] = useState(false);
   const [selectedItems, setSelectedItems] = useState([]);
   const [openModal, setOpenModal] = useState(false);
-  const [productRemark, setProductRemark] = useState('');
+  const [productRemark, setProductRemark] = useState("");
   const [showRemark, setShowRemark] = useState(false);
   const [qtyCount, setQtyCount] = useState(1);
   const [diaIDData, setdiaID] = useState();
@@ -59,72 +59,78 @@ const useCart = () => {
   const { broadcast } = useBroadcaster(); // Get the broadcaster
   const [shouldRecalculate, setShouldRecalculate] = useState(true);
 
-
   const imageNotFound = "/image-not-found.jpg";
 
   const [finalCartData, setFinalCartData] = useState([]);
-  const [loadingIndex, setLoadingIndex] = useState(0)
+  const [loadingIndex, setLoadingIndex] = useState(0);
 
   const [visiterId, setVisiterId] = useState();
 
-  const isLargeScreen = useMediaQuery('(min-width:1050px)');
-  const isMaxWidth1050 = useMediaQuery('(max-width:1050px)');
+  const isLargeScreen = useMediaQuery("(min-width:1050px)");
+  const isMaxWidth1050 = useMediaQuery("(max-width:1050px)");
 
   const validThemenos = [3, 4, 11, 12, 10, 7, 1, 9, 2, 6];
 
   useEffect(() => {
-    const visiterIdVal = Cookies.get('visiterId');
-    setVisiterId(visiterIdVal)
+    const visiterIdVal = Cookies.get("visiterId");
+    setVisiterId(visiterIdVal);
     const storeInit = getSession("storeInit");
     const storedData = getSession("loginUserDetail");
-    setStoreInit(storeInit)
+    setStoreInit(storeInit);
     if (storeInit?.IsB2BWebsite != 0) {
-      setCurrencyData(storedData)
-      const cartStatus = sessionStorage.getItem('isCartDrawer')
-      setCartDrawer(cartStatus)
+      setCurrencyData(storedData);
+      const cartStatus = sessionStorage.getItem("isCartDrawer");
+      setCartDrawer(cartStatus);
       setCartStatus(cartStatus);
     } else {
-      setCurrencyData(storeInit)
+      setCurrencyData(storeInit);
     }
-  }, [])
-
+  }, []);
 
   useEffect(() => {
-    const metalTypeData = getSession('metalTypeCombo');
-    const metalColorData = getSession('MetalColorCombo');
-    const diamondQtyColorData = getSession('diamondQualityColorCombo');
-    const CSQtyColorData = getSession('ColorStoneQualityColorCombo');
+    const metalTypeData = getSession("metalTypeCombo");
+    const metalColorData = getSession("MetalColorCombo");
+    const diamondQtyColorData = getSession("diamondQualityColorCombo");
+    const CSQtyColorData = getSession("ColorStoneQualityColorCombo");
     setMetalTypeCombo(metalTypeData);
     setMetalColorCombo(metalColorData);
     setDiamondQualityColorCombo(diamondQtyColorData);
     setColorStoneCombo(CSQtyColorData);
-  }, [])
+  }, []);
 
   const getCartData = async () => {
     setIsLoading(true);
-    const visiterId = Cookies.get('visiterId');
+    const visiterId = Cookies.get("visiterId");
     try {
       const response = await fetchCartDetails(visiterId);
 
       if (response?.Data?.rd[0]?.stat != 0) {
         setCartData(response?.Data?.rd);
-        const initialProducts = response?.Data?.rd?.map(data => ({
+        const initialProducts = response?.Data?.rd?.map((data) => ({
           ...data,
           images: [],
-          loading: true
-        }))
+          loading: true,
+        }));
         setFinalCartData(initialProducts);
         setLoadingIndex(0);
 
         if (response?.Data?.rd?.length > 0) {
           setSelectedItem(response?.Data?.rd[0]);
-          let item = response?.Data?.rd[0]
-          setQtyCount(item?.Quantity)
+          let item = response?.Data?.rd[0];
+          setQtyCount(item?.Quantity);
           handleCategorySize(item);
-          setMetalID(response?.Data?.rd[0]?.metaltypeid)
-          setMetalCOLORID(response?.Data?.rd[0]?.metalcolorid)
-          setdiaID(response?.Data?.rd[0]?.diamondqualityid + ',' + response?.Data?.rd[0]?.diamondcolorid)
-          setColorStoneID(response?.Data?.rd[0]?.colorstonequalityid + ',' + response?.Data?.rd[0]?.colorstonecolorid)
+          setMetalID(response?.Data?.rd[0]?.metaltypeid);
+          setMetalCOLORID(response?.Data?.rd[0]?.metalcolorid);
+          setdiaID(
+            response?.Data?.rd[0]?.diamondqualityid +
+              "," +
+              response?.Data?.rd[0]?.diamondcolorid,
+          );
+          setColorStoneID(
+            response?.Data?.rd[0]?.colorstonequalityid +
+              "," +
+              response?.Data?.rd[0]?.colorstonecolorid,
+          );
         }
       } else {
         setCartData([]);
@@ -149,15 +155,19 @@ const useCart = () => {
   // for multiselect
   const handleSelectItem = async (item) => {
     if (multiSelect) {
-      setSelectedItems(prevItems =>
-        prevItems.includes(item) ? prevItems.filter(i => i !== item) : [...prevItems, item]
+      setSelectedItems((prevItems) =>
+        prevItems.includes(item)
+          ? prevItems.filter((i) => i !== item)
+          : [...prevItems, item],
       );
     } else {
       setSelectedItem(item);
-      setMetalID(item?.metaltypeid)
-      setdiaID(item?.diamondqualityid + ',' + item?.diamondcolorid);
-      setColorStoneID(item?.colorstonequalityid + ',' + item?.colorstonecolorid)
-      setQtyCount(item?.Quantity)
+      setMetalID(item?.metaltypeid);
+      setdiaID(item?.diamondqualityid + "," + item?.diamondcolorid);
+      setColorStoneID(
+        item?.colorstonequalityid + "," + item?.colorstonecolorid,
+      );
+      setQtyCount(item?.Quantity);
       handleCategorySize(item);
       setOpenMobileModal(true);
     }
@@ -165,7 +175,7 @@ const useCart = () => {
 
   const handlecloseMobileModal = () => {
     setOpenMobileModal(false);
-  }
+  };
 
   const handleMultiSelectToggle = () => {
     setMultiSelect(!multiSelect);
@@ -189,7 +199,6 @@ const useCart = () => {
     }
   };
 
-
   // for updation modal
   const handleOpenModal = () => {
     setOpenModal(true);
@@ -204,12 +213,14 @@ const useCart = () => {
     let param = "Cart";
     let cartfilter;
     if (validThemenos?.includes(storeInit?.Themeno)) {
-      cartfilter = finalCartData?.filter(cartItem => cartItem?.id !== item?.id);
+      cartfilter = finalCartData?.filter(
+        (cartItem) => cartItem?.id !== item?.id,
+      );
       setFinalCartData(cartfilter);
       // FIX: trigger summary recalculation after removal
       setShouldRecalculate(true);
     } else {
-      cartfilter = cartData?.filter(cartItem => cartItem?.id !== item?.id);
+      cartfilter = cartData?.filter((cartItem) => cartItem?.id !== item?.id);
       setCartData(cartfilter);
       // FIX: trigger summary recalculation after removal
       setShouldRecalculate(true);
@@ -229,7 +240,7 @@ const useCart = () => {
       if (resStatus?.msg === "success") {
         return resStatus;
       } else {
-        console.log('Failed to remove product or product not found');
+        console.log("Failed to remove product or product not found");
       }
     } catch (error) {
       console.error("Error:", error);
@@ -239,10 +250,14 @@ const useCart = () => {
   // LocalSetup
 
   const handleRemoveAll = async () => {
-    let param = "Cart"
+    let param = "Cart";
     try {
-      const response = await removeFromCartList('IsDeleteAll', param, visiterId);
-      let resStatus = response.Data.rd[0]
+      const response = await removeFromCartList(
+        "IsDeleteAll",
+        param,
+        visiterId,
+      );
+      let resStatus = response.Data.rd[0];
       if (resStatus?.msg === "success") {
         // setCartCountVal(resStatus?.Cartlistcount)
         // setWishCountVal(resStatus?.Wishlistcount)
@@ -250,10 +265,10 @@ const useCart = () => {
         getCartData();
         setCartData([]);
         setFinalCartData([]);
-        broadcast('LOGOUT_ALL_TABS');
+        broadcast("LOGOUT_ALL_TABS");
         return resStatus;
       } else {
-        console.log('Failed to remove product or product not found');
+        console.log("Failed to remove product or product not found");
       }
     } catch (error) {
       console.error("Error:", error);
@@ -264,22 +279,21 @@ const useCart = () => {
   //get category Size
 
   const handleCategorySize = async (item) => {
-    const visiterId = Cookies.get('visiterId');
+    const visiterId = Cookies.get("visiterId");
     try {
       const response = await getSizeData(item, visiterId);
       if (response) {
-        setSizeCombo(response?.Data)
-        setSizeId(item?.Size)
+        setSizeCombo(response?.Data);
+        setSizeId(item?.Size);
 
         const sizeChangeData = response?.Data?.rd?.filter((size) => {
           return size.sizename === item?.Size;
         });
 
-        setSizeChangeData(sizeChangeData)
+        setSizeChangeData(sizeChangeData);
       }
-    } catch (error) {
-    }
-  }
+    } catch (error) {}
+  };
 
   // const handleCategorySize = async (item) => {
   //   const visiterId = Cookies.get('visiterId');
@@ -305,9 +319,6 @@ const useCart = () => {
   //   }
   // };
 
-
-
-
   // update cart
   const handleUpdateCart = async (updatedItems) => {
     setSelectedItems([]);
@@ -324,50 +335,69 @@ const useCart = () => {
       Misc_Cost: updatedItems?.Misc_Cost,
       Misc_SettingCost: updatedItems?.Misc_SettingCost,
       Other_Cost: updatedItems?.Other_Cost,
-      SolPrice: updatedItems?.SolPrice
-    }
+      SolPrice: updatedItems?.SolPrice,
+    };
 
     if (validThemenos?.includes(storeInit?.Themeno)) {
-      const response1 = await updateQuantity(updatedItems.id, updatedItems?.Quantity, visiterId);
+      const response1 = await updateQuantity(
+        updatedItems.id,
+        updatedItems?.Quantity,
+        visiterId,
+      );
       let resStatus1 = response1?.Data.rd[0];
 
       if (resStatus1?.stat_msg == "success") {
         try {
-          const response = await updateCartAPI(updatedItems, metalID, metalCOLORID, diaIDData, colorStoneID, sizeId, markupData, finalPrice, finalPriceWithMarkup,
-            objExtra
+          const response = await updateCartAPI(
+            updatedItems,
+            metalID,
+            metalCOLORID,
+            diaIDData,
+            colorStoneID,
+            sizeId,
+            markupData,
+            finalPrice,
+            finalPriceWithMarkup,
+            objExtra,
           );
           let resStatus = response?.Data.rd[0];
-          const mtcCode = metalColorCombo?.find(option => option?.id === metalCOLORID);
+          const mtcCode = metalColorCombo?.find(
+            (option) => option?.id === metalCOLORID,
+          );
           if (resStatus?.msg == "success") {
             setOpenMobileModal(false);
-            setHandleUpdate(resStatus)
+            setHandleUpdate(resStatus);
             // toast.success('Cart Updated Successfully')
             let updatedCartData;
 
             const Price = updatedItems?.UnitCostWithMarkUp * qtyCount;
-            updatedCartData = finalCartData.map(cart =>
-              cart?.id === updatedItems?.id ? {
-                ...cart,
-                metaltypename: mtType ?? updatedItems?.metaltypename,
-                metalcolorname: mtColor ?? updatedItems?.metalcolorname,
-                diamondquality: diaQua ?? updatedItems?.diamondquality,
-                diamondcolor: diaColor ?? updatedItems?.diamondcolor,
-                colorstonecolor: csColor ?? updatedItems?.colorstonecolor,
-                // images: `${storeInit?.CDNDesignImageFol}${updatedItems?.designno}~1~${mtcCode?.colorcode}.${updatedItems?.ImageExtension}`,
-                images: `${storeInit?.CDNDesignImageFolThumb}${updatedItems?.designno}~1~${mtcCode?.colorcode}.jpg`,
-                loading: false,
-                colorstonequality: csQua ?? updatedItems?.colorstonequality,
-                FinalCost: Price ?? updatedItems?.FinalCost,
-                UnitCostWithMarkUp: finalPrice?.UnitCostWithMarkUp ?? updatedItems?.UnitCostWithMarkUp,
-                Quantity: qtyCount,
-                Size: sizeId
-              } : cart
+            updatedCartData = finalCartData.map((cart) =>
+              cart?.id === updatedItems?.id
+                ? {
+                    ...cart,
+                    metaltypename: mtType ?? updatedItems?.metaltypename,
+                    metalcolorname: mtColor ?? updatedItems?.metalcolorname,
+                    diamondquality: diaQua ?? updatedItems?.diamondquality,
+                    diamondcolor: diaColor ?? updatedItems?.diamondcolor,
+                    colorstonecolor: csColor ?? updatedItems?.colorstonecolor,
+                    // images: `${storeInit?.CDNDesignImageFol}${updatedItems?.designno}~1~${mtcCode?.colorcode}.${updatedItems?.ImageExtension}`,
+                    images: `${storeInit?.CDNDesignImageFolThumb}${updatedItems?.designno}~1~${mtcCode?.colorcode}.jpg`,
+                    loading: false,
+                    colorstonequality: csQua ?? updatedItems?.colorstonequality,
+                    FinalCost: Price ?? updatedItems?.FinalCost,
+                    UnitCostWithMarkUp:
+                      finalPrice?.UnitCostWithMarkUp ??
+                      updatedItems?.UnitCostWithMarkUp,
+                    Quantity: qtyCount,
+                    Size: sizeId,
+                  }
+                : cart,
             );
             setFinalCartData(updatedCartData);
             setShouldRecalculate(true);
             return resStatus;
           } else {
-            console.log('Failed to update product or product not found');
+            console.log("Failed to update product or product not found");
           }
         } catch (error) {
           console.error("Error:", error);
@@ -375,39 +405,52 @@ const useCart = () => {
       }
     } else {
       try {
-        const response = await updateCartAPI(updatedItems, metalID, metalCOLORID, diaIDData, colorStoneID, sizeId, markupData, finalPrice, finalPriceWithMarkup);
-        let resStatus = response?.Data.rd[0]
+        const response = await updateCartAPI(
+          updatedItems,
+          metalID,
+          metalCOLORID,
+          diaIDData,
+          colorStoneID,
+          sizeId,
+          markupData,
+          finalPrice,
+          finalPriceWithMarkup,
+        );
+        let resStatus = response?.Data.rd[0];
         if (resStatus?.msg == "success") {
           setOpenMobileModal(false);
-          setHandleUpdate(resStatus)
+          setHandleUpdate(resStatus);
           // toast.success('Cart Updated Successfully')
 
           const Price = updatedItems?.UnitCostWithMarkUp * qtyCount;
-          const updatedCartData = cartData.map(cart =>
-            cart?.id === updatedItems?.id ? {
-              ...cart,
-              metaltypename: mtType ?? updatedItems?.metaltypename,
-              metalcolorname: mtColor ?? updatedItems?.metalcolorname,
-              diamondquality: diaQua ?? updatedItems?.diamondquality,
-              diamondcolor: diaColor ?? updatedItems?.diamondcolor,
-              colorstonecolor: csColor ?? updatedItems?.colorstonecolor,
-              colorstonequality: csQua ?? updatedItems?.colorstonequality,
-              FinalCost: Price ?? updatedItems?.FinalCost,
-              UnitCostWithMarkUp: finalPrice?.UnitCostWithMarkUp ?? updatedItems?.UnitCostWithMarkUp,
-              Quantity: qtyCount,
-              Size: sizeId
-            } : cart
+          const updatedCartData = cartData.map((cart) =>
+            cart?.id === updatedItems?.id
+              ? {
+                  ...cart,
+                  metaltypename: mtType ?? updatedItems?.metaltypename,
+                  metalcolorname: mtColor ?? updatedItems?.metalcolorname,
+                  diamondquality: diaQua ?? updatedItems?.diamondquality,
+                  diamondcolor: diaColor ?? updatedItems?.diamondcolor,
+                  colorstonecolor: csColor ?? updatedItems?.colorstonecolor,
+                  colorstonequality: csQua ?? updatedItems?.colorstonequality,
+                  FinalCost: Price ?? updatedItems?.FinalCost,
+                  UnitCostWithMarkUp:
+                    finalPrice?.UnitCostWithMarkUp ??
+                    updatedItems?.UnitCostWithMarkUp,
+                  Quantity: qtyCount,
+                  Size: sizeId,
+                }
+              : cart,
           );
           setCartData(updatedCartData);
           return resStatus;
         } else {
-          console.log('Failed to update product or product not found');
+          console.log("Failed to update product or product not found");
         }
       } catch (error) {
         console.error("Error:", error);
       }
     }
-
   };
 
   const handleCancelUpdateCart = () => {
@@ -421,7 +464,6 @@ const useCart = () => {
     setShowRemark(true);
   };
 
-
   const handleRemarkChange = (event) => {
     const remarkChange = event.target.value;
     setProductRemark(remarkChange);
@@ -430,18 +472,26 @@ const useCart = () => {
   const handleSave = async (data) => {
     setShowRemark(false);
     try {
-      const response = await handleProductRemark(data, productRemark, visiterId);
-      let resStatus = response?.Data?.rd[0]
+      const response = await handleProductRemark(
+        data,
+        productRemark,
+        visiterId,
+      );
+      let resStatus = response?.Data?.rd[0];
       if (resStatus?.stat == 1) {
         let updatedCartData;
         if (validThemenos?.includes(storeInit?.Themeno)) {
-          updatedCartData = finalCartData.map(cart =>
-            cart.id == data.id ? { ...cart, Remarks: resStatus?.design_remark } : cart
+          updatedCartData = finalCartData.map((cart) =>
+            cart.id == data.id
+              ? { ...cart, Remarks: resStatus?.design_remark }
+              : cart,
           );
           setFinalCartData(updatedCartData);
         } else {
-          updatedCartData = cartData.map(cart =>
-            cart.id == data.id ? { ...cart, Remarks: resStatus?.design_remark } : cart
+          updatedCartData = cartData.map((cart) =>
+            cart.id == data.id
+              ? { ...cart, Remarks: resStatus?.design_remark }
+              : cart,
           );
           setCartData(updatedCartData);
         }
@@ -461,27 +511,30 @@ const useCart = () => {
     let updatedCartData;
 
     if (validThemenos?.includes(storeInit?.Themeno)) {
-      updatedCartData = finalCartData.map(cart =>
-        cart.id === item.id ? { ...cart, Quantity: quantity } : cart
+      updatedCartData = finalCartData.map((cart) =>
+        cart.id === item.id ? { ...cart, Quantity: quantity } : cart,
       );
       setFinalCartData(updatedCartData);
     } else {
-      updatedCartData = cartData.map(cart =>
-        cart.id === item.id ? { ...cart, Quantity: quantity } : cart
+      updatedCartData = cartData.map((cart) =>
+        cart.id === item.id ? { ...cart, Quantity: quantity } : cart,
       );
       setCartData(updatedCartData);
     }
 
-    const updatedSelectedItem = selectedItem.id === item.id ? { ...selectedItem, Quantity: quantity, FinalCost: priceQty } : selectedItem;
+    const updatedSelectedItem =
+      selectedItem.id === item.id
+        ? { ...selectedItem, Quantity: quantity, FinalCost: priceQty }
+        : selectedItem;
     setSelectedItem(updatedSelectedItem);
   };
 
   const handleIncrement = async (item) => {
     const newQuantity = (item?.Quantity || 0) + 1;
-    const priceQty = (item?.UnitCostWithMarkUp) * newQuantity;
+    const priceQty = item?.UnitCostWithMarkUp * newQuantity;
 
     updateCartAndSelectedItem(item, newQuantity, priceQty);
-    setQtyCount(prevCount => prevCount + 1);
+    setQtyCount((prevCount) => prevCount + 1);
 
     if (storeInit?.Themeno != 3) {
       try {
@@ -496,14 +549,18 @@ const useCart = () => {
   const handleDecrement = async (item) => {
     if (item?.Quantity > 1) {
       const newQuantity = item.Quantity - 1;
-      const priceQty = (item?.UnitCostWithMarkUp) * newQuantity;
+      const priceQty = item?.UnitCostWithMarkUp * newQuantity;
 
       updateCartAndSelectedItem(item, newQuantity, priceQty);
-      setQtyCount(prevCount => (prevCount > 1 ? prevCount - 1 : 1));
+      setQtyCount((prevCount) => (prevCount > 1 ? prevCount - 1 : 1));
 
       if (storeInit?.Themeno != 3) {
         try {
-          const response = await updateQuantity(item.id, newQuantity, visiterId);
+          const response = await updateQuantity(
+            item.id,
+            newQuantity,
+            visiterId,
+          );
           // console.log("Quantity updated successfully:", response);
         } catch (error) {
           console.error("Failed to update quantity:", error);
@@ -516,15 +573,20 @@ const useCart = () => {
   const handleMetalTypeChange = async (event) => {
     const selectedTypeName = event.target.value;
     const selectedID = event.target.name;
-    setMtType(selectedTypeName)
-    setSelectedItem(prevItem => ({ ...prevItem, metaltypename: selectedTypeName }));
+    setMtType(selectedTypeName);
+    setSelectedItem((prevItem) => ({
+      ...prevItem,
+      metaltypename: selectedTypeName,
+    }));
 
     // const updatedMTData = cartData?.map(cart =>
     //   cart.id == selectedID ? { ...cart, metaltypename: selectedTypeName } : cart
     // );
     // setCartData(updatedMTData);
 
-    const selectedMetal = metalTypeCombo?.find(option => option.metaltype === selectedTypeName);
+    const selectedMetal = metalTypeCombo?.find(
+      (option) => option.metaltype === selectedTypeName,
+    );
     if (selectedMetal) {
       const selectedMetalId = selectedMetal?.Metalid;
       setMetalID(selectedMetalId);
@@ -534,39 +596,48 @@ const useCart = () => {
 
   const handleMetalColorChange = (event, selectedId) => {
     const selectedTypeName = event.target.value;
-    const fetchColorCode = metalColorCombo.find((item) => item?.metalcolorname === event.target.value)
+    const fetchColorCode = metalColorCombo.find(
+      (item) => item?.metalcolorname === event.target.value,
+    );
     // const selectedID = event.target.name;
     setMtColor(selectedTypeName);
     if (validThemenos?.includes(storeInit?.Themeno)) {
-      setSelectedItem(prevItem => ({
-        ...prevItem, metalcolorname: selectedTypeName, colorcode: fetchColorCode?.colorcode,
+      setSelectedItem((prevItem) => ({
+        ...prevItem,
+        metalcolorname: selectedTypeName,
+        colorcode: fetchColorCode?.colorcode,
         // images: `${storeInit?.CDNDesignImageFol}${selectedItem?.designno}~1~${selectedTypeName}.${selectedItem?.ImageExtension}`,
         images: `${storeInit?.CDNDesignImageFolThumb}${selectedItem?.designno}~1~${fetchColorCode?.colorcode}.${selectedItem?.ImageExtension}`,
-        loading: false
+        loading: false,
       }));
     } else {
-      setSelectedItem(prevItem => ({ ...prevItem, metalcolorname: selectedTypeName, colorcode: fetchColorCode?.colorcode }));
+      setSelectedItem((prevItem) => ({
+        ...prevItem,
+        metalcolorname: selectedTypeName,
+        colorcode: fetchColorCode?.colorcode,
+      }));
     }
 
-    const selectedMetal = metalColorCombo.find(option => option.metalcolorname === selectedTypeName);
+    const selectedMetal = metalColorCombo.find(
+      (option) => option.metalcolorname === selectedTypeName,
+    );
     if (selectedMetal) {
       const selectedMetalId = selectedMetal.id;
       setMetalCOLORID(selectedMetalId);
     }
   };
 
-
   const handleDiamondChange = (event) => {
     const value = event.target.value;
     const selectedID = event.target.name;
-    const [quality, color] = value.split(',');
+    const [quality, color] = value.split(",");
 
     setDiaColor(color);
     setDiaQua(quality);
-    setSelectedItem(prevItem => ({
+    setSelectedItem((prevItem) => ({
       ...prevItem,
       diamondquality: quality,
-      diamondcolor: color
+      diamondcolor: color,
     }));
 
     // const updatedQtytData = cartData?.map(cart =>
@@ -577,7 +648,9 @@ const useCart = () => {
     // );
     // setCartData(updatedQtytData);
 
-    const selectedDia = diamondQualityColorCombo.find(option => option.Quality === quality && option.color === color);
+    const selectedDia = diamondQualityColorCombo.find(
+      (option) => option.Quality === quality && option.color === color,
+    );
     if (selectedDia) {
       const selectedDiaQId = selectedDia.QualityId;
       const selectedDiaCId = selectedDia.ColorId;
@@ -590,7 +663,7 @@ const useCart = () => {
   const handleSizeChange = (event) => {
     const sizedata = event?.target?.value;
     const selectedID = event.target.name;
-    setSelectedItem(prevItem => ({ ...prevItem, Size: sizedata }));
+    setSelectedItem((prevItem) => ({ ...prevItem, Size: sizedata }));
     setSizeId(sizedata);
 
     // const updatedSizeData = cartData?.map(cart =>
@@ -598,7 +671,9 @@ const useCart = () => {
     // );
     // setCartData(updatedSizeData);
 
-    const sizeChangeData = sizeCombo?.rd?.filter(size => size.sizename === sizedata);
+    const sizeChangeData = sizeCombo?.rd?.filter(
+      (size) => size.sizename === sizedata,
+    );
     setSizeChangeData(sizeChangeData);
     handlePrice(selectedID, sizedata, diaIDData, colorStoneID, metalID);
   };
@@ -606,15 +681,15 @@ const useCart = () => {
   const handleColorStoneChange = (event) => {
     const value = event.target.value;
     const selectedID = event.target.name;
-    const [quality, color] = value.split(',');
+    const [quality, color] = value.split(",");
 
     setCsColor(color);
     setCsQua(quality);
 
-    setSelectedItem(prevItem => ({
+    setSelectedItem((prevItem) => ({
       ...prevItem,
       colorstonequality: quality,
-      colorstonecolor: color
+      colorstonecolor: color,
     }));
 
     // const updatedQtytData = cartData?.map(cart =>
@@ -625,7 +700,9 @@ const useCart = () => {
     // );
     // setCartData(updatedQtytData);
 
-    const selectedCS = ColorStoneCombo.find(option => option.Quality === quality && option.color === color);
+    const selectedCS = ColorStoneCombo.find(
+      (option) => option.Quality === quality && option.color === color,
+    );
     if (selectedCS) {
       const selectedCSQId = selectedCS.QualityId;
       const selectedCSCId = selectedCS.ColorId;
@@ -637,14 +714,31 @@ const useCart = () => {
 
   // for price api
 
-  const handlePrice = async (selectedID, sizedata, diaId, csQid, selectedMetalId) => {
+  const handlePrice = async (
+    selectedID,
+    sizedata,
+    diaId,
+    csQid,
+    selectedMetalId,
+  ) => {
     try {
       setIsPriceLoding(true);
-      const response = await fetchSingleProdDT(selectedItem, sizedata, diaId, csQid, selectedMetalId, visiterId);
-      if (response?.Status === "200" || response?.Status === 200 || response?.Status == 200) {
+      const response = await fetchSingleProdDT(
+        selectedItem,
+        sizedata,
+        diaId,
+        csQid,
+        selectedMetalId,
+        visiterId,
+      );
+      if (
+        response?.Status === "200" ||
+        response?.Status === 200 ||
+        response?.Status == 200
+      ) {
         const resData = response?.Data?.rd[0];
         const finalPrice = resData?.UnitCostWithMarkUp * qtyCount;
-        setFinalPrice(resData)
+        setFinalPrice(resData);
         const objExtra = {
           Metal_Cost: resData?.Metal_Cost,
           Labour_Cost: resData?.Labour_Cost,
@@ -655,15 +749,15 @@ const useCart = () => {
           Misc_Cost: resData?.Misc_Cost,
           Misc_SettingCost: resData?.Misc_SettingCost,
           Other_Cost: resData?.Other_Cost,
-          SolPrice: resData?.SolPrice
-        }
+          SolPrice: resData?.SolPrice,
+        };
 
-        setSelectedItem(prevItem => ({
+        setSelectedItem((prevItem) => ({
           ...prevItem,
           FinalCost: finalPrice,
           UnitCostWithMarkUp: resData?.UnitCostWithMarkUp,
           Quantity: qtyCount,
-          ...objExtra
+          ...objExtra,
         }));
 
         // setCartData(prevCartData => prevCartData.map(cart =>
@@ -675,7 +769,6 @@ const useCart = () => {
         //     Size: sizedata
         //   } : cart
         // ));
-
       }
     } catch (error) {
       console.error("Failed to update quantity:", error);
@@ -688,11 +781,13 @@ const useCart = () => {
     var txt = document.createElement("textarea");
     txt.innerHTML = html;
     return txt.value;
-  }
+  };
 
   const CartCardImageFunc = (pd) => {
     if (validThemenos?.includes(storeInit?.Themeno)) {
-      const mtcCode = metalColorCombo?.find(option => option?.metalcolorname === pd?.metalcolorname);
+      const mtcCode = metalColorCombo?.find(
+        (option) => option?.metalcolorname === pd?.metalcolorname,
+      );
       let primaryImage;
 
       if (pd?.ImageCount > 0) {
@@ -713,14 +808,15 @@ const useCart = () => {
           });
         };
 
-        const mtcCode = metalColorCombo?.find(option => option?.metalcolorname === pd?.metalcolorname);
+        const mtcCode = metalColorCombo?.find(
+          (option) => option?.metalcolorname === pd?.metalcolorname,
+        );
         let primaryImage, secondaryImage;
 
         if (pd?.ImageCount > 0) {
           primaryImage = `${storeInit?.CDNDesignImageFolThumb}${pd?.designno}~1~${mtcCode?.colorcode}.jpg`;
           secondaryImage = `${storeInit?.CDNDesignImageFolThumb}${pd?.designno}~1.jpg`;
-        }
-        else {
+        } else {
           primaryImage = secondaryImage = imageNotFound;
         }
         loadImage(primaryImage)
@@ -738,56 +834,53 @@ const useCart = () => {
           });
       });
     }
-
   };
 
   useEffect(() => {
-    const initialProducts = cartData?.map(data => ({
+    const initialProducts = cartData?.map((data) => ({
       ...data,
       images: [],
-      loading: true
-    }))
+      loading: true,
+    }));
 
-    setFinalCartData(initialProducts)
-    setLoadingIndex(0)
-  }, [cartData, cartStatus])
+    setFinalCartData(initialProducts);
+    setLoadingIndex(0);
+  }, [cartData, cartStatus]);
 
   useEffect(() => {
-    if (loadingIndex >= finalCartData?.length) return
+    if (loadingIndex >= finalCartData?.length) return;
 
     const loadNextProductImages = () => {
-      setFinalCartData(prevData => {
-        const newData = [...prevData]
+      setFinalCartData((prevData) => {
+        const newData = [...prevData];
         newData[loadingIndex] = {
           ...newData[loadingIndex],
           images: CartCardImageFunc(newData[loadingIndex]),
-          loading: false
-        }
-        return newData
-      })
+          loading: false,
+        };
+        return newData;
+      });
 
-      setLoadingIndex(prevIndex => prevIndex + 1)
-    }
+      setLoadingIndex((prevIndex) => prevIndex + 1);
+    };
     if (validThemenos?.includes(storeInit?.Themeno)) {
-      const timer = setTimeout(loadNextProductImages, 130)
-      return () => clearTimeout(timer)
+      const timer = setTimeout(loadNextProductImages, 130);
+      return () => clearTimeout(timer);
+    } else {
+      const timer = setTimeout(loadNextProductImages, 20);
+      return () => clearTimeout(timer);
     }
-    else {
-      const timer = setTimeout(loadNextProductImages, 20)
-      return () => clearTimeout(timer)
-    }
-  }, [loadingIndex, finalCartData, CartCardImageFunc])
+  }, [loadingIndex, finalCartData, CartCardImageFunc]);
 
   const compressAndEncode = (inputString) => {
     try {
       const uint8Array = new TextEncoder().encode(inputString);
 
-      const compressed = pako.deflate(uint8Array, { to: 'string' });
-
+      const compressed = pako.deflate(uint8Array, { to: "string" });
 
       return btoa(String.fromCharCode.apply(null, compressed));
     } catch (error) {
-      console.error('Error compressing and encoding:', error);
+      console.error("Error compressing and encoding:", error);
       return null;
     }
   };
@@ -796,36 +889,61 @@ const useCart = () => {
     const logindata = getSession("loginUserDetail");
     const createAndNavigate = (obj) => {
       const encodedObj = compressAndEncode(JSON.stringify(obj));
-      // navigate(`/d/${ ? cartData?.TitleLine.replace(/\s+/g, `_`) + (cartData?.TitleLine?.length > 0 ? "_" : "") : ""}${}?p=${}`);
-      navigate(`/d/${formatRedirectTitleLine(cartData?.TitleLine)}${cartData?.designno}?p=${encodeURIComponent(encodedObj)}`);
-    }
+      navigate(
+        `/d/${formatRedirectTitleLine(cartData?.TitleLine)}${cartData?.designno}?p=${encodeURIComponent(encodedObj)}`,
+      );
+    };
+
+    const itemDiaQc =
+      (cartData?.diamondqualityid != null && cartData?.diamondcolorid != null && cartData?.diamondqualityid !== 0)
+        ? `${cartData.diamondqualityid},${cartData.diamondcolorid}`
+        : (cartData?.cmboDiaQCid || logindata?.cmboDiaQCid);
+
+    const itemCsQc =
+      (cartData?.colorstonequalityid != null && cartData?.colorstonecolorid != null && cartData?.colorstonequalityid !== 0)
+        ? `${cartData.colorstonequalityid},${cartData.colorstonecolorid}`
+        : (cartData?.cmboCSQCid || logindata?.cmboCSQCid);
 
     if (cartData?.StockNo !== "") {
       let obj = {
         a: cartData?.autocode,
         b: cartData?.designno,
-        m: logindata?.MetalId,
-        d: logindata?.cmboDiaQCid,
-        c: logindata?.cmboCSQCid,
+        m: cartData?.metaltypeid || cartData?.MetalPurityid || cartData?.Metalid || logindata?.MetalId,
+        d: itemDiaQc,
+        c: itemCsQc,
         f: {},
-        g: [["", ""], ["", "", ""]],
-        i: cartData?.MetalColorid,
+        g: [
+          ["", ""],
+          ["", "", ""],
+        ],
+        i: cartData?.metalcolorid || cartData?.MetalColorid,
         l: cartData?.ImageExtension,
         count: cartData?.ImageCount,
+        ArticleNo: cartData?.ArticleNo,
+        ArticleId: cartData?.ArticleId || cartData?.id,
+        Size: cartData?.Size,
+        Purity: cartData?.Purity,
+        metalpurityname: cartData?.metalpurityname,
       };
       createAndNavigate(obj);
     } else {
       let obj = {
         a: cartData?.autocode,
         b: cartData?.designno,
-        m: cartData?.metaltypeid,
-        d: diaIDData,
-        c: colorStoneID,
+        m: cartData?.metaltypeid || cartData?.MetalPurityid || cartData?.Metalid || logindata?.MetalId,
+        d: itemDiaQc,
+        c: itemCsQc,
         f: {},
-        g: [["", ""], ["", "", ""]],
-        i: cartData?.MetalColorid,
+        g: [
+          ["", ""],
+          ["", "", ""],
+        ],
+        i: cartData?.metalcolorid || cartData?.MetalColorid,
         l: cartData?.ImageExtension,
         count: cartData?.ImageCount,
+        ArticleNo: cartData?.ArticleNo,
+        ArticleId: cartData?.ArticleId || cartData?.id,
+        Size: cartData?.Size,
       };
       createAndNavigate(obj);
     }
@@ -833,7 +951,7 @@ const useCart = () => {
 
   // browse our collection
   const handelMenu = () => {
-    let menudata = getSession('menuparams');
+    let menudata = getSession("menuparams");
     // let redirectURL = sessionStorage.getItem('redirectURL');
     // if (redirectURL) {
     //   return navigate(redirectURL);
@@ -843,13 +961,17 @@ const useCart = () => {
         menudata?.FilterKey && `${menudata?.FilterVal}`,
         menudata?.FilterKey1 && `${menudata?.FilterVal1}`,
         menudata?.FilterKey2 && `${menudata?.FilterVal2}`,
-      ].filter(Boolean).join('/');
+      ]
+        .filter(Boolean)
+        .join("/");
 
       const queryParameters = [
         menudata?.FilterKey && `${menudata?.FilterVal}`,
         menudata?.FilterKey1 && `${menudata?.FilterVal1}`,
         menudata?.FilterKey2 && `${menudata?.FilterVal2}`,
-      ].filter(Boolean).join(',');
+      ]
+        .filter(Boolean)
+        .join(",");
 
       const otherparamUrl = Object.entries({
         b: menudata?.FilterKey,
@@ -859,7 +981,7 @@ const useCart = () => {
         .filter(([key, value]) => value !== undefined)
         .map(([key, value]) => value)
         .filter(Boolean)
-        .join(',');
+        .join(",");
 
       // const paginationParam = [
       //   `page=${menudata.page ?? 1}`,
@@ -868,14 +990,13 @@ const useCart = () => {
 
       let menuEncoded = `${queryParameters}/${otherparamUrl}`;
       const url = `/p/${menudata?.menuname}/${queryParameters1}/?M=${btoa(
-        menuEncoded
+        menuEncoded,
       )}`;
-      navigate(url)
+      navigate(url);
     } else {
-      navigate("/")
+      navigate("/");
     }
-  }
-
+  };
 
   return {
     isloding,
@@ -922,7 +1043,7 @@ const useCart = () => {
     handleMoveToDetail,
     handelMenu,
     shouldRecalculate,
-    setShouldRecalculate
+    setShouldRecalculate,
   };
 };
 

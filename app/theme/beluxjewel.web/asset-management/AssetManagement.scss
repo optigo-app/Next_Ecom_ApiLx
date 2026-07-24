@@ -1,0 +1,55 @@
+@use "../style/variable.scss" as *;
+
+.assetContainer {
+  background-color: #ffffff;
+  min-height: 100vh;
+}
+
+.assetHeader {
+  border-bottom: 1px solid #eaeaea;
+  background-color: #fbfbfb;
+}
+
+.assetTitle {
+  color: #1a1a1a !important;
+}
+
+.assetOverline {
+  color: $btnBg !important;
+}
+
+.assetCard {
+  background-color: #ffffff;
+  border: 1px solid #eaeaea;
+  border-radius: 1px;
+  overflow: hidden;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+
+  &:hover {
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    border-color: #114d6e;
+    transform: translateY(-2px);
+  }
+}
+
+.assetCardTitle {
+  color: #1a1a1a !important;
+}
+
+.assetCardSpec {
+  color: #666666 !important;
+}
+
+.assetDownloadButton {
+  border-radius: 0px !important;
+  border-color: #eaeaea !important;
+  color: #1a1a1a !important;
+  font-weight: 600 !important;
+  transition: all 0.2s ease !important;
+
+  &:hover {
+    background-color: #114d6e !important;
+    color: #ffffff !important;
+    border-color: #114d6e !important;
+  }
+}

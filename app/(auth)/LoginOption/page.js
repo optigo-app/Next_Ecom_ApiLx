@@ -3,6 +3,7 @@ import { themeMap } from "@/app/(core)/utils/ThemeMap";
 import { IsUserLoggedIn } from "@/app/(core)/utils/GlobalFunctions/GlobalFunctions";
 import { redirect } from "next/navigation";
 import React from "react";
+import { resolveLoginOption } from "@/app/(core)/utils/ThemeRouteResolver";
 
 
 const page = async ({ params, searchParams }) => {
@@ -12,7 +13,7 @@ const page = async ({ params, searchParams }) => {
   const theme = await getActiveTheme();
   const themeData = themeMap[theme];
   const [awaitedParams, awaitedSearchParams] = await Promise.all([params, searchParams]);
-  const LoginOption = (await import(`@/app/theme/${themeData.page}/Auth/LoginOption/page.js`)).default;
+  const LoginOption = await resolveLoginOption(themeData.page);
   return <LoginOption params={awaitedParams} searchParams={awaitedSearchParams} />;
 };
 

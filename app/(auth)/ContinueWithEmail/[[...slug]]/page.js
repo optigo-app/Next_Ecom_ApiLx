@@ -3,6 +3,7 @@ import { getStoreInit, IsUserLoggedIn } from "@/app/(core)/utils/GlobalFunctions
 import { themeMap } from "@/app/(core)/utils/ThemeMap";
 import { redirect } from "next/navigation";
 import React from "react";
+import { resolveContinueWithEmail } from "@/app/(core)/utils/ThemeRouteResolver";
 
 
 const page = async ({ params, searchParams }) => {
@@ -13,7 +14,7 @@ const page = async ({ params, searchParams }) => {
   const storeInit = await getStoreInit();
   const themeData = themeMap[theme];
   const [awaitedParams, awaitedSearchParams] = await Promise.all([params, searchParams]);
-  const ContinueWithEmail = (await import(`@/app/theme/${themeData.page}/Auth/ContinueWithEmail/page.js`)).default;
+  const ContinueWithEmail = await resolveContinueWithEmail(themeData.page);
   return <ContinueWithEmail storeInit={storeInit} params={awaitedParams} searchParams={awaitedSearchParams} />;
 };
 

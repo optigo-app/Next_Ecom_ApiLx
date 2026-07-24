@@ -1,0 +1,49 @@
+ArticleId	MetalTypeId	MetalType  MetalColorId  MetalColor	    Size
+17249	           2	GOLD 18K	2	          Yellow       	-			    
+17258	           1	GOLD 14K	2	          Yellow       	10			    
+17259	           1	GOLD 14K	2	          Yellow       	12			    
+17260	           1	GOLD 16K	2	          Yellow       	13			    
+
+  StoneTypeid	ArticleId	Quality	Color
+		1     	17249   	PD   	PD
+		2     	17249   	PD   	PD
+		4     	17249   	18K   	Yellow
+		1     	17258   	PD   	PD
+		2     	17258   	PD   	PD
+		4     	17258   	14K   	Yellow
+		1     	17259   	IJ   	Blue
+		2     	17259   	PD   	PD
+		4     	17259   	14K   	Yellow
+		1     	17260   	IJ   	Blue
+		2     	17260   	PD   	PD
+		4     	17260   	14K   	Yellow   
+
+heer we ahv to make combinationan category fr like 
+so we have to creat 
+Choice of Metal
+ which contain unique metal type color combnation in our case  rd1
+ 18k gold yellow 
+ 14k gold yellow 
+ 16k gold yellow
+
+ size   when we selected metal type color to 14k goldyelloew we hav to type size 
+ avaiable 10 , 12 so this artcile okay for size fomr rd1  
+ -  
+ 10   
+ 12
+ 13
+
+Diamond Quality  this fully work based on stonetypeid
+
+PD-PD
+18K-YELLOW
+14K-YELLOW
+ij-blue
+
+
+filetr out meal uqialty fomr rd2 
+
+
+
+                  
+                                       

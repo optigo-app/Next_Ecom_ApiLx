@@ -1,0 +1,12 @@
+@use "../../style/variable.scss" as *;
+
+.bar {
+  background-color: $topbar;
+  color: #fff;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  padding-inline: 16px;
+  width: 100%;
+  overflow: hidden;
+}

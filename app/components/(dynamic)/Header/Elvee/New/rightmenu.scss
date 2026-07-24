@@ -1,0 +1,10 @@
+@use "../../../../../theme/beluxjewel.web/style/variable.scss" as *;
+
+
+
+.badge_right_menu {
+    .MuiBadge-badge {
+        background-color: $btnBg;
+        color: $btncolor;
+    }
+}

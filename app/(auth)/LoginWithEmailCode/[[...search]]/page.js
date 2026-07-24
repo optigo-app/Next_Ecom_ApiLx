@@ -3,6 +3,7 @@ import { IsUserLoggedIn } from "@/app/(core)/utils/GlobalFunctions/GlobalFunctio
 import { redirect } from "next/navigation";
 import { themeMap } from "@/app/(core)/utils/ThemeMap";
 import React from "react";
+import { resolveLoginWithEmailCode } from "@/app/(core)/utils/ThemeRouteResolver";
 
 
 const page = async ({ params, searchParams }) => {
@@ -12,7 +13,7 @@ const page = async ({ params, searchParams }) => {
   const theme = await getActiveTheme();
   const themeData = themeMap[theme];
   const [awaitedParams, awaitedSearchParams] = await Promise.all([params, searchParams]);
-  const LoginWithEmailCode = (await import(`@/app/theme/${themeData.page}/Auth/LoginWithEmailCode/page.js`)).default;
+  const LoginWithEmailCode = await resolveLoginWithEmailCode(themeData.page);
   return <LoginWithEmailCode params={awaitedParams} searchParams={awaitedSearchParams} />;
 };
 

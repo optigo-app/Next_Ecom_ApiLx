@@ -9,7 +9,7 @@ import { AppConfig } from "../constants/AppConfig";
  */
 export async function getHost() {
   try {
-    const h = headers();
+    const h = await headers();
     const host = h.get("host");
     if (host) return host;
   } catch {
@@ -68,16 +68,20 @@ const Theme = {
     mobile: "/WebSiteStaticImage/logoIcon/vimal/mobileLogo.png",
     favicon: "/WebSiteStaticImage/logoIcon/vimal/favicon.ico",
     meta: "/WebSiteStaticImage/logoIcon/vimal/MetaShareImage.jpg",
-    
+  },
+  beluxjewel: {
+    web: "/WebSiteStaticImage/logoIcon/vimal/webLogo.png",
+    mobile: "/WebSiteStaticImage/logoIcon/vimal/mobileLogo.png",
   },
 };
- 
+
 export function getLogos() {
   const config = AppConfig[activeBrand];
   if (config?.web && config?.mobile) {
     return {
       web: config.web,
       mobile: config.mobile,
+      transparent_mobile: config.transparent_mobile,
     };
   }
 
@@ -94,6 +98,10 @@ export function getLogos() {
   if (brand.toLowerCase().includes("hoq")) {
     return Theme.hoq;
   }
+  if (brand.toLowerCase().includes("beluxjewel")) {
+    return Theme.beluxjewel;
+  }
+
   return Theme.Sonasons;
 }
 
@@ -113,7 +121,10 @@ export function getHoqLogos() {
   if (brand.toLowerCase().includes("sonasons")) {
     return Theme.Sonasons;
   }
-  if (brand.toLowerCase().includes("elvee")) {
+  if (
+    brand.toLowerCase().includes("elvee") ||
+    brand.toLowerCase().includes("belux")
+  ) {
     return Theme.Elvee;
   }
   if (brand.toLowerCase().includes("hoq")) {
@@ -121,15 +132,3 @@ export function getHoqLogos() {
   }
   return Theme.Sonasons;
 }
-
-// // export const LocalSetup = "fgstore.mapp";
-// export const LocalSetup = "fgstore.web";
-// // export const LocalSetup = "hoq.web";
-// // export const LocalSetup = "elvee.web";
-// // export const LocalSetup = "diamondtine.web";
-// // export const LocalSetup = "malakanJwewls.web";
-
-// // export const activeBrand = "shreediamond"
-// export const activeBrand = "SonasonsApp"
-// // export const activeBrand = "EliorApp"
-// // export const activeBrand = "omjiyas"
