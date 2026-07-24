@@ -31,8 +31,8 @@
       "IsDiamondCustomization": 1,
       "IsCsCustomization": 0,
       "IsCeilingApply": 1,
-      "IsMetalCustComb": 1,
-      "IsDiamondCustComb": 1,
+      "IsMetalCustComb": 0,
+      "IsDiamondCustComb": 0,
       "IsCsCustComb": 0,
       "IsStockWebsite": 0,
       "IsSizeWiseDesignWt": 1,
@@ -105,7 +105,7 @@
       "IsMakeToOrderBatch": 0,
       "CartNo": 1,
       "IsTaxIncludePrice": 0,
-      "FileCreateDate": "2026-07-22T11:46:38.237",
+      "FileCreateDate": "2026-07-23T15:41:14.21",
       "RollOverNo": 0,
       "IsWebMobileLoginOff": 1,
       "IsEcomOtpVerification": 1,
@@ -533,7 +533,7 @@
       "IsWhatsappShare": 1,
       "SocialLinkObj": "[{\"SName\":\"Instagram\",\"SLink\":\"https:\\/\\/www.instagram.com\\/accounts\\/login\\/?hl=en\",\"SImgPath\":\"http:\\/\\/nzen\\/R50B3\\/UFS\\/demostoreQI9S5BDATC0M1KYJH\\/b2cstoreFooterimages\\/Elvee Promise Store\\/footerIcon1\\/Instagram.svg.png\"},{\"SName\":\"Facebook\",\"SLink\":\"https:\\/\\/www.facebook.com\\/OptigoApps\\/\",\"SImgPath\":\"http:\\/\\/nzen\\/R50B3\\/UFS\\/demostoreQI9S5BDATC0M1KYJH\\/b2cstoreFooterimages\\/Elvee Promise Store\\/footerIcon2\\/fb.png\"},{\"SName\":\"Twitter\",\"SLink\":\"https:\\/\\/twitter.com\\/\",\"SImgPath\":\"http:\\/\\/nzen\\/R50B3\\/UFS\\/demostoreQI9S5BDATC0M1KYJH\\/b2cstoreFooterimages\\/Elvee Promise Store\\/footerIcon3\\/twitter-x-logo-png-9.png\"},{\"SName\":\"youtube\",\"SLink\":\"https:\\/\\/www.youtube.com\\/\",\"SImgPath\":\"http:\\/\\/nzen\\/R50B3\\/UFS\\/demostoreQI9S5BDATC0M1KYJH\\/b2cstoreFooterimages\\/Elvee Promise Store\\/footerIcon4\\/pngegg (1).png\"},{\"SName\":\"Pinterest\",\"SLink\":\"https:\\/\\/www.pinterest.com\\/\",\"SImgPath\":\"http:\\/\\/nzen\\/R50B3\\/UFS\\/demostoreQI9S5BDATC0M1KYJH\\/b2cstoreFooterimages\\/Elvee Promise Store\\/footerIcon5\\/pngegg.png\"},{\"SName\":\"Linkedin\",\"SLink\":\"https:\\/\\/in.linkedin.com\\/\",\"SImgPath\":\"http:\\/\\/nzen\\/R50B3\\/UFS\\/demostoreQI9S5BDATC0M1KYJH\\/b2cstoreFooterimages\\/Elvee Promise Store\\/footerIcon6\\/linkedin-app-logo-set-social-media-button-or-social-media-icon-free-vector.jpg\"}]",
       "theme": "Theme1",
-      "VisitorId": 565476837
+      "VisitorId": 620065397
     }
   ]
 }
