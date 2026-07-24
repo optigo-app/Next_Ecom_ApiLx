@@ -21,6 +21,7 @@ import DesignSet1 from "@/app/components/(dynamic)/DesignSet/DesignSet1";
 import DesignSet from "@/app/components/(dynamic)/DesignSet/DesignSet";
 import BrandsComponent from "@/app/components/(static)/BrandComponent/BrandComponents";
 import NewsletterSignup from "@/app/components/(static)/SubscribeNewsLater/NewsletterSignup";
+import {IsSonasons} from "@/app/(core)/constants/Fgstore.Web";
 
 export const metadata = generatePageMetadata(pages["/"], "Sonasons");
 
@@ -41,7 +42,8 @@ const SonasonsHome = async () => {
       {/* <BespokeBanner /> */}
       {storeData?.Blockno === 1 && (
         <>
-          {storeData?.IsHomeAlbum === 1 && <AlbumSection storeData={storeData} />}
+          {/* {storeData?.IsHomeAlbum === 1 && <AlbumSection storeData={storeData} />} */}
+          {IsSonasons?null: storeData?.IsHomeAlbum === 1 && <AlbumSection storeData={storeData} />  }
           {storeData?.IsHomeBestSeller === 1 && <BestSellerSection2 data={bestsellerBanner} storeData={storeData} />}
           {storeData?.IsHomeBestSeller === 1 && <NewArrival data={newArrivalBanner} storeData={storeData} />}
           {storeData?.IsHomeTrending === 1 && <TrendingView data={trendingBanner} storeInit={storeData} />}
@@ -56,7 +58,7 @@ const SonasonsHome = async () => {
       )}
       {storeData?.Blockno === 2 && (
         <>
-          {storeData?.IsHomeAlbum === 1 && <AlbumSection storeData={storeData} />}
+          {IsSonasons?null: storeData?.IsHomeAlbum === 1 && <AlbumSection storeData={storeData} />  }
           {storeData?.IsHomeBestSeller === 1 && <BestSellerSection1 data={bestsellerBanner} storeData={storeData} />}
           {storeData?.IsHomeNewArrival === 1 && <NewArrival2 data={newArrivalBanner} storeInit={storeData} />}
           {storeData?.IsHomeTrending === 1 && <TrendingView2 data={trendingBanner} storeInit={storeData} />}

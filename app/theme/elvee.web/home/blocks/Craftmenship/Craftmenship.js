@@ -13,13 +13,13 @@ import { Pagination, Navigation } from 'swiper/modules';
 
 const sliderData = [
     {
-        imageUrl: "/banner/elvee/promotionalbanner1.png",
+        imageUrl: "/banner/elvee/promo1.jpg",
     },
     {
-        imageUrl: "/banner/elvee/promotionalbanner2.png",
+        imageUrl: "/banner/elvee/promo2.jpg",
     },
     {
-        imageUrl: "/banner/elvee/promotionalbanner3.png",
+        imageUrl: "/banner/elvee/promo3.jpg",
     },
 ];
 

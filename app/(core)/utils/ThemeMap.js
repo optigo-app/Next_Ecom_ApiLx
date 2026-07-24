@@ -9,7 +9,8 @@ export const themeMap = {
   },
   "nxtsonasons.web": {
     // page: "fgstore.mapp",
-    page: LocalSetup,
+    page: "fgstore.web",
+    // page: LocalSetup,
   },
   // local dev
   "nxtmobileapp.web": {
@@ -21,6 +22,7 @@ export const themeMap = {
   },
   "nxtelvee.web": {
     page: "elvee.web",
+    // page: LocalSetup,
     // page: LocalSetup,
   },
   "nxtdiamondtine.web": {
@@ -34,6 +36,10 @@ export const themeMap = {
   'nxthoq.web': {
     page: "hoq.web",
   },
+  "nxtjulian.web": {
+    page: "julian.web",
+  },
+   
   "nxt29.optigoapps.com": {
     page: "fgstore.web",
   },

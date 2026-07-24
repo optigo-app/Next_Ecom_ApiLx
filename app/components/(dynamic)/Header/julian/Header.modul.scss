@@ -1,0 +1,42 @@
+ 
+ @use "../../../../theme/julian.web/style/variable.scss" as *;
+ 
+ 
+ .HeaderContainer{
+   background-color:$primaryBorderColor;
+
+
+  }
+  .monogram{
+   background-color:$primaryBorderColor;
+  }
+
+  .navBar{
+    background-color:$primaryBorderColor;
+  }
+
+  .hwMonogram{
+    border: 1px solid $primaryBorderColor2;
+  }
+
+  .hwMonogramText{
+    color: $primaryBorderColor2;
+  }
+
+  .megaMenuPanel{
+    border: 1px solid $primaryBorderColor2;
+  }
+
+  .megaMenuText{
+    border-bottom: 1px solid $primaryBorderColor2;
+  }
+  .megaMenuTextLink:hover{
+    color: $primaryBorderColor2;
+  }
+
+  .megaMenuButton:hover{
+    border-color: $primaryBorderColor2;
+  }
+  .hwMonogramDivider{
+    background-color: $primaryBorderColor2;
+  }

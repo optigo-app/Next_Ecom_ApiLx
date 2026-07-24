@@ -28,7 +28,8 @@ const SocialTab = ({ assetBase }) => {
   return (
     <div className="hoq_main_SocialTab">
       <div className="header">
-        <h1>Follow Us : @Lorem ipsum dolor sit amet.</h1>
+        {/* <h1>Follow Us : @Lorem ipsum dolor sit amet.</h1> */}
+        <h1 style={{marginBottom: "10px",fontSize: "30px",marginTop:"4px"}}> <span style={{color: "#c20000",fontStyle: "italic"}}>Join  </span> Our Community</h1>
       </div>
       <div className="social_row">
         {socialLink?.slice(0, 4)?.map(({ img, icon }, i) => {

@@ -172,7 +172,11 @@ const Collection = ({ storeInit }) => {
             onContextMenu={(e) => e.preventDefault()}
         >
             <div className="heading">
-                <h1>Collections</h1>
+            <div className="header" >
+                
+                <h1 style={{ fontSize: "30px",marginTop:"4px",fontWeight: 700}}> <span style={{color: "#c20000",fontStyle: "italic"}}>Signature </span> Collections</h1>
+              
+            </div>
             </div>
             <div className="collection_cards desktop-collection">
                 {designSetList?.slice(0, 4)?.map((val, i) => {
@@ -205,15 +209,15 @@ const Collection = ({ storeInit }) => {
                                 onContextMenu={(e) => e.preventDefault()}
                             />
                             <div className="details">
-                                <h3>{val?.designsetno}</h3>
+                                <h3 style={{marginBottom: "10px"}}> {val?.designsetno}</h3>
                                 <button
-                                // onClick={() =>
-                                //   handleNavigation(
-                                //     val?.designno,
-                                //     val?.autocode,
-                                //     val?.TitleLine ? val?.TitleLine : ""
-                                //   )
-                                // }
+                                onClick={() =>
+                                  handleNavigation(
+                                    val?.designno,
+                                    val?.autocode,
+                                    val?.TitleLine ? val?.TitleLine : ""
+                                  )
+                                }
                                 >
                                     Explore
                                 </button>

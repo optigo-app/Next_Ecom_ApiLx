@@ -27,6 +27,8 @@ import { cookies } from "next/headers";
 import PromoComponent1 from "./blocks/PromoComponent/PromoComponent/PromoComponent1"
 import BrandsComponent from "./blocks/PromoComponent/BrandsComponent/BrandsComponent"
 import PromoComponent2 from "./blocks/PromoComponent/PromoComponent/PromoComponent2"
+import NewPromoComponent from "./blocks/PromoComponent/PromoComponent/NewPromoComponent"
+
 import OldCollection from "./blocks/Collection/OldCollection"
 import Craftmenship from "./blocks/Craftmenship/Craftmenship"
 import GaleryView from "./blocks/GaleryView/GaleryView"
@@ -78,6 +80,7 @@ return (
         <PromoComponent1 />
         <BrandsComponent />
         <PromoComponent2 />
+        <NewPromoComponent />
         <Craftmenship />
         <GaleryView />
         <CompanyData />

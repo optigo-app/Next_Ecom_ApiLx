@@ -10,6 +10,8 @@ import { useStore } from "@/app/(core)/contexts/StoreProvider";
 import { useNextRouterLikeRR } from "@/app/(core)/hooks/useLocationRd";
 import { normalizeALC, buildAlbumCacheKey, getPricingContext } from "@/app/(core)/cache_utility/CacheBuilder";
 import { readCache, writeCache } from "@/app/(core)/cache_utility/cacheActions";
+import { Box, Typography, Grid } from "@mui/material";
+import Link from "next/link";
 
 const TabSection = ({ storeData }) => {
     const [newArrivalData, setNewArrivalData] = useState([]);
@@ -157,8 +159,10 @@ const TabSection = ({ storeData }) => {
             draggable={false}
             onContextMenu={(e) => e.preventDefault()}
         >
+
             <div className="header">
-                <h1>New Arrivals</h1>
+                
+                <h1 style={{marginBottom: "10px",fontSize: "30px",marginTop:"4px"}}> <span style={{color: "#c20000",fontStyle: "italic"}}>New</span> Arrivals</h1>
                 <button
                     onClick={() => navigation(`/p/NewArrival/?N=${btoa("NewArrival")}`)}
                 >
@@ -167,41 +171,45 @@ const TabSection = ({ storeData }) => {
             </div>
             {/* 330 w 500 h */}
             <div className="tab_card">
-                {newArrivalData?.slice(0, 4)?.map((val, i) => {
+                {newArrivalData?.slice(0, 3)?.map((val, i) => {
                     return (
                         <div
-                            key={i}
-                            className="TabCard_main"
-                            style={{ backgroundColor: " #b8b4b823", cursor: "pointer" }}
-                            onClick={() => handleMoveToDetail(val, i)}
-                        >
-                            <div className="cardhover">
-                                <img
-                                    src={ImageGenrate(val)}
-                                    alt={val?.id}
-                                    id={`product-${i}`}
-                                    ref={(el) => (productRefs.current[`product-${i}`] = el)}
-                                    style={{ mixBlendMode: "multiply", objectFit: "contain" }}
-                                    onError={(e) => {
-                                        e.target.src = noimage;
-                                        e.target.alt = "Fallback image";
-                                    }}
-                                    draggable={true}
-                                    onContextMenu={(e) => e.preventDefault()}
-                                    loading="lazy"
-                                />
-                            </div>
-                            <div className="tab_hover_Details">
-                                <h3 style={{ fontSize: "20px" }}>{val?.designno}</h3>
-                                {storeData?.IsPriceShow === 1 && (
-                                    <small>
-                                        {loginUserDetail?.CurrencyCode ?? storeData?.CurrencyCode}{" "}
-                                        &nbsp;
-                                        {formatter.format(val?.UnitCostWithMarkUp)}
-                                    </small>
-                                )}
-                            </div>
+                        key={i}
+                        className="TabCard_main"
+                        style={{ cursor: "pointer" }}
+                        onClick={() => handleMoveToDetail(val, i)}
+                    >
+                        <div className="cardhover">
+                            <img
+                                src={ImageGenrate(val)}
+                                alt={val?.id}
+                                id={`product-${i}`}
+                                ref={(el) => (productRefs.current[`product-${i}`] = el)}
+                                style={{ mixBlendMode: "multiply", objectFit: "contain" }}
+                                onError={(e) => {
+                                    e.target.src = noimage;
+                                    e.target.alt = "Fallback image";
+                                }}
+                                draggable={true}
+                                onContextMenu={(e) => e.preventDefault()}
+                                loading="lazy"
+                            />
                         </div>
+                        <div className="tab_hover_Details">
+                            <h3 style={{ fontSize: "20px" }}>{val?.designno}</h3>
+                            {storeData?.IsPriceShow === 1 && (
+                                <small>
+                                    {loginUserDetail?.CurrencyCode ?? storeData?.CurrencyCode}{" "}
+                                    &nbsp;
+                                    {formatter.format(val?.UnitCostWithMarkUp)}
+                                </small>
+                            )}
+                        </div>
+                    </div>
+
+
+                   
+
                     );
                 })}
             </div>
