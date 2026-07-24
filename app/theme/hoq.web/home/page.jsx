@@ -19,6 +19,8 @@ import CategoryTab from "@/app/components/(dynamic)/CategoryTab/CategoryTab";
 import BestSellerSection from "@/app/components/(dynamic)/BestSellerSection/hoq/BestSellerSection";
 import ImageBannerTab from "@/app/components/(static)/ImageBannerTab/ImageBannerTab";
 import ScrollTriggerTab from "@/app/components/(static)/ScrollTriggerTab/ScrollTriggerTab";
+import NewScrollTriggerTab from "@/app/components/(static)/ScrollTriggerTab/NewScrollTriggerTab";
+
 import SocialTab from "@/app/components/(static)/SocialTab/SocialTab";
 import InfoSection from "@/app/components/(static)/InfoSection/InfoSection";
 import FaqSection from "@/app/components/(static)/FaQSection/FaqSection";
@@ -46,7 +48,8 @@ const HoqHome = cache(async () => {
           {storeData?.IsHomeAlbum === 1 && <CategoryTab storeData={storeData} />}
           {storeData?.IsHomeBestSeller === 1 && <BestSellerSection data={bestsellerBanner} storeData={storeData} />}
           <ImageBannerTab assetsBase={assetBase} />
-          <ScrollTriggerTab assetBase={assetBase} />
+          {/* <ScrollTriggerTab assetBase={assetBase} /> */}
+          <NewScrollTriggerTab assetBase={assetBase} />
           <SocialTab assetBase={assetBase} />
           {/* <InfoSection /> */}
           {/* <FaqSection /> */}
@@ -62,7 +65,8 @@ const HoqHome = cache(async () => {
           {storeData?.IsHomeAlbum === 1 && <CategoryTab storeData={storeData} />}
           {storeData?.IsHomeBestSeller === 1 && <BestSellerSection data={bestsellerBanner} storeData={storeData} />}
           <ImageBannerTab assetsBase={assetBase} />
-          <ScrollTriggerTab assetBase={assetBase} />
+          {/* <ScrollTriggerTab assetBase={assetBase} /> */}
+          <NewScrollTriggerTab assetBase={assetBase} />
           <SocialTab assetBase={assetBase} />
           {/* <InfoSection /> */}
           {/* <FaqSection /> */}

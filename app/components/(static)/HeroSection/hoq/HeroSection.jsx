@@ -30,7 +30,7 @@ const TopSlider = ({ data }) => {
                             <img
                                 src={val || ""}
                                 alt={val + i}
-                                draggable={true}
+                                draggable={false}
                                 onContextMenu={(e) => e.preventDefault()}
                             />
                         </div>

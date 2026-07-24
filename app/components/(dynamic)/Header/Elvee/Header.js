@@ -980,7 +980,7 @@ const ElveeBaseHeader = ({ hidden, storeInit, logos }) => {
                         display: "flex",
                         flexWrap: "wrap",
                         flexDirection: "column",
-                        marginLeft: "15px",
+                        // marginLeft: "15px",
                       }}
                     >
                       {param1Item?.param2?.map((param2Item, param2Index) => {

@@ -56,16 +56,14 @@ const MaxBestSeller = ({ storeInit }) => {
   const callAllApi = () => {
     
  
-     
-     
-     
-
     let data =  storeInit;
     setImageUrl(data?.CDNDesignImageFol);
  
     Get_Tren_BestS_NewAr_DesigSet_Album("GETBestSeller", finalId)
       .then((response) => {
         if (response?.Data?.rd) {
+          
+          console.log("TCL: callAllApi BestSaller ->response?.Data?.rd ", response?.Data?.rd)
           setBestSellerData(response?.Data?.rd);
         }
       })

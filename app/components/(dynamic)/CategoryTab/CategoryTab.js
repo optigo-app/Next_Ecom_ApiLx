@@ -122,7 +122,8 @@ const CategoryTab = ({ storeData }) => {
             onContextMenu={(e) => e.preventDefault()}
         >
             <div className="header">
-                <h1>Shop By Category</h1>
+                {/* <h1>Shop By Category</h1> */}
+                <h1 style={{marginBottom: "10px",fontSize: "30px",marginTop:"4px"}}> <span style={{color: "#c20000",fontStyle: "italic"}}>Shop </span> By Category</h1>
             </div>
             <div className="category_row">
                 {albumData?.slice(0, 4)?.map((data, i) => {

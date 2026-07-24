@@ -29,7 +29,7 @@ const currentversion = versionData[1];
 
 function CompanyData() {
   return (
-    <div className="el_companyData_main" style={{ marginBlock: "1rem" }}>
+    <div className="el_companyData_main" style={{ marginBlock: "1rem",marginTop:"55px" }}>
       <div className="banner-stats">
         <div className="stat">
           <div>

@@ -1,0 +1,9 @@
+@use "../../../../theme/julian.web/style/variable.scss" as *;
+
+.shopNowBtn{
+    background-color:$primaryBorderColor;
+}
+.shopNowBtn:hover{
+    background-color:$btn1bgColor;
+    color: $btn1hoverFontColor;
+}

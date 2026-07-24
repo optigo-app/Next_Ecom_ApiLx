@@ -23,7 +23,7 @@ const layout = async ({ children }) => {
   return (
     <>
       <Box sx={{ display: "flex", flexDirection: "column", minHeight: "100vh", width: "100%" }}>
-        <AnnouncementBar />
+       {isVimalDiamond==1 && <AnnouncementBar />}
 
         {isOldElvee ? <OldHeader hidden={false} logos={logos} storeInit={storeData} /> : isVimalDiamond ? <MaxNavbar hidden={false} logos={logos} storeInit={storeData} /> : <ElveeBaseHeader hidden={false} logos={logos} storeInit={storeData} />}
         

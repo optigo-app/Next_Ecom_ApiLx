@@ -94,10 +94,7 @@ export default function SocialMediaVideoSection({ }) {
             py: 8
         }}>
 
-            <HeaderV2
-                title="Social Media"
-                alignment="left"
-            />
+             <h2 style={{color:"#1d3258cc",fontSize:"28px",textAlign:"center",marginBottom:20}} className='galeryComponents'>Social Media</h2>
 
             <Swiper
                 loop

@@ -170,7 +170,8 @@ const BestSellerSection = ({ storeData }) => {
             onContextMenu={(e) => e.preventDefault()}
         >
             <div className="header">
-                <h1>Best Seller</h1>
+                {/* <h1>Best Seller</h1> */}
+                <h1 style={{marginBottom: "10px",fontSize: "30px",marginTop:"4px"}}> <span style={{color: "#c20000",fontStyle: "italic"}}>Best </span> Seller</h1>
                 <button
                     onClick={() => navigation(`/p/BestSeller/?B=${btoa("BestSeller")}`)}
                 >

@@ -84,7 +84,7 @@ const BrandInfoMarquee = ({ assetBase }) => {
                 }}
               >
                 <svg xmlns="http://www.w3.org/2000/svg" width={25} height={25} viewBox="0 0 16 16">
-                  <g fill="none" stroke="#5b72ff" strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}>
+                  <g fill="none" stroke="#2e3c2f" strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}>
                     <path d="m13.75 7.75h-12"></path>
                     <path d="m7.75 1.75v12"></path>
                     <path d="m4.25 11.25 7-7"></path>

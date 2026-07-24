@@ -1,6 +1,4 @@
-
 "use client";
-
 
 import React from 'react'
 import './GaleryView.modul.scss'
@@ -8,27 +6,23 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
 import 'swiper/css/pagination';
 import { Pagination } from 'swiper/modules';
- 
 
 const sliderData = [
   {
-    imageUrl: "/galery/photogallery2.png",
+    imageUrl: "/galery/photogallery2.webp",
   },
   {
-    imageUrl: "/galery/photogallery3.png",
+    imageUrl: "/galery/photogallery3.webp",
   },
   {
-    imageUrl: "/galery/photogallery4.png",
+    imageUrl: "/galery/photogallery4.jpg",
   },
   {
-    imageUrl: "/galery/photogallery5.png",
+    imageUrl: "/galery/photogallery5.avif",
   },
-  
-  
-  
 ];
 
-export default function GaleryView( ) {
+export default function GaleryView() {
   return (
     <div className='el_mainGalleryConatinerID' id='mainGalleryConatinerID' name='mainGalleryConatinerID123'>
       <div className='elv_gallery_div'>
@@ -62,9 +56,33 @@ export default function GaleryView( ) {
         className="mySwiper"
       >
         {sliderData?.map((slide, index) => (
-          <SwiperSlide key={index} style={{ marginRight: '0px', padding: '20px' ,height:'430px'  }}>
-            <img loading="lazy" src={slide.imageUrl} alt={`Slide ${index}`} style={{ objectFit: 'contain', width: '100%'}} />
-          
+          <SwiperSlide
+            key={index}
+            style={{
+              marginRight: '0px',
+              padding: '10px',
+              height: '430px', // increased from 430px
+            }}
+          >
+            <div
+              style={{
+                width: '100%',
+                height: '100%',
+                overflow: 'hidden',
+              }}
+            >
+              <img
+                loading="lazy"
+                src={slide.imageUrl}
+                alt={`Slide ${index}`}
+                style={{
+                  objectFit: 'cover', // fills the box uniformly, crops instead of shrinking
+                  width: '100%',
+                  height: '100%',
+                  display: 'block',
+                }}
+              />
+            </div>
           </SwiperSlide>
         ))}
       </Swiper>

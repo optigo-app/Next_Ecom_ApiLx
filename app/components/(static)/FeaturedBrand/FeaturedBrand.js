@@ -41,7 +41,7 @@ const FeaturedBrand = ({ assetBase }) => {
   return (
     <div className="hoq_main_FeaturedBrand">
       <div className="heading">
-        <h3>Featured In</h3>
+      <h1 style={{marginBottom: "10px",fontSize: "30px",marginTop:"4px"}}> <span style={{color: "#c20000",fontStyle: "italic"}}>Featured </span> In </h1>
       </div>
       <div className="horizontal_list">
         {FeaturedBrandList?.map((val, i) => {

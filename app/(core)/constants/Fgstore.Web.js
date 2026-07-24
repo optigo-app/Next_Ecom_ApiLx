@@ -27,6 +27,8 @@ export const FgstoreWeb = {
     },
 };
 
+export const IsSonasons = true;
+
 
 
 export const CurrentactiveTheme = FgstoreWeb.Omjiyas;
