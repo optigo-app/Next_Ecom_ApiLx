@@ -122,11 +122,11 @@ const LeftSide = ({
                   position: "relative",
                   width: "100%",
                   cursor: "zoom-in",
-                  borderRadius: 3,
+                  borderRadius: 1,
                   overflow: "hidden",
                   border: "1px solid #f2f0ee33",
                   transition: "0s ease-in-out",
-                  bgcolor: "#fff9f266",
+                  bgcolor: "#e9e9e91a",
                 }}
                 onClick={() => HandleImageDialogOpen(index)}
               >

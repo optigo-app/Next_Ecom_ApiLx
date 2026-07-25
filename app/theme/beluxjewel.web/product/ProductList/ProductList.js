@@ -80,7 +80,7 @@ const ProductList = ({ storeinit, searchParams, params }) => {
 
   const breadcrumbData = [
     { name: "Home", url: baseUrl },
-    { name: "Product", url: fullUrl },
+    { name: "Product", url: fullUrl },  
   ];
 
   useEffect(() => {
@@ -94,7 +94,7 @@ const ProductList = ({ storeinit, searchParams, params }) => {
     }
   }, []);
 
-  const generateBreadcrumbJsonLd = (breadcrumbs) => {
+  const generateBreadcrumbJsonLd = (breadcrumbs) => { 
     return {
       "@context": "https://schema.org",
       "@type": "BreadcrumbList",

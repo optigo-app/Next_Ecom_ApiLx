@@ -113,12 +113,7 @@ export const MasterProvider = ({
     }
 
     if (storeInitData) {
-      if (isBelux) {
-        // Skip all combo/master API calls for beluxjewel.web theme
-        setIsMasterReady(true);
-      } else {
-        callAllApi();
-      }
+      callAllApi();
     }
   };
 
@@ -130,11 +125,8 @@ export const MasterProvider = ({
     }
   }, [getStoreInit, getMyAccountFlags]);
 
-  // Paymaster fetch — skipped for beluxjewel.web theme
+  // Paymaster fetch — fetches and caches payment master in session storage
   useEffect(() => {
-    if (isBelux) {
-      return; // beluxjewel.web does not use paymaster
-    }
     const fetchData = async () => {
       try {
         const storedPayMaster = getSession("payMaster");
@@ -161,7 +153,7 @@ export const MasterProvider = ({
 
     const timer = setTimeout(fetchData, 100);
     return () => clearTimeout(timer);
-  }, [isBelux]);
+  }, []);
 
   console.log(typeof window !== "undefined");
   const callAllApi = async () => {
@@ -188,36 +180,57 @@ export const MasterProvider = ({
         : loginUserDetail?.id || "0";
 
     try {
+      if (isBelux) {
+        // For beluxjewel.web: Only fetch CountryCodeListApi & PayMaster (skip heavy metal/diamond/colorstone combos)
+        const storedCountry = getSession("CountryCodeListApi");
+        if (storedCountry && storedCountry.length > 0) {
+          setIsMasterReady(true);
+          return;
+        }
+
+        const country = await CountryCodeListApi(finalID);
+        if (country?.Data?.rd) {
+          setSession("CountryCodeListApi", country.Data.rd);
+        }
+        setIsMasterReady(true);
+        return;
+      }
+
+      // For all other themes: Fetch ALL master combo APIs
       const requiredKeys = [
         "metalTypeCombo",
         "diamondQualityColorCombo",
         "MetalColorCombo",
         "ColorStoneQualityColorCombo",
         "CurrencyCombo",
-        "CountryCodeListApi"
+        "CountryCodeListApi",
       ];
 
-      const hasAllKeys = requiredKeys.every(key => {
+      const hasAllKeys = requiredKeys.every((key) => {
         const val = getSession(key);
         return val && val.length > 0;
       });
 
       if (hasAllKeys) {
-        console.log("[Cache] All combo lists found in session storage. Loading from session.");
+        console.log(
+          "[Cache] All combo lists found in session storage. Loading from session.",
+        );
         setIsMasterReady(true);
         return;
       }
 
-      console.log("[Cache] Combo lists missing. Fetching fresh combo data from server.");
+      console.log(
+        "[Cache] Combo lists missing. Fetching fresh combo data from server.",
+      );
 
-      // 2. Fetch all individual APIs concurrently
+      // 2. Fetch all individual APIs concurrently for other themes
       const [mt, dia, mc, cs, curr, country] = await Promise.all([
         MetalTypeComboAPI(finalID),
         DiamondQualityColorComboAPI(finalID),
         MetalColorCombo(finalID),
         ColorStoneQualityColorComboAPI(finalID),
         CurrencyComboAPI(finalID),
-        CountryCodeListApi(finalID)
+        CountryCodeListApi(finalID),
       ]);
 
       // 3. Store the fresh combo data in session storage

@@ -60,7 +60,7 @@ const Confirmation = ({ storeinit }) => {
     }
 
     return (
-        <div className='smr_confirMaindiv'>
+        <div className='smr_confirMaindiv_be'>
             <div className='smr_confirSecondMaindiv'>
                 <div className="thankYouContainer">
                     <div className="thankYouContent">

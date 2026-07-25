@@ -106,8 +106,9 @@ const initStore = async () => {
       try {
         let data;
         if (typeof window === "undefined") {
-          // Server-side: bypass internal API call and fetch directly
-          const storeInitRes = await fetchStoreInitData();
+          // Server-side: Use disk/memory SWR cached storeInit (0ms latency)
+          const { getStoreInitData } = await import("@/app/(core)/cache_utility/storeInitCache");
+          const storeInitRes = await getStoreInitData();
           data = storeInitRes?.rd?.[0] || storeInitRes;
         } else {
           // Client-side: use the API route

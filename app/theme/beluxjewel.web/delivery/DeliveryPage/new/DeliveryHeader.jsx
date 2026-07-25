@@ -108,7 +108,6 @@ export default function DeliveryHeader({
           <Button
             variant="contained"
             sx={{
-              background: "#163164",
               color: "#fff",
               fontSize: "14px",
               textTransform: "none",
@@ -116,8 +115,6 @@ export default function DeliveryHeader({
               px: 3,
               py: 0.9,
               whiteSpace: "nowrap",
-              ":hover": { background: "#163164" },
-
               // Fixed bottom CTA for mobile screens
               "@media (max-width: 968px)": {
                 position: "fixed",
@@ -132,6 +129,7 @@ export default function DeliveryHeader({
               }
             }}
             onClick={handleContinue}
+            className="stickyPill"
           >
             Continue
           </Button>
