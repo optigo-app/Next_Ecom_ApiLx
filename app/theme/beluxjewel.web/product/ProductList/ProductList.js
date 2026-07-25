@@ -50,6 +50,8 @@ import { getSession } from "@/app/(core)/utils/FetchSessionData";
 import { usePathname, useSearchParams } from "next/navigation";
 import { useNextRouterLikeRR } from "@/app/(core)/hooks/useLocationRd";
 import { ParseAndDecodeSearchParams } from "@/app/(core)/utils/GlobalFunctions/Parser";
+import { readCache, writeCache } from "@/app/(core)/cache_utility/cacheActions";
+import { buildProdListCacheKey } from "@/app/(core)/cache_utility/CacheBuilder";
 
 const ProductList = ({ storeinit, searchParams, params }) => {
   const { setCartCountNum, setWishCountNum, loginUserDetail } = useStore();
@@ -490,28 +492,65 @@ const ProductList = ({ storeinit, searchParams, params }) => {
         setCurrPage(1);
         setInputPage(1);
 
-        ProductListApi(
-          output,
-          1,
-          obj,
-          prodListType,
-          cookie,
-          sortBySelect,
-          DiaRange,
-          netRange,
-          grossRange,
-        )
-          .then((res) => {
-            if (res) {
-              setProductListData(res?.pdList);
-              setAfterFilterCount(res?.pdResp?.rd1[0]?.designcount);
-            }
-          })
-          .catch((err) => console.log("err", err))
-          .finally(() => {
-            setIsOnlyProdLoading(false);
-            setIsClearAllClicked(false);
+        const runLiveApi = () => {
+          ProductListApi(
+            output,
+            1,
+            obj,
+            prodListType,
+            cookie,
+            sortBySelect,
+            DiaRange,
+            netRange,
+            grossRange,
+          )
+            .then((res) => {
+              if (res) {
+                setProductListData(res?.pdList);
+                setAfterFilterCount(res?.pdResp?.rd1[0]?.designcount);
+              }
+            })
+            .catch((err) => console.log("err", err))
+            .finally(() => {
+              setIsOnlyProdLoading(false);
+              setIsClearAllClicked(false);
+            });
+        };
+
+        if (isClearAllClicked === true && !anyFilterApplied) {
+          const menuParamsSession = getSession("menuparams") ?? {};
+          const storeInitSession = getSession("storeInit");
+          const loginDetailSession = getSession("loginUserDetail");
+          const packageId =
+            loginUserDetail?.PackageId ??
+            storeinit?.PackageId ??
+            loginDetailSession?.PackageId ??
+            storeInitSession?.PackageId ??
+            "";
+          const cacheKey = buildProdListCacheKey({
+            menuParams: menuParamsSession,
+            metalId: obj.mt,
+            diaId: obj.dia,
+            packageId,
           });
+
+          readCache(cacheKey).then((cacheRes) => {
+            if (cacheRes?.cached && cacheRes?.data?.pdList?.length > 0) {
+              console.log(`[ProdList] ⚡ Clear All Cache HIT — key: ${cacheKey}`);
+              setProductListData(cacheRes.data.pdList);
+              setAfterFilterCount(
+                cacheRes.data.pdResp?.rd1?.[0]?.designcount ?? cacheRes.data.pdList.length
+              );
+              setIsOnlyProdLoading(false);
+              setIsClearAllClicked(false);
+              return;
+            }
+            runLiveApi();
+          });
+          return;
+        }
+
+        runLiveApi();
       }
     }, 300); // 300ms debounce
 
@@ -886,6 +925,83 @@ const ProductList = ({ storeinit, searchParams, params }) => {
           sliderValue1,
           inputNet,
         );
+        // ----------------------------------------------------------------
+        // CACHE-FIRST: check .next_cache file before hitting the API
+        // Only applies to page 1 with no filters (the pre-warmed case)
+        // ----------------------------------------------------------------
+        let cacheHit = false;
+        try {
+          const menuParamsSession = getSession("menuparams") ?? {};
+          const storeInitSession = getSession("storeInit");
+          const loginDetailSession = getSession("loginUserDetail");
+          const packageId =
+            loginUserDetail?.PackageId ??
+            storeinit?.PackageId ??
+            loginDetailSession?.PackageId ??
+            storeInitSession?.PackageId ??
+            "";
+          const cacheKey = buildProdListCacheKey({
+            menuParams: menuParamsSession,
+            metalId: obj.mt,
+            diaId: obj.dia,
+            packageId,
+          });
+
+          const cacheRes = await readCache(cacheKey);
+          if (cacheRes?.cached && cacheRes?.data?.pdList?.length > 0) {
+            const cacheData = cacheRes.data;
+            // ✅ CACHE HIT — instant render, no spinner
+            console.log(`[ProdList] ⚡ Cache HIT — key: ${cacheKey}`);
+            cacheHit = true;
+
+            setProductListData(cacheData.pdList);
+            setAfterFilterCount(
+              cacheData.pdResp?.rd1?.[0]?.designcount ?? cacheData.pdList.length
+            );
+            setIsProdLoading(false);
+            setIsOnlyProdLoading(false);
+
+            // Hydrate filter sidebar from cache too
+            if (cacheData.filterData?.length > 0) {
+              const res1 = cacheData.filterData;
+              setFilterData(res1);
+              try {
+                let priceFilter = JSON.parse(
+                  res1?.find((ele) => ele.Name === "Price")?.options
+                )?.[0];
+                if (priceFilter) setFilterPriceSlider(priceFilter);
+              } catch (_) {}
+              const diafilter = res1?.find((ele) => ele?.Name === "Diamond")?.options?.length > 0
+                ? JSON.parse(res1.find((ele) => ele?.Name === "Diamond").options)[0] : [];
+              const diafilter1 = res1?.find((ele) => ele?.Name === "NetWt")?.options?.length > 0
+                ? JSON.parse(res1.find((ele) => ele?.Name === "NetWt").options)[0] : [];
+              const diafilter2 = res1?.find((ele) => ele?.Name === "Gross")?.options?.length > 0
+                ? JSON.parse(res1.find((ele) => ele?.Name === "Gross").options)[0] : [];
+              setSliderValue(diafilter?.Min != null || diafilter?.Max != null ? [diafilter.Min, diafilter.Max] : []);
+              setInputDia(diafilter?.Min != null || diafilter?.Max != null ? [diafilter.Min, diafilter.Max] : []);
+              setSliderValue1(diafilter1?.Min != null || diafilter1?.Max != null ? [diafilter1.Min, diafilter1.Max] : []);
+              setInputNet(diafilter1?.Min != null || diafilter1?.Max != null ? [diafilter1.Min, diafilter1.Max] : []);
+              setSliderValue2(diafilter2?.Min != null || diafilter2?.Max != null ? [diafilter2.Min, diafilter2.Max] : []);
+              setInputGross(diafilter2?.Min != null || diafilter2?.Max != null ? [diafilter2.Min, diafilter2.Max] : []);
+            }
+          }
+        } catch (cacheErr) {
+          // Cache read failure is non-fatal — fall through to live API
+          console.warn("[ProdList] Cache read failed, using live API:", cacheErr);
+        }
+
+        if (cacheHit) {
+          // Skip both API calls — cache already hydrated everything above
+          return;
+        }
+
+        // ----------------------------------------------------------------
+        // CACHE MISS — fetch live data as normal & cache the result
+        // ----------------------------------------------------------------
+
+        let fetchedPdList = [];
+        let fetchedPdResp = {};
+        let fetchedFilterData = [];
 
         // 1. Fetch Product List (High Priority -> Renders products first)
         try {
@@ -901,8 +1017,10 @@ const ProductList = ({ storeinit, searchParams, params }) => {
             grossRange,
           );
           if (res) {
-            setProductListData(res?.pdList);
-            setAfterFilterCount(res?.pdResp?.rd1[0]?.designcount);
+            fetchedPdList = res?.pdList ?? [];
+            fetchedPdResp = res?.pdResp ?? {};
+            setProductListData(fetchedPdList);
+            setAfterFilterCount(res?.pdResp?.rd1?.[0]?.designcount);
           }
         } catch (err) {
           console.error("ProductListApi error:", err);
@@ -916,6 +1034,7 @@ const ProductList = ({ storeinit, searchParams, params }) => {
           await new Promise((resolve) => setTimeout(resolve, 500));
           const res1 = await FilterListAPI(productlisttype, cookie);
           if (res1) {
+            fetchedFilterData = res1 ?? [];
             setFilterData(res1);
             let priceFilter = JSON.parse(
               res1?.filter((ele) => ele.Name == "Price")[0]?.options,
@@ -978,6 +1097,15 @@ const ProductList = ({ storeinit, searchParams, params }) => {
           }
         } catch (err) {
           console.error("FilterListAPI error:", err);
+        }
+
+        // Save live response to disk cache for future instant loads
+        if (cacheKey && (fetchedPdList.length > 0 || fetchedFilterData.length > 0)) {
+          writeCache(cacheKey, {
+            pdList: fetchedPdList,
+            pdResp: fetchedPdResp,
+            filterData: fetchedFilterData,
+          }).catch(() => {});
         }
       } catch (error) {
         console.error("Error fetching product list:", error);

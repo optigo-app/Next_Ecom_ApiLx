@@ -1039,11 +1039,14 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
             // }
 
             // 5. Save Last View Design (Background)
-            // if (prod?.autocode && prod?.designno) {
-            //   SaveLastViewDesign(cookie, prod.autocode, prod.designno)
-            //     .then((res) => setSaveLastView(res?.Data?.rd))
-            //     .catch((err) => console.log("saveLastView", err));
-            // }
+            if (prod?.autocode && prod?.designno) {
+              SaveLastViewDesign(cookie, prod.autocode, prod.designno)
+                .then((res) => {
+                  console.log(res,"res")
+                  setSaveLastView(res?.Data?.rd)
+                })
+                .catch((err) => console.log("saveLastView", err));
+            }
           }
         }
       } catch (err) {

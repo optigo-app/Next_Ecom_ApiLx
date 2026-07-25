@@ -37,6 +37,9 @@ import { useNextRouterLikeRR } from "@/app/(core)/hooks/useLocationRd";
 import { useMaster } from "@/app/(core)/contexts/MasterProvider";
 import { clearSession, getSession, setSession } from "@/app/(core)/utils/FetchSessionData";
 import { readCache, writeCache } from "@/app/(core)/cache_utility/cacheActions";
+import ProductListApi from "@/app/(core)/utils/API/ProductListAPI/ProductListApi";
+import { FilterListAPI } from "@/app/(core)/utils/API/FilterAPI/FilterListAPI";
+import { buildProdListCacheKey } from "@/app/(core)/cache_utility/CacheBuilder";
 import { usePathname, useRouter } from "next/navigation";
 
 const BeluxNavbar = ({ storeInit: storeinit, logos }) => {
@@ -155,7 +158,8 @@ const BeluxNavbar = ({ storeInit: storeinit, logos }) => {
     let isMounted = true;
 
     const loadMenu = async () => {
-      const cacheKey = `beluxMenu_${finalId}`;
+      const targetId = finalId || 0;
+      const cacheKey = `menu/beluxMenu_${targetId}`;
 
       // 1. Session Cache Check (Instant browser memory/session read)
       let menuData = getSession(cacheKey);
@@ -185,7 +189,7 @@ const BeluxNavbar = ({ storeInit: storeinit, logos }) => {
 
       // 3. Cache miss — Call GetMenuAPI
       try {
-        const res = await GetMenuAPI(finalId);
+        const res = await GetMenuAPI(targetId);
         const rawData = res?.Data?.rd || [];
         if (rawData.length > 0) {
           menuData = rawData;
@@ -209,9 +213,7 @@ const BeluxNavbar = ({ storeInit: storeinit, logos }) => {
     return () => {
       isMounted = false;
     };
-    // Intentional: re-run when user identity / finalId changes
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [islogin, loginUserDetail, finalId]);
+  }, []);
 
   const currentMenuItems = useMemo(() => {
     return menuItems;
@@ -279,12 +281,186 @@ const BeluxNavbar = ({ storeInit: storeinit, logos }) => {
       const { url } = getMenuUrl(param, param1, param2, isFilterKey2Ignore);
       if (url && url !== "#" && !prefetchedUrlsRef.current.has(url)) {
         prefetchedUrlsRef.current.add(url);
-        router.prefetch(url);
       }
     } catch (err) {
       // ignore prefetch errors
     }
   };
+  const hasPrewarmedRef = useRef(false);
+  const isAbortedRef = useRef(false);
+
+  useEffect(() => {
+    // -------------------------------------------------------------------------
+    // ZERO-FLICKER GUARD: ONLY run background prewarming when on Homepage ("/")
+    // Never run on detail pages, product list pages, search, or cart!
+    // If user navigates away from "/", abort instantly!
+    // -------------------------------------------------------------------------
+    if (location !== "/") {
+      isAbortedRef.current = true;
+      return;
+    }
+
+    if (!menuItems || menuItems.length === 0) return;
+    if (hasPrewarmedRef.current) return;
+
+    isAbortedRef.current = false;
+
+    const prewarmAllMenus = async () => {
+      if (hasPrewarmedRef.current || isAbortedRef.current) return;
+      hasPrewarmedRef.current = true;
+
+      try {
+        const storeInitSession = getSession("storeInit");
+        const loginDetailSession = getSession("loginUserDetail");
+
+        const metalId =
+          loginUserDetail?.MetalId ??
+          storeinit?.MetalId ??
+          loginDetailSession?.MetalId ??
+          storeInitSession?.MetalId ??
+          "";
+        const diaId =
+          loginUserDetail?.cmboDiaQCid ??
+          storeinit?.cmboDiaQCid ??
+          loginDetailSession?.cmboDiaQCid ??
+          storeInitSession?.cmboDiaQCid ??
+          "";
+        const csId =
+          loginUserDetail?.cmboCSQCid ??
+          storeinit?.cmboCSQCid ??
+          loginDetailSession?.cmboCSQCid ??
+          storeInitSession?.cmboCSQCid ??
+          "";
+        const packageId =
+          loginUserDetail?.PackageId ??
+          storeinit?.PackageId ??
+          loginDetailSession?.PackageId ??
+          storeInitSession?.PackageId ??
+          "";
+        const visiterId = Cookies.get("visiterId") ?? "";
+
+        const targetList = [];
+        const visitedUrls = new Set();
+
+        const addTarget = (param, param1, param2, isIgnore) => {
+          try {
+            const { url, finalData } = getMenuUrl(param, param1, param2, isIgnore);
+            if (finalData && url && url !== "/collection" && !visitedUrls.has(url)) {
+              visitedUrls.add(url);
+              targetList.push(finalData);
+            }
+          } catch (_) {}
+        };
+
+        menuItems.forEach((item) => {
+          const param0 = {
+            menuname: item.menuname,
+            key: item.param0name,
+            value: item.param0dataname,
+          };
+          addTarget(param0, {}, {}, item.IsFilterKey1Ignore);
+
+          if (Array.isArray(item.param1)) {
+            item.param1.forEach((sub) => {
+              const param1 = {
+                menuname: sub.menuname,
+                key: sub.param1name,
+                value: sub.param1dataname,
+              };
+              addTarget(param0, param1, {}, sub.IsFilterKey1Ignore);
+
+              if (Array.isArray(sub.param2)) {
+                sub.param2.forEach((grand) => {
+                  const param2 = {
+                    key: grand.param2name,
+                    value: grand.param2dataname,
+                  };
+                  addTarget(param0, param1, param2, grand.IsFilterKey2Ignore);
+                });
+              }
+            });
+          }
+        });
+
+        console.log(`[BeluxNavbar] 🚀 Parallel background pre-warming ${targetList.length} menu items...`);
+
+        // Batch in groups of 3 for maximum speed without blocking network
+        const BATCH_SIZE = 3;
+        for (let i = 0; i < targetList.length; i += BATCH_SIZE) {
+          if (isAbortedRef.current) {
+            console.log("[BeluxNavbar] ⏹ Pre-warming aborted due to page navigation!");
+            break;
+          }
+
+          const chunk = targetList.slice(i, i + BATCH_SIZE);
+
+          await Promise.allSettled(
+            chunk.map(async (finalData) => {
+              if (isAbortedRef.current) return;
+              try {
+                const cacheKey = buildProdListCacheKey({
+                  menuParams: finalData,
+                  metalId,
+                  diaId,
+                  packageId,
+                });
+
+                // Check if already cached
+                const checkRes = await readCache(cacheKey);
+                if (checkRes?.cached && checkRes?.data?.pdList?.length > 0) {
+                  return;
+                }
+
+                if (isAbortedRef.current) return;
+
+                const rawKeys = [finalData.FilterKey, finalData.FilterKey1, finalData.FilterKey2];
+                const rawVals = [finalData.FilterVal, finalData.FilterVal1, finalData.FilterVal2];
+
+                const keys = [];
+                const vals = [];
+                rawKeys.forEach((k, idx) => {
+                  if (k !== undefined && k !== null && k !== "") {
+                    keys.push(k);
+                    vals.push(rawVals[idx] ?? "");
+                  }
+                });
+
+                const productlisttype = keys.length > 0 ? [keys, vals] : "";
+                const obj = { mt: metalId, dia: diaId, cs: csId };
+
+                const [prodRes, filterRes] = await Promise.allSettled([
+                  ProductListApi({}, 1, obj, productlisttype, visiterId, "", {}, {}, {}),
+                  FilterListAPI(productlisttype, visiterId),
+                ]);
+
+                if (isAbortedRef.current) return;
+
+                const pdList = prodRes.status === "fulfilled" ? (prodRes.value?.pdList ?? []) : [];
+                const pdResp = prodRes.status === "fulfilled" ? (prodRes.value?.pdResp ?? {}) : {};
+                const filterData = filterRes.status === "fulfilled" ? (filterRes.value ?? []) : [];
+
+                if (pdList.length > 0 || filterData.length > 0) {
+                  await writeCache(cacheKey, { pdList, pdResp, filterData });
+                }
+              } catch (_) {}
+            })
+          );
+
+          await new Promise((r) => setTimeout(r, 100));
+        }
+      } catch (err) {
+        console.warn("[BeluxNavbar] Pre-warm error:", err);
+      }
+    };
+
+    // Low-priority scheduling: wait 2.5s until homepage is completely idle
+    const timer = setTimeout(prewarmAllMenus, 2500);
+
+    return () => {
+      isAbortedRef.current = true;
+      clearTimeout(timer);
+    };
+  }, [menuItems, location]);
 
   const handelMenu = (param, param1, param2, event, isFilterKey2Ignore) => {
     if (hoverTimeoutRef.current) {

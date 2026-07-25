@@ -4,6 +4,10 @@ import { isLocalHost } from "@/app/(core)/constants/DomainList";
 const getApiUrl = () => {
   if (typeof window !== "undefined") {
     const hostname = window.location.hostname.split(":")[0];
+
+    if (hostname === 'nxt10.optigoapps.com') {
+      return "https://apilx.optigoapps.com/api/report";
+    }
     if (isLocalHost(hostname)) {
       return "http://newnextjs.web/api/report";
     }
