@@ -4,6 +4,7 @@ import { Box, Typography, Divider, Collapse, IconButton } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import CustomerReviews from "./CustomerReviews";
+import { getDeliveryInfo } from "./deliveryUtils";
 
 const faqData = [
   {
@@ -33,10 +34,21 @@ const faqData = [
   },
 ];
 
-const ExtraProductSections = ({ imgSrc }) => {
+const ExtraProductSections = ({
+  imgSrc,
+  singleProd,
+  singleProd1,
+  stockItemArr,
+}) => {
   const [isIncludesOpen, setIsIncludesOpen] = useState(true);
   const [isShippingOpen, setIsShippingOpen] = useState(false);
   const [expandedFaq, setExpandedFaq] = useState(null);
+
+  const deliveryInfo = getDeliveryInfo(
+    singleProd,
+    singleProd1,
+    stockItemArr
+  );
 
   const fallbackImg =
     "https://images.unsplash.com/photo-1605100804763-247f67b3557e?q=80&w=800&auto=format&fit=crop";
@@ -145,7 +157,7 @@ const ExtraProductSections = ({ imgSrc }) => {
                   }}
                 >
                   Estimated Shipping By:{" "}
-                  <strong style={{ color: "#111111" }}>Mon, Aug 3</strong>
+                  <strong style={{ color: "#111111" }}>{deliveryInfo.shipByStr}</strong>
                 </Typography>
                 <IconButton size="small" sx={{ color: "#111111" }}>
                   {isShippingOpen ? (
@@ -173,12 +185,18 @@ const ExtraProductSections = ({ imgSrc }) => {
             </Box>
           </Box>
 
-          {/* Right Wooden Ring Box / Product Image */}
+          {/* Right Product Image Presentation */}
           <Box
             sx={{
               width: "100%",
-              height: { xs: "240px", md: "320px" },
+              height: { xs: "220px", sm: "250px", md: "270px" },
+              maxHeight: "280px",
               borderRadius: "16px",
+              backgroundColor: "#ffffff",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              p: 2.5,
               overflow: "hidden",
               boxShadow: "0 6px 20px rgba(0,0,0,0.06)",
             }}
@@ -192,9 +210,11 @@ const ExtraProductSections = ({ imgSrc }) => {
               }}
               alt="Order Includes Presentation"
               sx={{
-                width: "100%",
-                height: "100%",
-                objectFit: "cover",
+                maxWidth: "100%",
+                maxHeight: "100%",
+                width: "auto",
+                height: "auto",
+                objectFit: "contain",
               }}
             />
           </Box>

@@ -26,7 +26,6 @@ export default function AddNewAddressCard({ handleAddNew }) {
       >
         <Box
           sx={{
-            background: "#6a79bcff",
             width: "55px",
             height: "55px",
             borderRadius: "50%",
@@ -36,6 +35,7 @@ export default function AddNewAddressCard({ handleAddNew }) {
             mb: 2,
             boxShadow: "0 4px 12px rgba(188, 161, 106, 0.35)",
           }}
+        className="stickyPill"
         >
           <AddIcon sx={{ fontSize: "32px", color: "#fff" }} />
         </Box>

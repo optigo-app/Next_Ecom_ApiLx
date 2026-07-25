@@ -78,12 +78,13 @@ const AddressCard = ({
                 label="Default"
                 size="small"
                 sx={{
-                  background: "#000",
                   color: "#fff",
                   fontWeight: 600,
                   borderRadius: "1px",
                   px: 1,
                 }}
+        className="stickyPill"
+
               />
             )}
           </Box>
@@ -122,7 +123,6 @@ const AddressCard = ({
             startIcon={<MdModeEditOutline size={18} />}
             sx={{
               flex: 1,
-              background: "#000",
               color: "#fff",
               textTransform: "none",
               fontWeight: 600,
@@ -131,10 +131,8 @@ const AddressCard = ({
               borderRadius: "1px",
               boxShadow: "0 4px 10px rgba(0,0,0,0.15)",
               transition: "all .25s ease",
-              "&:hover": {
-                background: "#222",
-              },
             }}
+        className="stickyPill"
           >
             Edit
           </Button>
@@ -154,10 +152,9 @@ const AddressCard = ({
                 py: 0.8,
                 borderRadius: "30px",
                 transition: "all .25s ease",
-                "&:hover": {
-                  background: "#665229",
-                },
+             
               }}
+        className="stickyPill"
             >
               Delete
             </Button>

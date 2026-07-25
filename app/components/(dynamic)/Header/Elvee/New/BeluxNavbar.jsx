@@ -35,8 +35,9 @@ import { useStore } from "@/app/(core)/contexts/StoreProvider";
 import { useSyncStore } from "@/app/(core)/hooks/useStore";
 import { useNextRouterLikeRR } from "@/app/(core)/hooks/useLocationRd";
 import { useMaster } from "@/app/(core)/contexts/MasterProvider";
+import { clearSession, getSession, setSession } from "@/app/(core)/utils/FetchSessionData";
+import { readCache, writeCache } from "@/app/(core)/cache_utility/cacheActions";
 import { usePathname, useRouter } from "next/navigation";
-import { clearSession, getSession } from "@/app/(core)/utils/FetchSessionData";
 
 const BeluxNavbar = ({ storeInit: storeinit, logos }) => {
   const {
@@ -155,19 +156,44 @@ const BeluxNavbar = ({ storeInit: storeinit, logos }) => {
 
     const loadMenu = async () => {
       const cacheKey = `beluxMenu_${finalId}`;
-      let menuData = getSession(cacheKey);
 
-      if (!menuData || menuData === "[]" || menuData === "null") {
-        try {
-          const res = await GetMenuAPI(finalId);
-          const rawData = res?.Data?.rd || [];
-          if (rawData.length > 0) {
-            sessionStorage.setItem(cacheKey, JSON.stringify(rawData));
-            menuData = rawData;
-          }
-        } catch (err) {
-          console.warn("[Navbar] GetMenuAPI failed", err);
+      // 1. Session Cache Check (Instant browser memory/session read)
+      let menuData = getSession(cacheKey);
+      if (menuData && Array.isArray(menuData) && menuData.length > 0) {
+        if (isMounted) {
+          setMenuItems(buildMenuItems(menuData));
+          setMenuLoading(false);
         }
+        return;
+      }
+
+      // 2. Server File Cache Check (Fast server disk cache read)
+      try {
+        const cacheRes = await readCache(cacheKey);
+        if (cacheRes?.cached && Array.isArray(cacheRes.data) && cacheRes.data.length > 0) {
+          menuData = cacheRes.data;
+          setSession(cacheKey, menuData);
+          if (isMounted) {
+            setMenuItems(buildMenuItems(menuData));
+            setMenuLoading(false);
+          }
+          return;
+        }
+      } catch (err) {
+        console.warn("[Navbar] File cache read error:", err);
+      }
+
+      // 3. Cache miss — Call GetMenuAPI
+      try {
+        const res = await GetMenuAPI(finalId);
+        const rawData = res?.Data?.rd || [];
+        if (rawData.length > 0) {
+          menuData = rawData;
+          setSession(cacheKey, rawData);
+          writeCache(cacheKey, rawData).catch(console.error);
+        }
+      } catch (err) {
+        console.warn("[Navbar] GetMenuAPI failed", err);
       }
 
       if (isMounted && menuData?.length) {
@@ -183,9 +209,9 @@ const BeluxNavbar = ({ storeInit: storeinit, logos }) => {
     return () => {
       isMounted = false;
     };
-    // Intentional: only re-run when the user identity changes (login/logout)
+    // Intentional: re-run when user identity / finalId changes
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [islogin, loginUserDetail]);
+  }, [islogin, loginUserDetail, finalId]);
 
   const currentMenuItems = useMemo(() => {
     return menuItems;

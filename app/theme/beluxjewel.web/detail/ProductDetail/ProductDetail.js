@@ -2047,6 +2047,7 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
                 addToCardFlag={addToCardFlag}
                 handleWishList={handleWishList}
                 wishListFlag={wishListFlag}
+                stockItemArr={stockItemArr}
                 rd1={rd1Data}
                 rd2={rd2Data}
                 defaultArticleId={defaultArticleId}
@@ -2057,6 +2058,9 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
             </Grid>
             <ExtraProductSections
               imgSrc={getImagesArr?.[0] || getImagesArr?.[1]}
+              singleProd={singleProd}
+              singleProd1={singleProd1}
+              stockItemArr={stockItemArr}
             />
 
             {stockItemArr?.length > 0 &&

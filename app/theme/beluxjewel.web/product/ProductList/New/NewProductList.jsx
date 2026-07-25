@@ -277,7 +277,7 @@ const ProductCard = ({
             md: "1 / 1.2",
             lg: "1/1.18",
           },
-          bgcolor: "#f0f0f05d",
+          bgcolor: "#e9e9e91a",
         }}
       >
         {/* Main Image */}
@@ -368,7 +368,7 @@ const ProductCard = ({
                     left: 0,
                     bottom: 0,
                     right: 0,
-                    bgcolor: "#fff9f266",
+                    bgcolor: "#e9e9e91a",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
