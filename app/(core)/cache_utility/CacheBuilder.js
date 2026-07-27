@@ -108,6 +108,29 @@ const processAlbumImages = (albums, storeInit) => {
   return fallbackImages;
 };
 
+const buildProdListCacheKey = ({ menuParams, metalId, diaId, packageId }) => {
+  const safe = (v) =>
+    String(v ?? "")
+      .trim()
+      .replace(/\s+/g, "_")
+      .replace(/[^a-zA-Z0-9_\-]/g, "");
+
+  const parts = [
+    "menu/pl1",
+    safe(menuParams?.FilterKey),
+    safe(menuParams?.FilterVal),
+    safe(menuParams?.FilterKey1),
+    safe(menuParams?.FilterVal1),
+    safe(menuParams?.FilterKey2),
+    safe(menuParams?.FilterVal2),
+    `mt${safe(metalId)}`,
+    `dia${safe(diaId)}`,
+    `pkg${safe(packageId)}`,
+  ];
+
+  return parts.join("_");
+};
+
 export { 
     normalizeStr, 
     normalizePriceListName, 
@@ -117,5 +140,6 @@ export {
     getPricingContext, 
     processAlbumImages,
     buildMenuCacheKey,
-    findMatchingMenuCacheEntry
+    findMatchingMenuCacheEntry,
+    buildProdListCacheKey
 };

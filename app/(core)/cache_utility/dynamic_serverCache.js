@@ -1,18 +1,25 @@
 import fs from "fs";
 import path from "path";
 
-// const CACHE_DIR = path.resolve("F:/next-ecomm(apilx)/app/next_cache");
 const CACHE_DIR = path.join(process.cwd(), ".next_cache");
-
+const MENU_CACHE_DIR = path.join(CACHE_DIR, "menu");
 if (!fs.existsSync(CACHE_DIR)) fs.mkdirSync(CACHE_DIR, { recursive: true });
+if (!fs.existsSync(MENU_CACHE_DIR)) fs.mkdirSync(MENU_CACHE_DIR, { recursive: true });
 
 const defaultTTL = 12 * 60 * 60 * 1000; // 12h
 const safeKey = (key) => key.replace(/[^a-zA-Z0-9_\-]/g, "_");
 
+const resolveCacheFilePath = (key) => {
+  if (key.startsWith("menu/")) {
+    const cleanKey = safeKey(key.replace("menu/", ""));
+    return path.join(MENU_CACHE_DIR, `${cleanKey}.json`);
+  }
+  return path.join(CACHE_DIR, `${safeKey(key)}.json`);
+};
 
 export async function setCache(key, data, meta) {
   const now = Date.now();
-  const file = path.join(CACHE_DIR, `${safeKey(key)}.json`);
+  const file = resolveCacheFilePath(key);
   const payload = {
     timestamp: now,
     meta,
@@ -20,8 +27,9 @@ export async function setCache(key, data, meta) {
   };
 
   try {
-    if (!fs.existsSync(CACHE_DIR)) {
-      await fs.promises.mkdir(CACHE_DIR, { recursive: true });
+    const dir = path.dirname(file);
+    if (!fs.existsSync(dir)) {
+      await fs.promises.mkdir(dir, { recursive: true });
     }
     // Optimization: Remove pretty-printing (null, 2) to reduce file size and I/O
     await fs.promises.writeFile(file, JSON.stringify(payload), "utf8");
@@ -33,7 +41,7 @@ export async function setCache(key, data, meta) {
 
 export async function getCache(key, ttlMs = defaultTTL) {
   const now = Date.now();
-  const file = path.join(CACHE_DIR, `${safeKey(key)}.json`);
+  const file = resolveCacheFilePath(key);
 
   try {
     // Optimization: Use asynchronous readFile instead of synchronous readFileSync
