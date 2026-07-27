@@ -13,14 +13,14 @@ import { Pagination, Navigation } from 'swiper/modules';
 
 const sliderData = [
     {
-        imageUrl: "/banner/elvee/promo1.jpg",
+        imageUrl: "/banner/elvee/craftmanship2.png",
     },
     {
-        imageUrl: "/banner/elvee/promo2.jpg",
+        imageUrl: "/banner/elvee/craftmanship1.png",
     },
-    {
-        imageUrl: "/banner/elvee/promo3.jpg",
-    },
+    // {
+    //     imageUrl: "/banner/elvee/promo3.jpg",
+    // },
 ];
 
 export default function Craftmenship() {

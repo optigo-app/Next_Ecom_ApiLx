@@ -627,7 +627,7 @@ const Navbar = ({ storeinit, logos }) => {
                 )} */}
                 {islogin ? (
                   <Tooltip title="Logout" className="tooltip-logout">
-                    <button onClick={() => setIsLogoutModalOpen(true)} className="logout_btn_hoq icons" style={{ border: "none", backgroundColor: "transparent" }}>
+                    <button onClick={() => setIsLogoutModalOpen(true)} className="logout_btn_hoq icons" style={{ border: "none", backgroundColor: "transparent" ,cursor:"pointer"}}>
                       <IoIosLogOut color="grey" size={27} />
                     </button>
                   </Tooltip>
@@ -815,6 +815,11 @@ const Navbar = ({ storeinit, logos }) => {
       </div>
       {isScrolled && <DummyNav />}
       {IsCartNo == 2 && <CartDrawer storeinit={storeinit} open={isCartOpen} />}
+      <LogOutModal
+      open={isLogoutModalOpen}
+      onClose={() => setIsLogoutModalOpen(false)}
+      onConfirm={handleLogout}
+    />
     </>
   );
 };

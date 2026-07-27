@@ -54,7 +54,7 @@ export default function CartHeader({
             >
               <Box
                 sx={{
-                  background: "#000", // Dark Blue Glassmorphism
+                  background: "#0d1232", // Dark Blue Glassmorphism
                   backdropFilter: "blur(10px)",
                   color: "#fff",
                   borderRadius: "50px", // Pill shape
@@ -309,7 +309,7 @@ export default function CartHeader({
               <Button
                 variant="contained"
                 sx={{
-                  background: "#000",
+                  background: "#0d1232",
                   color: "#fff",
                   fontSize: { xs: "13px", sm: "15px" },
                   textTransform: "none",
@@ -345,7 +345,7 @@ export default function CartHeader({
                 variant="contained"
                 endIcon={<ShoppingBagIcon />}
                 sx={{
-                  background: "#000",
+                  background: "#0d1232",
                   color: "#fff",
                   fontSize: "14px",
                   textTransform: "none",

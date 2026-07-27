@@ -1,9 +1,13 @@
 // Central registry for static theme .
 export async function resolveHome(themePage) {
+  console.log(themePage , "themePage")
   switch (themePage) {
     case "beluxjewel.web":
       return (await import("@/app/theme/beluxjewel.web/home/page.jsx")).default;
-    case "elvee.web":
+      case "julian.web":
+        return (await import("@/app/theme/julian.web/home/page.jsx")).default;
+    case "nxtelvee.web":
+      case "elvee.web":
       return (await import("@/app/theme/elvee.web/home/page.jsx")).default;
     case "diamondtine.web":
       return (await import("@/app/theme/diamondtine.web/home/page.jsx"))
@@ -24,7 +28,11 @@ export async function resolveProductList(themePage) {
     case "beluxjewel.web":
       return (await import("@/app/theme/beluxjewel.web/product/page.jsx"))
         .default;
-    case "elvee.web":
+        case "julian.web":
+        return (await import("@/app/theme/julian.web/product/page.jsx")).default;
+    case "nxtelvee.web":
+      case "elvee.web":
+      
       return (await import("@/app/theme/elvee.web/product/page.jsx")).default;
     case "diamondtine.web":
       return (await import("@/app/theme/diamondtine.web/product/page.jsx"))
@@ -47,7 +55,10 @@ export async function resolveProductDetail(themePage) {
     case "beluxjewel.web":
       return (await import("@/app/theme/beluxjewel.web/detail/page.jsx"))
         .default;
-    case "elvee.web":
+        case "julian.web":
+        return (await import("@/app/theme/julian.web/detail/page.jsx")).default;
+    case "nxtelvee.web":
+      case "elvee.web":
       return (await import("@/app/theme/elvee.web/detail/page.jsx")).default;
     case "diamondtine.web":
       return (await import("@/app/theme/diamondtine.web/detail/page.jsx"))
@@ -68,7 +79,10 @@ export async function resolveCart(themePage) {
   switch (themePage) {
     case "beluxjewel.web":
       return (await import("@/app/theme/beluxjewel.web/cart/page.jsx")).default;
-    case "elvee.web":
+        case "julian.web":
+        return (await import("@/app/theme/julian.web/cart/page.jsx")).default;
+    case "nxtelvee.web":
+      case "elvee.web":
       return (await import("@/app/theme/elvee.web/cart/page.jsx")).default;
     case "diamondtine.web":
       return (await import("@/app/theme/diamondtine.web/cart/page.jsx"))
@@ -89,7 +103,10 @@ export async function resolveWishlist(themePage) {
     case "beluxjewel.web":
       return (await import("@/app/theme/beluxjewel.web/Wishlist/page.js"))
         .default;
-    case "elvee.web":
+        case "julian.web":
+        return (await import("@/app/theme/julian.web/Wishlist/page.js")).default;
+    case "nxtelvee.web":
+      case "elvee.web":
       return (await import("@/app/theme/elvee.web/Wishlist/page.js")).default;
     case "diamondtine.web":
       return (await import("@/app/theme/diamondtine.web/Wishlist/page.js"))
@@ -113,7 +130,10 @@ export async function resolveLoginWithEmail(themePage) {
       return (
         await import("@/app/theme/beluxjewel.web/Auth/LoginWithEmail/page.js")
       ).default;
-    case "elvee.web":
+        case "julian.web":
+        return (await import("@/app/theme/julian.web/Auth/LoginWithEmail/page.js")).default;
+    case "nxtelvee.web":
+      case "elvee.web":
       return (await import("@/app/theme/elvee.web/Auth/LoginWithEmail/page.js"))
         .default;
     case "diamondtine.web":
@@ -143,7 +163,10 @@ export async function resolveRegister(themePage) {
     case "beluxjewel.web":
       return (await import("@/app/theme/beluxjewel.web/Auth/Register/page.js"))
         .default;
-    case "elvee.web":
+        case "julian.web":
+        return (await import("@/app/theme/julian.web/Auth/Register/page.js")).default;
+    case "nxtelvee.web":
+      case "elvee.web":
       return (await import("@/app/theme/elvee.web/Auth/Register/page.js"))
         .default;
     case "diamondtine.web":
@@ -170,7 +193,10 @@ export async function resolveLoginOption(themePage) {
       return (
         await import("@/app/theme/beluxjewel.web/Auth/LoginOption/page.js")
       ).default;
-    case "elvee.web":
+        case "julian.web":
+        return (await import("@/app/theme/julian.web/Auth/LoginOption/page.js")).default;
+    case "nxtelvee.web":
+      case "elvee.web":
       return (await import("@/app/theme/elvee.web/Auth/LoginOption/page.js"))
         .default;
     case "diamondtine.web":
@@ -199,7 +225,10 @@ export async function resolveLoginWithMobileCode(themePage) {
       return (
         await import("@/app/theme/beluxjewel.web/Auth/LoginWithMobileCode/page.js")
       ).default;
-    case "elvee.web":
+        case "julian.web":
+        return (await import("@/app/theme/julian.web/Auth/LoginWithMobileCode/page.js")).default;
+    case "nxtelvee.web":
+      case "elvee.web":
       return (
         await import("@/app/theme/elvee.web/Auth/LoginWithMobileCode/page.js")
       ).default;
@@ -232,7 +261,10 @@ export async function resolveLoginWithEmailCode(themePage) {
       return (
         await import("@/app/theme/beluxjewel.web/Auth/LoginWithEmailCode/page.js")
       ).default;
-    case "elvee.web":
+        case "julian.web":
+        return (await import("@/app/theme/julian.web/Auth/LoginWithEmailCode/page.js")).default;
+    case "nxtelvee.web":
+      case "elvee.web":
       return (
         await import("@/app/theme/elvee.web/Auth/LoginWithEmailCode/page.js")
       ).default;
@@ -265,7 +297,10 @@ export async function resolveForgotPassword(themePage) {
       return (
         await import("@/app/theme/beluxjewel.web/Auth/ForgotPassword/page.js")
       ).default;
-    case "elvee.web":
+        case "julian.web":
+        return (await import("@/app/theme/julian.web/Auth/ForgotPassword/page.js")).default;
+    case "nxtelvee.web":
+      case "elvee.web":
       return (await import("@/app/theme/elvee.web/Auth/ForgotPassword/page.js"))
         .default;
     case "diamondtine.web":
@@ -296,7 +331,10 @@ export async function resolveContinueWithEmail(themePage) {
       return (
         await import("@/app/theme/beluxjewel.web/Auth/ContinueWithEmail/page.js")
       ).default;
-    case "elvee.web":
+      case "julian.web":
+        return (await import("@/app/theme/julian.web/Auth/ContinueWithEmail/page.js")).default;
+    case "nxtelvee.web":
+      case "elvee.web":
       return (
         await import("@/app/theme/elvee.web/Auth/ContinueWithEmail/page.js")
       ).default;
@@ -329,7 +367,10 @@ export async function resolveContinueWithMobile(themePage) {
       return (
         await import("@/app/theme/beluxjewel.web/Auth/ContinueWithMobile/page.js")
       ).default;
-    case "elvee.web":
+      case "julian.web":
+        return (await import("@/app/theme/julian.web/Auth/ContinueWithMobile/page.js")).default;
+    case "nxtelvee.web":
+      case "elvee.web":
       return (
         await import("@/app/theme/elvee.web/Auth/ContinueWithMobile/page.js")
       ).default;
@@ -361,7 +402,10 @@ export async function resolveConfirmation(themePage) {
     case "beluxjewel.web":
       return (await import("@/app/theme/beluxjewel.web/confirmation/page.jsx"))
         .default;
-    case "elvee.web":
+        case "julian.web":
+          return (await import("@/app/theme/julian.web/confirmation/page.jsx")).default; 
+    case "nxtelvee.web":
+      case "elvee.web":
       return (await import("@/app/theme/elvee.web/confirmation/page.jsx"))
         .default;
     case "diamondtine.web":
@@ -387,7 +431,10 @@ export async function resolveLookbook(themePage) {
     case "beluxjewel.web":
       return (await import("@/app/theme/beluxjewel.web/Lookbook/page.js"))
         .default;
-    case "elvee.web":
+        case "julian.web":
+          return (await import("@/app/theme/julian.web/Lookbook/page.js")).default; 
+    case "nxtelvee.web":
+      case "elvee.web":
       return (await import("@/app/theme/elvee.web/Lookbook/page.js")).default;
     case "diamondtine.web":
       return (await import("@/app/theme/diamondtine.web/Lookbook/page.js"))
@@ -410,7 +457,10 @@ export async function resolvePayment(themePage) {
     case "beluxjewel.web":
       return (await import("@/app/theme/beluxjewel.web/payment/page.jsx"))
         .default;
-    case "elvee.web":
+        case "julian.web":
+          return (await import("@/app/theme/julian.web/payment/page.jsx")).default; 
+    case "nxtelvee.web":
+      case "elvee.web":
       return (await import("@/app/theme/elvee.web/payment/page.jsx")).default;
     case "diamondtine.web":
       return (await import("@/app/theme/diamondtine.web/payment/page.jsx"))
@@ -433,7 +483,10 @@ export async function resolveDelivery(themePage) {
     case "beluxjewel.web":
       return (await import("@/app/theme/beluxjewel.web/delivery/page.jsx"))
         .default;
-    case "elvee.web":
+        case "julian.web":
+          return (await import("@/app/theme/julian.web/delivery/page.jsx")).default; 
+    case "nxtelvee.web":
+      case "elvee.web":
       return (await import("@/app/theme/elvee.web/delivery/page.jsx")).default;
     case "diamondtine.web":
       return (await import("@/app/theme/diamondtine.web/delivery/page.jsx"))

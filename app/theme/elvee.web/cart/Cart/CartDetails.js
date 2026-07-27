@@ -82,11 +82,12 @@ const CartDetails = ({
         boxSizing: 'border-box'
       }}
     >
-      <Box sx={{ display: "flex", alignItems: "center", gap: 1, bgcolor: '#fff', py: 2, width: '100%', borderRadius: 4, mb: 1.6 }}>
+      <Box sx={{ display: "flex",justifyContent: "center", alignItems: "center", gap: 1, bgcolor: '#fff', py: 2, width: '100%', borderRadius: 4, mb: 1.6 }}>
         <Box>
           <Typography
             component="h1"
             variant="h5"
+         
             sx={{ fontWeight: 700, letterSpacing: -0.2, px: 2 }}
           >
             Customization
@@ -129,12 +130,13 @@ const CartDetails = ({
           py: 1,
           display: 'flex',
           alignItems: 'center',
+          justifyContent: 'center',
           px: 1
         }}
       >
         <Typography
           sx={{
-            textAlign: "left",
+            textAlign: "center",
             fontWeight: 600,
             color: "#1A1A1A", // modern deep-dark tone
             fontSize: {

@@ -46,10 +46,10 @@ const SonasonsHome = async () => {
       <BrandInfoMarquee assetBase={assetBase} />
       <Collection />
       <DiamondType />
-      <DiamondShape />
+      {/* <DiamondShape /> */}
+      <NewArrival data={newArrivalBanner} storeData={storeData} />
       <MarketingBanner />
       <FeatureProducts  storeInit={storeData} />
-      <NewArrival data={newArrivalBanner} storeData={storeData} />
       <TrendingNow  storeInit={storeData} />
       <BestSaller  storeInit={storeData} />
       <Services />

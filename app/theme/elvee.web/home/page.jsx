@@ -81,9 +81,9 @@ return (
         <BrandsComponent />
         <PromoComponent2 />
         <NewPromoComponent />
+        <CompanyData />
         <Craftmenship />
         <GaleryView />
-        <CompanyData />
         <AffiliationData />
         <SocialMediaVideoSection />
       </>

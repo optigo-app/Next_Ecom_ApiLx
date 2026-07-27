@@ -349,7 +349,7 @@ const PromoComponent1 = () => {
               <ChevronLeft sx={{ fontSize: 22 }} />
             </IconButton>
 
-            <Box style={{width :"35px"}} className="promo-text-pagination" />
+            <Box style={{width :"35px",display:"flex"}}  className="promo-text-pagination" />
 
             <IconButton
               className="promo-text-next"

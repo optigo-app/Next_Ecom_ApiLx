@@ -21,23 +21,24 @@ export const themeMap = {
     page: "fgstore.mapp",
   },
   "nxtelvee.web": {
-    page: "elvee.web",
+    page: "hoq.web",
     // page: LocalSetup,
-    // page: LocalSetup,
+     
   },
   "nxtdiamondtine.web": {
     page: "diamondtine.web",
     // page: LocalSetup,
   },
   "nxtmalakanJwewls.web": {
-    // page: "elvee.web",
-    page: LocalSetup,
+    page: "elvee.web",
+    // page: LocalSetup,
   },
   "nxthoq.web": {
     page: "hoq.web",
   },
   "nxtjulian.web": {
-    page: "julian.web",
+    // page: "julian.web",
+    // page: LocalSetup,
   },
    
   "nxt29.optigoapps.com": {

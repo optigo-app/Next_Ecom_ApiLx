@@ -2,7 +2,7 @@
 // @use "../../style/variable.scss" as *;
 
 .smr_DeliverMainDiv {
-  background-color: $bgColor;
+  background-color: #fff !important;
   margin-bottom: 4rem;
 }
 
@@ -130,7 +130,7 @@
     font-size: $fontSize3;
     padding: 0 15px;
     color: $elebtncolor;
-    background: $elecbtnbg;
+    background: $primaryBorderColor !important;
     border: none;
     border-radius: 0px !important;
     cursor: pointer;

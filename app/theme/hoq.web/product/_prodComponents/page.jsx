@@ -1151,7 +1151,7 @@ const Product = ({ params, searchParams, storeinit }) => {
 export default memo(Product);
 
 const Banner = () => {
-    const path = "/WebSiteStaticImage/imageBanner/2.webp"
+    const path = "/WebSiteStaticImage/imageBanner/2.png"
     return (
         <div
             className="Banner"
