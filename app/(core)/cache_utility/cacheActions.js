@@ -1,7 +1,7 @@
 "use server";
 /**
  * Server Actions for cache read/write.
- * Replaces client-side fetch('/api/v1/cache') with direct filesystem access.
+ * Direct filesystem access to .next_cache (and .next_cache/menu).
  * No HTTP round-trip — runs on the server, returns plain data to the client.
  */
 import { getCache, setCache } from "@/app/(core)/cache_utility/dynamic_serverCache";

@@ -83,6 +83,8 @@ const RightSide = ({
     return isNaN(num) ? 0 : num;
   };
   const isLoading = isPriceloading || pdLoadImage || loadingdata;
+  const isPriceLoadingState = (isPriceloading || pdLoadImage || loadingdata) && !activeArticle && !singleProd?.UnitCostWithmarkup && !singleProd?.UnitCostWithMarkUp;
+  const isNetWeightLoadingState = isLoading && !activeArticle?.NetWeight && !singleProd?.NetWeight && !singleProd?.Nwt;
 
   // Derive article-specific metal info from rd1 using defaultArticleId
   const defaultArticle =
@@ -327,7 +329,7 @@ const RightSide = ({
                 }}
               />
 
-              {isPriceloading || pdLoadImage || loadingdata ? (
+              {isPriceLoadingState ? (
                 <Skeleton
                   variant="rounded"
                   width={140}
@@ -339,6 +341,8 @@ const RightSide = ({
                   {formatter(
                     activeArticle?.UnitCostWithmarkup ??
                       activeArticle?.TotalUnitCost ??
+                      singleProd?.UnitCostWithmarkup ??
+                      singleProd?.UnitCostWithMarkUp ??
                       0,
                   )}
                 </span>
@@ -455,14 +459,17 @@ const RightSide = ({
                   </Typography>
 
                   <Typography sx={{ fontSize: "15px", fontWeight: 600 }}>
-                    {isLoading ? (
+                    {isNetWeightLoadingState ? (
                       <Skeleton variant="text" width={50} />
                     ) : activeArticle?.NetWeight != null ? (
                       Number(activeArticle.NetWeight).toFixed(3)
                     ) : singleProd1?.NetWeight != null ||
-                      singleProd?.NetWeight != null ? (
+                      singleProd?.NetWeight != null ||
+                      singleProd?.Nwt != null ? (
                       (
-                        singleProd1?.NetWeight ?? singleProd?.NetWeight
+                        singleProd1?.NetWeight ??
+                        singleProd?.NetWeight ??
+                        singleProd?.Nwt
                       )?.toFixed(3)
                     ) : (
                       "-"

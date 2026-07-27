@@ -36,6 +36,7 @@ const SonasonsHome = async () => {
         mt: { xs: "-64px", sm: "-84px" },
       }}
     >
+      {/* Silent file-cache pre-warmer — invisible, fires after paint */}
       <TopSection />
       <BrandInfoMarquee assetBase={assetBase} />
       <CategoryBlock assetBase={assetBase} storeInit={storeData} />
