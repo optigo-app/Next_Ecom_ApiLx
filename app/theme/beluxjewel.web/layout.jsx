@@ -1,3 +1,4 @@
+import { Box } from "@mui/material";
 import {
   getCompanyInfoData,
   getExtraFlag,
@@ -6,7 +7,6 @@ import {
 import React, { Suspense } from "react";
 import { getLogos } from "@/app/(core)/lib/ServerHelper";
 import FooterNew from "@/app/components/(static)/Footer/FooterNew";
-import { Box } from "@mui/material";
 import ChatMenu from "@/app/components/(static)/ChatMenu/ChatMenu";
 import AnnouncementBar from "./home/blocks/AnnouncementBar";
 import BeluxNavbar from "@/app/components/(dynamic)/Header/Elvee/New/BeluxNavbar";

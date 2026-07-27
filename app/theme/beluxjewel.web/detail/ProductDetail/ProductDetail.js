@@ -52,14 +52,40 @@ const noImageFound = imageNotFound;
 
 const ProductDetail = ({ storeinit, searchParams, params }) => {
   const { setCartCountNum, setWishCountNum, loginUserDetail } = useStore();
+
+  const initialDecodeUrl = useMemo(() => {
+    const result = ParseAndDecodeSearchParams(searchParams);
+    const navVal = result[0]?.split("=")[1];
+    return decodeAndDecompress(navVal);
+  }, [searchParams]);
+
+  const initialMockProd = useMemo(() => {
+    if (initialDecodeUrl?.title) {
+      return {
+        TitleLine: initialDecodeUrl.title,
+        Nwt: initialDecodeUrl.nwt ? parseFloat(initialDecodeUrl.nwt) : 0,
+        NetWeight: initialDecodeUrl.nwt ? parseFloat(initialDecodeUrl.nwt) : 0,
+        UnitCostWithMarkUp: initialDecodeUrl.price ? parseFloat(initialDecodeUrl.price) : 0,
+        UnitCostWithmarkup: initialDecodeUrl.price ? parseFloat(initialDecodeUrl.price) : 0,
+        TotalUnitCost: initialDecodeUrl.price ? parseFloat(initialDecodeUrl.price) : 0,
+        ArticleNo: initialDecodeUrl.ArticleNo ?? "",
+        designno: initialDecodeUrl.b ?? "",
+        autocode: initialDecodeUrl.a ?? "",
+        ImageExtension: "webp",
+        ImageCount: 1,
+      };
+    }
+    return {};
+  }, [initialDecodeUrl]);
+
   const [maxWidth1400, setMaxWidth1400] = useState(false);
   const [maxWidth1000, setMaxWidth1000] = useState(false);
-  const [decodeUrl, setDecodeUrl] = useState({});
+  const [decodeUrl, setDecodeUrl] = useState(initialDecodeUrl || {});
   const [storeInit, setStoreInit] = useState(storeinit || {});
   const [loginData, setLoginData] = useState({});
   const [sizeData, setSizeData] = useState();
-  const [singleProd, setSingleProd] = useState({});
-  const [singleProd1, setSingleProd1] = useState({});
+  const [singleProd, setSingleProd] = useState(initialMockProd);
+  const [singleProd1, setSingleProd1] = useState(initialMockProd);
   const [diaList, setDiaList] = useState([]);
   const [csList, setCsList] = useState([]);
   const [netWTData, setnetWTData] = useState([]);
@@ -76,7 +102,7 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
   const [selectCsQC, setSelectCsQC] = useState();
   const [metalWiseColorImg, setMetalWiseColorImg] = useState([]);
   const [metalColorCombo, setMetalColorCombo] = useState([]);
-  const [isPriceloading, setisPriceLoading] = useState(true);
+  const [isPriceloading, setisPriceLoading] = useState(initialDecodeUrl?.title ? false : true);
   const [selectedThumbImg, setSelectedThumbImg] = useState({});
   const [pdThumbImg, setPdThumbImg] = useState([]);
   const [thumbImgIndex, setThumbImgIndex] = useState();
@@ -87,7 +113,7 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
   const [pdLoadImage, setPdLoadImage] = useState(false);
   const location = usePathname();
   const [saveLastView, setSaveLastView] = useState();
-  const [imageSrc, setImageSrc] = useState();
+  const [imageSrc, setImageSrc] = useState(initialDecodeUrl?.img || "");
   const [filterData, setFilterData] = useState([]);
   const [showPlaceholder, setShowPlaceholder] = useState(false);
   const { imageRefs, handleMouseMove, handleMouseLeave } = useImageZoom(2.2);
@@ -107,12 +133,6 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
   const { broadcast } = useBroadcaster(); // Get the broadcaster
   const lastSyncData = useSyncDataStore((s) => s.syncData);
 
-  const initialDecodeUrl = useMemo(() => {
-    const result = ParseAndDecodeSearchParams(searchParams);
-    const navVal = result[0]?.split("=")[1];
-    return decodeAndDecompress(navVal);
-  }, [searchParams]);
-
   useGlobalPreventSave();
 
   useEffect(() => {
@@ -125,7 +145,7 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
 
   let cookie = Cookies.get("visiterId");
 
-  const [loadingdata, setloadingdata] = useState(true);
+  const [loadingdata, setloadingdata] = useState(initialDecodeUrl?.title ? false : true);
   const [SimilarBrandArr, setSimilarBrandArr] = useState([]);
   const [designSetList, setDesignSetList] = useState();
   const [stockItemArr, setStockItemArr] = useState([]);
@@ -833,7 +853,9 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
         `${decodeobj?.c?.split(",")[0]},${decodeobj?.c?.split(",")[1]}`;
     }
 
-    setloadingdata(true);
+    if (!decodeobj?.title) {
+      setloadingdata(true);
+    }
     const FetchProductData = async () => {
       let obj1 = {
         mt: logininfoInside?.MetalId ?? storeinitInside?.MetalId,
@@ -857,9 +879,28 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
           : (logininfoInside?.cmboCSQCid ?? storeinitInside?.cmboCSQCid),
       };
 
+    if (decodeobj?.title) {
+      const initialProd = {
+        TitleLine: decodeobj.title,
+        Nwt: decodeobj.nwt ? parseFloat(decodeobj.nwt) : 0,
+        UnitCostWithMarkUp: decodeobj.price ? parseFloat(decodeobj.price) : 0,
+        ArticleNo: decodeobj.ArticleNo ?? "",
+        designno: decodeobj.b ?? "",
+        autocode: decodeobj.a ?? "",
+        ImageExtension: "webp",
+        ImageCount: 1,
+      };
+      setSingleProd(initialProd);
+      setSingleProd1(initialProd);
+      if (decodeobj.img) {
+        setImageSrc(decodeobj.img);
+      }
+      setisPriceLoading(false);
+    } else {
       setisPriceLoading(true);
       setSingleProd1({});
       setSingleProd({});
+    }
 
       try {
         const res = await SingleArticleProdListAPI(
@@ -1922,13 +1963,18 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
       return matchedOption?.Name || null;
     })[0];
 
-  const getImagesArr = pdThumbImg?.map((item) => {
-    const firstHalf = item?.thumbImageUrl?.split("/Design_Thumb")[0];
-    const secondhalf = item?.thumbImageUrl
-      ?.split("/Design_Thumb")[1]
-      ?.split(".")[0];
-    return `${firstHalf}${secondhalf}.${item?.originalImageExtension}`;
-  });
+  const getImagesArr = pdThumbImg?.length > 0
+    ? pdThumbImg?.map((item) => {
+        const firstHalf = item?.thumbImageUrl?.split("/Design_Thumb")[0];
+        const secondhalf = item?.thumbImageUrl
+          ?.split("/Design_Thumb")[1]
+          ?.split(".")[0];
+        return `${firstHalf}${secondhalf}.${item?.originalImageExtension}`;
+      })
+    : (decodeUrl?.img ? [decodeUrl.img] : []);
+
+  const derivedMediaBuildDone = mediaBuildDone || (decodeUrl?.img ? true : false);
+  const derivedIsMediaReady = isMediaReady || (decodeUrl?.img ? true : false);
 
   useEffect(() => {
     if (!mediaBuildDone) return;
@@ -1960,7 +2006,7 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
     }
   }, [lastSyncData]);
 
-  if (loadingdata) {
+  if (loadingdata && !decodeUrl?.title) {
     return <DetailPageSkeleton />;
   }
 
@@ -2007,8 +2053,8 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
                     })),
                   ] || null
                 }
-                isMediaReady={isMediaReady}
-                mediaBuildDone={mediaBuildDone}
+                isMediaReady={derivedIsMediaReady}
+                mediaBuildDone={derivedMediaBuildDone}
                 HandleImageDialogOpen={HandleImageDialogOpen}
               />
               <RightSide
