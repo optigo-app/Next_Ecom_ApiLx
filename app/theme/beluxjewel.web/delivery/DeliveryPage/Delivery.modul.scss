@@ -1,5 +1,8 @@
 @use "../../style/variable.scss" as *;
 
+.stickyPill{
+  background-color: $btnBg;
+}
 .elv_delivery_Main_div {
     font-family: $fontSansSerif !important;
 

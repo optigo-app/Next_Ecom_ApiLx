@@ -36,7 +36,6 @@ const PremiumFooter = ({
   storeData,
   companyInfoData: companyInfoDataProp,
 }) => {
-  console.log(logos, "logoslogos");
   const [email, setEmail] = useState("");
   const [companyInfoData, setCompanuInfoData] = useState(companyInfoDataProp);
   const [socialMediaData, setSocialMediaData] = useState([]);

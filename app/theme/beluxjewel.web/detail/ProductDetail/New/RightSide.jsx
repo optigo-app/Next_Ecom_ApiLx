@@ -25,6 +25,7 @@ import { motion } from "framer-motion";
 import { getSession } from "@/app/(core)/utils/FetchSessionData";
 import CustomizerDrawer from "../Customiziation";
 import ProductDetailsSection from "./ProductDetailsSection";
+import { getDeliveryInfo } from "./deliveryUtils";
 
 const MotionButton = motion(Button);
 const MotionCheckbox = motion(Checkbox);
@@ -36,6 +37,7 @@ const RightSide = ({
   description,
   singleProd,
   singleProd1,
+  stockItemArr,
   metalType,
   metalColor,
   storeInit,
@@ -953,30 +955,52 @@ const RightSide = ({
               </Box>
 
               {/* Stock & Delivery Info Notice Box */}
-              <Box
-                sx={{
-                  backgroundColor: "#f5f5f5",
-                  borderRadius: "2px",
-                  p: 2,
-                  mb: 3,
-                }}
-              >
-                <Typography
-                  variant="body2"
-                  sx={{
-                    fontSize: "13px",
-                    color: "#555555",
-                    lineHeight: 1.65,
-                  }}
-                >
-                  This piece is in stock and will be delivered between{" "}
-                  <strong style={{ color: "#111111", fontWeight: 700 }}>
-                    July 25th–27th
-                  </strong>
-                  . Crafted in limited quantities to reduce waste and ensure
-                  exceptional quality.
-                </Typography>
-              </Box>
+              {(() => {
+                const deliveryInfo = getDeliveryInfo(
+                  singleProd,
+                  singleProd1,
+                  stockItemArr
+                );
+                return (
+                  <Box
+                    sx={{
+                      backgroundColor: "#f5f5f5",
+                      borderRadius: "2px",
+                      p: 2,
+                      mb: 3,
+                    }}
+                  >
+                    <Typography
+                      variant="body2"
+                      sx={{
+                        fontSize: "13px",
+                        color: "#555555",
+                        lineHeight: 1.65,
+                      }}
+                    >
+                      {deliveryInfo.isInStock ? (
+                        <>
+                          This piece is in stock and will be delivered between{" "}
+                          <strong style={{ color: "#111111", fontWeight: 700 }}>
+                            {deliveryInfo.dateRangeStr}
+                          </strong>
+                          . Crafted in limited quantities to reduce waste and ensure
+                          exceptional quality.
+                        </>
+                      ) : (
+                        <>
+                          This piece is made to order and will be delivered in 15 days (by{" "}
+                          <strong style={{ color: "#111111", fontWeight: 700 }}>
+                            {deliveryInfo.dateRangeStr}
+                          </strong>
+                          ). Crafted in limited quantities to reduce waste and ensure
+                          exceptional quality.
+                        </>
+                      )}
+                    </Typography>
+                  </Box>
+                );
+              })()}
 
               {/* Trust Feature Badges List */}
               <Box

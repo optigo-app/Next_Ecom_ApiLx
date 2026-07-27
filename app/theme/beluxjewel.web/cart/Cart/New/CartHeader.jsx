@@ -3,6 +3,7 @@ import { Box, Typography, Divider, Button, Stack, Grid, useMediaQuery } from "@m
 import ShoppingBagIcon from "@mui/icons-material/ShoppingBag";
 import { motion, AnimatePresence, useInView } from "framer-motion";
 import Tooltip from "@mui/material/Tooltip";
+import './CartHeader.scss'
 
 export default function CartHeader({
   summary,
@@ -53,6 +54,7 @@ export default function CartHeader({
               }}
             >
               <Box
+                className="stickyPill"
                 sx={{
                   background: "#000", // Dark Blue Glassmorphism
                   backdropFilter: "blur(10px)",
@@ -308,6 +310,7 @@ export default function CartHeader({
             <Stack direction="row" spacing={2} sx={{ flexShrink: 0, justifyContent: "center" }}>
               <Button
                 variant="contained"
+                className="stickyPill"
                 sx={{
                   background: "#000",
                   color: "#fff",
@@ -315,7 +318,6 @@ export default function CartHeader({
                   textTransform: "none",
                   borderRadius: "10px",
                   px: 3,
-                  ":hover": { background: "#000" },
                 }}
                 onClick={count > 0 ? handleOpen1 : handleClose1}
               >
@@ -345,7 +347,6 @@ export default function CartHeader({
                 variant="contained"
                 endIcon={<ShoppingBagIcon />}
                 sx={{
-                  background: "#000",
                   color: "#fff",
                   fontSize: "14px",
                   textTransform: "none",
@@ -353,7 +354,6 @@ export default function CartHeader({
                   px: 3,
                   py: 0.9,
                   whiteSpace: "nowrap",
-                  ":hover": { background: "#000" },
                   "@media (max-width: 968px)": {
                     position: "fixed",
                     bottom: 0,
@@ -366,6 +366,7 @@ export default function CartHeader({
                     zIndex: 2000,
                   },
                 }}
+                className="stickyPill"
                 onClick={handleMoveToOrder}
               >
                 Place Order

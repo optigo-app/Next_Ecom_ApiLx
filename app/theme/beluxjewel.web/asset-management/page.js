@@ -51,6 +51,18 @@ import {
   Sparkles,
   Lock,
 } from "lucide-react";
+import { useSearchParams, useRouter, usePathname } from "next/navigation";
+import { toast } from "react-toastify";
+import { getSession } from "@/app/(core)/utils/FetchSessionData";
+import { useStore } from "@/app/(core)/contexts/StoreProvider";
+import Cookies from "js-cookie";
+import {
+  GetAssetMasterAPI,
+  GetAssetNodesAPI,
+  handleDownloadFile,
+} from "@/app/(core)/utils/API/AssetManagementAPI/AssetManagementAPI";
+import "./AssetManagement.scss";
+
 
 const getCategoryDetails = (title = "", index = 0) => {
   const lower = title.toLowerCase();
@@ -186,16 +198,6 @@ const getBadgeStyle = (type) => {
   }
 };
 
-import { useSearchParams, useRouter, usePathname } from "next/navigation";
-import { toast } from "react-toastify";
-import { getSession } from "@/app/(core)/utils/FetchSessionData";
-import {
-  GetAssetMasterAPI,
-  GetAssetNodesAPI,
-  handleDownloadFile,
-} from "@/app/(core)/utils/API/AssetManagementAPI/AssetManagementAPI";
-import "./AssetManagement.scss";
-
 /**
  * Dynamically extracts CompanyDbName from base64 encoded YearCode in storeInit.
  * Example YearCode: "e3tuemVufX17ezIwfX17e2RlbW9zdG9yZX19e3tkZW1vc3RvcmV9fQ=="
@@ -243,6 +245,41 @@ function AssetManagementContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
+  const { islogin } = useStore();
+
+  const [authChecked, setAuthChecked] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  // Authentication Protection Effect
+  useEffect(() => {
+    let loggedIn = false;
+    if (typeof window !== "undefined") {
+      const cookieToken = Cookies.get("userLoginCookie");
+      const cookieLoginUser = Cookies.get("LoginUser");
+      const sessionLoginUser = getSession("LoginUser");
+      const sessionUserDetail =
+        getSession("loginUserDetail") || window.__LOGIN_USER_DETAIL__;
+
+      loggedIn = Boolean(
+        islogin ||
+          cookieToken ||
+          cookieLoginUser === "true" ||
+          sessionLoginUser === true ||
+          (sessionUserDetail &&
+            (sessionUserDetail?.id ||
+              sessionUserDetail?.userid ||
+              sessionUserDetail?.EmailId)),
+      );
+    }
+
+    setIsAuthenticated(loggedIn);
+    setAuthChecked(true);
+
+    if (!loggedIn) {
+      const redirectUrl = `/LoginOption?LoginRedirect=${encodeURIComponent("/asset-management")}`;
+      router.replace(redirectUrl);
+    }
+  }, [islogin, router]);
 
   const [userInfo, setUserInfo] = useState({
     email: "",
@@ -277,8 +314,10 @@ function AssetManagementContent() {
     });
   };
 
-  // Single mount effect: resolve session parameters dynamically and load masters once
+  // Single mount effect: resolve session parameters dynamically and load masters once if authenticated
   useEffect(() => {
+    if (!authChecked || !isAuthenticated) return;
+
     const email = getUserEmailFromSession();
     const companyDb = getCompanyDbFromYearCode();
     const yearCode = getYearCodeFromSession();
@@ -317,7 +356,7 @@ function AssetManagementContent() {
     };
 
     fetchMasters();
-  }, []);
+  }, [authChecked, isAuthenticated]);
 
   // Fetch Nodes when selectedMasterId changes
   useEffect(() => {
@@ -393,9 +432,10 @@ function AssetManagementContent() {
   };
 
   // Active Category Master Object
-  const activeMasterObj = useMemo(() => {
-    return masters.find((m) => String(m.Id) === String(selectedMasterId));
-  }, [masters, selectedMasterId]);
+  const activeMaster = useMemo(
+    () => masters.find((m) => String(m.Id) === String(selectedMasterId)),
+    [masters, selectedMasterId],
+  );
 
   // Current Node Object
   const currentNodeObj = useMemo(() => {
@@ -461,6 +501,100 @@ function AssetManagementContent() {
       return (a.Name || "").localeCompare(b.Name || "");
     });
   }, [nodes, currentNodeId, searchQuery]);
+
+  // Auth checking fallback UI
+  if (!authChecked) {
+    return (
+      <Box
+        sx={{
+          minHeight: "75vh",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          gap: 2,
+        }}
+      >
+        <CircularProgress sx={{ color: "#114D6E" }} />
+        <Typography variant="body2" sx={{ color: "#666", letterSpacing: "1px" }}>
+          Verifying access permissions...
+        </Typography>
+      </Box>
+    );
+  }
+
+  // Access Denied / Login Required UI
+  if (!isAuthenticated) {
+    return (
+      <Container maxWidth="md" sx={{ py: 12, display: "flex", justifyContent: "center" }}>
+        <Card
+          elevation={0}
+          sx={{
+            p: 6,
+            textAlign: "center",
+            borderRadius: "16px",
+            border: "1px solid #e0e0e0",
+            backgroundColor: "#ffffff",
+            boxShadow: "0 20px 40px rgba(0,0,0,0.06)",
+            maxWidth: 540,
+            width: "100%",
+          }}
+        >
+          <Box
+            sx={{
+              width: 72,
+              height: 72,
+              borderRadius: "50%",
+              backgroundColor: "rgba(17, 77, 110, 0.08)",
+              color: "#114D6E",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              mx: "auto",
+              mb: 3,
+            }}
+          >
+            <Lock size={36} />
+          </Box>
+          <Typography
+            variant="h5"
+            sx={{ fontWeight: 700, color: "#114D6E", mb: 1.5, letterSpacing: "-0.5px" }}
+          >
+            Login Required
+          </Typography>
+          <Typography variant="body1" sx={{ color: "#666", mb: 4, lineHeight: 1.6 }}>
+            Access to our private B2B design catalogue & asset management library is restricted to logged-in partners only. Please log in to continue.
+          </Typography>
+          <Button
+            variant="contained"
+            onClick={() =>
+              router.push(
+                `/LoginOption?LoginRedirect=${encodeURIComponent("/asset-management")}`,
+              )
+            }
+            sx={{
+              py: 1.5,
+              px: 5,
+              backgroundColor: "#114D6E",
+              color: "#fff",
+              fontWeight: 600,
+              fontSize: "0.95rem",
+              borderRadius: "8px",
+              textTransform: "none",
+              boxShadow: "0 4px 14px rgba(17, 77, 110, 0.3)",
+              "&:hover": {
+                backgroundColor: "#0d3b54",
+              },
+            }}
+          >
+            Log In to Access Assets
+          </Button>
+        </Card>
+      </Container>
+    );
+  }
+
+
 
   // Handle File Download
   const handleDownload = async (fileNode) => {
@@ -751,7 +885,7 @@ function AssetManagementContent() {
             </Button>
 
             <Chip
-              label={`Category: ${activeMasterObj?.Title || "Selected Category"}`}
+              label={`Category: ${activeMaster?.Title || "Selected Category"}`}
               sx={{
                 bgcolor: "#0C2E40",
                 color: "#FFFFFF",
@@ -801,7 +935,7 @@ function AssetManagementContent() {
                       key={item.Id}
                       sx={{ color: "#114D6E", fontWeight: 700 }}
                     >
-                      {item.Name || activeMasterObj?.Title}
+                      {item.Name || activeMaster?.Title}
                     </Typography>
                   ) : (
                     <MuiLink
@@ -811,7 +945,7 @@ function AssetManagementContent() {
                       sx={{ cursor: "pointer", fontWeight: 500 }}
                       onClick={() => handleOpenFolder(item.Id)}
                     >
-                      {item.Name || activeMasterObj?.Title}
+                      {item.Name || activeMaster?.Title}
                     </MuiLink>
                   );
                 })}
