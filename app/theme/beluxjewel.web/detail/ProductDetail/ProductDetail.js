@@ -53,16 +53,28 @@ const noImageFound = imageNotFound;
 const ProductDetail = ({ storeinit, searchParams, params }) => {
   const { setCartCountNum, setWishCountNum, loginUserDetail } = useStore();
 
+  const unwrappedSearchParams = (searchParams && typeof searchParams.then === "function")
+    ? React.use(searchParams)
+    : searchParams;
+
   const initialDecodeUrl = useMemo(() => {
-    const result = ParseAndDecodeSearchParams(searchParams);
+    const result = ParseAndDecodeSearchParams(unwrappedSearchParams);
     const navVal = result[0]?.split("=")[1];
     return decodeAndDecompress(navVal);
-  }, [searchParams]);
+  }, [unwrappedSearchParams]);
+
+  const hasPreHydratedData = Boolean(
+    initialDecodeUrl?.b ||
+    initialDecodeUrl?.title ||
+    initialDecodeUrl?.a ||
+    initialDecodeUrl?.img ||
+    initialDecodeUrl?.ArticleNo
+  );
 
   const initialMockProd = useMemo(() => {
-    if (initialDecodeUrl?.title) {
+    if (hasPreHydratedData) {
       return {
-        TitleLine: initialDecodeUrl.title,
+        TitleLine: initialDecodeUrl.title || initialDecodeUrl.ArticleNo || initialDecodeUrl.b || "",
         Nwt: initialDecodeUrl.nwt ? parseFloat(initialDecodeUrl.nwt) : 0,
         NetWeight: initialDecodeUrl.nwt ? parseFloat(initialDecodeUrl.nwt) : 0,
         UnitCostWithMarkUp: initialDecodeUrl.price ? parseFloat(initialDecodeUrl.price) : 0,
@@ -76,7 +88,7 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
       };
     }
     return {};
-  }, [initialDecodeUrl]);
+  }, [initialDecodeUrl, hasPreHydratedData]);
 
   const [maxWidth1400, setMaxWidth1400] = useState(false);
   const [maxWidth1000, setMaxWidth1000] = useState(false);
@@ -102,7 +114,7 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
   const [selectCsQC, setSelectCsQC] = useState();
   const [metalWiseColorImg, setMetalWiseColorImg] = useState([]);
   const [metalColorCombo, setMetalColorCombo] = useState([]);
-  const [isPriceloading, setisPriceLoading] = useState(initialDecodeUrl?.title ? false : true);
+  const [isPriceloading, setisPriceLoading] = useState(hasPreHydratedData ? false : true);
   const [selectedThumbImg, setSelectedThumbImg] = useState({});
   const [pdThumbImg, setPdThumbImg] = useState([]);
   const [thumbImgIndex, setThumbImgIndex] = useState();
@@ -143,9 +155,102 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
     return () => clearTimeout(timer);
   }, []);
 
+  useEffect(() => {
+    if (initialDecodeUrl && Object.keys(initialDecodeUrl).length > 0) {
+      try {
+        const mediaDet = initialDecodeUrl.mediaDet;
+        if (!mediaDet || mediaDet === "0") return;
+        const parsed = typeof mediaDet === "string" ? JSON.parse(mediaDet) : mediaDet;
+        if (!Array.isArray(parsed) || parsed.length === 0) return;
+
+        const baseImageCDN = storeinit?.CDNDesignImageFol || storeInit?.CDNDesignImageFol;
+        const baseThumbCDN = storeinit?.CDNDesignImageFolThumb || storeInit?.CDNDesignImageFolThumb;
+        const baseVideoCDN = storeinit?.CDNVPath || storeInit?.CDNVPath;
+        if (!baseImageCDN) return;
+
+        const normalImages = parsed.filter((item) => Number(item?.TI) === 1);
+        const colorImages = parsed.filter((item) => Number(item?.TI) === 2);
+        const normalVideos = parsed.filter((item) => Number(item?.TI) === 3);
+        const colorVideos = parsed.filter((item) => Number(item?.TI) === 4);
+
+        let colorCode = null;
+        if (initialDecodeUrl.img) {
+          const fileName = initialDecodeUrl.img.split("/").pop() || "";
+          const parts = fileName.split("~");
+          if (parts.length > 2) {
+            colorCode = parts[2].split(".")[0]?.toUpperCase() || null;
+          }
+        }
+
+        if (!colorCode && typeof window !== "undefined") {
+          try {
+            const mtColorLocal = JSON.parse(sessionStorage.getItem("MetalColorCombo") || "[]");
+            const loginInfo = getSession("loginUserDetail");
+            const defaultColorObj = mtColorLocal.find(ele => ele.id === loginInfo?.MetalColorId);
+            colorCode = defaultColorObj?.colorcode || colorImages[0]?.CN || null;
+          } catch (err) {}
+        }
+
+        const resolvedImages = [];
+
+        if (colorImages.length > 0 && colorCode) {
+          colorImages.forEach((img) => {
+            if (img.CN === colorCode) {
+              const thumbUrl = `${baseThumbCDN}${initialDecodeUrl.b}~${img.Nm}~${colorCode}.jpg`;
+              resolvedImages.push({
+                thumbImageUrl: thumbUrl,
+                originalImageExtension: img.Ex || "webp",
+              });
+            }
+          });
+        }
+
+        if (resolvedImages.length === 0 && normalImages.length > 0) {
+          normalImages.forEach((img) => {
+            const thumbUrl = `${baseThumbCDN}${initialDecodeUrl.b}~${img.Nm}.jpg`;
+            resolvedImages.push({
+              thumbImageUrl: thumbUrl,
+              originalImageExtension: img.Ex || "webp",
+            });
+          });
+        }
+
+        if (resolvedImages.length > 0) {
+          setPdThumbImg(resolvedImages);
+          setThumbImgIndex(0);
+        }
+
+        const resolvedVideos = [];
+        if (colorVideos.length > 0 && colorCode && baseVideoCDN) {
+          colorVideos.forEach((vid) => {
+            if (vid.CN === colorCode) {
+              resolvedVideos.push(
+                `${baseVideoCDN}${initialDecodeUrl.b}~${vid.Nm}~${colorCode}.${vid.Ex || "mp4"}`
+              );
+            }
+          });
+        }
+
+        normalVideos.forEach((vid) => {
+          if (baseVideoCDN) {
+            resolvedVideos.push(
+              `${baseVideoCDN}${initialDecodeUrl.b}~${vid.Nm}.${vid.Ex || "mp4"}`
+            );
+          }
+        });
+
+        if (resolvedVideos.length > 0) {
+          setPdVideoArr(resolvedVideos);
+        }
+      } catch (e) {
+        console.error("Error pre-populating media:", e);
+      }
+    }
+  }, [initialDecodeUrl, storeinit, storeInit]);
+
   let cookie = Cookies.get("visiterId");
 
-  const [loadingdata, setloadingdata] = useState(initialDecodeUrl?.title ? false : true);
+  const [loadingdata, setloadingdata] = useState(hasPreHydratedData ? false : true);
   const [SimilarBrandArr, setSimilarBrandArr] = useState([]);
   const [designSetList, setDesignSetList] = useState();
   const [stockItemArr, setStockItemArr] = useState([]);
@@ -853,7 +958,7 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
         `${decodeobj?.c?.split(",")[0]},${decodeobj?.c?.split(",")[1]}`;
     }
 
-    if (!decodeobj?.title) {
+    if (!(decodeobj?.b || decodeobj?.title || decodeobj?.a || decodeobj?.img)) {
       setloadingdata(true);
     }
     const FetchProductData = async () => {
@@ -1103,7 +1208,7 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
       top: 0,
       behavior: "smooth",
     });
-  }, [location, searchParams]);
+  }, [location, unwrappedSearchParams]);
 
   const callAllApi = async () => {
     let mtTypeLocal = getSession("metalTypeCombo");
@@ -1226,6 +1331,10 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
     const mtColorLocal = getSession("MetalColorCombo") || [];
     const imageVideoDetail = singleProd?.ImageVideoDetail;
     const pd = singleProd;
+
+    if (!imageVideoDetail) {
+      return;
+    }
 
     let parsedData = [];
     try {
@@ -1854,6 +1963,7 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
       img:
         imageUrl ??
         `${storeinit?.CDNDesignImageFol}${productData?.designno}~1.${productData?.ImageExtension}`,
+      mediaDet: productData?.ImageVideoDetail ?? "",
     };
 
     let encodeObj = compressAndEncode(JSON.stringify(obj));
@@ -2006,7 +2116,7 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
     }
   }, [lastSyncData]);
 
-  if (loadingdata && !decodeUrl?.title) {
+  if (loadingdata && !(decodeUrl?.b || decodeUrl?.title || decodeUrl?.a || decodeUrl?.img)) {
     return <DetailPageSkeleton />;
   }
 

@@ -2787,6 +2787,7 @@ const ProductList = ({ storeinit, searchParams, params }) => {
       title: productData?.TitleLine ?? "",
       nwt: productData?.Nwt ?? 0,
       price: productData?.UnitCostWithMarkUp ?? 0,
+      mediaDet: productData?.ImageVideoDetail ?? "",
     };
     // compressAndEncode(JSON.stringify(obj))
 
@@ -3485,23 +3486,19 @@ const ProductList = ({ storeinit, searchParams, params }) => {
           handelFilterClearAll={handelFilterClearAll}
         />
 
-        {!isOnlyProdLoading && !isProdLoading && productListData.length == 0 ? (
-          <NoProductFound />
-        ) : (
-          <JewelryProductGrid
-            productListData={productListData}
-            isFiltering={isOnlyProdLoading || isProdLoading}
-            handleMoveToDetail={handleMoveToDetail}
-            showFilter={showFilter}
-            filter={filter}
-            filterData={filterData}
-            handleCartandWish={handleCartandWish}
-            cartArr={cartArr}
-            wishArr={wishArr}
-            storeinit={storeinit}
-            loginUserDetail={loginUserDetail}
-          />
-        )}
+        <JewelryProductGrid
+          productListData={productListData}
+          isFiltering={isOnlyProdLoading || isProdLoading}
+          handleMoveToDetail={handleMoveToDetail}
+          showFilter={showFilter}
+          filter={filter}
+          filterData={filterData}
+          handleCartandWish={handleCartandWish}
+          cartArr={cartArr}
+          wishArr={wishArr}
+          storeinit={storeinit}
+          loginUserDetail={loginUserDetail}
+        />
 
         {storeinit?.IsProductListPagination == 1 &&
           Math.ceil(afterFilterCount / storeinit.PageSize) > 1 && (
