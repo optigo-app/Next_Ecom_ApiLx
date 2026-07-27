@@ -41,19 +41,7 @@ const LeftSide = ({
     e.target.poster = noImageFound;
   };
 
-  if (loading && !mediaBuildDone && media !== null) {
-    return (
-      <Grid
-        size={{
-          xs: 12,
-          sm: 12,
-          md: 6,
-        }}
-      >
-        <DetailSkeleton />
-      </Grid>
-    );
-  }
+
 
   if (media !== null && isMediaReady && mediaBuildDone && media.length === 0) {
     return (

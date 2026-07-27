@@ -23,6 +23,7 @@ import {
 import CartToggleButton from "./CartToggleButton";
 import WishToggleButton from "./WishToggleButton";
 import MobileCartToggleButton from "./MobileCartButton";
+import NoProductFound from "./NoProductFound";
 
 const IsSetupFor = true;
 const noImageFound = "/image-not-found.jpg";
@@ -132,8 +133,12 @@ const JewelryProductGrid = ({
     return;
   };
 
-  const showSkeletons =
-    isFiltering || !productListData || productListData.length === 0;
+  const showSkeletons = isFiltering || !productListData;
+  const isNoProduct = !isFiltering && Array.isArray(productListData) && productListData.length === 0;
+
+  if (isNoProduct) {
+    return <NoProductFound />;
+  }
 
   return (
     <Box

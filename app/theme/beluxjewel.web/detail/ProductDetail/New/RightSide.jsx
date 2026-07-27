@@ -82,16 +82,16 @@ const RightSide = ({
     const num = parseFloat(val);
     return isNaN(num) ? 0 : num;
   };
-  const isLoading = isPriceloading || pdLoadImage || loadingdata;
-  const isPriceLoadingState = (isPriceloading || pdLoadImage || loadingdata) && !activeArticle && !singleProd?.UnitCostWithmarkup && !singleProd?.UnitCostWithMarkUp;
-  const isNetWeightLoadingState = isLoading && !activeArticle?.NetWeight && !singleProd?.NetWeight && !singleProd?.Nwt;
 
-  // Derive article-specific metal info from rd1 using defaultArticleId
   const defaultArticle =
     rd1?.find((r) => r.ArticleId === defaultArticleId) || rd1?.[0] || null;
 
   // Prioritize active combination details from customizationDetail state
   const activeArticle = customizationDetail || defaultArticle;
+
+  const isLoading = isPriceloading || pdLoadImage || loadingdata;
+  const isPriceLoadingState = (isPriceloading || pdLoadImage || loadingdata) && !activeArticle && !singleProd?.UnitCostWithmarkup && !singleProd?.UnitCostWithMarkUp;
+  const isNetWeightLoadingState = isLoading && !activeArticle?.NetWeight && !singleProd?.NetWeight && !singleProd?.Nwt;
 
   // Derive default diamond quality from rd2 for the activeArticle ArticleId
   const defaultDiaStone =
