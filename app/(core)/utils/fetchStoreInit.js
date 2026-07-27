@@ -35,6 +35,9 @@ export async function fetchStoreInitData() {
 
     if (!hostname) hostname = NEXT_APP_WEB;
 
+    console.log(NEXT_APP_WEB , "NEXT_APP_WEB")
+    console.log(cleanHost , "hostname")
+
     if (isLocalHost(cleanHost)) {
       if (process.env.NODE_ENV === "development") {
         baseUrl = `http://192.168.0.153/R50B3/UFS/StoreInit/${NEXT_APP_WEB}/StoreInit.json`;

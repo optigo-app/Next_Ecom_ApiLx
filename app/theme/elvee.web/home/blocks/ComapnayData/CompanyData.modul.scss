@@ -4,10 +4,11 @@
   color: rgba(29, 50, 88, 0.8) !important;
   text-align: center;
   font-size: 22px;
-  background: rgb(242, 242, 242);
-  box-shadow: rgba(0, 0, 0, 0.1) 0px 10px 10px, rgba(0, 0, 0, 0.01) 0px 10px 10px;
+  // background: rgb(242, 242, 242);
+  // box-shadow: rgba(0, 0, 0, 0.1) 0px 10px 10px, rgba(0, 0, 0, 0.01) 0px 10px 10px;
   font-family: $homePageFontFamily;
   // box-shadow: rgba(0, 0, 0, 0.1) 0px 19px 38px, rgba(0, 0, 0, 0.01) 0px 15px 12px;
+  margin-bottom: 10px;
 
   .banner-stats {
     display: flex;
@@ -25,7 +26,7 @@
   }
 
   .rightBorder {
-    border-right: 1px solid #ddd;
+    // border-right: 1px solid #ddd;
   }
 
   .firstspantag {

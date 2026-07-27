@@ -178,7 +178,7 @@ export default function LoginWithEmail({ params, searchParams, storeInit }) {
   }
 
   return (
-    <div className="fg_smr_loginEmail">
+    <div className="elv_fg_smr_loginEmail">
       {isLoading && (
         <div className="loader-overlay">
           <CircularProgress className="loadingBarManage" />

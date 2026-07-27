@@ -83,7 +83,7 @@ const AddressManagement = () => {
                         title="Confirm"
                         content="Are you sure you want to remove this address?"
                     />
-                    <div className='smr_AddressBtnGroup'>
+                    <div className='elv_smr_AddressBtnGroup'>
                         <button className='smr_AddNewAddrbtn' onClick={() => handleOpen(null)}>Add New Address</button>
                     </div>
                 </div>

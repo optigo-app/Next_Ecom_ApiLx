@@ -228,7 +228,7 @@ const PremiumFooter = ({
                 <Box component={Link} href="/" onClick={MoveToTop}>
                   <Box
                     component="img"
-                    src={logos?.transparent_mobile}
+                    src={logos?.web}
                     alt="footer_logo"
                     sx={{
                       width: "auto",

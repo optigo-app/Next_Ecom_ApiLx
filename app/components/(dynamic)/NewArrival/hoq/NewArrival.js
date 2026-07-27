@@ -162,7 +162,7 @@ const TabSection = ({ storeData }) => {
 
             <div className="header">
                 
-                <h1 style={{marginBottom: "10px",fontSize: "30px",marginTop:"4px"}}> <span style={{color: "#c20000",fontStyle: "italic"}}>New</span> Arrivals</h1>
+                <h1 style={{marginBottom: "10px",fontSize: "40px",marginTop:"4px"}}> <span style={{color: "#c20000",fontStyle: "italic"}}>New</span> Arrivals</h1>
                 <button
                     onClick={() => navigation(`/p/NewArrival/?N=${btoa("NewArrival")}`)}
                 >

@@ -125,7 +125,7 @@ const CartItem = ({ item, index, CartCardImageFunc, onSelect, CurrencyData, show
         display: "flex",
         flexDirection: "column",
         gap: 2,
-        boxShadow: !multiSelect && !isMobileScreen && selectedItem?.id == item?.id && "#c20000 1px 1px 1px 0px, #c20000 0px 0px 0px 1px !important",
+        boxShadow: !multiSelect && !isMobileScreen && selectedItem?.id == item?.id && "#000 1px 1px 1px 0px, #000 0px 0px 0px 1px !important",
         boxSizing: 'border-box'
       }}
     >

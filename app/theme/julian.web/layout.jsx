@@ -15,15 +15,16 @@ const layout = async ({ children }) => {
   return (
     <>
       <Box sx={{ display: "flex", flexDirection: "column", minHeight: "100vh", width: "100%" }}>
-        
 
-          <JulianBaseHeader hidden={false} logos={logos} storeInit={storeData} />
+
+        <JulianBaseHeader hidden={false} logos={logos} storeInit={storeData} />
 
         <Box sx={{ flex: 1, display: "flex", flexDirection: "column" }}>
+          {/* <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", flex: 1, minHeight: "90vh" }}>{children}</Box> */}
           <Suspense fallback={<Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", flex: 1, minHeight: "90vh" }}></Box>}>{children}</Suspense>
         </Box>
- 
-        <Footer companyInfoData={companyInfoData} storeData={storeData} extraFlag={extraFlag} logos={logos}  />
+
+        <Footer companyInfoData={companyInfoData} storeData={storeData} extraFlag={extraFlag} logos={logos} />
         <ChatMenu />
       </Box>
     </>
