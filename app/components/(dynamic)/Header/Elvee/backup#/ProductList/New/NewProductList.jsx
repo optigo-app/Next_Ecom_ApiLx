@@ -23,7 +23,6 @@ import {
 import CartToggleButton from "./CartToggleButton";
 import WishToggleButton from "./WishToggleButton";
 import MobileCartToggleButton from "./MobileCartButton";
-import NoProductFound from "./NoProductFound";
 
 const IsSetupFor = true;
 const noImageFound = "/image-not-found.jpg";
@@ -133,12 +132,8 @@ const JewelryProductGrid = ({
     return;
   };
 
-  const showSkeletons = isFiltering || !productListData;
-  const isNoProduct = !isFiltering && Array.isArray(productListData) && productListData.length === 0;
-
-  if (isNoProduct) {
-    return <NoProductFound />;
-  }
+  const showSkeletons =
+    isFiltering || !productListData || productListData.length === 0;
 
   return (
     <Box
@@ -149,219 +144,57 @@ const JewelryProductGrid = ({
       }}
     >
       <Box sx={{ position: "relative", zIndex: 1 }}>
-        {(() => {
-          if (showSkeletons) {
-            return (
-              <Grid container spacing={{ xs: 1, sm: 1, md: 1 }}>
-                {Array.from(new Array(12)).map((_, index) => (
-                  <Grid
-                    key={index}
-                    size={{
-                      xs: 6,
-                      sm: 6,
-                      md: isMedium ? 6 : 3,
-                    }}
-                  >
-                    <ProductSkeleton key={index} />
-                  </Grid>
-                ))}
-              </Grid>
-            );
-          }
-
-          const landscapes = [
-            "/promo/Summer2_Homepage_Hero1POSTER_DT.jpg",
-            "/promo/EvergreenWeb_STLGuide_GoOut_Grid3_DT.jpg",
-          ];
-          const portraits = [
-            "/promo/02-Stevie2.0_StevieRing_V_OnFig_053.webp",
-            "/promo/1-PuzzleStackingRingSilver_January_Garnet_SS_OnFigStacked_011.webp",
-            "/promo/BTF_MaterialEd3_D-2.webp",
-          ];
-
-          const totalCount = productListData.length;
-          const seed = productListData[0]?.id || totalCount || 1;
-
-          const selectedLandscape = landscapes[seed % landscapes.length];
-          const pIndex1 = seed % portraits.length;
-          const pIndex2 = (seed + 1) % portraits.length;
-          const selectedPortrait1 = portraits[pIndex1];
-          const selectedPortrait2 = portraits[pIndex2];
-
-          // Order: Portrait (small) -> Landscape (big) -> Portrait (small)
-          const activePromos = [
-            { src: selectedPortrait1, type: "portrait" },
-            { src: selectedLandscape, type: "landscape" },
-            { src: selectedPortrait2, type: "portrait" },
-          ];
-
-          const items = [];
-          let runningSize = 0;
-          let promoIndex = 0;
-
-          productListData.forEach((item, index) => {
-            items.push({
-              type: "product",
-              data: item,
-              originalIndex: index,
-            });
-            runningSize += 1;
-
-            if (promoIndex < activePromos.length) {
-              const nextPromo = activePromos[promoIndex];
-              const isLandscape = nextPromo.type === "landscape";
-              const productsSinceLastPromo = index - promoIndex * 4;
-
-              let shouldInsert = false;
-              if (productsSinceLastPromo >= 2) {
-                if (isLandscape) {
-                  if (runningSize % 4 === 0 || runningSize % 4 === 2) {
-                    shouldInsert = true;
-                  }
-                } else {
-                  shouldInsert = true;
-                }
-              }
-
-              if (shouldInsert) {
-                items.push({
-                  type: "promo",
-                  src: nextPromo.src,
-                  promoType: nextPromo.type,
-                  key: `promo-${promoIndex}`,
-                });
-                runningSize += (isLandscape ? 2 : 1);
-                promoIndex++;
-              }
-            }
-          });
-
-          // Group into rows of desktop size 4 (products = 1, portrait = 1, landscape = 2)
-          const rows = [];
-          let currentRow = [];
-          let currentRowSize = 0;
-
-          items.forEach((item) => {
-            const itemSize = item.type === "promo" && item.promoType === "landscape" ? 2 : 1;
-            if (currentRowSize + itemSize > 4) {
-              rows.push(currentRow);
-              currentRow = [item];
-              currentRowSize = itemSize;
-            } else {
-              currentRow.push(item);
-              currentRowSize += itemSize;
-            }
-          });
-          if (currentRow.length > 0) {
-            rows.push(currentRow);
-          }
-
-          return rows.map((rowItems, rowIndex) => (
-            <Grid
-              container
-              spacing={{ xs: 1, sm: 1, md: 1 }}
-              key={rowIndex}
-              sx={{ mb: { xs: 1, sm: 1, md: 1 } }}
-            >
-              {rowItems.map((item, idx) => {
-                if (item.type === "promo") {
-                  const isLandscape = item.promoType === "landscape";
-                  return (
-                    <Grid
-                      key={item.key}
-                      size={{
-                        xs: isLandscape ? 12 : 6,
-                        sm: isLandscape ? 12 : 6,
-                        md: isLandscape ? (isMedium ? 12 : 6) : (isMedium ? 6 : 3),
-                      }}
-                    >
-                      <Box
-                        sx={{
-                          position: "relative",
-                          width: "100%",
-                          height: "100%",
-                          borderRadius: 1,
-                          overflow: "hidden",
-                          aspectRatio: isLandscape ? {
-                            xs: "3 / 2",
-                            sm: "2 / 1.25",
-                            md: "2 / 1.2",
-                            lg: "2 / 1.18",
-                          } : {
-                            xs: "3 / 4",
-                            sm: "1 / 1.25",
-                            md: "1 / 1.2",
-                            lg: "1/1.18",
-                        },
-                        bgcolor: "#e9e9e91a",
-                        "&:hover img": {
-                          transform: "scale(1.06)",
-                        },
-                      }}
-                    >
-                      <img
-                        src={item.src}
-                        alt="Promo Banner"
-                        style={{
-                          width: "100%",
-                          height: "100%",
-                          objectFit: "cover",
-                          display: "block",
-                          transition: "transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94)",
-                        }}
-                      />
-                    </Box>
-                  </Grid>
-                );
-              }
-
-              const prod = item.data;
-              return (
-                <Grid
-                  key={prod?.id || item.originalIndex}
-                  size={{
-                    xs: 6,
-                    sm: 6,
-                    md: isMedium ? 6 : 3,
-                  }}
-                >
+        <Grid container spacing={{ xs: 1, sm: 1, md: 1 }}>
+          {(showSkeletons ? Array.from(new Array(12)) : productListData).map(
+            (item, index) => (
+              <Grid
+                key={item?.id || index}
+                size={{
+                  xs: 6,
+                  sm: 6,
+                  md: isMedium ? 6 : 3,
+                }}
+              >
+                {showSkeletons ? (
+                  <ProductSkeleton key={index} />
+                ) : (
                   <ProductCard
-                    product={prod}
-                    index={item.originalIndex}
+                    product={item}
+                    index={index}
+                    key={index}
                     StoreInit={storeinit}
-                    productData={prod}
+                    productData={item}
                     handleCartandWish={handleCartandWish}
                     cartArr={cartArr}
                     wishArr={wishArr}
                     loginCurrency={loginUserDetail}
                     imageUrl={getDynamicImages(
-                      prod?.designno,
-                      prod?.ImageExtension,
+                      item?.designno,
+                      item?.ImageExtension,
                     )}
                     videoUrl={getDynamicVideo(
-                      prod?.designno,
-                      prod?.VideoCount,
-                      prod?.VideoExtension,
+                      item?.designno,
+                      item?.VideoCount,
+                      item?.VideoExtension,
                     )}
                     RollImageUrl={getDynamicRollImages(
-                      prod?.designno,
-                      prod?.ImageCount,
-                      prod?.ImageExtension,
+                      item?.designno,
+                      item?.ImageCount,
+                      item?.ImageExtension,
                     )}
                     handleMoveToDetail={handleMoveToDetail}
-                    ImageCount={prod?.ImageCount}
-                    VideoCount={prod?.VideoCount}
+                    ImageCount={item?.ImageCount}
+                    VideoCount={item?.VideoCount}
                     showFilter={showFilter}
                     filter={filter}
                     filterData={filterData}
                     isMobile={isMobile}
                   />
-                </Grid>
-              );
-            })}
-          </Grid>
-        ));
-      })()}
+                )}
+              </Grid>
+            ),
+          )}
+        </Grid>
       </Box>
     </Box>
   );

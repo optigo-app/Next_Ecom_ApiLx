@@ -47,13 +47,12 @@ import { useBroadcaster } from "@/app/(core)/contexts/BoardCastContext";
 import { useSyncDataStore, useSyncStore } from "@/app/(core)/hooks/useStore";
 import { useStore } from "@/app/(core)/contexts/StoreProvider";
 import { getSession } from "@/app/(core)/utils/FetchSessionData";
-import { readCache, writeCache } from "@/app/(core)/cache_utility/cacheActions";
 import { usePathname, useSearchParams } from "next/navigation";
 import { useNextRouterLikeRR } from "@/app/(core)/hooks/useLocationRd";
 import { ParseAndDecodeSearchParams } from "@/app/(core)/utils/GlobalFunctions/Parser";
 
 const ProductList = ({ storeinit, searchParams, params }) => {
-  const { setCartCountNum, setWishCountNum, loginUserDetail, finalId } = useStore();
+  const { setCartCountNum, setWishCountNum, loginUserDetail } = useStore();
   const location = usePathname();
   let cookie = Cookies.get("visiterId");
   const navigate = useNextRouterLikeRR();
@@ -888,68 +887,22 @@ const ProductList = ({ storeinit, searchParams, params }) => {
           inputNet,
         );
 
-        // 1. Check server cache first for instant render
+        // 1. Fetch Product List (High Priority -> Renders products first)
         try {
-          let cacheKey = null;
-          const defaultMetal = loginUserDetail?.MetalId ?? storeinit?.MetalId;
-          const defaultDia = loginUserDetail?.cmboDiaQCid ?? storeinit?.cmboDiaQCid;
-          const defaultCs = loginUserDetail?.cmboCSQCid ?? storeinit?.cmboCSQCid;
-          const defaultSort = NewArrivalVar ? "New" : (hasCollection ? "Design Set" : "Recommended");
-
-          const isDefaultState = 
-            (!obj?.mt || obj.mt === defaultMetal) &&
-            (!obj?.dia || obj.dia === defaultDia) &&
-            (!obj?.cs || obj.cs === defaultCs) &&
-            (!effectiveSortBy || effectiveSortBy === defaultSort) &&
-            (!DiaRange || (DiaRange.Minval === undefined && DiaRange.Maxval === undefined)) &&
-            (!netRange || (netRange.Minval === undefined && netRange.Maxval === undefined)) &&
-            (!grossRange || (grossRange.Minval === undefined && grossRange.Maxval === undefined));
-
-          if (isDefaultState && searchParams && typeof searchParams === "object") {
-            const queryParts = [];
-            const sortedEntries = Object.entries(searchParams).sort((a, b) => a[0].localeCompare(b[0]));
-            sortedEntries.forEach(([k, v]) => {
-              if (v && typeof v === "string") {
-                queryParts.push(`${k}_${v.replace(/[^a-zA-Z0-9_\-]/g, "_")}`);
-              }
-            });
-            if (queryParts.length > 0) {
-              cacheKey = `menu/pl_${finalId}_${queryParts.join("_")}`;
-            }
-          }
-
-          let cachedRes = null;
-          if (cacheKey) {
-            try {
-              const diskCached = await readCache(cacheKey);
-              if (diskCached?.cached && diskCached.data?.pdList) {
-                cachedRes = diskCached.data;
-              }
-            } catch (_) {}
-          }
-
-          if (cachedRes) {
-            setProductListData(cachedRes?.pdList);
-            setAfterFilterCount(cachedRes?.pdResp?.rd1?.[0]?.designcount);
-          } else {
-            const res = await ProductListApi(
-              {},
-              1,
-              obj,
-              productlisttype,
-              cookie,
-              effectiveSortBy,
-              DiaRange,
-              netRange,
-              grossRange,
-            );
-            if (res) {
-              setProductListData(res?.pdList);
-              setAfterFilterCount(res?.pdResp?.rd1?.[0]?.designcount);
-              if (cacheKey) {
-                writeCache(cacheKey, res).catch(() => {});
-              }
-            }
+          const res = await ProductListApi(
+            {},
+            1,
+            obj,
+            productlisttype,
+            cookie,
+            effectiveSortBy,
+            DiaRange,
+            netRange,
+            grossRange,
+          );
+          if (res) {
+            setProductListData(res?.pdList);
+            setAfterFilterCount(res?.pdResp?.rd1[0]?.designcount);
           }
         } catch (err) {
           console.error("ProductListApi error:", err);
@@ -1049,7 +1002,7 @@ const ProductList = ({ storeinit, searchParams, params }) => {
         behavior: "smooth",
       });
     }
-  }, [location, searchParamsHook, syncProductList.ts, finalId]);
+  }, [location, searchParamsHook, syncProductList.ts]);
 
   const decodeEntities = (html) => {
     var txt = document.createElement("textarea");
@@ -1057,7 +1010,7 @@ const ProductList = ({ storeinit, searchParams, params }) => {
     return txt.value;
   };
 
-  const handelPageChange = async (event, value) => {
+  const handelPageChange = (event, value) => {
     let output = FilterValueWithCheckedOnly();
     let obj = { mt: selectedMetalId, dia: selectedDiaId, cs: selectedCsId };
     setProductListData([]);
@@ -1087,81 +1040,30 @@ const ProductList = ({ storeinit, searchParams, params }) => {
     );
     const netRange = parseRangeData(filterData, "net", sliderValue1, inputNet);
 
-    let cacheKey = null;
-    const defaultMetal = loginUserDetail?.MetalId ?? storeinit?.MetalId;
-    const defaultDia = loginUserDetail?.cmboDiaQCid ?? storeinit?.cmboDiaQCid;
-    const defaultCs = loginUserDetail?.cmboCSQCid ?? storeinit?.cmboCSQCid;
-    const hasCollection = result?.includes("collection");
-    const NewArrivalVar = result?.find((ele) => ele.charAt(0) === "N") || "";
-    const defaultSort = NewArrivalVar ? "New" : (hasCollection ? "Design Set" : "Recommended");
-
-    const isDefaultState = 
-      value === 1 &&
-      (!obj?.mt || obj.mt === defaultMetal) &&
-      (!obj?.dia || obj.dia === defaultDia) &&
-      (!obj?.cs || obj.cs === defaultCs) &&
-      (!sortBySelect || sortBySelect === defaultSort) &&
-      (!DiaRange || (DiaRange.Minval === undefined && DiaRange.Maxval === undefined)) &&
-      (!netRange || (netRange.Minval === undefined && netRange.Maxval === undefined)) &&
-      (!grossRange || (grossRange.Minval === undefined && grossRange.Maxval === undefined)) &&
-      (!output || Object.keys(output).length === 0);
-
-    if (isDefaultState && searchParams && typeof searchParams === "object") {
-      const queryParts = [];
-      const sortedEntries = Object.entries(searchParams).sort((a, b) => a[0].localeCompare(b[0]));
-      sortedEntries.forEach(([k, v]) => {
-        if (v && typeof v === "string") {
-          queryParts.push(`${k}_${v.replace(/[^a-zA-Z0-9_\-]/g, "_")}`);
+    ProductListApi(
+      output,
+      value,
+      obj,
+      prodListType,
+      cookie,
+      sortBySelect,
+      DiaRange,
+      netRange,
+      grossRange,
+    )
+      .then((res) => {
+        if (res) {
+          setProductListData(res?.pdList);
+          setAfterFilterCount(res?.pdResp?.rd1[0]?.designcount);
         }
+        return res;
+      })
+      .catch((err) => console.log("err", err))
+      .finally(() => {
+        setTimeout(() => {
+          setIsOnlyProdLoading(false);
+        }, 100);
       });
-      if (queryParts.length > 0) {
-        cacheKey = `menu/pl_${finalId}_${queryParts.join("_")}`;
-      }
-    }
-
-    let cachedRes = null;
-    if (cacheKey) {
-      try {
-        const diskCached = await readCache(cacheKey);
-        if (diskCached?.cached && diskCached.data?.pdList) {
-          cachedRes = diskCached.data;
-        }
-      } catch (_) {}
-    }
-
-    if (cachedRes) {
-      setProductListData(cachedRes?.pdList);
-      setAfterFilterCount(cachedRes?.pdResp?.rd1?.[0]?.designcount);
-      setIsOnlyProdLoading(false);
-    } else {
-      ProductListApi(
-        output,
-        value,
-        obj,
-        prodListType,
-        cookie,
-        sortBySelect,
-        DiaRange,
-        netRange,
-        grossRange,
-      )
-        .then((res) => {
-          if (res) {
-            setProductListData(res?.pdList);
-            setAfterFilterCount(res?.pdResp?.rd1?.[0]?.designcount);
-            if (cacheKey) {
-              writeCache(cacheKey, res).catch(() => {});
-            }
-          }
-          return res;
-        })
-        .catch((err) => console.log("err", err))
-        .finally(() => {
-          setTimeout(() => {
-            setIsOnlyProdLoading(false);
-          }, 100);
-        });
-    }
   };
 
   const totalPages = Math.ceil(afterFilterCount / storeinit.PageSize);
@@ -2784,10 +2686,6 @@ const ProductList = ({ storeinit, searchParams, params }) => {
         `${storeinit?.CDNDesignImageFol}${productData?.designno}~1.${productData?.ImageExtension}`,
       ArticleNo: productData?.ArticleNo,
       ArticleId: productData?.ArticleId ?? null, // pass clicked article id for default customizer selection
-      title: productData?.TitleLine ?? "",
-      nwt: productData?.Nwt ?? 0,
-      price: productData?.UnitCostWithMarkUp ?? 0,
-      mediaDet: productData?.ImageVideoDetail ?? "",
     };
     // compressAndEncode(JSON.stringify(obj))
 
@@ -3486,19 +3384,23 @@ const ProductList = ({ storeinit, searchParams, params }) => {
           handelFilterClearAll={handelFilterClearAll}
         />
 
-        <JewelryProductGrid
-          productListData={productListData}
-          isFiltering={isOnlyProdLoading || isProdLoading}
-          handleMoveToDetail={handleMoveToDetail}
-          showFilter={showFilter}
-          filter={filter}
-          filterData={filterData}
-          handleCartandWish={handleCartandWish}
-          cartArr={cartArr}
-          wishArr={wishArr}
-          storeinit={storeinit}
-          loginUserDetail={loginUserDetail}
-        />
+        {!isOnlyProdLoading && !isProdLoading && productListData.length == 0 ? (
+          <NoProductFound />
+        ) : (
+          <JewelryProductGrid
+            productListData={productListData}
+            isFiltering={isOnlyProdLoading || isProdLoading}
+            handleMoveToDetail={handleMoveToDetail}
+            showFilter={showFilter}
+            filter={filter}
+            filterData={filterData}
+            handleCartandWish={handleCartandWish}
+            cartArr={cartArr}
+            wishArr={wishArr}
+            storeinit={storeinit}
+            loginUserDetail={loginUserDetail}
+          />
+        )}
 
         {storeinit?.IsProductListPagination == 1 &&
           Math.ceil(afterFilterCount / storeinit.PageSize) > 1 && (

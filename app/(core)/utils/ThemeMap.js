@@ -74,4 +74,7 @@ export const themeMap = {
   "nxt10.optigoapps.com": {
     page: "beluxjewel.web",
   },
+    "nxt11.optigoapps.com": {
+    page: "beluxjewel.web",
+  },
 };
