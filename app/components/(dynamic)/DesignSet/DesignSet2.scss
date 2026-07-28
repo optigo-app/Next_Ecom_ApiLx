@@ -1,8 +1,9 @@
 @use "../../../theme/fgstore.web/style/variable.scss" as *;
 
 .smr_DesignSet2MainDiv {
+  padding-top: 30px;
   .imgBG {
-    object-fit: contain;
+    object-fit: none;
     height: 100%;
     width: 100%;
   }

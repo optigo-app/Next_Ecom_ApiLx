@@ -143,7 +143,7 @@ const BestSellerSection = ({ data, storeData }) => {
   return (
     <div>
       {bestSellerData?.length != 0 && (
-        <div className="proCat_bestSallerMain">
+        <div className="fg_proCat_bestSallerMain">
           <div className="linkingLoveMain">
             <div className="linkingLove">
               <p className="linkingTitle"></p>

@@ -9,7 +9,7 @@ const banners = [
   {
     title: 'Natural Diamond',
     image:  "/WebSiteStaticImage/Banner/julian/diamondType1.jpg",
-    href: '/engagement-rings/shop-all',
+    href: '/p',
     buttonText: 'Shop Now',
     buttonBg: '#FAFAF7',
     buttonColor: '#fff',
@@ -17,7 +17,7 @@ const banners = [
   {
     title: 'Lab Grown Diamond',
     image:  "/WebSiteStaticImage/Banner/julian/diamondType2.jpg",
-    href: '/jewelry/charms',
+    href: '/p',
     buttonText: 'Shop Now',
     buttonBg: '#FAFAF7',
     buttonColor: '#fff',

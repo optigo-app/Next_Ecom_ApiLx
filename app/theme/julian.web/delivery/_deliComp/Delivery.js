@@ -36,7 +36,7 @@ const AddressManagement = () => {
     const navigate = location.push;
 
     return (
-        <div className='smr_DeliverMainDiv'>
+        <div className='Julsmr_DeliverMainDiv'>
             <div className='smr_secondMaindivAdd'>
                 <div className='smr_addMainDiv'>
                     <div className='smr_TitleDetailMainDiv'>

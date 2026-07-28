@@ -219,7 +219,7 @@ const BestSellerSection1 = ({ data, storeData }) => {
     <div>
       <div>
         {bestSellerData?.length != 0 && (
-          <div className="smr_mainBestSeler1Div">
+          <div className="fg_smr_mainBestSeler1Div">
             {/* <div className="smr_bestseler1TitleDiv">
               <span className="smr_bestseler1Title">BEST SELLER</span>
             </div> */}
