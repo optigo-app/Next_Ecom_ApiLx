@@ -273,7 +273,7 @@ const TabSection = ({ storeData }) => {
                                 {/* Quote Text */}
                                 <Typography
                                     sx={{
-                                        fontFamily: '"Inter", sans-serif',
+                                
                                         fontSize: '14px',
                                         lineHeight: 1.5,
                                         color: '#1c1c1c',
@@ -302,7 +302,7 @@ const TabSection = ({ storeData }) => {
                                                 <Typography
                                                   sx={{
                                                     fontWeight: 600,
-                                                    fontSize: { xs: "0.78rem", sm: "0.85rem", md: "0.9rem" },
+                                                    fontSize: { xs: "0.78rem", sm: "0.85rem", md: index % 2 === 0 ? "1.2rem" : "0.9rem" },
                                                     color: "#050505",
                                                   }}
                                                 >

@@ -354,7 +354,7 @@ const ElveeCartPage = ({ storeinit, visiterId }) => {
       >
         {hasItems && <CartHeader count={finalCartData.length} AddOrderRemark={handleOrderRemarkFun} handleRemoveAll={handleConfirmRemoveAll} totalPrice={getTotalPrice[0]?.total} CurrencyCode={loginUserDetail?.CurrencyCode ?? CurrencyData?.CurrencyCode} IsPriceShow={storeinit?.IsPriceShow == 1} handleMoveToOrder={handleDiscountModalOpen} handleOpen1={handleOpen1} handleClose1={handleClose1} orderRemark={orderRemark} OrderMessage={orderRemark ? "View & Edit Order Remark" : "Add Order Remark"} openClearAllModal={handleOpen} closeClearAllModal={handleClose} summary={summary} />}
 
-        <div className="elv_Productlists_Main_div">
+        <div className="fg_elv_Productlists_Main_div">
           <div className="elv_Productlists_lists_div">
             <div className="elv_Productlists_lists_header">
               {hasItems ? (
@@ -398,7 +398,7 @@ const ElveeCartPage = ({ storeinit, visiterId }) => {
 export default ElveeCartPage;
 
 const EmptyCartUI = React.memo(({ handelMenu }) => (
-  <div className="elv_noCartlistData" style={{ paddingTop: "8rem" }}>
+  <div className="elvfg_noCartlistData" style={{ paddingTop: "8rem" }}>
     <p className="elv_title">No Data Found!</p>
     <p className="elv_desc">Please First Add Product in Cart</p>
     <button className="elv_browseOurCollectionbtn" onClick={handelMenu}>

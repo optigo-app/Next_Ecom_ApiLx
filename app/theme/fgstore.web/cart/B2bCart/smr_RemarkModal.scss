@@ -29,9 +29,9 @@ $cartUpdateBtncolor: #b1b1b1;
         }
     }
 
-    .smr_remarkcancel-btn {
+    .fg_smr_remarkcancel-btn {
         background-color: $btn1bgColor;
-        color: $btn1FontColor;
+        color: "#000";
         border: 1px solid $titleColor;
 
         &:hover {
