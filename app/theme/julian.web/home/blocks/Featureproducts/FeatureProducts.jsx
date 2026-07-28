@@ -260,7 +260,7 @@ function ProductCard({ product, onNavigate }) {
   return (
     <>
       <div
-        className={`product-card ${isHovered ? "hovered" : ""}`}
+        className={`jul-product-card ${isHovered ? "hovered" : ""}`}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >

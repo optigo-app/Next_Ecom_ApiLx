@@ -21,7 +21,7 @@ export const themeMap = {
     page: "fgstore.mapp",
   },
   "nxtelvee.web": {
-    page: "hoq.web",
+    page: "elvee.web",
     // page: LocalSetup,
      
   },
@@ -37,7 +37,7 @@ export const themeMap = {
     page: "hoq.web",
   },
   "nxtjulian.web": {
-    // page: "julian.web",
+    page: "julian.web",
     // page: LocalSetup,
   },
    

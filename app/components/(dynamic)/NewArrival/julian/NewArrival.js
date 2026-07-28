@@ -11,6 +11,7 @@ import { useStore } from "@/app/(core)/contexts/StoreProvider";
 import { useNextRouterLikeRR } from "@/app/(core)/hooks/useLocationRd";
 import { normalizeALC, buildAlbumCacheKey, getPricingContext } from "@/app/(core)/cache_utility/CacheBuilder";
 import { readCache, writeCache } from "@/app/(core)/cache_utility/cacheActions";
+import { formatter, formatTitleLine } from "@/app/(core)/utils/Glob_Functions/GlobalFunction";
 
 const TabSection = ({ storeData }) => {
     const [newArrivalData, setNewArrivalData] = useState([]);
@@ -23,6 +24,7 @@ const TabSection = ({ storeData }) => {
     const pricingContext = useMemo(() => getPricingContext(loginUserDetail, storeData, islogin), [loginUserDetail, storeData, islogin]);
     const isFetchingRef = useRef(false);
     const lastRequestKeyRef = useRef("");
+
 
     const fetchAndSetNewArrivals = useCallback(
         async (finalID, cacheKey) => {
@@ -146,14 +148,20 @@ const TabSection = ({ storeData }) => {
             hasScrolledRef.current = true; // mark as done
         }
     }, [newArrivalData]);
-
-    const formatter = new Intl.NumberFormat("en-IN");
+ 
 
     if (newArrivalData?.length === 0) {
         return <div style={{ marginTop: "2rem" }}></div>;
     }
 
     const TRACK_ITEMS = [...newArrivalData, ...newArrivalData, ...newArrivalData];
+
+    const decodeEntities = (html) => {
+        var txt = document.createElement("textarea");
+        txt.innerHTML = html;
+        return txt.value;
+      };
+      
 
     return (
         <div className="NewArrivalSection"
@@ -193,46 +201,7 @@ const TabSection = ({ storeData }) => {
                 </Box>
             </Box>
 
-            {/* <div className="tab_card">
-                {newArrivalData?.map((val, i) => {
-                    return (
-                        <div
-                            key={i}
-                            className="TabCard_main"
-                            style={{ backgroundColor: " #b8b4b823", cursor: "pointer" }}
-                            onClick={() => handleMoveToDetail(val, i)}
-                        >
-                            <div className="cardhover">
-                                <img
-                                    src={ImageGenrate(val)}
-                                    alt={val?.id}
-                                    id={`product-${i}`}
-                                    ref={(el) => (productRefs.current[`product-${i}`] = el)}
-                                    style={{ mixBlendMode: "multiply", objectFit: "contain" }}
-                                    onError={(e) => {
-                                        e.target.src = noimage;
-                                        e.target.alt = "Fallback image";
-                                    }}
-                                    draggable={true}
-                                    onContextMenu={(e) => e.preventDefault()}
-                                    loading="lazy"
-                                />
-                            </div>
-                            <div className="tab_hover_Details">
-                                <h3 style={{ fontSize: "20px" }}>{val?.designno}</h3>
-                                {storeData?.IsPriceShow === 1 && (
-                                    <small>
-                                        {loginUserDetail?.CurrencyCode ?? storeData?.CurrencyCode}{" "}
-                                        &nbsp;
-                                        {formatter.format(val?.UnitCostWithMarkUp)}
-                                    </small>
-                                )}
-                            </div>
-                        </div>
-                    );
-                })}
-            </div> */}
-
+           
             <Box sx={{ width: '100%', overflow: 'hidden' , }}>
                 <Box
                     sx={{
@@ -247,10 +216,10 @@ const TabSection = ({ storeData }) => {
                         },
                     }}
                 >
-                    {TRACK_ITEMS.map((review, index) => (
+                    {TRACK_ITEMS.map((product, index) => (
                         <Box
-                            key={`${review.id}-${index}`}
-                            onClick={() => handleMoveToDetail(review, index)}
+                            key={`${product.id}-${index}`}
+                            onClick={() => handleMoveToDetail(product, index)}
                             cursor="pointer"
                             sx={{
                                 flex: '0 0 auto',
@@ -271,7 +240,7 @@ const TabSection = ({ storeData }) => {
                                 }}
                             >
 
-                                {/* Review Portrait Image */}
+                                {/* product Portrait Image */}
                                 <Box
                                     sx={{
                                         width: '100%',
@@ -284,8 +253,8 @@ const TabSection = ({ storeData }) => {
                                 >
                                     <Box
                                         component="img"
-                                        src={ImageGenrate(review)}
-                                        alt={review?.id}
+                                        src={ImageGenrate(product)}
+                                        alt={product?.id}
                                         id={`product-${index}`}
                                         draggable={false}
                                         onError={(e) => {
@@ -304,7 +273,7 @@ const TabSection = ({ storeData }) => {
                                 {/* Quote Text */}
                                 <Typography
                                     sx={{
-                                        fontFamily: '"Inter", sans-serif',
+                                
                                         fontSize: '14px',
                                         lineHeight: 1.5,
                                         color: '#1c1c1c',
@@ -312,7 +281,7 @@ const TabSection = ({ storeData }) => {
                                         mb: 1.5,
                                     }}
                                 >
-                                    {review?.TitleLine || " "}
+                                    {product?.TitleLine || " "}
                                 </Typography>
 
                                 {/* Author & Tagged Product Info Link */}
@@ -325,26 +294,44 @@ const TabSection = ({ storeData }) => {
                                             textDecoration: 'center',
                                         }}
                                     >
-                                        {review.TitleLine}
+                                        {product.TitleLine}
                                     </Typography>
-                                    <Typography
-
-
-                                        sx={{
-                                            fontSize: '13px',
-                                            color: '#1c1c1c',
-                                            textAlign: 'center',
-                                            opacity: 0.7,
-                                            textDecorationColor: 'rgba(28, 28, 28, 0.4)',
-                                            transition: 'opacity 0.2s',
-                                            '&:hover': {
-                                                opacity: 1,
-                                                textDecorationColor: '#1c1c1c',
-                                            },
-                                        }}
-                                    >
-                                        {review.UnitCostWithMarkUp}
-                                    </Typography>
+                                        {/* --- PRICE ROW: current price / struck-through original / discount % --- */}
+                                            {storeData?.IsPriceShow == 1 && (
+                                              <Box sx={{ display: "flex", alignItems: "center", gap: 0.8, flexWrap: "wrap" }}>
+                                                <Typography
+                                                  sx={{
+                                                    fontWeight: 600,
+                                                    fontSize: { xs: "0.78rem", sm: "0.85rem", md: index % 2 === 0 ? "1.2rem" : "0.9rem" },
+                                                    color: "#050505",
+                                                  }}
+                                                >
+                                                  <span
+                                                    dangerouslySetInnerHTML={{
+                                                      __html: decodeEntities(loginUserDetail?.CurrencyCode ?? storeData?.CurrencyCode),
+                                                    }}
+                                                    style={{ paddingRight: "0.3rem" }}
+                                                  />
+                                                  {formatter(product?.UnitCostWithMarkUp)}
+                                                </Typography>
+                                    
+                                               
+                                                {product?.MRP ? (
+                                                  <Typography
+                                                    sx={{
+                                                      fontWeight: 300,
+                                                      fontSize: { xs: "0.7rem", sm: "0.78rem" },
+                                                      color: "#8a8a8a",
+                                                      textDecoration: "line-through",
+                                                    }}
+                                                  >
+                                                    {formatter(product.UnitCostWithMarkUpIncTax)}
+                                                  </Typography>
+                                                ) : null}
+                                    
+                                                
+                                              </Box>
+                                            )}
                                 </Box>
 
                             </Box>

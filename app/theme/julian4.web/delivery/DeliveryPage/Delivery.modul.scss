@@ -1,0 +1,553 @@
+@import '../../../scss/elvee_modules.scss';
+
+.elv_delivery_Main_div {
+    font-family: $fontSansSerif !important;
+
+    .elv_delivery_lists_div {
+        height: 100%;
+        width: 100%;
+    }
+
+    .elv_delivery_lists_header {
+        align-items: center;
+        margin-inline: 13%;
+        margin-top: 30px;
+        padding: 20px 0px 20px 0px;
+    }
+
+    .elv_delivery_lists_header_breadcrumb {
+        display: flex;
+        justify-content: space-between;
+        background: $backgroundColor;
+        padding: 20px 0px 20px 40px;
+    }
+
+    .elv_delivery_details {
+        font-size: 20px;
+        font-weight: 500;
+        letter-spacing: 1px;
+        // font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        font-family: $fontSansSerif !important;
+        color: #AF8238;
+    }
+
+    .elv_delivery_details_1 {
+        text-transform: uppercase;
+        font-size: 30px;
+        // font-family: "Segoe UI", "Noto Sans", sans-serif;
+        font-family: $fontSansSerif !important;
+    }
+
+    .elv_delivery_details_3 {
+        text-transform: capitalize;
+    }
+
+    .elv_delivery_lists_name {
+        margin-top: 30px;
+    }
+
+    .elv_breadcrumbs_div {
+        margin-left: 0.5rem;
+        position: relative;
+        bottom: 0.5rem;
+
+        .elv_breadcrumbs {
+            font-size: 10px;
+            text-transform: uppercase;
+            color: #AF8238;
+        }
+
+    }
+
+    .elv_delivery_lists_header_logo {
+        padding-right: 20px;
+    }
+
+    .elv_delivery_ptitle {
+        font-size: 50px;
+        font-weight: 600;
+        margin-bottom: 0;
+    }
+
+    .elv_delivery_logo {
+        width: 70px;
+        height: 100px;
+        margin-right: 30px;
+    }
+
+    .elv_delblock_rows {
+        display: flex;
+        justify-content: center;
+        margin-block: 20px;
+    }
+
+
+    .elv_delblock_rows_1 {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex: 1 1 20%;
+        padding-block: 1.2rem;
+        border: 1px solid #d9d9d9;
+
+        .elv_back_title {
+            display: flex;
+            text-decoration: underline;
+            color: #7b7b7b;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+    }
+
+    .elv_delblock_rows_2 {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding-block: 1.2rem;
+        flex: 1 1 20%;
+        border: 1px solid #d9d9d9;
+
+        .elv_address_title {
+            display: flex;
+            text-decoration: underline;
+            color: #7b7b7b;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+    }
+
+    .elv_delblock_rows_3 {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding-block: 1.2rem;
+        flex: 1 1 20%;
+        border: 1px solid #d9d9d9;
+
+        .elv_address_count {
+            display: flex;
+            color: #7b7b7b;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+    }
+
+
+
+    .elv_delblock_rows_4 {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding-block: 1.2rem;
+        flex: 1 1 20%;
+        border: 1px solid #d9d9d9;
+
+    }
+
+    .elv_delblock_rows_4_hide {
+        display: none;
+        justify-content: center;
+        align-items: center;
+        padding-block: 1.2rem;
+        flex: 1 1 20%;
+        border: 1px solid #d9d9d9;
+
+    }
+
+    .elv_delblock_rows_5 {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding-block: 1.2rem;
+        flex: 1 1 20%;
+        background-color: #7d7f85;
+        color: white;
+        border: 1px solid #d9d9d9;
+        cursor: pointer;
+        transition: background-color 0.3s, color 0.3s;
+
+        &:hover {
+            background-color: #FFFFFF;
+            color: #7b7b7b;
+        }
+
+        .elv_continue_title {
+            display: flex;
+            text-transform: uppercase;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+    }
+
+    .elv_addCardSkeltonMainBox {
+        display: flex;
+        flex-direction: row;
+        gap: 10px;
+        margin-bottom: 20px;
+
+        .elv_addCardSkelton {
+            width: 345px !important;
+            max-width: 345px !important;
+            box-shadow: none !important;
+
+            .elv_addCardSkelton {
+                background-color: #f6f6f6 !important;
+            }
+        }
+    }
+
+    .elv_TitleDetailMainDiv {
+        display: flex;
+        justify-content: start;
+
+        .elv_deliverydesc {
+            font-size: 16px;
+        }
+    }
+
+    .elv_getAddrMainDiv {
+        margin-bottom: 40px;
+    }
+
+    .elv_AddrCard {
+        box-shadow: rgba(0, 0, 0, 0.02) 0px 1px 3px 0px, rgba(27, 31, 35, 0.15) 0px 0px 0px 1px !important;
+        padding: 20px 20px 0px 20px !important;
+    }
+
+    .elv_ActiveAddrCard {
+        padding: 20px 20px 0px 20px !important;
+        box-shadow: rgba(0, 0, 0, 0.02) 0px 1px 3px 0px, rgba(27, 31, 35, 0.15) 0px 0px 0px 1px !important;
+        background: #f5f4f4 !important;
+        position: relative;
+    }
+
+    .elv_addrTypoTitle {
+        color: #7d7f85;
+        text-transform: capitalize;
+        margin-bottom: 0.3rem;
+        font-family: $fontSansSerif !important;
+    }
+
+    .elv_addrTypo {
+        color: #7d7f85;
+        text-transform: capitalize;
+        font-family: $fontSansSerif !important;
+    }
+
+    .elv_editDeleteBtngroup {
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        margin-bottom: 10px;
+
+        .elv_editIcon {
+            font-size: 14px;
+            font-weight: 500;
+            text-transform: uppercase;
+            color: #7d7f85;
+        }
+
+        .elv_DeleteIcon {
+            font-size: 20px;
+            color: #7d7f85;
+        }
+    }
+
+    .elv_defualt_addrSelected {
+        padding: 2px 7px;
+        font-size: $fontSize3;
+        color: black;
+        background: #E1E1E1;
+        border-radius: 6px;
+        font-weight: bold;
+        border: none;
+        cursor: pointer;
+        position: absolute;
+        top: 20px;
+        right: 25px;
+        transition: background-color 0.3s, color 0.3s;
+    }
+
+    .elv_defualt_addrSelectedHide {
+        display: none !important;
+    }
+
+}
+
+.elev_add_modal {
+    border-radius: 4px;
+    overflow-y: auto;
+
+    .elv_add-remark {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        overflow-y: auto;
+
+        .elv_add-title-span {
+            text-align: center;
+            font-size: 23.2px;
+            font-weight: bold;
+            padding: 13px 21px 35px 21px;
+            text-decoration: underline;
+            font-family: $fontSansSerif !important;
+        }
+
+        .elv_add-remarkTextArea {
+            border-radius: 10px;
+            margin-block: 0.5rem;
+            border: 1px solid #DEE0E6;
+        }
+
+        .elv_address_form {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            width: 430px;
+            margin: auto
+        }
+    }
+
+    .elv_add_RemarkBtn-group {
+        display: flex;
+        margin-top: 2rem;
+        justify-content: center;
+        font-family: $fontSansSerif !important;
+
+        .elv_add_remarksave-btn {
+            height: 38px;
+            width: 35%;
+            border: none;
+            outline: none;
+            text-align: center;
+            color: #817E7E;
+            border-radius: 4px;
+            background-color: #F8F2EB;
+            font-size: 16px;
+            font-weight: 600;
+            transition: 0.2s ease-in;
+
+            @media (max-width: 500px) {
+                font-size: 13px;
+            }
+
+            &:hover {
+                background-color: #fff;
+                color: #4a5568;
+                border: 1px solid #DEE0E6;
+            }
+        }
+
+        .elv_add_remarkcancel-btn {
+            height: 38px;
+            width: 100px;
+            margin-left: 1rem;
+            border: none;
+            outline: none;
+            text-align: center;
+            color: #817E7E;
+            border-radius: 4px;
+            font-size: 16px;
+            background-color: #F8F2EB;
+            font-weight: 600;
+            transition: 0.2s ease-in;
+
+            @media (max-width: 500px) {
+                font-size: 13px;
+            }
+
+            &:hover {
+                background-color: #fff;
+                color: #4a5568;
+                border: 1px solid #DEE0E6;
+            }
+        }
+    }
+}
+
+
+.elv_noCartlistData {
+    text-align: center;
+    height: 100%;
+    margin-bottom: 327px;
+    margin-top: 3rem;
+
+    .elv_title {
+        color: #7d7f85;
+        font-size: 28px;
+        ;
+    }
+
+    .elv_desc {
+        color: #7d7f85;
+        font-size: 18px;
+    }
+
+    .elv_browseOurCollectionbtn {
+        background-color: #7d7f85;
+        border: none;
+        color: #fff;
+        font-size: 15px;
+        font-weight: 500;
+        height: 50px;
+        outline: none;
+        width: 220px;
+    }
+}
+
+@media (max-width: 1240px) {
+    .elv_delivery_lists_header {
+        margin-inline: 4% !important;
+    }
+}
+
+@media (max-width: 1024px) {
+    .elv_delivery_lists_header {
+        margin-inline: 2% !important;
+    }
+}
+
+@media (max-width: 1000px) {
+    .elv_delblock_rows_5 {
+        position: fixed;
+        bottom: 0;
+        width: 100%;
+        z-index: 999;
+        background-color: #7d7f85;
+        color: white;
+        border: 1px solid #d9d9d9;
+        cursor: pointer;
+        transition: background-color 0.3s, color 0.3s;
+
+        &:hover {
+            background-color: #FFFFFF;
+            color: #7b7b7b;
+        }
+
+        .elv_continue_title {
+            display: flex;
+            text-transform: uppercase;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .elv_delivery_lists_header {
+        margin-inline: 2% !important;
+    }
+
+    .elv_address_form {
+        width: 90% !important;
+    }
+
+    .elv_delivery_Main_div {
+        .elv_delblock_rows_1 {
+
+            .elv_back_title {
+                font-size: 14px;
+            }
+
+        }
+
+        .elv_delblock_rows_2 {
+            .elv_address_title {
+                text-align: center;
+                font-size: 14px;
+            }
+        }
+
+        .elv_delblock_rows_3 {
+            .elv_address_count {
+                font-size: 14px;
+            }
+        }
+
+
+        .elv_delblock_rows_5 {
+            .elv_continue_title {
+                font-size: 12px;
+            }
+        }
+    }
+
+}
+
+@media screen and (max-width: 425px) {
+    .elv_add_remarksave-btn {
+        width: 50% !important;
+    }
+
+    .elv_add_remarkcancel-btn {
+        width: 50% !important;
+    }
+
+    .elv_delivery_Main_div {
+        .elv_delblock_rows_1 {
+            .elv_back_title {
+                font-size: 15px;
+            }
+
+        }
+
+        .elv_delblock_rows_2 {
+            .elv_address_title {
+                text-align: center;
+                font-size: 15px;
+            }
+        }
+
+        .elv_delblock_rows_3 {
+            display: none;
+
+            .elv_address_count {
+                font-size: 12px;
+            }
+        }
+
+
+        .elv_delblock_rows_5 {
+            .elv_continue_title {
+                font-size: 12px;
+            }
+        }
+    }
+
+}
+
+@media screen and (max-width: 375px) {
+
+    .elv_delivery_Main_div {
+        .elv_delivery_details_1 {
+            font-size: 25px;
+        }
+
+        .elv_delblock_rows_1 {
+            flex: 1 0%;
+        }
+
+        .elv_delblock_rows_2 {
+            flex: 1 10%;
+
+        }
+
+        .elv_delblock_rows_3 {
+            flex: 1 10%;
+
+        }
+
+
+        .elv_delblock_rows_5 {
+            flex: 1 13%;
+
+        }
+    }
+
+}

@@ -12,7 +12,7 @@ const LoginOption = ({ params, searchParams }) => {
 
 
   return (
-    <div className="smr_Loginoption">
+    <div className="julsmr_Loginoption">
       <div className="loginDailog">
         <div style={{ display: "flex", alignItems: "center", flexDirection: "column" }}>
           <p className="loginDiTile">Log in or sign up in seconds</p>

@@ -1,0 +1,101 @@
+@use '../../../scss//variable.scss' as *;
+
+.smr_confirMaindiv {
+    background-color: $bgColor;
+    display: grid;
+    align-content: center;
+    height: 90vh;
+    @media screen and (max-width: 768px) {
+        height: 100svh;
+    }
+}
+
+.smr_confirSecondMaindiv {
+    margin-inline: 6%;
+    background-color: #fff;
+}
+
+.thankYouContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+
+.thankYouContent {
+    text-align: center;
+}
+
+.thankYouMessage h1 {
+    font-size: $fontSize6;
+    color: #ff6600;
+    margin-bottom: 20px;
+}
+
+.thankYouMessage h1 span {
+    color: $titleColor;
+}
+
+.orderNumber p {
+    font-size: $fontSize3 ;
+    color: $titleColor;
+}
+
+.orderNumber p span {
+    font-weight: bold;
+    color: #ff6600;
+}
+
+.smr_continueShoppingBtns {
+    margin-top: 20px;
+    height: 40px;
+    width: 190px;
+    font-family: $homePageFontFamily !important;
+    font-size: $fontSize3;
+    color: $btn1hoverFontColor;
+    background-color: $btn1ActivebgColor;
+    border: 1px solid $btn1FontColor;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s;
+
+    &:hover {
+        color: $btn1hoverFontColor;
+        background-color: $btn1ActivebgColor;
+    }
+}
+
+.smr_orderCnfThankyouImage {
+    height: 250px;
+    width: 250px
+}
+.smr_plwlPrintDiv{
+    // position: absolute;
+    // top: 50px;
+    // right: 50px;
+
+.icon-button {
+    display: inline-flex;
+    align-items: center;    
+    justify-content: center;
+    height: 40px;
+    width: 150px;
+    font-family: $homePageFontFamily !important;
+    font-size: $fontSize3;
+    color: $btn1hoverFontColor;
+    background-color: $btn1ActivebgColor;
+    border: 1px solid $btn1FontColor;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+
+    &:hover {
+        background-color: #fff;
+        color: $titleColor;
+    }
+
+    .icon {
+        margin-right: 5px;
+    }
+}
+}

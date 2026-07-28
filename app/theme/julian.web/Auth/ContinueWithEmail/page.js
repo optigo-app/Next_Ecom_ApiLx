@@ -95,7 +95,7 @@ export default function ContinueWithEmail({ params, searchParams, storeInit }) {
     };
 
     return (
-        <div className='fg_smr_continuemail' >
+        <div className='fgjul_smr_continuemail' >
             {isLoading && (
                 <div className="loader-overlay">
                     <CircularProgress className='loadingBarManage' />

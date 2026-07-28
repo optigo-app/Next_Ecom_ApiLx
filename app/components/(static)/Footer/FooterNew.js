@@ -172,7 +172,7 @@ const PremiumFooter = ({
       title: "OUR COMPANY",
       links: [
         { label: "About Us", href: "/aboutUs" },
-        { label: "Blogs", href: "/blogs" },
+        // { label: "Blogs", href: "/blogs" },
         // { label: 'History', href: '/history' },
         { label: "Contact Us", href: "/contactUs" },
         { label: "Terms and Conditions", href: "/terms-and-conditions" },

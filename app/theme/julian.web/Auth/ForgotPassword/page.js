@@ -121,7 +121,7 @@ export default function ForgotPassword({ params, storeInit }) {
   };
 
   return (
-    <div className="fg_smr_forgotMain">
+    <div className="fgjul_smr_forgotMain">
       {isLoading && (
         <div className="loader-overlay">
           <CircularProgress className="loadingBarManage" />
