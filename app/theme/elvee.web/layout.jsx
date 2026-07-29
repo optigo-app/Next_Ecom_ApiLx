@@ -18,6 +18,8 @@ const layout = async ({ children }) => {
   const storeData = await getStoreInit();
   const companyInfoData = await getCompanyInfoData();
   const logos = getLogos();
+
+  
   let extraFlag = await getExtraFlag();
 
   return (

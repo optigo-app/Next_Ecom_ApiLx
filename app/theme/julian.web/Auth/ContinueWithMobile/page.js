@@ -108,7 +108,7 @@ export default function ContinueWithMobile({ params, searchParams, storeInit }) 
   };
 
   return (
-    <div className="fg_smr_continuMobile">
+    <div className="fgjul_smr_continuMobile">
       {isLoading && (
         <div className="loader-overlay">
           <CircularProgress className="loadingBarManage" />

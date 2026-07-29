@@ -2,7 +2,7 @@
 @use "../../style/variable.scss" as *;
 
 
-.fg_smr_continuemail {
+.fgjul_smr_continuemail{
   background-color: $authbg;
   height: 70vh;
   display: grid;
@@ -29,7 +29,7 @@
   .submitBtnForgot {
     height: 60px;
     width: 420px;
-    background-color: $authbtnbg;
+    background-color: $authbtnbg !important;
     color: $authbtncolor;
     border: 0;
     margin-top: 10px;

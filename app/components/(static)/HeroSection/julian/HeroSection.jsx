@@ -2,10 +2,15 @@
 
 import React from "react";
 import { Box, Typography, Button } from "@mui/material";
+import { useNextRouterLikeRR } from "@/app/(core)/hooks/useLocationRd";
 import "./HeroSection.scss"
 export default function HeroSection() {
 
-  
+  const { push } = useNextRouterLikeRR();
+
+  const handleShopNowClick = () => {
+      push("/p");
+  }
  
   return (
     <Box
@@ -90,6 +95,7 @@ export default function HeroSection() {
         <Button
           variant="contained"
           className="shopNowBtn"
+          onClick={handleShopNowClick}
           sx={{
             
             borderRadius: 0,

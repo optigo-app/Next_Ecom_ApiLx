@@ -4,7 +4,6 @@ import { cookies } from "next/headers";
 export async function getActiveTheme() {
   const cookieStore = await cookies();
   const storeData = cookieStore.get("x-store-data");
-
   if (!storeData) return NEXT_APP_WEB;
 
   try {

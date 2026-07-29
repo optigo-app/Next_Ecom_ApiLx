@@ -50,10 +50,10 @@ const SonasonsHome = async () => {
           <Box sx={{ marginTop: 4 }}>
             <BespokeBanner />
           </Box>
-          <AppointmentBanner />
+          {/* <AppointmentBanner /> */}
           {storeData?.IsHomeDesignSet === 1 && <DesignSet data={lookbookBanner} storeInit={storeData} />}
           <BrandsComponent />
-          <NewsletterSignup storeData={storeData} />
+          {/* <NewsletterSignup storeData={storeData} /> */}
         </>
       )}
       {storeData?.Blockno === 2 && (
@@ -65,10 +65,10 @@ const SonasonsHome = async () => {
           <Box sx={{ marginTop: 4 }}>
             <BespokeBanner />
           </Box>
-          <AppointmentBanner />
+          {/* <AppointmentBanner /> */}
           {storeData?.IsHomeDesignSet === 1 && <DesignSet2 data={lookbookBanner} storeInit={storeData} />}
           <BrandsComponent />
-          <NewsletterSignup storeData={storeData} />
+          {/* <NewsletterSignup storeData={storeData} /> */}
         </>
       )}
     </Box>

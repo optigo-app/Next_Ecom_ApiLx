@@ -1,8 +1,8 @@
 @use "../../../scss/variable.scss" as *;
 // @use "../../style/variable.scss" as *;
 
-.smr_DeliverMainDiv {
-  background-color: $bgColor;
+.Julsmr_DeliverMainDiv {
+  background-color: #fff !important;
   margin-bottom: 4rem;
 }
 
@@ -130,7 +130,7 @@
     font-size: $fontSize3;
     padding: 0 15px;
     color: $elebtncolor;
-    background: $elecbtnbg;
+    background: "#0d1232" !important;
     border: none;
     border-radius: 0px !important;
     cursor: pointer;

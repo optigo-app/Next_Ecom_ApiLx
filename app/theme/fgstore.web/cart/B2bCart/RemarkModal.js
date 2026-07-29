@@ -50,7 +50,7 @@ const RemarkModal = ({ open, onClose, remark, onRemarkChange, onSave }) => {
           <Button className="smr_remarksave-btn" onClick={onSave}>
             Save
           </Button>
-          <Button className="smr_remarkcancel-btn" onClick={onClose}>
+          <Button className="fg_smr_remarkcancel-btn" onClick={onClose}>
             Cancel
           </Button>
         </div>

@@ -25,7 +25,7 @@ const ProductSkeleton = () => (
                     position: "absolute",
                     top: 0,
                     left: 0,
-                    width: "100%",
+                    width: "99%",
                     height: "100%",
                     bgcolor: "#eeeeee80",
                     borderRadius: 4,

@@ -52,7 +52,7 @@ export async function generateMetadata() {
 
 export default async function RootLayout({ children }) {
   const theme = await getActiveTheme();
-  console.log(theme , "theme")
+  console.log("TCL: RootLayout -> ", theme)
   const themeData = themeMap[theme];
   const Layout = (await import(`@/app/theme/${themeData.page}/layout.jsx`))
     .default;

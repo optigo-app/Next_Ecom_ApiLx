@@ -1,6 +1,6 @@
 @use "../../style/variable.scss" as *;
 
-.smr_Loginoption {
+.julsmr_Loginoption {
   height: 70vh;
   display: grid;
   align-content: center;
@@ -32,7 +32,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: $authbtnbg;
+    background-color: $authbtnbg !important;
     color: $authbtncolor;
 
     margin-inline: 7px;
@@ -46,7 +46,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: $authbtnbg;
+    background-color: $authbtnbg !important;
     color: $authbtncolor;
     margin-inline: 7px;
     height: 55px;

@@ -174,7 +174,7 @@ const Collection = ({ storeInit }) => {
             <div className="heading">
             <div className="header" >
                 
-                <h1 style={{ fontSize: "30px",marginTop:"4px",fontWeight: 700}}> <span style={{color: "#c20000",fontStyle: "italic"}}>Signature </span> Collections</h1>
+                <h1 style={{ fontSize: "40px",marginTop:"4px",fontWeight: 700}}> <span style={{color: "#c20000",fontStyle: "italic"}}>Signature </span> Collections</h1>
               
             </div>
             </div>

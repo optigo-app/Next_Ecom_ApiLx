@@ -24,6 +24,7 @@ import NewScrollTriggerTab from "@/app/components/(static)/ScrollTriggerTab/NewS
 import SocialTab from "@/app/components/(static)/SocialTab/SocialTab";
 import InfoSection from "@/app/components/(static)/InfoSection/InfoSection";
 import FaqSection from "@/app/components/(static)/FaQSection/FaqSection";
+import Marquee from "./Marquee/Marquee";
 
 export const metadata = generatePageMetadata(pages["/"], "Hoq");
 
@@ -41,6 +42,7 @@ const HoqHome = cache(async () => {
       {storeData?.Blockno === 1 && (
         <>
           <TopSection data={mainBanner} />
+          <Marquee   />
           {storeData?.IsHomeNewArrival === 1 && <NewArrival data={newArrivalBanner} storeData={storeData} />}
           {storeData?.IsHomeDesignSet === 1 && <Collection data={lookbookBanner} storeInit={storeData} />}
           <FeaturedBrand assetBase={assetBase} />
@@ -58,6 +60,7 @@ const HoqHome = cache(async () => {
       {storeData?.Blockno === 2 && (
         <>
           <TopSection data={mainBanner} />
+          <Marquee   />
           {storeData?.IsHomeNewArrival === 1 && <NewArrival data={newArrivalBanner} storeData={storeData} />}
           {storeData?.IsHomeDesignSet === 1 && <Collection data={lookbookBanner} storeInit={storeData} />}
           <FeaturedBrand assetBase={assetBase} />

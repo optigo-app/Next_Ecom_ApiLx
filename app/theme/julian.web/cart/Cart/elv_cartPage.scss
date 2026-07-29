@@ -81,7 +81,7 @@
     overflow: auto;
 }
 
-.elv_Productlists_Main_div {
+.fg_elv_Productlists_Main_div {
 
     .elv_Productlists_lists_div {
         height: 100%;
@@ -1166,7 +1166,7 @@
     }
 
 
-    .elv_noCartlistData {
+    .elvfg_noCartlistData {
         text-align: center;
         height: 100%;
         margin-bottom: 327px;
@@ -1175,12 +1175,13 @@
         .elv_title {
             color: #7d7f85;
             font-size: 28px;
-            ;
+            margin-bottom: 5px;
         }
 
         .elv_desc {
             color: #7d7f85;
             font-size: 18px;
+            margin-bottom: 10px;
         }
 
         .elv_browseOurCollectionbtn {

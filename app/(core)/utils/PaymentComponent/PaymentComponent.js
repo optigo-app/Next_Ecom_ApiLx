@@ -55,6 +55,9 @@ export default function PaymentComponent({ bgcolor, textColor, top, storeinit })
 
     const { IsPriceShow } = storeinit;
 
+    
+    console.log("TCL: PaymentComponent ->selectedAddrData ",selectedAddrData )
+
     return (
         <ThemeProvider theme={theme}>
             <Box sx={{ bgcolor: 'background.default', minHeight: '100vh', py: 6, marginTop: top ?? "" }}>
@@ -146,7 +149,7 @@ export default function PaymentComponent({ bgcolor, textColor, top, storeinit })
                                                 />
                                             </Grid>
                                             <Grid item size={{ xs: 12 }}>
-                                                <label style={{ fontWeight: 'bold', color: '#7d7f85' }} htmlFor="email">Email</label>
+                                                <label style={{ fontWeight: 'bold', color: '#7d7f85' }} htmlFor="email">Street</label>
                                                 <TextField
                                                     disabled
                                                     readOnly

@@ -48,16 +48,16 @@ export default function CartHeader({
                 right: 0,
                 margin: "0 auto",
                 width: "fit-content",
-                zIndex: 1100, // High z-index to sit on top of products
+                zIndex: 1100,  
                 maxWidth: "95%",
               }}
             >
               <Box
                 sx={{
-                  background: "#000", // Dark Blue Glassmorphism
+                  background: "#0d1232",  
                   backdropFilter: "blur(10px)",
                   color: "#fff",
-                  borderRadius: "50px", // Pill shape
+                  borderRadius: "50px",  
                   boxShadow: "0 8px 32px rgba(0, 0, 0, 0.2)",
                   padding: "10px 24px",
                   display: "flex",
@@ -309,7 +309,7 @@ export default function CartHeader({
               <Button
                 variant="contained"
                 sx={{
-                  background: "#000",
+                  background: "#0d1232",
                   color: "#fff",
                   fontSize: { xs: "13px", sm: "15px" },
                   textTransform: "none",
@@ -345,7 +345,7 @@ export default function CartHeader({
                 variant="contained"
                 endIcon={<ShoppingBagIcon />}
                 sx={{
-                  background: "#000",
+                  background: "#0d1232",
                   color: "#fff",
                   fontSize: "14px",
                   textTransform: "none",

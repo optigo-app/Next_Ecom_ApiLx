@@ -188,10 +188,10 @@
     background-color 0.3s,
     color 0.3s;
 
-  // &:hover {
-  //   color: $btn1hoverFontColor;
-  //   background-color: $btn1ActivebgColor;
-  // }
+  &:hover {
+    color: $btn1hoverFontColor;
+    background-color: $btn1ActivebgColor;
+  }
 }
 
 .smr_editDeleteBtngroup {
