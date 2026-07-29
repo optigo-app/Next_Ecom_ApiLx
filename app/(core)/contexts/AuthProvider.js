@@ -5,7 +5,7 @@ import { useStore } from "./StoreProvider";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import Cookies from "js-cookie";
 import { WebLoginWithMobileToken } from "../utils/API/Auth/WebLoginWithMobileToken";
-import { getSession, setSession } from "../utils/FetchSessionData";
+import { getSession, setSession, removeSession } from "../utils/FetchSessionData";
 
 const MOBILE_APP_REDIRECT_PATH = "/";
 
@@ -60,13 +60,14 @@ export function AuthProvider({ children, storeInit, theme }) {
       setSession("token", token);
       localStorage.setItem("token", token);
     }
-    const existingLoginUser = sessionStorage.getItem("LoginUser");
-    if (existingLoginUser === "true" && !token) {
+    const existingLoginUser = getSession("LoginUser");
+    const existingDetail = getSession("loginUserDetail");
+    if ((existingLoginUser === true || existingLoginUser === "true") && existingDetail && !token) {
+      setislogin(true);
+      setLoginUserDetail(existingDetail);
       setIsLoading(false);
       hasInitializedAuth.current = true;
       setLocalData(storeInit);
-      console.log(hasInitializedAuth, "hasInitializedAuth");
-
       return;
     }
 
@@ -79,24 +80,45 @@ export function AuthProvider({ children, storeInit, theme }) {
         LoginWithEmailAPI("", "", "", "", cookieValue)
           .then((response) => {
             if (response?.Data?.rd[0]?.stat === 1) {
-              Cookies.set("userLoginCookie", response?.Data?.rd[0]?.Token);
+              Cookies.set("userLoginCookie", response?.Data?.rd[0]?.Token, { path: "/", expires: 7 });
               setislogin(true);
-              sessionStorage.setItem("LoginUser", true);
-              sessionStorage.setItem("loginUserDetail", JSON.stringify(response.Data.rd[0]));
+              setSession("LoginUser", true);
+              setSession("loginUserDetail", response.Data.rd[0]);
               setLoginUserDetail(response.Data.rd[0]);
               if (redirectEmailUrl) {
                 router.replace(redirectEmailUrl);
               } else if (pathname.startsWith("/accountdwsr")) {
                 router.replace("/accountdwsr");
-              } else if (pathname === sessionStorage.getItem("previousUrl")) {
-                router.replace(sessionStorage.getItem("previousUrl"));
+              } else if (pathname === getSession("previousUrl")) {
+                router.replace(getSession("previousUrl"));
               } else {
               }
+            } else {
+              removeSession("LoginUser");
+              removeSession("loginUserDetail");
+              Cookies.remove("userLoginCookie", { path: "/" });
+              Cookies.remove("LoginUser", { path: "/" });
+              setislogin(false);
+              setLoginUserDetail(null);
             }
           })
-          .catch((err) => alert(`err`))
+          .catch((err) => {
+            console.error("Login API verification error:", err);
+            removeSession("LoginUser");
+            removeSession("loginUserDetail");
+            Cookies.remove("userLoginCookie", { path: "/" });
+            Cookies.remove("LoginUser", { path: "/" });
+            setislogin(false);
+            setLoginUserDetail(null);
+          })
           .finally(() => setIsLoading(false));
       } else {
+        removeSession("LoginUser");
+        removeSession("loginUserDetail");
+        Cookies.remove("userLoginCookie", { path: "/" });
+        Cookies.remove("LoginUser", { path: "/" });
+        setislogin(false);
+        setLoginUserDetail(null);
         setIsLoading(false);
         hasInitializedAuth.current = true;
       }
