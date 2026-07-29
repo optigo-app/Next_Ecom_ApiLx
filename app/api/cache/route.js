@@ -1,12 +1,11 @@
 import { NextResponse } from "next/server";
-import { getCache, setCache, getAllCachedItems, clearCache, clearAllCache } from "@/app/(core)/cache_utility/serverCache";
+import { getCache, setCache, getAllCachedItems, clearCache, clearAllCache } from "@/app/(core)/cache_utility/dynamic_serverCache";
 
 export async function GET(req) {
   try {
     const { searchParams } = new URL(req.url);
     const key = searchParams.get("key");
-    const mode = searchParams.get("mode"); // 'list' to get all
-
+    const mode = searchParams.get("mode"); 
     // 1. Dashboard Mode: Get All Keys
     if (mode === "list") {
       const allItems = await getAllCachedItems();

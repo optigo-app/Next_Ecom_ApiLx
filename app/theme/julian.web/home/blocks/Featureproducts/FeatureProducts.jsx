@@ -10,7 +10,10 @@ import { useNextRouterLikeRR } from "@/app/(core)/hooks/useLocationRd";
 import { formatter, formatRedirectTitleLine } from "@/app/(core)/utils/Glob_Functions/GlobalFunction";
 import { compressAndEncode } from "@/app/(core)/utils/Encoder&Decoder";
 import ProductListApi from "@/app/(core)/utils/API/ProductListAPI/ProductListApi";
-import FeaturedSkeleton from "./FeaturedSkeleton"
+import FeaturedSkeleton from "./FeaturedSkeleton";
+import { getSession, setSession } from "@/app/(core)/utils/FetchSessionData";
+import { readCache, writeCache } from "@/app/(core)/cache_utility/cacheActions";
+import { Box } from "@mui/material";
 
 const imageNotFound = "/image-not-found.jpg";
 
@@ -320,25 +323,78 @@ export default function ChopardCarousel() {
   const [products, setProducts] = useState([]);
   const isFetchingRef = useRef(false);
 
-  const { storeInit, islogin, loginUserDetail } = useStore();
+  const { storeInit, islogin, loginUserDetail, finalId } = useStore();
   const { push } = useNextRouterLikeRR();
 
   // ── Fetch ALL products, no filter criteria ──────────────────────────────
   const fetchAllProducts = useCallback(async () => {
+    const cacheKey = `julian_featured_products_${finalId || "0"}`;
+
+    // 1. Client Session Cache Check (0ms instant browser read)
+    let cachedSessionData = getSession(cacheKey);
+    if (cachedSessionData && Array.isArray(cachedSessionData) && cachedSessionData.length > 0) {
+      const hasError = cachedSessionData.some(
+        (item) =>
+          item?.stat === 0 ||
+          (typeof item?.stat_msg === "string" &&
+            item.stat_msg.toLowerCase().includes("error")),
+      );
+      if (!hasError) {
+        setRawProducts(cachedSessionData);
+        return;
+      }
+    }
+
     if (isFetchingRef.current) return;
     isFetchingRef.current = true;
+
+    // 2. Server Disk Cache Check (.next_cache)
+    try {
+      const cacheRes = await readCache(cacheKey);
+      if (cacheRes?.cached && Array.isArray(cacheRes.data) && cacheRes.data.length > 0) {
+        const hasError = cacheRes.data.some(
+          (item) =>
+            item?.stat === 0 ||
+            (typeof item?.stat_msg === "string" &&
+              item.stat_msg.toLowerCase().includes("error")),
+        );
+        if (!hasError) {
+          setRawProducts(cacheRes.data);
+          setSession(cacheKey, cacheRes.data);
+          isFetchingRef.current = false;
+          return;
+        }
+      }
+    } catch (err) {
+      console.warn("[FeatureProducts] File cache read error:", err);
+    }
+
+    // 3. Live API Call (ProductListApi)
     try {
       const visiterId = Cookies.get("visiterId") ?? "0";
-      // mainData="" -> no menu/category filters applied, so this returns the full product list
       const { pdList } = await ProductListApi({}, 1, {}, "", visiterId, "");
-      setRawProducts(Array.isArray(pdList) ? pdList : []);
+      const list = Array.isArray(pdList) ? pdList : [];
+      const hasError = list.some(
+        (item) =>
+          item?.stat === 0 ||
+          (typeof item?.stat_msg === "string" &&
+            item.stat_msg.toLowerCase().includes("error")),
+      );
+
+      if (list.length > 0 && !hasError) {
+        setRawProducts(list);
+        setSession(cacheKey, list);
+        writeCache(cacheKey, list).catch(console.error);
+      } else {
+        setRawProducts([]);
+      }
     } catch (err) {
-      console.error("[ChopardCarousel] Error fetching products:", err);
+      console.error("[FeatureProducts] Error fetching products:", err);
       setRawProducts([]);
     } finally {
       isFetchingRef.current = false;
     }
-  }, []);
+  }, [finalId]);
 
   useEffect(() => {
     fetchAllProducts();
@@ -431,7 +487,12 @@ export default function ChopardCarousel() {
 
   return (
     <>
-      <section className="chopard-carousel-section" id="featuredProducts">
+      <Box className="chopard-carousel-section" id="featuredProducts"
+        sx={{
+          width: "100%",
+        boxSizing:'border-box'
+        }}
+      >
         <div className="carousel-inner">
           <div>
             <p style={{ fontSize: "42px", fontWeight: 400, color: "#2C2C2C", marginBottom: "10px", textAlign: "center" }}>
@@ -548,7 +609,7 @@ export default function ChopardCarousel() {
             />
           ))}
         </div>
-      </section>
+      </Box>
     </>
   );
 }

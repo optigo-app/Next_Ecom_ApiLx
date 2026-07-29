@@ -54,7 +54,8 @@ export const themeMap = {
     page: "fgstore.mapp",
   },
   "sonasons.optigoapps.com": {
-    page: "fgstore.web",
+    // page: "fgstore.web",
+      page: "beluxjewel.web"
   },
   "nxt09.optigoapps.com": {
     page: "fgstore.mapp",

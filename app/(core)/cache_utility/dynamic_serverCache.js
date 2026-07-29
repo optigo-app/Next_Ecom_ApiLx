@@ -137,35 +137,56 @@ export async function getCacheWithMeta(key, ttlMs = defaultTTL) {
 }
 
 
-// --- NEW FUNCTIONS FOR DASHBOARD ---
+// --- DASHBOARD RECURSIVE CACHE FUNCTIONS ---
+
+async function getFilesRecursive(dir) {
+  if (!fs.existsSync(dir)) return [];
+  try {
+    const entries = await fs.promises.readdir(dir, { withFileTypes: true });
+    const files = await Promise.all(
+      entries.map(async (entry) => {
+        const fullPath = path.join(dir, entry.name);
+        return entry.isDirectory() ? getFilesRecursive(fullPath) : fullPath;
+      })
+    );
+    return Array.prototype.concat(...files);
+  } catch (e) {
+    return [];
+  }
+}
 
 export async function getAllCachedItems() {
   if (!fs.existsSync(CACHE_DIR)) return [];
 
   try {
-    const files = await fs.promises.readdir(CACHE_DIR);
+    const allFiles = await getFilesRecursive(CACHE_DIR);
     const items = [];
 
-    for (const file of files) {
-      if (!file.endsWith(".json")) continue;
+    for (const filePath of allFiles) {
+      if (!filePath.endsWith(".json")) continue;
 
-      const filePath = path.join(CACHE_DIR, file);
       try {
         const stats = await fs.promises.stat(filePath);
         const content = await fs.promises.readFile(filePath, "utf8");
         const json = JSON.parse(content);
+        const relPath = path.relative(CACHE_DIR, filePath).replace(/\\/g, "/");
+
+        let category = "General";
+        if (relPath.startsWith("menu/")) category = "Menu";
+        else if (relPath.includes("storeInit")) category = "StoreInit";
+        else if (relPath.includes("pl_") || relPath.includes("pd_")) category = "Product";
 
         items.push({
-          fileName: file,
-          originalKey: json.key || file.replace(".json", ""), // Fallback if key wasn't saved
+          fileName: relPath,
+          originalKey: json.key || relPath.replace(".json", ""),
           timestamp: json.timestamp,
-          size: (stats.size / 1024).toFixed(2) + " KB", // Size in KB
-          meta: json.meta || {},
+          size: (stats.size / 1024).toFixed(2) + " KB",
+          meta: { ...(json.meta || {}), category },
           expiresAt: json.timestamp + defaultTTL,
-          isExpired: Date.now() > (json.timestamp + defaultTTL)
+          isExpired: Date.now() > (json.timestamp + defaultTTL),
         });
       } catch (err) {
-        console.warn(`Skipping corrupt cache file: ${file}`);
+        console.warn(`Skipping corrupt cache file: ${filePath}`);
       }
     }
 
@@ -178,14 +199,19 @@ export async function getAllCachedItems() {
 }
 
 export async function clearCache(key) {
-  // We accept either the original key or the filename
-  let filename = key.endsWith(".json") ? key : `${safeKey(key)}.json`;
-  const file = path.join(CACHE_DIR, filename);
-
   try {
-    await fs.promises.unlink(file);
-    console.log(`🗑️ [CACHE CLEARED] ${key}`);
-    return true;
+    let file = resolveCacheFilePath(key);
+    if (!fs.existsSync(file)) {
+      const filename = key.endsWith(".json") ? key : `${safeKey(key)}.json`;
+      file = path.join(CACHE_DIR, filename);
+    }
+
+    if (fs.existsSync(file)) {
+      await fs.promises.unlink(file);
+      console.log(`🗑️ [CACHE CLEARED] ${key}`);
+      return true;
+    }
+    return false;
   } catch (err) {
     return false;
   }
@@ -194,9 +220,9 @@ export async function clearCache(key) {
 export async function clearAllCache() {
   if (fs.existsSync(CACHE_DIR)) {
     try {
-      const files = await fs.promises.readdir(CACHE_DIR);
-      await Promise.all(files.map(file => fs.promises.unlink(path.join(CACHE_DIR, file))));
-      console.log("🗑️ Cleared all cache files");
+      const allFiles = await getFilesRecursive(CACHE_DIR);
+      await Promise.all(allFiles.map((file) => fs.promises.unlink(file)));
+      console.log("🗑️ Cleared all cache files recursively");
     } catch (err) {
       console.error("Error clearing all cache:", err);
     }

@@ -183,7 +183,15 @@ const CacheManager = () => {
 
                     {/* Meta Column */}
                     <TableCell>
-                      <Box sx={{ display: "flex", flexDirection: "column", gap: 0.5 }}>
+                      <Box sx={{ display: "flex", flexDirection: "column", gap: 0.5, alignItems: "flex-start" }}>
+                        {row.meta?.category && (
+                          <Chip
+                            label={row.meta.category}
+                            size="small"
+                            color={row.meta.category === "Menu" ? "primary" : row.meta.category === "Product" ? "secondary" : "default"}
+                            variant="filled"
+                          />
+                        )}
                         {row.meta?.type && (
                           <Chip label={`Type: ${row.meta.type}`} size="small" variant="outlined" />
                         )}

@@ -18,6 +18,7 @@ const BrandInfoMarquee = ({ assetBase }) => {
         display: "flex",
         alignItems: "center",
         overflow: "hidden",
+        boxSizing:'border-box'
       }}
     >
       {/* 🔥 LEFT BLUR */}
