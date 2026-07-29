@@ -2,6 +2,11 @@ import { NextResponse } from "next/server";
 import { getStoreInitData } from "@/app/(core)/cache_utility/storeInitCache";
 
 export default async function middleware(req) {
+  const isRsc = req.headers.get("rsc") === "1" || req.nextUrl.searchParams.has("_rsc") || req.headers.has("next-action");
+  if (isRsc) {
+    return NextResponse.next();
+  }
+
   const host = req.headers.get("host");
 
   const storeData = await getStoreInitData(host);

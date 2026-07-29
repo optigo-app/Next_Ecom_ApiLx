@@ -29,7 +29,13 @@ export const getClientIpAddress = async () => {
       if (cachedIp) return cachedIp;
     }
 
-    const res = await fetch("https://api.ipify.org?format=json");
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 1200);
+
+    const res = await fetch("https://api.ipify.org?format=json", {
+      signal: controller.signal,
+    });
+    clearTimeout(timeoutId);
     const data = await res.json();
     const ip = data?.ip || "";
 
@@ -38,7 +44,6 @@ export const getClientIpAddress = async () => {
     }
     return ip;
   } catch (error) {
-    console.error("Error fetching IP address:", error);
     return "";
   }
 };
@@ -222,17 +227,37 @@ export const CommonAPI = async (body) => {
       ? APIURL
       : APIURL.replace(/\/$/, "") + "/api/report";
 
-    const response = await axios.post(endpoint, body, {
-      headers: header,
-      timeout: 30000,
-    });
+    let responseData = null;
+    try {
+      const response = await axios.post(endpoint, body, {
+        headers: header,
+        timeout: 30000,
+      });
+      responseData = response?.data;
+    } catch (axiosError) {
+      console.warn("Axios failed in CommonAPI, attempting native fetch fallback:", axiosError?.message);
+      try {
+        const fetchRes = await fetch(endpoint, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            ...header,
+          },
+          body: typeof body === "string" ? body : JSON.stringify(body),
+        });
+        responseData = await fetchRes.json();
+      } catch (fetchError) {
+        console.error("CommonAPI Fetch Fallback Error:", fetchError);
+        throw fetchError;
+      }
+    }
 
-    return response?.data || { Data: { rd: [] } };
+    return responseData || { Data: { rd: [] } };
   } catch (error) {
     console.error("CommonAPI Error:", error);
     return {
       Data: {
-        rd: [{ stat: 0, stat_msg: "Network error or API failure" }],
+        rd: [{ stat: 0, stat_msg: error?.message || "Network error or API failure" }],
       },
     };
   }

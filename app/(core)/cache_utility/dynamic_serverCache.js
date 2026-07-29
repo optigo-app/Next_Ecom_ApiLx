@@ -17,7 +17,39 @@ const resolveCacheFilePath = (key) => {
   return path.join(CACHE_DIR, `${safeKey(key)}.json`);
 };
 
+const isErrorPayload = (data) => {
+  if (!data) return true;
+  if (Array.isArray(data)) {
+    if (data.length === 0) return false;
+    return data.some(
+      (item) =>
+        item?.stat === 0 ||
+        (typeof item?.stat_msg === "string" &&
+          item.stat_msg.toLowerCase().includes("network error")),
+    );
+  }
+  if (typeof data === "object") {
+    if (data?.stat === 0) return true;
+    if (
+      Array.isArray(data?.rd) &&
+      data.rd.some((item) => item?.stat === 0)
+    )
+      return true;
+    if (
+      Array.isArray(data?.Data?.rd) &&
+      data.Data.rd.some((item) => item?.stat === 0)
+    )
+      return true;
+  }
+  return false;
+};
+
 export async function setCache(key, data, meta) {
+  if (isErrorPayload(data)) {
+    console.warn(`⚠️ [CACHE WRITE ABORTED - ERROR DATA] ${key}`);
+    return;
+  }
+
   const now = Date.now();
   const file = resolveCacheFilePath(key);
   const payload = {
@@ -47,6 +79,13 @@ export async function getCache(key, ttlMs = defaultTTL) {
     // Optimization: Use asynchronous readFile instead of synchronous readFileSync
     const content = await fs.promises.readFile(file, "utf8");
     const cached = JSON.parse(content);
+
+    if (isErrorPayload(cached?.data)) {
+      console.warn(`⚠️ [CACHE INVALIDATED - CONTAINS ERROR DATA] ${key}`);
+      fs.promises.unlink(file).catch(() => {});
+      return null;
+    }
+
     if (now - cached.timestamp < ttlMs) {
       // console.log(`💾 [CACHE HIT - DISK] ${key}`);
       return cached.data;
@@ -72,6 +111,11 @@ export async function getCacheWithMeta(key, ttlMs = defaultTTL) {
     // Optimization: Use asynchronous readFile instead of synchronous readFileSync
     const content = await fs.promises.readFile(file, "utf8");
     const cached = JSON.parse(content);
+    if (isErrorPayload(cached?.data)) {
+      console.warn(`⚠️ [CACHE INVALIDATED WITH META - CONTAINS ERROR DATA] ${key}`);
+      fs.promises.unlink(file).catch(() => {});
+      return null;
+    }
     if (now - cached.timestamp < ttlMs) {
       console.log(`💾 [CACHE HIT WITH META] ${key}`);
       return {

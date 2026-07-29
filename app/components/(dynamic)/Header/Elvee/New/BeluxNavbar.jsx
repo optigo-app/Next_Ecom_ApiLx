@@ -187,7 +187,14 @@ const BeluxNavbar = ({ storeInit: storeinit, logos }) => {
       try {
         const res = await GetMenuAPI(finalId);
         const rawData = res?.Data?.rd || [];
-        if (rawData.length > 0) {
+        const hasError = rawData.some(
+          (item) =>
+            item?.stat === 0 ||
+            (typeof item?.stat_msg === "string" &&
+              item.stat_msg.toLowerCase().includes("error")),
+        );
+
+        if (rawData.length > 0 && !hasError) {
           menuData = rawData;
           setSession(cacheKey, rawData);
           writeCache(cacheKey, rawData).catch(console.error);
