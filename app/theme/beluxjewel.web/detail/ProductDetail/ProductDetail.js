@@ -1394,7 +1394,7 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
 
     const pdImgList = [];
 
-    if (maxColorCount > 0) {
+    if (maxColorCount > 0 && mcArr?.colorcode) {
       // Asynchronously populate pdImgList with color images
       for (let i = 1; i <= maxColorCount; i++) {
         const colorImageUrl = buildImageURL(i, true);
@@ -1486,8 +1486,8 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
 
   const handleMetalWiseColorImg = async (e) => {
     const selectedColorCode = e.target.value;
-    const mtColorLocal = getSession("MetalColorCombo");
-    const mcArr = mtColorLocal.find(
+    const mtColorLocal = getSession("MetalColorCombo") || [];
+    const mcArr = mtColorLocal?.find(
       (ele) => ele?.colorcode === selectedColorCode,
     );
 
@@ -2080,7 +2080,7 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
           ?.split("/Design_Thumb")[1]
           ?.split(".")[0];
         return `${firstHalf}${secondhalf}.${item?.originalImageExtension}`;
-      })
+      }).filter(url => url && !url.includes("undefined"))
     : (decodeUrl?.img ? [decodeUrl.img] : []);
 
   const derivedMediaBuildDone = mediaBuildDone || (decodeUrl?.img ? true : false);
@@ -2152,7 +2152,7 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
               <LeftSide
                 loading={loadingdata}
                 media={
-                  [
+                  ([
                     ...getImagesArr?.map((item) => ({
                       type: "image",
                       src: item,
@@ -2161,7 +2161,7 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
                       type: "video",
                       src: item,
                     })),
-                  ] || null
+                  ] || []).filter(item => item.src && !item.src.includes("undefined"))
                 }
                 isMediaReady={derivedIsMediaReady}
                 mediaBuildDone={derivedMediaBuildDone}

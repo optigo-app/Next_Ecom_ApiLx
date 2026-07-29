@@ -7,6 +7,8 @@ import CollectionSkeleton from "./Loader"; // Assumed path based on your old cod
 import { useStore } from "@/app/(core)/contexts/StoreProvider";
 import { useNextRouterLikeRR } from "@/app/(core)/hooks/useLocationRd";
 import { useSyncStore } from "@/app/(core)/hooks/useStore";
+import { getSession, setSession } from "@/app/(core)/utils/FetchSessionData";
+import { readCache, writeCache } from "@/app/(core)/cache_utility/cacheActions";
 
 const FALLBACK_COLORS = [
   "#F5E6E8", // Soft Rose
@@ -30,13 +32,64 @@ export default function LuxuryAngledGrid() {
 
  
   const Fetchcolection = async () => {
+    const cacheKey = `julian_home_collection_${finalId}`;
+
+    // 1. Client Session Cache Check (0ms instant browser read)
+    let cachedSessionData = getSession(cacheKey);
+    if (cachedSessionData && Array.isArray(cachedSessionData) && cachedSessionData.length > 0) {
+      const hasError = cachedSessionData.some(
+        (item) =>
+          item?.stat === 0 ||
+          (typeof item?.stat_msg === "string" &&
+            item.stat_msg.toLowerCase().includes("error")),
+      );
+      if (!hasError) {
+        setCollectionList(cachedSessionData);
+        setLoading(false);
+        return;
+      }
+    }
+
+    // 2. Server Disk Cache Check (Fast read from .next_cache)
+    try {
+      const cacheRes = await readCache(cacheKey);
+      if (cacheRes?.cached && Array.isArray(cacheRes.data) && cacheRes.data.length > 0) {
+        const hasError = cacheRes.data.some(
+          (item) =>
+            item?.stat === 0 ||
+            (typeof item?.stat_msg === "string" &&
+              item.stat_msg.toLowerCase().includes("error")),
+        );
+        if (!hasError) {
+          setCollectionList(cacheRes.data);
+          setSession(cacheKey, cacheRes.data);
+          setLoading(false);
+          return;
+        }
+      }
+    } catch (err) {
+      console.warn("[Collection] File cache read error:", err);
+    }
+
+    // 3. Live API Call (HomeCollectionPageApi)
     try {
       setLoading(true);
       const res = await HomeCollectionPageApi(finalId);
-      const list = res?.Data?.rd;
-      if (list) setCollectionList(list);
+      const list = res?.Data?.rd || [];
+      const hasError = list.some(
+        (item) =>
+          item?.stat === 0 ||
+          (typeof item?.stat_msg === "string" &&
+            item.stat_msg.toLowerCase().includes("error")),
+      );
+
+      if (list.length > 0 && !hasError) {
+        setCollectionList(list);
+        setSession(cacheKey, list);
+        writeCache(cacheKey, list).catch(console.error);
+      }
     } catch (error) {
-      console.log("🚀 ~ Fetchcolection ~ error:", error);
+      console.error("🚀 ~ Fetchcolection ~ error:", error);
     } finally {
       setLoading(false);
     }
@@ -44,7 +97,7 @@ export default function LuxuryAngledGrid() {
 
   useEffect(() => {
     Fetchcolection();
-  }, [syncProductList.ts]);
+  }, [syncProductList.ts, finalId]);
 
   const sortedCollection = [...CollectionList].sort((a, b) => {
     const aHasImg = a.DisplayOrder && a.DisplayOrder.length > 0;

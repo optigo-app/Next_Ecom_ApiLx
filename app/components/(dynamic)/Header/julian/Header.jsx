@@ -9,6 +9,7 @@ import {
   Link as MuiLink,
   Badge,
   Tooltip,
+  Skeleton,
 } from '@mui/material';
 import "./Header.modul.scss";
 import SearchIcon from '@mui/icons-material/Search';
@@ -267,6 +268,7 @@ export default function HarryWinstonHeader({ storeinit, logos }) {
   const [activeMenu, setActiveMenu] = useState(null);
   const [menuData, setMenuData] = useState([]);
   const [menuItems, setMenuItems] = useState([]);
+  const [menuLoading, setMenuLoading] = useState(true);
   const [isMounted, setIsMounted] = useState(false);
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
@@ -286,44 +288,81 @@ export default function HarryWinstonHeader({ storeinit, logos }) {
 
  
   const getMenuApi = async () => {
-    const pricingContext = getPricingContext(loginUserDetail, storeinit, islogin);
-    let cacheKey = "";
-    if (pricingContext) {
-      const eventName = "elvee_hwheader_menu";
-      const { key } = buildMenuCacheKey(eventName, storeinit, pricingContext, finalId);
-      cacheKey = key;
-      try {
-        const cacheRes = await readCache(key);
-        if (cacheRes?.cached && Array.isArray(cacheRes.data)) {
-          setMenuData(cacheRes.data);
-          return;
-        }
-      } catch (err) {
-        console.error("Cache read error:", err);
+    const isB2B = storeinit?.IsB2BWebsite === 1;
+    if (isB2B && !islogin) {
+      setMenuLoading(false);
+      return;
+    }
+
+    setMenuLoading(true);
+    const cacheKey = `julianMenu_${finalId}`;
+
+    // 1. Client Session Cache Check (Instant browser memory/session read)
+    let cachedSessionData = getSession(cacheKey);
+    if (cachedSessionData && Array.isArray(cachedSessionData) && cachedSessionData.length > 0) {
+      const hasError = cachedSessionData.some(
+        (item) =>
+          item?.stat === 0 ||
+          (typeof item?.stat_msg === "string" &&
+            item.stat_msg.toLowerCase().includes("error")),
+      );
+      if (!hasError) {
+        setMenuData(cachedSessionData);
+        setMenuLoading(false);
+        return;
       }
     }
 
+    // 2. Server Disk Cache Check (Fast server file cache read)
+    try {
+      const cacheRes = await readCache(cacheKey);
+      if (cacheRes?.cached && Array.isArray(cacheRes.data) && cacheRes.data.length > 0) {
+        const hasError = cacheRes.data.some(
+          (item) =>
+            item?.stat === 0 ||
+            (typeof item?.stat_msg === "string" &&
+              item.stat_msg.toLowerCase().includes("error")),
+        );
+        if (!hasError) {
+          setMenuData(cacheRes.data);
+          setSession(cacheKey, cacheRes.data);
+          setMenuLoading(false);
+          return;
+        }
+      }
+    } catch (err) {
+      console.warn("[julian Header] File cache read error:", err);
+    }
+
+    // 3. Cache Miss — Call Live GetMenuAPI
     try {
       const response = await GetMenuAPI(finalId);
       const apiData = response?.Data?.rd || [];
-      setMenuData(apiData);
-      if (apiData.length > 0 && cacheKey) {
+      const hasError = apiData.some(
+        (item) =>
+          item?.stat === 0 ||
+          (typeof item?.stat_msg === "string" &&
+            item.stat_msg.toLowerCase().includes("error")),
+      );
+
+      if (apiData.length > 0 && !hasError) {
+        setMenuData(apiData);
+        setSession(cacheKey, apiData);
         writeCache(cacheKey, apiData).catch(console.error);
       }
     } catch (err) {
-      console.log(err);
+      console.error("[julian Header] GetMenuAPI failed:", err);
+    } finally {
+      setMenuLoading(false);
     }
   };
 
   useEffect(() => {
-    if (isMounted && islogin) {
+    if (isMounted) {
       getMenuApi();
-    } else {
-      setMenuData([]);
-      setMenuItems([]);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [islogin, isMounted]);
+  }, [islogin, isMounted, loginUserDetail, finalId]);
 
   // ── Transform flat menuData rows into menuid → param1 → param2 tree ─────
   useEffect(() => {
@@ -667,18 +706,33 @@ export default function HarryWinstonHeader({ storeinit, logos }) {
         <Box
         className="navBar"
           sx={{
-            
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             gap: { xs: 2, md: 4 },
             px: { xs: 2, md: 6 },
             pb: 2,
+            minHeight: '36px',
             flexWrap: 'wrap',
           }}
         >
-          {isMounted && islogin
-            ? menuItems?.map((item, index) => {
+          {menuLoading ? (
+            <Box sx={{ display: "flex", gap: { xs: 2, md: 4 }, justifyContent: "center", alignItems: "center", minHeight: "36px" }}>
+              {[1, 2, 3, 4, 5].map((i) => (
+                <Skeleton
+                  key={i}
+                  variant="rectangular"
+                  width={110}
+                  height={18}
+                  sx={{
+                    borderRadius: 1,
+                    bgcolor: "rgba(255, 255, 255, 0.22)",
+                  }}
+                />
+              ))}
+            </Box>
+          ) : isMounted && islogin && menuItems?.length > 0 ? (
+            menuItems?.map((item, index) => {
               const isActive = activeMenu === item.menuname;
               return (
                 <Box
@@ -710,7 +764,8 @@ export default function HarryWinstonHeader({ storeinit, logos }) {
                 </Box>
               );
             })
-            : STATIC_NAV_LINKS.map((link) => (
+          ) : (
+            STATIC_NAV_LINKS.map((link) => (
               <Box key={link.label} sx={{ position: 'relative' }}>
                 <Typography
                   component={Link}
@@ -734,7 +789,8 @@ export default function HarryWinstonHeader({ storeinit, logos }) {
                   {link.label}
                 </Typography>
               </Box>
-            ))}
+            ))
+          )}
         </Box>
 
         {/* Mega Menu Dropdown (logged-in users only)  */}

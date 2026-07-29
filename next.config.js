@@ -10,6 +10,15 @@ const nextConfig = {
   async headers() {
     return [
       {
+        source: '/:path*',
+        headers: [
+          { key: 'Access-Control-Allow-Origin', value: '*' },
+          { key: 'Access-Control-Allow-Methods', value: 'GET, POST, PUT, DELETE, OPTIONS' },
+          { key: 'Access-Control-Allow-Headers', value: 'X-Requested-With, Content-Type, Authorization, RSC, Next-Router-State-Tree, Next-Router-Prefetch, Next-Url, Next-Action' },
+          { key: 'Vary', value: 'RSC, Next-Router-State-Tree, Next-Router-Prefetch' },
+        ],
+      },
+      {
         // Local static images — 30 days, immutable (browser skips revalidation)
         source: '/:all*(jpg|jpeg|png|gif|webp|svg|avif|ico)',
         headers: [
@@ -35,6 +44,7 @@ const nextConfig = {
         source: '/',
         headers: [
           { key: 'Cache-Control', value: 'public, max-age=60, s-maxage=3600, stale-while-revalidate=86400' },
+          { key: 'Vary', value: 'RSC, Next-Router-State-Tree, Next-Router-Prefetch' },
         ],
       },
     ];
@@ -52,6 +62,9 @@ const nextConfig = {
 
   experimental: {
     viewTransition: true,
+    serverActions: {
+      allowedOrigins: ['*.optigoapps.com', 'optigoapps.com', 'localhost:5009', 'localhost:3000', '*'],
+    },
   },
 };
 

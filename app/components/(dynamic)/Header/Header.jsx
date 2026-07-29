@@ -98,8 +98,14 @@ const Header = ({ storeinit, logos }) => {
       console.log("[Header Menu] Cache miss, calling GetMenuAPI...");
       const response = await GetMenuAPI(finalID);
       const apiData = response?.Data?.rd || [];
+      const hasError = apiData.some(
+        (item) =>
+          item?.stat === 0 ||
+          (typeof item?.stat_msg === "string" &&
+            item.stat_msg.toLowerCase().includes("error")),
+      );
 
-      if (apiData.length > 0) {
+      if (apiData.length > 0 && !hasError) {
         setMenuData(apiData);
 
         // Step 3: Save to server cache (fire-and-forget, 12h TTL)
