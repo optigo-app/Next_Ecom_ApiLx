@@ -12,6 +12,7 @@ import { useNextRouterLikeRR } from "@/app/(core)/hooks/useLocationRd";
 import { normalizeALC, buildAlbumCacheKey, getPricingContext } from "@/app/(core)/cache_utility/CacheBuilder";
 import { readCache, writeCache } from "@/app/(core)/cache_utility/cacheActions";
 import { formatter, formatTitleLine } from "@/app/(core)/utils/Glob_Functions/GlobalFunction";
+import { getSession, setSession } from "@/app/(core)/utils/FetchSessionData";
 
 const TabSection = ({ storeData }) => {
     const [newArrivalData, setNewArrivalData] = useState([]);
@@ -28,33 +29,67 @@ const TabSection = ({ storeData }) => {
 
     const fetchAndSetNewArrivals = useCallback(
         async (finalID, cacheKey) => {
-            if (!pricingContext || !pricingContext.PackageId || isFetchingRef.current) return;
+            if (!pricingContext || !pricingContext.PackageId) return;
 
+            // 1. Client Session Cache Check (0ms instant browser read)
+            let cachedSessionData = getSession(cacheKey);
+            if (cachedSessionData && Array.isArray(cachedSessionData) && cachedSessionData.length > 0) {
+                const hasError = cachedSessionData.some(
+                    (item) =>
+                        item?.stat === 0 ||
+                        (typeof item?.stat_msg === "string" &&
+                            item.stat_msg.toLowerCase().includes("error")),
+                );
+                if (!hasError) {
+                    setNewArrivalData(cachedSessionData);
+                    return;
+                }
+            }
+
+            if (isFetchingRef.current) return;
             isFetchingRef.current = true;
 
+            // 2. Server Disk Cache Check (.next_cache)
             try {
                 const cacheRes = await readCache(cacheKey);
 
-                if (cacheRes?.cached && Array.isArray(cacheRes.data)) {
-                    console.log("[NewArrival] Serving from cache");
-                    setNewArrivalData(cacheRes.data);
-                    isFetchingRef.current = false;
-                    return;
+                if (cacheRes?.cached && Array.isArray(cacheRes.data) && cacheRes.data.length > 0) {
+                    const hasError = cacheRes.data.some(
+                        (item) =>
+                            item?.stat === 0 ||
+                            (typeof item?.stat_msg === "string" &&
+                                item.stat_msg.toLowerCase().includes("error")),
+                    );
+                    if (!hasError) {
+                        console.log("[NewArrival] Serving from server cache");
+                        setNewArrivalData(cacheRes.data);
+                        setSession(cacheKey, cacheRes.data);
+                        isFetchingRef.current = false;
+                        return;
+                    }
                 }
 
+                // 3. Live API Call
                 console.log("[NewArrival] Cache miss, calling API...");
                 const response = await Get_Tren_BestS_NewAr_DesigSet_Album(storeData, "GETNewArrival", finalID);
                 const apiData = response?.Data?.rd || [];
+                const hasError = apiData.some(
+                    (item) =>
+                        item?.stat === 0 ||
+                        (typeof item?.stat_msg === "string" &&
+                            item.stat_msg.toLowerCase().includes("error")),
+                );
 
-                if (apiData.length > 0) {
+                if (apiData.length > 0 && !hasError) {
                     setNewArrivalData(apiData);
+                    setSession(cacheKey, apiData);
                     writeCache(cacheKey, apiData).catch(console.error);
                 } else {
                     setNewArrivalData([]);
                 }
                 isFetchingRef.current = false;
             } catch (err) {
-                console.log("[NewArrival] Error in fetch:", err);
+                console.error("[NewArrival] Error in fetch:", err);
                 setNewArrivalData([]);
                 isFetchingRef.current = false;
             }

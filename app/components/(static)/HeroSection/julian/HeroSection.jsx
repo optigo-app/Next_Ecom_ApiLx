@@ -1,17 +1,34 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import { Box, Typography, Button } from "@mui/material";
 import { useNextRouterLikeRR } from "@/app/(core)/hooks/useLocationRd";
-import "./HeroSection.scss"
-export default function HeroSection() {
+import { useRouter } from "next/navigation";
+import "./HeroSection.scss";
 
+const BANNER_IMAGE_URL = "/WebSiteStaticImage/Banner/b2c_banner.webp";
+
+export default function HeroSection() {
   const { push } = useNextRouterLikeRR();
+  const router = useRouter();
+
+  useEffect(() => {
+    // 1. Preload Hero Banner Image into browser cache
+    if (typeof window !== "undefined") {
+      const img = new Image();
+      img.src = BANNER_IMAGE_URL;
+    }
+
+    // 2. Prefetch Shop Now (/p) page route
+    try {
+      router.prefetch("/p");
+    } catch (_) {}
+  }, [router]);
 
   const handleShopNowClick = () => {
-      push("/p");
-  }
- 
+    push("/p");
+  };
+
   return (
     <Box
       sx={{
@@ -29,8 +46,10 @@ export default function HeroSection() {
       {/* BACKGROUND IMAGE */}
       <Box
         component="img"
-        src={"/WebSiteStaticImage/Banner/b2c_banner.webp"}
+        src={BANNER_IMAGE_URL}
         alt="Mother's Day Banner"
+        fetchPriority="high"
+        decoding="async"
         sx={{
           width: "100%",
           height: "100%",

@@ -11,6 +11,8 @@ import { compressAndEncode } from "@/app/(core)/utils/Encoder&Decoder";
 import { formatRedirectTitleLine } from "@/app/(core)/utils/Glob_Functions/GlobalFunction";
 import { Get_Tren_BestS_NewAr_DesigSet_Album } from "@/app/(core)/utils/API/Home/Get_Tren_BestS_NewAr_DesigSet_Album/Get_Tren_BestS_NewAr_DesigSet_Album";
 import { BookCache } from "@/app/(core)/utils/API/Cache/CacheApi";
+import { getSession, setSession } from "@/app/(core)/utils/FetchSessionData";
+import { readCache, writeCache } from "@/app/(core)/cache_utility/cacheActions";
 import {
   normalizeALC,
   buildAlbumCacheKey,
@@ -46,63 +48,74 @@ export default function Trending({ storeInit }) {
   // ── Fetch + cache trending data ──────────────────────────────────────────
   const fetchAndSetTrending = useCallback(
     async (finalID, precomputedKey) => {
-      if (!pricingContext || !pricingContext.PackageId || isFetchingRef.current) return;
+      if (!pricingContext || !pricingContext.PackageId) return;
 
-      const apiALC = "";
       const keyALC = normalizeALC("");
       const eventName = "fg_trending";
-      const { key, meta } = buildAlbumCacheKey(eventName, storeInit, pricingContext, finalID, keyALC);
+      const { key } = buildAlbumCacheKey(eventName, storeInit, pricingContext, finalID, keyALC);
       const effectiveKey = precomputedKey || key;
 
+      // 1. Client Session Cache Check (0ms instant browser read)
+      let cachedSessionData = getSession(effectiveKey);
+      if (cachedSessionData && Array.isArray(cachedSessionData) && cachedSessionData.length > 0) {
+        const hasError = cachedSessionData.some(
+          (item) =>
+            item?.stat === 0 ||
+            (typeof item?.stat_msg === "string" &&
+              item.stat_msg.toLowerCase().includes("error")),
+        );
+        if (!hasError) {
+          setTrandingViewData(cachedSessionData);
+          return;
+        }
+      }
+
+      if (isFetchingRef.current) return;
       isFetchingRef.current = true;
 
+      // 2. Server Disk Cache Check (.next_cache)
       try {
-        const localCacheRes = await fetch(`/api/v1/cache?mode=meta&key=${effectiveKey}`)
-          .then((res) => res.json())
-          .catch(() => ({ cached: false }));
-
-        const matchingServerEntry = findMatchingCacheEntry(
-          cacheList?.Data?.rd ?? [],
-          pricingContext,
-          eventName,
-          apiALC
-        );
-        const serverRebuildDate = matchingServerEntry?.CacheRebuildDate ?? null;
-
-        if (localCacheRes?.cached && localCacheRes?.CacheRebuildDate === serverRebuildDate) {
-          const cachedRes = await fetch(`/api/v1/cache?key=${effectiveKey}`).then((res) => res.json());
-          if (cachedRes.cached && Array.isArray(cachedRes.data)) {
-            setTrandingViewData(cachedRes.data);
+        const cacheRes = await readCache(effectiveKey);
+        if (cacheRes?.cached && Array.isArray(cacheRes.data) && cacheRes.data.length > 0) {
+          const hasError = cacheRes.data.some(
+            (item) =>
+              item?.stat === 0 ||
+              (typeof item?.stat_msg === "string" &&
+                item.stat_msg.toLowerCase().includes("error")),
+          );
+          if (!hasError) {
+            setTrandingViewData(cacheRes.data);
+            setSession(effectiveKey, cacheRes.data);
             isFetchingRef.current = false;
             return;
           }
         }
 
+        // 3. Live API Call
         const response = await Get_Tren_BestS_NewAr_DesigSet_Album(storeInit, "GETTrending", finalID);
         const records = response?.Data?.rd ?? [];
-        setTrandingViewData(records);
-        isFetchingRef.current = false;
+        const hasError = records.some(
+          (item) =>
+            item?.stat === 0 ||
+            (typeof item?.stat_msg === "string" &&
+              item.stat_msg.toLowerCase().includes("error")),
+        );
 
-        if (records.length > 0) {
-          const bookResult = await BookCache(finalID, eventName, pricingContext, apiALC);
-          if (bookResult?.CacheRebuildDate) {
-            fetch("/api/v1/cache", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                key: effectiveKey,
-                data: records,
-                meta: { ...meta, CacheRebuildDate: bookResult.CacheRebuildDate },
-              }),
-            });
-          }
+        if (records.length > 0 && !hasError) {
+          setTrandingViewData(records);
+          setSession(effectiveKey, records);
+          writeCache(effectiveKey, records).catch(console.error);
+        } else {
+          setTrandingViewData([]);
         }
+        isFetchingRef.current = false;
       } catch (error) {
         console.error("[Trending] Error:", error);
+        setTrandingViewData([]);
         isFetchingRef.current = false;
       }
     },
-    [pricingContext, storeInit, cacheList]
+    [pricingContext, storeInit]
   );
 
   useEffect(() => {
