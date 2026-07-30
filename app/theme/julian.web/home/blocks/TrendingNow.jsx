@@ -153,6 +153,8 @@ export default function Trending({ storeInit }) {
 
   // ── Navigation to PDP ─────────────────────────────────────────────────────
   const handleNavigation = (item) => {
+    const cdnFol = storeInit?.CDNDesignImageFol || "";
+    const imgUrl = item?.src || (cdnFol && item?.designno ? `${cdnFol}${item?.designno}~1.${item?.ImageExtension || "webp"}` : "");
     let obj = {
       a: item?.autocode,
       b: item?.designno,
@@ -162,6 +164,7 @@ export default function Trending({ storeInit }) {
       f: {},
       l: item?.ImageExtension,
       count: item?.ImageCount,
+      img: imgUrl,
     };
     let encodeObj = compressAndEncode(JSON.stringify(obj));
     push(`/d/${formatRedirectTitleLine(item?.TitleLine)}${item?.designno}?p=${encodeURIComponent(encodeObj)}`);

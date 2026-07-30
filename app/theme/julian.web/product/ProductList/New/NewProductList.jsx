@@ -1,18 +1,32 @@
-'use client'
+"use client";
 import { useMemo, useState, useEffect } from "react";
-import { Box, Grid, Card, CardMedia, CardContent, Typography, IconButton, Chip, useMediaQuery, Button } from "@mui/material";
+import {
+  Box,
+  Card,
+  CardMedia,
+  CardContent,
+  Typography,
+  IconButton,
+  Chip,
+  useMediaQuery,
+  Button,
+} from "@mui/material";
+import Grid from "@mui/material/Grid";
 import { motion } from "framer-motion";
 import ProductSkeleton from "./Skeleton";
 import { useTheme } from "@emotion/react";
 import "./index.scss";
-import { formatter, formatTitleLine } from "@/app/(core)/utils/Glob_Functions/GlobalFunction";
+import {
+  formatter,
+  formatTitleLine,
+} from "@/app/(core)/utils/Glob_Functions/GlobalFunction";
 import CartToggleButton from "./CartToggleButton";
 import WishToggleButton from "./WishToggleButton";
 import MobileCartToggleButton from "./MobileCartButton";
+import NoProductFound from "./NoProductFound";
 
 const IsSetupFor = true;
-const noImageFound = '/image-not-found.jpg';
-
+const noImageFound = "/image-not-found.jpg";
 
 const ChipBar = (title, bgcolor, position) => {
   return (
@@ -71,6 +85,7 @@ const ChipBar = (title, bgcolor, position) => {
 };
 
 const decodeEntities = (html) => {
+  if (typeof document === "undefined") return html || "";
   var txt = document.createElement("textarea");
   txt.innerHTML = html;
   return txt.value;
@@ -81,23 +96,29 @@ const MotionCard = motion(Card);
 const JewelryProductGrid = ({
   storeinit,
   loginUserDetail,
-  productListData, isFiltering, handleMoveToDetail = () => { }, showFilter, filter, filterData, handleCartandWish = () => { }, cartArr, wishArr }) => {
+  productListData,
+  isFiltering,
+  handleMoveToDetail = () => {},
+  showFilter,
+  filter,
+  filterData,
+  handleCartandWish = () => {},
+  cartArr,
+  wishArr,
+}) => {
   const theme = useTheme();
   const isMedium = useMediaQuery("(max-width:1000px)");
   const isMobile = useMediaQuery("(max-width: 640px)");
 
   const getDesignVideoFol = storeinit?.CDNVPath;
   const getDesignImageFol = storeinit?.CDNDesignImageFol;
-  // let getDesignImageFol = storeinit?.CDNDesignImageFolThumb;
 
   const getDynamicImages = (designno, extension) => {
     return `${getDesignImageFol}${designno}~${1}.${extension}`;
-    // return `${getDesignImageFol}${designno}~${1}.jpg`;
   };
   const getDynamicRollImages = (designno, count, extension) => {
     if (count > 1) {
       return `${getDesignImageFol}${designno}~${2}.${extension}`;
-      // return `${getDesignImageFol}${designno}~${2}.jpg`;
     }
     return;
   };
@@ -110,6 +131,13 @@ const JewelryProductGrid = ({
     return;
   };
 
+  const showSkeletons = isFiltering || !productListData;
+  const isNoProduct = !isFiltering && Array.isArray(productListData) && productListData.length === 0;
+
+  if (isNoProduct) {
+    return <NoProductFound />;
+  }
+
   return (
     <Box
       sx={{
@@ -119,17 +147,73 @@ const JewelryProductGrid = ({
       }}
     >
       <Box sx={{ position: "relative", zIndex: 1 }}>
-        <Grid container spacing={{ xs: 0, sm: 0, md: 0 }}>
-          {(isFiltering ? Array.from(new Array(12)) : productListData).map((item, index) => (
-            <Grid item key={item?.id || index} size={{
-              xs: 6,
-              sm: 6,
-              md: isMedium ? 6 : 3
-            }}>
-              {isFiltering ? <ProductSkeleton key={index} /> : <ProductCard columnsPerRow={isMedium ? 2 : 4} product={item} index={index} key={index} StoreInit={storeinit} productData={item} handleCartandWish={handleCartandWish} cartArr={cartArr} wishArr={wishArr} loginCurrency={loginUserDetail} imageUrl={getDynamicImages(item?.designno, item?.ImageExtension)} videoUrl={getDynamicVideo(item?.designno, item?.VideoCount, item?.VideoExtension)} RollImageUrl={getDynamicRollImages(item?.designno, item?.ImageCount, item?.ImageExtension)} handleMoveToDetail={handleMoveToDetail} ImageCount={item?.ImageCount} VideoCount={item?.VideoCount} showFilter={showFilter} filter={filter} filterData={filterData} isMobile={isMobile} />}
+        {(() => {
+          if (showSkeletons) {
+            return (
+              <Grid container spacing={{ xs: 1, sm: 1, md: 1 }}>
+                {Array.from(new Array(12)).map((_, index) => (
+                  <Grid
+                    key={index}
+                    size={{
+                      xs: 6,
+                      sm: 6,
+                      md: isMedium ? 6 : 3,
+                    }}
+                  >
+                    <ProductSkeleton key={index} />
+                  </Grid>
+                ))}
+              </Grid>
+            );
+          }
+
+          return (
+            <Grid container spacing={0}>
+              {productListData.map((prod, index) => (
+                <Grid
+                  key={prod?.id || prod?.autocode || index}
+                  size={{
+                    xs: 6,
+                    sm: 6,
+                    md: isMedium ? 6 : 3,
+                  }}
+                >
+                  <ProductCard
+                    product={prod}
+                    index={index}
+                    StoreInit={storeinit}
+                    productData={prod}
+                    handleCartandWish={handleCartandWish}
+                    cartArr={cartArr}
+                    wishArr={wishArr}
+                    loginCurrency={loginUserDetail}
+                    imageUrl={getDynamicImages(
+                      prod?.designno,
+                      prod?.ImageExtension,
+                    )}
+                    videoUrl={getDynamicVideo(
+                      prod?.designno,
+                      prod?.VideoCount,
+                      prod?.VideoExtension,
+                    )}
+                    RollImageUrl={getDynamicRollImages(
+                      prod?.designno,
+                      prod?.ImageCount,
+                      prod?.ImageExtension,
+                    )}
+                    handleMoveToDetail={handleMoveToDetail}
+                    ImageCount={prod?.ImageCount}
+                    VideoCount={prod?.VideoCount}
+                    showFilter={showFilter}
+                    filter={filter}
+                    filterData={filterData}
+                    isMobile={isMobile}
+                  />
+                </Grid>
+              ))}
             </Grid>
-          ))}
-        </Grid>
+          );
+        })()}
       </Box>
     </Box>
   );
@@ -137,8 +221,28 @@ const JewelryProductGrid = ({
 
 export default JewelryProductGrid;
 
-const ProductCard = ({ columnsPerRow = 4, product, index, productData, StoreInit, calcVal, videoUrl, handleCartandWish,
-  cartArr, wishArr, RollImageUrl, imageUrl, handleMoveToDetail, loginCurrency, showFilter, filter, filterData, ImageCount, VideoCount, isMobile }) => {
+const ProductCard = ({
+  product,
+  index,
+  productData,
+  StoreInit,
+  calcVal,
+  videoUrl,
+  handleCartandWish,
+  cartArr,
+  wishArr,
+  RollImageUrl,
+  imageUrl,
+  handleMoveToDetail,
+  loginCurrency,
+  showFilter,
+  filter,
+  filterData,
+  ImageCount,
+  VideoCount,
+  isMobile,
+  columnsPerRow = 4,
+}) => {
   const cardVariants = {
     hidden: {
       opacity: 0,
@@ -150,30 +254,41 @@ const ProductCard = ({ columnsPerRow = 4, product, index, productData, StoreInit
       y: 0,
       scale: 1,
       transition: {
-        duration: 0.5,
-        delay: index * 0.1,
+        duration: 0.25,
+        delay: Math.min(index * 0.02, 0.15),
         ease: [0.25, 0.46, 0.45, 0.94],
       },
     },
   };
   const isFirstInRow = index % columnsPerRow === 0;
   const isFirstRow = index < columnsPerRow;
-  const hasUpperTags = productData?.IsInReadyStock == 1 || productData?.IsBestSeller == 1 || productData?.IsTrending == 1 || productData?.IsNewArrival == 1;
+  // const hasUpperTags = productData?.IsInReadyStock == 1 || productData?.IsBestSeller == 1 || productData?.IsTrending == 1 || productData?.IsNewArrival == 1;
+  const hasUpperTags =
+    productData?.IsInReadyStock == 1 ||
+    productData?.IsBestSeller == 1 ||
+    productData?.IsTrending == 1 ||
+    productData?.IsNewArrival == 1;
+
+  const Article = productData?.ArticleNo;
+  const DesignNo = productData?.designno;
 
   return (
     <MotionCard
+      id={`product-card-${Article}`}
       variants={cardVariants}
       initial="hidden"
       animate="visible"
       sx={{
         boxShadow: "none !important",
         outline: "none !important",
-        border: "1px solid #bebebe",
-        borderLeft: isFirstInRow ? "1px solid #bebebe" : "none",
-        borderTop: isFirstRow ? "1px solid #bebebe" : "none",
+        borderRight: "1px solid #e5e5e5",
+        borderBottom: "1px solid #e5e5e5",
+        borderLeft: isFirstInRow ? "1px solid #e5e5e5" : "none",
+        borderTop: isFirstRow ? "1px solid #e5e5e5" : "none",
         borderRadius: 0,
       }}
     >
+      {/* --- PRODUCT IMAGE CONTAINER --- */}
       <Box
         className="product-container"
         onClick={() => handleMoveToDetail(productData, imageUrl)}
@@ -187,10 +302,9 @@ const ProductCard = ({ columnsPerRow = 4, product, index, productData, StoreInit
             xs: "3 / 4",
             sm: "1 / 1.25",
             md: "1 / 1.2",
-            lg: "1/1.18"
+            lg: "1/1.18",
           },
-
-          bgcolor: "#fff9f266",
+          bgcolor: "#e9e9e91a",
         }}
       >
         {/* Main Image */}
@@ -210,8 +324,8 @@ const ProductCard = ({ columnsPerRow = 4, product, index, productData, StoreInit
           sx={{
             width: "100%",
             height: "100%",
-            objectFit: "contain",
-            borderRadius: 4,
+            objectFit: "cover",
+            borderRadius: 0,
             transition: "0s ease-in-out",
             mixBlendMode: "multiply",
           }}
@@ -258,8 +372,8 @@ const ProductCard = ({ columnsPerRow = 4, product, index, productData, StoreInit
                   }}
                   onContextMenu={(e) => e.preventDefault()}
                   sx={{
-                    objectFit: "contain !important",
-                    borderRadius: 4,
+                    objectFit: "cover !important",
+                    borderRadius: 0,
                     transition: "opacity 0.4s ease",
                     width: "100%",
                     height: "100%",
@@ -281,7 +395,7 @@ const ProductCard = ({ columnsPerRow = 4, product, index, productData, StoreInit
                     left: 0,
                     bottom: 0,
                     right: 0,
-                    bgcolor: "#fff9f266",
+                    bgcolor: "#e9e9e91a",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
@@ -304,8 +418,8 @@ const ProductCard = ({ columnsPerRow = 4, product, index, productData, StoreInit
                     sx={{
                       width: "100%",
                       height: "100%",
-                      objectFit: "contain",
-                      borderRadius: 4,
+                      objectFit: "cover",
+                      borderRadius: 0,
                       transition: "opacity 0.4s ease",
                       mixBlendMode: "multiply",
                     }}
@@ -318,7 +432,13 @@ const ProductCard = ({ columnsPerRow = 4, product, index, productData, StoreInit
         })()}
 
         {!isMobile && (
-          <CartToggleButton productData={productData} cartArr={cartArr} handleCartandWish={handleCartandWish} />
+          <Box>
+            <CartToggleButton
+              productData={productData}
+              cartArr={cartArr}
+              handleCartandWish={handleCartandWish}
+            />
+          </Box>
         )}
         {/* --- UPPER BOX --- */}
         <Box
@@ -336,7 +456,10 @@ const ProductCard = ({ columnsPerRow = 4, product, index, productData, StoreInit
           {productData?.IsBestSeller == 1 && ChipBar("Best Seller")}
           {productData?.IsTrending == 1 && ChipBar("Trending")}
           {productData?.IsNewArrival == 1 && ChipBar("New", "#163164")}
-          {!IsSetupFor && !hasUpperTags && productData?.MakeType && ChipBar(productData.MakeType, "bottom")}
+          {!IsSetupFor &&
+            !hasUpperTags &&
+            productData?.MakeType &&
+            ChipBar(productData.MakeType, "bottom")}
         </Box>
 
         {hasUpperTags && (
@@ -351,13 +474,20 @@ const ProductCard = ({ columnsPerRow = 4, product, index, productData, StoreInit
               gap: 0.8,
             }}
           >
-            {!IsSetupFor && productData?.MakeType && ChipBar(productData.MakeType, "bottom")}
+            {!IsSetupFor &&
+              productData?.MakeType &&
+              ChipBar(productData.MakeType, "bottom")}
           </Box>
         )}
 
-        <WishToggleButton productData={productData} wishArr={wishArr} handleCartandWish={handleCartandWish} />
+        <WishToggleButton
+          productData={productData}
+          wishArr={wishArr}
+          handleCartandWish={handleCartandWish}
+        />
       </Box>
 
+      {/* --- CARD CONTENT BELOW IMAGE --- */}
       <CardContent
         sx={{
           px: 2.4,
@@ -367,28 +497,7 @@ const ProductCard = ({ columnsPerRow = 4, product, index, productData, StoreInit
           gap: 0.8,
         }}
       >
-        {/* Title */}
-        <Typography
-          variant="body1"
-          sx={{
-            fontSize: { xs: "0.82rem", sm: "0.9rem", md: "0.94rem", lg: "1rem" },
-            fontWeight: 300,
-            lineHeight: 1.35,
-            color: "#050505",
-            mt: 0.3,
-            mb: 0.3,
-            textAlign: "left",
-            whiteSpace: "nowrap",
-            overflow: "hidden",
-            textOverflow: "ellipsis",
-            minHeight: "1.35em",
-            visibility: productData?.TitleLine ? "visible" : "visible",
-          }}
-        >
-          {productData?.TitleLine ? formatTitleLine(productData?.TitleLine) : " "}
-        </Typography>
-
-        {/* --- PRICE ROW: current price / struck-through original / discount % --- */}
+        {/* PRICE ROW */}
         {StoreInit?.IsPriceShow == 1 && (
           <Box sx={{ display: "flex", alignItems: "center", gap: 0.8, flexWrap: "wrap" }}>
             <Typography
@@ -400,81 +509,18 @@ const ProductCard = ({ columnsPerRow = 4, product, index, productData, StoreInit
             >
               <span
                 dangerouslySetInnerHTML={{
-                  __html: decodeEntities(loginCurrency?.CurrencyCode ?? StoreInit?.CurrencyCode),
+                  __html: decodeEntities(
+                    loginCurrency?.CurrencyCode ?? StoreInit?.CurrencyCode,
+                  ),
                 }}
                 style={{ paddingRight: "0.3rem" }}
               />
               {formatter(productData?.UnitCostWithMarkUp)}
             </Typography>
-
-            {/* No MRP / original-price field currently exists on productData — left empty */}
-            {productData?.MRP ? (
-              <Typography
-                sx={{
-                  fontWeight: 300,
-                  fontSize: { xs: "0.7rem", sm: "0.78rem" },
-                  color: "#8a8a8a",
-                  textDecoration: "line-through",
-                }}
-              >
-                {formatter(productData.UnitCostWithMarkUpIncTax)}
-              </Typography>
-            ) : null}
-
-            {/* No discount-percent field currently exists on productData — left empty */}
-            {productData?.DiscountPercent ? (
-              <Typography
-                sx={{
-                  fontWeight: 500,
-                  fontSize: { xs: "0.7rem", sm: "0.78rem" },
-                  color: "#1e7d34",
-                }}
-              >
-                {productData.DiscountPercent}% off
-              </Typography>
-            ) : null}
           </Box>
         )}
 
-        {/* --- COLOR SWATCHES ROW --- */}
-        {/* No color-variant array currently exists on productData — renders nothing until provided */}
-        {Array.isArray(productData?.ColorVariants) && productData.ColorVariants.length > 0 && (
-          <Box sx={{ display: "flex", alignItems: "center", gap: 0.8, mt: 0.4 }}>
-            {productData.ColorVariants.map((variant, vi) => (
-              <Box
-                key={variant?.MetalColorid ?? vi}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  // hook up color-switch handler here once behavior is defined
-                }}
-                sx={{
-                  width: 16,
-                  height: 16,
-                  borderRadius: "50%",
-                  border: "1px solid #d0d0d0",
-                  bgcolor: variant?.ColorHex || "#eee",
-                  cursor: "pointer",
-                }}
-              />
-            ))}
-          </Box>
-        )}
-
-        {/* --- MATERIAL LINE --- */}
-        {/* No ready-made material description string exists on productData — left empty */}
-        <Typography
-          sx={{
-            fontWeight: 300,
-            fontSize: { xs: "0.68rem", sm: "0.75rem" },
-            color: "#555",
-            mt: 0.3,
-            minHeight: "1.2em",
-          }}
-        >
-          {productData?.MaterialLine ?? ""}
-        </Typography>
-
-        {/* --- Existing fields (designno / DWT / NWT) kept as before, unchanged --- */}
+        {/* ARTICLE NO (LEFT) AND NWT (RIGHT) ROW */}
         <Box sx={{ mt: 1 }}>
           <Grid container spacing={0.8}>
             <Grid item size={{ xs: 6 }}>
@@ -489,55 +535,51 @@ const ProductCard = ({ columnsPerRow = 4, product, index, productData, StoreInit
                     textTransform: "uppercase",
                   }}
                 >
-                  {productData?.designno}
+                  {Article}
                 </Typography>
               </Box>
             </Grid>
 
             <Grid item size={{ xs: 6 }}>
-              <Box sx={{ display: "flex", alignItems: "center", gap: 0.5, justifyContent: "flex-end" }}>
-                {StoreInit?.IsDiamondWeight == 1 && Number(productData?.Dwt) !== 0 ? (
-                  <>
-                    <Typography
-                      variant="body2"
-                      sx={{ fontWeight: 300, fontSize: { xs: "0.62rem", sm: "0.8rem", md: "0.85rem" }, color: "#000", letterSpacing: "0.02em" }}
-                    >
-                      DWT&nbsp;:
-                    </Typography>
-                    <Typography
-                      variant="body2"
-                      sx={{ fontWeight: 300, fontSize: { xs: "0.62rem", sm: "0.8rem", md: "0.85rem" }, color: "#000" }}
-                    >
-                      {productData?.Dwt?.toFixed(3)}
-                      {StoreInit?.IsDiamondPcs === 1 ? `/${productData?.Dpcs}` : null}
-                    </Typography>
-                  </>
-                ) : null}
-              </Box>
-            </Grid>
-
-            <Grid item size={{ xs: 6 }} />
-
-            <Grid item size={{ xs: 6 }}>
-              <Box sx={{ display: "flex", alignItems: "center", gap: 0.5, justifyContent: "flex-end" }}>
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 0.5,
+                  justifyContent: "flex-end",
+                }}
+              >
                 <Typography
                   variant="body2"
-                  sx={{ fontWeight: 300, fontSize: { xs: "0.62rem", sm: "0.8rem", md: "0.85rem" }, color: "#000", letterSpacing: "0.02em" }}
+                  sx={{
+                    fontWeight: 300,
+                    fontSize: { xs: "0.62rem", sm: "0.8rem", md: "0.85rem" },
+                    color: "#000",
+                    letterSpacing: "0.02em",
+                  }}
                 >
                   NWT&nbsp;:
                 </Typography>
                 <Typography
                   variant="body2"
-                  sx={{ fontWeight: 300, fontSize: { xs: "0.7rem", sm: "0.8rem", md: "0.85rem" }, color: "#000" }}
+                  sx={{
+                    fontWeight: 300,
+                    fontSize: { xs: "0.7rem", sm: "0.8rem", md: "0.85rem" },
+                    color: "#000",
+                  }}
                 >
-                  {productData?.Nwt?.toFixed(3)}
+                  {productData?.Nwt ? productData?.Nwt?.toFixed(3) : "0.000"}
                 </Typography>
               </Box>
             </Grid>
 
             {isMobile && (
               <Grid item size={{ xs: 12, sm: 12 }} position={"relative"}>
-                <MobileCartToggleButton productData={productData} cartArr={cartArr} handleCartandWish={handleCartandWish} />
+                <MobileCartToggleButton
+                  productData={productData}
+                  cartArr={cartArr}
+                  handleCartandWish={handleCartandWish}
+                />
               </Grid>
             )}
           </Grid>
@@ -546,4 +588,3 @@ const ProductCard = ({ columnsPerRow = 4, product, index, productData, StoreInit
     </MotionCard>
   );
 };
-

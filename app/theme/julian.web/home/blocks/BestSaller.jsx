@@ -113,7 +113,13 @@ export default function JewelryGallery({ noHeading = false, storeInit }) {
     }
   };
 
-  const handleNavigation = (designNo, autoCode, titleLine, index) => {
+  const handleNavigation = (item, index) => {
+    const designNo = item?.designno;
+    const autoCode = item?.autocode;
+    const titleLine = item?.TitleLine;
+    const imageExtension = item?.ImageExtension || "webp";
+    const cdnFol = storeInit?.CDNDesignImageFol || "";
+    const imgUrl = (cdnFol && designNo) ? `${cdnFol}${designNo}~1.${imageExtension}` : "";
     const obj = {
       a: autoCode,
       b: designNo,
@@ -121,6 +127,9 @@ export default function JewelryGallery({ noHeading = false, storeInit }) {
       d: loginUserDetail?.cmboDiaQCid,
       c: loginUserDetail?.cmboCSQCid,
       f: {},
+      img: imgUrl,
+      l: imageExtension,
+      count: item?.ImageCount || 0,
     };
     sessionStorage.setItem("scrollToProduct1", `product-${index}`);
     const encodeObj = compressAndEncode(JSON.stringify(obj));
@@ -185,7 +194,7 @@ export default function JewelryGallery({ noHeading = false, storeInit }) {
           <Box
             key={item?.designno ?? index}
             className="gallery-card"
-            onClick={() => handleNavigation(item?.designno, item?.autocode, item?.TitleLine, index)}
+            onClick={() => handleNavigation(item, index)}
             sx={{
               position: "relative",
               height: {
