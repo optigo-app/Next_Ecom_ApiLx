@@ -13,8 +13,9 @@ export const WEBSITE_DOMAINS = {
   DIAMONDINEWEB: "nxtdiamondtine.web",
   MALAKANJWEWLSWEB: "nxtmalakanJwewls.web",
   JULIANWEB: "nxtjulian.web",
+  JULIAN4WEB: "nxtjulian4.web",
   BELUXJEWELWEB: "beluxjewel.web",
 };
 
-export const NEXT_APP_WEB = WEBSITE_DOMAINS.JULIANWEB;
+export const NEXT_APP_WEB = WEBSITE_DOMAINS.JULIAN4WEB;
 export const NEXT_PUBLIC_SITE_URL = NEXT_APP_WEB;

@@ -28,6 +28,8 @@ import { getSession, setSession, clearSession } from "@/app/(core)/utils/FetchSe
 import LogOutModal from "@/app/components/ui/LogOut";
 import CartDrawer from "@/app/theme/fgstore.web/cart/CartPageB2c/Cart";
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
+import SearchBarToggle from "./SearchBarToggle";
+import DrawerSearchBar from "./DrawerSearchbar";
 
 
 // Theme colors 
@@ -81,11 +83,11 @@ function HWMonogram() {
   return (
     <Box
 
-    className="hwMonogram"
+      className="hwMonogram"
       sx={{
         width: 44,
         height: 52,
-    
+
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -95,18 +97,18 @@ function HWMonogram() {
       }}
     >
       <Typography
-      className='hwMonogramText'
+        className='hwMonogramText'
         sx={{
           fontFamily: '"Playfair Display", Georgia, serif',
           fontSize: '13px',
-          
+
           letterSpacing: '1px',
           lineHeight: 1,
           textAlign: 'center',
           userSelect: 'none',
         }}
       >
-        JV
+        LJ
       </Typography>
     </Box>
   );
@@ -119,10 +121,10 @@ function MegaMenu({ item, images, onColumnClick, onLinkClick }) {
   return (
     <Box
 
-    className="megaMenuPanel"
+      className="megaMenuPanel"
       sx={{
         bgcolor: WHITE,
-       
+
         py: 5,
         px: { xs: 3, md: 8 },
         width: '100%',
@@ -143,14 +145,14 @@ function MegaMenu({ item, images, onColumnClick, onLinkClick }) {
                 onClick={(e) => onColumnClick(item, col, e)}
                 className='megaMenuText'
                 sx={{
-                  
+
                   fontSize: '11px',
                   letterSpacing: '2px',
                   color: '#222',
                   fontWeight: 600,
                   mb: 1.5,
                   pb: 1,
-                  
+
                   display: 'inline-block',
                   cursor: 'pointer',
                   textTransform: 'uppercase',
@@ -170,11 +172,11 @@ function MegaMenu({ item, images, onColumnClick, onLinkClick }) {
                     }}
                     className='megaMenuTextLink'
                     sx={{
-                      
+
                       fontSize: '12px',
                       letterSpacing: '1.5px',
                       color: '#444',
-                      
+
                       transition: 'color 0.2s',
                       cursor: 'pointer',
                       textTransform: 'uppercase',
@@ -231,7 +233,7 @@ function MegaMenu({ item, images, onColumnClick, onLinkClick }) {
                   border: `1px solid #ccc`,
                   py: 1.2,
                   textAlign: 'center',
-                 
+
                   transition: 'border-color 0.2s',
                 }}
               >
@@ -254,7 +256,7 @@ function MegaMenu({ item, images, onColumnClick, onLinkClick }) {
   );
 }
 
-//   Main Header 
+
 export default function HarryWinstonHeader({ storeinit, logos }) {
   const {
     islogin,
@@ -271,6 +273,7 @@ export default function HarryWinstonHeader({ storeinit, logos }) {
   const [menuLoading, setMenuLoading] = useState(true);
   const [isMounted, setIsMounted] = useState(false);
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
+  const [DrawerSearchOpen, setDrawerSearchOpen] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const closeTimer = useRef(null);
   const { push } = useNextRouterLikeRR();
@@ -279,14 +282,33 @@ export default function HarryWinstonHeader({ storeinit, logos }) {
   const companyLogo = logos?.web;
   const IsCartNo = storeinit?.CartNo;
 
-  
+
   useEffect(() => {
     const value = (typeof window !== "undefined" && window.__LOGIN_USER__) || getSession("LoginUser");
     setislogin(value);
     setIsMounted(true);
   }, [setislogin]);
 
- 
+  const searchDataFucn = (searchText) => {
+    if (searchText) {
+      let obj = {
+        a: "",
+        b: searchText,
+        m: loginUserDetail?.MetalId ?? storeinit?.MetalId,
+        d: loginUserDetail?.cmboDiaQCid ?? storeinit?.cmboDiaQCid,
+        c: loginUserDetail?.cmboCSQCid ?? storeinit?.cmboCSQCid,
+        f: {},
+      };
+
+      let encodeObj = btoa(JSON.stringify(obj));
+      navigate(`/p/${searchText}?S=${encodeObj}`);
+      setSearchOpen(false);
+      setDrawerSearchOpen(false);
+      setMobileOpen(false);
+    }
+  };
+
+
   const getMenuApi = async () => {
     const isB2B = storeinit?.IsB2BWebsite === 1;
     if (isB2B && !islogin) {
@@ -560,16 +582,16 @@ export default function HarryWinstonHeader({ storeinit, logos }) {
 
   return (
     <>
-       
+
 
       <Box component="header" data-header sx={{ position: 'relative', top: 0, zIndex: 1200 }}>
-      {/* <Box component="header" data-header sx={{ position: 'sticky', top: 0, zIndex: 1200 }}> */}
+        {/* <Box component="header" data-header sx={{ position: 'sticky', top: 0, zIndex: 1200 }}> */}
         {/* Top navy bar */}
         <Box
 
-        className="HeaderContainer"
+          className="HeaderContainer"
           sx={{
-           
+
             px: { xs: 2, md: 6 },
             py: 3,
             display: 'flex',
@@ -613,10 +635,26 @@ export default function HarryWinstonHeader({ storeinit, logos }) {
             />
           </Box>
 
+            {DrawerSearchOpen && (
+                    <DrawerSearchBar
+                      setSearchOpen={setDrawerSearchOpen}
+                      searchDataFucn={searchDataFucn}
+                    />
+                  )}
+
           {/* Right-side icon cluster: wishlist + cart (logged-in only) + login/logout */}
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
             {isMounted && islogin && (
               <>
+
+                <IconButton
+                  onClick={() => setDrawerSearchOpen((prev) => !prev)}
+                  sx={{
+                    color: "#000",
+                  }}
+                >
+                  <SearchIcon style={{ fontSize: "20px", color: "#ffffff" }} />
+                </IconButton>
                 {/* Wishlist */}
                 <Tooltip title="WishList">
                   <IconButton
@@ -684,27 +722,27 @@ export default function HarryWinstonHeader({ storeinit, logos }) {
 
         {/* Gold divider with monogram */}
         <Box
-        className="monogram"
+          className="monogram"
           sx={{
-    
+
             display: 'flex',
             alignItems: 'center',
             px: { xs: 2, md: 6 },
             pb: 1.5,
           }}
         >
-          <Box className="hwMonogramDivider" sx={{ flex: 1, height: '0.5px',  opacity: 0.7 }} />
+          <Box className="hwMonogramDivider" sx={{ flex: 1, height: '0.5px', opacity: 0.7 }} />
           <Box sx={{ mx: 2 }}>
             <HWMonogram />
           </Box>
-          <Box className="hwMonogramDivider" sx={{ flex: 1, height: '0.5px',  opacity: 0.7 }} />
+          <Box className="hwMonogramDivider" sx={{ flex: 1, height: '0.5px', opacity: 0.7 }} />
         </Box>
 
         {/* Navigation bar 
             Logged out  -> static links (Diamond Shape, Featured Products, Trending Now, Services)
             Logged in   -> dynamic API-driven menu with mega menu dropdown       */}
         <Box
-        className="navBar"
+          className="navBar"
           sx={{
             display: 'flex',
             alignItems: 'center',

@@ -39,12 +39,12 @@ const AddressManagement = () => {
         <div className='Julsmr_DeliverMainDiv'>
             <div className='smr_secondMaindivAdd'>
                 <div className='smr_addMainDiv'>
-                    <div className='smr_TitleDetailMainDiv'>
+                    <div className='Julsmr_TitleDetailMainDiv'>
                         <div>
                             <h1 className='smr_deliveryTitle'>Delivery</h1>
                             <p className='smr_deliverydesc'>Order Will be delivered to selected address</p>
                         </div>
-                        <button className='smr_ContinueOrderbtn' onClick={() => proceedToOrder(navigate)}>Continue</button>
+                        <button className='Julsmr_ContinueOrderbtn' onClick={() => proceedToOrder(navigate)}>Continue</button>
                     </div>
                     {!isLoading ? (
                         <div className='smr_getAddrMainDiv'>
