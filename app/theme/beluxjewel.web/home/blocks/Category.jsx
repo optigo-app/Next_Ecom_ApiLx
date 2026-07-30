@@ -385,6 +385,9 @@ const CategoryBlock = ({ assetBase, storeInit }) => {
     return null;
   }
 
+  
+  
+
   return (
     <Box
       id="ShopeByCategory"
@@ -481,7 +484,7 @@ const CategoryBlock = ({ assetBase, storeInit }) => {
         <Box
           sx={{
             px: { xs: 2, sm: 3, md: 4 },
-            bgcolor: "#e4e4e445",
+            bgcolor: "#cca182",
             position: "relative",
             mt: 8,
             py: 4,
@@ -562,7 +565,7 @@ const CategoryBlock = ({ assetBase, storeInit }) => {
                               display: "flex",
                               alignItems: "center",
                               justifyContent: "center",
-                              background: "rgba(0,0,0,0.35)",
+                              // background: "rgba(0,0,0,0.35)",
                               backdropFilter: "blur(2px)",
                               opacity: 0,
                               transition: "all 0.3s ease",
@@ -581,6 +584,7 @@ const CategoryBlock = ({ assetBase, storeInit }) => {
                             </Typography>
                           </Box>
                         </CategoryImageWrapper>
+                        <CategoryLabel>{collection?.CollectionName}</CategoryLabel>
                       </StyledCard>
                     </SwiperSlide>
                   ))}

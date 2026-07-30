@@ -404,10 +404,10 @@ const BeluxNavbar = ({ storeInit: storeinit, logos }) => {
     {
       id: 0,
       gradient: {
-        bg: "linear-gradient(135deg, #114D6E 0%, #114D6E 40%, #114D6E 100%)",
-        color: "#114D6E",
-        border: "#114D6E",
-        borderDark: "#114D6E",
+        bg: "linear-gradient(135deg, #cca182 0%, #cca182 40%, #cca182 100%)",
+        color: "#cca182",
+        border: "#cca182",
+        borderDark: "#cca182",
       },
     },
     // {
