@@ -271,6 +271,43 @@ const ProductList = ({ storeinit, searchParams, params }) => {
     }
   };
 
+  const getCardImageUrl = (productData) => {
+    const cdnFol = storeinit?.CDNDesignImageFol || storeInit?.CDNDesignImageFol || "";
+    if (!cdnFol || !productData?.designno) return "";
+    const ext = productData?.ImageExtension || "webp";
+    
+    if (productData?.ImageVideoDetail && productData.ImageVideoDetail !== "0") {
+      try {
+        const parsed = typeof productData.ImageVideoDetail === "string" 
+          ? JSON.parse(productData.ImageVideoDetail) 
+          : productData.ImageVideoDetail;
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          const mtColorLocal = getSession("MetalColorCombo") || [];
+          const targetColorObj = mtColorLocal.find(ele => Number(ele.id) === Number(productData?.MetalColorid));
+          const targetColorCode = targetColorObj?.colorcode || productData?.MetalColor;
+
+          if (targetColorCode) {
+            const targetLower = targetColorCode.toLowerCase().trim();
+            const matchedColorImg = parsed.find(item => {
+              if (Number(item?.TI) !== 2 || !item?.CN) return false;
+              const cnLower = item.CN.toLowerCase().trim();
+              return cnLower === targetLower || cnLower.includes(targetLower) || targetLower.includes(cnLower);
+            });
+            if (matchedColorImg) {
+              return `${cdnFol}${productData.designno}~${matchedColorImg.Nm}~${matchedColorImg.CN}.${matchedColorImg.Ex || ext}`;
+            }
+          }
+
+          const normalImg = parsed.find(item => Number(item?.TI) === 1);
+          if (normalImg) {
+            return `${cdnFol}${productData.designno}~${normalImg.Nm}.${normalImg.Ex || ext}`;
+          }
+        }
+      } catch (e) {}
+    }
+    return `${cdnFol}${productData.designno}~1.${ext}`;
+  };
+
   const convertUrl = (productData) => {
     let obj = {
       a: productData?.autocode,
@@ -279,7 +316,7 @@ const ProductList = ({ storeinit, searchParams, params }) => {
       d: selectedDiaId,
       c: selectedCsId,
       g: detailsMenu,
-      img: `${storeinit?.CDNDesignImageFol}${productData?.designno}~1.${productData?.ImageExtension}`,
+      img: getCardImageUrl(productData),
       ArticleNo: productData?.ArticleNo,
     };
 
@@ -2779,9 +2816,7 @@ const ProductList = ({ storeinit, searchParams, params }) => {
       c: selectedCsId,
       f: output,
       g: detailsMenu,
-      img:
-        imageUrl ??
-        `${storeinit?.CDNDesignImageFol}${productData?.designno}~1.${productData?.ImageExtension}`,
+      img: (imageUrl && !imageUrl.includes("undefined")) ? imageUrl : getCardImageUrl(productData),
       ArticleNo: productData?.ArticleNo,
       ArticleId: productData?.ArticleId ?? null, // pass clicked article id for default customizer selection
       title: productData?.TitleLine ?? "",
