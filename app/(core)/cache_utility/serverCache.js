@@ -98,10 +98,12 @@ export async function clearCache(key) {
 
 export async function clearAllCache() {
   if (fs.existsSync(CACHE_DIR)) {
-    const files = fs.readdirSync(CACHE_DIR);
-    for (const file of files) {
-      fs.unlinkSync(path.join(CACHE_DIR, file));
+    try {
+      fs.rmSync(CACHE_DIR, { recursive: true, force: true });
+      fs.mkdirSync(CACHE_DIR, { recursive: true });
+      console.log("🗑️ Cleared and recreated .next_cache directory");
+    } catch (err) {
+      console.error("Error clearing cache directory:", err);
     }
-    console.log("🗑️ Cleared all cache files");
   }
 }
