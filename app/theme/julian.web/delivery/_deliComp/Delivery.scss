@@ -4,6 +4,7 @@
 .Julsmr_DeliverMainDiv {
   background-color: #fff !important;
   margin-bottom: 4rem;
+  width: 100%;
 }
 
 .smr_secondMaindivAdd {
@@ -25,17 +26,17 @@
   margin-top: 4%;
 }
 
-.smr_TitleDetailMainDiv {
+.Julsmr_TitleDetailMainDiv {
   display: flex;
   justify-content: space-between;
   align-items: center;
 
-  .smr_ContinueOrderbtn {
+  .Julsmr_ContinueOrderbtn {
     height: 40px;
     width: 150px;
     font-family: $homePageFontFamily !important;
     font-size: $fontSize3;
-    background-color: $elecbtnbg;
+    background-color: $julbackgroundColor !important;
     color: $elebtncolor !important;
     border: none;
     border-radius: 0px !important;
@@ -130,7 +131,7 @@
     font-size: $fontSize3;
     padding: 0 15px;
     color: $elebtncolor;
-    background: "#0d1232" !important;
+    background: $julbackgroundColor !important;
     border: none;
     border-radius: 0px !important;
     cursor: pointer;

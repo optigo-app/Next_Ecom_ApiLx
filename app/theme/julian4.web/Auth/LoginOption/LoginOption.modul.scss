@@ -38,8 +38,11 @@
     margin-inline: 7px;
     height: 55px;
     cursor: pointer;
-    width: 25%;
+    width: 100%;
+    max-width: 360px;
     margin-top: 30px;
+    padding-inline: 20px;
+    box-sizing: border-box;
   }
 
   .loginMobile {
@@ -51,18 +54,11 @@
     margin-inline: 7px;
     height: 55px;
     cursor: pointer;
-    margin-top: 25px;
-    width: 25%;
-  }
-
-  @media screen and (max-width: 1150px) {
-    .loginMail {
-      width: 50% !important;
-    }
-
-    .loginMobile {
-      width: 50% !important;
-    }
+    margin-top: 20px;
+    width: 100%;
+    max-width: 360px;
+    padding-inline: 20px;
+    box-sizing: border-box;
   }
 
   @media screen and (max-width: 900px) {
@@ -72,32 +68,14 @@
   }
 
   @media screen and (max-width: 700px) {
-    .loginMail {
-      width: 80% !important;
-    }
-
-    .loginMobile {
-      width: 80% !important;
-    }
-
     .loginDiTile {
       font-size: 25px;
     }
   }
 
   @media screen and (max-width: 500px) {
-    .loginMail {
-      margin-top: 0px !important;
-    }
-  }
-
-  @media screen and (max-width: 499px) {
-    .loginMail {
-      width: 100% !important;
-    }
-
-    .loginMobile {
-      width: 100% !important;
+    .loginMail, .loginMobile {
+      max-width: 100%;
     }
   }
 }

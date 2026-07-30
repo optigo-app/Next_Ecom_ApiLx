@@ -394,7 +394,8 @@ const CategoryBlock = ({ assetBase, storeInit }) => {
       sx={{
         backgroundColor: "#ffffff",
         width: "100%",
-        py: { xs: 4, md: 6 },
+        pb: { xs: 4, md: 6 },
+         
       }}
     >
       {/* Category Section */}
@@ -550,7 +551,7 @@ const CategoryBlock = ({ assetBase, storeInit }) => {
                       >
                         <CategoryImageWrapper>
                           <CategoryImage
-                            sx={{ borderRadius: 0 }}
+                            sx={{ borderRadius: 0,objectFit:"fill" }}
                             src={getImage(
                               ImgesPick.collectionImages,
                               collection?.CollectionName,
@@ -584,7 +585,7 @@ const CategoryBlock = ({ assetBase, storeInit }) => {
                             </Typography>
                           </Box>
                         </CategoryImageWrapper>
-                        <CategoryLabel>{collection?.CollectionName}</CategoryLabel>
+                        {/* <CategoryLabel>{collection?.CollectionName}</CategoryLabel> */}
                       </StyledCard>
                     </SwiperSlide>
                   ))}

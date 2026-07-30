@@ -43,6 +43,15 @@ const LeftSide = ({
 
 
 
+  // Show skeleton while media is still being built
+  if (!isMediaReady || !mediaBuildDone) {
+    return (
+      <Grid size={{ xs: 12, sm: 12, md: 7 }}>
+        <DetailSkeleton />
+      </Grid>
+    );
+  }
+
   if (media !== null && isMediaReady && mediaBuildDone && media.length === 0) {
     return (
       <Grid size={{ xs: 12, sm: 12, md: 6 }}>

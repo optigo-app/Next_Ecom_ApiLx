@@ -1,6 +1,7 @@
 "use client";
 import React from "react";
-import DetailPageSkeleton from "@/app/theme/beluxjewel.web/detail/DetailPageSkeleton";
+import BeluxSkeleton from "@/app/theme/beluxjewel.web/detail/DetailPageSkeleton";
+import JulianSkeleton from "@/app/theme/julian.web/detail/DetailPageSkeleton";
 
 import { useSearchParams } from "next/navigation";
 import { decodeAndDecompress } from "@/app/(core)/utils/seo/seo-utils";
@@ -10,6 +11,17 @@ import { useStore } from "@/app/(core)/contexts/StoreProvider";
 export default function Loading() {
   const searchParams = useSearchParams();
   const { loginUserDetail, storeInit } = useStore();
+
+  const isJulian = React.useMemo(() => {
+    if (typeof window !== "undefined") {
+      const host = window.location.hostname.toLowerCase();
+      if (host.includes("julian")) return true;
+    }
+    const themeName = (storeInit?.theme || storeInit?.ClientHeaderName || "").toLowerCase();
+    return themeName.includes("julian");
+  }, [storeInit]);
+
+  const DetailPageSkeleton = isJulian ? JulianSkeleton : BeluxSkeleton;
 
   const decodedData = React.useMemo(() => {
     try {

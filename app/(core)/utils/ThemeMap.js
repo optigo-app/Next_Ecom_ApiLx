@@ -37,8 +37,12 @@ export const themeMap = {
     page: "hoq.web",
   },
   "nxtjulian.web": {
-    page: "julian.web",
-    // page: LocalSetup,
+    // page: "julian.web",
+    page: LocalSetup,
+  },
+  "nxtjulian4.web": {
+    page: "julian4.web",
+ 
   },
    
   "nxt29.optigoapps.com": {

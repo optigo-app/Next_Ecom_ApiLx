@@ -110,7 +110,7 @@ const MaxBrandMarquee = ({ assetBase }) => {
         px: { xs: 2, sm: 4, md: 8 },
         bgcolor: "#fff",
         textAlign: "center",
-        pb: 15,
+        // pb: 15,
         pt: 8,
       }}
     >

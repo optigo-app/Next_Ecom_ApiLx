@@ -58,6 +58,11 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
     : searchParams;
 
   const initialDecodeUrl = useMemo(() => {
+    const rawP = unwrappedSearchParams?.p || (typeof window !== "undefined" ? new URLSearchParams(window.location.search).get("p") : null);
+    if (rawP) {
+      const decompressed = decodeAndDecompress(rawP);
+      if (decompressed) return decompressed;
+    }
     const result = ParseAndDecodeSearchParams(unwrappedSearchParams);
     const navVal = result[0]?.split("=")[1];
     return decodeAndDecompress(navVal);
@@ -73,6 +78,7 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
 
   const initialMockProd = useMemo(() => {
     if (hasPreHydratedData) {
+      const loginInfo = getSession("loginUserDetail");
       return {
         TitleLine: initialDecodeUrl.title || initialDecodeUrl.ArticleNo || initialDecodeUrl.b || "",
         Nwt: initialDecodeUrl.nwt ? parseFloat(initialDecodeUrl.nwt) : 0,
@@ -85,10 +91,12 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
         autocode: initialDecodeUrl.a ?? "",
         ImageExtension: "webp",
         ImageCount: 1,
+        MetalColorid: loginUserDetail?.MetalColorId || loginInfo?.MetalColorId,
+        ImageVideoDetail: initialDecodeUrl.mediaDet ?? "0",
       };
     }
     return {};
-  }, [initialDecodeUrl, hasPreHydratedData]);
+  }, [initialDecodeUrl, hasPreHydratedData, loginUserDetail]);
 
   const [maxWidth1400, setMaxWidth1400] = useState(false);
   const [maxWidth1000, setMaxWidth1000] = useState(false);
@@ -158,8 +166,43 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
   useEffect(() => {
     if (initialDecodeUrl && Object.keys(initialDecodeUrl).length > 0) {
       try {
+        // ── Resolve user's metal color (same source as ProdCardImageFunc) ──────
+        const mtColorLocal = getSession("MetalColorCombo") || [];
+        const loginInfo = getSession("loginUserDetail");
+        const targetColorId = loginUserDetail?.MetalColorId || loginInfo?.MetalColorId || mtColorLocal?.[0]?.id;
+        const defaultColorObj = mtColorLocal.find(ele => Number(ele.id) === Number(targetColorId)) || mtColorLocal?.[0];
+        const sessionColorCode = defaultColorObj?.colorcode || null;
+
+        // ── Path B: l+count based pre-load (FGStore pattern) ──────────────────
+        const { b, l, count } = initialDecodeUrl;
+        if (!initialDecodeUrl.mediaDet || initialDecodeUrl.mediaDet === "0") {
+          if (b && l && count) {
+            const cdnThumb = storeinit?.CDNDesignImageFolThumb || storeInit?.CDNDesignImageFolThumb;
+            if (cdnThumb) {
+              const numCount = Number(count);
+              if (numCount > 0) {
+                const thumbPath = Array.from({ length: numCount }, (_, i) => {
+                  const suffix = sessionColorCode
+                    ? `${b}~${i + 1}~${sessionColorCode}`
+                    : `${b}~${i + 1}`;
+                  return {
+                    thumbImageUrl: `${cdnThumb}${suffix}.jpg`,
+                    originalImageExtension: l,
+                  };
+                });
+                setPdThumbImg(thumbPath);
+                setThumbImgIndex(0);
+                // Do NOT call setMediaBuildDone here — ProdCardImageFunc owns that gate
+              }
+            }
+          }
+          return;
+        }
+
+        // ── Path A: mediaDet-based pre-load ───────────────────────────────────
+        // NOTE: do NOT call setMediaBuildDone here — ProdCardImageFunc owns that
+        // gate once singleProd is loaded with authoritative MetalColorid.
         const mediaDet = initialDecodeUrl.mediaDet;
-        if (!mediaDet || mediaDet === "0") return;
         const parsed = typeof mediaDet === "string" ? JSON.parse(mediaDet) : mediaDet;
         if (!Array.isArray(parsed) || parsed.length === 0) return;
 
@@ -173,23 +216,8 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
         const normalVideos = parsed.filter((item) => Number(item?.TI) === 3);
         const colorVideos = parsed.filter((item) => Number(item?.TI) === 4);
 
-        let colorCode = null;
-        if (initialDecodeUrl.img) {
-          const fileName = initialDecodeUrl.img.split("/").pop() || "";
-          const parts = fileName.split("~");
-          if (parts.length > 2) {
-            colorCode = parts[2].split(".")[0]?.toUpperCase() || null;
-          }
-        }
-
-        if (!colorCode && typeof window !== "undefined") {
-          try {
-            const mtColorLocal = JSON.parse(sessionStorage.getItem("MetalColorCombo") || "[]");
-            const loginInfo = getSession("loginUserDetail");
-            const defaultColorObj = mtColorLocal.find(ele => ele.id === loginInfo?.MetalColorId);
-            colorCode = defaultColorObj?.colorcode || colorImages[0]?.CN || null;
-          } catch (err) {}
-        }
+        // Use session color (same as ProdCardImageFunc) instead of img URL parsing
+        const colorCode = sessionColorCode || colorImages[0]?.CN || null;
 
         const resolvedImages = [];
 
@@ -985,6 +1013,7 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
       };
 
     if (decodeobj?.title) {
+      const loginInfo = getSession("loginUserDetail");
       const initialProd = {
         TitleLine: decodeobj.title,
         Nwt: decodeobj.nwt ? parseFloat(decodeobj.nwt) : 0,
@@ -994,6 +1023,8 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
         autocode: decodeobj.a ?? "",
         ImageExtension: "webp",
         ImageCount: 1,
+        MetalColorid: loginUserDetail?.MetalColorId || loginInfo?.MetalColorId,
+        ImageVideoDetail: decodeobj.mediaDet ?? "0",
       };
       setSingleProd(initialProd);
       setSingleProd1(initialProd);
@@ -1374,9 +1405,16 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
       : 0;
 
     // Get metal color code
+    const loginInfo = getSession("loginUserDetail");
+    const targetMetalColorId =
+      singleProd?.MetalColorid ||
+      loginUserDetail?.MetalColorId ||
+      loginInfo?.MetalColorId ||
+      mtColorLocal[0]?.id;
+
     const mcArr = mtColorLocal.find(
-      (ele) => ele.id === singleProd?.MetalColorid,
-    );
+      (ele) => Number(ele.id) === Number(targetMetalColorId),
+    ) || mtColorLocal[0];
     setSelectedMetalColor(mcArr?.colorcode);
 
     const buildImageURL = (i, isColor = false) => {
@@ -1395,18 +1433,12 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
     const pdImgList = [];
 
     if (maxColorCount > 0 && mcArr?.colorcode) {
-      // Asynchronously populate pdImgList with color images
-      for (let i = 1; i <= maxColorCount; i++) {
-        const colorImageUrl = buildImageURL(i, true);
-        const isColorImageAvailable = await checkImageAvailability(
-          colorImageUrl?.imageUrl,
-        );
-
-        // Only push the image if it is available
-        if (isColorImageAvailable) {
-          pdImgList.push(colorImageUrl);
-        }
-      }
+      // Build all color image URLs then check availability in parallel
+      const urlsToCheck = Array.from({ length: maxColorCount }, (_, i) => buildImageURL(i + 1, true));
+      const results = await Promise.all(urlsToCheck.map(u => checkImageAvailability(u.imageUrl)));
+      results.forEach((available, idx) => {
+        if (available) pdImgList.push(urlsToCheck[idx]);
+      });
     }
 
     // If no color image was added, push normal images
@@ -1473,9 +1505,7 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
     } else {
       setPdLoadImage(true);
     }
-    setTimeout(() => {
-      setMediaBuildDone(true);
-    }, 1000);
+    setMediaBuildDone(true); // signal immediately — no artificial delay
     return finalprodListimg;
   };
 
@@ -1606,7 +1636,7 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
       setSelectedThumbImg({
         link: {
           imageUrl: mainImg?.imageUrl,
-          extension: mainImg?.originalImageExtension,
+          extension: mainImg?.extension, // fix: was incorrectly `originalImageExtension`
         },
         type: "img",
       });
@@ -1629,12 +1659,12 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
       const safeIndex =
         thumbImgIndex < pdImgList.length
           ? thumbImgIndex
-          : pdImgListCol.length - 1;
+          : pdImgList.length - 1;
       const fallbackImg = pdImgList[safeIndex];
       setSelectedThumbImg({
         link: {
           imageUrl: fallbackImg?.imageUrl,
-          extension: fallbackImg?.originalImageExtension,
+          extension: fallbackImg?.extension, // fix: was incorrectly `originalImageExtension`
         },
         type: "img",
       });
@@ -2073,18 +2103,65 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
       return matchedOption?.Name || null;
     })[0];
 
-  const getImagesArr = pdThumbImg?.length > 0
-    ? pdThumbImg?.map((item) => {
-        const firstHalf = item?.thumbImageUrl?.split("/Design_Thumb")[0];
-        const secondhalf = item?.thumbImageUrl
-          ?.split("/Design_Thumb")[1]
-          ?.split(".")[0];
-        return `${firstHalf}${secondhalf}.${item?.originalImageExtension}`;
-      }).filter(url => url && !url.includes("undefined"))
-    : (decodeUrl?.img ? [decodeUrl.img] : []);
+  const rawPassedImg = (decodeUrl?.img && !decodeUrl.img.includes("undefined") && !decodeUrl.img.startsWith("undefined"))
+    ? decodeUrl.img
+    : (initialDecodeUrl?.img && !initialDecodeUrl.img.includes("undefined") && !initialDecodeUrl.img.startsWith("undefined"))
+    ? initialDecodeUrl.img
+    : null;
 
-  const derivedMediaBuildDone = mediaBuildDone || (decodeUrl?.img ? true : false);
-  const derivedIsMediaReady = isMediaReady || (decodeUrl?.img ? true : false);
+  const mtColorLocalForFallback = getSession("MetalColorCombo") || [];
+  const loginInfoForFallback = getSession("loginUserDetail");
+  const fallbackColorId = singleProd?.MetalColorid || loginUserDetail?.MetalColorId || loginInfoForFallback?.MetalColorId || mtColorLocalForFallback?.[0]?.id;
+  const fallbackColorObj = mtColorLocalForFallback.find(ele => Number(ele.id) === Number(fallbackColorId)) || mtColorLocalForFallback?.[0];
+  const activeColorCode = selectedMetalColor || fallbackColorObj?.colorcode;
+
+  let validPassedImg = rawPassedImg;
+  if (validPassedImg && activeColorCode && !validPassedImg.includes(`~${activeColorCode}`)) {
+    const lastSlash = validPassedImg.lastIndexOf("/");
+    const pathPrefix = lastSlash !== -1 ? validPassedImg.substring(0, lastSlash + 1) : "";
+    const fileName = lastSlash !== -1 ? validPassedImg.substring(lastSlash + 1) : validPassedImg;
+    const parts = fileName.split("~");
+    if (parts.length === 2 && !parts[1].includes("~")) {
+      const designPart = parts[0];
+      const restPart = parts[1]; // e.g. "1.webp"
+      const [num, extStr] = restPart.split(".");
+      if (num && extStr) {
+        validPassedImg = `${pathPrefix}${designPart}~${num}~${activeColorCode}.${extStr}`;
+      }
+    }
+  }
+
+  let resolvedImages = [];
+  if (pdThumbImg?.length > 0) {
+    resolvedImages = pdThumbImg.map((item) => {
+      if (!item?.thumbImageUrl) return null;
+      if (item.thumbImageUrl.includes("/Design_Thumb")) {
+        const firstHalf = item.thumbImageUrl.split("/Design_Thumb")[0];
+        const secondhalf = item.thumbImageUrl.split("/Design_Thumb")[1]?.split(".")[0];
+        if (firstHalf && secondhalf) {
+          return `${firstHalf}${secondhalf}.${item?.originalImageExtension || "webp"}`;
+        }
+      }
+      return item.thumbImageUrl.replace(/\.[^/.]+$/, `.${item?.originalImageExtension || "webp"}`);
+    }).filter(url => url && !url.includes("undefined") && !url.startsWith("undefined"));
+  }
+
+  if (resolvedImages.length === 0 && validPassedImg) {
+    resolvedImages = [validPassedImg];
+  }
+
+  const dNo = singleProd?.designno || initialDecodeUrl?.b || decodeUrl?.b;
+  const ext = singleProd?.ImageExtension || "webp";
+  const baseFol = storeInit?.CDNDesignImageFol || storeinit?.CDNDesignImageFol;
+  if (resolvedImages.length === 0 && dNo && baseFol) {
+    const colorSuffix = activeColorCode ? `~${activeColorCode}` : "";
+    resolvedImages = [`${baseFol}${dNo}~1${colorSuffix}.${ext}`];
+  }
+
+  const getImagesArr = resolvedImages;
+
+  const derivedMediaBuildDone = mediaBuildDone || (validPassedImg ? true : false) || (resolvedImages.length > 0);
+  const derivedIsMediaReady = isMediaReady || (validPassedImg ? true : false) || (resolvedImages.length > 0);
 
   useEffect(() => {
     if (!mediaBuildDone) return;
@@ -2163,8 +2240,8 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
                     })),
                   ] || []).filter(item => item.src && !item.src.includes("undefined"))
                 }
-                isMediaReady={derivedIsMediaReady}
-                mediaBuildDone={derivedMediaBuildDone}
+                isMediaReady={mediaBuildDone}
+                mediaBuildDone={mediaBuildDone}
                 HandleImageDialogOpen={HandleImageDialogOpen}
               />
               <RightSide
