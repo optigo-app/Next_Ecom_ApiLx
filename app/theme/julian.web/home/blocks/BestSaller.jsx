@@ -119,7 +119,36 @@ export default function JewelryGallery({ noHeading = false, storeInit }) {
     const titleLine = item?.TitleLine;
     const imageExtension = item?.ImageExtension || "webp";
     const cdnFol = storeInit?.CDNDesignImageFol || "";
-    const imgUrl = (cdnFol && designNo) ? `${cdnFol}${designNo}~1.${imageExtension}` : "";
+    let imgUrl = (cdnFol && designNo) ? `${cdnFol}${designNo}~1.${imageExtension}` : "";
+    if (item?.ImageVideoDetail && item.ImageVideoDetail !== "0") {
+      try {
+        const parsed = typeof item.ImageVideoDetail === "string" ? JSON.parse(item.ImageVideoDetail) : item.ImageVideoDetail;
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          const mtColorLocal = getSession("MetalColorCombo") || [];
+          const targetColorObj = mtColorLocal.find(ele => Number(ele.id) === Number(item?.MetalColorid));
+          const targetColorCode = targetColorObj?.colorcode || item?.MetalColor;
+
+          let matchedColorImg = null;
+          if (targetColorCode) {
+            const targetLower = targetColorCode.toLowerCase().trim();
+            matchedColorImg = parsed.find(i => {
+              if (Number(i?.TI) !== 2 || !i?.CN) return false;
+              const cnLower = i.CN.toLowerCase().trim();
+              return cnLower === targetLower || cnLower.includes(targetLower) || targetLower.includes(cnLower);
+            });
+          }
+
+          if (matchedColorImg) {
+            imgUrl = `${cdnFol}${designNo}~${matchedColorImg.Nm}~${matchedColorImg.CN}.${matchedColorImg.Ex || imageExtension}`;
+          } else {
+            const normalImg = parsed.find(i => Number(i?.TI) === 1);
+            if (normalImg) {
+              imgUrl = `${cdnFol}${designNo}~${normalImg.Nm}.${normalImg.Ex || imageExtension}`;
+            }
+          }
+        }
+      } catch (e) {}
+    }
     const obj = {
       a: autoCode,
       b: designNo,

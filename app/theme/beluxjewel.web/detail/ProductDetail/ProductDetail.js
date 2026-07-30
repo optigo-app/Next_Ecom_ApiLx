@@ -166,12 +166,20 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
   useEffect(() => {
     if (initialDecodeUrl && Object.keys(initialDecodeUrl).length > 0) {
       try {
-        // ── Resolve user's metal color (same source as ProdCardImageFunc) ──────
-        const mtColorLocal = getSession("MetalColorCombo") || [];
-        const loginInfo = getSession("loginUserDetail");
-        const targetColorId = loginUserDetail?.MetalColorId || loginInfo?.MetalColorId || mtColorLocal?.[0]?.id;
-        const defaultColorObj = mtColorLocal.find(ele => Number(ele.id) === Number(targetColorId)) || mtColorLocal?.[0];
-        const sessionColorCode = defaultColorObj?.colorcode || null;
+        // ── Resolve metal color from URL parameters (initialDecodeUrl) ─────────
+        let sessionColorCode = null;
+        if (initialDecodeUrl?.img && initialDecodeUrl.img.includes("~")) {
+          const parts = initialDecodeUrl.img.split("~");
+          if (parts.length >= 3) {
+            const rawColor = parts[2].split(".")[0];
+            if (rawColor) sessionColorCode = rawColor;
+          }
+        }
+        if (!sessionColorCode && initialDecodeUrl?.m) {
+          const mtColorLocal = getSession("MetalColorCombo") || [];
+          const matchedObj = mtColorLocal.find(ele => Number(ele.id) === Number(initialDecodeUrl.m));
+          if (matchedObj?.colorcode) sessionColorCode = matchedObj.colorcode;
+        }
 
         // ── Path B: l+count based pre-load (FGStore pattern) ──────────────────
         const { b, l, count } = initialDecodeUrl;
@@ -216,8 +224,7 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
         const normalVideos = parsed.filter((item) => Number(item?.TI) === 3);
         const colorVideos = parsed.filter((item) => Number(item?.TI) === 4);
 
-        // Use session color (same as ProdCardImageFunc) instead of img URL parsing
-        const colorCode = sessionColorCode || colorImages[0]?.CN || null;
+        const colorCode = sessionColorCode;
 
         const resolvedImages = [];
 
@@ -1345,142 +1352,84 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
   }
 
   const handleMetalWiseColorImgWithFlag = async (e) => {
-    let mtColorLocal = getSession("MetalColorCombo");
-    let mcArr;
-
-    if (mtColorLocal?.length) {
-      mcArr = mtColorLocal?.filter(
-        (ele) => ele?.colorcode == e.target.value,
-      )[0];
-    }
-
-    setMetalColor(e.target.value);
+    handleMetalWiseColorImg(e);
   };
 
   const ProdCardImageFunc = async () => {
-    const storeInit = storeinit;
-    const mtColorLocal = getSession("MetalColorCombo") || [];
-    const imageVideoDetail = singleProd?.ImageVideoDetail;
-    const pd = singleProd;
+    const storeInit = storeinit || storeInit;
+    const pd = (singleProd1 && Object.keys(singleProd1).length > 0) ? singleProd1 : singleProd;
+    const imageVideoDetail = pd?.ImageVideoDetail;
 
-    if (!imageVideoDetail) {
-      return;
-    }
+    if (!imageVideoDetail) return;
 
     let parsedData = [];
     try {
-      parsedData =
-        imageVideoDetail === "0" ? [] : JSON.parse(imageVideoDetail || "[]");
+      parsedData = imageVideoDetail === "0" ? [] : (typeof imageVideoDetail === "string" ? JSON.parse(imageVideoDetail) : imageVideoDetail);
     } catch (err) {
       console.error("Invalid JSON in ImageVideoDetail:", err);
       return;
     }
 
-    // Filter categorized media
-    const normalImages = [],
-      colorImages = [],
-      normalVideos = [],
-      colorVideos = [];
-    parsedData.forEach((item) => {
-      if (item?.TI === 1 && !item?.CN) normalImages.push(item);
-      else if (item?.TI === 2 && item?.CN) colorImages.push(item);
-      else if (item?.TI === 4 && item?.CN) colorVideos.push(item);
-      else if (item?.TI === 3 && !item?.CN) normalVideos.push(item);
-    });
+    const normalImages = parsedData.filter(item => Number(item?.TI) === 1);
+    const colorImages = parsedData.filter(item => Number(item?.TI) === 2 && item?.CN);
+    const normalVideos = parsedData.filter(item => Number(item?.TI) === 3);
+    const colorVideos = parsedData.filter(item => Number(item?.TI) === 4 && item?.CN);
 
-    const getMaxCountByColor = (list) => {
-      return list.reduce((acc, curr) => {
-        const color = curr.CN;
-        acc[color] = (acc[color] || 0) + 1;
-        return acc;
-      }, {});
-    };
+    const mtColorLocal = getSession("MetalColorCombo") || [];
+    const targetColorObj = mtColorLocal.find(ele => Number(ele.id) === Number(pd?.MetalColorid));
+    const targetCN = selectedMetalColor || pd?.MetalColor || targetColorObj?.colorcode;
 
-    const maxColorCount = Math.max(
-      ...Object.values(getMaxCountByColor(colorImages)),
-      0,
-    );
-    const normalImageCount = normalImages.length
-      ? Math.max(...normalImages.map((i) => i.Nm))
-      : 0;
-
-    // Get metal color code
-    const loginInfo = getSession("loginUserDetail");
-    const targetMetalColorId =
-      singleProd?.MetalColorid ||
-      loginUserDetail?.MetalColorId ||
-      loginInfo?.MetalColorId ||
-      mtColorLocal[0]?.id;
-
-    const mcArr = mtColorLocal.find(
-      (ele) => Number(ele.id) === Number(targetMetalColorId),
-    ) || mtColorLocal[0];
-    setSelectedMetalColor(mcArr?.colorcode);
-
-    const buildImageURL = (i, isColor = false) => {
-      const base = storeInit?.CDNDesignImageFol;
-      const extension = isColor
-        ? colorImages[i - 1]?.Ex
-        : normalImages[i - 1]?.Ex;
-
-      const imageUrl = isColor
-        ? `${base}${pd.designno}~${i}~${mcArr?.colorcode}.${colorImages[i - 1]?.Ex}`
-        : `${base}${pd.designno}~${i}.${normalImages[i - 1]?.Ex}`;
-
-      return { imageUrl, extension };
-    };
-
-    const pdImgList = [];
-
-    if (maxColorCount > 0 && mcArr?.colorcode) {
-      // Build all color image URLs then check availability in parallel
-      const urlsToCheck = Array.from({ length: maxColorCount }, (_, i) => buildImageURL(i + 1, true));
-      const results = await Promise.all(urlsToCheck.map(u => checkImageAvailability(u.imageUrl)));
-      results.forEach((available, idx) => {
-        if (available) pdImgList.push(urlsToCheck[idx]);
+    let matchedColorImgs = [];
+    if (colorImages.length > 0 && targetCN) {
+      const targetLower = targetCN.toLowerCase().trim();
+      matchedColorImgs = colorImages.filter(item => {
+        const cnLower = (item.CN || "").toLowerCase().trim();
+        return cnLower === targetLower || cnLower.includes(targetLower) || targetLower.includes(cnLower);
       });
     }
 
-    // If no color image was added, push normal images
-    if (pdImgList.length === 0 && normalImageCount > 0) {
-      for (let i = 1; i <= normalImageCount; i++) {
-        pdImgList.push(buildImageURL(i));
-      }
+    let pdImgList = [];
+    if (matchedColorImgs.length > 0) {
+      matchedColorImgs.forEach(item => {
+        pdImgList.push({
+          imageUrl: `${storeInit?.CDNDesignImageFol}${pd.designno}~${item.Nm}~${item.CN}.${item.Ex || "webp"}`,
+          extension: item.Ex || "webp",
+          cn: item.CN
+        });
+      });
+    } else if (normalImages.length > 0) {
+      normalImages.forEach(item => {
+        pdImgList.push({
+          imageUrl: `${storeInit?.CDNDesignImageFol}${pd.designno}~${item.Nm}.${item.Ex || "webp"}`,
+          extension: item.Ex || "webp",
+          cn: ""
+        });
+      });
     }
 
-    // Now check if pdImgList is populated and set finalprodListimg after that
     let finalprodListimg = {};
     if (pdImgList.length > 0) {
       finalprodListimg = pdImgList[0];
-
-      // Set the selected thumbnail image if we have a valid image
-      if (Object.keys(finalprodListimg).length > 0) {
-        setSelectedThumbImg({
-          link: {
-            imageUrl: finalprodListimg?.imageUrl,
-            extension: finalprodListimg?.extension,
-          },
-          type: "img",
-        });
-      }
-    } else {
-      console.log("No images found, pdImgList is empty.");
-    }
-
-    if (pdImgList.length) {
-      const thumbImagePath = pdImgList.map((url) => {
-        const fileName = url?.imageUrl?.split("Design_Image/")[1];
-        const thumbImageUrl = `${storeInit?.CDNDesignImageFolThumb}${fileName?.split(".")[0]}.jpg`;
-        const originalImageExtension = url?.extension;
-        return { thumbImageUrl, originalImageExtension };
+      setSelectedThumbImg({
+        link: {
+          imageUrl: finalprodListimg?.imageUrl,
+          extension: finalprodListimg?.extension,
+        },
+        type: "img",
       });
+
+      const thumbImagePath = pdImgList.map(item => ({
+        thumbImageUrl: item.cn
+          ? `${storeInit?.CDNDesignImageFolThumb}${pd.designno}~${item.imageUrl.split("~")[1]}~${item.cn}.jpg`
+          : `${storeInit?.CDNDesignImageFolThumb}${pd.designno}~${item.imageUrl.split("~")[1]?.split(".")[0]}.jpg`,
+        originalImageExtension: item.extension
+      }));
       setPdThumbImg(thumbImagePath);
       setThumbImgIndex(0);
     } else {
       setThumbImgIndex();
     }
 
-    // Video processing
     const buildVideoURL = (video, isColor = false) => {
       const base = storeInit?.CDNVPath;
       return isColor
@@ -1492,20 +1441,10 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
       ...colorVideos.map((v) => buildVideoURL(v, true)),
       ...normalVideos.map((v) => buildVideoURL(v)),
     ];
-
     setPdVideoArr(pdvideoList.length ? pdvideoList : []);
 
-    if (
-      finalprodListimg?.extension !== undefined &&
-      finalprodListimg?.imageUrl !== imageNotFound
-    ) {
-      setPdLoadImage(false);
-    } else if (Object.keys(finalprodListimg)?.length === 0) {
-      setPdLoadImage(false);
-    } else {
-      setPdLoadImage(true);
-    }
-    setMediaBuildDone(true); // signal immediately — no artificial delay
+    setPdLoadImage(false);
+    setMediaBuildDone(true);
     return finalprodListimg;
   };
 
@@ -1514,161 +1453,87 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
     ProdCardImageFunc();
   }, [singleProd, location, searchParams]);
 
-  const handleMetalWiseColorImg = async (e) => {
-    const selectedColorCode = e.target.value;
-    const mtColorLocal = getSession("MetalColorCombo") || [];
-    const mcArr = mtColorLocal?.find(
-      (ele) => ele?.colorcode === selectedColorCode,
-    );
+  const handleMetalWiseColorImg = async (colorInput) => {
+    let selectedColor = "";
+    if (typeof colorInput === "string") {
+      selectedColor = colorInput;
+    } else if (colorInput?.target?.value) {
+      selectedColor = colorInput.target.value;
+    }
 
-    const prod = singleProd ?? singleProd1;
-    const { designno, ImageExtension } = prod || {};
-    const baseCDN = storeInit?.CDNDesignImageFol;
-    const thumbCDN = storeInit?.CDNDesignImageFolThumb;
+    const prod = (singleProd1 && Object.keys(singleProd1).length > 0) ? singleProd1 : singleProd;
+    const { designno } = prod || {};
+    const baseCDN = storeInit?.CDNDesignImageFol || storeinit?.CDNDesignImageFol;
+    const thumbCDN = storeInit?.CDNDesignImageFolThumb || storeinit?.CDNDesignImageFolThumb;
 
-    setSelectedMetalColor(mcArr?.colorcode);
-    setMetalColor(selectedColorCode);
+    if (selectedColor) {
+      setSelectedMetalColor(selectedColor);
+      setMetalColor(selectedColor);
+    }
 
-    // Parse image/video data
     let parsedData = [];
     try {
       parsedData =
         prod?.ImageVideoDetail && prod.ImageVideoDetail !== "0"
-          ? JSON.parse(prod.ImageVideoDetail)
+          ? (typeof prod.ImageVideoDetail === "string" ? JSON.parse(prod.ImageVideoDetail) : prod.ImageVideoDetail)
           : [];
     } catch (err) {
       console.error("Invalid JSON in ImageVideoDetail:", err);
       return;
     }
 
-    // Filter categorized media
-    const normalImages = [],
-      colorImages = [],
-      normalVideos = [],
-      colorVideos = [];
-    parsedData.forEach((item) => {
-      if (item?.TI === 1 && !item?.CN) normalImages.push(item);
-      else if (item?.TI === 2 && item?.CN) colorImages.push(item);
-      else if (item?.TI === 4 && item?.CN) colorVideos.push(item);
-      else if (item?.TI === 3 && !item?.CN) normalVideos.push(item);
-    });
+    const colorImages = parsedData.filter(item => Number(item?.TI) === 2 && item?.CN);
+    const normalImages = parsedData.filter(item => Number(item?.TI) === 1);
 
-    // Filter color and normal images
-    const colorImgs = parsedData.filter((ele) => ele?.CN && ele?.TI === 2);
-    const normalImgs = parsedData.filter((ele) => !ele?.CN && ele?.TI === 1);
-
-    const maxColorImgCount = Math.max(
-      0,
-      ...Object.values(
-        colorImgs.reduce((acc, { CN }) => {
-          acc[CN] = (acc[CN] || 0) + 1;
-          return acc;
-        }, {}),
-      ),
-    );
-
-    const normalImageCount =
-      normalImgs.length > 0
-        ? Math.max(...normalImgs.map((item) => item.Nm))
-        : 0;
-
-    // Build image URLs
-    const buildColorImageList = () =>
-      Array.from({ length: maxColorImgCount }, (_, i) => {
-        const extension = colorImages[i]?.Ex;
-        const imageUrl = `${baseCDN}${designno}~${i + 1}~${mcArr?.colorcode}.${colorImages[i]?.Ex}`;
-        return { imageUrl, extension };
+    let matchedColorImgs = [];
+    if (selectedColor && colorImages.length > 0) {
+      const targetLower = selectedColor.toLowerCase().trim();
+      matchedColorImgs = colorImages.filter(item => {
+        const cnLower = (item.CN || "").toLowerCase().trim();
+        return cnLower === targetLower || cnLower.includes(targetLower) || targetLower.includes(cnLower);
       });
+    }
 
-    const buildNormalImageList = () =>
-      Array.from({ length: normalImageCount }, (_, i) => {
-        const extension = normalImages[i]?.Ex;
-        const imageUrl = `${baseCDN}${designno}~${i + 1}.${normalImages[i]?.Ex}`;
-
-        return { imageUrl, extension };
-      });
-
-    let pdImgListCol = [];
     let pdImgList = [];
-    let colorImagesAvailable = false;
-
-    // Check color image availability dynamically
-    if (colorImgs.length > 0) {
-      const tempColorList = buildColorImageList().filter(Boolean);
-
-      const checkImages =
-        tempColorList.length > 3
-          ? tempColorList.slice(0, 3) // Optional cap for performance
-          : tempColorList;
-
-      const availabilityChecks = await Promise.all(
-        checkImages.map((url) => checkImageAvailability(url?.imageUrl)),
-      );
-
-      colorImagesAvailable = availabilityChecks.some(Boolean);
-      if (colorImagesAvailable) {
-        pdImgListCol = tempColorList;
-      }
-    }
-
-    // Fallback to normal images if no color images are available
-    if (!colorImagesAvailable && normalImgs.length > 0) {
-      pdImgList = buildNormalImageList();
-    }
-
-    // Set images to UI
-    if (colorImagesAvailable && pdImgListCol.length > 0) {
-      const thumbImagePath = pdImgListCol.map((url) => {
-        const fileName = url?.imageUrl.split("Design_Image/")[1]?.split(".")[0];
-        const thumbImageUrl = `${thumbCDN}${fileName}.jpg`;
-        const originalImageExtension = url?.extension;
-        return { thumbImageUrl, originalImageExtension };
+    if (matchedColorImgs.length > 0) {
+      matchedColorImgs.forEach(item => {
+        pdImgList.push({
+          imageUrl: `${baseCDN}${designno}~${item.Nm}~${item.CN}.${item.Ex || "webp"}`,
+          extension: item.Ex || "webp",
+          cn: item.CN
+        });
       });
+    } else if (normalImages.length > 0) {
+      normalImages.forEach(item => {
+        pdImgList.push({
+          imageUrl: `${baseCDN}${designno}~${item.Nm}.${item.Ex || "webp"}`,
+          extension: item.Ex || "webp",
+          cn: ""
+        });
+      });
+    }
+
+    if (pdImgList.length > 0) {
+      const thumbImagePath = pdImgList.map(item => ({
+        thumbImageUrl: item.cn
+          ? `${thumbCDN}${designno}~${item.imageUrl.split("~")[1]}~${item.cn}.jpg`
+          : `${thumbCDN}${designno}~${item.imageUrl.split("~")[1]?.split(".")[0]}.jpg`,
+        originalImageExtension: item.extension
+      }));
 
       setPdThumbImg(thumbImagePath);
 
-      const safeIndex =
-        thumbImgIndex < pdImgListCol.length
-          ? thumbImgIndex
-          : pdImgListCol.length - 1;
-      const mainImg = pdImgListCol[safeIndex];
-      // setSelectedThumbImg({ link: mainImg, type: 'img' });
+      const safeIndex = (thumbImgIndex && thumbImgIndex < pdImgList.length) ? thumbImgIndex : 0;
+      const mainImg = pdImgList[safeIndex];
       setSelectedThumbImg({
         link: {
           imageUrl: mainImg?.imageUrl,
-          extension: mainImg?.extension, // fix: was incorrectly `originalImageExtension`
+          extension: mainImg?.extension,
         },
         type: "img",
       });
       setThumbImgIndex(safeIndex);
-
-      const defaultMainImg = `${baseCDN}${designno}~${safeIndex + 1}~${mcArr?.colorcode}.${ImageExtension}`;
-      setMetalWiseColorImg(defaultMainImg);
-    } else if (pdImgList.length > 0) {
-      const thumbImagePath = pdImgList.map((url) => {
-        const fileName = url?.imageUrl
-          ?.split("Design_Image/")[1]
-          ?.split(".")[0];
-        const thumbImageUrl = `${thumbCDN}${fileName}.jpg`;
-        const originalImageExtension = url?.extension;
-        return { thumbImageUrl, originalImageExtension };
-      });
-
-      setPdThumbImg(thumbImagePath);
-
-      const safeIndex =
-        thumbImgIndex < pdImgList.length
-          ? thumbImgIndex
-          : pdImgList.length - 1;
-      const fallbackImg = pdImgList[safeIndex];
-      setSelectedThumbImg({
-        link: {
-          imageUrl: fallbackImg?.imageUrl,
-          extension: fallbackImg?.extension, // fix: was incorrectly `originalImageExtension`
-        },
-        type: "img",
-      });
-      setThumbImgIndex(safeIndex);
+      setMetalWiseColorImg(mainImg?.imageUrl);
     }
   };
 
@@ -1839,6 +1704,11 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
       setSingleProd1(res?.pdList[0]);
     }
 
+    const chosenColor = matchedArticle?.MetalColor || matchedArticle?.metalcolorname || matchedArticle?.MetalColorName;
+    if (chosenColor) {
+      handleMetalWiseColorImg(chosenColor);
+    }
+
     if (res?.pdList?.length > 0) {
       setisPriceLoading(false);
     }
@@ -1962,6 +1832,11 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
       Size: selectedArticleObj?.Size,
       NetWeight: selectedArticleObj?.NetWeight,
     });
+
+    const chosenColor = selectedArticleObj?.MetalColor || metalCombo?.MetalColor || metalCombo?.MetalColorName || selectedArticleObj?.metalcolorname;
+    if (chosenColor) {
+      handleMetalWiseColorImg(chosenColor);
+    }
 
     // No API call on customizer confirm — just update UI state with the selected combination
   };
@@ -2111,25 +1986,12 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
 
   const mtColorLocalForFallback = getSession("MetalColorCombo") || [];
   const loginInfoForFallback = getSession("loginUserDetail");
-  const fallbackColorId = singleProd?.MetalColorid || loginUserDetail?.MetalColorId || loginInfoForFallback?.MetalColorId || mtColorLocalForFallback?.[0]?.id;
-  const fallbackColorObj = mtColorLocalForFallback.find(ele => Number(ele.id) === Number(fallbackColorId)) || mtColorLocalForFallback?.[0];
+  const urlMetalColorId = initialDecodeUrl?.m || decodeUrl?.m;
+  const fallbackColorId = singleProd?.MetalColorid || urlMetalColorId || loginUserDetail?.MetalColorId || loginInfoForFallback?.MetalColorId || mtColorLocalForFallback?.[0]?.id;
+  const fallbackColorObj = mtColorLocalForFallback.find(ele => Number(ele.id) === Number(fallbackColorId));
   const activeColorCode = selectedMetalColor || fallbackColorObj?.colorcode;
 
   let validPassedImg = rawPassedImg;
-  if (validPassedImg && activeColorCode && !validPassedImg.includes(`~${activeColorCode}`)) {
-    const lastSlash = validPassedImg.lastIndexOf("/");
-    const pathPrefix = lastSlash !== -1 ? validPassedImg.substring(0, lastSlash + 1) : "";
-    const fileName = lastSlash !== -1 ? validPassedImg.substring(lastSlash + 1) : validPassedImg;
-    const parts = fileName.split("~");
-    if (parts.length === 2 && !parts[1].includes("~")) {
-      const designPart = parts[0];
-      const restPart = parts[1]; // e.g. "1.webp"
-      const [num, extStr] = restPart.split(".");
-      if (num && extStr) {
-        validPassedImg = `${pathPrefix}${designPart}~${num}~${activeColorCode}.${extStr}`;
-      }
-    }
-  }
 
   let resolvedImages = [];
   if (pdThumbImg?.length > 0) {

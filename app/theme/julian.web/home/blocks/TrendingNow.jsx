@@ -154,7 +154,36 @@ export default function Trending({ storeInit }) {
   // ── Navigation to PDP ─────────────────────────────────────────────────────
   const handleNavigation = (item) => {
     const cdnFol = storeInit?.CDNDesignImageFol || "";
-    const imgUrl = item?.src || (cdnFol && item?.designno ? `${cdnFol}${item?.designno}~1.${item?.ImageExtension || "webp"}` : "");
+    let imgUrl = item?.src || (cdnFol && item?.designno ? `${cdnFol}${item?.designno}~1.${item?.ImageExtension || "webp"}` : "");
+    if (item?.ImageVideoDetail && item.ImageVideoDetail !== "0") {
+      try {
+        const parsed = typeof item.ImageVideoDetail === "string" ? JSON.parse(item.ImageVideoDetail) : item.ImageVideoDetail;
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          const mtColorLocal = getSession("MetalColorCombo") || [];
+          const targetColorObj = mtColorLocal.find(ele => Number(ele.id) === Number(item?.MetalColorid));
+          const targetColorCode = targetColorObj?.colorcode || item?.MetalColor;
+
+          let matchedColorImg = null;
+          if (targetColorCode) {
+            const targetLower = targetColorCode.toLowerCase().trim();
+            matchedColorImg = parsed.find(i => {
+              if (Number(i?.TI) !== 2 || !i?.CN) return false;
+              const cnLower = i.CN.toLowerCase().trim();
+              return cnLower === targetLower || cnLower.includes(targetLower) || targetLower.includes(cnLower);
+            });
+          }
+
+          if (matchedColorImg) {
+            imgUrl = `${cdnFol}${item?.designno}~${matchedColorImg.Nm}~${matchedColorImg.CN}.${matchedColorImg.Ex || item?.ImageExtension || "webp"}`;
+          } else {
+            const normalImg = parsed.find(i => Number(i?.TI) === 1);
+            if (normalImg) {
+              imgUrl = `${cdnFol}${item?.designno}~${normalImg.Nm}.${normalImg.Ex || item?.ImageExtension || "webp"}`;
+            }
+          }
+        }
+      } catch (e) {}
+    }
     let obj = {
       a: item?.autocode,
       b: item?.designno,
