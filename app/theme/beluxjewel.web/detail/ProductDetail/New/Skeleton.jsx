@@ -66,9 +66,6 @@ const ProductSkeleton = () => (
 
 export default ProductSkeleton;
 
-
-
-
 export const DetailSkeleton = () => {
     return <>
         <Grid container spacing={1.7}>

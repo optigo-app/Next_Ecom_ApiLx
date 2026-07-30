@@ -105,9 +105,10 @@ const ProductImageGallery = ({
                                     }}
                                     className="smr_prod_thumb_img"
                                     onClick={() => {
+                                        const fullImgUrl = ele?.imageUrl || `${firstHalf}${secondhalf}.${ele?.originalImageExtension}`;
                                         setSelectedThumbImg({
                                             link: {
-                                                "imageUrl": `${firstHalf}${secondhalf}.${ele?.originalImageExtension}`,
+                                                "imageUrl": fullImgUrl,
                                                 "extension": `${ele?.originalImageExtension}`
                                             },
                                             type: "img",
