@@ -31,9 +31,8 @@ export const MasterProvider = ({
   getMyAccountFlags,
   theme,
 }) => {
-  // When the active theme is "beluxjewel.web" we skip all Master API calls
-  // (combo lists, paymaster, etc.) because that theme manages its own data flow.
-  const isBelux = theme === "beluxjewel.web";
+  console.log(theme , "theme")
+  const isBelux = theme === "beluxjewel.web" || theme === "julian.web";
   if (typeof window !== "undefined") {
     window.__STORE_INIT__ = getStoreInit;
     window.__LOGIN_USER__ =

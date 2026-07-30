@@ -220,9 +220,10 @@ export async function clearCache(key) {
 export async function clearAllCache() {
   if (fs.existsSync(CACHE_DIR)) {
     try {
-      const allFiles = await getFilesRecursive(CACHE_DIR);
-      await Promise.all(allFiles.map((file) => fs.promises.unlink(file)));
-      console.log("🗑️ Cleared all cache files recursively");
+      fs.rmSync(CACHE_DIR, { recursive: true, force: true });
+      fs.mkdirSync(CACHE_DIR, { recursive: true });
+      fs.mkdirSync(MENU_CACHE_DIR, { recursive: true });
+      console.log("🗑️ Cleared and recreated all cache directories recursively");
     } catch (err) {
       console.error("Error clearing all cache:", err);
     }

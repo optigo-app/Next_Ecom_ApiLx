@@ -221,9 +221,44 @@ const ProductList = ({ storeinit,
     }
   };
 
-  const convertUrl = (productData) => {
+  const getCardImageUrl = (productData) => {
     const cdnFol = storeinit?.CDNDesignImageFol || storeInit?.CDNDesignImageFol || "";
-    const imgUrl = (cdnFol && productData?.designno) ? `${cdnFol}${productData?.designno}~1.${productData?.ImageExtension || "webp"}` : "";
+    if (!cdnFol || !productData?.designno) return "";
+    const ext = productData?.ImageExtension || "webp";
+    
+    if (productData?.ImageVideoDetail && productData.ImageVideoDetail !== "0") {
+      try {
+        const parsed = typeof productData.ImageVideoDetail === "string" 
+          ? JSON.parse(productData.ImageVideoDetail) 
+          : productData.ImageVideoDetail;
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          const mtColorLocal = getSession("MetalColorCombo") || [];
+          const targetColorObj = mtColorLocal.find(ele => Number(ele.id) === Number(productData?.MetalColorid));
+          const targetColorCode = targetColorObj?.colorcode || productData?.MetalColor;
+
+          if (targetColorCode) {
+            const targetLower = targetColorCode.toLowerCase().trim();
+            const matchedColorImg = parsed.find(item => {
+              if (Number(item?.TI) !== 2 || !item?.CN) return false;
+              const cnLower = item.CN.toLowerCase().trim();
+              return cnLower === targetLower || cnLower.includes(targetLower) || targetLower.includes(cnLower);
+            });
+            if (matchedColorImg) {
+              return `${cdnFol}${productData.designno}~${matchedColorImg.Nm}~${matchedColorImg.CN}.${matchedColorImg.Ex || ext}`;
+            }
+          }
+
+          const normalImg = parsed.find(item => Number(item?.TI) === 1);
+          if (normalImg) {
+            return `${cdnFol}${productData.designno}~${normalImg.Nm}.${normalImg.Ex || ext}`;
+          }
+        }
+      } catch (e) {}
+    }
+    return `${cdnFol}${productData.designno}~1.${ext}`;
+  };
+
+  const convertUrl = (productData) => {
     let obj = {
       a: productData?.autocode,
       b: productData?.designno,
@@ -231,7 +266,7 @@ const ProductList = ({ storeinit,
       d: selectedDiaId,
       c: selectedCsId,
       g: detailsMenu,
-      img: imgUrl,
+      img: getCardImageUrl(productData),
       ArticleNo: productData?.ArticleNo,
       ArticleId: productData?.ArticleId ?? null,
       title: productData?.TitleLine ?? "",
@@ -2097,10 +2132,9 @@ const ProductList = ({ storeinit,
 
   const handleMoveToDetail = (productData, imageUrl) => {
     let output = FilterValueWithCheckedOnly();
-    const cdnFol = storeinit?.CDNDesignImageFol || storeInit?.CDNDesignImageFol || "";
     const cleanImg = (imageUrl && !imageUrl.includes("undefined"))
       ? imageUrl
-      : (cdnFol && productData?.designno ? `${cdnFol}${productData?.designno}~1.${productData?.ImageExtension || "webp"}` : "");
+      : getCardImageUrl(productData);
     let obj = {
       a: productData?.autocode,
       b: productData?.designno,
