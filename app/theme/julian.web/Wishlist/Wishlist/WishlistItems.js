@@ -183,7 +183,7 @@ const WishlistItems = ({
                     background:
                       item?.IsInCart === 1
                         ? "rgba(255,255,255,0.9)"
-                        : "rgba(0,0,0,0.85)", // ✨ visible on white
+                        : "#0d1232", // ✨ visible on white
                     cursor: item?.IsInCart === 1 ? "default" : "pointer",
                     boxShadow:
                       "0 4px 12px rgba(0,0,0,0.15)", // ✨ makes it visible on white background

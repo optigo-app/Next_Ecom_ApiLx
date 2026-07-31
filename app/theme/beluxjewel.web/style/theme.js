@@ -5,14 +5,15 @@
  */
 export const beluxTheme = {
   /** Top announcement bar background */
-  topBar:       "#114D6E",
+  // topBar:       "#114D6E",
+  topBar:       "#cca182",
 
   /** Main button */
-  btnBg:        "#114D6E",
+  btnBg:        "#cca182",
   btnColor:     "#ffffff",
 
   /** Auth page buttons (Continue with email / Log in with mobile) */
-  authBtnBg:    "#114D6E",
+  authBtnBg:    "#cca182",
   authBtnColor: "#ffffff",
   authBg:       "#ffffff",
 

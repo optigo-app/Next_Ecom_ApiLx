@@ -213,7 +213,7 @@ export default function LuxuryFooter({ img, logos, storeData, companyInfoData: c
           </Grid>
 
           {/* QR BLOCK */}
-          <Box
+          {/* <Box
             sx={{
               mt: 5,
               p: 2,
@@ -254,7 +254,7 @@ export default function LuxuryFooter({ img, logos, storeData, companyInfoData: c
                 Scan to shop on mobile
               </Typography>
             </Box>
-          </Box>
+          </Box> */}
 
           {/* EMAIL */}
           <Typography
@@ -264,7 +264,7 @@ export default function LuxuryFooter({ img, logos, storeData, companyInfoData: c
               fontSize: 14,
             }}
           >
-            {companyInfoData?.Email || storeInit?.email  }
+            {companyInfoData?.Email || storeInit?.email}
             {/* {email} */}
           </Typography>
 
@@ -280,7 +280,7 @@ export default function LuxuryFooter({ img, logos, storeData, companyInfoData: c
               mt: 6,
               width: 300,
               height: 300,
-            
+
               display: "flex",
               alignItems: "center",
               justifyContent: "flex-start",
@@ -320,20 +320,22 @@ export default function LuxuryFooter({ img, logos, storeData, companyInfoData: c
           }}
         >
           <Image
-              src="/WebSiteStaticImage/Banner/footer.jpg"
-              alt=""
-              fill
-              style={{
-                objectFit: "cover",
-              }}
-            />
-   
+            src="/WebSiteStaticImage/Banner/footer.jpg"
+            alt=""
+            fill
+            style={{
+              objectFit: "cover",
+            }}
+          />
 
+          {/* DARK OVERLAY HERE */}
           <Box
             sx={{
               position: "absolute",
               inset: 0,
-              background: "linear-gradient(to top, rgba(0,0,0,.35), transparent)",
+              // Option A: Uniform dark overlay with a subtle bottom gradient
+              backgroundColor: "rgba(0, 0, 0, 0.4)",
+             
             }}
           />
 
@@ -345,6 +347,7 @@ export default function LuxuryFooter({ img, logos, storeData, companyInfoData: c
               right: 40,
               color: "#fff",
               maxWidth: 550,
+              zIndex: 1, // Ensures text & inputs stay above the overlay
             }}
           >
             <Typography
@@ -375,8 +378,19 @@ export default function LuxuryFooter({ img, logos, storeData, companyInfoData: c
                   "& .MuiOutlinedInput-root": {
                     color: "#fff",
 
+                    
                     "& fieldset": {
                       borderColor: "#fff",
+                    },
+
+                   
+                    "&:hover fieldset": {
+                      borderColor: "#fff",
+                    },
+
+                  
+                    "&.Mui-focused fieldset": {
+                      borderColor: "#d1d5db", 
                     },
 
                     "& input::placeholder": {
@@ -458,7 +472,7 @@ export default function LuxuryFooter({ img, logos, storeData, companyInfoData: c
         }}
       >
         <Typography variant="body2">
-          {storeInit?.CurrencyCode} / {storeInit?.CountryName || storeInit?.CountryCode }
+          {storeInit?.CurrencyCode} / {storeInit?.CountryName || storeInit?.CountryCode}
         </Typography>
 
         <Typography variant="body2">

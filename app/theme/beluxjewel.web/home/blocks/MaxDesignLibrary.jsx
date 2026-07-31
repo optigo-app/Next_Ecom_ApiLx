@@ -76,7 +76,7 @@ export default function MaxDesignLibrary() {
               </Typography>
 
               <Stack direction="row" spacing={1.5} alignItems="center" sx={{ mb: 4 }}>
-                <WorkspacePremiumOutlinedIcon sx={{ color: "#114D6E" }} />
+                <WorkspacePremiumOutlinedIcon sx={{ color: "#cca182" }} />
                 <Typography variant="body2" sx={{ fontWeight: 600, color: "#1a1a1a" }}>
                   {islogin
                     ? "✓ Full catalog access unlocked"
@@ -100,6 +100,7 @@ export default function MaxDesignLibrary() {
                   transition: "all 0.3s ease",
                   border: "1px solid #1a1a1a",
                   width: { xs: "100%", sm: "auto" },
+                  // color:"#cca182"
                 }}
               >
                 {islogin ? "Explore Catalog" : "Log In to Access"}
@@ -301,7 +302,7 @@ export default function MaxDesignLibrary() {
                   top: "20px",
                   left: { xs: "10px", sm: "30px" },
                   zIndex: 5,
-                  bgcolor: "#114D6E",
+                  bgcolor: "#cca182",
                   color: "#ffffff",
                   px: 2,
                   py: 0.8,
@@ -354,7 +355,7 @@ export default function MaxDesignLibrary() {
                 }}
               >
                 <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
-                  <path d="M12 0L14.8 9.2L24 12L14.8 14.8L12 24L9.2 14.8L0 12L9.2 9.2L12 0Z" fill="#114D6E" />
+                  <path d="M12 0L14.8 9.2L24 12L14.8 14.8L12 24L9.2 14.8L0 12L9.2 9.2L12 0Z" fill="#cca182" />
                 </svg>
               </Box>
 
