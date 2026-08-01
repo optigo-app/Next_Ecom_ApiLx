@@ -268,7 +268,7 @@ const OmjiyanshTermsData = {
   }
 };
 
-const ActiveThemeName = "omjiyas";
+const ActiveThemeName = "SonasonstermsData";
 
 export default function TermsAndConditions() {
   const termsData = ActiveThemeName === "omjiyas" ? OmjiyanshTermsData : SonasonstermsData;

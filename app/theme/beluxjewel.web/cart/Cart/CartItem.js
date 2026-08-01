@@ -176,7 +176,7 @@ const CartItem = ({
           !multiSelect &&
           !isMobileScreen &&
           selectedItem?.id == item?.id &&
-          "#c20000 1px 1px 1px 0px, #c20000 0px 0px 0px 1px !important",
+          "#cca182 1px 1px 1px 0px, #c20000 0px 0px 0px 1px !important",
         boxSizing: "border-box",
       }}
     >

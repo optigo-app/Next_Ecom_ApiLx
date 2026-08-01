@@ -97,7 +97,7 @@ const AppointmentPage = ({ assetBase }) => {
         return <VimalAppointment />
     }else{
         return (
-            <div className="smr_appointment-page">
+            <div className="smrbl_appointment-page">
                 <div
                     className="smr_bg-imageCart"
                     style={{
