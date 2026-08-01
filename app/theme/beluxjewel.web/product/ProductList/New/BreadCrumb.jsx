@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
 const chipBaseStyles = {
-  fontSize: "13px",
+  fontSize: "15px",
   fontWeight: 500,
   color: "#444",
   backgroundColor: "#fafafa",
@@ -20,20 +20,20 @@ const chipBaseStyles = {
 };
 
 const chipPrimaryStyles = {
-  fontSize: "13px",
+  fontSize: "15px",
   fontWeight: 600,
   color: "#fff",
-  backgroundColor: "#0a1f47",
+  backgroundColor: "#cca182",
   borderRadius: 0,
   px: 1.2,
   height: 26,
-  border: "1px solid #0a1f47",
+  border: "1px solid #cca182",
   boxShadow: "0 1px 2px rgba(0,0,0,0.08)",
   transition: "all 0.2s ease",
 
   "&:hover": {
-    backgroundColor: "#0a1f47",
-    borderColor: "#0a1f47",
+    backgroundColor: "#cca182",
+    borderColor: "#cca182",
   },
 };
 

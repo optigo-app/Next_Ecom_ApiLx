@@ -89,8 +89,8 @@ const ShopHeader = ({
           <Typography
             variant="h6"
             sx={{
-              fontWeight: 600,
-              fontSize: "13px",
+              fontWeight: 700,
+              fontSize: "15px",
               letterSpacing: "0.5px",
               textTransform: "uppercase",
               color: "#000000",
@@ -101,8 +101,8 @@ const ShopHeader = ({
           <Typography
             component="span"
             sx={{
-              fontSize: "13px",
-              fontWeight: 600,
+              fontSize: "15px",
+              fontWeight: 700,
               letterSpacing: "0.2px",
               color: "#000000",
               transition: "all 0.3s ease-in-out",

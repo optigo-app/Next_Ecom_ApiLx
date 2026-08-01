@@ -2816,7 +2816,7 @@ const ProductList = ({ storeinit, searchParams, params }) => {
       c: selectedCsId,
       f: output,
       g: detailsMenu,
-      img: (imageUrl && !imageUrl.includes("undefined")) ? imageUrl : getCardImageUrl(productData),
+      img: getCardImageUrl(productData), // always use color-smart resolver; plain imageUrl from listing card has no color suffix
       ArticleNo: productData?.ArticleNo,
       ArticleId: productData?.ArticleId ?? null, // pass clicked article id for default customizer selection
       title: productData?.TitleLine ?? "",

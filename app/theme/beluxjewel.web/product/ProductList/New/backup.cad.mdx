@@ -107,49 +107,6 @@ const getMetalColorHex = (targetObj, prodData) => {
   return "#E5C378";
 };
 
-const WeightBadge = ({ label, value }) => {
-  return (
-    <Box
-      sx={{
-        display: "inline-flex",
-        alignItems: "center",
-        height: 20,
-        px: 0.7,
-        bgcolor: "#F7F6F2",
-        border: "1px solid #E2DFD7",
-        borderRadius: "2px",
-        fontSize: { xs: "0.6rem", sm: "0.64rem" },
-        lineHeight: 1,
-        whiteSpace: "nowrap",
-        userSelect: "none",
-      }}
-    >
-      <Typography
-        component="span"
-        sx={{
-          fontSize: "inherit",
-          fontWeight: 400,
-          color: "#666666",
-          mr: 0.4,
-          letterSpacing: "0.01em",
-        }}
-      >
-        {label}&nbsp;:
-      </Typography>
-      <Typography
-        component="span"
-        sx={{
-          fontSize: "inherit",
-          fontWeight: 600,
-          color: "#1a1a1a",
-        }}
-      >
-        {value}
-      </Typography>
-    </Box>
-  );
-};
-
 const ChipBar = (title, bgcolor, position) => {
   return (
     <>
@@ -299,10 +256,10 @@ const JewelryProductGrid = ({
                       md: isMedium ? 6 : 3,
                     }}
                     sx={{
-                      border: "1px solid #c0c0c096",
+                      border: "1px solid #c0c0c0",
                       borderLeft:
-                        index % columns === 0 ? "1px solid #c0c0c096" : "0",
-                      borderTop: index < columns ? "1px solid #c0c0c096" : "0",
+                        index % columns === 0 ? "1px solid #c0c0c0" : "0",
+                      borderTop: index < columns ? "1px solid #c0c0c0" : "0",
                       boxSizing: "border-box",
                     }}
                   >
@@ -648,17 +605,12 @@ const ProductCard = ({
       <CardContent
         sx={{
           px: 1.5,
-          pt: 1.2,
-          pb: "0.8rem !important",
-          "&:last-child": {
-            pb: "0.8rem !important",
-          },
-          borderTop: "1px solid #c0c0c096",
+          py: 1.25,
+          borderTop: "1px solid #c0c0c027",
           display: "flex",
           flexDirection: "column",
-          gap: 0.3,
+          gap: 0.4,
           backgroundColor: "#ffffff",
-          zIndex:9999
         }}
       >
         {/* Metal Color Swatch & Quality / Category Line */}
@@ -673,11 +625,11 @@ const ProductCard = ({
           >
             <Box
               sx={{
-                width: 11,
-                height: 11,
+                width: 12,
+                height: 12,
                 backgroundColor: colorHex,
-                border: "1px solid rgba(0,0,0,0.3)",
-                borderRadius: "1px",
+                border: "1px solid #333333",
+                borderRadius: 0,
                 flexShrink: 0,
               }}
             />
@@ -747,66 +699,114 @@ const ProductCard = ({
           </Typography>
         )}
 
-        {/* Meta Details — Article & Squared Weight Chips */}
-        <Box
-          sx={{
-            mt: 0.3,
-            display: "flex",
-            flexDirection: "column",
-            gap: 0.4,
-          }}
-        >
-          {Article && (
-            <Typography
-              sx={{
-                fontWeight: 600,
-                fontSize: { xs: "0.66rem", sm: "0.72rem" },
-                color: "#555555",
-                letterSpacing: "0.03em",
-                textTransform: "uppercase",
-              }}
-            >
-              {Article}
-            </Typography>
-          )}
+        {/* Meta Details — Article, DWT, NWT */}
+        <Box sx={{ mt: 0.2 }}>
+          <Grid container spacing={0.4} alignItems="center">
+            {/* DESIGN NO / ARTICLE */}
+            <Grid item size={{ xs: 6 }}>
+              <Typography
+                variant="body2"
+                sx={{
+                  fontWeight: 400,
+                  fontSize: { xs: "0.62rem", sm: "0.72rem", md: "0.75rem" },
+                  color: "#666",
+                  letterSpacing: "0.02em",
+                  textTransform: "uppercase",
+                }}
+              >
+                {Article}
+              </Typography>
+            </Grid>
 
-          <Box
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              flexWrap: "wrap",
-              gap: 0.5,
-            }}
-          >
+            {/* DWT — RIGHT CELL */}
+            <Grid item size={{ xs: 6 }}>
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 0.3,
+                  justifyContent: "flex-end",
+                }}
+              >
+                {StoreInit?.IsDiamondWeight == 1 &&
+                Number(productData?.Dwt) !== 0 ? (
+                  <>
+                    <Typography
+                      variant="body2"
+                      sx={{
+                        fontWeight: 400,
+                        fontSize: { xs: "0.62rem", sm: "0.72rem", md: "0.75rem" },
+                        color: "#666",
+                        letterSpacing: "0.02em",
+                      }}
+                    >
+                      DWT&nbsp;:
+                    </Typography>
+
+                    <Typography
+                      variant="body2"
+                      sx={{
+                        fontWeight: 400,
+                        fontSize: { xs: "0.62rem", sm: "0.72rem", md: "0.75rem" },
+                        color: "#666",
+                      }}
+                    >
+                      {productData?.Dwt?.toFixed(3)}
+                      {StoreInit?.IsDiamondPcs === 1
+                        ? `/${productData?.Dpcs}`
+                        : null}
+                    </Typography>
+                  </>
+                ) : null}
+              </Box>
+            </Grid>
+
+            {/* NWT */}
             {Number(productData?.Nwt) > 0 && (
-              <WeightBadge label="NWT" value={productData?.Nwt?.toFixed(3)} />
+              <Grid item size={{ xs: 12 }}>
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 0.3,
+                  }}
+                >
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      fontWeight: 400,
+                      fontSize: { xs: "0.62rem", sm: "0.72rem", md: "0.75rem" },
+                      color: "#666",
+                      letterSpacing: "0.02em",
+                    }}
+                  >
+                    NWT&nbsp;:
+                  </Typography>
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      fontWeight: 400,
+                      fontSize: { xs: "0.62rem", sm: "0.72rem", md: "0.75rem" },
+                      color: "#666",
+                    }}
+                  >
+                    {productData?.Nwt?.toFixed(3)}
+                  </Typography>
+                </Box>
+              </Grid>
             )}
 
-            {StoreInit?.IsDiamondWeight == 1 &&
-              Number(productData?.Dwt) !== 0 && (
-                <WeightBadge
-                  label="DWT"
-                  value={`${productData?.Dwt?.toFixed(3)}${
-                    StoreInit?.IsDiamondPcs === 1 ? `/${productData?.Dpcs}` : ""
-                  }`}
+            {isMobile && (
+              <Grid item size={{ xs: 12 }} position={"relative"}>
+                <MobileCartToggleButton
+                  productData={productData}
+                  cartArr={cartArr}
+                  handleCartandWish={handleCartandWish}
                 />
-              )}
-
-            {StoreInit?.IsGrossWeight == 1 && Number(productData?.Gwt) > 0 && (
-              <WeightBadge label="GWT" value={productData?.Gwt?.toFixed(3)} />
+              </Grid>
             )}
-          </Box>
+          </Grid>
         </Box>
-
-        {isMobile && (
-          <Box position="relative" sx={{ mt: 0.2 }}>
-            <MobileCartToggleButton
-              productData={productData}
-              cartArr={cartArr}
-              handleCartandWish={handleCartandWish}
-            />
-          </Box>
-        )}
       </CardContent>
     </MotionCard>
   );
