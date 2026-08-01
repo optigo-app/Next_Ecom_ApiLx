@@ -447,26 +447,52 @@ const Usewishlist = () => {
       let navigateUrl = `/d/${wishtData?.stockno}/det345/?p=${encodeURIComponent(encodeObj)}`;
       navigate(navigateUrl);
     } else {
+      const targetColorId = wishtData?.MetalColorid || wishtData?.metalcolorid;
+      const mtColorLocal = getSession("MetalColorCombo") || metalColorCombo || [];
+      const targetColorObj = mtColorLocal.find(
+        (ele) => Number(ele.id) === Number(targetColorId)
+      );
+      const colorCode = targetColorObj?.colorcode || wishtData?.metalcolorname || wishtData?.MetalColor;
+      const cdnFol = storeInit?.CDNDesignImageFol || "";
+      const ext = wishtData?.ImageExtension || "webp";
+      let imgUrl = "";
+      if (wishtData?.ImageVideoDetail && wishtData.ImageVideoDetail !== "0") {
+        try {
+          const parsed = typeof wishtData.ImageVideoDetail === "string" ? JSON.parse(wishtData.ImageVideoDetail) : wishtData.ImageVideoDetail;
+          if (Array.isArray(parsed) && colorCode) {
+            const colorLower = colorCode.toLowerCase().trim();
+            const colorImg = parsed.find(x => Number(x?.TI) === 2 && (x?.CN || "").toLowerCase().trim() === colorLower);
+            if (colorImg) imgUrl = `${cdnFol}${wishtData.designno}~${colorImg.Nm}~${colorImg.CN}.${colorImg.Ex || ext}`;
+          }
+        } catch {}
+      }
+      if (!imgUrl && wishtData?.designno && cdnFol) {
+        imgUrl = `${cdnFol}${wishtData.designno}~1${colorCode ? `~${colorCode}` : ""}.${ext}`;
+      }
+
       let obj = {
         a: wishtData?.autocode,
         b: wishtData?.designno,
-        m: wishtData?.metaltypeid,
+        m: wishtData?.metaltypeid || wishtData?.Metalid,
         d: `${wishtData?.diamondqualityid}${","}${wishtData?.diamondcolorid}`,
         c: `${wishtData?.colorstonequalityid}${","}${wishtData?.colorstonecolorid}`,
         f: {},
         g: [["", ""], ["", "", ""]],
-        i: wishtData?.MetalColorid,
-        l: wishtData?.ImageExtension,
-        count: wishtData?.ImageCount,
-        ArticleNo: wishtData?.ArticleNo,
+        metalColorId: targetColorId || null,
+        l: ext,
+        count: (wishtData?.ImageCount && Number(wishtData.ImageCount) > 0) ? Number(wishtData.ImageCount) : 1,
+        ArticleNo: wishtData?.ArticleNo || wishtData?.designno,
         ArticleId: wishtData?.ArticleId || wishtData?.id,
-      }
-      compressAndEncode(JSON.stringify(obj))
-      let encodeObj = compressAndEncode(JSON.stringify(obj))
-      // navigate(`/d/${?.replace(/\s+/g, `_`)}${wishtData?.TitleLine?.length > 0 ? "_" : ""}${}?p=${encodeObj}`)
+        mediaDet: wishtData?.ImageVideoDetail ?? "",
+        img: imgUrl,
+        title: wishtData?.TitleLine || wishtData?.ArticleNo || wishtData?.designno || "",
+        price: wishtData?.UnitCostWithMarkUp || wishtData?.CW_UCostWM || wishtData?._UnitCost || 0,
+        nwt: wishtData?.Nwt || wishtData?.CW_Nwt || wishtData?.CW_Gwt || 0,
+      };
+      let encodeObj = compressAndEncode(JSON.stringify(obj));
       navigate(`/d/${formatRedirectTitleLine(wishtData?.TitleLine)}${wishtData?.designno}?p=${encodeURIComponent(encodeObj)}`);
     }
-  }
+  };
 
   //browse our collection
 

@@ -2823,7 +2823,9 @@ const ProductList = ({ storeinit, searchParams, params }) => {
       nwt: productData?.Nwt ?? 0,
       price: productData?.UnitCostWithMarkUp ?? 0,
       mediaDet: productData?.ImageVideoDetail ?? "",
+      metalColorId: productData?.MetalColorid ?? null, // product's actual metal color — used by detail page to show correct color during skeleton
     };
+
     // compressAndEncode(JSON.stringify(obj))
 
     // decodeAndDecompress()
