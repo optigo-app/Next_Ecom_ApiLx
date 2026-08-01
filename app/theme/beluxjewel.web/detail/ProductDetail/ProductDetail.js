@@ -355,22 +355,31 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
   const [filteredVideos, setFilteredVideos] = useState([]);
 
   useEffect(() => {
-    if (!pdVideoArr || !selectedMetalColor) return;
+    if (!pdVideoArr) return;
 
+    // Normal videos: filename has exactly 2 parts (designno~slot.ext) — no color suffix
+    const noColorVideos = pdVideoArr.filter((url) => {
+      const parts = url.split("~");
+      return parts.length === 2;
+    });
+
+    if (!selectedMetalColor) {
+      // No color selected yet — show only normal (non-color) videos
+      setFilteredVideos(noColorVideos);
+      return;
+    }
+
+    // Color selected — try to find matching color videos
     const colorMatched = pdVideoArr.filter((url) => {
       const parts = url.split("~");
       const colorPart = parts[2]?.split(".")[0];
-      return colorPart === selectedMetalColor;
+      return colorPart?.toLowerCase().trim() === selectedMetalColor.toLowerCase().trim();
     });
 
     if (colorMatched.length > 0) {
       setFilteredVideos(colorMatched);
     } else {
-      // Fallback: videos without any color in the filename
-      const noColorVideos = pdVideoArr.filter((url) => {
-        const parts = url.split("~");
-        return parts.length === 2; // means format is like MCJ66~1.mp4
-      });
+      // No color match — fall back to normal videos
       setFilteredVideos(noColorVideos);
     }
   }, [pdVideoArr, selectedMetalColor]);
@@ -2096,7 +2105,7 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
                       type: "image",
                       src: item,
                     })),
-                    ...pdVideoArr?.map((item) => ({
+                    ...filteredVideos?.map((item) => ({
                       type: "video",
                       src: item,
                     })),
@@ -2203,7 +2212,7 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
                 type: "image",
                 src: item,
               })),
-              ...pdVideoArr?.map((item) => ({
+              ...filteredVideos?.map((item) => ({
                 type: "video",
                 src: item,
               })),

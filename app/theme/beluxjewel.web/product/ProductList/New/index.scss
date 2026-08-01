@@ -31,9 +31,9 @@
 
 
 
-/* Gentle lift effect */
+/* Lift effect removed to preserve border line alignment */
 .product-container:hover {
-  transform: translateY(-3px);
+  transform: none;
 }
 
 /* MAIN IMAGE */
