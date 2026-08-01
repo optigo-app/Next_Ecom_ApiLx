@@ -1,3 +1,4 @@
+
 "use client";
 import { useEffect, useRef, useState, useMemo } from "react";
 import {
@@ -68,8 +69,7 @@ const BeluxNavbar = ({ storeInit: storeinit, logos }) => {
   const navigate = (url) => Router(url);
   const location = usePathname();
 
-  const compnyLogo = logos?.web;
-  const compnyLogoM = logos?.mobile;
+
 
   const [expandedMenu, setExpandedMenu] = useState(null);
   const [menuLoading, setMenuLoading] = useState(true);
@@ -223,6 +223,12 @@ const BeluxNavbar = ({ storeInit: storeinit, logos }) => {
   const currentMenuItems = useMemo(() => {
     return menuItems;
   }, [menuItems]);
+
+
+    const whiteLogo = logos?.web || logos?.white_logo;
+  const blackLogo = logos?.black_logo || logos?.blackLogo || logos?.web;
+  const compnyLogoM  = logos?.mobile;
+  const activeLogo = (isHovered || isScrolled) ? blackLogo : whiteLogo;
 
   const getMenuUrl = (param, param1, param2, isFilterKey2Ignore) => {
     if (
@@ -520,14 +526,46 @@ const BeluxNavbar = ({ storeInit: storeinit, logos }) => {
                     <MenuIcon size={22} />
                   </IconButton>
                 )}
-                <Box component={Link} href="/">
+                <Box
+                  component={Link}
+                  href="/"
+                  sx={{
+                    position: "relative",
+                    display: "inline-flex",
+                    alignItems: "center",
+                    width: IsSetupFor ? "150px" : "110px",
+                  }}
+                >
+                  {/* White Logo (visible when navbar is transparent) */}
                   <Box
                     component="img"
-                    src={compnyLogo}
+                    src={whiteLogo}
                     alt="Logo"
                     sx={{
-                      width: IsSetupFor ? "150px" : "110px",
+                      width: "100%",
+                      height: "auto",
                       cursor: "pointer",
+                      opacity: isHovered || isScrolled ? 0 : 1,
+                      transition: "opacity 0.4s ease-in-out",
+                      display: "block",
+                    }}
+                    className="el_without_headerLogo_side"
+                  />
+                  {/* Black Logo (visible when navbar has background) */}
+                  <Box
+                    component="img"
+                    src={blackLogo}
+                    alt="Logo"
+                    sx={{
+                      position: "absolute",
+                      top: 0,
+                      left: 0,
+                      width: "100%",
+                      height: "auto",
+                      cursor: "pointer",
+                      opacity: isHovered || isScrolled ? 1 : 0,
+                      transition: "opacity 0.4s ease-in-out",
+                      display: "block",
                     }}
                     className="el_without_headerLogo_side"
                   />
@@ -1075,6 +1113,31 @@ const BeluxNavbar = ({ storeInit: storeinit, logos }) => {
                                 Collection
                               </Box>
                             </Box>
+                              <Box sx={{ position: "relative" }}>
+                                <Box
+                                  component={Link}
+                                  href="/asset-management"
+                                  sx={{
+                                    px: 2,
+                                  py: 3,
+                                  bgcolor: "transparent",
+                                  border: "none",
+                                  cursor: "pointer",
+                                  fontSize: "0.95rem",
+                                  fontWeight: 500,
+                                  letterSpacing: 0.8,
+                                  textDecoration: "none",
+                                  transition: "all 0.2s ease",
+                                  position: "relative",
+                                  color:
+                                    isHovered || isScrolled ? "#000" : "#fff",
+                                  outline: "none",
+                                  boxShadow: "none",
+                                  }}
+                                >
+                                  Marketing Support
+                                </Box>
+                              </Box>
                             {/* <Box sx={{ position: "relative" }}>
                                 <Box
                                   component={Link}

@@ -72,6 +72,7 @@ const Theme = {
   beluxjewel: {
     web: "/WebSiteStaticImage/logoIcon/vimal/webLogo.png",
     mobile: "/WebSiteStaticImage/logoIcon/vimal/mobileLogo.png",
+    blackLogo: "/WebSiteStaticImage/logoIcon/vimal/webLogo11.png",
   },
 };
 
@@ -82,6 +83,7 @@ export function getLogos() {
       web: config.web,
       mobile: config.mobile,
       transparent_mobile: config.transparent_mobile,
+      ...(config.black_logo && { black_logo: config.black_logo }),
     };
   }
 
