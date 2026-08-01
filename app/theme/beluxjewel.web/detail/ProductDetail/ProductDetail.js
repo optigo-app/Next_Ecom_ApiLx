@@ -91,7 +91,7 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
         autocode: initialDecodeUrl.a ?? "",
         ImageExtension: "webp",
         ImageCount: 1,
-        MetalColorid: loginUserDetail?.MetalColorId || loginInfo?.MetalColorId,
+        MetalColorid: initialDecodeUrl?.metalColorId ?? loginUserDetail?.MetalColorId ?? loginInfo?.MetalColorId,
         ImageVideoDetail: initialDecodeUrl.mediaDet ?? "0",
       };
     }
@@ -137,7 +137,18 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
   const [filterData, setFilterData] = useState([]);
   const [showPlaceholder, setShowPlaceholder] = useState(false);
   const { imageRefs, handleMouseMove, handleMouseLeave } = useImageZoom(2.2);
-  const [selectedMetalColor, setSelectedMetalColor] = useState();
+  const [selectedMetalColor, setSelectedMetalColor] = useState(() => {
+    // Initialize from URL's metalColorId immediately so ProdCardImageFunc always uses
+    // the correct color from the very first render — prevents the Yellow flash
+    if (initialDecodeUrl?.metalColorId) {
+      const mtColorLocal = getSession("MetalColorCombo") || [];
+      const matchedObj = mtColorLocal.find(
+        (ele) => Number(ele.id) === Number(initialDecodeUrl.metalColorId)
+      );
+      return matchedObj?.colorcode || undefined;
+    }
+    return undefined;
+  });
   const getBreadCrumData = getSession("breadcrumbData");
   const [isMediaReady, setIsMediaReady] = useState(false);
   const [mediaBuildDone, setMediaBuildDone] = useState(false);
@@ -180,28 +191,39 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
           const matchedObj = mtColorLocal.find(ele => Number(ele.id) === Number(initialDecodeUrl.m));
           if (matchedObj?.colorcode) sessionColorCode = matchedObj.colorcode;
         }
+        // Resolve from the product's actual metal color id (most reliable — not filter metal type)
+        if (!sessionColorCode && initialDecodeUrl?.metalColorId) {
+          const mtColorLocal = getSession("MetalColorCombo") || [];
+          const matchedObj = mtColorLocal.find(ele => Number(ele.id) === Number(initialDecodeUrl.metalColorId));
+          if (matchedObj?.colorcode) sessionColorCode = matchedObj.colorcode;
+        }
 
         // ── Path B: l+count based pre-load (FGStore pattern) ──────────────────
         const { b, l, count } = initialDecodeUrl;
         if (!initialDecodeUrl.mediaDet || initialDecodeUrl.mediaDet === "0") {
-          if (b && l && count) {
+          if (b) {
             const cdnThumb = storeinit?.CDNDesignImageFolThumb || storeInit?.CDNDesignImageFolThumb;
+            const cdnFol = storeinit?.CDNDesignImageFol || storeInit?.CDNDesignImageFol;
             if (cdnThumb) {
-              const numCount = Number(count);
-              if (numCount > 0) {
-                const thumbPath = Array.from({ length: numCount }, (_, i) => {
-                  const suffix = sessionColorCode
-                    ? `${b}~${i + 1}~${sessionColorCode}`
-                    : `${b}~${i + 1}`;
-                  return {
-                    thumbImageUrl: `${cdnThumb}${suffix}.jpg`,
-                    originalImageExtension: l,
-                  };
-                });
-                setPdThumbImg(thumbPath);
-                setThumbImgIndex(0);
-                // Do NOT call setMediaBuildDone here — ProdCardImageFunc owns that gate
-              }
+              const numCount = (count && Number(count) > 0) ? Number(count) : 1;
+              const ext = l || "webp";
+              const thumbPath = Array.from({ length: numCount }, (_, i) => {
+                const suffix = sessionColorCode
+                  ? `${b}~${i + 1}~${sessionColorCode}`
+                  : `${b}~${i + 1}`;
+                return {
+                  thumbImageUrl: `${cdnThumb}${suffix}.jpg`,
+                  originalImageExtension: ext,
+                };
+              });
+              setPdThumbImg(thumbPath);
+              setThumbImgIndex(0);
+
+              const mainSuffix = sessionColorCode
+                ? `${b}~1~${sessionColorCode}`
+                : `${b}~1`;
+              const mainUrl = initialDecodeUrl?.img || `${cdnFol}${mainSuffix}.${ext}`;
+              if (!imageSrc) setImageSrc(mainUrl);
             }
           }
           return;
@@ -1039,7 +1061,7 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
         autocode: decodeobj.a ?? "",
         ImageExtension: "webp",
         ImageCount: 1,
-        MetalColorid: loginUserDetail?.MetalColorId || loginInfo?.MetalColorId,
+        MetalColorid: decodeobj?.metalColorId ?? loginUserDetail?.MetalColorId ?? loginInfo?.MetalColorId,
         ImageVideoDetail: decodeobj.mediaDet ?? "0",
       };
       setSingleProd(initialProd);
@@ -1064,6 +1086,18 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
         if (res && res?.pdList) {
           const prod = res?.pdList[0];
           setSingleProd(prod);
+
+          // After API loads, re-apply the URL-specified metal color so images stay correct
+          // (API may return the design's default metal which could differ from the card clicked)
+          if (decodeobj?.metalColorId) {
+            const mtColorLocal = getSession("MetalColorCombo") || [];
+            const matchedColorObj = mtColorLocal.find(
+              (ele) => Number(ele.id) === Number(decodeobj.metalColorId)
+            );
+            if (matchedColorObj?.colorcode) {
+              handleMetalWiseColorImg(matchedColorObj.colorcode);
+            }
+          }
 
           if (res?.pdList?.length > 0) {
             setisPriceLoading(false);
@@ -1878,6 +1912,7 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
         imageUrl ??
         `${storeinit?.CDNDesignImageFol}${productData?.designno}~1.${productData?.ImageExtension}`,
       mediaDet: productData?.ImageVideoDetail ?? "",
+      metalColorId: productData?.MetalColorid ?? null,
     };
 
     let encodeObj = compressAndEncode(JSON.stringify(obj));
@@ -1995,7 +2030,7 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
 
   const mtColorLocalForFallback = getSession("MetalColorCombo") || [];
   const loginInfoForFallback = getSession("loginUserDetail");
-  const urlMetalColorId = initialDecodeUrl?.m || decodeUrl?.m;
+  const urlMetalColorId = initialDecodeUrl?.metalColorId || decodeUrl?.metalColorId || initialDecodeUrl?.m || decodeUrl?.m;
   const fallbackColorId = singleProd?.MetalColorid || urlMetalColorId || loginUserDetail?.MetalColorId || loginInfoForFallback?.MetalColorId || mtColorLocalForFallback?.[0]?.id;
   const fallbackColorObj = mtColorLocalForFallback.find(ele => Number(ele.id) === Number(fallbackColorId));
   const activeColorCode = selectedMetalColor || fallbackColorObj?.colorcode;
@@ -2060,7 +2095,7 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
         setAddToCartFlag(status);
       } else if (type === "wish") {
         setWishListFlag(status);
-      }
+      } 
     }
   }, [lastSyncData]);
 
