@@ -35,6 +35,7 @@ import {
 } from "@/app/(core)/cache_utility/CacheBuilder";
 import { HeaderV2 } from "./Header";
 import SpireBox from "./Svg";
+import { getSession } from "@/app/(core)/utils/FetchSessionData";
 
 // ─── Styled Components ───────────────────────────────────────────────────────
 
@@ -247,6 +248,25 @@ const MaxTrending = ({ data, storeInit }) => {
   }, [trandingViewData, imageUrl]);
 
   const handleNavigation = (item) => {
+    // Resolve color code for this product to build a color-matched img URL
+    const mtColorLocal = getSession("MetalColorCombo") || [];
+    const targetColorObj = mtColorLocal.find(ele => Number(ele.id) === Number(item?.MetalColorid));
+    const colorCode = targetColorObj?.colorcode;
+    const cdnFol = storeInit?.CDNDesignImageFol || "";
+    const ext = item?.ImageExtension || "webp";
+    let imgUrl = "";
+    if (item?.ImageVideoDetail && item.ImageVideoDetail !== "0") {
+      try {
+        const parsed = typeof item.ImageVideoDetail === "string" ? JSON.parse(item.ImageVideoDetail) : item.ImageVideoDetail;
+        if (Array.isArray(parsed) && colorCode) {
+          const colorLower = colorCode.toLowerCase().trim();
+          const colorImg = parsed.find(x => Number(x?.TI) === 2 && (x?.CN || "").toLowerCase().trim() === colorLower);
+          if (colorImg) imgUrl = `${cdnFol}${item.designno}~${colorImg.Nm}~${colorImg.CN}.${colorImg.Ex || ext}`;
+        }
+      } catch {}
+    }
+    if (!imgUrl) imgUrl = `${cdnFol}${item?.designno}~1.${ext}`;
+
     let obj = {
       a: item?.autocode,
       b: item?.designno,
@@ -256,12 +276,19 @@ const MaxTrending = ({ data, storeInit }) => {
       f: {},
       l: item?.ImageExtension,
       count: item?.ImageCount,
+      metalColorId: item?.MetalColorid ?? null,
+      mediaDet: item?.ImageVideoDetail ?? "",
+      img: imgUrl,
+      title: item?.TitleLine ?? "",
+      price: item?.UnitCostWithMarkUp ?? 0,
+      nwt: item?.Nwt ?? 0,
     };
     let encodeObj = compressAndEncode(JSON.stringify(obj));
     push(
       `/d/${formatRedirectTitleLine(item?.TitleLine)}${item?.designno}?p=${encodeURIComponent(encodeObj)}`,
     );
   };
+
 
   if (validatedData.length === 0) return null;
 

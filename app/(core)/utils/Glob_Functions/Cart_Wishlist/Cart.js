@@ -887,6 +887,7 @@ const useCart = () => {
 
   const handleMoveToDetail = (cartData) => {
     const logindata = getSession("loginUserDetail");
+    const storeInit = getSession("storeInit");
     const createAndNavigate = (obj) => {
       const encodedObj = compressAndEncode(JSON.stringify(obj));
       navigate(
@@ -904,48 +905,63 @@ const useCart = () => {
         ? `${cartData.colorstonequalityid},${cartData.colorstonecolorid}`
         : (cartData?.cmboCSQCid || logindata?.cmboCSQCid);
 
-    if (cartData?.StockNo !== "") {
-      let obj = {
-        a: cartData?.autocode,
-        b: cartData?.designno,
-        m: cartData?.metaltypeid || cartData?.MetalPurityid || cartData?.Metalid || logindata?.MetalId,
-        d: itemDiaQc,
-        c: itemCsQc,
-        f: {},
-        g: [
-          ["", ""],
-          ["", "", ""],
-        ],
-        i: cartData?.metalcolorid || cartData?.MetalColorid,
-        l: cartData?.ImageExtension,
-        count: cartData?.ImageCount,
-        ArticleNo: cartData?.ArticleNo,
-        ArticleId: cartData?.ArticleId || cartData?.id,
-        Size: cartData?.Size,
-        Purity: cartData?.Purity,
-        metalpurityname: cartData?.metalpurityname,
-      };
-      createAndNavigate(obj);
+    const targetColorId = cartData?.metalcolorid || cartData?.MetalColorid;
+    const mtColorLocal = getSession("MetalColorCombo") || metalColorCombo || [];
+    const targetColorObj = mtColorLocal.find(
+      (ele) => Number(ele.id) === Number(targetColorId)
+    );
+    const colorCode = targetColorObj?.colorcode || cartData?.metalcolorname || cartData?.MetalColor;
+    const cdnFol = storeInit?.CDNDesignImageFol || "";
+    const ext = cartData?.ImageExtension || "webp";
+    let imgUrl = "";
+    if (cartData?.ImageVideoDetail && cartData.ImageVideoDetail !== "0") {
+      try {
+        const parsed = typeof cartData.ImageVideoDetail === "string" ? JSON.parse(cartData.ImageVideoDetail) : cartData.ImageVideoDetail;
+        if (Array.isArray(parsed) && colorCode) {
+          const colorLower = colorCode.toLowerCase().trim();
+          const colorImg = parsed.find(x => Number(x?.TI) === 2 && (x?.CN || "").toLowerCase().trim() === colorLower);
+          if (colorImg) imgUrl = `${cdnFol}${cartData.designno}~${colorImg.Nm}~${colorImg.CN}.${colorImg.Ex || ext}`;
+        }
+      } catch {}
+    }
+    if (!imgUrl && cartData?.designno && cdnFol) {
+      imgUrl = `${cdnFol}${cartData.designno}~1${colorCode ? `~${colorCode}` : ""}.${ext}`;
+    }
+
+    const commonObj = {
+      a: cartData?.autocode,
+      b: cartData?.designno,
+      m: cartData?.metaltypeid || cartData?.MetalPurityid || cartData?.Metalid || logindata?.MetalId,
+      d: itemDiaQc,
+      c: itemCsQc,
+      f: {},
+      g: [
+        ["", ""],
+        ["", "", ""],
+      ],
+      metalColorId: targetColorId || null,
+      l: ext,
+      count: (cartData?.ImageCount && Number(cartData.ImageCount) > 0) ? Number(cartData.ImageCount) : 1,
+      ArticleNo: cartData?.ArticleNo || cartData?.designno,
+      ArticleId: cartData?.ArticleId || cartData?.id,
+      Size: cartData?.Size,
+      Purity: cartData?.Purity,
+      metalpurityname: cartData?.metalpurityname,
+      mediaDet: cartData?.ImageVideoDetail ?? "",
+      img: imgUrl,
+      title: cartData?.TitleLine || cartData?.ArticleNo || cartData?.designno || "",
+      price: cartData?.UnitCostWithMarkUp || cartData?.CW_UCostWM || cartData?._UnitCost || 0,
+      nwt: cartData?.Nwt || cartData?.CW_Nwt || cartData?.CW_Gwt || 0,
+    };
+
+    const stockNo = cartData?.StockNo || cartData?.stockno;
+    if (stockNo && String(stockNo).trim() !== "") {
+      createAndNavigate({
+        ...commonObj,
+        StockNo: stockNo,
+      });
     } else {
-      let obj = {
-        a: cartData?.autocode,
-        b: cartData?.designno,
-        m: cartData?.metaltypeid || cartData?.MetalPurityid || cartData?.Metalid || logindata?.MetalId,
-        d: itemDiaQc,
-        c: itemCsQc,
-        f: {},
-        g: [
-          ["", ""],
-          ["", "", ""],
-        ],
-        i: cartData?.metalcolorid || cartData?.MetalColorid,
-        l: cartData?.ImageExtension,
-        count: cartData?.ImageCount,
-        ArticleNo: cartData?.ArticleNo,
-        ArticleId: cartData?.ArticleId || cartData?.id,
-        Size: cartData?.Size,
-      };
-      createAndNavigate(obj);
+      createAndNavigate(commonObj);
     }
   };
 

@@ -22,6 +22,7 @@ import {
 } from "@/app/(core)/cache_utility/CacheBuilder";
 import { readCache, writeCache } from "@/app/(core)/cache_utility/cacheActions";
 import SpireBox from "./Svg";
+import { getSession } from "@/app/(core)/utils/FetchSessionData";
 
 // ─── Styled Components (mirrors Category.jsx) ────────────────────────────────
 
@@ -190,7 +191,30 @@ const MaxBestSeller = ({ storeInit }) => {
     }
   };
 
-  const handleNavigation = (designNo, autoCode, titleLine, index) => {
+  const handleNavigation = (item, index) => {
+    const designNo = item?.designno;
+    const autoCode = item?.autocode;
+    const titleLine = item?.TitleLine;
+
+    // Resolve color code for this product to build a color-matched img URL
+    const mtColorLocal = getSession("MetalColorCombo") || [];
+    const targetColorObj = mtColorLocal.find(ele => Number(ele.id) === Number(item?.MetalColorid));
+    const colorCode = targetColorObj?.colorcode;
+    const cdnFol = storeInit?.CDNDesignImageFol || "";
+    const ext = item?.ImageExtension || "webp";
+    let imgUrl = "";
+    if (item?.ImageVideoDetail && item.ImageVideoDetail !== "0") {
+      try {
+        const parsed = typeof item.ImageVideoDetail === "string" ? JSON.parse(item.ImageVideoDetail) : item.ImageVideoDetail;
+        if (Array.isArray(parsed) && colorCode) {
+          const colorLower = colorCode.toLowerCase().trim();
+          const colorImg = parsed.find(x => Number(x?.TI) === 2 && (x?.CN || "").toLowerCase().trim() === colorLower);
+          if (colorImg) imgUrl = `${cdnFol}${designNo}~${colorImg.Nm}~${colorImg.CN}.${colorImg.Ex || ext}`;
+        }
+      } catch {}
+    }
+    if (!imgUrl) imgUrl = `${cdnFol}${designNo}~1.${ext}`;
+
     const obj = {
       a: autoCode,
       b: designNo,
@@ -198,6 +222,14 @@ const MaxBestSeller = ({ storeInit }) => {
       d: loginUserDetail?.cmboDiaQCid,
       c: loginUserDetail?.cmboCSQCid,
       f: {},
+      metalColorId: item?.MetalColorid ?? null,
+      mediaDet: item?.ImageVideoDetail ?? "",
+      img: imgUrl,
+      title: titleLine ?? "",
+      price: item?.UnitCostWithMarkUp ?? 0,
+      nwt: item?.Nwt ?? 0,
+      l: item?.ImageExtension,
+      count: item?.ImageCount,
     };
     sessionStorage.setItem("scrollToProduct1", `product-${index}`);
     const encodeObj = compressAndEncode(JSON.stringify(obj));
@@ -279,9 +311,7 @@ const MaxBestSeller = ({ storeInit }) => {
               <ProductCard
                 onClick={() =>
                   handleNavigation(
-                    item?.designno,
-                    item?.autocode,
-                    item?.TitleLine,
+                    item,
                     index,
                   )
                 }
