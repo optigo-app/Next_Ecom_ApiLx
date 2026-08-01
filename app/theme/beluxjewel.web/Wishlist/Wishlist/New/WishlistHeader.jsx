@@ -38,13 +38,13 @@ export default function WishlistHeader({ count = 0 , handleMovetoCartAll, handle
                     variant="contained"
                     sx={{
                         flex: 1,
-                        background: "#163164",
+                        background: "#cca182",
                         color: "#fff",
                         fontSize: { xs: "13px", sm: "15px" },
                         textTransform: "none",
                         borderRadius: "10px",
                         py: 0.8,
-                        ":hover": { background: "#163164" },
+                        ":hover": { background: "#a77c5d" },
                     }}
                     onClick={handleMovetoCartAll}
                 >

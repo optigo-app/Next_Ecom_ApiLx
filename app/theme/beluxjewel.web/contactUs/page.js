@@ -14,7 +14,7 @@ export default async function ContactUsPage() {
 
   }else{
     return (
-      <div className="fg_smr_contactMain_div">
+      <div className="fgbl_smr_contactMain_div">
   
         <div className="Fo-contactMain">
           <div className="smr_contact_inner">

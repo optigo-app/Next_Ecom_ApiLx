@@ -131,6 +131,7 @@ const AddressCard = ({
               borderRadius: "1px",
               boxShadow: "0 4px 10px rgba(0,0,0,0.15)",
               transition: "all .25s ease",
+              borderRadius: "30px",
             }}
         className="stickyPill"
           >

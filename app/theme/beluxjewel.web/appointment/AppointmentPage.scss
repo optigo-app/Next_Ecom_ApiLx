@@ -1,6 +1,6 @@
 @use '../../fgstore.web/style/variable.scss' as *;
 
-.smr_appointment-page {
+.smrbl_appointment-page {
     text-align: center;
     margin-top: 0px;
     font-family: $primaryFontFamily;
@@ -113,9 +113,10 @@
                         width: 50%;
                         .smr_btn_a{
                             border: none;
-                            background-color: #cec7ba;
+                            background-color: #cca182;
                             font-weight: 500;
                             border: 1px solid gray;
+                            color: #ffffff;
                         }
 
                         h2 {

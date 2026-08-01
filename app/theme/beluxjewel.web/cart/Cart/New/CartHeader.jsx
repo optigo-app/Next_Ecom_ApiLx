@@ -72,17 +72,17 @@ export default function CartHeader({
                 <Stack direction="row" spacing={3} divider={<Divider orientation="vertical" flexItem sx={{ borderColor: 'rgba(255,255,255,0.3)' }} />}>
 
                   <Box textAlign="center">
-                    <Typography fontSize={10} color="#b0b8c4" fontWeight={500}>G. Wt</Typography>
+                    <Typography fontSize={10} color="#000" fontWeight={500}>G. Wt</Typography>
                     <Typography fontSize={14} fontWeight={700}>{summary.totalGwt?.toFixed(3)}</Typography>
                   </Box>
 
                   <Box textAlign="center">
-                    <Typography fontSize={10} color="#b0b8c4" fontWeight={500}>N. Wt</Typography>
+                    <Typography fontSize={10} color="#000" fontWeight={500}>N. Wt</Typography>
                     <Typography fontSize={14} fontWeight={700}>{summary.totalNwt?.toFixed(3)}</Typography>
                   </Box>
 
                   <Box textAlign="center">
-                    <Typography fontSize={10} color="#b0b8c4" fontWeight={500}>Dia Wt</Typography>
+                    <Typography fontSize={10} color="#000" fontWeight={500}>Dia Wt</Typography>
                     <Typography fontSize={14} fontWeight={700}>{summary.totalDwt?.toFixed(3)} / {summary?.totalDpcs}</Typography>
                   </Box>
 
@@ -92,7 +92,7 @@ export default function CartHeader({
                     (
                       IsPriceShow && (
                         <Box textAlign="center">
-                          <Typography fontSize={10} color="#b0b8c4" fontWeight={500}>Total</Typography>
+                          <Typography fontSize={10} color="#000" fontWeight={500}>Total</Typography>
                           <Tooltip
                             title={IsSetupFor ? "Cart Summary" : <PriceTooltipContent summary={summary} />}
                             arrow
@@ -120,7 +120,7 @@ export default function CartHeader({
                     p: 0,
                     ml: 1,
                     background: "#fff",
-                    color: "#0a1f47",
+                    color: "#cca182",
                     ":hover": { background: "#f0f0f0" }
                   }}
                 >
