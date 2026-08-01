@@ -6,7 +6,8 @@ import ElveeCartPage from './Cart/Cart';
 const MainCart = ({ storeinit, visiterId }) => {
     return (
         <div style={{
-            marginBottom: "3rem"
+            marginBottom: "3rem",
+            width: "100%"
         }}>
             <ElveeCartPage storeinit={storeinit} visiterId={visiterId} />
             <PrintPageCard />

@@ -82,7 +82,7 @@ const CartDetails = ({
         boxSizing: 'border-box'
       }}
     >
-      <Box sx={{ display: "flex", alignItems: "center", gap: 1, bgcolor: '#fff', py: 2, width: '100%', borderRadius: 4, mb: 1.6 }}>
+      <Box sx={{ display: "flex", alignItems: "center", gap: 1, bgcolor: '#fff', py: 2, width: '100%', borderRadius: 4, mb: 1.6,justifyContent: 'center' }}>
         <Box>
           <Typography
             component="h1"
@@ -129,6 +129,7 @@ const CartDetails = ({
           py: 1,
           display: 'flex',
           alignItems: 'center',
+          justifyContent: 'center',
           px: 1
         }}
       >

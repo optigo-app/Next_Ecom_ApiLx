@@ -338,7 +338,8 @@ const PremiumFooter = ({
                         width: 22,
                         height: 22,
                         marginTop: 2,
-                      }}
+                        color: "#ffffff",
+                                             }}
                     />
                     <Typography
                       component="span"

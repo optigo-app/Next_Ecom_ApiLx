@@ -13,6 +13,7 @@ export const WEBSITE_DOMAINS = {
   DIAMONDINEWEB: "nxtdiamondtine.web",
   MALAKANJWEWLSWEB: "nxtmalakanJwewls.web",
   JULIANWEB: "nxtjulian.web",
+  JULIAN4WEB: "nxtjulian4.web",
   BELUXJEWELWEB: "beluxjewel.web",
 };
 

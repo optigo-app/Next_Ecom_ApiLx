@@ -46,15 +46,16 @@ export default function AddressForm({ open, handleClose, handleCancel, handleInp
                         fullWidth
                         className='smr_addressTextFields'
                     />
-                    <TextField
-                        label="Country"
-                        value={formData.country}
-                        onChange={(e) => handleInputChange(e, 'country')}
-                        error={!!errors.country}
-                        helperText={errors.country}
+                     <TextField
+                        label="City"
+                        value={formData.city}
+                        onChange={(e) => handleInputChange(e, 'city')}
+                        error={!!errors.city}
+                        helperText={errors.city}
                         fullWidth
                         className='smr_addressTextFields'
                     />
+                    
                     <TextField
                         label="State"
                         value={formData.state}
@@ -64,15 +65,18 @@ export default function AddressForm({ open, handleClose, handleCancel, handleInp
                         fullWidth
                         className='smr_addressTextFields'
                     />
+                  
+                  
                     <TextField
-                        label="City"
-                        value={formData.city}
-                        onChange={(e) => handleInputChange(e, 'city')}
-                        error={!!errors.city}
-                        helperText={errors.city}
+                        label="Country"
+                        value={formData.country}
+                        onChange={(e) => handleInputChange(e, 'country')}
+                        error={!!errors.country}
+                        helperText={errors.country}
                         fullWidth
                         className='smr_addressTextFields'
                     />
+                     
                     <TextField
                         label="ZIP Code"
                         value={formData.zipCode}

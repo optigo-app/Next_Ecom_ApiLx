@@ -56,7 +56,7 @@ const AboutUs = () => {
               textTransform: "uppercase",
             }}
           >
-            Discover Our Legacy
+            Discover Our Legacy      
           </Typography>
           <Typography
             variant="h3"

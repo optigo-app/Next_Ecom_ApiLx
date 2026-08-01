@@ -572,8 +572,8 @@ export default function ChopardCarousel() {
               1200: { slidesPerView: 4, slidesPerGroup: 4 },
             }}
           >
-            {filteredProducts.map((product) => (
-              <SwiperSlide key={product.id}>
+            {filteredProducts.map((product,ind) => (
+              <SwiperSlide key={`${product.id}-${ind}`}>
                 <ProductCard product={product} onNavigate={handleNavigateToProduct} />
               </SwiperSlide>
             ))}

@@ -8,6 +8,7 @@ const banners = [
   {
     title: "Natural Diamond",
     image: "/WebSiteStaticImage/Banner/julian/diamondType1.jpg",
+    description:"A natural diamond is formed deep within the Earth's mantle under intense heat and pressure over billions of years. Volcanic activity eventually brings these diamonds closer to the Earth's surface, where they are mined. Every natural diamond is unique. Its journey from deep within the Earth to becoming part of a beautifully crafted piece of jewellery makes it one of nature's rarest creations. For many buyers, this natural origin adds emotional and symbolic value that goes beyond appearance.",
     href: "/p",
     buttonText: "Shop Now",
     buttonBg: "#FAFAF7",
@@ -16,6 +17,7 @@ const banners = [
   {
     title: "Lab Grown Diamond",
     image: "/WebSiteStaticImage/Banner/julian/diamondType2.jpg",
+    description:"A lab-grown diamond is created in a controlled laboratory using advanced technology that replicates the natural diamond-growing process. These diamonds have the same chemical composition, crystal structure, and physical properties as natural diamonds. They are not imitation stones like cubic zirconia or moissanite. Because they are produced in a laboratory rather than mined, they are generally available at a lower price.",
     href: "/p",
     buttonText: "Shop Now",
     buttonBg: "#FAFAF7",
@@ -37,7 +39,8 @@ export default function BannerGrid() {
           textAlign: "center",
         }}
       >
-        Shop by Diamond Type
+        {/* Shop by Diamond Type */}
+        Natural vs Lab-Grown 
       </Typography>
 
       <Typography
@@ -91,7 +94,7 @@ export default function BannerGrid() {
                 position: "absolute",
                 inset: 0,
                 background:
-                  "linear-gradient(to top, rgba(0,0,0,.35), rgba(0,0,0,.05))",
+                  "rgb(41 35 35 / 29%)",
               }}
             />
 
@@ -100,9 +103,10 @@ export default function BannerGrid() {
               sx={{
                 position: "absolute",
                 inset: 0,
+                 
                 display: "flex",
                 flexDirection: "column",
-                justifyContent: "flex-end",
+                justifyContent: "center",
                 alignItems: "center",
                 px: { xs: 3, md: 6 },
                 py: { xs: 3, md: 6 },
@@ -114,7 +118,7 @@ export default function BannerGrid() {
                   fontFamily: '"EB Garamond", serif',
                   fontSize: {
                     xs: "2rem",
-                    md: "3rem",
+                    md: "4rem",
                   },
                   fontWeight: 400,
                   textAlign: "center",
@@ -124,21 +128,20 @@ export default function BannerGrid() {
                 {banner.title}
               </Typography>
 
-              <Button
-                className="shopNowBtn"
-                component={Link}
-                href={banner.href}
+              <Typography
+                className="Discription"
+                
                 variant="contained"
                 sx={{
-                  minWidth: 180,
-                  height: 46,
+                  fontSize: "1.2rem",
                   borderRadius: 0,
                   textTransform: "none",
                   boxShadow: "none",
+                  color: "#fff",
                 }}
               >
-                {banner.buttonText}
-              </Button>
+                {banner.description}
+              </Typography>
             </Box>
           </Box>
         ))}
