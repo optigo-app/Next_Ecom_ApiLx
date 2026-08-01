@@ -34,48 +34,39 @@ const ChipBar = (title, bgcolor, position) => {
       <Chip
         label={title}
         sx={{
-          bgcolor: "#FBF8F3",
-          color: "#7A6A55",
-          border: "1px solid #EFE6DA",
+          bgcolor: "#F4F3EE",
+          color: "#222222",
+          border: "1px solid #E2E0D8",
           fontWeight: 500,
           fontSize: {
-            xs: "0.6rem", // phones
-            sm: "0.65rem", // small tablets
-            md: "0.7rem", // tablets
-            lg: "0.75rem", // desktop
+            xs: "0.6rem",
+            sm: "0.65rem",
+            md: "0.68rem",
+            lg: "0.72rem",
           },
-
-          letterSpacing: "0.03em",
+          letterSpacing: "0.02em",
           height: {
-            xs: 18,
-            sm: 20,
+            xs: 20,
+            sm: 22,
             md: 22,
             lg: 24,
           },
-          borderRadius: 1,
+          borderRadius: "2px",
           px: {
             xs: 0.5,
             sm: 0.6,
             md: 0.7,
-            lg: 0.8,
           },
-
           py: 0,
-          textTransform: "uppercase",
+          textTransform: "capitalize",
           boxShadow: "none",
-
           "& .MuiChip-label": {
             px: {
               xs: 0.6,
               sm: 0.7,
               md: 0.8,
-              lg: 1,
             },
-            py: {
-              xs: 0.15,
-              sm: 0.18,
-              md: 0.2,
-            },
+            py: 0.1,
             lineHeight: 1.1,
           },
         }}
@@ -169,165 +160,32 @@ const JewelryProductGrid = ({
             );
           }
 
-          const landscapes = [
-            "/promo/Summer2_Homepage_Hero1POSTER_DT.jpg",
-            "/promo/EvergreenWeb_STLGuide_GoOut_Grid3_DT.jpg",
-          ];
-          const portraits = [
-            "/promo/02-Stevie2.0_StevieRing_V_OnFig_053.webp",
-            "/promo/1-PuzzleStackingRingSilver_January_Garnet_SS_OnFigStacked_011.webp",
-            "/promo/BTF_MaterialEd3_D-2.webp",
-          ];
-
-          const totalCount = productListData.length;
-          const seed = productListData[0]?.id || totalCount || 1;
-
-          const selectedLandscape = landscapes[seed % landscapes.length];
-          const pIndex1 = seed % portraits.length;
-          const pIndex2 = (seed + 1) % portraits.length;
-          const selectedPortrait1 = portraits[pIndex1];
-          const selectedPortrait2 = portraits[pIndex2];
-
-          // Order: Portrait (small) -> Landscape (big) -> Portrait (small)
-          const activePromos = [
-            { src: selectedPortrait1, type: "portrait" },
-            { src: selectedLandscape, type: "landscape" },
-            { src: selectedPortrait2, type: "portrait" },
-          ];
-
-          const items = [];
-          let runningSize = 0;
-          let promoIndex = 0;
-
-          productListData.forEach((item, index) => {
-            items.push({
-              type: "product",
-              data: item,
-              originalIndex: index,
-            });
-            runningSize += 1;
-
-            if (promoIndex < activePromos.length) {
-              const nextPromo = activePromos[promoIndex];
-              const isLandscape = nextPromo.type === "landscape";
-              const productsSinceLastPromo = index - promoIndex * 4;
-
-              let shouldInsert = false;
-              if (productsSinceLastPromo >= 2) {
-                if (isLandscape) {
-                  if (runningSize % 4 === 0 || runningSize % 4 === 2) {
-                    shouldInsert = true;
-                  }
-                } else {
-                  shouldInsert = true;
-                }
-              }
-
-              if (shouldInsert) {
-                items.push({
-                  type: "promo",
-                  src: nextPromo.src,
-                  promoType: nextPromo.type,
-                  key: `promo-${promoIndex}`,
-                });
-                runningSize += (isLandscape ? 2 : 1);
-                promoIndex++;
-              }
-            }
-          });
-
-          // Group into rows of desktop size 4 (products = 1, portrait = 1, landscape = 2)
-          const rows = [];
-          let currentRow = [];
-          let currentRowSize = 0;
-
-          items.forEach((item) => {
-            const itemSize = item.type === "promo" && item.promoType === "landscape" ? 2 : 1;
-            if (currentRowSize + itemSize > 4) {
-              rows.push(currentRow);
-              currentRow = [item];
-              currentRowSize = itemSize;
-            } else {
-              currentRow.push(item);
-              currentRowSize += itemSize;
-            }
-          });
-          if (currentRow.length > 0) {
-            rows.push(currentRow);
-          }
-
-          return rows.map((rowItems, rowIndex) => (
+          return (
             <Grid
               container
-              spacing={{ xs: 1, sm: 1, md: 1 }}
-              key={rowIndex}
-              sx={{ mb: { xs: 1, sm: 1, md: 1 } }}
+              spacing={0}
+              sx={{
+                borderTop: "1px solid #c0c0c0",
+                borderLeft: "1px solid #c0c0c0",
+              }}
             >
-              {rowItems.map((item, idx) => {
-                if (item.type === "promo") {
-                  const isLandscape = item.promoType === "landscape";
-                  return (
-                    <Grid
-                      key={item.key}
-                      size={{
-                        xs: isLandscape ? 12 : 6,
-                        sm: isLandscape ? 12 : 6,
-                        md: isLandscape ? (isMedium ? 12 : 6) : (isMedium ? 6 : 3),
-                      }}
-                    >
-                      <Box
-                        sx={{
-                          position: "relative",
-                          width: "100%",
-                          height: "100%",
-                          borderRadius: 1,
-                          overflow: "hidden",
-                          aspectRatio: isLandscape ? {
-                            xs: "3 / 2",
-                            sm: "2 / 1.25",
-                            md: "2 / 1.2",
-                            lg: "2 / 1.18",
-                          } : {
-                            xs: "3 / 4",
-                            sm: "1 / 1.25",
-                            md: "1 / 1.2",
-                            lg: "1/1.18",
-                        },
-                        bgcolor: "#e9e9e91a",
-                        "&:hover img": {
-                          transform: "scale(1.06)",
-                        },
-                      }}
-                    >
-                      <img
-                        src={item.src}
-                        alt="Promo Banner"
-                        style={{
-                          width: "100%",
-                          height: "100%",
-                          objectFit: "cover",
-                          display: "block",
-                          transition: "transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94)",
-                        }}
-                      />
-                    </Box>
-                  </Grid>
-                );
-              }
-
-              const prod = item.data;
-              return (
+              {productListData.map((prod, index) => (
                 <Grid
-                  key={prod?.id || item.originalIndex}
+                  key={prod?.id || index}
                   size={{
                     xs: 6,
                     sm: 6,
                     md: isMedium ? 6 : 3,
                   }}
+                  sx={{
+                    borderRight: "1px solid #c0c0c0",
+                    borderBottom: "1px solid #c0c0c0",
+                    boxSizing: "border-box",
+                  }}
                 >
                   <ProductCard
                     product={prod}
-                    index={item.originalIndex}
+                    index={index}
                     StoreInit={storeinit}
                     productData={prod}
                     handleCartandWish={handleCartandWish}
@@ -357,11 +215,10 @@ const JewelryProductGrid = ({
                     isMobile={isMobile}
                   />
                 </Grid>
-              );
-            })}
-          </Grid>
-        ));
-      })()}
+              ))}
+            </Grid>
+          );
+        })()}
       </Box>
     </Box>
   );
@@ -427,6 +284,18 @@ const ProductCard = ({
         boxShadow: "none !important",
         outline: "none !important",
         border: "none !important",
+        borderRadius: 0,
+        overflow: "hidden",
+        backgroundColor: "#ffffff",
+        height: "100%",
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "space-between",
+        position: "relative",
+        transition: "all 0.2s ease",
+        "&:hover": {
+          zIndex: 2,
+        },
       }}
     >
       <Box
@@ -435,16 +304,13 @@ const ProductCard = ({
         sx={{
           position: "relative",
           width: "100%",
-          height: "100%",
-          borderRadius: 1,
           overflow: "hidden",
           aspectRatio: {
             xs: "3 / 4",
             sm: "1 / 1.25",
             md: "1 / 1.2",
-            lg: "1/1.18",
+            lg: "1 / 1.18",
           },
-          bgcolor: "#e9e9e91a",
         }}
       >
         {/* Main Image */}
@@ -465,7 +331,7 @@ const ProductCard = ({
             width: "100%",
             height: "100%",
             objectFit: "contain",
-            borderRadius: 4,
+            borderRadius: 0,
             transition: "0s ease-in-out",
             mixBlendMode: "multiply",
           }}
@@ -513,7 +379,7 @@ const ProductCard = ({
                   onContextMenu={(e) => e.preventDefault()}
                   sx={{
                     objectFit: "contain !important",
-                    borderRadius: 4,
+                    borderRadius: 0,
                     transition: "opacity 0.4s ease",
                     width: "100%",
                     height: "100%",
@@ -559,7 +425,7 @@ const ProductCard = ({
                       width: "100%",
                       height: "100%",
                       objectFit: "contain",
-                      borderRadius: 4,
+                      borderRadius: 0,
                       transition: "opacity 0.4s ease",
                       mixBlendMode: "multiply",
                     }}
@@ -584,8 +450,8 @@ const ProductCard = ({
         <Box
           sx={{
             position: "absolute",
-            top: 20,
-            left: 12,
+            top: 10,
+            left: 10,
             zIndex: 22,
             display: "flex",
             flexDirection: { xs: "column", md: "row" },

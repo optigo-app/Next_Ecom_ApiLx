@@ -15,21 +15,21 @@ const WishToggleButton = ({ productData, wishArr, handleCartandWish }) => {
       onClick={(e) => e.stopPropagation()}
       sx={{
         position: "absolute",
-        top: 16,
-        right: 16,
+        top: 4,
+            right: 5,
         zIndex: 5,
-        backgroundColor: "rgba(255, 255, 255, 0.9)",
-        backdropFilter: "blur(10px)",
+        backgroundColor: "rgba(255, 255, 255, 0.75)",
+        backdropFilter: "blur(4px)",
         borderRadius: "50%",
-        width: 42,
-        height: 42,
+        width: 34,
+        height: 34,
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
         transition: "all 0.25s ease",
         "&:hover": {
-          backgroundColor: "#fff",
-          transform: "scale(1.1)",
+          backgroundColor: "#ffffff",
+          transform: "scale(1.08)",
         },
       }}
     >
