@@ -355,6 +355,8 @@ export const AppConfig = {
     ico: "/optigo_favicon.ico",
     web: "/WebSiteStaticImage/logoIcon/webLogo.png",
     mobile: "/WebSiteStaticImage/logoIcon/mobileLogo.png",
+    transparent_mobile: "/WebSiteStaticImage/logoIcon/sona/image.png",
+    black_logo: "/WebSiteStaticImage/logoIcon/webLogo11.png",
     metaData: {
       description:
         "Discover timeless jewelry crafted with precision and elegance. Explore gold, diamond, and silver collections designed for everyday wear and special occasions, with trusted quality and exceptional craftsmanship.",
