@@ -10,6 +10,15 @@ import {
   Badge,
   Tooltip,
   Skeleton,
+  Drawer,
+  List,
+  ListItem,
+  ListItemButton,
+  ListItemText,
+  Divider,
+  useMediaQuery,
+  useTheme,
+  alpha,
 } from '@mui/material';
 import "./Header.modul.scss";
 import SearchIcon from '@mui/icons-material/Search';
@@ -17,6 +26,10 @@ import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
 import LogoutIcon from '@mui/icons-material/Logout';
 import ShoppingCartOutlinedIcon from '@mui/icons-material/ShoppingCartOutlined';
 import StarBorderRoundedIcon from '@mui/icons-material/StarBorderRounded';
+import MenuIcon from '@mui/icons-material/Menu';
+import CloseIcon from '@mui/icons-material/Close';
+import ChevronRightRoundedIcon from '@mui/icons-material/ChevronRightRounded';
+import ArrowBackRoundedIcon from '@mui/icons-material/ArrowBackRounded';
 import Link from 'next/link';
 import { useNextRouterLikeRR } from "@/app/(core)/hooks/useLocationRd";
 import Cookies from "js-cookie";
@@ -114,7 +127,7 @@ function HWMonogram() {
   );
 }
 
-//   Mega Menu Panel 
+//   Mega Menu Panel  (desktop hover dropdown — unchanged)
 function MegaMenu({ item, images, onColumnClick, onLinkClick }) {
   const columns = item?.param1 || [];
 
@@ -273,11 +286,42 @@ export default function HarryWinstonHeader({ storeinit, logos }) {
   const [menuLoading, setMenuLoading] = useState(true);
   const [isMounted, setIsMounted] = useState(false);
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
-  const [DrawerSearchOpen, setDrawerSearchOpen] = useState(false);
+
+  // ── FIX: two independent search states instead of one shared one ────────
+  // Previously a single `DrawerSearchOpen` boolean controlled BOTH the
+  // desktop inline search bar AND the mobile drawer search bar. Toggling
+  // one via `setDrawerSearchOpen` made both render at the same time, so
+  // clicking the search icon inside the drawer also popped open the
+  // "outside" (desktop) search bar. Splitting them fixes that.
+  const [SearchOpen, setSearchOpen] = useState(false);         // desktop inline search
+  const [DrawerSearchOpen, setDrawerSearchOpen] = useState(false); // mobile drawer search
+
   const [isCartOpen, setIsCartOpen] = useState(false);
   const closeTimer = useRef(null);
   const { push } = useNextRouterLikeRR();
   const navigate = (url) => push(url);
+
+  // ── Mobile drawer navigation (UI only — reuses existing handlers) ───────
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [activeMobileMenu, setActiveMobileMenu] = useState(null);
+
+  const handleDrawerToggle = () => {
+    setMobileOpen((prev) => !prev);
+    setActiveMobileMenu(null);
+  };
+
+  const handleMobileItemClick = (item, event) => {
+    if (item?.param1?.length) {
+      setActiveMobileMenu(item.menuname);
+    } else {
+      handleTopLevelClick(item, event);
+      setMobileOpen(false);
+    }
+  };
+
+  const handleMobileBack = () => setActiveMobileMenu(null);
 
   const companyLogo = logos?.web;
   const IsCartNo = storeinit?.CartNo;
@@ -580,6 +624,13 @@ export default function HarryWinstonHeader({ storeinit, logos }) {
   const activeImages =
     activeIndex >= 0 ? FALLBACK_IMAGE_PAIRS[activeIndex % FALLBACK_IMAGE_PAIRS.length] : [];
 
+  // ── Mobile drawer data source (same source as desktop nav — no data change) ─
+  const mobileTopLevelItems =
+    isMounted && islogin && menuItems?.length > 0 ? menuItems : null;
+  const activeMobileItem = mobileTopLevelItems?.find(
+    (item) => item.menuname === activeMobileMenu
+  );
+
   return (
     <>
 
@@ -601,6 +652,22 @@ export default function HarryWinstonHeader({ storeinit, logos }) {
           }}
         >
 
+          {/* Hamburger — mobile only */}
+          <IconButton
+            onClick={handleDrawerToggle}
+            aria-label="Open menu"
+            sx={{
+              display: { xs: 'inline-flex', md: 'none' },
+              position: 'absolute',
+              left: { xs: 8, sm: 16 },
+              top: '50%',
+              transform: 'translateY(-50%)',
+              color: TEXT_LIGHT,
+              '&:hover': { color: WHITE },
+            }}
+          >
+            <MenuIcon />
+          </IconButton>
 
           <Box sx={{ position: 'absolute', left: '50%', transform: 'translateX(-50%)' }}>
             {/* <Typography
@@ -625,7 +692,8 @@ export default function HarryWinstonHeader({ storeinit, logos }) {
               alt="Logo"
               onClick={() => push('/')}
               sx={{
-                height: { xs: '28px', md: '90px' },
+                height: { xs: '60px', md: '90px' },
+                marginTop: { xs: 2, md: 0 },
                 width: 'auto',
                 padding: { xs: 0, md: 2 },
                 cursor: 'pointer',
@@ -635,22 +703,28 @@ export default function HarryWinstonHeader({ storeinit, logos }) {
             />
           </Box>
 
-            {DrawerSearchOpen && (
-                    <DrawerSearchBar
-                      setSearchOpen={setDrawerSearchOpen}
-                      searchDataFucn={searchDataFucn}
-                    />
-                  )}
+          {/* FIX: this is the DESKTOP inline search bar — now controlled by
+              `SearchOpen`, completely independent from the drawer's search */}
+          {SearchOpen && (
+            <DrawerSearchBar
+              setSearchOpen={setSearchOpen}
+              searchDataFucn={searchDataFucn}
+            />
+          )}
 
-          {/* Right-side icon cluster: wishlist + cart (logged-in only) + login/logout */}
+          {/* Right-side icon cluster: wishlist + cart (logged-in only) + login/logout
+              NOTE: Search + Wishlist are hidden here on mobile — they live inside
+              the drawer header instead (see Drawer below). Cart / Account / Login
+              stay visible on every screen size. */}
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
             {isMounted && islogin && (
               <>
 
                 <IconButton
-                  onClick={() => setDrawerSearchOpen((prev) => !prev)}
+                  onClick={() => setSearchOpen((prev) => !prev)}
                   sx={{
                     color: "#000",
+                    display: { xs: 'none', md: 'inline-flex' },
                   }}
                 >
                   <SearchIcon style={{ fontSize: "20px", color: "#ffffff" }} />
@@ -660,7 +734,12 @@ export default function HarryWinstonHeader({ storeinit, logos }) {
                   <IconButton
                     onClick={() => navigate("/myWishList")}
                     aria-label="Wishlist"
-                    sx={{ color: TEXT_LIGHT, p: 0.8, '&:hover': { color: WHITE } }}
+                    sx={{
+                      color: TEXT_LIGHT,
+                      p: 0.8,
+                      '&:hover': { color: WHITE },
+                      display: { xs: 'none', md: 'inline-flex' },
+                    }}
                   >
                     <Badge badgeContent={wishCountNum} max={1000} overlap="rectangular" color="secondary">
                       <FavoriteBorderIcon sx={{ fontSize: 20 }} />
@@ -738,13 +817,13 @@ export default function HarryWinstonHeader({ storeinit, logos }) {
           <Box className="hwMonogramDivider" sx={{ flex: 1, height: '0.5px', opacity: 0.7 }} />
         </Box>
 
-        {/* Navigation bar 
+        {/* Navigation bar — DESKTOP ONLY now, mobile uses the drawer below
             Logged out  -> static links (Diamond Shape, Featured Products, Trending Now, Services)
             Logged in   -> dynamic API-driven menu with mega menu dropdown       */}
         <Box
           className="navBar"
           sx={{
-            display: 'flex',
+            display: { xs: 'none', md: 'flex' },
             alignItems: 'center',
             justifyContent: 'center',
             gap: { xs: 2, md: 4 },
@@ -831,7 +910,7 @@ export default function HarryWinstonHeader({ storeinit, logos }) {
           )}
         </Box>
 
-        {/* Mega Menu Dropdown (logged-in users only)  */}
+        {/* Mega Menu Dropdown (logged-in users only, desktop hover)  */}
         {isMounted && islogin && activeItem && (
           <Box
             onMouseEnter={handleMenuMouseEnter}
@@ -854,6 +933,276 @@ export default function HarryWinstonHeader({ storeinit, logos }) {
           </Box>
         )}
       </Box>
+
+      {/* ── Mobile Drawer Navigation ─────────────────────────────────────── */}
+      <Drawer
+        anchor="left"
+        open={mobileOpen}
+        onClose={handleDrawerToggle}
+        sx={{
+          '& .MuiDrawer-paper': {
+            width: { xs: '85%', sm: 380 },
+            maxWidth: '100%',
+            bgcolor: WHITE,
+          },
+        }}
+      >
+        {/* Inline search bar — toggled via the search icon below.
+            FIX: stays on its own `DrawerSearchOpen` state, so it never
+            gets triggered by the desktop search icon anymore. */}
+        {DrawerSearchOpen && (
+          <DrawerSearchBar
+            isFormobile={true}
+            setSearchOpen={setDrawerSearchOpen}
+            searchDataFucn={searchDataFucn}
+          />
+        )}
+
+        {/* Drawer header: logo + search + wishlist + close
+            Search & Wishlist live here (mobile-only) instead of the main header */}
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            p: 2,
+            borderBottom: `1px solid ${alpha('#000', 0.08)}`,
+          }}
+        >
+          <Box
+            component="img"
+            src={companyLogo}
+            alt="Logo"
+            sx={{ height: '32px', width: 'auto' }}
+          />
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.6 }}>
+            {isMounted && islogin && (
+              <>
+                <IconButton
+                  onClick={() => setDrawerSearchOpen((prev) => !prev)}
+                  aria-label="Search"
+                  sx={{ color: '#000' }}
+                >
+                  <SearchIcon style={{ fontSize: '20px', color: 'inherit' }} />
+                </IconButton>
+                <IconButton
+                  onClick={() => {
+                    navigate('/myWishList');
+                    setMobileOpen(false);
+                  }}
+                  aria-label="Wishlist"
+                  sx={{ color: '#000' }}
+                >
+                  <Badge badgeContent={wishCountNum} max={1000} overlap="rectangular" color="secondary">
+                    <FavoriteBorderIcon sx={{ fontSize: 20 }} />
+                  </Badge>
+                </IconButton>
+              </>
+            )}
+            <IconButton onClick={handleDrawerToggle} aria-label="Close menu" sx={{ color: '#000' }}>
+              <CloseIcon />
+            </IconButton>
+          </Box>
+        </Box>
+
+        {/* Drill-down view: a top-level item's columns + leaf links */}
+        {activeMobileItem ? (
+          <Box sx={{ bgcolor: WHITE, height: '100%', display: 'flex', flexDirection: 'column' }}>
+            <Box
+              sx={{
+                p: 2,
+                borderBottom: `1px solid ${alpha('#000', 0.08)}`,
+                display: 'flex',
+                alignItems: 'center',
+                gap: 1,
+                position: 'sticky',
+                top: 0,
+                bgcolor: WHITE,
+                zIndex: 1,
+              }}
+            >
+              <IconButton
+                onClick={handleMobileBack}
+                sx={{
+                  color: '#000',
+                  p: 0.8,
+                  bgcolor: alpha('#000', 0.05),
+                  '&:hover': { bgcolor: alpha('#000', 0.08) },
+                }}
+              >
+                <ArrowBackRoundedIcon fontSize="small" />
+              </IconButton>
+              <Typography
+                onClick={(e) => {
+                  handleTopLevelClick(activeMobileItem, e);
+                  setMobileOpen(false);
+                }}
+                sx={{
+                  fontWeight: 600,
+                  color: '#000',
+                  cursor: 'pointer',
+                  textTransform: 'uppercase',
+                  letterSpacing: '1px',
+                  '&:hover': { textDecoration: 'underline' },
+                }}
+              >
+                {activeMobileItem.menuname}
+              </Typography>
+            </Box>
+
+            <List sx={{ flex: 1, overflowY: 'auto', bgcolor: WHITE, py: 1 }}>
+              {activeMobileItem.param1?.map((col, colIndex) => {
+                const visibleLinks = (col.param2 || []).filter(
+                  (p2) => p2?.param2dataname && p2.param2dataname.trim() !== ''
+                );
+                return (
+                  <Box key={col.param1dataid ?? colIndex}>
+                    <ListItem disablePadding sx={{ px: 3, py: 0.8 }}>
+                      <Typography
+                        onClick={(e) => {
+                          handleColumnClick(activeMobileItem, col, e);
+                          setMobileOpen(false);
+                        }}
+                        sx={{
+                          fontWeight: 600,
+                          fontSize: '0.85rem',
+                          color: '#222',
+                          textTransform: 'uppercase',
+                          letterSpacing: '1px',
+                          cursor: 'pointer',
+                          '&:hover': { textDecoration: 'underline' },
+                        }}
+                      >
+                        {col.param1dataname}
+                      </Typography>
+                    </ListItem>
+                    {visibleLinks.length > 0 && (
+                      <Box sx={{ pl: 1 }}>
+                        {visibleLinks.map((param2Item, li) => (
+                          <ListItemButton
+                            key={param2Item.param2dataid ?? li}
+                            onClick={(e) => {
+                              handleLeafLinkClick(activeMobileItem, col, param2Item, e);
+                              setMobileOpen(false);
+                            }}
+                            sx={{
+                              py: 0.6,
+                              px: 3,
+                              '&:hover': { bgcolor: alpha('#000', 0.04) },
+                            }}
+                          >
+                            <ListItemText
+                              primary={param2Item.param2dataname}
+                              primaryTypographyProps={{
+                                sx: { fontSize: '0.85rem', color: '#555', textTransform: 'uppercase', letterSpacing: '0.5px' },
+                              }}
+                            />
+                          </ListItemButton>
+                        ))}
+                      </Box>
+                    )}
+                    <Divider sx={{ my: 0.5 }} />
+                  </Box>
+                );
+              })}
+            </List>
+          </Box>
+        ) : (
+          /* Main list: dynamic menu (logged in) or static links (logged out) */
+          <List sx={{ pt: 0, bgcolor: WHITE }}>
+            {!islogin && (
+              <ListItem disablePadding>
+                <ListItemButton
+                  component="a"
+                  href="/LoginOption"
+                  sx={{
+                    py: 1.5,
+                    px: 3,
+                    borderBottom: `1px solid ${alpha('#000', 0.06)}`,
+                    '&:hover': { bgcolor: alpha('#000', 0.04) },
+                  }}
+                >
+                  <ListItemText
+                    primary="Login"
+                    primaryTypographyProps={{
+                      sx: { fontSize: '1rem', fontWeight: 500, letterSpacing: 0.4, color: '#3C3C3C' },
+                    }}
+                  />
+                </ListItemButton>
+              </ListItem>
+            )}
+
+            {mobileTopLevelItems
+              ? mobileTopLevelItems.map((item, index) => (
+                  <ListItem
+                    key={item.menuid ?? index}
+                    disablePadding
+                    secondaryAction={
+                      item.param1?.length ? (
+                        <IconButton
+                          edge="end"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setActiveMobileMenu(item.menuname);
+                          }}
+                          sx={{ color: '#000' }}
+                        >
+                          <ChevronRightRoundedIcon />
+                        </IconButton>
+                      ) : null
+                    }
+                    sx={{ borderBottom: `1px solid ${alpha('#000', 0.06)}` }}
+                  >
+                    <ListItemButton
+                      onClick={(e) => handleMobileItemClick(item, e)}
+                      sx={{ py: 1.5, px: 3, '&:hover': { bgcolor: alpha('#000', 0.04) } }}
+                    >
+                      <ListItemText
+                        primary={item.menuname}
+                        primaryTypographyProps={{
+                          sx: { fontSize: '1rem', fontWeight: 500, letterSpacing: 0.4, color: '#3C3C3C', textTransform: 'uppercase' },
+                        }}
+                      />
+                    </ListItemButton>
+                  </ListItem>
+                ))
+              : STATIC_NAV_LINKS.map((link) => (
+                  <ListItem key={link.label} disablePadding sx={{ borderBottom: `1px solid ${alpha('#000', 0.06)}` }}>
+                    <ListItemButton
+                      component="a"
+                      href={link.href}
+                      onClick={() => setMobileOpen(false)}
+                      sx={{ py: 1.5, px: 3, '&:hover': { bgcolor: alpha('#000', 0.04) } }}
+                    >
+                      <ListItemText
+                        primary={link.label}
+                        primaryTypographyProps={{
+                          sx: { fontSize: '1rem', fontWeight: 500, letterSpacing: 0.4, color: '#3C3C3C', textTransform: 'uppercase' },
+                        }}
+                      />
+                    </ListItemButton>
+                  </ListItem>
+                ))}
+
+            {isMounted && islogin && (
+              <ListItem disablePadding sx={{ borderBottom: `1px solid ${alpha('#000', 0.06)}` }}>
+                <ListItemButton
+                  onClick={() => {
+                    navigate('/account');
+                    setMobileOpen(false);
+                  }}
+                  sx={{ py: 1.5, px: 3, '&:hover': { bgcolor: alpha('#000', 0.04) } }}
+                >
+                  <ListItemText
+                    primary="Account"
+                    primaryTypographyProps={{ sx: { fontSize: '1rem', fontWeight: 500, letterSpacing: 0.4, color: '#3C3C3C' } }}
+                  />
+                </ListItemButton>
+              </ListItem>
+            )}
+          </List>
+        )}
+      </Drawer>
 
       {IsCartNo == 2 && <CartDrawer open={isCartOpen} />}
 

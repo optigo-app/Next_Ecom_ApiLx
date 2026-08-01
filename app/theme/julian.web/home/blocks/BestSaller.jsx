@@ -3,6 +3,8 @@
 import { useEffect, useRef, useState, useMemo, useCallback } from "react";
 import { Box, Container, Typography, Button } from "@mui/material";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
+import { Swiper, SwiperSlide } from "swiper/react";
+import "swiper/css";
 import Pako from "pako";
 import { formatRedirectTitleLine, formatter } from "@/app/(core)/utils/Glob_Functions/GlobalFunction";
 import { Get_Tren_BestS_NewAr_DesigSet_Album } from "@/app/(core)/utils/API/Home/Get_Tren_BestS_NewAr_DesigSet_Album/Get_Tren_BestS_NewAr_DesigSet_Album";
@@ -13,7 +15,7 @@ import { readCache, writeCache } from "@/app/(core)/cache_utility/cacheActions";
 
 const imageNotFound = "image-not-found.jpg";
 
-export default function JewelryGallery({ noHeading = false, storeInit }) {
+export default function BestSaller({ noHeading = false, storeInit }) {
   const [imageUrl, setImageUrl] = useState();
   const [bestSellerData, setBestSellerData] = useState([]);
   const [validatedData, setValidatedData] = useState([]);
@@ -168,6 +170,99 @@ export default function JewelryGallery({ noHeading = false, storeInit }) {
   // ── Early return ────────────────────────────────────────────────────────
   if (!bestSellerData?.length) return null;
 
+  const totalItems = validatedData.length;
+
+  // Same exact card markup as before — only extracted into a function
+  // so it can be reused inside SwiperSlide without touching any UI/data.
+  const renderCard = (item, index) => (
+    <Box
+      className="gallery-card"
+      onClick={() => handleNavigation(item, index)}
+      sx={{
+        position: "relative",
+        width: "100%",
+        height: {
+          xs: 320,
+          md: 320,
+        },
+        overflow: "hidden",
+        cursor: "pointer",
+        backgroundColor: "#f5f5f560",
+
+        "&:hover img": {
+          transform: "scale(1.08)",
+        },
+
+        "&:hover .product-overlay": {
+          transform: "translateY(0)",
+        },
+      }}
+    >
+      <Box
+        component="img"
+        src={item.validatedImageURL}
+        alt={item?.TitleLine || item?.designno}
+        onError={(e) => {
+          e.target.src = imageNotFound;
+          e.target.alt = "no-image-found";
+        }}
+        sx={{
+          position: "absolute",
+          inset: 0,
+          width: "100%",
+          height: "100%",
+          objectFit: "cover",
+          transition: "transform .6s ease",
+        }}
+      />
+
+      {/* Product Name + Price */}
+      <Box
+        className="product-overlay"
+        sx={{
+          position: "absolute",
+          bottom: 0,
+          left: 0,
+          width: "100%",
+          background: "#fff",
+          py: 1,
+          px: 2,
+          textAlign: "center",
+          transform: "translateY(100%)",
+          transition: "transform .4s ease",
+          zIndex: 2,
+          boxSizing: "border-box",
+        }}
+      >
+        <Typography
+          sx={{
+            fontSize: 20,
+            fontWeight: 800,
+            color: "#2C2C2C",
+            whiteSpace: "nowrap",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+          }}
+        >
+          {item?.TitleLine || item?.designno}
+          <br />
+          {loginUserDetail?.CurrencyCode ?? storeInit?.CurrencyCode}&nbsp;
+          {formatter(item?.UnitCostWithMarkUp)}
+        </Typography>
+      </Box>
+
+      <Box
+        sx={{
+          position: "absolute",
+          inset: 0,
+          background: "linear-gradient(to top, rgba(0,0,0,.15), transparent)",
+          opacity: 0,
+          transition: ".3s",
+        }}
+      />
+    </Box>
+  );
+
   // ── Render ──────────────────────────────────────────────────────────────
   return (
     <Container maxWidth="xl">
@@ -208,106 +303,52 @@ export default function JewelryGallery({ noHeading = false, storeInit }) {
         </Box>
       </Box>
 
-      <Box
-        sx={{
-          display: "grid",
-          gridTemplateColumns: {
-            xs: "repeat(2, 1fr)",
-            sm: "repeat(3, 1fr)",
-            md: "repeat(6, 1fr)",
+      
+      <Swiper
+        spaceBetween={10}
+        slidesPerView={1}
+        // breakpoints={{
+        //   0: {
+        //     slidesPerView: 2,
+        //     allowTouchMove: true,
+        //   },
+        //   600: {
+        //     slidesPerView: 3,
+        //     allowTouchMove: true,
+        //   },
+        //   900: {
+        //     slidesPerView: Math.min(6, totalItems) || 6,
+        //     allowTouchMove: false,
+        //   },
+        // }}
+        breakpoints={{
+          0: {
+            slidesPerView: 1,
+            allowTouchMove: true,
           },
-          gap: "10px",
+          600: {
+            slidesPerView: 3,
+            allowTouchMove: true,
+          },
+          // Covers screen sizes from 900px up to 1199px (e.g., your 1024px screen)
+          900: {
+            slidesPerView: 4,
+            allowTouchMove: true,
+          },
+          // Takes effect only at 1200px and above
+          1200: {
+            slidesPerView: 6,
+            allowTouchMove: false,
+          },
         }}
+        style={{ overflow: "hidden" }}
       >
         {validatedData.map((item, index) => (
-          <Box
-            key={item?.designno ?? index}
-            className="gallery-card"
-            onClick={() => handleNavigation(item, index)}
-            sx={{
-              position: "relative",
-              height: {
-                xs: 220,
-                md: 320,
-              },
-              overflow: "hidden",
-              cursor: "pointer",
-              backgroundColor: "#f5f5f560",
-
-              "&:hover img": {
-                transform: "scale(1.08)",
-              },
-
-              "&:hover .product-overlay": {
-                transform: "translateY(0)",
-              },
-            }}
-          >
-            <Box
-              component="img"
-              src={item.validatedImageURL}
-              alt={item?.TitleLine || item?.designno}
-              onError={(e) => {
-                e.target.src = imageNotFound;
-                e.target.alt = "no-image-found";
-              }}
-              sx={{
-                position: "absolute",
-                inset: 0,
-                width: "100%",
-                height: "100%",
-                objectFit: "cover",
-                transition: "transform .6s ease",
-              }}
-            />
-
-            {/* Product Name + Price */}
-            <Box
-              className="product-overlay"
-              sx={{
-                position: "absolute",
-                bottom: 0,
-                left: 0,
-                width: "100%",
-                background: "#fff",
-                py: 1,
-                px: 2,
-                textAlign: "center",
-                transform: "translateY(100%)",
-                transition: "transform .4s ease",
-                zIndex: 2,
-                boxSizing: "border-box",
-              }}
-            >
-              <Typography
-                sx={{
-                  fontSize: 20,
-                  fontWeight: 800,
-                  color: "#2C2C2C",
-                  whiteSpace: "nowrap",
-                  overflow: "hidden",
-                  textOverflow: "ellipsis",
-                }}
-              >
-                {item?.TitleLine || item?.designno}
-                <br />
-                {loginUserDetail?.CurrencyCode ?? storeInit?.CurrencyCode}&nbsp;
-                {formatter(item?.UnitCostWithMarkUp)}
-              </Typography>
-            </Box>
-
-            <Box
-              sx={{
-                position: "absolute",
-                inset: 0,
-                background: "linear-gradient(to top, rgba(0,0,0,.15), transparent)",
-                opacity: 0,
-                transition: ".3s",
-              }}
-            />
-          </Box>
+          <SwiperSlide key={item?.designno ?? index}>
+            {renderCard(item, index)}
+          </SwiperSlide>
         ))}
-      </Box>
+      </Swiper>
 
       <Box
         sx={{

@@ -8,7 +8,7 @@ export default function MarketingBanner() {
     <Box
       sx={{
         position: 'relative',
-        height: { xs: 220, md: 350 },
+        height: { xs: 320, md: 350 },
         borderRadius: 0,
         overflow: 'hidden',
 

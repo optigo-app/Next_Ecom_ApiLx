@@ -337,7 +337,7 @@ const TabSection = ({ storeData }) => {
                                                 <Typography
                                                   sx={{
                                                     fontWeight: 600,
-                                                    fontSize: { xs: "0.78rem", sm: "0.85rem", md: index % 2 === 0 ? "1.2rem" : "0.9rem" },
+                                                    fontSize: { xs: index % 2 === 0 ? "0.8rem" : "0.78rem", sm: "0.85rem", md: index % 2 === 0 ? "1.2rem" : "0.9rem" },
                                                     color: "#050505",
                                                   }}
                                                 >

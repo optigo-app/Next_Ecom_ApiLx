@@ -1,12 +1,10 @@
- 
-
-
-
 'use client';
 
 import { Box, Container, Typography } from '@mui/material';
 import Link from "next/link";
- 
+import { Swiper, SwiperSlide } from "swiper/react";
+import "swiper/css";
+
 import { useRef } from 'react';
 
 
@@ -58,10 +56,11 @@ function VideoCard({ item }) {
             onMouseLeave={handleMouseLeave}
             sx={{
                 position: 'relative',
+                width: '100%',
                 overflow: 'hidden',
                 cursor: 'pointer',
                 height: {
-                    xs: 320,
+                    xs: 520,
                     md: 520,
                 },
 
@@ -164,6 +163,8 @@ function VideoCard({ item }) {
     );
 }
 export default function CategoryShowcase() {
+    const totalItems = categories.length;
+
     return (
         <Container maxWidth="xl" sx={{pt:2, pb: 4}}>
 
@@ -180,23 +181,34 @@ export default function CategoryShowcase() {
             >
                 Watch & Buy
             </Typography>
-            <Box
-                sx={{
-                    display: 'grid',
-                    gridTemplateColumns: {
-                        xs: '1fr',
-                        sm: 'repeat(2,1fr)',
-                        md: 'repeat(4,1fr)',
+
+           
+            <Swiper
+                spaceBetween={12}
+                slidesPerView={1}
+                loop={true}
+                breakpoints={{
+                    0: {
+                        slidesPerView: 1,
+                        allowTouchMove: true,
                     },
-                    gap: 1.5,
+                    600: {
+                        slidesPerView: 3,
+                        allowTouchMove: true,
+                    },
+                    1200: {
+                        slidesPerView: Math.min(4, totalItems) || 1,
+                        allowTouchMove: false,
+                    },
                 }}
+                style={{ overflow: 'hidden' }}
             >
                 {categories.map((item, index) => (
-                     
-                    <VideoCard key={index} item={item} />
-                   
+                    <SwiperSlide key={index}>
+                        <VideoCard item={item} />
+                    </SwiperSlide>
                 ))}
-            </Box>
+            </Swiper>
         </Container>
     );
 }

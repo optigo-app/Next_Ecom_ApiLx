@@ -8,7 +8,7 @@ import {
 } from "@mui/material";
 import { IoClose as Close, IoSearchOutline as Search } from "react-icons/io5";
 
-const DrawerSearchBar = ({ setSearchOpen, searchDataFucn }) => {
+const DrawerSearchBar = ({ setSearchOpen, searchDataFucn, isFormobile = false }) => {
   const [value, setValue] = useState("");
 
   const handleClose = () => setSearchOpen(false);
@@ -22,12 +22,13 @@ const DrawerSearchBar = ({ setSearchOpen, searchDataFucn }) => {
   return (
     <Box
       sx={{
-        width: "20%",
+        width: isFormobile ? "99%" : "20%",
         bgcolor: "#fff",
+        padding: isFormobile ? "10px" : "0px",
        
         borderBottom: "1px solid #eee",
         position: "sticky",
-        top: 0,
+        top: isFormobile ? 10 : 0,
         zIndex: 10,
       }}
     >

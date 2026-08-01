@@ -537,6 +537,71 @@
   border-bottom-color: #000;
 }
 
+
+.category-tabs {
+  display: flex;
+  gap: 8px;
+  padding: 4px 2px;
+
+  // Desktop: centered, no scroll needed if it fits
+  justify-content: center;
+  flex-wrap: wrap;
+
+  @media (max-width: 768px) {
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+    scroll-snap-type: x proximity;
+
+    // hide scrollbar but keep it scrollable
+    scrollbar-width: none; // Firefox
+    &::-webkit-scrollbar {
+      display: none; // Chrome/Safari
+    }
+
+    // fade hint at the edges so users know it scrolls
+    -webkit-mask-image: linear-gradient(
+      to right,
+      transparent,
+      black 24px,
+      black calc(100% - 24px),
+      transparent
+    );
+    mask-image: linear-gradient(
+      to right,
+      transparent,
+      black 24px,
+      black calc(100% - 24px),
+      transparent
+    );
+  }
+}
+
+.category-tab {
+  flex-shrink: 0; // prevents tabs from squashing/wrapping text
+  white-space: nowrap;
+  scroll-snap-align: start;
+
+  padding: 8px 18px;
+  font-size: 14px;
+
+  @media (max-width: 600px) {
+    padding: 7px 14px;
+    font-size: 13px;
+  }
+
+  @media (max-width: 400px) {
+    padding: 6px 12px;
+    font-size: 12.5px;
+  }
+}
+
+
+
+
+
 /* ── Responsive ── */
 @media (max-width: 900px) {
   .carousel-inner {
