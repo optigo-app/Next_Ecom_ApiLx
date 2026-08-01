@@ -2,6 +2,8 @@
 
 import React, { useEffect, useState } from "react";
 import { Box, Typography, Container } from '@mui/material';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import 'swiper/css';
 import { HomeCollectionPageApi } from "@/app/(core)/utils/API/Home/HomeCollectionPage/HomeCollectionPageApi";
 import CollectionSkeleton from "./Loader"; // Assumed path based on your old code
 import { useStore } from "@/app/(core)/contexts/StoreProvider";
@@ -170,129 +172,154 @@ export default function LuxuryAngledGrid() {
     return null;
   }
 
-  return (
-    <Container maxWidth="xl" sx={{ py: 8 }}>
-      
+  const totalItems = sortedCollection.length;
 
-      {/* Dynamic Angled Row Section */}
+  // Same exact card markup as before — only extracted into a function
+  // so it can be reused inside SwiperSlide without touching any UI/data.
+  const renderCard = (item, index) => {
+    const hasImage = item?.imgsrc && item?.imgsrc.length > 0;
+    const bgColor = FALLBACK_COLORS[index % FALLBACK_COLORS.length];
+
+    return (
       <Box
         sx={{
-          display: 'flex',
-          flexDirection: { xs: 'column', md: 'row' }, // Stack vertically on mobile, row on desktop
-          gap: '8px', 
+          flex: 1,
+          width: '100%',
+          height: 420,
+          position: 'relative',
+          // Applies angled layout logic on desktop screens only
+          clipPath: { xs: 'none', md: getClipPath(index, totalItems) },
           overflow: 'hidden',
+          cursor: 'pointer',
+          backgroundColor: hasImage ? "transparent" : bgColor,
         }}
+        onClick={(e) =>
+          handelMenu(
+            { menuname: "Collection", key: "Auto", value: "" },
+            { key: "collection", value: item.CollectionName },
+            {},
+            e,
+            0
+          )
+        }
       >
-        {sortedCollection?.map((item, index) => {
-          const hasImage = item?.imgsrc && item?.imgsrc.length > 0;
-          const bgColor = FALLBACK_COLORS[index % FALLBACK_COLORS.length];
-          const totalItems = sortedCollection.length;
+        {hasImage ? (
+          /* Background Image rendering safely */
+          <Box
+            component="img"
+            src={item.imgsrc}
+            alt={item.CollectionName}
+            sx={{
+              width: '100%',
+              height: '100%',
+              objectFit: 'cover',
+              transition: '0.5s',
+              '&:hover': {
+                transform: 'scale(1.08)',
+              },
+            }}
+            onError={(e) => {
+              e.target.style.display = "none";
+            }}
+          />
+        ) : (
+          /* Text fallback visual block when no image exists */
+          <Box
+            sx={{
+              width: '100%',
+              height: '100%',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              p: 2,
+            }}
+          />
+        )}
 
-          return (
-            <Box
-              key={index}
-              sx={{
-                flex: 1,
-                height: 420,
-                position: 'relative',
-                // Applies angled layout logic on desktop screens only
-                clipPath: { xs: 'none', md: getClipPath(index, totalItems) },
-                overflow: 'hidden',
-                cursor: 'pointer',
-                backgroundColor: hasImage ? "transparent" : bgColor,
-              }}
-              onClick={(e) => 
-                handelMenu(
-                  { menuname: "Collection", key: "Auto", value: "" }, 
-                  { key: "collection", value: item.CollectionName }, 
-                  {}, 
-                  e, 
-                  0
-                )
-              }
-            >
-              {hasImage ? (
-                /* Background Image rendering safely */
-                <Box
-                  component="img"
-                  src={item.imgsrc}
-                  alt={item.CollectionName}
-                  sx={{
-                    width: '100%',
-                    height: '100%',
-                    objectFit: 'cover',
-                    transition: '0.5s',
-                    '&:hover': {
-                      transform: 'scale(1.08)',
-                    },
-                  }}
-                  onError={(e) => {
-                    e.target.style.display = "none";
-                  }}
-                />
-              ) : (
-                /* Text fallback visual block when no image exists */
-                <Box
-                  sx={{
-                    width: '100%',
-                    height: '100%',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    p: 2,
-                  }}
-                />
-              )}
+        {/* Gradient Overlay for modern high-contrast readability */}
+        <Box
+          sx={{
+            position: 'absolute',
+            inset: 0,
+            background: 'linear-gradient(to top, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.1) 60%, rgba(0,0,0,0) 100%)',
+          }}
+        />
 
-              {/* Gradient Overlay for modern high-contrast readability */}
-              <Box
-                sx={{
-                  position: 'absolute',
-                  inset: 0,
-                  background: 'linear-gradient(to top, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.1) 60%, rgba(0,0,0,0) 100%)',
-                }}
-              />
-
-              {/* Title Content */}
-              <Box
-                sx={{
-                  position: 'absolute',
-                  bottom: 30,
-                  left: { xs: 16, md: 24 },
-                  right: { xs: 16, md: 24 },
-                  textAlign: 'center',
-                  color: '#fff',
-                  zIndex: 2,
-                }}
-              >
-                <Typography
-                  variant="h6"
-                  sx={{
-                    fontFamily: "'Playfair Display', serif",
-                    fontWeight: 600,
-                    fontSize: "1.15rem",
-                    letterSpacing: "0.5px",
-                    mb: 0.5,
-                  }}
-                >
-                  {item.CollectionName}
-                </Typography>
-                <Typography
-                  variant="body2"
-                  sx={{
-                    opacity: 0.8,
-                    fontSize: "0.8rem",
-                    textTransform: "uppercase",
-                    letterSpacing: "1px",
-                  }}
-                >
-                  Explore
-                </Typography>
-              </Box>
-            </Box>
-          );
-        })}
+        {/* Title Content */}
+        <Box
+          sx={{
+            position: 'absolute',
+            bottom: 30,
+            left: { xs: 16, md: 24 },
+            right: { xs: 16, md: 24 },
+            textAlign: 'center',
+            color: '#fff',
+            zIndex: 2,
+          }}
+        >
+          <Typography
+            variant="h6"
+            sx={{
+              fontFamily: "'Playfair Display', serif",
+              fontWeight: 600,
+              fontSize: "1.15rem",
+              letterSpacing: "0.5px",
+              mb: 0.5,
+            }}
+          >
+            {item.CollectionName}
+          </Typography>
+          <Typography
+            variant="body2"
+            sx={{
+              opacity: 0.8,
+              fontSize: "0.8rem",
+              textTransform: "uppercase",
+              letterSpacing: "1px",
+            }}
+          >
+            Explore
+          </Typography>
+        </Box>
       </Box>
+    );
+  };
+
+  return (
+    <Container maxWidth="xl" sx={{ py: 8 }}>
+
+      
+      <Swiper
+        spaceBetween={8}
+        slidesPerView={1}
+        breakpoints={{
+          0: {
+            slidesPerView: 1,
+            allowTouchMove: true,
+          },
+          600: {
+            slidesPerView: Math.min(3, totalItems),
+            allowTouchMove: true,
+          },
+          // Covers screen sizes from 900px up to 1199px (e.g., your 1024px screen)
+          // 900: {
+          //   slidesPerView: Math.min(4, totalItems),
+          //   allowTouchMove: true,
+          // },
+          // Takes effect only at 1200px and above
+          1200: {
+            slidesPerView: totalItems,
+            allowTouchMove: false,
+          },
+        }}
+        style={{ overflow: 'hidden' }}
+      >
+        {sortedCollection?.map((item, index) => (
+          <SwiperSlide key={index}>
+            {renderCard(item, index)}
+          </SwiperSlide>
+        ))}
+      </Swiper>
     </Container>
   );
 }

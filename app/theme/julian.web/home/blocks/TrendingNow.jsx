@@ -4,6 +4,8 @@ import React, { useEffect, useMemo, useRef, useState, useCallback } from "react"
 import { Box, Typography, Container, Button } from "@mui/material";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import cookies from "js-cookie";
+import { Swiper, SwiperSlide } from "swiper/react";
+import "swiper/css";
 import { useNextRouterLikeRR } from "@/app/(core)/hooks/useLocationRd";
 import { useStore } from "@/app/(core)/contexts/StoreProvider";
 import { useMaster } from "@/app/(core)/contexts/MasterProvider";
@@ -201,6 +203,111 @@ export default function Trending({ storeInit }) {
 
   if (!mounted || validatedData.length === 0) return null;
 
+  const totalItems = validatedData.length;
+
+  // Same exact card markup as before — only extracted into a function
+  // so it can be reused inside SwiperSlide without touching any UI/data.
+  const renderCard = (item, index) => (
+    <Box
+      onClick={() => handleNavigation(item)}
+      sx={{
+        width: "100%",
+        background: "#fff",
+        border: "3px solid #000",
+        overflow: "hidden",
+        transition: ".4s",
+        cursor: "pointer",
+
+        "&:hover": {
+          transform: "translateY(-6px)",
+        },
+      }}
+    >
+      <Box
+        sx={{
+          position: "relative",
+          height: {
+            xs: 160,
+            md: 320,
+          },
+          overflow: "hidden",
+
+          "& .main-image": {
+            transition: "all .6s ease",
+          },
+
+          "& .hover-image": {
+            opacity: 0,
+            transform: "scale(1.1)",
+            transition: "all .6s ease",
+          },
+
+          "&:hover .main-image": {
+            opacity: 0,
+            transform: "scale(1.1)",
+          },
+
+          "&:hover .hover-image": {
+            opacity: 1,
+            transform: "scale(1)",
+          },
+        }}
+      >
+        <Box
+          component="img"
+          className="main-image"
+          src={item.mainImageURL}
+          alt={item?.TitleLine || "Trending Design"}
+          onError={(e) => (e.target.src = imageNotFound)}
+          sx={{
+            position: "absolute",
+            inset: 0,
+            width: "100%",
+            height: "100%",
+            objectFit: "cover",
+          }}
+        />
+
+        <Box
+          component="img"
+          className="hover-image"
+          src={item.hoverImageURL}
+          alt={`${item?.TitleLine || "Trending Design"} Hover`}
+          onError={(e) => (e.target.src = item.mainImageURL)}
+          sx={{
+            position: "absolute",
+            inset: 0,
+            width: "100%",
+            height: "100%",
+            objectFit: "cover",
+          }}
+        />
+      </Box>
+
+      <Box
+        sx={{
+          borderTop: "2px solid #000",
+          py: 0.7,
+          textAlign: "center",
+        }}
+      >
+        <Typography
+          sx={{
+            fontSize: 16,
+            fontFamily: "serif",
+            color: "#111",
+            fontWeight: 700,
+            whiteSpace: "nowrap",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+          }}
+        >
+          {item?.TitleLine || "Exquisite Piece"}
+        </Typography>
+      </Box>
+    </Box>
+  );
+
   return (
     <div id="Trendingnow">
       <Box>
@@ -253,115 +360,34 @@ export default function Trending({ storeInit }) {
               backgroundSize: "cover",
               backgroundPosition: "center",
               p: 5,
-              display: "flex",
-              justifyContent: "center",
-              gap: 2,
             }}
           >
-            {validatedData.map((item, index) => (
-              <Box
-                onClick={() => handleNavigation(item)}
-                key={item?.designno || index}
-                sx={{
-                  width: {
-                    xs: "22%",
-                    md: "18%",
-                  },
-                  background: "#fff",
-                  border: "3px solid #000",
-                  overflow: "hidden",
-                  transition: ".4s",
-                  cursor: "pointer",
-
-                  "&:hover": {
-                    transform: "translateY(-6px)",
-                  },
-                }}
-              >
-                <Box
-                  sx={{
-                    position: "relative",
-                    height: {
-                      xs: 160,
-                      md: 320,
-                    },
-                    overflow: "hidden",
-
-                    "& .main-image": {
-                      transition: "all .6s ease",
-                    },
-
-                    "& .hover-image": {
-                      opacity: 0,
-                      transform: "scale(1.1)",
-                      transition: "all .6s ease",
-                    },
-
-                    "&:hover .main-image": {
-                      opacity: 0,
-                      transform: "scale(1.1)",
-                    },
-
-                    "&:hover .hover-image": {
-                      opacity: 1,
-                      transform: "scale(1)",
-                    },
-                  }}
-                >
-                  <Box
-                    component="img"
-                    className="main-image"
-                    src={item.mainImageURL}
-                    alt={item?.TitleLine || "Trending Design"}
-                    onError={(e) => (e.target.src = imageNotFound)}
-                    sx={{
-                      position: "absolute",
-                      inset: 0,
-                      width: "100%",
-                      height: "100%",
-                      objectFit: "cover",
-                    }}
-                  />
-
-                  <Box
-                    component="img"
-                    className="hover-image"
-                    src={item.hoverImageURL}
-                    alt={`${item?.TitleLine || "Trending Design"} Hover`}
-                    onError={(e) => (e.target.src = item.mainImageURL)}
-                    sx={{
-                      position: "absolute",
-                      inset: 0,
-                      width: "100%",
-                      height: "100%",
-                      objectFit: "cover",
-                    }}
-                  />
-                </Box>
-
-                <Box
-                  sx={{
-                    borderTop: "2px solid #000",
-                    py: 0.7,
-                    textAlign: "center",
-                  }}
-                >
-                  <Typography
-                    sx={{
-                      fontSize: 16,
-                      fontFamily: "serif",
-                      color: "#111",
-                      fontWeight: 700,
-                      whiteSpace: "nowrap",
-                      overflow: "hidden",
-                      textOverflow: "ellipsis",
-                    }}
-                  >
-                    {item?.TitleLine || "Exquisite Piece"}
-                  </Typography>
-                </Box>
-              </Box>
-            ))}
+            
+            <Swiper
+              spaceBetween={16}
+              slidesPerView={1}
+              breakpoints={{
+                0: {
+                  slidesPerView: 1,
+                  allowTouchMove: true,
+                },
+                600: {
+                  slidesPerView: 3,
+                  allowTouchMove: true,
+                },
+                900: {
+                  slidesPerView: 4,
+                  allowTouchMove: false,
+                },
+              }}
+              style={{ overflow: "hidden" }}
+            >
+              {validatedData.map((item, index) => (
+                <SwiperSlide key={item?.designno || index}>
+                  {renderCard(item, index)}
+                </SwiperSlide>
+              ))}
+            </Swiper>
           </Box>
 
           <Box

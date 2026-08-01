@@ -1,5 +1,5 @@
 "use client";
-import "./FeatureProduct.css";
+import "./FeatureProduct.scss";
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
