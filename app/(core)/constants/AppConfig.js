@@ -5,7 +5,7 @@
  * Updated: 2026-04-03
  */
 
-export const AppConfig = {
+const rawAppConfig = {
   Sonasons: {
     ico: "/optigo_favicon.ico",
     web: "/WebSiteStaticImage/logoIcon/webLogo.png",
@@ -713,3 +713,15 @@ export const AppConfig = {
     },
   },
 };
+
+export const AppConfig = new Proxy(rawAppConfig, {
+  get(target, prop) {
+    if (typeof prop === "symbol" || prop === "then" || prop === "toJSON") {
+      return Reflect.get(target, prop);
+    }
+    if (typeof prop === "string" && prop in target) {
+      return target[prop];
+    }
+    return target.SonasonsApp || target.Sonasons || {};
+  },
+});

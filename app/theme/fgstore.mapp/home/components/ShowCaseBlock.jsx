@@ -7,7 +7,9 @@ import { activeBrand } from '@/app/env';
 
 const ShowCaseBlock = () => {
 
-  const block1 = AppConfig[activeBrand].static_block.block1;
+  const brandConfig = AppConfig[activeBrand] || AppConfig.SonasonsApp;
+  const block1 = brandConfig?.static_block?.block1 || "";
+
 
   if (activeBrand === "shreediamond") {
     return <>

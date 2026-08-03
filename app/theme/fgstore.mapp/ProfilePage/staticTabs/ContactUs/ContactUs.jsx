@@ -56,8 +56,9 @@ const ContactUs = ({ open, onClose }) => {
     }
   }, [open]);
 
-  const ActiveMap = AppConfig[activeBrand].address.map;
-  const ActiveAddress = AppConfig[activeBrand].address;
+  const brandConfig = AppConfig[activeBrand] || AppConfig.SonasonsApp;
+  const ActiveMap = brandConfig?.address?.map || "";
+  const ActiveAddress = brandConfig?.address || {};
 
 
   const handleChange = (e) => {
