@@ -43,6 +43,9 @@ export default function LuxuryFooter({ img, logos, storeData, companyInfoData: c
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState();
 
+  const whiteLogo = logos?.web || logos?.white_logo;
+  const blackLogo = logos?.black_logo || logos?.blackLogo || logos?.web;
+
   const Router = useNextRouterLikeRR().push;
   const navigation = (url) => Router(url);
   const { storeInit: storeInitContext } = useStore();
@@ -289,10 +292,10 @@ export default function LuxuryFooter({ img, logos, storeData, companyInfoData: c
               cursor: "pointer",
             }}
           >
-            {logos?.web ? (
+            {blackLogo ? (
               <Box
                 component="img"
-                src={logos?.web}
+                src={blackLogo}
                 alt={brandName || "logo"}
                 sx={{ width: "70%", height: "70%", objectFit: "contain" }}
               />

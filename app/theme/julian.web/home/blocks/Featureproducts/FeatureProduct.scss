@@ -598,7 +598,12 @@
   }
 }
 
-
+/* Target Swiper's default pagination class */
+.swiper-pagination {
+  position: relative !important;
+  bottom: auto !important;
+  margin-top: 24px !important; /* Adjust your margin-top here */
+}
 
 
 

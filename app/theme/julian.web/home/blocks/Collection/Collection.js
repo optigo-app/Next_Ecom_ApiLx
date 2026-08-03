@@ -164,6 +164,7 @@ export default function LuxuryAngledGrid() {
     return 'polygon(7% 0%, 100% 0%, 92% 100%, 0% 100%)';
   };
 
+console.log("TCL: LuxuryAngledGrid -> sortedCollection",sortedCollection )
   if (loading) {
     return <CollectionSkeleton />;
   }
@@ -298,7 +299,7 @@ export default function LuxuryAngledGrid() {
             allowTouchMove: true,
           },
           600: {
-            slidesPerView: Math.min(3, totalItems),
+            slidesPerView: 3,
             allowTouchMove: true,
           },
           // Covers screen sizes from 900px up to 1199px (e.g., your 1024px screen)
@@ -308,7 +309,7 @@ export default function LuxuryAngledGrid() {
           // },
           // Takes effect only at 1200px and above
           1200: {
-            slidesPerView: totalItems,
+            slidesPerView: 5,
             allowTouchMove: false,
           },
         }}

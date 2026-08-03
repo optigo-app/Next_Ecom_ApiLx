@@ -350,14 +350,15 @@ const CategoryBlock = ({ assetBase, storeInit }) => {
       Bangle: `${assetBase}/images/Category/Earring.webp`,
     }),
     categoryImages: buildNormalizedMap({
-      Ring: `${assetBase}/images/Category/Bracelet.webp`,
-      Bracelet: `${assetBase}/images/Category/Ring.webp`,
+      Ring: `${assetBase}/images/Category/Ring.webp`,
+      Bracelet: `${assetBase}/images/Category/Bracelet.webp`,
       Earring: `${assetBase}/images/Category/Earring.webp`,
       Necklace: `${assetBase}/images/Category/Necklace.webp`,
-      Mangalsutra: `${assetBase}/images/Category/earing1.webp`,
+      Mangalsutra: `${assetBase}/images/Category/Mangalsutra.webp`,
       Pendant: `${assetBase}/images/Category/pendent.webp`,
       Bangle: `${assetBase}/images/Category/Bangle.webp`,
       Pendant_Set: `${assetBase}/images/Category/pendentset.webp`,
+      "Pendant Set": `${assetBase}/images/Category/pendentset.webp`,
     }),
   };
 
