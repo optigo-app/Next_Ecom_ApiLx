@@ -291,7 +291,7 @@ export default function BestSaller({ noHeading = false, storeInit }) {
           <Typography
             sx={{
               fontFamily: '"EB Garamond", serif',
-              fontSize: { xs: 34, md: 42 },
+              fontSize: { xs: 25, md: 42 },
               fontWeight: 400,
               mt: 1,
               color: "#2C2C2C",

@@ -692,7 +692,7 @@ export default function HarryWinstonHeader({ storeinit, logos }) {
               alt="Logo"
               onClick={() => push('/')}
               sx={{
-                height: { xs: '60px', md: '90px' },
+                height: { xs: '45px', sm: '60px', md: '90px' },
                 marginTop: { xs: 2, md: 0 },
                 width: 'auto',
                 padding: { xs: 0, md: 2 },
@@ -717,9 +717,34 @@ export default function HarryWinstonHeader({ storeinit, logos }) {
               the drawer header instead (see Drawer below). Cart / Account / Login
               stay visible on every screen size. */}
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+
+          <Box sx={{ position: 'relative' ,display: { xs: 'none', md: 'block' }, }}>
+            <Typography
+              component={Link}
+              href="/custom-orders"
+              sx={{
+                
+                fontSize: { xs: '14px', md: '16px' },
+                letterSpacing: '2px',
+                fontWeight: 500,
+                color: "white",
+                cursor: 'pointer',
+                whiteSpace: 'nowrap',
+                transition: 'color 0.2s',
+                '&:hover': { color: GOLD },
+                pb: 0.5,
+                borderBottom: '1px solid transparent',
+                textTransform: 'uppercase',
+                textDecoration: 'none',
+              }}
+            >
+              Custom order
+            </Typography>
+          </Box>
+
+
             {isMounted && islogin && (
               <>
-
                 <IconButton
                   onClick={() => setSearchOpen((prev) => !prev)}
                   sx={{
@@ -908,6 +933,36 @@ export default function HarryWinstonHeader({ storeinit, logos }) {
               </Box>
             ))
           )}
+
+          {!menuLoading &&(
+             <Box sx={{ position: 'relative' }}>
+             <Typography
+               component={Link}
+               href="/asset-management"
+               sx={{
+                 fontFamily: '"Cormorant Garamond", Georgia, serif',
+                 fontSize: { xs: '14px', md: '16px' },
+                 letterSpacing: '2px',
+                 fontWeight: 500,
+                 color: "white",
+                 cursor: 'pointer',
+                 whiteSpace: 'nowrap',
+                 transition: 'color 0.2s',
+                 '&:hover': { color: GOLD },
+                 pb: 0.5,
+                 borderBottom: '1px solid transparent',
+                 textTransform: 'uppercase',
+                 textDecoration: 'none',
+               }}
+             >
+               Marketing Support
+             </Typography>
+           </Box>
+
+          )}
+
+         
+
         </Box>
 
         {/* Mega Menu Dropdown (logged-in users only, desktop hover)  */}
@@ -1132,57 +1187,98 @@ export default function HarryWinstonHeader({ storeinit, logos }) {
               </ListItem>
             )}
 
+              {/* Marketing Support — always visible, login or not */}
+              <ListItem disablePadding sx={{ borderBottom: `1px solid ${alpha('#000', 0.06)}` }}>
+              <ListItemButton
+                onClick={() => {
+                  navigate('/custom-orders');
+                  setMobileOpen(false);
+                }}
+                sx={{ py: 1.5, px: 3, '&:hover': { bgcolor: alpha('#000', 0.04) } }}
+              >
+                <ListItemText
+                  primary="Custom Order"
+                  primaryTypographyProps={{
+                    sx: { fontSize: '1rem', fontWeight: 500, letterSpacing: 0.4, color: '#3C3C3C', textTransform: 'uppercase' },
+                  }}
+                />
+              </ListItemButton>
+            </ListItem>
+
+
+            
+
+            
+
             {mobileTopLevelItems
               ? mobileTopLevelItems.map((item, index) => (
-                  <ListItem
-                    key={item.menuid ?? index}
-                    disablePadding
-                    secondaryAction={
-                      item.param1?.length ? (
-                        <IconButton
-                          edge="end"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setActiveMobileMenu(item.menuname);
-                          }}
-                          sx={{ color: '#000' }}
-                        >
-                          <ChevronRightRoundedIcon />
-                        </IconButton>
-                      ) : null
-                    }
-                    sx={{ borderBottom: `1px solid ${alpha('#000', 0.06)}` }}
+                <ListItem
+                  key={item.menuid ?? index}
+                  disablePadding
+                  secondaryAction={
+                    item.param1?.length ? (
+                      <IconButton
+                        edge="end"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setActiveMobileMenu(item.menuname);
+                        }}
+                        sx={{ color: '#000' }}
+                      >
+                        <ChevronRightRoundedIcon />
+                      </IconButton>
+                    ) : null
+                  }
+                  sx={{ borderBottom: `1px solid ${alpha('#000', 0.06)}` }}
+                >
+                  <ListItemButton
+                    onClick={(e) => handleMobileItemClick(item, e)}
+                    sx={{ py: 1.5, px: 3, '&:hover': { bgcolor: alpha('#000', 0.04) } }}
                   >
-                    <ListItemButton
-                      onClick={(e) => handleMobileItemClick(item, e)}
-                      sx={{ py: 1.5, px: 3, '&:hover': { bgcolor: alpha('#000', 0.04) } }}
-                    >
-                      <ListItemText
-                        primary={item.menuname}
-                        primaryTypographyProps={{
-                          sx: { fontSize: '1rem', fontWeight: 500, letterSpacing: 0.4, color: '#3C3C3C', textTransform: 'uppercase' },
-                        }}
-                      />
-                    </ListItemButton>
-                  </ListItem>
-                ))
+                    <ListItemText
+                      primary={item.menuname}
+                      primaryTypographyProps={{
+                        sx: { fontSize: '1rem', fontWeight: 500, letterSpacing: 0.4, color: '#3C3C3C', textTransform: 'uppercase' },
+                      }}
+                    />
+                  </ListItemButton>
+                </ListItem>
+              ))
               : STATIC_NAV_LINKS.map((link) => (
-                  <ListItem key={link.label} disablePadding sx={{ borderBottom: `1px solid ${alpha('#000', 0.06)}` }}>
-                    <ListItemButton
-                      component="a"
-                      href={link.href}
-                      onClick={() => setMobileOpen(false)}
-                      sx={{ py: 1.5, px: 3, '&:hover': { bgcolor: alpha('#000', 0.04) } }}
-                    >
-                      <ListItemText
-                        primary={link.label}
-                        primaryTypographyProps={{
-                          sx: { fontSize: '1rem', fontWeight: 500, letterSpacing: 0.4, color: '#3C3C3C', textTransform: 'uppercase' },
-                        }}
-                      />
-                    </ListItemButton>
-                  </ListItem>
-                ))}
+                <ListItem key={link.label} disablePadding sx={{ borderBottom: `1px solid ${alpha('#000', 0.06)}` }}>
+                  <ListItemButton
+                    component="a"
+                    href={link.href}
+                    onClick={() => setMobileOpen(false)}
+                    sx={{ py: 1.5, px: 3, '&:hover': { bgcolor: alpha('#000', 0.04) } }}
+                  >
+                    <ListItemText
+                      primary={link.label}
+                      primaryTypographyProps={{
+                        sx: { fontSize: '1rem', fontWeight: 500, letterSpacing: 0.4, color: '#3C3C3C', textTransform: 'uppercase' },
+                      }}
+                    />
+                  </ListItemButton>
+                </ListItem>
+              ))}
+
+              {/* Marketing Support — always visible, login or not */}
+            <ListItem disablePadding sx={{ borderBottom: `1px solid ${alpha('#000', 0.06)}` }}>
+              <ListItemButton
+                onClick={() => {
+                  navigate('/asset-management');
+                  setMobileOpen(false);
+                }}
+                sx={{ py: 1.5, px: 3, '&:hover': { bgcolor: alpha('#000', 0.04) } }}
+              >
+                <ListItemText
+                  primary="Marketing Support"
+                  primaryTypographyProps={{
+                    sx: { fontSize: '1rem', fontWeight: 500, letterSpacing: 0.4, color: '#3C3C3C', textTransform: 'uppercase' },
+                  }}
+                />
+              </ListItemButton>
+            </ListItem>
 
             {isMounted && islogin && (
               <ListItem disablePadding sx={{ borderBottom: `1px solid ${alpha('#000', 0.06)}` }}>

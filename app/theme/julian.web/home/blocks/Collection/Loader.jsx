@@ -4,6 +4,7 @@ import { Box, Container, Skeleton } from "@mui/material";
 const CollectionSkeleton = () => {
   const totalItems = 5;
 
+  // Dynamic clipPath based on position in the CURRENT view
   const getClipPath = (index, total) => {
     if (total <= 1) return "none";
     if (index === 0) {
@@ -17,24 +18,47 @@ const CollectionSkeleton = () => {
 
   return (
     <Container maxWidth="xl" sx={{ py: 6, px: { xs: 2, md: 4 } }}>
-      {/* Flex container enforcing a single row */}
       <Box
         sx={{
           display: "flex",
           flexWrap: "nowrap",
-          gap: 1.5,
+          gap: 1, // matches Swiper spaceBetween={8} (8px)
           width: "100%",
+          overflow: "hidden",
         }}
       >
         {Array.from({ length: totalItems }).map((_, index) => (
           <Box
             key={index}
             sx={{
-              flex: 1, // Equally distributes available space among all 5 items
               height: 480,
               position: "relative",
               overflow: "hidden",
               clipPath: getClipPath(index, totalItems),
+              // Match Swiper breakpoints:
+              // 0px - 599px: Show 1 item (100% width)
+              width: "100%",
+              flex: "0 0 100%",
+
+              // 600px - 1199px: Show 3 items (~33.33% width each)
+              "@media (min-width: 600px)": {
+                width: "calc((100% - 16px) / 3)",
+                flex: "0 0 calc((100% - 16px) / 3)",
+                // Hide items beyond 3rd on tablet to mimic Swiper view
+                display: index >= 3 ? "none" : "block",
+              },
+
+              // 1200px+: Show 5 items (20% width each)
+              "@media (min-width: 1200px)": {
+                width: "calc((100% - 32px) / 5)",
+                flex: "0 0 calc((100% - 32px) / 5)",
+                display: "block",
+              },
+
+              // Hide items beyond 1st on mobile
+              "@media (max-width: 599px)": {
+                display: index >= 1 ? "none" : "block",
+              },
             }}
           >
             {/* Background Card Skeleton */}

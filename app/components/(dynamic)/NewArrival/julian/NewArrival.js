@@ -210,7 +210,7 @@ const TabSection = ({ storeData }) => {
                     <Typography
                         sx={{
 
-                            fontSize: { xs: 34, md: 42 },
+                            fontSize: { xs: 30, md: 42 },
                             fontWeight: 500,
                             mt: 1,
                             color: "#2C2C2C",
@@ -223,7 +223,7 @@ const TabSection = ({ storeData }) => {
                     <Typography
                         sx={{
 
-                            fontSize: { xs: 34, md: 18 },
+                            fontSize: { xs:17, md: 18 },
                             fontWeight: 400,
                             color: "gray",
                             marginBottom:"50px",
@@ -311,6 +311,7 @@ const TabSection = ({ storeData }) => {
                                 
                                         fontSize: '14px',
                                         lineHeight: 1.5,
+                                        textAlign: 'center',
                                         color: '#1c1c1c',
                                         fontWeight: 300,
                                         mb: 1.5,
@@ -329,7 +330,7 @@ const TabSection = ({ storeData }) => {
                                             textDecoration: 'center',
                                         }}
                                     >
-                                        {product.TitleLine}
+                                        {/* {product.TitleLine} */}
                                     </Typography>
                                         {/* --- PRICE ROW: current price / struck-through original / discount % --- */}
                                             {storeData?.IsPriceShow == 1 && (
