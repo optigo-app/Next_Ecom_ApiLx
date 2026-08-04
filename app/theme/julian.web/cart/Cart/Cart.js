@@ -368,7 +368,7 @@ const ElveeCartPage = ({ storeinit, visiterId }) => {
                       <CartList items={finalCartData} CartCardImageFunc={CartCardImageFunc} showRemark={showRemark} productRemark={productRemark} CurrencyData={CurrencyData} decodeEntities={decodeEntities} onSelect={handleSelectItem} selectedItem={selectedItem} selectedItems={selectedItems} multiSelect={multiSelect} border={border} handleBorder={handleBorder} onRemove={handleRemoveItem} handleAddReamrk={handleAddReamrk} handleRemarkChange={handleRemarkChange} handleSave={handleSave} handleCancel={handleCancel} openHandleUpdateCartModal={handleOpenModal} showRemark1={showRemark1} handleClose1={handleClose1} />
                     </Grid>
                   </div>
-                  <div className="elv_CartSingleProducts_div">
+                  {/* <div className="elv_CartSingleProducts_div">
                     {!isTabletResponsive ? (
                       selectedItem && <CartDetails
                         count={finalCartData.length}
@@ -379,7 +379,7 @@ const ElveeCartPage = ({ storeinit, visiterId }) => {
                         <MobileCartDetails open={openMobileModal} handleClose={handlecloseMobileModal} ispriceloding={ispriceloding} selectedItem={selectedItem} CartCardImageFunc={CartCardImageFunc} handleIncrement={handleIncrement} handleDecrement={handleDecrement} qtyCount={qtyCount} multiSelect={multiSelect} sizeCombo={sizeCombo} CurrencyData={CurrencyData} mrpbasedPriceFlag={mrpbasedPriceFlag} handleMetalTypeChange={handleMetalTypeChange} handleMetalColorChange={handleMetalColorChange} handleDiamondChange={handleDiamondChange} handleColorStoneChange={handleColorStoneChange} handleSizeChange={handleSizeChange} decodeEntities={decodeEntities} onUpdateCart={handleUpdateCart} handleMoveToDetail={handleMoveToDetail} />
                       </div>
                     )}
-                  </div>
+                  </div> */}
                 </div>
               ) : (
                 <EmptyCartUI handelMenu={handelMenu} />

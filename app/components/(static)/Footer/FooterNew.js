@@ -182,6 +182,7 @@ const PremiumFooter = ({
       title: "CUSTOMER CARE",
       links: [
         { label: "Customer Services", href: "/customer-service" },
+        { label: "Custom Order", href: "/custom-orders" },
         { label: "Book an Appoinment", href: "/appointment" },
         { label: "Customize", href: "/customization" },
         { label: "FAQ", href: "/faq" },

@@ -15,11 +15,11 @@ import { sendEmail } from '@/app/(core)/utils/API/SendEmail';
 const CONTACT_NUMBERS = []; // Will be populated from storeInit or left empty if not provided
 
 const COLORS = {
-  bg: "#f0f2f5",
+  bg: "#ffffff",
   cardBg: "#ffffff",
   whatsApp: "#1ebc57",
   gold: "#c5a059",
-  black: "#000000",
+  black: "#0d1232",
   textGray: "#666666",
   error: "#d32f2f",
 };
@@ -237,7 +237,7 @@ const OrderForm = () => {
             color: '#fff'
           }}>
             <Typography variant="h4" sx={{ fontWeight: 700, textTransform: "uppercase", letterSpacing: 2, mb: 1 }}>
-              Custom Order Form
+              Custom Order Form 
             </Typography>
             <Typography variant="body1" sx={{ color: '#ccc', mt: 1, maxWidth: 600, mx: 'auto', lineHeight: 1.6 }}>
               Place your unique Jewelry request here. Our artisans will bring your vision to life.
