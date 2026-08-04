@@ -1242,7 +1242,7 @@ const SalesReport = () => {
                           <TableCell align="center">
                             <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "8px" }}>
                               <span>{row.designno}</span>
-                              {BELUX_JEWEL && row.ArticleNo && (
+                              {row.ArticleNo && (
                                 <Chip
                                   label={row.ArticleNo}
                                   size="small"

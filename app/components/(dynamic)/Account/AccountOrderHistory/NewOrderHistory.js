@@ -174,6 +174,13 @@ const NewOrderHistory = () => {
       d: loginInfo?.cmboDiaQCid,
       c: loginInfo?.cmboCSQCid,
       f: {},
+      ArticleNo: productData?.ArticleNo || productData?.designno || "",
+      ArticleId: productData?.ArticleId || productData?.id || null,
+      mediaDet: productData?.ImageVideoDetail ?? "",
+      img: productData?.images || "",
+      title: productData?.TitleLine || productData?.ArticleNo || productData?.designno || "",
+      price: productData?.UnitCostWithMarkUp || productData?.CW_UCostWM || productData?._UnitCost || 0,
+      nwt: productData?.Nwt || productData?.CW_Nwt || productData?.CW_Gwt || 0,
     };
     let encodeObj = compressAndEncode(JSON.stringify(obj));
 
@@ -864,9 +871,7 @@ const NewOrderHistory = () => {
                                             {/* <img src={`${image_path}${el?.imgrandomno}${btoa(el?.autocode)}/Red_Thumb/${el?.DefaultImageName}`} onError={handleOrderImageError} alt="#designimage" style={{maxHeight:'90px', maxWidth:'90px', marginRight:'10px'}} onClick={() => handleMoveToDetail(el)} /> */}
                                             <div>
                                               <div>
-                                                {BELUX_JEWEL
-                                                  ? el?.ArticleNo
-                                                  : el?.designno}{" "}
+                                                {el?.ArticleNo || el?.designno}{" "}
                                                 - {`Quantity ${el?.quantity}`}
                                               </div>
                                               <div>

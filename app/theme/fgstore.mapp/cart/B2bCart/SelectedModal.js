@@ -248,7 +248,7 @@ const MyModal = ({ open, onClose, selectedItems, onRemove, onUpdateCart, onCance
                               </div>
                             </div>
                             <div className='designNocartList'>
-                              <p className='smr_DesignNoTExt'>{product?.designno}</p>
+                              <p className='smr_DesignNoTExt'>{product?.ArticleNo || product?.designno}</p>
                             </div>
                             <div className='closeCartIconDiv'>
                               <CloseIcon className='closeCartIcon' onClick={(e) => { e.stopPropagation(); onRemove(product); }} />

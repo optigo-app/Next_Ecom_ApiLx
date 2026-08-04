@@ -2087,7 +2087,7 @@ const QuotationJob = () => {
                                                   ></span>{" "}
                                                   {formatAmount(value)}
                                                 </>
-                                              ) : (BELUX_JEWEL &&   column?.id === "DesignNo") ? (
+                                              ) : (column?.id === "DesignNo") ? (
                                                 <div
                                                   style={{
                                                     display: "flex",
@@ -2229,7 +2229,7 @@ const QuotationJob = () => {
                                         >
                                           {products?.DesignNo}
                                         </Typography>
-                                        {BELUX_JEWEL && products?.ArticleNo && (
+                                        {products?.ArticleNo && (
                                           <Chip
                                             label={products.ArticleNo}
                                             size="small"

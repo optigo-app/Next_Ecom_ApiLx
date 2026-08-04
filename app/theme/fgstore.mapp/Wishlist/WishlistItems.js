@@ -149,11 +149,11 @@ const WishlistItems = ({ item, index, selectedValue, itemInCart, updateCount, co
                   }}
                 />
               )}
-              <CardContent className="smr_cardContent">
+              <CardContent className="smr_cardContent" onClick={() => handleMoveToDetail(item)} style={{ cursor: 'pointer' }}>
                 <div className="cardText">
                   <Typography variant="body2" className="smr_card-ContentData fg_smr_WlTitleline">
-                    {item?.designno && item?.designno !== "" ? item?.designno : ""}
-                    {item?.designno && item?.designno !== "" && formatTitleLine(item?.TitleLine) ? " - " : ""}
+                    {(item?.ArticleNo || item?.designno) ? (item?.ArticleNo || item?.designno) : ""}
+                    {(item?.ArticleNo || item?.designno) && formatTitleLine(item?.TitleLine) ? " - " : ""}
                     {formatTitleLine(item?.TitleLine) ? item?.TitleLine : ""}
                   </Typography>
                   <Typography variant="body2" className="smr_card-ContentData">
