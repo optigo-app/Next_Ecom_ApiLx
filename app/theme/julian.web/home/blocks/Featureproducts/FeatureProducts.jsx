@@ -13,7 +13,7 @@ import ProductListApi from "@/app/(core)/utils/API/ProductListAPI/ProductListApi
 import FeaturedSkeleton from "./FeaturedSkeleton";
 import { getSession, setSession } from "@/app/(core)/utils/FetchSessionData";
 import { readCache, writeCache } from "@/app/(core)/cache_utility/cacheActions";
-import { Box } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 
 const imageNotFound = "/image-not-found.jpg";
 
@@ -495,12 +495,31 @@ export default function ChopardCarousel() {
       >
         <div className="carousel-inner">
           <div>
-            <p style={{ fontSize: "42px", fontWeight: 400, color: "#2C2C2C", marginBottom: "10px", textAlign: "center" }}>
+            {/* <p style={{ fontSize: { xs: 30, md: 42 }, fontWeight: 400, color: "#2C2C2C", marginBottom: "10px", textAlign: "center" }}>
               Featured Products
-            </p>
-            <p style={{ fontSize: "20px", fontWeight: 400, color: "gray", marginBottom: "40px", textAlign: "center" }}>
-              A showcase of our most exceptional jewelry and signature designs.
-            </p>
+            </p> */}
+            <Typography
+  sx={{
+    fontSize: { xs: 30, md: 42 },
+    fontWeight: 400,
+    color: "#2C2C2C",
+    mb: 1,
+    textAlign: "center",
+  }}
+>
+  Featured Products
+</Typography>
+<Typography
+  sx={{
+    fontSize: { xs: 16, sm: 18, md: 20 },
+    fontWeight: 400,
+    color: "gray",
+    mb: { xs: 3, md: 5 }, // 24px on xs, 40px on md+
+    textAlign: "center",
+  }}
+>
+  A showcase of our most exceptional jewelry and signature designs.
+</Typography>
           </div>
 
 
@@ -547,7 +566,12 @@ export default function ChopardCarousel() {
 
           <Swiper
             className="chopard-main-swiper"
-            modules={[Navigation, A11y]}
+            pagination={{
+              clickable: true,
+              dynamicBullets: true, // Auto-shrinks dots on mobile when there are many items
+            }}
+            // modules={[]}
+            modules={[Navigation, A11y,Pagination]}
             slidesPerView={4}
             slidesPerGroup={4}
             speed={500}
@@ -599,7 +623,7 @@ export default function ChopardCarousel() {
         </div>
 
         {/* Custom pagination dots — same look as original */}
-        <div className="carousel-pagination">
+        {/* <div className="carousel-pagination">
           {Array.from({ length: totalPages }).map((_, i) => (
             <button
               key={i}
@@ -608,7 +632,7 @@ export default function ChopardCarousel() {
               aria-label={`Go to page ${i + 1}`}
             />
           ))}
-        </div>
+        </div> */}
       </Box>
     </>
   );

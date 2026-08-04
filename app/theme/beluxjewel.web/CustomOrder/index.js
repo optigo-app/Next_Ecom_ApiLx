@@ -19,7 +19,7 @@ const COLORS = {
   cardBg: "#ffffff",
   whatsApp: "#1ebc57",
   gold: "#c5a059",
-  black: "#000000",
+  black: "#cca182",
   textGray: "#666666",
   error: "#d32f2f",
 };
@@ -239,7 +239,7 @@ const OrderForm = () => {
             <Typography variant="h4" sx={{ fontWeight: 700, textTransform: "uppercase", letterSpacing: 2, mb: 1 }}>
               Custom Order Form
             </Typography>
-            <Typography variant="body1" sx={{ color: '#ccc', mt: 1, maxWidth: 600, mx: 'auto', lineHeight: 1.6 }}>
+            <Typography variant="body1" sx={{ color: '#e8e8e8', mt: 1, maxWidth: 600, mx: 'auto', lineHeight: 1.6 }}>
               Place your unique Jewelry request here. Our artisans will bring your vision to life.
               If this order was placed by mistake, please contact us immediately.
             </Typography>
@@ -455,7 +455,7 @@ const OrderForm = () => {
                       letterSpacing: 2,
                       borderRadius: 2,
                       boxShadow: '0 6px 20px rgba(0,0,0,0.2)',
-                      '&:hover': { backgroundColor: '#333', boxShadow: '0 10px 25px rgba(0,0,0,0.3)' },
+                      '&:hover': { backgroundColor: '#cca182db', boxShadow: '0 10px 25px rgba(0,0,0,0.3)' },
                       '&:disabled': { backgroundColor: '#ccc' }
                     }}
                   >

@@ -173,27 +173,27 @@ const getBadgeStyle = (type) => {
   switch (type) {
     case "approved":
       return {
-        bgcolor: "#cca182",
+        bgcolor: "#0d1232",
         color: "#ffffff",
-        borderColor: "#cca182",
+        borderColor: "#0d1232",
       };
     case "private":
       return {
-        bgcolor: "#cca182b3",
+        bgcolor: "#0d1232b3",
         color: "#ffffff",
-        borderColor: "#cca182",
+        borderColor: "#0d1232",
       };
     case "soon":
       return {
-        bgcolor: "#cca1824f",
+        bgcolor: "#0d12324f",
         color: "#ffffff",
-        borderColor: "#cca182",
+        borderColor: "#0d1232",
       };
     default:
       return {
-        bgcolor: "#cca182",
+        bgcolor: "#0d1232",
         color: "#ffffff",
-        borderColor: "#cca182",
+        borderColor: "#0d1232",
       };
   }
 };
@@ -515,7 +515,7 @@ function AssetManagementContent() {
           gap: 2,
         }}
       >
-        <CircularProgress sx={{ color: "#cca182" }} />
+        <CircularProgress sx={{ color: "#0d1232" }} />
         <Typography variant="body2" sx={{ color: "#666", letterSpacing: "1px" }}>
           Verifying access permissions...
         </Typography>
@@ -546,7 +546,7 @@ function AssetManagementContent() {
               height: 72,
               borderRadius: "50%",
               backgroundColor: "rgba(17, 77, 110, 0.08)",
-              color: "#cca182",
+              color: "#0d1232",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
@@ -558,7 +558,7 @@ function AssetManagementContent() {
           </Box>
           <Typography
             variant="h5"
-            sx={{ fontWeight: 700, color: "#cca182", mb: 1.5, letterSpacing: "-0.5px" }}
+            sx={{ fontWeight: 700, color: "#0d1232", mb: 1.5, letterSpacing: "-0.5px" }}
           >
             Login Required
           </Typography>
@@ -575,7 +575,7 @@ function AssetManagementContent() {
             sx={{
               py: 1.5,
               px: 5,
-              backgroundColor: "#cca182",
+              backgroundColor: "#0d1232",
               color: "#fff",
               fontWeight: 600,
               fontSize: "0.95rem",
@@ -629,7 +629,7 @@ function AssetManagementContent() {
     const ext = (fileNode.FileExtension || "").toLowerCase();
 
     if (category === "image" || ["png", "jpg", "jpeg", "webp"].includes(ext)) {
-      return <ImageIcon sx={{ color: "#cca182", fontSize: size }} />;
+      return <ImageIcon sx={{ color: "#0d1232", fontSize: size }} />;
     }
     if (category === "video" || ["mp4", "webm", "mov"].includes(ext)) {
       return <VideocamIcon sx={{ color: "#d32f2f", fontSize: size }} />;
@@ -654,7 +654,7 @@ function AssetManagementContent() {
           gap: 2,
         }}
       >
-        <CircularProgress sx={{ color: "#cca182" }} />
+        <CircularProgress sx={{ color: "#0d1232" }} />
         <Typography
           variant="body2"
           sx={{ color: "#666", letterSpacing: "1px" }}
@@ -666,7 +666,7 @@ function AssetManagementContent() {
   }
 
   return (
-    <Box className="assetContainer">
+    <Box className="assetContainerJulian">
       {!selectedMasterId ? (
         /* ─── Overview Mode: Category Cards Grid ───────────────────────────────── */
         <>
@@ -684,7 +684,7 @@ function AssetManagementContent() {
                   fontSize: "0.75rem",
                   fontWeight: 700,
                   letterSpacing: 2,
-                  color: "#cca182",
+                  color: "#0d1232",
                   textTransform: "uppercase",
                   mb: 1.5,
                 }}
@@ -730,7 +730,7 @@ function AssetManagementContent() {
                   mb: 3,
                   textTransform: "uppercase",
                   fontSize: "0.78rem",
-                  color: "#cca182",
+                  color: "#0d1232",
                   textAlign: "center",
                 }}
               >
@@ -758,9 +758,9 @@ function AssetManagementContent() {
                       onClick={() => handleSelectMaster(cat.Id)}
                       elevation={0}
                       sx={{
-                        backgroundColor: "#cca18238",
+                        backgroundColor: "#0d123212",
                         borderRadius: "18px",
-                        border: "1px solid #cca182",
+                        border: "1px solid #0d1232",
                         p: { xs: 3, sm: 3.5 },
                         display: "flex",
                         flexDirection: "column",
@@ -772,7 +772,7 @@ function AssetManagementContent() {
                         "&:hover": {
                           transform: "translateY(-4px)",
                           boxShadow: "0 14px 35px rgba(12, 46, 64, 0.09)",
-                          borderColor: "#cca182",
+                          borderColor: "#0d1232",
                         },
                       }}
                     >
@@ -790,7 +790,7 @@ function AssetManagementContent() {
                               width: 42,
                               height: 42,
                               borderRadius: "50%",
-                              bgcolor: "#cca182",
+                              bgcolor: "#0d1232",
                               display: "flex",
                               alignItems: "center",
                               justifyContent: "center",
@@ -822,7 +822,7 @@ function AssetManagementContent() {
                             fontFamily: "Prata, Playfair Display, serif",
                             fontSize: "1.25rem",
                             fontWeight: 700,
-                            color: "#cca182",
+                            color: "#0d1232",
                             mb: 1,
                           }}
                         >
@@ -848,7 +848,7 @@ function AssetManagementContent() {
         </>
       ) : (
         /* ─── Folder & File Explorer Mode ─────────────────────────────────────── */
-        <Container maxWidth="lg" sx={{ py: 6 }}>
+        <Container   sx={{ py: 6 }}>
           {/* Back to All Categories Bar */}
           <Box
             sx={{
@@ -867,8 +867,8 @@ function AssetManagementContent() {
               onClick={handleBackToCategories}
               startIcon={<ArrowBackIcon />}
               sx={{
-                color: "#cca182",
-                borderColor: "#cca182",
+                color: "#0d1232",
+                borderColor: "#0d1232",
                 borderRadius: "30px",
                 px: 3,
                 py: 0.9,
@@ -876,8 +876,8 @@ function AssetManagementContent() {
                 fontSize: "0.85rem",
                 textTransform: "none",
                 "&:hover": {
-                  bgcolor: "#cca18238",
-                  borderColor: "#cca182",
+                  bgcolor: "#0d123212",
+                  borderColor: "#0d1232",
                 },
               }}
             >
@@ -887,7 +887,7 @@ function AssetManagementContent() {
             <Chip
               label={`Category: ${activeMaster?.Title || "Selected Category"}`}
               sx={{
-                bgcolor: "#cca182",
+                bgcolor: "#0d1232",
                 color: "#FFFFFF",
                 fontWeight: 700,
                 fontSize: "0.85rem",
@@ -933,7 +933,7 @@ function AssetManagementContent() {
                   return isLast ? (
                     <Typography
                       key={item.Id}
-                      sx={{ color: "#cca182", fontWeight: 700 }}
+                      sx={{ color: "#0d1232", fontWeight: 700 }}
                     >
                       {item.Name || activeMaster?.Title}
                     </Typography>
@@ -1010,7 +1010,7 @@ function AssetManagementContent() {
                 gap: 2,
               }}
             >
-              <CircularProgress size={32} sx={{ color: "#cca182" }} />
+              <CircularProgress size={32} sx={{ color: "#0d1232" }} />
               <Typography variant="body2" sx={{ color: "#777" }}>
                 Loading folder nodes...
               </Typography>
@@ -1038,7 +1038,7 @@ function AssetManagementContent() {
                         }}
                       >
                         <FolderIcon
-                          sx={{ color: "#cca182", fontSize: "2.8rem" }}
+                          sx={{ color: "#0d1232", fontSize: "2.8rem" }}
                         />
                         <Box sx={{ flexGrow: 1, minWidth: 0 }}>
                           <Typography
@@ -1061,7 +1061,7 @@ function AssetManagementContent() {
                                 fontSize: "0.65rem",
                                 height: "18px",
                                 bgcolor: "#f0f4f8",
-                                color: "#cca182",
+                                color: "#0d1232",
                                 fontWeight: 600,
                               }}
                             />
@@ -1134,7 +1134,7 @@ function AssetManagementContent() {
                               label={(item.FileExtension || "").toUpperCase()}
                               size="small"
                               sx={{
-                                bgcolor: "#cca182",
+                                bgcolor: "#0d1232",
                                 color: "#fff",
                                 fontWeight: 700,
                                 fontSize: "0.65rem",
@@ -1195,7 +1195,7 @@ function AssetManagementContent() {
                             borderRadius: "2px",
                             display: "flex",
                             alignItems: "center",
-                            "&:hover": { bgcolor: "#cca182" },
+                            "&:hover": { bgcolor: "#0d1232" },
                           }}
                         >
                           <Tooltip title="Preview File">
@@ -1217,7 +1217,7 @@ function AssetManagementContent() {
                             lineHeight: 1.3,
                             wordBreak: "break-word",
                             cursor: "pointer",
-                            "&:hover": { color: "#cca182" },
+                            "&:hover": { color: "#0d1232" },
                           }}
                         >
                           {displayName}
@@ -1271,13 +1271,13 @@ function AssetManagementContent() {
                           }
                           sx={{
                             borderRadius: "0px",
-                            bgcolor: "#cca182",
+                            bgcolor: "#0d1232",
                             color: "#fff",
                             flex: 1,
                             fontSize: "0.75rem",
                             fontWeight: 600,
                             boxShadow: "none",
-                            "&:hover": { bgcolor: "#cca182e3" },
+                            "&:hover": { bgcolor: "#0d1232e3" },
                           }}
                         >
                           Download
@@ -1363,7 +1363,7 @@ function AssetManagementContent() {
                               alignItems="center"
                             >
                               <FolderIcon
-                                sx={{ color: "#cca182", fontSize: "1.5rem" }}
+                                sx={{ color: "#0d1232", fontSize: "1.5rem" }}
                               />
                               <Typography
                                 variant="subtitle2"
@@ -1381,7 +1381,7 @@ function AssetManagementContent() {
                                 fontSize: "0.7rem",
                                 height: "20px",
                                 bgcolor: "#f0f4f8",
-                                color: "#cca182",
+                                color: "#0d1232",
                               }}
                             />
                           </TableCell>
@@ -1393,7 +1393,7 @@ function AssetManagementContent() {
                               onClick={() => handleOpenFolder(item.Id)}
                               endIcon={<NavigateNextIcon />}
                               sx={{
-                                color: "#cca182",
+                                color: "#0d1232",
                                 fontWeight: 600,
                                 fontSize: "0.75rem",
                               }}
@@ -1420,7 +1420,7 @@ function AssetManagementContent() {
                               variant="subtitle2"
                               sx={{
                                 fontWeight: 600,
-                                "&:hover": { color: "#cca182" },
+                                "&:hover": { color: "#0d1232" },
                               }}
                             >
                               {displayName}
@@ -1476,12 +1476,12 @@ function AssetManagementContent() {
                               }
                               sx={{
                                 borderRadius: "0px",
-                                bgcolor: "#cca182",
+                                bgcolor: "#0d1232",
                                 color: "#fff",
                                 fontSize: "0.75rem",
                                 fontWeight: 600,
                                 boxShadow: "none",
-                                "&:hover": { bgcolor: "#cca182e3" },
+                                "&:hover": { bgcolor: "#0d1232e3" },
                               }}
                             >
                               Download
@@ -1686,9 +1686,9 @@ function AssetManagementContent() {
                 }}
                 startIcon={<CloudDownloadOutlinedIcon />}
                 sx={{
-                  bgcolor: "#cca182",
+                  bgcolor: "#0d1232",
                   color: "#fff",
-                  "&:hover": { bgcolor: "#cca182e3" },
+                  "&:hover": { bgcolor: "#0d1232e3" },
                 }}
               >
                 Download File
@@ -1715,7 +1715,7 @@ export default function AssetManagementPage() {
             gap: 2,
           }}
         >
-          <CircularProgress sx={{ color: "#cca182" }} />
+          <CircularProgress sx={{ color: "#0d1232" }} />
           <Typography
             variant="body2"
             sx={{ color: "#666", letterSpacing: "1px" }}
