@@ -195,7 +195,7 @@ const CartItem = ({
           </div>
           <div className="smr3_cart-item__details">
             <h3>
-              {item?.designno != "" && item?.designno}
+              {(item?.ArticleNo || item?.designno)}
               {(item?.StockNo != "" && item?.StockNo != null) && ` (${item?.StockNo})`}
               {formatTitleLine(item?.TitleLine) && " - " + item?.TitleLine}
             </h3>

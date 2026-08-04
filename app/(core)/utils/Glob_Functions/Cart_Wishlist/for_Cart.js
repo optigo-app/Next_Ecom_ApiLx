@@ -681,13 +681,19 @@ const useCart = () => {
             let obj = {
                 a: cartData?.autocode,
                 b: cartData?.designno,
-                m: cartData?.metaltypeid,
+                m: cartData?.metaltypeid || cartData?.MetalPurityid || cartData?.Metalid,
                 d: diaIDData,
                 c: colorStoneID,
                 mc: metalColor != undefined ? metalColor : cartData?.MetalColorid,
-                f: {}
+                f: {},
+                ArticleNo: cartData?.ArticleNo || cartData?.designno || "",
+                ArticleId: cartData?.ArticleId || cartData?.id || null,
+                mediaDet: cartData?.ImageVideoDetail ?? "",
+                img: cartData?.images || "",
+                title: cartData?.TitleLine || cartData?.ArticleNo || cartData?.designno || "",
+                price: cartData?.UnitCostWithMarkUp || cartData?.CW_UCostWM || cartData?._UnitCost || 0,
+                nwt: cartData?.Nwt || cartData?.CW_Nwt || cartData?.CW_Gwt || 0,
             }
-            compressAndEncode(JSON?.stringify(obj))
             let encodeObj = compressAndEncode(JSON?.stringify(obj))
 
             navigate(`/d/${cartData?.TitleLine?.replace(/\s+/g, `_`)}${cartData?.TitleLine?.length > 0 ? "_" : ""}${cartData?.designno}?p=${encodeObj}`)

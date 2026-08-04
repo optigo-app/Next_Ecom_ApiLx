@@ -1935,7 +1935,7 @@ const DesignWiseSalesReport = () => {
                           >
                             {products?.designno}
                           </Typography>
-                          {BELUX_JEWEL && products?.ArticleNo && (
+                          {products?.ArticleNo && (
                             <Chip
                               label={products.ArticleNo}
                               size="small"

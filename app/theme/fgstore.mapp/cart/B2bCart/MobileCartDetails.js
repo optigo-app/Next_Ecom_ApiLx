@@ -164,7 +164,7 @@ const MobileCartDetails = ({
                 }}
               />
 
-              {storeInitData?.IsProductWebCustomization == 1 &&
+              {/* {storeInitData?.IsProductWebCustomization == 1 &&
                 <div className="smrMo_Cart-options">
                   {storeInitData?.IsMetalCustomization == 1 &&
                     <div className="option">
@@ -257,7 +257,7 @@ const MobileCartDetails = ({
                     </div>
                   }
                 </div>
-              }
+              } */}
               <div className='smrMo_cartQtyPricemainDev'>
                 <QuantitySelector selectedItem={selectedItem} handleIncrement={handleIncrement} handleDecrement={handleDecrement} qtyCount={qtyCount} />
                 {storeInitData?.IsPriceShow == 1 &&
