@@ -42,16 +42,26 @@ function ProductTypeBar({ storeinit }) {
   }, []);
 
 
+  // const chipColors = {
+  //   "Diamond Jewellery": "linear-gradient(135deg,#e3f2fd,#bbdefb)",
+  //   Bridal: "linear-gradient(135deg,#fff0f6,#ffd6e7)",
+  //   Jewellery: "linear-gradient(135deg,#fff8e1,#ffe0b2)",
+  //   "BRACELET Jewellery": "linear-gradient(135deg,#f3e5f5,#e1bee7)",
+  //   Men: "linear-gradient(135deg,#eceff1,#cfd8dc)",
+  //   Women: "linear-gradient(135deg,#fff3e0,#ffccbc)",
+  //   Diamond: "linear-gradient(135deg,#e1f5fe,#b3e5fc)",
+  //   "Gold Jewellery": "linear-gradient(135deg,#fff8e1,#ffd54f)",
+  // };
   const chipColors = {
-    "Diamond Jewellery": "linear-gradient(135deg,#e3f2fd,#bbdefb)",
-    Bridal: "linear-gradient(135deg,#fff0f6,#ffd6e7)",
-    Jewellery: "linear-gradient(135deg,#fff8e1,#ffe0b2)",
-    "BRACELET Jewellery": "linear-gradient(135deg,#f3e5f5,#e1bee7)",
-    Men: "linear-gradient(135deg,#eceff1,#cfd8dc)",
-    Women: "linear-gradient(135deg,#fff3e0,#ffccbc)",
-    Diamond: "linear-gradient(135deg,#e1f5fe,#b3e5fc)",
-    "Gold Jewellery": "linear-gradient(135deg,#fff8e1,#ffd54f)",
-  };
+  "Diamond Jewellery": "linear-gradient(135deg, #FFFFFF 0%, #F5F5F5 100%)",
+  Bridal: "linear-gradient(135deg, #FCFCFC 0%, #F2F2F2 100%)",
+  Jewellery: "linear-gradient(135deg, #FAFAFA 0%, #EEEEEE 100%)",
+  "BRACELET Jewellery": "linear-gradient(135deg, #FFFFFF 0%, #ECECEC 100%)",
+  Men: "linear-gradient(135deg, #F3F3F3 0%, #DEDEDE 100%)",
+  Women: "linear-gradient(135deg, #FFFFFF 0%, #F0F0F0 100%)",
+  Diamond: "linear-gradient(135deg, #FAFAFA 0%, #EAEAEA 100%)",
+  "Gold Jewellery": "linear-gradient(135deg, #FFFFFF 0%, #E8E8E8 100%)",
+};
 
   return (
     <Box
@@ -84,12 +94,12 @@ function ProductTypeBar({ storeinit }) {
             clickable
             icon={<DiamondOutlinedIcon fontSize="small" />}
             sx={{
-              borderRadius: "999px",
+              borderRadius: "3px",
               px: 1.6,
               height: 42,
               fontWeight: 600,
               color: "#5a4636",
-              background: chipColors[item.ProductTypeName] || "#fff8e1",
+              background: chipColors[item.ProductTypeName] ,
               transition: "all .25s ease",
             }}
           />

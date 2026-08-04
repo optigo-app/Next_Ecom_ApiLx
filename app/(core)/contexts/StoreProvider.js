@@ -30,8 +30,12 @@ export function StoreProvider({ children, storeInit }) {
   const [user, setUser] = useState(null);
   const [cartCountNum, setCartCountNum] = useState(0);
   const [wishCountNum, setWishCountNum] = useState(0);
-  const [loginUserDetail, setLoginUserDetail] = useState(null);
-  const [islogin, setislogin] = useState(false);
+  // Lazy initializers read from session/window-globals synchronously on the client.
+  // On the server, getSession() returns null (isBrowser() guard), so SSR stays safe.
+  // This eliminates the false→true transition on mount that caused every home component
+  // to recompute its pricingContext cache key and flash loading skeletons.
+  const [loginUserDetail, setLoginUserDetail] = useState(() => getSession("loginUserDetail") || null);
+  const [islogin, setislogin] = useState(() => !!getSession("loginUserDetail"));
   const [cartOpenStateB2C, setCartOpenStateB2C] = useState(false);
   const [SoketData, setSoketData] = useState([]);
 
@@ -63,9 +67,12 @@ export function StoreProvider({ children, storeInit }) {
   }, [finalId]);
 
   useEffect(() => {
+    // Belt-and-suspenders: if lazy initializer missed the session (e.g. race with
+    // cookie fallback), sync it up now. setState with the same value is a no-op
+    // in React 18 — no extra re-render when state is already correct.
     if (typeof window === "undefined") return;
     const storedDetail = getSession("loginUserDetail");
-    if (storedDetail) {
+    if (storedDetail && !islogin) {
       setLoginUserDetail(storedDetail);
       setislogin(true);
     }

@@ -96,7 +96,8 @@ const SlideContent = ({ promo }) => (
       backgroundSize: "cover",
       backgroundPosition: "center",
       height: { xs: "200px", sm: "250px", md: "300px" }, // Responsive height
-      borderRadius: 4,
+      borderRadius: 1,
+      // borderRadius: 4,
       position: "relative",
       overflow: "hidden",
       cursor: "pointer",

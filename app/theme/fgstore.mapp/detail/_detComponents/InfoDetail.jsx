@@ -1,5 +1,5 @@
-import { formatTitleLine } from "@/app/(core)/utils/Glob_Functions/GlobalFunction";
-import { Box, Typography, Button, Skeleton, Stack } from "@mui/material";
+import { formatTitleLine, formatter } from "@/app/(core)/utils/Glob_Functions/GlobalFunction";
+import { Box, Typography, Skeleton, Stack } from "@mui/material";
 import React, { useState } from "react";
 
 const InfoDetail = ({
@@ -11,141 +11,94 @@ const InfoDetail = ({
     Currency
 }) => {
     const [showMdesc, setShowMdesc] = useState(false);
-    
-    const prod = Object.keys(singleProd1).length > 0 ? singleProd1 : singleProd;
-    
+
+    // Prioritize API response (singleProd or singleProd1) over default payload
+    const prod = (singleProd1 && Object.keys(singleProd1).length > 0)
+        ? singleProd1
+        : (singleProd && Object.keys(singleProd).length > 0 ? singleProd : {});
+
+    const articleNo = prod?.ArticleNo || prod?.articleno || "";
+    const designNo = prod?.designno || prod?.b || "";
+    const titleLine = prod?.TitleLine || prod?.titleline || "";
+
+    // Clean title line without duplicating ArticleNo or DesignNo
+    let displayTitle = "";
+    if (articleNo && titleLine && titleLine !== articleNo && titleLine !== designNo) {
+        displayTitle = `${articleNo} - ${titleLine}`;
+    } else if (articleNo) {
+        displayTitle = articleNo;
+    } else if (titleLine) {
+        displayTitle = titleLine;
+    } else {
+        displayTitle = designNo;
+    }
+
+    const priceVal = prod?.UnitCostWithMarkUp ?? prod?.price ?? 0;
+    const currencySymbol = Currency || storeInit?.CurrencyCode || "INR";
+
     return (
-        <Box sx={{ width: "100%", px: 2, mt: 4, textAlign: 'left' }}>
-
-            {/* Product Title */}
-            {formatTitleLine(singleProd?.TitleLine) && (
-                <Typography
-                    sx={{
-                        fontSize: "20px",
-                        fontWeight: 600,
-                        lineHeight: 1.3,
-                        mb: 0.5
-                    }}
-                >
-                    {singleProd?.TitleLine}
-                </Typography>
-            )}
-
-            {/* Design Number */}
+        <Box sx={{ width: "100%", px: 2, mt: 2, textAlign: "left" }}>
+            {/* Title Line */}
             <Typography
                 sx={{
-                    fontSize: "20px",
-                    color: "#666",
-                    fontWeight: 600,
-                    mb: 1
+                    fontSize: "18px",
+                    fontWeight: 700,
+                    color: "#102A43",
+                    lineHeight: 1.3,
+                    mb: 0.5,
                 }}
             >
-                {singleProd?.designno}
+                {displayTitle}
             </Typography>
+
+            {/* Design No (show only if different from displayTitle) */}
+            {designNo && displayTitle !== designNo && (
+                <Typography
+                    sx={{
+                        fontSize: "12px",
+                        color: "#627D98",
+                        fontWeight: 600,
+                        mb: 1,
+                    }}
+                >
+                    Design No: {designNo}
+                </Typography>
+            )}
 
             {/* Price Section */}
             {storeInit?.IsPriceShow === 1 && (
                 <Box sx={{ mb: 1.5 }}>
-                    <Stack direction="row" alignItems="center" spacing={1}>
-
-                        {isPriceloading ? (
-                            <Skeleton variant="rounded" width={140} height={30} />
+                    <Stack direction="row" alignItems="center" spacing={0.5}>
+                        {isPriceloading || !priceVal ? (
+                            <Skeleton variant="rounded" width={140} height={28} />
                         ) : (
-                            <>
-                                <Typography
-                                    component="span"
-                                    sx={{ fontSize: "18px", fontWeight: 600 }}
-                                    dangerouslySetInnerHTML={{
-                                        __html: decodeEntities(
-                                            Currency
-                                        ),
-                                    }}
-                                />
-
-                                <Typography sx={{ fontSize: "18px", fontWeight: 600 }}>
-                                    {prod?.UnitCostWithMarkUp?.toLocaleString("en-IN")}
-                                </Typography>
-                            </>
+                            <Typography sx={{ fontSize: "22px", fontWeight: 800, color: "#0B2F83" }}>
+                                {currencySymbol} {formatter(priceVal)}
+                            </Typography>
                         )}
-
                     </Stack>
                 </Box>
             )}
 
             {/* Description */}
-            {singleProd?.description && (
-                <Box>
-
+            {prod?.description && (
+                <Box sx={{ mt: 1 }}>
                     <Typography
                         sx={{
-                            fontSize: "14px",
-                            color: "#555",
+                            fontSize: "13px",
+                            color: "#486581",
                             display: "-webkit-box",
                             WebkitLineClamp: showMdesc ? "unset" : 3,
                             WebkitBoxOrient: "vertical",
-                            overflow: "hidden"
+                            overflow: "hidden",
                         }}
                     >
-                        {singleProd?.description}
+                        {prod?.description}
                     </Typography>
-
-                    <Button
-                        onClick={() => setShowMdesc((prev) => !prev)}
-                        size="small"
-                        sx={{
-                            textTransform: "none",
-                            fontSize: "13px",
-                            mt: 0.5,
-                            p: 0,
-                            minWidth: "auto"
-                        }}
-                    >
-                        {showMdesc ? "...Show Less" : "...Show More"}
-                    </Button>
-
                 </Box>
             )}
-
         </Box>
     );
 };
 
 export default InfoDetail;
-
-
-
-
-//    {/* <div className="product_info">
-//                             {formatTitleLine(singleProd?.TitleLine) && singleProd?.TitleLine}
-//                             <span className="fgstore_mapp_single_prod_designno" style={{ marginTop: "5px", fontSize: "1.1rem" }}>
-//                                 {singleProd?.designno}
-//                             </span>
-//                             {storeInit?.IsPriceShow === 1 && (
-//                                 <div className="pricecharge">
-//                                     {
-//                                         <div className="fgstore_mapp_price_portion">
-//                                             {isPriceloading ? (
-//                                                 ""
-//                                             ) : (
-//                                                 <span
-//                                                     style={{ paddingRight: "0.4rem" }}
-//                                                     className="fgstore_mapp_currencyFont"
-//                                                     dangerouslySetInnerHTML={{
-//                                                         __html: decodeEntities(loginInfo?.CurrencyCode ?? storeInit?.CurrencyCode),
-//                                                     }}
-//                                                 />
-//                                             )}
-//                                             {isPriceloading ? <Skeleton variant="rounded" width={140} height={30} /> : <>{singleProd1?.UnitCostWithMarkUp ?? singleProd?.UnitCostWithMarkUp?.toLocaleString("en-IN")}</>}
-//                                         </div>
-//                                     }
-//                                 </div>
-//                             )}
-//                             {singleProd?.description && (
-//                                 <div className="desc-p-details">
-//                                     <p className={`${!ShowMdesc ? "showless" : "showmore"}`}>{singleProd?.description}</p>
-//                                     <div className="btn_sec_pd">
-//                                         <button onClick={() => setShowMdesc(!ShowMdesc)}>{ShowMdesc ? "...Show Less" : "...Show More"}</button>
-//                                     </div>
-//                                 </div>
-//                             )}
-//                         </div> */}

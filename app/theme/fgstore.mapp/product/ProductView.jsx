@@ -45,7 +45,7 @@ const ProductView = ({
 
   return (
     <>
-      <Grid container spacing={0} className="customGrid" sx={{ width: "100%", margin: 0 }}>
+      <Grid container spacing={1.5} className="customGrid" sx={{ width: "100%", p: 1, margin: 0 }}>
         {data?.map((productData, index) => {
           const images = imageMap[productData.designno] || {};
           const yellowImage = images?.yellowImage;
@@ -58,7 +58,7 @@ const ProductView = ({
           const isAvailable = imageAvailability[productData?.autocode];
 
           return (
-            <Grid item size={{ xs: ImageView ? 12 : 6 }} key={index} className="gridItem">
+            <Grid item size={{ xs: ImageView ? 12 : 6 }} key={index} className="gridItem" sx={{ display: "flex" }}>
               <ProductCard
                 key={index}
                 productData={productData}
@@ -105,6 +105,7 @@ const ProductView = ({
                 metalColorCombo={metalColorCombo}
                 isLoading={isLoading}
                 isAvailable={isAvailable}
+                ImageView={ImageView}
               />
             </Grid>
           );

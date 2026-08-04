@@ -14,95 +14,100 @@ const StaticMaterial = ({
   const prod = Object.keys(singleProd1).length > 0 ? singleProd1 : singleProd;
 
   return (
-    <>
-      <Box
+    <Box
+      sx={{
+        boxSizing: 'border-box',
+        width: '100%',
+        mt: 2,
+      }}
+    >
+      <Card
+        elevation={0}
         sx={{
-          boxSizing: 'border-box',
-          width: '100%',
+          borderRadius: "4px",
+          border: "1px solid #e0e0e0",
+          backgroundColor: "#ffffff",
+          p: 2,
         }}
       >
-
-        <Card
+        {/* Title */}
+        <Typography
           sx={{
-            mt: 3,
-            borderRadius: 2,
-            boxShadow: "0 1px 6px rgba(0,0,0,0.08)",
-            p: 1
+            fontSize: "13px",
+            fontWeight: 700,
+            letterSpacing: 0.8,
+            color: "#102a43",
+            textTransform: "uppercase",
+            mb: 1,
+            textAlign: "left",
           }}
         >
-          {/* Title */}
-          <Typography
-            sx={{
-              fontSize: "14px",
-              fontWeight: 600,
-              letterSpacing: 1,
-              mb: 1
-            }}
-          >
-            MATERIAL DETAILS
-          </Typography>
+          Material Details
+        </Typography>
 
-          <Divider sx={{ mb: 1.5 }} />
+        <Divider sx={{ mb: 1.5 }} />
 
-          {/* Details */}
-          <Stack spacing={0.8}>
-
-            {singleProd?.designno && (<Stack direction="row" justifyContent="space-between">
-              <Typography sx={{ color: "#666", fontSize: "13px" }}>
+        {/* Details */}
+        <Stack spacing={1}>
+          {singleProd?.designno && (
+            <Stack direction="row" justifyContent="space-between">
+              <Typography sx={{ color: "#627d98", fontSize: "13px", fontWeight: 500 }}>
                 Design No
               </Typography>
-              <Typography sx={{ fontSize: "13px", fontWeight: 500 }}>
+              <Typography sx={{ fontSize: "13px", fontWeight: 700, color: "#102a43" }}>
                 {singleProd?.designno}
               </Typography>
-            </Stack>)}
+            </Stack>
+          )}
 
+          {selectMtType && (
             <Stack direction="row" justifyContent="space-between">
-              <Typography sx={{ color: "#666", fontSize: "13px" }}>
+              <Typography sx={{ color: "#627d98", fontSize: "13px", fontWeight: 500 }}>
                 Metal Purity
               </Typography>
-              <Typography sx={{ fontSize: "13px", fontWeight: 500 }}>
+              <Typography sx={{ fontSize: "13px", fontWeight: 700, color: "#102a43" }}>
                 {selectMtType}
               </Typography>
             </Stack>
+          )}
 
+          {selectMtColor && (
             <Stack direction="row" justifyContent="space-between">
-              <Typography sx={{ color: "#666", fontSize: "13px" }}>
+              <Typography sx={{ color: "#627d98", fontSize: "13px", fontWeight: 500 }}>
                 Metal Color
               </Typography>
-              <Typography sx={{ fontSize: "13px", fontWeight: 500 }}>
+              <Typography sx={{ fontSize: "13px", fontWeight: 700, color: "#102a43" }}>
                 {selectMtColor}
               </Typography>
             </Stack>
+          )}
 
-            {storeInit?.IsDiamondCustomization === 1 &&
-              diaQcCombo?.length > 0 &&
-              diaList?.length > 0 && (
-                <Stack direction="row" justifyContent="space-between">
-                  <Typography sx={{ color: "#666", fontSize: "13px" }}>
-                    Diamond Quality
-                  </Typography>
-                  <Typography sx={{ fontSize: "13px", fontWeight: 500 }}>
-                    {selectDiaQc}
-                  </Typography>
-                </Stack>
-              )}
-
-            {storeInit?.IsMetalWeight === 1 && (
+          {storeInit?.IsDiamondCustomization === 1 &&
+            diaQcCombo?.length > 0 &&
+            diaList?.length > 0 && (
               <Stack direction="row" justifyContent="space-between">
-                <Typography sx={{ color: "#666", fontSize: "13px" }}>
-                  Net Wt
+                <Typography sx={{ color: "#627d98", fontSize: "13px", fontWeight: 500 }}>
+                  Diamond Quality
                 </Typography>
-                <Typography sx={{ fontSize: "13px", fontWeight: 500 }}>
-                  {prod?.Nwt?.toFixed(3)}
+                <Typography sx={{ fontSize: "13px", fontWeight: 700, color: "#102a43" }}>
+                  {selectDiaQc}
                 </Typography>
               </Stack>
             )}
 
-          </Stack>
-        </Card>
-      </Box>
-
-    </>
+          {storeInit?.IsMetalWeight === 1 && prod?.Nwt && (
+            <Stack direction="row" justifyContent="space-between">
+              <Typography sx={{ color: "#627d98", fontSize: "13px", fontWeight: 500 }}>
+                Net Wt
+              </Typography>
+              <Typography sx={{ fontSize: "13px", fontWeight: 700, color: "#102a43" }}>
+                {prod?.Nwt?.toFixed(3)} g
+              </Typography>
+            </Stack>
+          )}
+        </Stack>
+      </Card>
+    </Box>
   );
 };
 

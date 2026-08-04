@@ -1,341 +1,144 @@
 import React from "react";
-import { Box, Typography, Divider, Paper, Stack } from "@mui/material";
+import { Box, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material";
+import { formatter } from "@/app/(core)/utils/Glob_Functions/GlobalFunction";
 
-
-    const decodeEntities = (html) => {
-        if (!html || typeof html !== "string") return html;
-        if (typeof window === "undefined") return html;
-
-        const txt = document.createElement("textarea");
-        txt.innerHTML = html;
-        return txt.value;
-    };
+const getCost = (val) => {
+  const num = Number(val);
+  return isNaN(num) ? 0 : num;
+};
 
 const PriceBreakup = ({
   storeInit,
   singleProd,
   singleProd1,
-  loginInfo
+  loginInfo,
+  Currency
 }) => {
+  const prod = (singleProd1 && Object.keys(singleProd1).length > 0)
+    ? singleProd1
+    : (singleProd && Object.keys(singleProd).length > 0 ? singleProd : {});
 
+  const currencySymbol = Currency || storeInit?.CurrencyCode || loginInfo?.CurrencyCode || "INR";
 
-  const prod = Object.keys(singleProd1).length > 0 ? singleProd1 : singleProd;
+  const metalCost = getCost(prod?.Metal_Cost ?? prod?.TotalMetalCost ?? prod?.totalmetalCost);
+  const diamondCost = getCost(prod?.Diamond_Cost ?? prod?.TotalDiamondCost ?? prod?.totaldiamondCost);
+  const stoneCost = getCost(prod?.ColorStone_Cost ?? prod?.TotalColorStoneCost ?? prod?.totalColorStoneCost);
+  const miscCost = getCost(prod?.Misc_Cost ?? prod?.TotalMiscCost ?? prod?.totalMiscCost);
+  const labourCost = getCost(prod?.Labour_Cost ?? prod?.TotalMakingCost ?? prod?.totalMakingCost ?? prod?.Making_Cost);
+  const otherCost = getCost(prod?.Other_Cost ?? prod?.TotalOtherCost ?? prod?.totalOtherCost) +
+    getCost(prod?.Size_MarkUp) +
+    getCost(prod?.DesignMarkUpAmount) +
+    getCost(prod?.ColorStone_SettingCost) +
+    getCost(prod?.Diamond_SettingCost) +
+    getCost(prod?.Misc_SettingCost);
 
-  const currency = (
-    <span
-      style={{ paddingRight: "0.35rem" }}
-      dangerouslySetInnerHTML={{
-        __html: decodeEntities(loginInfo?.CurrencyCode ?? storeInit?.CurrencyCode ),
-      }}
-    />
-  );
-
-  const metal = prod?.Metal_Cost;
-  const diamond = prod?.Diamond_Cost;
-  const stone = prod?.ColorStone_Cost;
-  const misc = prod?.Misc_Cost;
-  const labour = prod?.Labour_Cost;
-
-
-  const other =
-    (prod?.Other_Cost || 0) +
-    (prod?.Size_MarkUp || 0) +
-    (prod?.DesignMarkUpAmount || 0) +
-    (prod?.ColorStone_SettingCost || 0) +
-    (prod?.Diamond_SettingCost || 0) +
-    (prod?.Misc_SettingCost || 0);
+  const priceBreakupItems = [
+    { label: "Metal", cost: metalCost },
+    { label: "Diamond", cost: diamondCost },
+    { label: "Stone", cost: stoneCost },
+    { label: "MISC", cost: miscCost },
+    { label: "Labour", cost: labourCost },
+    { label: "Other", cost: otherCost },
+  ].filter(item => item.cost > 0);
 
   if (
-    !(storeInit?.IsPriceShow === 1 &&
-      storeInit?.IsPriceBreakUp == 1 &&
-      prod?.IsMrpBase !== 1)
-  ) return null;
-
-  const Row = ({ label, value }) =>
-    value !== 0 ? (
-      <Stack
-        direction="row"
-        justifyContent="space-between"
-        alignItems="center"
-        sx={{ py: 0.4 }}
-      >
-        <Typography sx={{ fontSize: "0.9rem", color: "#616161" }}>
-          {label}
-        </Typography>
-
-        <Typography
-          sx={{
-            fontSize: "0.9rem",
-            fontWeight: 500,
-            display: "flex",
-            alignItems: "center"
-          }}
-        >
-          {currency}
-          {value?.toFixed(2)}
-        </Typography>
-      </Stack>
-    ) : null;
+    storeInit?.IsPriceShow === 0 ||
+    storeInit?.IsPriceBreakUp === 0 ||
+    prod?.IsMrpBase === 1 ||
+    priceBreakupItems.length === 0
+  ) {
+    return null;
+  }
 
   return (
-
-      <Box
-        sx={{
-            boxSizing:'border-box',
-            width:'100%',
-        }}
-        >
-    
-    <Paper
-      elevation={0}
+    <Box
       sx={{
+        boxSizing: 'border-box',
+        width: '100%',
         mt: 2,
-        p: 1,
-        borderRadius: 2,
-        border: "1px solid #eee",
-        background: "#fff",
-        
       }}
     >
-
-      <Typography
+      <TableContainer
         sx={{
-          fontSize: "0.85rem",
-          fontWeight: 600,
-          mb: 1,
-          letterSpacing: 1,
-          textTransform: "uppercase",
-          color: "#424242"
+          border: "1px solid #e0e0e0",
+          borderRadius: "4px",
+          overflow: "hidden",
+          backgroundColor: "#ffffff",
         }}
       >
-        Price Breakup
-      </Typography>
-
-      <Divider sx={{ mt: 1.5 ,mb:1 }} />
-
-      <Box>
-
-        <Row label="Metal" value={metal} />
-        <Row label="Diamond" value={diamond} />
-        <Row label="Stone" value={stone} />
-        <Row label="Misc" value={misc} />
-        <Row label="Labour" value={labour} />
-        <Row label="Other" value={other} />
-
-      </Box>
-
-
-    </Paper>
+        <Table size="small">
+          <TableHead>
+            <TableRow sx={{ backgroundColor: "#fafafa" }}>
+              <TableCell
+                sx={{
+                  fontWeight: 700,
+                  color: "#627d98",
+                  fontSize: "11px",
+                  py: 1,
+                  px: 2,
+                  textTransform: "uppercase",
+                  letterSpacing: "0.5px",
+                  borderBottom: "1px solid #e0e0e0",
+                }}
+              >
+                Component
+              </TableCell>
+              <TableCell
+                align="right"
+                sx={{
+                  fontWeight: 700,
+                  color: "#627d98",
+                  fontSize: "11px",
+                  py: 1,
+                  px: 2,
+                  textTransform: "uppercase",
+                  letterSpacing: "0.5px",
+                  borderBottom: "1px solid #e0e0e0",
+                }}
+              >
+                Amount
+              </TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {priceBreakupItems.map((item, index) => (
+              <TableRow
+                key={index}
+                sx={{
+                  "&:last-child td": { borderBottom: 0 },
+                }}
+              >
+                <TableCell
+                  sx={{
+                    fontSize: "12.5px",
+                    color: "#333333",
+                    py: 1,
+                    px: 2,
+                    borderBottom: "1px solid #f0f0f0",
+                  }}
+                >
+                  {item.label}
+                </TableCell>
+                <TableCell
+                  align="right"
+                  sx={{
+                    fontSize: "12.5px",
+                    fontWeight: 600,
+                    color: "#102a43",
+                    py: 1,
+                    px: 2,
+                    borderBottom: "1px solid #f0f0f0",
+                  }}
+                >
+                  {currencySymbol} {formatter(item.cost)}
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
     </Box>
   );
 };
 
 export default PriceBreakup;
-
-//    {storeInit?.IsPriceShow === 1 && storeInit?.IsPriceBreakUp == 1 && (singleProd1 ?? singleProd)?.IsMrpBase !== 1 && (
-                        //         <Accordion
-                        //             className="accordian"
-                        //             key={3}
-                        //             sx={{
-                        //                 border: "none", // Remove default border
-                        //                 boxShadow: "none", // Remove default shadow
-                        //                 "&:before": {
-                        //                     // Remove the border-top pseudo-element
-                        //                     display: "none",
-                        //                 },
-                        //             }}
-                        //             expanded={expandedIndex === 3}
-                        //             onChange={handleChange(3)}
-                        //         >
-                        //             <AccordionSummary
-                        //                 expandIcon={
-                        //                     expandedIndex === 3 ? <RemoveIcon style={{ fontSize: "1.2rem", color: "black" }} /> : <AddIcon style={{ fontSize: "1.2rem", color: "black" }} />
-                        //                     // <AddIcon
-                        //                     //   style={{ fontSize: "1.2rem", color: "black" }}
-                        //                     // />
-                        //                 }
-                        //                 aria-controls="panel1-content"
-                        //                 id="panel1-header"
-                        //                 className="summary-fgstore_mapp"
-                        //                 sx={{
-                        //                     padding: "0 5px",
-                        //                 }}
-                        //             >
-                        //                 <Typography
-                        //                     className="title"
-                        //                     sx={{
-                        //                         textAlign: "center",
-                        //                         width: "100%",
-                        //                     }}
-                        //                     style={{
-                        //                         fontSize: "0.9rem",
-                        //                         textTransform: "uppercase",
-                        //                         marginLeft: "3.4px",
-                        //                     }}
-                        //                 >
-                        //                     Price Breakup
-                        //                 </Typography>
-                        //             </AccordionSummary>
-                        //             <AccordionDetails>
-                        //                 {(singleProd1?.Metal_Cost ? singleProd1?.Metal_Cost : singleProd?.Metal_Cost) !== 0 ? (
-                        //                     <div
-                        //                         style={{
-                        //                             display: "flex",
-                        //                             justifyContent: "space-between",
-                        //                             alignItems: "center",
-                        //                         }}
-                        //                     >
-                        //                         <Typography className="smr_Price_breakup_label">Metal</Typography>
-                        //                         <span style={{ display: "flex" }}>
-                        //                             <Typography>
-                        //                                 {
-                        //                                     <span
-                        //                                         style={{ paddingRight: "0.4rem" }}
-                        //                                         className="smr_currencyFont"
-                        //                                         dangerouslySetInnerHTML={{
-                        //                                             __html: decodeEntities(loginInfo?.CurrencyCode),
-                        //                                         }}
-                        //                                     />
-                        //                                 }
-                        //                             </Typography>
-                        //                             <Typography>{(singleProd1?.Metal_Cost ? singleProd1?.Metal_Cost : singleProd?.Metal_Cost)?.toFixed(2)}</Typography>
-                        //                         </span>
-                        //                     </div>
-                        //                 ) : null}
-                        //                 {(singleProd1?.Diamond_Cost ? singleProd1?.Diamond_Cost : singleProd?.Diamond_Cost) !== 0 ? (
-                        //                     <div
-                        //                         style={{
-                        //                             display: "flex",
-                        //                             justifyContent: "space-between",
-                        //                             alignItems: "center",
-                        //                         }}
-                        //                     >
-                        //                         <Typography className="smr_Price_breakup_label">Diamond </Typography>
-
-                        //                         <span style={{ display: "flex" }}>
-                        //                             <Typography>
-                        //                                 {
-                        //                                     <span
-                        //                                         style={{ paddingRight: "0.4rem" }}
-                        //                                         className="smr_currencyFont"
-                        //                                         dangerouslySetInnerHTML={{
-                        //                                             __html: decodeEntities(loginInfo?.CurrencyCode),
-                        //                                         }}
-                        //                                     />
-                        //                                 }
-                        //                             </Typography>
-                        //                             <Typography>{(singleProd1?.Diamond_Cost ? singleProd1?.Diamond_Cost : singleProd?.Diamond_Cost)?.toFixed(2)}</Typography>
-                        //                         </span>
-                        //                     </div>
-                        //                 ) : null}
-
-                        //                 {(singleProd1?.ColorStone_Cost ? singleProd1?.ColorStone_Cost : singleProd?.ColorStone_Cost) !== 0 ? (
-                        //                     <div
-                        //                         style={{
-                        //                             display: "flex",
-                        //                             justifyContent: "space-between",
-                        //                             alignItems: "center",
-                        //                         }}
-                        //                     >
-                        //                         <Typography className="smr_Price_breakup_label">Stone </Typography>
-
-                        //                         <span style={{ display: "flex" }}>
-                        //                             <Typography>
-                        //                                 {
-                        //                                     <span
-                        //                                         style={{ paddingRight: "0.4rem" }}
-                        //                                         className="smr_currencyFont"
-                        //                                         dangerouslySetInnerHTML={{
-                        //                                             __html: decodeEntities(loginInfo?.CurrencyCode),
-                        //                                         }}
-                        //                                     />
-                        //                                 }
-                        //                             </Typography>
-                        //                             <Typography>{(singleProd1?.ColorStone_Cost ? singleProd1?.ColorStone_Cost : singleProd?.ColorStone_Cost)?.toFixed(2)}</Typography>
-                        //                         </span>
-                        //                     </div>
-                        //                 ) : null}
-
-                        //                 {(singleProd1?.Misc_Cost ? singleProd1?.Misc_Cost : singleProd?.Misc_Cost) !== 0 ? (
-                        //                     <div
-                        //                         style={{
-                        //                             display: "flex",
-                        //                             justifyContent: "space-between",
-                        //                             alignItems: "center",
-                        //                         }}
-                        //                     >
-                        //                         <Typography className="smr_Price_breakup_label">MISC </Typography>
-
-                        //                         <span style={{ display: "flex" }}>
-                        //                             <Typography>
-                        //                                 {
-                        //                                     <span
-                        //                                         style={{ paddingRight: "0.4rem" }}
-                        //                                         className="smr_currencyFont"
-                        //                                         dangerouslySetInnerHTML={{
-                        //                                             __html: decodeEntities(loginInfo?.CurrencyCode),
-                        //                                         }}
-                        //                                     />
-                        //                                 }
-                        //                             </Typography>
-                        //                             <Typography>{(singleProd1?.Misc_Cost ? singleProd1?.Misc_Cost : singleProd?.Misc_Cost)?.toFixed(2)}</Typography>
-                        //                         </span>
-                        //                     </div>
-                        //                 ) : null}
-
-                        //                 {(singleProd1?.Labour_Cost ? singleProd1?.Labour_Cost : singleProd?.Labour_Cost) !== 0 ? (
-                        //                     <div
-                        //                         style={{
-                        //                             display: "flex",
-                        //                             justifyContent: "space-between",
-                        //                             alignItems: "center",
-                        //                         }}
-                        //                     >
-                        //                         <Typography className="smr_Price_breakup_label">Labour </Typography>
-
-                        //                         <span style={{ display: "flex" }}>
-                        //                             <Typography>
-                        //                                 {
-                        //                                     <span
-                        //                                         style={{ paddingRight: "0.4rem" }}
-                        //                                         className="smr_currencyFont"
-                        //                                         dangerouslySetInnerHTML={{
-                        //                                             __html: decodeEntities(loginInfo?.CurrencyCode),
-                        //                                         }}
-                        //                                     />
-                        //                                 }
-                        //                             </Typography>
-                        //                             <Typography>{(singleProd1?.Labour_Cost ? singleProd1?.Labour_Cost : singleProd?.Labour_Cost)?.toFixed(2)}</Typography>
-                        //                         </span>
-                        //                     </div>
-                        //                 ) : null}
-
-                        //                 {(singleProd1?.Other_Cost ? singleProd1?.Other_Cost : singleProd?.Other_Cost) + (singleProd1?.Size_MarkUp ? singleProd1?.Size_MarkUp : singleProd?.Size_MarkUp) + (singleProd1?.DesignMarkUpAmount ? singleProd1?.DesignMarkUpAmount : singleProd?.DesignMarkUpAmount) + (singleProd1?.ColorStone_SettingCost ? singleProd1?.ColorStone_SettingCost : singleProd?.ColorStone_SettingCost) + (singleProd1?.Diamond_SettingCost ? singleProd1?.Diamond_SettingCost : singleProd?.Diamond_SettingCost) + (singleProd1?.Misc_SettingCost ? singleProd1?.Misc_SettingCost : singleProd?.Misc_SettingCost) !== 0 ? (
-                        //                     <div
-                        //                         style={{
-                        //                             display: "flex",
-                        //                             justifyContent: "space-between",
-                        //                             alignItems: "center",
-                        //                         }}
-                        //                     >
-                        //                         <Typography className="smr_Price_breakup_label">Other </Typography>
-
-                        //                         <span style={{ display: "flex" }}>
-                        //                             <Typography>
-                        //                                 {
-                        //                                     <span
-                        //                                         style={{ paddingRight: "0.4rem" }}
-                        //                                         className="smr_currencyFont"
-                        //                                         dangerouslySetInnerHTML={{
-                        //                                             __html: decodeEntities(loginInfo?.CurrencyCode),
-                        //                                         }}
-                        //                                     />
-                        //                                 }
-                        //                             </Typography>
-                        //                             <Typography>{((singleProd1?.Other_Cost ? singleProd1?.Other_Cost : singleProd?.Other_Cost) + (singleProd1?.Size_MarkUp ? singleProd1?.Size_MarkUp : singleProd?.Size_MarkUp) + (singleProd1?.DesignMarkUpAmount ? singleProd1?.DesignMarkUpAmount : singleProd?.DesignMarkUpAmount) + (singleProd1?.ColorStone_SettingCost ? singleProd1?.ColorStone_SettingCost : singleProd?.ColorStone_SettingCost) + (singleProd1?.Diamond_SettingCost ? singleProd1?.Diamond_SettingCost : singleProd?.Diamond_SettingCost) + (singleProd1?.Misc_SettingCost ? singleProd1?.Misc_SettingCost : singleProd?.Misc_SettingCost))?.toFixed(2)}</Typography>
-                        //                         </span>
-                        //                     </div>
-                        //                 ) : null}
-                        //             </AccordionDetails>
-                        //         </Accordion>
-                        //     )}

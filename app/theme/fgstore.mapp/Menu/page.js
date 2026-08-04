@@ -34,8 +34,6 @@ const Menu = ({ storeInit }) => {
     useEffect(() => {
         const isB2B = storeInit?.IsB2BWebsite === 1;
         const isUserLoggedIn = getSession("LoginUser") === true;
-        console.log("isB2B", isB2B);
-        console.log("isUserLoggedIn", isUserLoggedIn);
 
         // B2B Guard Condition
         // if (isB2B && !isUserLoggedIn) {

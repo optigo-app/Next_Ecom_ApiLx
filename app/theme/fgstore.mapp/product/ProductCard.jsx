@@ -1,30 +1,21 @@
-import React, { useEffect, useState } from 'react'
-import { findMetalColor, formatter, formatTitleLine, findMetalType, storImagePath } from "@/app/(core)/utils/Glob_Functions/GlobalFunction";
+"use client";
+import React, { useEffect, useState } from 'react';
+import { findMetalColor, formatter, formatTitleLine, findMetalType } from "@/app/(core)/utils/Glob_Functions/GlobalFunction";
 import {
-    Card, CardMedia, Checkbox, Paper, Skeleton
+    Card, CardContent, Checkbox, Typography, Box, Button
 } from "@mui/material";
-import LocalMallOutlinedIcon from '@mui/icons-material/LocalMallOutlined';
-import StarBorderIcon from "@mui/icons-material/StarBorder";
-import { Chip, CardContent, Grid, Typography, Box, Button } from "@mui/material";
+import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
+import FavoriteIcon from "@mui/icons-material/Favorite";
+import LocalMallOutlinedIcon from "@mui/icons-material/LocalMallOutlined";
 import LocalMallIcon from "@mui/icons-material/LocalMallRounded";
-import StarIcon from "@mui/icons-material/StarBorderRounded";
-import StarRoundedIcon from "@mui/icons-material/StarRounded";
+import VerifiedIcon from '@mui/icons-material/Verified';
 import SwiperProductCard from './SwiperProductCard';
-import FavoriteRoundedIcon from '@mui/icons-material/FavoriteRounded';
-import FavoriteBorderRoundedIcon from '@mui/icons-material/FavoriteBorderRounded';
-
-
 
 const ProductCard = ({
     productData,
-    isshowDots,
-    menuParams,
     handleCartandWish,
-    cartArr,
-    wishArr,
-    metalColorType,
-    maxwidth590px,
-    loginUserDetail,
+    cartArr = {},
+    wishArr = {},
     handleMoveToDetail,
     selectedMetalId,
     productIndex,
@@ -39,145 +30,170 @@ const ProductCard = ({
     RollImageUrl,
     location,
     metalColorCombo,
-    storeInit
+    storeInit,
+    loginUserDetail,
+    ImageView
 }) => {
-    const [imageColor, setImageColor] = useState("");
-    const getSessImgColor = JSON.parse(sessionStorage.getItem('imgColorCode'));
     const [selectedMetalColor, setSelectedMetalColor] = useState(null);
-    const [metalColorTitle, setMetalColorTitle] = useState();
-    const getSessCartWishImgColor = JSON?.parse(sessionStorage.getItem('cartWishImgColor')) ?? undefined;
-
-    const activeColorCode = getSessImgColor || getSessCartWishImgColor;
+    const [metalColorTitle, setMetalColorTitle] = useState("");
 
     useEffect(() => {
         if (metalColorCombo?.length > 0) {
             const mtColor = metalColorCombo?.find(ele => ele.id === productData?.MetalColorid)?.colorcode;
-            setMetalColorTitle(mtColor);
+            setMetalColorTitle(mtColor || "");
         }
-    }, [productData])
+    }, [productData, metalColorCombo]);
 
-    useEffect(() => {
-        if ((activeColorCode !== "" && activeColorCode !== undefined && activeColorCode !== null)) {
-            setImageColor("");
-            sessionStorage.removeItem("imgColorCode");
-            sessionStorage.removeItem("cartWishImgColor");
-            setSelectedMetalColor(null);
-        }
-    }, [location?.search])
+    const isWishlistChecked = wishArr[productData?.autocode] ?? (productData?.IsInWish === 1);
+    const isCartChecked = cartArr[productData?.autocode] ?? (productData?.IsInCart === 1);
 
-    useEffect(() => {
-        if (selectedMetalColor !== null) {
-            setImageColor(selectedMetalColor);
-            sessionStorage.setItem("imgColorCode", JSON.stringify(selectedMetalColor));
-        } else {
-            sessionStorage.removeItem("imgColorCode");
-            setImageColor("");
-        }
-    }, [selectedMetalColor])
+    const currencySymbol = loginUserDetail?.CurrencyCode ?? storeInit?.CurrencyCode ?? "INR";
+    const formattedPrice = formatter(productData?.UnitCostWithMarkUp);
+    
+    // MRP display (calculated 15% higher for strikethrough if applicable)
+    const mrpValue = productData?.UnitCostWithMarkUp 
+        ? formatter(Math.round(productData?.UnitCostWithMarkUp * 1.15))
+        : null;
 
-    const handleClick = (id) => {
-        setSelectedMetalColor(selectedMetalColor === id ? null : id);
-    };
+    const metalColorName = findMetalColor(productData?.MetalColorid)?.[0]?.metalcolorname?.toUpperCase() || "";
+    const metalTypeStr = findMetalType(productData?.IsMrpBase == 1 ? productData?.MetalPurityid : (selectedMetalId ?? productData?.MetalPurityid))?.[0]?.metaltype || "";
 
-    const titleLine = `${productData?.MetalTypePurity?.split(" ")[1]} ${metalColorTitle} ${productData?.MetalTypePurity?.split(" ")[0]} ${productData?.ShapeName} Diamond ${productData?.category} with ${productData?.style} style`;
+    const headerText = [metalColorName, metalTypeStr].filter(Boolean).join(" - ") || productData?.category?.toUpperCase() || "";
 
-    const [isLoading, setIsLoading] = useState(true);
-    const [isHover, setIsHover] = useState(false);
-    const hasNoData = productData?.IsInReadyStock !== 1 && productData?.IsBestSeller !== 1 && productData?.IsTrending !== 1 && productData?.IsNewArrival !== 1;
+    const articleNo = productData?.ArticleNo || productData?.articleno || productData?.designno || "";
+    const titleLine = productData?.TitleLine || productData?.titleline || "";
+    const titleText = [articleNo, titleLine].filter(Boolean).join(" - ") || productData?.category || "";
 
-    useEffect(() => {
-        const delay = (productIndex + 1) * 100;
-
-        const timer = setTimeout(() => {
-            setIsLoading(false);
-        }, delay);
-
-        return () => clearTimeout(timer);
-    }, [productIndex]);
-
-    return <Card
-        elevation={0}
-        sx={{
-            width: "100%",
-            display: "flex",
-            flexDirection: "column",
-            position: "relative",
-        }}
-    >
-        <Box
-            sx={{
-                position: "absolute",
-                top: 5,
-                left: 5,
-                zIndex: 2,
-            }}
-        >
-            <Checkbox
-                icon={
-                    <FavoriteBorderRoundedIcon
-                        sx={{
-                            fontSize: "22px",
-                            color: "#7d7f85",
-                            opacity: ".7",
-                        }}
-                    />
-                }
-                checkedIcon={
-                    <FavoriteRoundedIcon
-                        sx={{
-                            fontSize: "22px",
-                            color: "#4caf50",
-                        }}
-                    />
-                }
-                disableRipple={false}
-                onChange={(e) =>
-                    handleCartandWish(e, productData, "Wish")
-                }
-                checked={
-                    wishArr[productData?.autocode] ??
-                        productData?.IsInWish === 1
-                        ? true
-                        : false
-                }
-            />
-        </Box>
-
-        <Box
+    return (
+        <Card
+            elevation={0}
             sx={{
                 width: "100%",
-                backgroundColor: "#f9f9f9",
+                height: "100%",
+                borderRadius: "8px",
+                border: "1px solid #ececec",
+                backgroundColor: "#fff",
                 position: "relative",
-                minHeight: {
-                    xs: 200,
-                    sm: 250,
-                    md: 312,
-                    lg: 350,
-                    xl: 412,
-                },
+                display: "flex",
+                flexDirection: "column",
+                overflow: "hidden",
+                boxShadow: "0 2px 6px rgba(0,0,0,0.04)",
             }}
-            onClick={() => handleMoveToDetail(productData)}
         >
-            {isLoading === true ?
-                <Skeleton
-                    animation="wave"
-                    variant="rectangular"
-                    sx={{
-                        width: "100%",
-                        minHeight: {
-                            xs: 200,
-                            sm: 250,
-                            md: 312,
-                            lg: 350,
-                            xl: 412,
-                        },
-                        height: "100%",
-                        backgroundColor: "#f2f2f2",
-                        display: "block",
-                    }}
-                />
+            {/* Top Badges (Left) */}
+            <Box
+                sx={{
+                    position: "absolute",
+                    top: 8,
+                    left: 8,
+                    zIndex: 3,
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 0.5,
+                }}
+            >
+                {(productData?.IsInReadyStock === 1 || productData?.IsBestSeller === 1) && (
+                    <Box
+                        sx={{
+                            backgroundColor: "#385898",
+                            color: "#ffffff",
+                            fontSize: "10px",
+                            fontWeight: 700,
+                            px: 0.8,
+                            py: 0.3,
+                            borderRadius: "3px",
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "3px",
+                            boxShadow: "0 1px 3px rgba(0,0,0,0.15)",
+                        }}
+                    >
+                        <VerifiedIcon sx={{ fontSize: "11px" }} />
+                        <span>Assured</span>
+                    </Box>
+                )}
+                {productData?.IsTrending === 1 && (
+                    <Box
+                        sx={{
+                            backgroundColor: "#ff9800",
+                            color: "#ffffff",
+                            fontSize: "10px",
+                            fontWeight: 700,
+                            px: 0.8,
+                            py: 0.3,
+                            borderRadius: "3px",
+                        }}
+                    >
+                        Trending
+                    </Box>
+                )}
+                {productData?.IsNewArrival === 1 && (
+                    <Box
+                        sx={{
+                            backgroundColor: "#9c27b0",
+                            color: "#ffffff",
+                            fontSize: "10px",
+                            fontWeight: 700,
+                            px: 0.8,
+                            py: 0.3,
+                            borderRadius: "3px",
+                        }}
+                    >
+                        New
+                    </Box>
+                )}
+            </Box>
 
-                :
+            {/* Wishlist Heart Icon (Top Right) */}
+            <Box
+                sx={{
+                    position: "absolute",
+                    top: 4,
+                    right: 4,
+                    zIndex: 3,
+                }}
+            >
+                <Checkbox
+                    icon={
+                        <FavoriteBorderIcon
+                            sx={{
+                                fontSize: "20px",
+                                color: "#b0b0b0",
+                            }}
+                        />
+                    }
+                    checkedIcon={
+                        <FavoriteIcon
+                            sx={{
+                                fontSize: "20px",
+                                color: "#ff4380",
+                            }}
+                        />
+                    }
+                    onChange={(e) => handleCartandWish(e, productData, "Wish")}
+                    checked={isWishlistChecked}
+                    sx={{ p: 0.6 }}
+                />
+            </Box>
+
+            {/* Card Media / Image Area - Uniform Responsive Height */}
+            <Box
+                onClick={() => handleMoveToDetail(productData)}
+                sx={{
+                    width: "100%",
+                    cursor: "pointer",
+                    position: "relative",
+                    backgroundColor: "#ffffff",
+                    height: ImageView ? { xs: 260, sm: 320, md: 360 } : { xs: 160, sm: 200, md: 230 },
+                    minHeight: ImageView ? { xs: 260, sm: 320, md: 360 } : { xs: 160, sm: 200, md: 230 },
+                    maxHeight: ImageView ? { xs: 260, sm: 320, md: 360 } : { xs: 160, sm: 200, md: 230 },
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    overflow: "hidden",
+                    p: 1,
+                }}
+            >
                 <SwiperProductCard
                     imageUrl={imageUrl}
                     rollImageUrl={RollImageUrl}
@@ -186,653 +202,141 @@ const ProductCard = ({
                     roseImage={roseImage}
                     selectedMetalColor={selectedMetalColor}
                 />
-            }
-            <Box
-                sx={{
-                    display: "flex",
-                    flexWrap: "wrap",
-                    gap: 0.5,
-                    position: "absolute",
-                    bottom: 5,
-                    left: 5,
-                    zIndex: 1,
-                }}
-            >
-                {productData?.IsInReadyStock == 1 && (
-                    <Chip
-                        label="In Stock"
-                        size="small"
-                        sx={{
-                            fontSize: 10.5,
-                            height: 20,
-                            backgroundColor: "#e8f5e9",
-                            color: "#2e7d32",
-                            fontWeight: 600,
-                        }}
-                    />
-                )}
-
-                {productData?.IsBestSeller == 1 && (
-                    <Chip
-                        label="Best Seller"
-                        size="small"
-                        sx={{
-                            fontSize: 10.5,
-                            height: 20,
-                            backgroundColor: "#fff3e0",
-                            color: "#ef6c00",
-                            fontWeight: 600,
-                        }}
-                    />
-                )}
-
-                {productData?.IsTrending == 1 && (
-                    <Chip
-                        label="Trending"
-                        size="small"
-                        sx={{
-                            fontSize: 10.5,
-                            height: 20,
-                            backgroundColor: "#e3f2fd",
-                            color: "#1565c0",
-                            fontWeight: 600,
-                        }}
-                    />
-                )}
-
-                {productData?.IsNewArrival == 1 && (
-                    <Chip
-                        label="New"
-                        size="small"
-                        sx={{
-                            fontSize: 10.5,
-                            height: 20,
-                            backgroundColor: "#f3e5f5",
-                            color: "#6a1b9a",
-                            fontWeight: 600,
-                        }}
-                    />
-                )}
             </Box>
-        </Box>
-        {/* Content */}
-        <CardContent
-            sx={{
-                flexGrow: 1,
-                display: "flex",
-                flexDirection: "column",
-                gap: 0.3,
-                px: 0.8,
-                py: 1,
-                paddingBottom: "8px !important",
-            }}
-        >
-            {/* Title */}
-            <Typography
+
+            {/* Card Details Area - Flex Grow for Equal Heights */}
+            <CardContent
                 sx={{
-                    fontWeight: 600,
-                    fontSize: 14,
-                    lineHeight: 1.3,
-                    display: "-webkit-box",
-                    WebkitLineClamp: 2,
-                    WebkitBoxOrient: "vertical",
-                    overflow: "hidden",
-                    minHeight: 36.38
-                }}
-            >
-                {productData?.designno !== "" && productData?.designno}{formatTitleLine(productData?.TitleLine) && " - " + productData?.TitleLine}
-            </Typography>
-
-            {/* Metal Type */}
-            <Typography
-                sx={{
-                    color: "text.secondary",
-                    fontSize: 12,
-                    py: 0.3
-                }}
-            >
-                {findMetalColor(
-                    productData?.MetalColorid
-                )?.[0]?.metalcolorname.toUpperCase()}
-                {findMetalColor(
-                    productData?.MetalColorid
-                )?.[0]?.metalcolorname.toUpperCase() ? " - " : ""}
-                {
-                    findMetalType(
-                        productData?.IsMrpBase == 1 ? productData?.MetalPurityid : (selectedMetalId ?? productData?.MetalPurityid)
-                    )[0]?.metaltype
-                }
-            </Typography>
-
-            {/* Material info */}
-            <Grid
-                container
-                spacing={0.4}
-                sx={{
-                    fontSize: 13,
-                    minHeight: 31,
-                    width: "100%"
-                }}
-            >
-                {storeInit?.IsGrossWeight == 1 &&
-                    Number(productData?.Gwt) !== 0 && (
-                        <>
-                            <Grid item size={{ xs: 6 }}>
-                                <Typography
-                                    sx={{
-
-                                        fontSize: "clamp(0.58rem, 2vw, 0.75rem)",
-                                        display: "-webkit-box",
-                                        WebkitLineClamp: 2,
-                                        WebkitBoxOrient: "vertical",
-                                        overflow: "hidden",
-                                    }}
-                                >
-                                    <strong>GWT:</strong>   {(productData?.Gwt)?.toFixed(3)}
-                                </Typography>
-                            </Grid>
-                        </>
-                    )
-                }
-                {Number(productData?.Nwt) !== 0 && (
-                    <>
-                        <Grid item size={{ xs: 6 }}>
-                            <Typography
-                                sx={{
-
-                                    fontSize: "clamp(0.58rem, 2vw, 0.75rem)",
-                                    display: "-webkit-box",
-                                    WebkitLineClamp: 2,
-                                    WebkitBoxOrient: "vertical",
-                                    overflow: "hidden",
-                                }}
-                            >
-                                <strong>NWT:</strong>  {(productData?.Nwt)?.toFixed(3)}
-                            </Typography>
-                        </Grid>
-                    </>
-                )
-                }
-
-                {storeInit?.IsDiamondWeight == 1 &&
-                    (Number(productData?.Dwt) !== 0 && (
-                        <>
-                            <Grid item xs={6}>
-                                <Typography
-                                    sx={{
-
-                                        fontSize: "clamp(0.58rem, 2vw, 0.75rem)",
-                                        display: "-webkit-box",
-                                        WebkitLineClamp: 2,
-                                        WebkitBoxOrient: "vertical",
-                                        overflow: "hidden",
-                                    }}
-                                >
-                                    <strong>DWT:</strong>  {(productData?.Dwt)?.toFixed(3)}
-                                    {storeInit?.IsDiamondPcs === 1
-                                        ? `/${productData?.Dpcs}`
-                                        : null}
-                                </Typography>
-                            </Grid>
-                        </>
-                    ))
-                }
-                {storeInit?.IsStoneWeight == 1 &&
-                    (Number(productData?.CSwt) !== 0 && (
-                        <>
-                            <Grid item xs={6}>
-                                <Typography
-                                    sx={{
-
-                                        fontSize: "clamp(0.58rem, 2vw, 0.75rem)",
-                                        display: "-webkit-box",
-                                        WebkitLineClamp: 2,
-                                        WebkitBoxOrient: "vertical",
-                                        overflow: "hidden",
-                                    }}
-                                >
-                                    <strong>CWT:</strong>  {(productData?.CSwt)?.toFixed(3)}
-                                    {storeInit?.IsStonePcs === 1
-                                        ? `/${productData?.CSpcs}`
-                                        : null}
-                                </Typography>
-                            </Grid>
-                        </>
-                    ))
-                }
-            </Grid>
-            <Box sx={{ flexGrow: 1 }} />
-
-            {/* Bottom Row */}
-            <Box
-                sx={{
+                    p: 1.2,
+                    pt: 0.8,
+                    pb: "10px !important",
                     display: "flex",
-                    alignItems: "center",
-                    justifyContent: "space-between",
+                    flexDirection: "column",
+                    gap: 0.4,
+                    backgroundColor: "#fff",
+                    flexGrow: 1,
                 }}
             >
-                {/* Price */}
-                {storeInit?.IsPriceShow == 1 && <Typography
+                {/* Brand / Metal Type Header (e.g. YELLOW - GOLD 24k) */}
+                <Typography
                     sx={{
+                        fontSize: "11px",
                         fontWeight: 700,
-                        fontSize: 15,
+                        color: "#878787",
+                        textTransform: "uppercase",
+                        letterSpacing: "0.5px",
+                        height: "15px",
+                        lineHeight: "15px",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        whiteSpace: "nowrap",
                     }}
                 >
-                    {loginUserDetail?.CurrencyCode ?? storeInit?.CurrencyCode} {formatter(
-                        productData?.UnitCostWithMarkUp
-                    )}
-                </Typography>}
-                <Checkbox
-                    icon={
-                        <LocalMallOutlinedIcon
-                            sx={{
-                                fontSize: "22px",
-                                color: "#7d7f85",
-                                opacity: ".7",
-                            }}
-                        />
-                    }
-                    checkedIcon={
-                        <LocalMallIcon
-                            sx={{
-                                fontSize: "22px",
-                                color: "#4caf50",
-                            }}
-                        />
-                    }
-                    disableRipple={false}
-                    onChange={(e) =>
-                        handleCartandWish(e, productData, "Cart")
-                    }
-                    checked={
-                        cartArr[productData?.autocode] ??
-                            productData?.IsInCart === 1
-                            ? true
-                            : false
-                    }
-                />
-            </Box>
-        </CardContent>
-    </Card>
+                    {headerText}
+                </Typography>
 
-    return (
-        <Paper
-            elevation={0}
-            sx={{
-                width: '100%'
-            }}
-        >
-            {!isshowDots &&
-                productIndex === 6 && (
-                    <>
-                        {menuParams?.menuname === "Glossy" && (
-                            <div className="smr_productCard_banner">
-                                <img src={`${storImagePath()}/images/HomePage/ProductListing/5.png`} loading="lazy" alt=""
-                                    draggable={true}
-                                    onContextMenu={(e) => e.preventDefault()}
-                                />
-                            </div>
-                        )}
-                        {menuParams?.menuname === "Amber" && (
-                            <div className="smr_productCard_banner">
-                                <video
-                                    src={`${storImagePath()}/images/HomePage/ProductListing/staticv1.mp4`}
-                                    autoPlay
-                                    muted
-                                    controls={false}
-                                    loop
-                                    draggable={true}
-                                    onContextMenu={(e) => e.preventDefault()}
-                                >
-                                </video>
-                            </div>
-                        )}
-                        {menuParams?.menuname === "Ruby" && (
-                            <div className="smr_productCard_banner">
-                                <video
-                                    src={`${storImagePath()}/images/HomePage/ProductListing/staticv2(1).mp4`}
-                                    autoPlay
-                                    muted
-                                    controls={false}
-                                    loop
-                                    draggable={true}
-                                    onContextMenu={(e) => e.preventDefault()}
-                                >
-                                </video>
-                            </div>
-                        )}
-                    </>
-                )
-            }
-            {!isshowDots && productIndex === 14 && (
-                <>
-                    {menuParams?.menuname === "Glossy" && (
-                        <div className="smr_productCard_banner">
-                            <img
-                                src={`${storImagePath()}/images/HomePage/ProductListing/static4.jpg`}
-                                alt="Banner 2"
-                                loading="lazy"
-                                draggable={true}
-                                onContextMenu={(e) => e.preventDefault()}
-                            />
-                        </div>
-                    )}
-                    {menuParams?.menuname === "Amber" && (
-                        <div className="smr_productCard_banner">
-                            <video
-                                src={`${storImagePath()}/images/HomePage/ProductListing/staticv1(1).mp4`}
-                                autoPlay
-                                muted
-                                controls={false}
-                                loop
-                                draggable={true}
-                                onContextMenu={(e) => e.preventDefault()}
-                            />
-                        </div>
-                    )}
-                    {menuParams?.menuname === "Ruby" && (
-                        <div className="smr_productCard_banner">
-                            <video
-                                src={`${storImagePath()}/images/HomePage/ProductListing/staticv2.mp4`}
-                                autoPlay
-                                muted
-                                controls={false}
-                                loop
-                                draggable={true}
-                                onContextMenu={(e) => e.preventDefault()}
-                            />
-                        </div>
-                    )}
-                </>
-            )}
-            <div className="smr_productCard">
-                <div className="cart_and_wishlist_icon">
-                    <Checkbox
-                        icon={
-                            <LocalMallOutlinedIcon
-                                sx={{
-                                    fontSize: "22px",
-                                    color: "#7d7f85",
-                                    opacity: ".7",
-                                }}
-                            />
-                        }
-                        checkedIcon={
-                            <LocalMallIcon
-                                sx={{
-                                    fontSize: "22px",
-                                    color: "#009500",
-                                }}
-                            />
-                        }
-                        disableRipple={false}
-                        sx={{ padding: "10px" }}
-                        onChange={(e) =>
-                            handleCartandWish(e, productData, "Cart")
-                        }
-                        checked={
-                            cartArr[productData?.autocode] ??
-                                productData?.IsInCart === 1
-                                ? true
-                                : false
-                        }
-                    />
-                    <Checkbox
-                        icon={
-                            <FavoriteBorderRoundedIcon
-                                sx={{
-                                    fontSize: "22px",
-                                    color: "#7d7f85",
-                                    opacity: ".7",
-                                }}
-                            />
-                        }
-                        checkedIcon={
-                            <FavoriteRoundedIcon
-                                sx={{
-                                    fontSize: "22px",
-                                    color: "#ffd200",
-                                }}
-                            />
-                        }
-                        disableRipple={false}
-                        sx={{ padding: "10px" }}
-                        onChange={(e) =>
-                            handleCartandWish(e, productData, "Wish")
-                        }
-                        checked={
-                            wishArr[productData?.autocode] ??
-                                productData?.IsInWish === 1
-                                ? true
-                                : false
-                        }
-                    />
-                </div>
-                <div className="smrWeb_app_product_label">
-                    {productData?.IsInReadyStock == 1 && <span className="smrWeb_app_instock">In Stock</span>}
-                    {productData?.IsBestSeller == 1 && <span className="smrWeb_app_bestSeller">Best Seller</span>}
-                    {productData?.IsTrending == 1 && <span className="smrWeb_app_intrending">Trending</span>}
-                    {productData?.IsNewArrival == 1 && <span className="smrWeb_app_newarrival">New</span>}
-                </div>
-
-                <div
-                    onMouseMove={() => setIsHover(true)}
-                    onMouseLeave={() => setIsHover(false)}
-                    className="smr_ImgandVideoContainer"
+                {/* Title Line - Fixed Min Height for 2 Lines */}
+                <Typography
                     onClick={() => handleMoveToDetail(productData)}
+                    sx={{
+                        fontSize: "13px",
+                        fontWeight: 600,
+                        color: "#1a73e8",
+                        lineHeight: 1.3,
+                        cursor: "pointer",
+                        minHeight: "34px",
+                        display: "-webkit-box",
+                        WebkitLineClamp: 2,
+                        WebkitBoxOrient: "vertical",
+                        overflow: "hidden",
+                    }}
                 >
-                    {isLoading === true ?
-                        <Skeleton
-                            animation="wave"
-                            variant="rectangular"
-                            sx={{
-                                width: '100%',
-                                minHeight: {
-                                    xs: 200,
-                                    sm: 250,
-                                    md: 312,
-                                    lg: 350,
-                                    xl: 412,
-                                },
-                                height: '100%',
-                                backgroundColor: '#e7e7e7',
-                                display: 'block',
-                            }}
-                        />
-                        :
-                        <>
+                    {titleText}
+                </Typography>
 
-                            <div style={{ display: isHover ? "block" : "none" }}>
-                                {videoUrl !== undefined ? (
-                                    <video
-                                        className="smr_productCard_video"
-                                        src={videoUrl}
-                                        autoPlay
-                                        muted
-                                        loop
-                                        playsInline
-                                        onError={(e) => {
-                                            e.target.poster = '/image-not-found.jpg';
-                                        }}
-                                    />
-                                ) : (videoUrl === undefined && RollImageUrl !== undefined) ? (
-                                    <img
-                                        className="smr_productListCard_Image"
-                                        src={
-                                            selectedMetalColor === 1
-                                                ? yellowRollImage
-                                                : selectedMetalColor === 2
-                                                    ? whiteRollImage
-                                                    : selectedMetalColor === 3
-                                                        ? roseRollImage
-                                                        : RollImageUrl
-                                        }
-                                        onError={(e) => {
-                                            if (productData?.ImageCount > 0) {
-                                                e.target.src = RollImageUrl;
-                                            }
-                                            e.target.src = '/image-not-found.jpg';
-                                        }}
-                                        draggable={true}
-                                        onContextMenu={(e) => e.preventDefault()}
-                                    />
-                                ) : null}
-                            </div>
-                            <img
-                                className="smr_productListCard_Image"
-                                src={selectedMetalColor === 1 ? yellowImage : selectedMetalColor === 2 ? whiteImage : selectedMetalColor === 3 ? roseImage : imageUrl}
-                                onError={(e) => {
-                                    e.target.onerror = null;
-                                    e.stopPropagation();
-                                    e.target.src = '/image-not-found.jpg';
-                                }}
-                                draggable={true}
-                                onContextMenu={(e) => e.preventDefault()}
-                                style={{
-                                    opacity: isHover && (RollImageUrl || videoUrl) ? "0" : "1",
-                                    transition: '0s ease-in-out',
-                                }}
-                            />
-                        </>
-                    }
-                </div>
-                <div className="smr_prod_card_info" style={{ height: !isshowDots ? "106px" : "90px" }}>
-                    <div className="smr_prodCard_1"
+                {/* Weights (NWT / GWT / DWT) */}
+                <Box
+                    sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                        flexWrap: "wrap",
+                        gap: "2px 6px",
+                        fontSize: "11px",
+                        color: "#555555",
+                        minHeight: "30px",
+                        py: 0.2,
+                    }}
+                >
+                    <Box sx={{ display: "flex", alignItems: "center", gap: 0.8, flexWrap: "wrap", width: "100%" }}>
+                        {storeInit?.IsGrossWeight == 1 && Number(productData?.Gwt) > 0 && (
+                            <Typography sx={{ fontSize: "11px", color: "#555" }}>
+                                <strong>GWT:</strong> {productData.Gwt.toFixed(3)}g
+                            </Typography>
+                        )}
+                        {Number(productData?.Nwt) > 0 && (
+                            <Typography sx={{ fontSize: "11px", color: "#333", fontWeight: 600 }}>
+                                <strong>NWT:</strong> {productData.Nwt.toFixed(3)}g
+                            </Typography>
+                        )}
+                        {storeInit?.IsDiamondWeight == 1 && Number(productData?.Dwt) > 0 && (
+                            <Typography sx={{ fontSize: "11px", color: "#555" }}>
+                                <strong>DWT:</strong> {productData.Dwt.toFixed(3)}ct
+                            </Typography>
+                        )}
+                    </Box>
+                </Box>
+
+                {/* Spacer to push Price Row to bottom */}
+                <Box sx={{ flexGrow: 1 }} />
+
+                {/* Always-Visible Bottom Action Row */}
+                <Box
+                    sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                        pt: 0.8,
+                        mt: "auto",
+                        borderTop: "1px solid #f0f0f0",
+                        gap: 0.5,
+                    }}
+                >
+                    {/* Price Block */}
+                    <Box sx={{ display: "flex", flexDirection: "column" }}>
+                        <Typography sx={{ fontSize: "14px", fontWeight: 700, color: "#111111", lineHeight: 1.1 }}>
+                            {currencySymbol} {formattedPrice}
+                        </Typography>
+                    </Box>
+
+                    {/* Add to Cart Button */}
+                    <Button
+                        variant="contained"
+                        size="small"
+                        onClick={(e) => handleCartandWish({ target: { checked: !isCartChecked } }, productData, "Cart")}
+                        sx={{
+                            backgroundColor: isCartChecked ? "#2e7d32" : "#1a2b4c",
+                            color: "#ffffff",
+                            fontSize: "11px",
+                            fontWeight: 600,
+                            textTransform: "none",
+                            px: 1.4,
+                            py: 0.5,
+                            borderRadius: "4px",
+                            boxShadow: "none",
+                            whiteSpace: "nowrap",
+                            "&:hover": {
+                                backgroundColor: isCartChecked ? "#1b5e20" : "#0f1c34",
+                                boxShadow: "none",
+                            },
+                        }}
                     >
-                        {!isshowDots &&
-                            <div className="smr_productList_metaltype_Maindiv">
-                                <div className="smr_productList_metaltype_div"
-                                >
-                                    {metalColorType?.map((item) => (
-                                        <button
-                                            className={selectedMetalColor === item?.id ? `smr_metaltype_${item?.metal}_clicked` : `smr_metaltype_${item?.metal}`}
-                                            key={item?.id}
-                                            type="button"
-                                            disabled={yellowImage === undefined}
-                                            onClick={() => handleClick(item?.id)}
-                                        >
-                                            {""}
-                                        </button>
-                                    ))}
-                                </div>
-                            </div>}
-                        <div className="smr_prod_Title">
-                            <span
-                                className={
-                                    (productData?.TitleLine?.length > 30)
-                                        ?
-                                        "smr1_prod_title_with_width"
-                                        :
-                                        "smr1_prod_title_with_no_width"
-                                }
-                            >
-                                <strong style={{ color: "black" }}>{productData?.designno !== "" && productData?.designno}</strong>
-                                {formatTitleLine(productData?.TitleLine) && " - " + productData?.TitleLine}
-                            </span>
-                        </div>
-                        <div className="smr_prod_Allwt">
-                            <div
-                                style={{
-                                    display: "flex",
-                                    justifyContent: "center",
-                                    lineHeight: "12px",
-                                    gap: "2px",
-                                    alignItems: "center",
-                                    letterSpacing: maxwidth590px
-                                        ? "0px"
-                                        : "1px",
-                                    flexWrap: "wrap",
-                                }}
-                            >
-                                {storeInit?.IsGrossWeight == 1 &&
-                                    Number(productData?.Gwt) !== 0 && (
-                                        <span className="smr_prod_wt">
-                                            <span className="smr_main_keys">
-                                                GWT:
-                                            </span>
-                                            <span className="smr_main_val">
-                                                {(productData?.Gwt)?.toFixed(3)}
-                                            </span>
-                                        </span>
-                                    )}
-                                {Number(productData?.Nwt) !== 0 && (
-                                    <>
-                                        <span style={{ fontSize: '13px' }}>|</span>
-                                        <span className="smr_prod_wt">
-                                            <span className="smr_main_keys">NWT:</span>
-                                            <span className="smr_main_val">
-                                                {(productData?.Nwt)?.toFixed(3)}
-                                            </span>
-                                        </span>
-                                    </>
-                                )}
-                                {storeInit?.IsDiamondWeight == 1 &&
-                                    Number(productData?.Dwt) !== 0 && (
-                                        <>
-                                            <span style={{ fontSize: '13px' }}>|</span>
-                                            <span className="smr_prod_wt">
-                                                <span className="smr_main_keys">
-                                                    DWT:
-                                                </span>
-                                                <span className="smr_main_val">
-                                                    {(productData?.Dwt)?.toFixed(3)}
-                                                    {storeInit?.IsDiamondPcs === 1
-                                                        ? `/${productData?.Dpcs}`
-                                                        : null}
-                                                </span>
-                                            </span>
-                                        </>
-                                    )}
-                                {storeInit?.IsStoneWeight == 1 &&
-                                    Number(productData?.CSwt) !== 0 && (
-                                        <>
-                                            <span style={{ fontSize: '13px' }}>|</span>
-                                            <span className="smr_prod_wt">
-                                                <span className="smr_main_keys">
-                                                    CWT:
-                                                </span>
-                                                <span className="smr_main_val">
-                                                    {(productData?.CSwt)?.toFixed(3)}
-                                                    {storeInit?.IsStonePcs === 1
-                                                        ? `/${productData?.CSpcs}`
-                                                        : null}
-                                                </span>
-                                            </span>
-                                        </>
-                                    )}
-                            </div>
-                        </div>
-                        <div className="smr_prod_mtcolr_price">
-                            <span className="smr_prod_metal_col">
-                                {findMetalColor(
-                                    productData?.MetalColorid
-                                )?.[0]?.metalcolorname.toUpperCase()}
-                                -
-                                {
-                                    findMetalType(
-                                        productData?.IsMrpBase == 1 ? productData?.MetalPurityid : (selectedMetalId ?? productData?.MetalPurityid)
-                                    )[0]?.metaltype
-                                }
-                            </span>
-                            {storeInit?.IsPriceShow == 1 && <>
-                                <span>/</span>
-                                <span className="smr_price">
-                                    <span className="smr_currencyFont">
-                                        {loginUserDetail?.CurrencyCode ?? storeInit?.CurrencyCode}
-                                    </span>
-                                    <span className="smr_pricePort">
-                                        {formatter(
-                                            productData?.UnitCostWithMarkUp
-                                        )}
-                                    </span>
-                                </span></>}
-                        </div>
-                    </div>
-                </div>
-            </div >
-        </Paper>
-    )
-}
+                        {isCartChecked ? "In cart" : "Add to cart"}
+                    </Button>
+                </Box>
+            </CardContent>
+        </Card>
+    );
+};
 
 export default ProductCard;
-
