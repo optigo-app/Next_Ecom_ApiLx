@@ -867,89 +867,85 @@ const ProductPage = ({ params, searchParams, storeInit }) => {
     };
 
     // Run ProdCardImageFunc only when singleProd is available
+    // Run ProdCardImageFunc only when initial product autocode loads
     useEffect(() => {
-        if (singleProd && Object.keys(singleProd).length > 0) {
+        if (singleProd?.autocode) {
             setPdImageLoader(true);
             ProdCardImageFunc();
         }
-    }, [singleProd]);
+    }, [singleProd?.autocode]);
 
     const handleCustomChange = async (e, type) => {
-        let metalArr;
-        let diaArr;
-        let csArr;
-        let size;
-
-        let mtTypeLocal = getSession("metalTypeCombo");
-
-        let diaQcLocal = getSession("diamondQualityColorCombo");
-
-        let csQcLocal = getSession("ColorStoneQualityColorCombo");
+        let targetMetalType = selectMtType;
+        let targetMetalColor = selectMtColor;
+        let targetSize = sizeData;
 
         if (type === "mt") {
-            metalArr = mtTypeLocal?.filter((ele) => ele?.metaltype == e.target.value)[0]?.Metalid;
+            targetMetalType = e.target.value;
             setSelectMtType(e.target.value);
+        }
+        if (type === "mc") {
+            targetMetalColor = e.target.value;
+            setSelectMtColor(e.target.value);
         }
         if (type === "dia") {
             setSelectDiaQc(e.target.value);
-            diaArr = diaQcLocal?.filter((ele) => ele?.Quality == e.target.value?.split(",")[0] && ele?.color == e.target.value?.split(",")[1])[0];
         }
         if (type === "cs") {
             setSelectCsQc(e.target.value);
-            csArr = csQcLocal?.filter((ele) => ele?.Quality == e.target.value?.split(",")[0] && ele?.color == e.target.value?.split(",")[1])[0];
         }
         if (type === "sz") {
+            targetSize = e.target.value;
             setSizeData(e.target.value);
-            size = e.target.value;
         }
 
-        if (metalArr == undefined) {
-            metalArr = mtTypeLocal?.filter((ele) => ele?.metaltype == selectMtType)[0]?.Metalid;
-        }
+        const normalizedTargetSize = targetSize === "-" || targetSize === "" || !targetSize ? "" : targetSize;
 
-        if (diaArr == undefined) {
-            diaArr = diaQcLocal?.filter((ele) => ele?.Quality == selectDiaQc?.split(",")[0] && ele?.color == selectDiaQc?.split(",")[1])[0];
-        }
+        let matchedArticle = rd1Data?.find((r) => {
+            const matchMetal = (r.MetalType || r.metaltypename)?.toUpperCase() === targetMetalType?.toUpperCase();
+            const matchColor = (r.MetalColor || r.metalcolorname)?.toUpperCase() === targetMetalColor?.toUpperCase();
+            const rSize = r.Size === "-" || r.Size === "" || !r.Size ? "" : r.Size;
+            return matchMetal && matchColor && rSize === normalizedTargetSize;
+        });
 
-        if (csArr == undefined) {
-            csArr = csQcLocal?.filter((ele) => ele?.Quality == selectCsQc?.split(",")[0] && ele?.color == selectCsQc?.split(",")[1])[0];
-        }
-
-        let obj = {
-            mt: metalArr,
-            diaQc: `${diaArr?.QualityId},${diaArr?.ColorId}`,
-            csQc: `${csArr?.QualityId},${csArr?.ColorId}`,
-        };
-
-        let prod = {
-            a: singleProd?.autocode,
-            b: singleProd?.designno,
-        };
-
-        // console.log("eeee", obj);
-        setisPriceLoading(true);
-        await SingleProdListAPI(prod, size, obj, cookie)
-            .then((res) => {
-                setSingleProd1(res?.pdList[0]);
-                console.log(res?.pdList[0], "rajan?.pdList[0]")
-
-
-                if (res?.pdList?.length > 0) {
-                    setisPriceLoading(false);
-                }
-                setDiaList(res?.pdResp?.rd3);
-                setCsList(res?.pdResp?.rd4);
-                // console.log("res123", res);
-            })
-            .catch((err) => {
-                console.log("customProdDetailErr", err);
+        if (!matchedArticle) {
+            matchedArticle = rd1Data?.find((r) => {
+                const matchMetal = (r.MetalType || r.metaltypename)?.toUpperCase() === targetMetalType?.toUpperCase();
+                const matchColor = (r.MetalColor || r.metalcolorname)?.toUpperCase() === targetMetalColor?.toUpperCase();
+                return matchMetal && matchColor;
             });
+        }
+
+        if (!matchedArticle) {
+            matchedArticle = rd1Data?.find((r) => r.ArticleId === defaultArticleId) || rd1Data?.[0];
+        }
+
+        if (matchedArticle) {
+            const mainMedia = singleProd?.ImageVideoDetail || singleProd1?.ImageVideoDetail || "0";
+            const mainDesign = singleProd?.designno || singleProd1?.designno || "";
+            const mainAutoCode = singleProd?.autocode || singleProd1?.autocode || "";
+
+            const updatedArt = {
+                ...singleProd,
+                ...matchedArticle,
+                designno: matchedArticle?.designno || mainDesign,
+                autocode: matchedArticle?.autocode || mainAutoCode,
+                ImageVideoDetail: matchedArticle?.ImageVideoDetail || mainMedia,
+            };
+
+            setSingleProd(updatedArt);
+            setSingleProd1(updatedArt);
+            const colorVal = matchedArticle?.MetalColor || matchedArticle?.metalcolorname;
+            if (colorVal) {
+                handleMetalWiseColorImg(colorVal);
+            }
+        }
     };
 
     const handleMetalWiseColorImg = async (e) => {
         const mtColorLocal = getSession("MetalColorCombo") || [];
         const pd = singleProd ?? singleProd1;
-        const selectedMetalColorName = e.target.value;
+        const selectedMetalColorName = typeof e === "string" ? e : e?.target?.value;
         const { designno, ImageExtension } = pd || {};
         const baseCDN = storeInit?.CDNDesignImageFol;
         const thumbCDN = storeInit?.CDNDesignImageFolThumb;
@@ -989,7 +985,12 @@ const ProductPage = ({ params, searchParams, storeInit }) => {
         const normalImageCount = normalImages.length > 0 ? Math.max(...normalImages.map((img) => img.Nm)) : 0;
 
         // Find matching metal color info
-        const mcArr = mtColorLocal.find((ele) => ele?.metalcolorname === selectedMetalColorName);
+        const mcArr = mtColorLocal.find(
+            (ele) =>
+                ele?.metalcolorname?.toLowerCase() === selectedMetalColorName?.toLowerCase() ||
+                ele?.colorcode?.toLowerCase() === selectedMetalColorName?.toLowerCase() ||
+                ele?.id == selectedMetalColorName
+        );
 
         if (!mcArr) {
             console.warn("Selected metal color not found in MetalColorCombo");
@@ -1516,10 +1517,25 @@ const ProductPage = ({ params, searchParams, storeInit }) => {
                         if (targetArticleId && rd1Data?.length > 0) {
                             const targetArt = rd1Data.find((a) => a.ArticleId == targetArticleId);
                             if (targetArt) {
-                                setSingleProd(targetArt);
-                                setSingleProd1(targetArt);
-                                if (targetArt?.MetalColorid) setSelectMtColor(targetArt.MetalColorid);
-                                if (targetArt?.MetalPurityid) setSelectMtType(targetArt.MetalPurityid);
+                                const mainMedia = singleProd?.ImageVideoDetail || singleProd1?.ImageVideoDetail || "0";
+                                const mainDesign = singleProd?.designno || singleProd1?.designno || "";
+                                const mainAutoCode = singleProd?.autocode || singleProd1?.autocode || "";
+
+                                const updatedArt = {
+                                    ...singleProd,
+                                    ...targetArt,
+                                    designno: targetArt?.designno || mainDesign,
+                                    autocode: targetArt?.autocode || mainAutoCode,
+                                    ImageVideoDetail: targetArt?.ImageVideoDetail || mainMedia,
+                                };
+
+                                setSingleProd(updatedArt);
+                                setSingleProd1(updatedArt);
+                                const colorVal = targetArt?.MetalColor || targetArt?.metalcolorname || targetMetal?.MetalColor || targetMetal?.metalcolorname;
+                                if (colorVal) {
+                                    handleMetalWiseColorImg(colorVal);
+                                }
+                                if (targetArt?.MetalType || targetArt?.metaltypename) setSelectMtType(targetArt.MetalType || targetArt.metaltypename);
                                 if (targetSize) setSizeData(targetSize);
                             }
                         }
