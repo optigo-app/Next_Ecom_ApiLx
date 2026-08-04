@@ -32,8 +32,8 @@ const InfoDetail = ({
     } else {
         displayTitle = designNo;
     }
-
-    const priceVal = prod?.UnitCostWithMarkUp ?? prod?.price ?? 0;
+    
+    const priceVal = prod?.UnitCostWithMarkUp ?? prod?.UnitCostWithmarkup ?? prod?.TotalUnitCost ?? prod?.price ?? prod?.UnitCost ?? 0;
     const currencySymbol = Currency || storeInit?.CurrencyCode || "INR";
 
     return (
@@ -69,7 +69,7 @@ const InfoDetail = ({
             {storeInit?.IsPriceShow === 1 && (
                 <Box sx={{ mb: 1.5 }}>
                     <Stack direction="row" alignItems="center" spacing={0.5}>
-                        {isPriceloading || !priceVal ? (
+                        {isPriceloading ? (
                             <Skeleton variant="rounded" width={140} height={28} />
                         ) : (
                             <Typography sx={{ fontSize: "22px", fontWeight: 800, color: "#0B2F83" }}>

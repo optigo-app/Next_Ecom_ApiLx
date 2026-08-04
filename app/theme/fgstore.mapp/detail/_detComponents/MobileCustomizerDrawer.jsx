@@ -125,12 +125,12 @@ export default function MobileCustomizerDrawer({
         });
     }, [rd1, selectedMetal, rd2]);
 
-    // ── 3. Unique Diamond Origins ──────────────────────────────────────────────
     const availableOrigins = useMemo(() => {
         const origins = matchingArticlesWithOrigin
             .map((art) => art.MaterialTypeName)
             .filter((o) => o !== null && o !== undefined);
-        return Array.from(new Set(origins));
+        const unique = Array.from(new Set(origins));
+        return unique.length > 0 ? unique : ["Natural"];
     }, [matchingArticlesWithOrigin]);
 
     // ── 4. Initial defaults ───────────────────────────────────────────────────
@@ -306,7 +306,7 @@ export default function MobileCustomizerDrawer({
                 sx: {
                     borderTopLeftRadius: "16px",
                     borderTopRightRadius: "16px",
-                    maxHeight: "85vh",
+                    maxHeight: "88vh",
                     backgroundColor: "#ffffff",
                     display: "flex",
                     flexDirection: "column",
@@ -337,9 +337,16 @@ export default function MobileCustomizerDrawer({
                     borderBottom: "1px solid #f0f0f0",
                 }}
             >
-                <Typography sx={{ fontSize: "16px", fontWeight: 700, color: "#102a43" }}>
-                    Customize Your Piece
-                </Typography>
+                <Box sx={{ display: "flex", flexDirection: "column", textAlign: "left" }}>
+                    <Typography sx={{ fontSize: "15px", fontWeight: 800, color: "#102a43", letterSpacing: "0.5px" }}>
+                        CUSTOMIZE YOUR PIECE
+                    </Typography>
+                    {calculatedPrice && (
+                        <Typography sx={{ fontSize: "16px", fontWeight: 800, color: "#0b2f83", mt: 0.2 }}>
+                            {currencySymbol} {calculatedPrice}
+                        </Typography>
+                    )}
+                </Box>
                 <IconButton size="small" onClick={onClose}>
                     <CloseIcon sx={{ fontSize: "20px", color: "#627d98" }} />
                 </IconButton>
@@ -347,11 +354,55 @@ export default function MobileCustomizerDrawer({
 
             {/* Drawer Body */}
             <Box sx={{ p: 2, overflowY: "auto", flex: 1, pb: 3 }}>
-                {/* 1. Metal Options */}
+
+                {/* 0. Selected Config Header Bar (Belux Pattern) */}
+                <Box sx={{ mb: 2, p: 1.2, backgroundColor: "#f8fafc", borderRadius: "10px", border: "1px solid #e2e8f0" }}>
+                    <Typography sx={{ fontSize: "10px", fontWeight: 700, color: "#627d98", textTransform: "uppercase", letterSpacing: "0.8px", mb: 0.8, textAlign: "left" }}>
+                        SELECTED CONFIG
+                    </Typography>
+                    <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.8 }}>
+                        {selectedMetal && (
+                            <Chip
+                                size="small"
+                                label={`${selectedMetal.MetalType || "Gold"} - ${selectedMetal.MetalColor || "Yellow"}`}
+                                sx={{ fontWeight: 700, fontSize: "11px", backgroundColor: "#0b2f83", color: "#ffffff" }}
+                            />
+                        )}
+                        {selectedDiaQc && (
+                            <Chip
+                                size="small"
+                                label={selectedDiaQc}
+                                sx={{ fontWeight: 700, fontSize: "11px", backgroundColor: "#e2e8f0", color: "#102a43" }}
+                            />
+                        )}
+                        {selectedOrigin && (
+                            <Chip
+                                size="small"
+                                label={selectedOrigin}
+                                sx={{ fontWeight: 700, fontSize: "11px", backgroundColor: "#e2e8f0", color: "#102a43" }}
+                            />
+                        )}
+                        {activeArticle?.ArticleNo && (
+                            <Chip
+                                size="small"
+                                label={`Art# ${activeArticle.ArticleNo}`}
+                                sx={{ fontWeight: 700, fontSize: "11px", backgroundColor: "#0b2f83", color: "#ffffff" }}
+                            />
+                        )}
+                    </Box>
+                </Box>
+
+                {/* 1. Metal Options (2-Column Mobile Grid) */}
                 {metalCombos.length > 0 && (
                     <>
-                        <SectionHeader title="Select Metal & Purity" />
-                        <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
+                        <SectionHeader title="CHOICE OF METAL" />
+                        <Box
+                            sx={{
+                                display: "grid",
+                                gridTemplateColumns: "repeat(2, 1fr)",
+                                gap: 1,
+                            }}
+                        >
                             {metalCombos.map((combo) => {
                                 const isSelected =
                                     selectedMetal?.MetalTypeId === combo.MetalTypeId &&
@@ -370,12 +421,11 @@ export default function MobileCustomizerDrawer({
                                             cursor: "pointer",
                                             border: `1.5px solid ${isSelected ? "#0b2f83" : "#d9e2ec"}`,
                                             backgroundColor: isSelected ? "#f0f4fc" : "#ffffff",
-                                            borderRadius: "12px",
-                                            px: 1.8,
-                                            py: 1.2,
+                                            borderRadius: "10px",
+                                            p: 1.2,
                                             display: "flex",
                                             alignItems: "center",
-                                            gap: 1.2,
+                                            gap: 1,
                                             position: "relative",
                                             transition: "all 0.2s ease",
                                         }}
@@ -390,16 +440,16 @@ export default function MobileCustomizerDrawer({
                                                 flexShrink: 0,
                                             }}
                                         />
-                                        <Box sx={{ display: "flex", flexDirection: "column", textAlign: "left" }}>
-                                            <Typography sx={{ fontWeight: 700, fontSize: "13px", color: isSelected ? "#0b2f83" : "#102a43", textTransform: "uppercase", lineHeight: 1.2 }}>
-                                                {metalTypeName}
+                                        <Box sx={{ display: "flex", flexDirection: "column", textAlign: "left", flex: 1, minWidth: 0 }}>
+                                            <Typography sx={{ fontWeight: 700, fontSize: "12px", color: isSelected ? "#0b2f83" : "#102a43", textTransform: "uppercase", lineHeight: 1.2, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                                                {metalTypeName} {metalColorName}
                                             </Typography>
-                                            <Typography sx={{ fontSize: "11px", color: "#627d98", fontWeight: 500, lineHeight: 1.2, mt: 0.2 }}>
-                                                {metalColorName} • <span style={{ color: combo.inStockLabel === "In Stock" ? "#2e7d32" : "#878787", fontWeight: 600 }}>{combo.inStockLabel}</span>
+                                            <Typography sx={{ fontSize: "10px", color: combo.inStockLabel === "In Stock" ? "#2e7d32" : "#878787", fontWeight: 600, lineHeight: 1.2, mt: 0.2 }}>
+                                                {combo.inStockLabel}
                                             </Typography>
                                         </Box>
                                         {isSelected && (
-                                            <CheckCircleIcon sx={{ fontSize: "18px", color: "#0b2f83", ml: "auto" }} />
+                                            <CheckCircleIcon sx={{ fontSize: "16px", color: "#0b2f83", ml: "auto", flexShrink: 0 }} />
                                         )}
                                     </Box>
                                 );
@@ -409,26 +459,35 @@ export default function MobileCustomizerDrawer({
                 )}
 
                 {/* 2. Diamond Origin */}
-                {availableOrigins.length > 1 && (
+                {availableOrigins.length > 0 && (
                     <>
-                        <SectionHeader title="Diamond Type" />
+                        <SectionHeader title="DIAMOND ORIGIN" />
                         <Box sx={{ display: "flex", gap: 1 }}>
                             {availableOrigins.map((origin) => {
-                                const isSelected = selectedOrigin === origin;
+                                const isSelected = selectedOrigin === origin || (!selectedOrigin && origin === "Natural");
                                 return (
-                                    <Chip
+                                    <Box
                                         key={origin}
-                                        label={origin}
                                         onClick={() => setSelectedOrigin(origin)}
                                         sx={{
-                                            fontWeight: 700,
-                                            fontSize: "12px",
-                                            borderRadius: "16px",
-                                            px: 1,
-                                            backgroundColor: isSelected ? "#0b2f83" : "#f0f4fc",
-                                            color: isSelected ? "#ffffff" : "#102a43",
+                                            cursor: "pointer",
+                                            border: `1.5px solid ${isSelected ? "#0b2f83" : "#d9e2ec"}`,
+                                            backgroundColor: isSelected ? "#f0f4fc" : "#ffffff",
+                                            borderRadius: "8px",
+                                            px: 2,
+                                            py: 1,
+                                            display: "flex",
+                                            alignItems: "center",
+                                            gap: 0.8,
                                         }}
-                                    />
+                                    >
+                                        <Typography sx={{ fontSize: "12px", fontWeight: 700, color: isSelected ? "#0b2f83" : "#102a43", textTransform: "uppercase" }}>
+                                            {origin}
+                                        </Typography>
+                                        {isSelected && (
+                                            <CheckCircleIcon sx={{ fontSize: "16px", color: "#0b2f83" }} />
+                                        )}
+                                    </Box>
                                 );
                             })}
                         </Box>
@@ -438,7 +497,7 @@ export default function MobileCustomizerDrawer({
                 {/* 3. Diamond Quality Badges */}
                 {stoneQualityCombos.length > 0 && (
                     <>
-                        <SectionHeader title="Diamond Quality" />
+                        <SectionHeader title="DIAMOND QUALITY" />
                         <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
                             {stoneQualityCombos.map((qc) => {
                                 const key = `${qc.Quality}-${qc.Color}`;
@@ -459,7 +518,7 @@ export default function MobileCustomizerDrawer({
                                             gap: 0.5,
                                         }}
                                     >
-                                        <Typography sx={{ fontSize: "13px", fontWeight: 700, color: isSelected ? "#0b2f83" : "#102a43" }}>
+                                        <Typography sx={{ fontSize: "12px", fontWeight: 700, color: isSelected ? "#0b2f83" : "#102a43" }}>
                                             {qc.Quality} / {qc.Color}
                                         </Typography>
                                     </Box>
@@ -472,7 +531,7 @@ export default function MobileCustomizerDrawer({
                 {/* 4. Sizes */}
                 {availableSizes.length > 0 && (
                     <>
-                        <SectionHeader title="Select Size" />
+                        <SectionHeader title="SELECT SIZE" />
                         <Box sx={{ display: "flex", gap: 1, overflowX: "auto", pb: 1 }}>
                             {availableSizes.map(({ size, inStockLabel }) => {
                                 const isSelected = selectedSize === size;
@@ -495,7 +554,7 @@ export default function MobileCustomizerDrawer({
                                             alignItems: "center",
                                         }}
                                     >
-                                        <Typography sx={{ fontSize: "14px", fontWeight: 700, color: isSelected ? "#0b2f83" : "#102a43" }}>
+                                        <Typography sx={{ fontSize: "13px", fontWeight: 700, color: isSelected ? "#0b2f83" : "#102a43" }}>
                                             {size}
                                         </Typography>
                                         <Typography sx={{ fontSize: "9px", color: isInStock ? "#2e7d32" : "#627d98", fontWeight: 600 }}>
@@ -543,7 +602,8 @@ export default function MobileCustomizerDrawer({
                         color: "#ffffff",
                         fontWeight: 700,
                         fontSize: "13px",
-                        textTransform: "none",
+                        letterSpacing: "0.5px",
+                        textTransform: "uppercase",
                         px: 3,
                         py: 1.1,
                         borderRadius: "6px",
@@ -554,7 +614,7 @@ export default function MobileCustomizerDrawer({
                         },
                     }}
                 >
-                    Apply Customization
+                    CONFIRM CUSTOMISATION
                 </Button>
             </Box>
         </SwipeableDrawer>
