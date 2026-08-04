@@ -29,7 +29,7 @@ import { responsiveConfig } from "@/app/components/Config/ProductSliderConfig";
 import { getSizeData } from "@/app/(core)/utils/API/CartAPI/GetCategorySizeAPI";
 import { StockItemApi } from "@/app/(core)/utils/API/StockItemAPI/StockItemApi";
 import { DesignSetListAPI } from "@/app/(core)/utils/API/DesignSetListAPI/DesignSetListAPI";
-import { SingleProdListAPI } from "@/app/(core)/utils/API/SingleProdListAPI/SingleProdListAPI";
+import { SingleArticleProdListAPI } from "@/app/(core)/utils/API/ArticleSingleProdListAPI/ArticleSingleProdListAPI";
 import Pako from "pako";
 import Cookies from "js-cookie";
 import { MetalTypeComboAPI } from "@/app/(core)/utils/API/Combo/MetalTypeComboAPI";
@@ -54,6 +54,7 @@ import ButtonBlock from './ButtonBlock'
 import DeliveryInfo from './DeliveryInfo'
 import NewStockitem from './InstockProduct/NewStockitem'
 import { getSession } from "@/app/(core)/utils/FetchSessionData";
+import MobileCustomizerDrawer from './MobileCustomizerDrawer';
 
 
 const ProductPage = ({ params, searchParams, storeInit }) => {
@@ -110,6 +111,9 @@ const ProductPage = ({ params, searchParams, storeInit }) => {
     const [defaultExtension, setDefaultExtension] = useState("");
     const [proThumImgCount, setProThumImgCount] = useState("");
     const [imageLoaded, setIsImageLoaded] = useState(true);
+    const [rd1Data, setRd1Data] = useState([]);
+    const [rd2Data, setRd2Data] = useState([]);
+    const [isCustomizerOpen, setIsCustomizerOpen] = useState(false);
 
     const noimage = "/image-not-found.jpg";
     const imageNotFound = "/image-not-found.jpg";
@@ -394,77 +398,118 @@ const ProductPage = ({ params, searchParams, storeInit }) => {
                 csQc: csArr ? `${csArr?.QualityId ?? 0},${csArr?.ColorId ?? 0}` : (logininfoInside?.cmboCSQCid ?? storeinitInside?.cmboCSQCid),
             };
 
-            setisPriceLoading(true);
-            // step 4
-            setSingleProd1({});
-            setSingleProd({});
+            if (decodeobj?.title || decodeobj?.price) {
+                const initialProd = {
+                    TitleLine: decodeobj.title || "",
+                    Nwt: decodeobj.nwt ? parseFloat(decodeobj.nwt) : 0,
+                    UnitCostWithMarkUp: decodeobj.price ? parseFloat(decodeobj.price) : 0,
+                    ArticleNo: decodeobj.ArticleNo ?? "",
+                    designno: decodeobj.b ?? "",
+                    autocode: decodeobj.a ?? "",
+                    ImageExtension: "webp",
+                    ImageCount: 1,
+                    MetalColorid: decodeobj?.metalColorId ?? logininfoInside?.MetalColorId ?? storeinitInside?.MetalColorId,
+                    ImageVideoDetail: decodeobj.mediaDet ?? "0",
+                };
+                setSingleProd(initialProd);
+                setSingleProd1(initialProd);
+                setisPriceLoading(false);
+            } else {
+                setisPriceLoading(true);
+                setSingleProd1({});
+                setSingleProd({});
+            }
 
-            await SingleProdListAPI(decodeobj, sizeData, obj, cookie)
-                .then(async (res) => {
+            await SingleArticleProdListAPI(decodeobj, sizeData, obj, cookie)
+                .then((res) => {
                     if (res) {
-                        setSingleProd(res?.pdList[0]);
-
-                        if (res?.pdList?.length > 0) {
+                        const prod = res?.pdList?.[0];
+                        if (prod) {
+                            setSingleProd(prod);
                             setisPriceLoading(false);
-                            // setloadingdata(false);
-                        }
-
-                        if (!res?.pdList[0]) {
+                            setloadingdata(false);
+                            setIsDataFound(false);
+                        } else {
                             setisPriceLoading(false);
+                            setloadingdata(false);
                             setIsDataFound(true);
+                            return res;
                         }
 
                         setDiaList(res?.pdResp?.rd3);
                         setCsList(res?.pdResp?.rd4);
 
-                        let prod = res?.pdList[0];
+                        let mappedRd1 = [];
+                        if (res?.pdResp?.rd1?.length) {
+                            mappedRd1 = res.pdResp.rd1.map(r => {
+                                const metalId = r.metaltypeid || r.MetalTypeId || r.Metalid;
+                                const metalColorId = r.metalcolorid || r.MetalColorId;
+                                const metalType = r.metal || r.metaltypename || r.MetalType || r.metalpurityname || r.MetalTypePurity;
+                                const metalColor = r.metalcolorname || r.MetalColor;
+                                const netWeight = r.Nwt || r.NetWeight;
+                                return {
+                                    ...r,
+                                    ArticleId: r.ArticleId || r.id,
+                                    MetalTypeId: metalId,
+                                    Metalid: metalId,
+                                    MetalColorId: metalColorId,
+                                    MetalType: metalType,
+                                    MetalColor: metalColor,
+                                    NetWeight: netWeight,
+                                };
+                            });
+                            setRd1Data(mappedRd1);
+                        }
+
+                        if (res?.pdResp?.rd2?.length) {
+                            const mappedRd2 = res.pdResp.rd2.map(r => ({
+                                ...r,
+                                ArticleId: r.ArticleId || r.id,
+                            }));
+                            setRd2Data(mappedRd2);
+                        }
+
+                        if (prod) {
+                            const purityName = prod?.MetalTypePurity || mtTypeLocal?.find((ele) => ele?.Metalid == prod?.MetalPurityid || ele?.Metalid == prod?.MetalTypeId || ele?.Metalid == prod?.Metalid)?.metaltype || prod?.MetalType || "";
+                            if (purityName) setSelectMtType(purityName);
+
+                            const colorName = prod?.MetalColor || mtColorLocal?.find((ele) => ele?.id == prod?.MetalColorid || ele?.id == prod?.metalcolorid)?.metalcolorname || prod?.metalcolorname || prod?.colorname || "";
+                            if (colorName) setSelectMtColor(colorName);
+                        }
 
                         let initialsize = prod && prod.DefaultSize !== "" ? prod?.DefaultSize : SizeCombo?.rd?.find((size) => size.IsDefaultSize === 1)?.sizename === undefined ? SizeCombo?.rd[0]?.sizename : SizeCombo?.rd?.find((size) => size.IsDefaultSize === 1)?.sizename;
-
                         setSizeData(initialsize);
 
-                        // await SingleFullProdPriceAPI(decodeobj).then((res) => {
-                        //   setSingleProdPrice(res);
-                        //   console.log("singlePrice", res);
-                        // });
+                        // --- Progressive Non-Blocking Secondary APIs ---
+                        if (prod) {
+                            getSizeData(prod, cookie)
+                                .then((sRes) => setSizeCombo(sRes?.Data))
+                                .catch((err) => console.log("SizeErr", err));
+
+                            StockItemApi(prod?.autocode, "stockitem", cookie)
+                                .then((stRes) => setStockItemArr(stRes?.Data?.rd))
+                                .catch((err) => console.log("stockItemErr", err));
+
+                            StockItemApi(prod?.autocode, "similarbrand", obj, cookie)
+                                .then((smRes) => setSimilarBrandArr(smRes?.Data?.rd))
+                                .catch((err) => console.log("similarbrandErr", err));
+
+                            DesignSetListAPI(obj1, prod?.designno, cookie)
+                                .then((dsRes) => setDesignSetList(dsRes?.Data?.rd))
+                                .catch((err) => console.log("designsetErr", err));
+
+                            SaveLastViewDesign(cookie, prod?.autocode, prod?.designno)
+                                .then((svRes) => setSaveLastView(svRes?.Data?.rd))
+                                .catch((err) => console.log("saveLastView", err));
+                        }
                     }
                     return res;
                 })
-                .then(async (resp) => {
-                    if (resp) {
-                        await getSizeData(resp?.pdList[0], cookie)
-                            .then((res) => {
-                                setSizeCombo(res?.Data);
-                            })
-                            .catch((err) => console.log("SizeErr", err));
-
-                        await StockItemApi(resp?.pdList[0]?.autocode, "stockitem", cookie)
-                            .then((res) => {
-                                setStockItemArr(res?.Data?.rd);
-                            })
-                            .catch((err) => console.log("stockItemErr", err));
-
-                        await StockItemApi(resp?.pdList[0]?.autocode, "similarbrand", obj, cookie)
-                            .then((res) => {
-                                setSimilarBrandArr(res?.Data?.rd);
-                            })
-                            .catch((err) => console.log("similarbrandErr", err));
-
-                        await DesignSetListAPI(obj1, resp?.pdList[0]?.designno, cookie)
-                            .then((res) => {
-                                setDesignSetList(res?.Data?.rd);
-                            })
-                            .catch((err) => console.log("designsetErr", err));
-
-                        await SaveLastViewDesign(cookie, resp?.pdList[0]?.autocode, resp?.pdList[0]?.designno)
-                            .then((res) => {
-                                setSaveLastView(res?.Data?.rd);
-                            })
-                            .catch((err) => console.log("saveLastView", err));
-                    }
-                })
-                .catch((err) => console.log("err", err))
-                .finally(() => setloadingdata(false));
+                .catch((err) => {
+                    console.log("err", err);
+                    setisPriceLoading(false);
+                    setloadingdata(false);
+                });
         };
 
         FetchProductData();
@@ -647,11 +692,17 @@ const ProductPage = ({ params, searchParams, storeInit }) => {
                     csArr = csQcLocal?.filter((ele) => ele?.QualityId == (decodeobj?.c ? decodeobj?.c?.split(",")[0] : (logininfoInside?.cmboCSQCid ?? storeinitInside?.cmboCSQCid).split(",")[0]) && ele?.ColorId == (decodeobj?.c ? decodeobj?.c?.split(",")[1] : (logininfoInside?.cmboCSQCid ?? storeinitInside?.cmboCSQCid).split(",")[1]))[0];
                 }
 
-                setSelectMtType(metalArr?.metaltype);
+                if (metalArr?.metaltype) {
+                    setSelectMtType(metalArr.metaltype);
+                }
 
-                setSelectDiaQc(`${diaArr?.Quality},${diaArr?.color}`);
+                if (diaArr?.Quality && diaArr?.color) {
+                    setSelectDiaQc(`${diaArr.Quality},${diaArr.color}`);
+                }
 
-                setSelectCsQc(`${csArr?.Quality},${csArr?.color}`);
+                if (csArr?.Quality && csArr?.color) {
+                    setSelectCsQc(`${csArr.Quality},${csArr.color}`);
+                }
 
                 // let InitialSize = (singleProd && singleProd.DefaultSize !== "")
                 //                       ? singleProd?.DefaultSize
@@ -1174,7 +1225,7 @@ const ProductPage = ({ params, searchParams, storeInit }) => {
                                     <Skeleton
                                         variant="rectangular"
                                         width={"100%"}
-                                        height={"55vh"}
+                                        height={"42vh"}
                                         sx={{
                                             backgroundColor: "#f0ededb4 !important",
                                         }}
@@ -1405,6 +1456,7 @@ const ProductPage = ({ params, searchParams, storeInit }) => {
                             handleMetalWiseColorImg={handleMetalWiseColorImg}
                             SizeSorting={SizeSorting}
                             loadingdata={loadingdata}
+                            onOpenCustomizer={() => setIsCustomizerOpen(true)}
                         />
                         <ButtonBlock
                             addToCartFlag={addToCartFlag}
@@ -1453,7 +1505,28 @@ const ProductPage = ({ params, searchParams, storeInit }) => {
                 {storeInit?.IsProductDetailSimilarDesign == 1 && SimilarBrandArr?.length > 0 && SimilarBrandArr?.[0]?.stat_code != 1005 && <RelatedProduct SimilarBrandArr={SimilarBrandArr} handleMoveToDetail={handleMoveToDetail} storeInit={storeInit} loginInfo={loginInfo} check={storeInit?.IsPriceShow === 1} />}
                 {storeInit?.IsProductDetailDesignSet === 1 && designSetList?.length > 0 && designSetList?.[0]?.stat_code != 1005 && <DesignSet designSetList={designSetList} handleMoveToDetail={handleMoveToDetail} loginInfo={loginInfo} storeInit={storeInit} check={storeInit?.IsPriceShow === 1} />}
 
-                {/* <RecentlyViewd /> hold on */}
+                {/* Mobile Customizer Drawer */}
+                <MobileCustomizerDrawer
+                    open={isCustomizerOpen}
+                    onClose={() => setIsCustomizerOpen(false)}
+                    rd1={rd1Data}
+                    rd2={rd2Data}
+                    defaultArticleId={decodeUrl?.ArticleId || singleProd?.ArticleId}
+                    onConfirm={(targetArticleId, targetSize, targetDiaQc, targetMetal) => {
+                        if (targetArticleId && rd1Data?.length > 0) {
+                            const targetArt = rd1Data.find((a) => a.ArticleId == targetArticleId);
+                            if (targetArt) {
+                                setSingleProd(targetArt);
+                                setSingleProd1(targetArt);
+                                if (targetArt?.MetalColorid) setSelectMtColor(targetArt.MetalColorid);
+                                if (targetArt?.MetalPurityid) setSelectMtType(targetArt.MetalPurityid);
+                                if (targetSize) setSizeData(targetSize);
+                            }
+                        }
+                    }}
+                    storeInit={storeInit}
+                    currencySymbol={loginUserDetail?.CurrencyCode ?? storeInit?.CurrencyCode ?? "INR"}
+                />
             </div>
         </>
     );

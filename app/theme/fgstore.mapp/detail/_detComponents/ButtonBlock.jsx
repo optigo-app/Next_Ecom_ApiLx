@@ -1,84 +1,71 @@
-import { COLORS, getButtonStyle } from "@/app/(core)/constants/MobileAppTheme";
 import { Box, Button } from "@mui/material";
-import { FaHeart } from "react-icons/fa";
-
-
-
+import { FaHeart, FaRegHeart, FaShoppingCart, FaCheck } from "react-icons/fa";
 
 const ButtonBlock = ({ addToCartFlag, wishListFlag, handleCart, handleWishList }) => {
-    return <>
-
+    return (
         <Box
             sx={{
                 display: "flex",
-                gap: 1,
+                gap: 1.5,
                 mt: 2,
+                mb: 2,
                 boxSizing: 'border-box',
                 width: '100%',
             }}
         >
-
             {/* Cart Button */}
             <Button
                 fullWidth
-                variant={!addToCartFlag ? "outlined" : "contained"}
                 onClick={() => handleCart(!addToCartFlag)}
-                sx={getButtonStyle(addToCartFlag)}
-
+                sx={{
+                    py: 1.2,
+                    borderRadius: "4px",
+                    fontWeight: 700,
+                    fontSize: "14px",
+                    textTransform: "none",
+                    border: "1.5px solid #0b2f83 !important",
+                    color: addToCartFlag ? "#ffffff !important" : "#0b2f83 !important",
+                    backgroundColor: addToCartFlag ? "#0b2f83 !important" : "#ffffff !important",
+                    boxShadow: "none !important",
+                    "&:hover": {
+                        backgroundColor: addToCartFlag ? "#082360 !important" : "#f0f4fc !important",
+                        boxShadow: "none !important",
+                    },
+                }}
             >
-                {!addToCartFlag ? "Add to Cart" : "Remove from Cart"}
+                {addToCartFlag ? <FaCheck style={{ marginRight: 6 }} /> : <FaShoppingCart style={{ marginRight: 6 }} />}
+                {!addToCartFlag ? "Add to Cart" : "In Cart"}
             </Button>
 
             {/* Wishlist Button */}
             <Button
                 fullWidth
-                variant={!wishListFlag ? "outlined" : "contained"}
                 onClick={() => handleWishList(!wishListFlag)}
-                sx={getButtonStyle(wishListFlag)}
+                sx={{
+                    py: 1.2,
+                    borderRadius: "4px",
+                    fontWeight: 700,
+                    fontSize: "14px",
+                    textTransform: "none",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: 1,
+                    border: "1.5px solid #d32f2f !important",
+                    color: wishListFlag ? "#ffffff !important" : "#d32f2f !important",
+                    backgroundColor: wishListFlag ? "#d32f2f !important" : "#ffffff !important",
+                    boxShadow: "none !important",
+                    "&:hover": {
+                        backgroundColor: wishListFlag ? "#b71c1c !important" : "#fdf2f2 !important",
+                        boxShadow: "none !important",
+                    },
+                }}
             >
-                <FaHeart />
-                {!wishListFlag ? "Add To Wishlist" : "Remove from Wishlist"}
+                {wishListFlag ? <FaHeart style={{ fontSize: "15px", color: "#ffffff" }} /> : <FaRegHeart style={{ fontSize: "15px", color: "#d32f2f" }} />}
+                {!wishListFlag ? "Wishlist" : "Saved"}
             </Button>
-
         </Box>
-
-
-    </>
-}
+    );
+};
 
 export default ButtonBlock;
-
-
-//    <div className="btn_Section">
-//                                 <button className={!addToCartFlag ? "fgstore_mapp_AddToCart_btn" : "fgstore_mapp_AddToCart_btn_afterCart"} onClick={() => handleCart(!addToCartFlag)}>
-//                                     <span
-//                                         className="fgstore_mapp_addtocart_btn_txt"
-//                                         style={{
-//                                             color: !addToCartFlag ? "" : "white",
-//                                             fontSize: "1rem",
-//                                         }}
-//                                     >
-//                                         {!addToCartFlag ? "ADD TO CART" : "REMOVE FROM CART"}
-//                                     </span>
-//                                 </button>
-//                                 <button onClick={() => handleWishList(!wishListFlag)}>
-//                                     <span className="fgstore_mapp_addtocart_btn_txt">{!wishListFlag ? "ADD TO Wishlist" : "Remove from wishlist"}</span>
-//                                     <FaHeart />
-//                                 </button>
-
-//    <div className="btn_Section">
-//                                 <button className={!addToCartFlag ? "fgstore_mapp_AddToCart_btn" : "fgstore_mapp_AddToCart_btn_afterCart"} onClick={() => handleCart(!addToCartFlag)}>
-//                                     <span
-//                                         className="fgstore_mapp_addtocart_btn_txt"
-//                                         style={{
-//                                             color: !addToCartFlag ? "" : "white",
-//                                             fontSize: "1rem",
-//                                         }}
-//                                     >
-//                                         {!addToCartFlag ? "ADD TO CART" : "REMOVE FROM CART"}
-//                                     </span>
-//                                 </button>
-//                                 <button onClick={() => handleWishList(!wishListFlag)}>
-//                                     <span className="fgstore_mapp_addtocart_btn_txt">{!wishListFlag ? "ADD TO Wishlist" : "Remove from wishlist"}</span>
-//                                     <FaHeart />
-//                                 </button>

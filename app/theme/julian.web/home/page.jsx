@@ -12,10 +12,6 @@ import { assetBase } from "@/app/(core)/lib/ServerHelper";
 import BrandInfoMarquee from "./blocks/Marquee";
 import NewArrival from "@/app/components/(dynamic)/NewArrival/julian/NewArrival";
 import SocialMediaVideoSection from "./blocks/SocialMedia";
- 
-import { cookies } from "next/headers";
-
- 
  import TrendingNow from "./blocks/TrendingNow"
  import FeatureProducts from "./blocks/Featureproducts/FeatureProducts"
  import BestSaller from "./blocks/BestSaller"
@@ -29,7 +25,6 @@ export const metadata = generatePageMetadata(pages["/"], "Sonasons");
 
 const SonasonsHome = async () => {
   const storeData = await getStoreInit();
-  const  islogin  = cookies().get("LoginUser");
   const { bestsellerBanner, newArrivalBanner, trendingBanner, lookbookBanner } = useHomeBannerImages({ host: assetBase });
 
  

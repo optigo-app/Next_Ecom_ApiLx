@@ -1,7 +1,8 @@
 "use client";
-import React from "react";
+import React, { useState, useEffect } from "react";
 import BeluxSkeleton from "@/app/theme/beluxjewel.web/detail/DetailPageSkeleton";
 import JulianSkeleton from "@/app/theme/julian.web/detail/DetailPageSkeleton";
+import FgstoreMappSkeleton from "@/app/theme/fgstore.mapp/detail/DetailPageSkeleton";
 
 import { useSearchParams } from "next/navigation";
 import { decodeAndDecompress } from "@/app/(core)/utils/seo/seo-utils";
@@ -11,6 +12,20 @@ import { useStore } from "@/app/(core)/contexts/StoreProvider";
 export default function Loading() {
   const searchParams = useSearchParams();
   const { loginUserDetail, storeInit } = useStore();
+  const [isMobileTheme, setIsMobileTheme] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const host = window.location.hostname || "";
+      const isMappTheme =
+        host.includes("mapp") ||
+        host.includes("nxtmobileapp") ||
+        window.innerWidth < 768 ||
+        process.env.NEXT_PUBLIC_THEME === "fgstore.mapp";
+
+      setIsMobileTheme(Boolean(isMappTheme));
+    }
+  }, []);
 
   const isJulian = React.useMemo(() => {
     if (typeof window !== "undefined") {
@@ -20,8 +35,6 @@ export default function Loading() {
     const themeName = (storeInit?.theme || storeInit?.ClientHeaderName || "").toLowerCase();
     return themeName.includes("julian");
   }, [storeInit]);
-
-  const DetailPageSkeleton = isJulian ? JulianSkeleton : BeluxSkeleton;
 
   const decodedData = React.useMemo(() => {
     try {
@@ -33,7 +46,7 @@ export default function Loading() {
     }
   }, [searchParams]);
 
-  const CurrencyCode = loginUserDetail?.loginData ?? storeInit?.CurrencyCode ?? " ";
+  const CurrencyCode = loginUserDetail?.loginData ?? storeInit?.CurrencyCode ?? "INR";
 
   const mediaList = React.useMemo(() => {
     if (!decodedData) return [];
@@ -124,6 +137,23 @@ export default function Loading() {
       return fallback;
     }
   }, [decodedData, storeInit, loginUserDetail]);
+
+  if (isMobileTheme) {
+    return (
+      <FgstoreMappSkeleton
+        imageUrl={decodedData?.img}
+        title={decodedData?.title || ""}
+        ArticleNo={decodedData?.ArticleNo || decodedData?.b || ""}
+        price={decodedData?.price}
+        CurrencyCode={CurrencyCode}
+        nwt={decodedData?.nwt}
+        media={mediaList}
+        decodedData={decodedData}
+      />
+    );
+  }
+
+  const DetailPageSkeleton = isJulian ? JulianSkeleton : BeluxSkeleton;
 
   return (
     <DetailPageSkeleton

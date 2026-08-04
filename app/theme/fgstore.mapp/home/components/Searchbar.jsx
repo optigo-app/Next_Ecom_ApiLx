@@ -44,11 +44,22 @@ const Searchbar = ({ storeinit }) => {
           display: "flex",
           alignItems: "center",
           bgcolor: "white",
-          borderRadius: "50px",
+          borderRadius: "3px",
           px: 2,
-          py: 0.8,
           boxShadow: "0 2px 10px rgba(0,0,0,0.03)",
-          backgroundColor: "rgba(0, 0, 0, 0.05)",
+             display: "flex",
+          alignItems: "center",
+          height: 42,
+          bgcolor: "#fff",
+          border: "1px solid #E5E7EB",
+          transition: "all .25s ease",
+          "&:hover": {
+            borderColor: "#CFCFCF",
+          },
+          "&:focus-within": {
+            borderColor: "#0000003b",
+            boxShadow: "0 0 0 3px rgba(32, 31, 29, 0.12)",
+          },
         }}
       >
         <SearchRounded
