@@ -21,6 +21,6 @@ export default async function Page() {
   const themeData = themeMap[theme] || { page: "fgstore.web" };
   const storeInit = await getStoreInit();
   const CustomOrder = await resolveCustomOrders(themeData?.page);
-  return <CustomOrder storeInit={storeInit} />;
+  return <CustomOrder storeInit={storeInit} theme={theme} />;
 }
 

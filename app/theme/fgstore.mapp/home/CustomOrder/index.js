@@ -10,6 +10,7 @@ import CloseIcon from "@mui/icons-material/Close";
 
 import { generateCustomerConfirmationEmail, generateOrderEmail } from "./OrderTemplate";
 import { sendEmail } from '@/app/(core)/utils/API/SendEmail';
+import { activeBrand } from "../../../../env";
 
 // --- CONSTANTS & CONFIGURATION ---
 // const CONTACT_NUMBERS = ["+918866937682", "+91886665579"];
@@ -57,16 +58,15 @@ const INITIAL_DIAMONDS = {
   other: false,
 };
 
-const OrderForm = () => {
+const OrderForm = ({ storeInit }) => {
   let companyLogo = 'https://b2b.eliorjewel.com/WebSiteStaticImage/logoIcon/webLogo.png';
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { loginuser, storeInit } = useMemo(() => {
+  const { loginuser } = useMemo(() => {
     try {
       const loginuser = JSON.parse(sessionStorage.getItem("loginUserDetail")) || {};
-      const storeInit = JSON.parse(sessionStorage.getItem("storeInit")) || {};
-      return { loginuser, storeInit };
+      return { loginuser };
     } catch {
-      return { loginuser: null, storeInit: null };
+      return { loginuser: null };
     }
   }, []);
 
@@ -356,8 +356,8 @@ const OrderForm = () => {
               </FormControl>
 
               {/* Section 4: Checkboxes */}
-              <FormControl component="fieldset">
-                <FormLabel component="legend">Diamonds or Colorstone By Elior</FormLabel>
+            <FormControl component="fieldset">
+                <FormLabel component="legend">Diamonds or Colorstone By {storeInit?.companyname || ""}</FormLabel>
                 <FormGroup row>
                   <FormControlLabel control={<Checkbox name="diamond" checked={diamondOptions.diamond} onChange={handleCheckboxChange} color="success" />} label="Diamond" />
                   <FormControlLabel control={<Checkbox name="colorStone" checked={diamondOptions.colorStone} onChange={handleCheckboxChange} color="success" />} label="Color Stone" />
@@ -365,7 +365,7 @@ const OrderForm = () => {
                 </FormGroup>
                 <FormControlLabel control={<Checkbox name="other" checked={diamondOptions.other} onChange={handleCheckboxChange} color="success" />} label="Other" />
                 <Typography variant="caption" color="textSecondary" sx={{ mt: 1, display: "block" }}>
-                  * Tick box only if Diamonds/Stones need to be sourced by Elior Jewel.
+                  * Tick box only if Diamonds/Stones need to be sourced by {storeInit?.companyname || ""}.
                 </Typography>
               </FormControl>
 
