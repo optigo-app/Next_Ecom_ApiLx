@@ -14,14 +14,13 @@
 import { getActiveTheme } from "@/app/(core)/lib/getActiveTheme";
 import { getStoreInit } from "../(core)/utils/GlobalFunctions/GlobalFunctions";
 import { themeMap } from "../(core)/utils/ThemeMap";
-import { LocalSetup } from "../env";
-import OrderFormApp from "@/app/theme/fgstore.mapp/home/CustomOrder";
+import { resolveCustomOrders } from "../(core)/utils/ThemeRouteResolver";
 
 export default async function Page() {
   const theme = await getActiveTheme();
-  const themeData = themeMap[theme];
+  const themeData = themeMap[theme] || { page: "fgstore.web" };
   const storeInit = await getStoreInit();
-  const CustomOrder = (await import(`@/app/theme/${themeData.page}/CustomOrder/index.js`)).default;
-  if (LocalSetup === "fgstore.mapp") return <OrderFormApp />;
+  const CustomOrder = await resolveCustomOrders(themeData?.page);
   return <CustomOrder storeInit={storeInit} />;
 }
+

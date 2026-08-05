@@ -547,3 +547,26 @@ export async function resolveMenu(themePage) {
       return (await import("@/app/theme/fgstore.mapp/Menu/page.js")).default;
   }
 }
+
+export async function resolveCustomOrders(themePage) {
+  switch (themePage) {
+    case "beluxjewel.web":
+      return (await import("@/app/theme/beluxjewel.web/CustomOrder")).default;
+    case "julian.web":
+      return (await import("@/app/theme/julian.web/CustomOrder")).default;
+    case "julian4.web":
+      return (await import("@/app/theme/julian4.web/CustomOrder")).default;
+    case "nxtelvee.web":
+    case "elvee.web":
+      return (await import("@/app/theme/elvee.web/CustomOrder")).default;
+    case "diamondtine.web":
+      return (await import("@/app/theme/diamondtine.web/CustomOrder")).default;
+    case "fgstore.web":
+      return (await import("@/app/theme/fgstore.web/CustomOrder")).default;
+    case "fgstore.mapp":
+      return (await import("@/app/theme/fgstore.mapp/home/CustomOrder")).default;
+    default:
+      return (await import("@/app/theme/fgstore.web/CustomOrder")).default;
+  }
+}
+
