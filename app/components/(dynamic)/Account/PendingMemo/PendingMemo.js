@@ -1120,7 +1120,7 @@ const PendingMemo = () => {
                               }}
                             >
                               <span>{row.designno}</span>
-                              {BELUX_JEWEL && row.ArticleNo && (
+                              {row.ArticleNo && (
                                 <Chip
                                   label={row.ArticleNo}
                                   size="small"

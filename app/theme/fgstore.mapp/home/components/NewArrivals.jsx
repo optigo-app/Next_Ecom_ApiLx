@@ -23,7 +23,11 @@ function NewArrival({ storeinit }) {
   const isFetchingRef = useRef(false);
   const lastRequestKeyRef = useRef("");
 
-  const handleNavigation = (designNo, autoCode, titleLine, index) => {
+  const handleNavigation = (product, index) => {
+    const designNo = product?.designno;
+    const autoCode = product?.autocode;
+    const titleLine = product?.TitleLine;
+
     let obj = {
       a: autoCode,
       b: designNo,
@@ -31,6 +35,14 @@ function NewArrival({ storeinit }) {
       d: loginUserDetail?.cmboDiaQCid,
       c: loginUserDetail?.cmboCSQCid,
       f: {},
+      img: product?.validatedImageURL || `${storeinit?.CDNDesignImageFolThumb}${designNo}~1.jpg`,
+      ArticleNo: product?.ArticleNo || product?.articleno || "",
+      ArticleId: product?.ArticleId ?? null,
+      title: titleLine ?? "",
+      nwt: product?.Nwt ?? 0,
+      price: product?.UnitCostWithMarkUp ?? 0,
+      mediaDet: product?.ImageVideoDetail ?? "",
+      metalColorId: product?.MetalColorid ?? null,
     };
     let encodeObj = compressAndEncode(JSON.stringify(obj));
     push(`/d/${formatRedirectTitleLine(titleLine)}${designNo}?p=${encodeObj}`);
@@ -141,7 +153,7 @@ function NewArrival({ storeinit }) {
               product={product}
               minWidth="200px"
               maxWidth="200px"
-              onClick={() => handleNavigation(product?.designno, product?.autocode, product?.TitleLine, index)}
+              onClick={() => handleNavigation(product, index)}
               image={product?.validatedImageURL}
               title={[product?.designno, product?.TitleLine && formatTitleLine(product?.TitleLine)]?.filter(Boolean)?.join(" - ")}
               // designno={product?.designno}

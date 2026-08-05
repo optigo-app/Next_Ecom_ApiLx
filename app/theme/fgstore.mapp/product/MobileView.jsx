@@ -33,6 +33,7 @@ import ProductView from "./ProductView";
 import ActionIsland from "./FloatingIsland";
 import FilterDrawerApp from "./FilterDrawer";
 import { getSession } from "@/app/(core)/utils/FetchSessionData";
+import { readCache, writeCache } from "@/app/(core)/cache_utility/cacheActions";
 
 const MobileFilter = dynamic(() => import("./_prodComponents/MobileFilter"), { ssr: false });
 
@@ -58,7 +59,7 @@ const Layout = ({ params, searchParams, storeinit }) => {
     let maxwidth590px = useMediaQuery("(max-width:590px)");
     let maxwidth464px = useMediaQuery("(max-width:464px)");
 
-    const { islogin, setCartCountNum, setWishCountNum } = useStore();
+    const { islogin, setCartCountNum, setWishCountNum, finalId, loginUserDetail: storeLoginUserDetail } = useStore();
 
     const [productListData, setProductListData] = useState([]);
     const [isProductListData, setIsProductListData] = useState(false);
@@ -96,6 +97,9 @@ const Layout = ({ params, searchParams, storeinit }) => {
     const hasMoreRef = useRef(true);            // false when no more pages
     const sentinelRef = useRef(null);           // bottom sentinel div
     const isLoadingMoreRef = useRef(false);     // ref mirror of isLoadingMore (avoids stale closure)
+
+    const activeCacheKeyRef = useRef(null);
+    const activeCacheDataRef = useRef(null);
 
     const isEditablePage = 1;
 
@@ -336,12 +340,13 @@ const Layout = ({ params, searchParams, storeinit }) => {
 
             setIsProdLoading(true);
             setprodListType(productlisttype);
-            let diafilter = filterData?.filter((ele) => ele?.Name == "Diamond")[0]?.options?.length > 0 ? JSON.parse(filterData?.filter((ele) => ele?.Name == "Diamond")[0]?.options)[0] : [];
-            let diafilter1 = filterData?.filter((ele) => ele?.Name == "NetWt")[0]?.options?.length > 0 ? JSON.parse(filterData?.filter((ele) => ele?.Name == "NetWt")[0]?.options)[0] : [];
-            let diafilter2 = filterData?.filter((ele) => ele?.Name == "Gross")[0]?.options?.length > 0 ? JSON.parse(filterData?.filter((ele) => ele?.Name == "Gross")[0]?.options)[0] : [];
-            const isDia = JSON.stringify(sliderValue) !== JSON.stringify([diafilter?.Min, diafilter?.Max]);
-            const isNet = JSON.stringify(sliderValue1) !== JSON.stringify([diafilter1?.Min, diafilter1?.Max]);
-            const isGross = JSON.stringify(sliderValue2) !== JSON.stringify([diafilter2?.Min, diafilter2?.Max]);
+            let diafilter = filterData?.filter((ele) => ele?.Name == "Diamond")[0]?.options?.length > 0 ? JSON.parse(filterData?.filter((ele) => ele?.Name == "Diamond")[0]?.options)[0] : null;
+            let diafilter1 = filterData?.filter((ele) => ele?.Name == "NetWt")[0]?.options?.length > 0 ? JSON.parse(filterData?.filter((ele) => ele?.Name == "NetWt")[0]?.options)[0] : null;
+            let diafilter2 = filterData?.filter((ele) => ele?.Name == "Gross")[0]?.options?.length > 0 ? JSON.parse(filterData?.filter((ele) => ele?.Name == "Gross")[0]?.options)[0] : null;
+
+            const isDia = Boolean(diafilter && sliderValue?.length === 2 && (sliderValue[0] !== diafilter?.Min || sliderValue[1] !== diafilter?.Max));
+            const isNet = Boolean(diafilter1 && sliderValue1?.length === 2 && (sliderValue1[0] !== diafilter1?.Min || sliderValue1[1] !== diafilter1?.Max));
+            const isGross = Boolean(diafilter2 && sliderValue2?.length === 2 && (sliderValue2[0] !== diafilter2?.Min || sliderValue2[1] !== diafilter2?.Max));
 
             let DiaRange = {
                 DiaMin: isDia ? (sliderValue[0] ?? "") : "",
@@ -358,58 +363,108 @@ const Layout = ({ params, searchParams, storeinit }) => {
                 grossMax: isGross ? (sliderValue2[1] ?? "") : "",
             };
 
-            await ProductListApi({}, 1, obj, productlisttype, cookie, sortBySelect, DiaRange, netRange, grossRange)
-                .then((res) => {
-                    if (res) {
-                        // console.log("productList", res);
+            // ── Belux Jewel Caching Strategy ───────────────────────────
+            let cacheKey = null;
+            const activeLoginDetail = storeLoginUserDetail || loginInfo;
+            const defaultMetal = activeLoginDetail?.MetalId ?? storeInit?.MetalId;
+            const defaultDia = activeLoginDetail?.cmboDiaQCid ?? storeInit?.cmboDiaQCid;
+            const defaultCs = activeLoginDetail?.cmboCSQCid ?? storeInit?.cmboCSQCid;
+            const defaultSort = "Recommended";
 
+            const isDefaultState =
+                (!obj?.mt || Number(obj.mt) === Number(defaultMetal)) &&
+                (!obj?.dia || Number(obj.dia) === Number(defaultDia)) &&
+                (!obj?.cs || Number(obj.cs) === Number(defaultCs)) &&
+                (!sortBySelect || sortBySelect === defaultSort) &&
+                !isDia && !isNet && !isGross;
+
+            if (isDefaultState && searchParams && typeof searchParams === "object") {
+                const queryParts = [];
+                const sortedEntries = Object.entries(searchParams).sort((a, b) => a[0].localeCompare(b[0]));
+                sortedEntries.forEach(([k, v]) => {
+                    if (v && typeof v === "string") {
+                        queryParts.push(`${k}_${v.replace(/[^a-zA-Z0-9_\-]/g, "_")}`);
+                    }
+                });
+                if (queryParts.length > 0) {
+                    cacheKey = `menu/pl_${finalId || "0"}_${queryParts.join("_")}`;
+                }
+            }
+
+            activeCacheKeyRef.current = cacheKey;
+            console.log("[MobileView Cache]", { isDefaultState, cacheKey, finalId });
+
+            let cachedRes = null;
+            if (cacheKey) {
+                try {
+                    const diskCached = await readCache(cacheKey);
+                    if (diskCached?.cached && diskCached.data?.pdList) {
+                        cachedRes = diskCached.data;
+                    }
+                } catch (_) { }
+            }
+
+            let apiRes = null;
+
+            if (cachedRes) {
+                console.log("%c⚡ [Cache Hit] Mobile ProductList Page 1 loaded from disk cache: " + cacheKey, "color: #00E676; font-weight: bold;");
+                apiRes = cachedRes;
+                setProductListData(
+                    cachedRes?.pdList?.sort((a, b) => a?.autocode.localeCompare(b?.autocode))
+                );
+                setAfterFilterCount(cachedRes?.pdResp?.rd1[0]?.designcount);
+                setIsProductListData(true);
+                if ((cachedRes?.pdList?.length ?? 0) < storeInit.PageSize) {
+                    hasMoreRef.current = false;
+                }
+            } else {
+                try {
+                    console.log("[Cache Miss] Fetching Page 1 from API for key:", cacheKey);
+                    const res = await ProductListApi({}, 1, obj, productlisttype, cookie, sortBySelect, DiaRange, netRange, grossRange);
+                    if (res) {
+                        apiRes = res;
                         setProductListData(
-                            res?.pdList?.sort((a, b) => {
-                                return a?.autocode.localeCompare(b?.autocode);
-                            }),
+                            res?.pdList?.sort((a, b) => a?.autocode.localeCompare(b?.autocode))
                         );
                         setAfterFilterCount(res?.pdResp?.rd1[0]?.designcount);
-                        // Stop infinite scroll if we got a partial page (last page)
                         if ((res?.pdList?.length ?? 0) < storeInit.PageSize) {
                             hasMoreRef.current = false;
                         }
+                        if (cacheKey) {
+                            writeCache(cacheKey, res).catch(() => {});
+                        }
                     }
-
                     if (res?.pdList) {
                         setIsProductListData(true);
                     }
-                    return res;
-                })
-
-                .then(async (res) => {
-                    let forWardResp1;
-                    if (res) {
-                        await FilterListAPI(productlisttype, cookie)
-                            .then((res) => {
-                                setFilterData(res);
-                                let diafilter = res?.filter((ele) => ele?.Name == "Diamond")[0]?.options?.length > 0 ? JSON.parse(res?.filter((ele) => ele?.Name == "Diamond")[0]?.options)[0] : [];
-                                let diafilter1 = res?.filter((ele) => ele?.Name == "NetWt")[0]?.options?.length > 0 ? JSON.parse(res?.filter((ele) => ele?.Name == "NetWt")[0]?.options)[0] : [];
-
-                                let diafilter2 = res?.filter((ele) => ele?.Name == "Gross")[0]?.options?.length > 0 ? JSON.parse(res?.filter((ele) => ele?.Name == "Gross")[0]?.options)[0] : [];
-
-                                setSliderValue(diafilter?.Min != null || diafilter?.Max != null ? [diafilter.Min, diafilter.Max] : []);
-                                setSliderValue1(diafilter1?.Min != null || diafilter1?.Max != null ? [diafilter1?.Min, diafilter1?.Max] : []);
-                                setSliderValue2(diafilter2?.Min != null || diafilter2?.Max != null ? [diafilter2?.Min, diafilter2?.Max] : []);
-                                forWardResp1 = res;
-                            })
-                            .catch((err) => console.log("err", err));
-                    }
-                    return forWardResp1;
-                })
-                .finally(() => {
-                    setIsProdLoading(false);
-                    setIsOnlyProdLoading(false);
-                    isApiCallInProgressRef.current = false; // Reset the flag when API call completes
-                })
-                .catch((err) => {
+                } catch (err) {
                     console.log("err", err);
-                    isApiCallInProgressRef.current = false; // Reset the flag on error too
-                });
+                }
+            }
+
+            // Fetch filter list options
+            if (apiRes) {
+                activeCacheDataRef.current = apiRes;
+                try {
+                    const resFilter = await FilterListAPI(productlisttype, cookie);
+                    if (resFilter) {
+                        setFilterData(resFilter);
+                        let diafilterRes = resFilter?.filter((ele) => ele?.Name == "Diamond")[0]?.options?.length > 0 ? JSON.parse(resFilter?.filter((ele) => ele?.Name == "Diamond")[0]?.options)[0] : [];
+                        let diafilter1Res = resFilter?.filter((ele) => ele?.Name == "NetWt")[0]?.options?.length > 0 ? JSON.parse(resFilter?.filter((ele) => ele?.Name == "NetWt")[0]?.options)[0] : [];
+                        let diafilter2Res = resFilter?.filter((ele) => ele?.Name == "Gross")[0]?.options?.length > 0 ? JSON.parse(resFilter?.filter((ele) => ele?.Name == "Gross")[0]?.options)[0] : [];
+
+                        setSliderValue(diafilterRes?.Min != null || diafilterRes?.Max != null ? [diafilterRes.Min, diafilterRes.Max] : []);
+                        setSliderValue1(diafilter1Res?.Min != null || diafilter1Res?.Max != null ? [diafilter1Res?.Min, diafilter1Res?.Max] : []);
+                        setSliderValue2(diafilter2Res?.Min != null || diafilter2Res?.Max != null ? [diafilter2Res?.Min, diafilter2Res?.Max] : []);
+                    }
+                } catch (err) {
+                    console.log("filter err", err);
+                }
+            }
+
+            setIsProdLoading(false);
+            setIsOnlyProdLoading(false);
+            isApiCallInProgressRef.current = false;
 
             // }
         };
@@ -545,6 +600,17 @@ const Layout = ({ params, searchParams, storeinit }) => {
             markup: ele?.DesignMarkUp,
             UnitCostWithmarkup: ele?.UnitCostWithMarkUp,
             Remark: "",
+            Metal_Cost: ele?.Metal_Cost,
+            Labour_Cost: ele?.Labour_Cost,
+            Diamond_Cost: ele?.Diamond_Cost,
+            Diamond_SettingCost: ele?.Diamond_SettingCost,
+            ColorStone_Cost: ele?.ColorStone_Cost,
+            ColorStone_SettingCost: ele?.ColorStone_SettingCost,
+            Misc_Cost: ele?.Misc_Cost,
+            Misc_SettingCost: ele?.Misc_SettingCost,
+            Other_Cost: ele?.Other_Cost,
+            SolPrice: ele?.SolPrice,
+            ArticleNo: ele?.ArticleNo || ele?.articleno || "",
         };
 
         if (e.target.checked == true) {
@@ -567,19 +633,56 @@ const Layout = ({ params, searchParams, storeinit }) => {
                 .catch((err) => console.log("err", err));
         }
 
+        const isChecked = e.target.checked;
         if (type === "Cart") {
             setCartArr((prev) => ({
                 ...prev,
-                [ele?.autocode]: e.target.checked,
+                [ele?.autocode]: isChecked,
             }));
         }
 
         if (type === "Wish") {
             setWishArr((prev) => ({
                 ...prev,
-                [ele?.autocode]: e.target.checked,
+                [ele?.autocode]: isChecked,
             }));
         }
+
+        // Update in-memory productListData and sync to disk cache
+        setProductListData((prevList) => {
+            if (!prevList) return prevList;
+            const updatedList = prevList.map((prod) => {
+                if (prod?.autocode === ele?.autocode) {
+                    return {
+                        ...prod,
+                        ...(type === "Cart" ? { IsInCart: isChecked ? 1 : 0 } : {}),
+                        ...(type === "Wish" ? { IsInWish: isChecked ? 1 : 0 } : {}),
+                    };
+                }
+                return prod;
+            });
+
+            if (activeCacheKeyRef.current && activeCacheDataRef.current) {
+                const currentCache = activeCacheDataRef.current;
+                const updatedCacheData = {
+                    ...currentCache,
+                    pdList: currentCache.pdList?.map((prod) => {
+                        if (prod?.autocode === ele?.autocode) {
+                            return {
+                                ...prod,
+                                ...(type === "Cart" ? { IsInCart: isChecked ? 1 : 0 } : {}),
+                                ...(type === "Wish" ? { IsInWish: isChecked ? 1 : 0 } : {}),
+                            };
+                        }
+                        return prod;
+                    }) || updatedList,
+                };
+                activeCacheDataRef.current = updatedCacheData;
+                writeCache(activeCacheKeyRef.current, updatedCacheData).catch(() => {});
+            }
+
+            return updatedList;
+        });
     };
 
     useEffect(() => {
@@ -693,7 +796,7 @@ const Layout = ({ params, searchParams, storeinit }) => {
         }
     };
 
-    const handleMoveToDetail = (productData) => {
+    const handleMoveToDetail = (productData, imageUrl) => {
         let output = FilterValueWithCheckedOnly();
         let obj = {
             a: productData?.autocode,
@@ -702,13 +805,24 @@ const Layout = ({ params, searchParams, storeinit }) => {
             d: selectedDiaId,
             c: selectedCsId,
             f: output,
+            g: menuParams || {},
+            img: imageUrl || "",
+            ArticleNo: productData?.ArticleNo || productData?.articleno || "",
+            ArticleId: productData?.ArticleId ?? null,
+            title: productData?.TitleLine ?? "",
+            nwt: productData?.Nwt ?? 0,
+            price: productData?.UnitCostWithMarkUp ?? 0,
+            mediaDet: productData?.ImageVideoDetail ?? "",
+            metalColorId: productData?.MetalColorid ?? null,
         };
 
-        decodeAndDecompress();
+        if (typeof window !== "undefined") {
+            sessionStorage.setItem("scroll_to_product", productData?.ArticleNo || productData?.designno || "");
+        }
 
         let encodeObj = compressAndEncode(JSON.stringify(obj));
 
-        navigate.push(`/d/${formatRedirectTitleLine(productData?.TitleLine)}${productData?.designno}?p=${encodeURIComponent(encodeObj)}`);
+        navigate.push(`/d/${formatRedirectTitleLine(productData?.TitleLine)}${productData?.designno}?p=${encodeObj}`);
     };
 
     const handleSortby = async (e) => {

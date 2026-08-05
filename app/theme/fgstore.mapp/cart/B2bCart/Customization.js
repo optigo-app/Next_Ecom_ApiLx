@@ -71,7 +71,7 @@ const Customization = ({
         <div className="smr_CartCusto_R-details">
           <p className='smr_cart-Titleline'>{formatTitleLine(selectedItem?.TitleLine) && selectedItem?.TitleLine}</p>
           <Divider />
-          {storeInitData?.IsProductWebCustomization == 1 &&
+          {/* {storeInitData?.IsProductWebCustomization == 1 &&
             <div className="smr_Cart-options">
               {storeInitData?.IsMetalCustomization == 1 &&
                 <div className="option">
@@ -165,7 +165,7 @@ const Customization = ({
                 </div>
               }
             </div>
-          }
+          } */}
           <div className='smr_cartQtyPricemainDev'>
             <QuantitySelector selectedItem={selectedItem} handleIncrement={handleIncrement} handleDecrement={handleDecrement} qtyCount={qtyCount} />
             {storeInitData?.IsPriceShow == 1 &&

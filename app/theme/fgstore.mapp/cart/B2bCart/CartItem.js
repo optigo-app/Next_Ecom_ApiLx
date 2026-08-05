@@ -174,7 +174,7 @@ const CartItem = ({
           <div className='smr_rightContentDataDiv'>
             <CardContent className='smr_cartcontentData' onClick={() => onSelect(item)}>
               <Typography variant="body2" className='smr_DesignNoTExt'>
-                {item?.designno} {item?.StockNo != "" &&
+                {item?.ArticleNo || item?.designno} {item?.StockNo != "" &&
                   <span className='smr_DesignNoTExt'>({item?.StockNo})</span>
                 }
               </Typography>

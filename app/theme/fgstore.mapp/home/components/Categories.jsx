@@ -94,7 +94,7 @@ const mapCategoryImages = (apiData) => {
 };
 
 const Categories = ({ storeinit }) => {
-  const { loginUserDetail, islogin } = useStore();
+  const { loginUserDetail, islogin, finalId } = useStore();
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNextRouterLikeRR().push;
@@ -141,7 +141,7 @@ const Categories = ({ storeinit }) => {
       } catch (err) {
         console.log("[Categories] Error in fetch:", err);
         console.error(err);
-        // ✅ fallback on error
+        // fallback on error
         setCategories(categoryImages);
         isFetchingRef.current = false;
         setLoading(false);
@@ -154,21 +154,19 @@ const Categories = ({ storeinit }) => {
     if (!pricingContext || !storeinit) return;
 
     const fetchData = async () => {
-      const visiterID = Cookies.get("visiterId");
-      const userId = loginUserDetail?.id;
-      const finalID = storeinit?.IsB2BWebsite === 0 ? (islogin ? userId || "" : visiterID) : userId || "";
-
+      const visitorId = finalId || Cookies.get("visiterId") || "";
       const keyALC = normalizeALC("");
-      const { key } = buildAlbumCacheKey("home_category", storeinit, pricingContext, finalID, keyALC);
+      const { key } = buildAlbumCacheKey("home_category", storeinit, pricingContext, visitorId, keyALC);
 
       if (isFetchingRef.current || lastRequestKeyRef.current === key) return;
       lastRequestKeyRef.current = key;
 
-      await fetchAndSetCategories(finalID, key);
+      await fetchAndSetCategories(visitorId, key);
     };
 
     fetchData();
-  }, [islogin, pricingContext, storeinit, fetchAndSetCategories, loginUserDetail?.id]);
+  }, [islogin, pricingContext, storeinit, fetchAndSetCategories, loginUserDetail?.id, finalId]);
+
 
 
   const handleNavigate = (name) => {

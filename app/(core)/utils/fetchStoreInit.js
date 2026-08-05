@@ -34,10 +34,6 @@ export async function fetchStoreInitData() {
       isNgrok;
 
     if (!hostname) hostname = NEXT_APP_WEB;
-
-    console.log(NEXT_APP_WEB , "NEXT_APP_WEB")
-    console.log(cleanHost , "hostname")
-
     if (isLocalHost(cleanHost)) {
       if (process.env.NODE_ENV === "development") {
         baseUrl = `http://192.168.0.153/R50B3/UFS/StoreInit/${NEXT_APP_WEB}/StoreInit.json`;
@@ -53,7 +49,7 @@ export async function fetchStoreInitData() {
     } else {
       baseUrl = `https://cdnfs.optigoapps.com/content-global3/StoreInit/${hostname}/StoreInit.json`;
     }
-
+    
     const response = await fetch(baseUrl);
 
     if (!response.ok) {
