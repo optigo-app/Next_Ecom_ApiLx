@@ -552,7 +552,7 @@ const CategoryBlock = ({ assetBase, storeInit }) => {
                       >
                         <CategoryImageWrapper>
                           <CategoryImage
-                            sx={{ borderRadius: 0,objectFit:"fill" }}
+                            sx={{ borderRadius: 0  }}
                             src={getImage(
                               ImgesPick.collectionImages,
                               collection?.CollectionName,

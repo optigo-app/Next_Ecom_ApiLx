@@ -113,7 +113,7 @@ export default function HeroSection() {
 
         <Button
           variant="contained"
-          className="shopNowBtn"
+          className="shopNowBtnJul"
           onClick={handleShopNowClick}
           sx={{
             

@@ -9,6 +9,7 @@ export const localHosts = [
   "nxt09.optigoapps.com",
   "beluxjewel.web",
   "beluxjewel.web",
+  "nxtjulian.web",
 ];
 
 export const isLocalHost = (cleanHost) => {
