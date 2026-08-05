@@ -7,7 +7,10 @@ import {
   Typography,
   TextField,
   IconButton,
+  
 } from "@mui/material";
+import { IoLocationOutline } from "react-icons/io5";
+import { IoMdCall,IoMdMail } from "react-icons/io";
 import Image from "next/image";
 import Link from "next/link";
 import { useNextRouterLikeRR } from "@/app/(core)/hooks/useLocationRd";
@@ -271,6 +274,84 @@ export default function LuxuryFooter({ img, logos, storeData, companyInfoData: c
             {/* {email} */}
           </Typography>
 
+          <Box
+                          variant="body2"
+                          sx={{
+                            lineHeight: 1.7,
+                            mb: 4,
+                            fontSize: { xs: "0.875rem", md: "0.9375rem" },
+                            color: "rgba(29, 50, 88, 0.85)",
+                            mt: 1,
+                          }}
+                        >
+                          <Box
+                            sx={{ display: "flex", flexDirection: "column", gap: 1.5 }}
+                          >
+                            {/* US Office Address */}
+                            <Box
+                              sx={{ display: "flex", alignItems: "flex-start", gap: 1.2 }}
+                            >
+                              <IoLocationOutline
+                                style={{
+                                  width: 22,
+                                  height: 22,
+                                  marginTop: 2,
+                                  color: "#0d1232",
+                                                       }}
+                              />
+                              <Typography
+                                component="span"
+                                sx={{
+                                  lineHeight: 1.6,
+                                  color: "#656565bf",
+                                  fontSize: { xs: "0.875rem", md: "0.9375rem" },
+                                }}
+                              >
+                                D-Block G20, ITC( International Trade Centre), Majura
+                                Gate, Ring Road,
+                              </Typography>
+                            </Box>
+          
+                            {/* Phone */}
+                            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                              <IoMdCall
+                                style={{
+                                  width: 18,
+                                  height: 18,
+                                }}
+                              />
+                              <Typography
+                                component="span"
+                                sx={{
+                                  color: "#656565bf",
+                                  fontSize: { xs: "0.875rem", md: "0.9375rem" },
+                                }}
+                              >
+                                +919099887762
+                              </Typography>
+                            </Box>
+          
+                            {/* Email */}
+                            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                              <IoMdMail
+                                style={{
+                                  width: 18,
+                                  height: 18,
+                                }}
+                              />
+                              <Typography
+                                component="span"
+                                sx={{
+                                  color: "#656565bf",
+                                  fontSize: { xs: "0.875rem", md: "0.9375rem" },
+                                }}
+                              >
+                                hello@optigoapps.com
+                              </Typography>
+                            </Box>
+                          </Box>
+                        </Box>
+
           {/* LOGO */}
           <Box
             component={Link}
@@ -282,7 +363,7 @@ export default function LuxuryFooter({ img, logos, storeData, companyInfoData: c
             sx={{
               mt: 6,
               width: 300,
-              height: 300,
+              
 
               display: "flex",
               alignItems: "center",
@@ -312,6 +393,8 @@ export default function LuxuryFooter({ img, logos, storeData, companyInfoData: c
               </Typography>
             )}
           </Box>
+
+           
         </Grid>
 
         {/* RIGHT SECTION */}
