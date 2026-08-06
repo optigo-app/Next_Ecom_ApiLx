@@ -36,7 +36,7 @@ const WishlistItems = ({
   handleWishlistToCart,
   handleMoveToDetail,
 }) => {
-  const { setCartCountNum, setWishCountNum, storeInit } = useStore();
+  const { setCartCountNum, setWishCountNum, storeInit, finalId } = useStore();
   const noImageFound = "image-not-found.jpg";
   const [imageSrc, setImageSrc] = useState();
   const { broadcast } = useBroadcaster();
@@ -52,7 +52,7 @@ const WishlistItems = ({
     const returnValue = await handleWishlistToCart(item);
     if (returnValue?.msg == "success") {
       showSnackbar("Wishlist items added in cart");
-      GetCountAPI(visiterId).then((res) => {
+      GetCountAPI(finalId).then((res) => {
         setCartCountNum(res?.cartcount);
         broadcast("UPDATE_CART_COUNT", res?.cartcount);
       });
@@ -63,7 +63,7 @@ const WishlistItems = ({
     const returnValue = await handleRemoveItem(item);
     if (returnValue?.msg == "success") {
       showSnackbar("Wishlist item removed successfully");
-      GetCountAPI(visiterId).then((res) => {
+      GetCountAPI(finalId).then((res) => {
         setWishCountNum(res?.wishcount);
         broadcast("UPDATE_WISH_COUNT", res?.wishcount);
       });
