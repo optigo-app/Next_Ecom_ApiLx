@@ -12,9 +12,11 @@ import {
 import LocationOnOutlinedIcon from "@mui/icons-material/LocationOnOutlined";
 import PhoneOutlinedIcon from "@mui/icons-material/PhoneOutlined";
 import AccessTimeOutlinedIcon from "@mui/icons-material/AccessTimeOutlined";
+import { useNextRouterLikeRR } from "@/app/(core)/hooks/useLocationRd";
 import "./PhysicalStore.scss";
 
 export default function MaxPhysicalStore() {
+  const router = useNextRouterLikeRR();
   return (
     <Box
       className="physicalStoreContainer"
@@ -173,6 +175,7 @@ export default function MaxPhysicalStore() {
                   variant="outlined"
                   fullWidth
                   className="physicalStoreButton"
+                  onClick={() => router.push("/contactUs")}
                   sx={{
                     borderRadius: "0px",
                     py: 1.6,
@@ -189,6 +192,7 @@ export default function MaxPhysicalStore() {
                   variant="outlined"
                   fullWidth
                   className="physicalStoreButton"
+                  onClick={() => router.push("/appointment")}
                   sx={{
                     borderRadius: "0px",
                     py: 1.6,

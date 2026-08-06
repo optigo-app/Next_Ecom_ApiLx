@@ -33,7 +33,7 @@ const ElveeWishlist = ({ storeInit }) => {
     handleMoveToDetail,
     handelMenu
   } = Usewishlist();
-  const { setCartCountNum, setWishCountNum } = useStore();
+  const { setCartCountNum, setWishCountNum, finalId } = useStore();
   const [dialogOpen, setDialogOpen] = useState(false);
   const visiterId = Cookies.get('visiterId');
   const { broadcast } = useBroadcaster();
@@ -47,7 +47,7 @@ const ElveeWishlist = ({ storeInit }) => {
     setDialogOpen(false);
     const returnValue = await handleRemoveAll();
     if (returnValue?.msg == "success") {
-      GetCountAPI(visiterId).then((res) => {
+      GetCountAPI(finalId).then((res) => {
         setWishCountNum(res?.wishcount);
         broadcast('UPDATE_WISH_COUNT', res?.wishcount);
       })
@@ -63,7 +63,7 @@ const ElveeWishlist = ({ storeInit }) => {
     const returnValue = await handleAddtoCartAll();
     if (returnValue?.msg == "success") {
       showSnackbar('All wishlist items added in cart');
-      GetCountAPI(visiterId).then((res) => {
+      GetCountAPI(finalId).then((res) => {
         setCartCountNum(res?.cartcount);
         broadcast('UPDATE_CART_COUNT', res?.cartcount);
       })

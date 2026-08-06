@@ -14,6 +14,7 @@ import {
 import LocationOnOutlinedIcon from '@mui/icons-material/LocationOnOutlined';
 import PhoneOutlinedIcon from '@mui/icons-material/PhoneOutlined';
 import AccessTimeOutlinedIcon from '@mui/icons-material/AccessTimeOutlined';
+import { useNextRouterLikeRR } from '@/app/(core)/hooks/useLocationRd';
 
 // ─── Theme ──────────────────────────────────────────────────────────────────
 
@@ -111,6 +112,7 @@ const DetailItem = ({ Icon, text }) => (
 // ─── Main Component ──────────────────────────────────────────────────────────
 
 export default function MaxPhysicalStore() {
+    const router = useNextRouterLikeRR();
     return (
         <ThemeProvider theme={theme}>
             <Box sx={{ bgcolor: 'background.default', py: { xs: 6, md: 12 }, overflow: 'hidden' }}>
@@ -173,6 +175,7 @@ export default function MaxPhysicalStore() {
                                 <Button 
                                     variant="contained" 
                                     fullWidth 
+                                    onClick={() => router.push("/contactUs")}
                                     sx={{ 
                                         bgcolor: '#1A1A1A', 
                                         color: '#FFF',
