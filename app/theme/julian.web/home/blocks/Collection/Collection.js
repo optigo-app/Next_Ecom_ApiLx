@@ -173,7 +173,8 @@ console.log("TCL: LuxuryAngledGrid -> sortedCollection",sortedCollection )
     return null;
   }
 
-  const totalItems = sortedCollection.length;
+  const totalItems = 5;
+  // const totalItems = sortedCollection.length;
 
   // Same exact card markup as before — only extracted into a function
   // so it can be reused inside SwiperSlide without touching any UI/data.

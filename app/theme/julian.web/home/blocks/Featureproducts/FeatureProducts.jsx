@@ -426,8 +426,8 @@ export default function ChopardCarousel() {
         price: `${currencyCode ?? ""} ${formatter(item?.UnitCostWithMarkUp)}`,
         priceRaw: item?.UnitCostWithMarkUp,
         isNew: item?.IsNewArrival === 1,
-        category: (item?.category || "uncategorized").toLowerCase(),
-        categoryLabel: item?.category || "Uncategorized",
+        category: (item?.category || "").toLowerCase(),
+        categoryLabel: item?.category || "",
         material: item?.MetalTypePurity || "",
         href: `/d/${formatRedirectTitleLine(item?.TitleLine)}${item?.designno}`,
         images,
@@ -490,7 +490,7 @@ export default function ChopardCarousel() {
       <Box className="chopard-carousel-section" id="featuredProducts"
         sx={{
           width: "100%",
-        boxSizing:'border-box'
+          boxSizing: 'border-box'
         }}
       >
         <div className="carousel-inner">
@@ -499,27 +499,27 @@ export default function ChopardCarousel() {
               Featured Products
             </p> */}
             <Typography
-  sx={{
-    fontSize: { xs: 30, md: 42 },
-    fontWeight: 400,
-    color: "#2C2C2C",
-    mb: 1,
-    textAlign: "center",
-  }}
->
-  Featured Products
-</Typography>
-<Typography
-  sx={{
-    fontSize: { xs: 16, sm: 18, md: 20 },
-    fontWeight: 400,
-    color: "gray",
-    mb: { xs: 3, md: 5 }, // 24px on xs, 40px on md+
-    textAlign: "center",
-  }}
->
-  A showcase of our most exceptional jewelry and signature designs.
-</Typography>
+              sx={{
+                fontSize: { xs: 30, md: 42 },
+                fontWeight: 400,
+                color: "#2C2C2C",
+                mb: 1,
+                textAlign: "center",
+              }}
+            >
+              Featured Products
+            </Typography>
+            <Typography
+              sx={{
+                fontSize: { xs: 16, sm: 18, md: 20 },
+                fontWeight: 400,
+                color: "gray",
+                mb: { xs: 3, md: 5 }, // 24px on xs, 40px on md+
+                textAlign: "center",
+              }}
+            >
+              A showcase of our most exceptional jewelry and signature designs.
+            </Typography>
           </div>
 
 
@@ -571,7 +571,7 @@ export default function ChopardCarousel() {
               dynamicBullets: true, // Auto-shrinks dots on mobile when there are many items
             }}
             // modules={[]}
-            modules={[Navigation, A11y,Pagination]}
+            modules={[Navigation, A11y, Pagination]}
             slidesPerView={4}
             slidesPerGroup={4}
             speed={500}
@@ -596,7 +596,7 @@ export default function ChopardCarousel() {
               1200: { slidesPerView: 4, slidesPerGroup: 4 },
             }}
           >
-            {filteredProducts.map((product,ind) => (
+            {filteredProducts.map((product, ind) => (
               <SwiperSlide key={`${product.id}-${ind}`}>
                 <ProductCard product={product} onNavigate={handleNavigateToProduct} />
               </SwiperSlide>
