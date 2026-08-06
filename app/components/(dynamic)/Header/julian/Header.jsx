@@ -718,29 +718,29 @@ export default function HarryWinstonHeader({ storeinit, logos }) {
               stay visible on every screen size. */}
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
 
-          <Box sx={{ position: 'relative' ,display: { xs: 'none', md: 'block' }, }}>
-            <Typography
-              component={Link}
-              href="/custom-orders"
-              sx={{
-                
-                fontSize: { xs: '14px', md: '16px' },
-                letterSpacing: '2px',
-                fontWeight: 500,
-                color: "white",
-                cursor: 'pointer',
-                whiteSpace: 'nowrap',
-                transition: 'color 0.2s',
-                '&:hover': { color: GOLD },
-                pb: 0.5,
-                borderBottom: '1px solid transparent',
-                textTransform: 'uppercase',
-                textDecoration: 'none',
-              }}
-            >
-              Custom order
-            </Typography>
-          </Box>
+            <Box sx={{ position: 'relative', display: { xs: 'none', md: 'block' }, }}>
+              <Typography
+                component={Link}
+                href="/custom-orders"
+                sx={{
+
+                  fontSize: { xs: '14px', md: '16px' },
+                  letterSpacing: '2px',
+                  fontWeight: 500,
+                  color: "white",
+                  cursor: 'pointer',
+                  whiteSpace: 'nowrap',
+                  transition: 'color 0.2s',
+                  '&:hover': { color: GOLD },
+                  pb: 0.5,
+                  borderBottom: '1px solid transparent',
+                  textTransform: 'uppercase',
+                  textDecoration: 'none',
+                }}
+              >
+                Custom order
+              </Typography>
+            </Box>
 
 
             {isMounted && islogin && (
@@ -812,15 +812,21 @@ export default function HarryWinstonHeader({ storeinit, logos }) {
             )}
 
             {/* Login / Logout — replaces the old location icon */}
-            <Tooltip title={islogin ? "Log out" : "Log in"}>
-              <IconButton
-                onClick={handleLoginIconClick}
-                aria-label={islogin ? "Log out" : "Log in"}
-                sx={{ color: TEXT_LIGHT, p: 0.8, '&:hover': { color: WHITE } }}
-              >
-                {islogin ? <LogoutIcon sx={{ fontSize: 20 }} /> : <PersonOutlineIcon sx={{ fontSize: 20 }} />}
-              </IconButton>
-            </Tooltip>
+
+
+            {isMounted && islogin ? (
+              <Tooltip title="Log out" key="logout-btn">
+                <IconButton onClick={handleLoginIconClick} aria-label="Log out" sx={{ color: TEXT_LIGHT, p: 0.8, '&:hover': { color: WHITE } }}>
+                  <LogoutIcon sx={{ fontSize: 20 }} />
+                </IconButton>
+              </Tooltip>
+            ) : (
+              <Tooltip title="Log in" key="login-btn">
+                <IconButton onClick={handleLoginIconClick} aria-label="Log in" sx={{ color: TEXT_LIGHT, p: 0.8, '&:hover': { color: WHITE } }}>
+                  <PersonOutlineIcon sx={{ fontSize: 20 }} />
+                </IconButton>
+              </Tooltip>
+            )}
           </Box>
         </Box>
 
@@ -934,34 +940,34 @@ export default function HarryWinstonHeader({ storeinit, logos }) {
             ))
           )}
 
-          {!menuLoading &&(
-             <Box sx={{ position: 'relative' }}>
-             <Typography
-               component={Link}
-               href="/asset-management"
-               sx={{
-                 fontFamily: '"Cormorant Garamond", Georgia, serif',
-                 fontSize: { xs: '14px', md: '16px' },
-                 letterSpacing: '2px',
-                 fontWeight: 500,
-                 color: "white",
-                 cursor: 'pointer',
-                 whiteSpace: 'nowrap',
-                 transition: 'color 0.2s',
-                 '&:hover': { color: GOLD },
-                 pb: 0.5,
-                 borderBottom: '1px solid transparent',
-                 textTransform: 'uppercase',
-                 textDecoration: 'none',
-               }}
-             >
-               Marketing Support
-             </Typography>
-           </Box>
+          {!menuLoading && (
+            <Box sx={{ position: 'relative' }}>
+              <Typography
+                component={Link}
+                href="/asset-management"
+                sx={{
+                  fontFamily: '"Cormorant Garamond", Georgia, serif',
+                  fontSize: { xs: '14px', md: '16px' },
+                  letterSpacing: '2px',
+                  fontWeight: 500,
+                  color: "white",
+                  cursor: 'pointer',
+                  whiteSpace: 'nowrap',
+                  transition: 'color 0.2s',
+                  '&:hover': { color: GOLD },
+                  pb: 0.5,
+                  borderBottom: '1px solid transparent',
+                  textTransform: 'uppercase',
+                  textDecoration: 'none',
+                }}
+              >
+                Marketing Support
+              </Typography>
+            </Box>
 
           )}
 
-         
+
 
         </Box>
 
@@ -1187,8 +1193,8 @@ export default function HarryWinstonHeader({ storeinit, logos }) {
               </ListItem>
             )}
 
-              {/* Marketing Support — always visible, login or not */}
-              <ListItem disablePadding sx={{ borderBottom: `1px solid ${alpha('#000', 0.06)}` }}>
+            {/* Marketing Support — always visible, login or not */}
+            <ListItem disablePadding sx={{ borderBottom: `1px solid ${alpha('#000', 0.06)}` }}>
               <ListItemButton
                 onClick={() => {
                   navigate('/custom-orders');
@@ -1206,9 +1212,9 @@ export default function HarryWinstonHeader({ storeinit, logos }) {
             </ListItem>
 
 
-            
 
-            
+
+
 
             {mobileTopLevelItems
               ? mobileTopLevelItems.map((item, index) => (
@@ -1262,7 +1268,7 @@ export default function HarryWinstonHeader({ storeinit, logos }) {
                 </ListItem>
               ))}
 
-              {/* Marketing Support — always visible, login or not */}
+            {/* Marketing Support — always visible, login or not */}
             <ListItem disablePadding sx={{ borderBottom: `1px solid ${alpha('#000', 0.06)}` }}>
               <ListItemButton
                 onClick={() => {
