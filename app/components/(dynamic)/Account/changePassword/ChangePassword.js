@@ -92,9 +92,9 @@ export default function ChangePassword() {
       setIsLoading(true);
       try {
 
-        const storeInit = getSession('storeInit');
+          const storeInit = getSession('storeInit');
 
-        const { FrontEnd_RegNo } = storeInit;
+          const { FrontEnd_RegNo } = storeInit;
 
         // const combinedValue = JSON.stringify({
         //     oldpassword: `${hashedOldPassword}`, newpassword: `${hashedPassword}`, confirmpassword: `${hashedConfirmPassword}`, FrontEnd_RegNo: `${FrontEnd_RegNo}`, Customerid: `${customerID}`

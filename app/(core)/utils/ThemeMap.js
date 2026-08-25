@@ -42,9 +42,7 @@ export const themeMap = {
   },
   "nxtjulian4.web": {
     page: "julian4.web",
- 
   },
-   
   "nxt29.optigoapps.com": {
     page: "fgstore.web",
   },

@@ -80,6 +80,7 @@ const MaxBestSeller = ({ storeInit }) => {
 
   const [imageUrl, setImageUrl] = useState();
   const [bestSellerData, setBestSellerData] = useState([]);
+  console.log(bestSellerData , "bestSellerData")
   const [validatedData, setValidatedData] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -218,9 +219,10 @@ const MaxBestSeller = ({ storeInit }) => {
     const obj = {
       a: autoCode,
       b: designNo,
-      m: loginUserDetail?.MetalId,
-      d: loginUserDetail?.cmboDiaQCid,
-      c: loginUserDetail?.cmboCSQCid,
+      // fallback to storeInit so guest users (not logged in) still get valid pricing params
+      m: loginUserDetail?.MetalId ?? storeInit?.MetalId,
+      d: loginUserDetail?.cmboDiaQCid ?? storeInit?.cmboDiaQCid,
+      c: loginUserDetail?.cmboCSQCid ?? storeInit?.cmboCSQCid,
       f: {},
       metalColorId: item?.MetalColorid ?? null,
       mediaDet: item?.ImageVideoDetail ?? "",
@@ -230,11 +232,14 @@ const MaxBestSeller = ({ storeInit }) => {
       nwt: item?.Nwt ?? 0,
       l: item?.ImageExtension,
       count: item?.ImageCount,
+      ArticleNo: item?.ArticleNo ?? designNo ?? "",
+      ArticleId: item?.ArticleId ?? item?.id ?? null,
     };
     sessionStorage.setItem("scrollToProduct1", `product-${index}`);
     const encodeObj = compressAndEncode(JSON.stringify(obj));
+    // encodeURIComponent prevents Base64 '+' chars being decoded as spaces in the URL
     navigation.push(
-      `/d/${formatRedirectTitleLine(titleLine)}${designNo}?p=${encodeObj}`,
+      `/d/${formatRedirectTitleLine(titleLine)}${designNo}?p=${encodeURIComponent(encodeObj)}`,
     );
   };
 
