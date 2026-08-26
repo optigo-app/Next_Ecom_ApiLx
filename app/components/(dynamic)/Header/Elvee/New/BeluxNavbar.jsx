@@ -151,31 +151,42 @@ const BeluxNavbar = ({ storeInit: storeinit, logos }) => {
     });
   }, [isHovered, isScrolled, controls]);
 
+  // Tracks whether we have already successfully loaded and rendered the menu.
+  // Prevents redundant API calls when islogin / finalId changes but the menu
+  // data is store-level (same for all users) and already in memory.
+  const menuLoadedRef = useRef(false);
+
   useEffect(() => {
     let isMounted = true;
 
     const loadMenu = async () => {
-      const cacheKey = `beluxMenu_${finalId}`;
+      // ── Store-level cache key ──────────────────────────────────────────────
+      // The menu navigation structure is identical for all users of the same
+      // store (guest or logged-in). Using a store-scoped key means a login /
+      // logout event never busts the cache or triggers a new API call.
+      const storeKey = storeinit?.FrontEnd_RegNo ?? storeinit?.PackageId ?? "default";
+      const cacheKey = `beluxMenu_store_${storeKey}`;
 
-      // 1. Session Cache Check (Instant browser memory/session read)
-      let menuData = getSession(cacheKey);
-      if (menuData && Array.isArray(menuData) && menuData.length > 0) {
-        if (isMounted) {
-          setMenuItems(buildMenuItems(menuData));
-          setMenuLoading(false);
-        }
+      // 1. Guard: if menu is already rendered, skip entirely (login-change re-run)
+      if (menuLoadedRef.current) {
+        if (isMounted) setMenuLoading(false);
         return;
       }
 
-      // 2. Server File Cache Check (Fast server disk cache read)
+      // Only show skeleton when we truly have nothing cached yet
+      if (isMounted) setMenuLoading(true);
+
+      let menuData = null;
+
+      // 2. Server File Cache Check (fast disk/edge cache read)
       try {
         const cacheRes = await readCache(cacheKey);
         if (cacheRes?.cached && Array.isArray(cacheRes.data) && cacheRes.data.length > 0) {
           menuData = cacheRes.data;
-          setSession(cacheKey, menuData);
           if (isMounted) {
             setMenuItems(buildMenuItems(menuData));
             setMenuLoading(false);
+            menuLoadedRef.current = true;
           }
           return;
         }
@@ -196,7 +207,6 @@ const BeluxNavbar = ({ storeInit: storeinit, logos }) => {
 
         if (rawData.length > 0 && !hasError) {
           menuData = rawData;
-          setSession(cacheKey, rawData);
           writeCache(cacheKey, rawData).catch(console.error);
         }
       } catch (err) {
@@ -205,18 +215,20 @@ const BeluxNavbar = ({ storeInit: storeinit, logos }) => {
 
       if (isMounted && menuData?.length) {
         setMenuItems(buildMenuItems(menuData));
+        menuLoadedRef.current = true;
       }
 
       if (isMounted) setMenuLoading(false);
     };
 
-    setMenuLoading(true);
     loadMenu();
 
     return () => {
       isMounted = false;
     };
-    // Intentional: re-run when user identity / finalId changes
+    // islogin / loginUserDetail kept so a B2B site (IsB2BWebsite=1) that truly
+    // serves different menus per user can still re-check. The menuLoadedRef guard
+    // above short-circuits immediately when the menu was already loaded.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [islogin, loginUserDetail, finalId]);
 

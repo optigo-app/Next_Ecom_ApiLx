@@ -270,9 +270,10 @@ const MaxTrending = ({ data, storeInit }) => {
     let obj = {
       a: item?.autocode,
       b: item?.designno,
-      m: loginUserDetail?.MetalId,
-      d: loginUserDetail?.cmboDiaQCid,
-      c: loginUserDetail?.cmboCSQCid,
+      // fallback to storeInit so guest users (not logged in) still get valid pricing params
+      m: loginUserDetail?.MetalId ?? storeInit?.MetalId,
+      d: loginUserDetail?.cmboDiaQCid ?? storeInit?.cmboDiaQCid,
+      c: loginUserDetail?.cmboCSQCid ?? storeInit?.cmboCSQCid,
       f: {},
       l: item?.ImageExtension,
       count: item?.ImageCount,
@@ -282,6 +283,8 @@ const MaxTrending = ({ data, storeInit }) => {
       title: item?.TitleLine ?? "",
       price: item?.UnitCostWithMarkUp ?? 0,
       nwt: item?.Nwt ?? 0,
+      ArticleNo: item?.ArticleNo ?? item?.designno ?? "",
+      ArticleId: item?.ArticleId ?? item?.id ?? null,
     };
     let encodeObj = compressAndEncode(JSON.stringify(obj));
     push(
