@@ -107,8 +107,16 @@ export default function BestSaller({ noHeading = false, storeInit }) {
   const compressAndEncode = (inputString) => {
     try {
       const uint8Array = new TextEncoder().encode(inputString);
-      const compressed = Pako.deflate(uint8Array, { to: "string" });
-      return btoa(String.fromCharCode.apply(null, compressed));
+      const compressed = Pako.deflate(uint8Array);
+      if (typeof compressed === "string") {
+        return btoa(compressed);
+      }
+      let binary = "";
+      const len = compressed.byteLength;
+      for (let i = 0; i < len; i++) {
+        binary += String.fromCharCode(compressed[i]);
+      }
+      return btoa(binary);
     } catch (error) {
       console.error("Error compressing and encoding:", error);
       return null;
@@ -121,13 +129,14 @@ export default function BestSaller({ noHeading = false, storeInit }) {
     const titleLine = item?.TitleLine;
     const imageExtension = item?.ImageExtension || "webp";
     const cdnFol = storeInit?.CDNDesignImageFol || "";
+    const itemMetalColorId = item?.MetalColorid ?? item?.MetalColorId ?? item?.metalcolorid;
     let imgUrl = (cdnFol && designNo) ? `${cdnFol}${designNo}~1.${imageExtension}` : "";
     if (item?.ImageVideoDetail && item.ImageVideoDetail !== "0") {
       try {
         const parsed = typeof item.ImageVideoDetail === "string" ? JSON.parse(item.ImageVideoDetail) : item.ImageVideoDetail;
         if (Array.isArray(parsed) && parsed.length > 0) {
           const mtColorLocal = getSession("MetalColorCombo") || [];
-          const targetColorObj = mtColorLocal.find(ele => Number(ele.id) === Number(item?.MetalColorid));
+          const targetColorObj = mtColorLocal.find(ele => Number(ele.id) === Number(itemMetalColorId));
           const targetColorCode = targetColorObj?.colorcode || item?.MetalColor;
 
           let matchedColorImg = null;
@@ -154,17 +163,27 @@ export default function BestSaller({ noHeading = false, storeInit }) {
     const obj = {
       a: autoCode,
       b: designNo,
-      m: loginUserDetail?.MetalId,
-      d: loginUserDetail?.cmboDiaQCid,
-      c: loginUserDetail?.cmboCSQCid,
+      m: loginUserDetail?.MetalId ?? storeInit?.MetalId,
+      d: loginUserDetail?.cmboDiaQCid ?? storeInit?.cmboDiaQCid,
+      c: loginUserDetail?.cmboCSQCid ?? storeInit?.cmboCSQCid,
       f: {},
+      g: {},
       img: imgUrl,
+      ArticleNo: item?.ArticleNo ?? "",
+      ArticleId: item?.ArticleId ?? null ?? "",
+      title: titleLine ?? "",
+      nwt: item?.Nwt ?? 0,
+      price: item?.UnitCostWithMarkUp ?? 0,
+      mediaDet: item?.ImageVideoDetail ?? "",
+      metalColorId: itemMetalColorId ?? loginUserDetail?.MetalColorId ?? storeInit?.MetalColorId ?? null,
       l: imageExtension,
-      count: item?.ImageCount || 0,
+      count: item?.ImageCount || 1,
     };
-    sessionStorage.setItem("scrollToProduct1", `product-${index}`);
+    if (index !== undefined) {
+      sessionStorage.setItem("scrollToProduct1", `product-${index}`);
+    }
     const encodeObj = compressAndEncode(JSON.stringify(obj));
-    navigation.push(`/d/${formatRedirectTitleLine(titleLine)}${designNo}?p=${encodeObj}`);
+    navigation.push(`/d/${formatRedirectTitleLine(titleLine)}${designNo}?p=${encodeURIComponent(encodeObj)}`);
   };
 
   // ── Early return ────────────────────────────────────────────────────────

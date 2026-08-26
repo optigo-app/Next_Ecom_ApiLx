@@ -20,6 +20,7 @@ import { ColorStoneQualityColorComboAPI } from "@/app/(core)/utils/API/Combo/Col
 import { MetalColorCombo } from "@/app/(core)/utils/API/Combo/MetalColorCombo";
 import { CartAndWishListAPI } from "@/app/(core)/utils/API/CartAndWishList/CartAndWishListAPI";
 import { RemoveCartAndWishAPI } from "@/app/(core)/utils/API/RemoveCartandWishAPI/RemoveCartAndWishAPI";
+import { GetCountAPI } from "@/app/(core)/utils/API/GetCount/GetCountAPI";
 import { formatRedirectTitleLine, formatter } from "@/app/(core)/utils/Glob_Functions/GlobalFunction";
 import useGlobalPreventSave from "@/app/(core)/utils/Glob_Functions/useGlobalPreventSave";
 import FilterSidebar from "./New/NewSideFilter";
@@ -211,10 +212,16 @@ const ProductList = ({ storeinit,
   const compressAndEncode = (inputString) => {
     try {
       const uint8Array = new TextEncoder().encode(inputString);
-
-      const compressed = Pako.deflate(uint8Array, { to: "string" });
-
-      return btoa(String.fromCharCode.apply(null, compressed));
+      const compressed = Pako.deflate(uint8Array);
+      if (typeof compressed === "string") {
+        return btoa(compressed);
+      }
+      let binary = "";
+      const len = compressed.byteLength;
+      for (let i = 0; i < len; i++) {
+        binary += String.fromCharCode(compressed[i]);
+      }
+      return btoa(binary);
     } catch (error) {
       console.error("Error compressing and encoding:", error);
       return null;
@@ -1174,85 +1181,7 @@ const ProductList = ({ storeinit,
     handelFilterClearAll();
   }, [location]); // location (pathname) changes on navigation — safe replacement for location.key
 
-  const handleCartandWish = async (e, ele, type) => {
-    const prodObj = {
-      autocode: ele?.autocode,
-      Metalid: selectedMetalId ?? ele?.MetalPurityid,
-      MetalColorId: ele?.MetalColorid,
-      DiaQCid: selectedDiaId ?? loginUserDetail?.cmboDiaQCid,
-      CsQCid: selectedCsId ?? loginUserDetail?.cmboCSQCid,
-      Size: ele?.DefaultSize,
-      Unitcost: ele?.UnitCost,
-      markup: ele?.DesignMarkUp,
-      UnitCostWithmarkup: ele?.UnitCostWithMarkUp,
-      Remark: "",
-      Metal_Cost: ele?.Metal_Cost,
-      Labour_Cost: ele?.Labour_Cost,
-      Diamond_Cost: ele?.Diamond_Cost,
-      Diamond_SettingCost: ele?.Diamond_SettingCost,
-      ColorStone_Cost: ele?.ColorStone_Cost,
-      ColorStone_SettingCost: ele?.ColorStone_SettingCost,
-      Misc_Cost: ele?.Misc_Cost,
-      Misc_SettingCost: ele?.Misc_SettingCost,
-      Other_Cost: ele?.Other_Cost,
-      SolPrice: ele?.SolPrice,
-      ArticleNo: ele?.ArticleNo,
-    };
 
-    if (type === "Wish") {
-      setWishArr((prev) => ({
-        ...prev,
-        [ele?.autocode]: e.target.checked,
-      }));
-    }
-    if (type === "Cart") {
-      setCartArr((prev) => ({
-        ...prev,
-        [ele?.autocode]: e.target.checked,
-      }));
-    }
-
-    if (e.target.checked) {
-      await CartAndWishListAPI(type, prodObj, cookie)
-        .then((res) => {
-          if (res) {
-            let cartC = res?.Data?.rd[0]?.Cartlistcount;
-            let wishC = res?.Data?.rd[0]?.Wishlistcount;
-            setWishCountNum(wishC);
-            setCartCountNum(cartC);
-            if (type === "Cart") {
-              broadcast("UPDATE_CART_COUNT", cartC, prodObj?.autocode, "cart", true);
-            } else {
-              broadcast("UPDATE_WISH_COUNT", wishC, prodObj?.autocode, "wish", true);
-            }
-          }
-        })
-        .catch((err) => console.log("addtocartwishErr", err));
-    } else {
-      await RemoveCartAndWishAPI(
-        type,
-        ele?.autocode,
-        cookie,
-        false,
-        "",
-        ele?.ArticleNo
-      )
-        .then((res1) => {
-          if (res1) {
-            let cartC = res1?.Data?.rd[0]?.Cartlistcount;
-            let wishC = res1?.Data?.rd[0]?.Wishlistcount;
-            setWishCountNum(wishC);
-            setCartCountNum(cartC);
-            if (type === "Cart") {
-              broadcast("UPDATE_CART_COUNT", cartC, prodObj?.autocode, "cart", false);
-            } else {
-              broadcast("UPDATE_WISH_COUNT", wishC, prodObj?.autocode, "wish", false);
-            }
-          }
-        })
-        .catch((err) => console.log("removecartwishErr", err));
-    }
-  };
 
   const getDesignVideoFol = storeinit?.CDNVPath;
 
@@ -1398,6 +1327,192 @@ const ProductList = ({ storeinit,
         behavior: "smooth",
       });
     }, 100);
+  };
+
+  const [cartAndWishListRd1, setCartAndWishListRd1] = useState([]);
+
+  const syncCartAndWishStates = (rd1Array = []) => {
+    const newCartObj = {};
+    const newWishObj = {};
+    rd1Array.forEach((item) => {
+      const autocodeKey = item?.autocode ? String(item.autocode) : null;
+      const articleKey = item?.ArticleNo ? String(item.ArticleNo) : null;
+      const designKey = item?.designno ? String(item.designno) : null;
+
+      const keys = [autocodeKey, articleKey, designKey].filter(Boolean);
+
+      keys.forEach((key) => {
+        if (item?.IsWishList === 1) {
+          newWishObj[key] = true;
+        } else if (item?.IsWishList === 0) {
+          newCartObj[key] = true;
+        }
+      });
+    });
+    setCartArr((prev) => ({ ...prev, ...newCartObj }));
+    setWishArr((prev) => ({ ...prev, ...newWishObj }));
+  };
+
+  const fetchGetCountData = async () => {
+    if (!finalId) return;
+    try {
+      const res = await GetCountAPI(finalId);
+      if (res) {
+        if (res?.cartcount !== undefined) setCartCountNum(res.cartcount);
+        if (res?.wishcount !== undefined) setWishCountNum(res.wishcount);
+        if (res?.rd1) {
+          setCartAndWishListRd1(res.rd1);
+          syncCartAndWishStates(res.rd1);
+        }
+      }
+    } catch (err) {
+      console.log("fetchGetCountErr", err);
+    }
+  };
+
+  useEffect(() => {
+    if (finalId) {
+      fetchGetCountData();
+    }
+  }, [finalId]);
+
+  const handleCartandWish = async (e, ele, type) => {
+    if (e) {
+      if (typeof e.stopPropagation === "function") e.stopPropagation();
+    }
+
+    const prodObj = {
+      autocode: ele?.autocode,
+      Metalid: selectedMetalId ?? ele?.MetalPurityid,
+      MetalColorId: ele?.MetalColorid,
+      DiaQCid: selectedDiaId ?? loginUserDetail?.cmboDiaQCid,
+      CsQCid: selectedCsId ?? loginUserDetail?.cmboCSQCid,
+      Size: ele?.DefaultSize,
+      Unitcost: ele?.UnitCost,
+      markup: ele?.DesignMarkUp,
+      UnitCostWithmarkup: ele?.UnitCostWithMarkUp,
+      Remark: "",
+      Metal_Cost: ele?.Metal_Cost,
+      Labour_Cost: ele?.Labour_Cost,
+      Diamond_Cost: ele?.Diamond_Cost,
+      Diamond_SettingCost: ele?.Diamond_SettingCost,
+      ColorStone_Cost: ele?.ColorStone_Cost,
+      ColorStone_SettingCost: ele?.ColorStone_SettingCost,
+      Misc_Cost: ele?.Misc_Cost,
+      Misc_SettingCost: ele?.Misc_SettingCost,
+      Other_Cost: ele?.Other_Cost,
+      SolPrice: ele?.SolPrice,
+      ArticleNo: ele?.ArticleNo,
+    };
+
+    const isChecked = e?.target?.checked !== undefined ? Boolean(e.target.checked) : true;
+    const autocodeKey = ele?.autocode ? String(ele.autocode) : null;
+    const articleKey = ele?.ArticleNo ? String(ele.ArticleNo) : null;
+    const designKey = ele?.designno ? String(ele.designno) : null;
+    const keys = [autocodeKey, articleKey, designKey].filter(Boolean);
+
+    keys.forEach((key) => {
+      if (type === "Wish") {
+        setWishArr((prev) => ({ ...prev, [key]: isChecked }));
+      } else if (type === "Cart") {
+        setCartArr((prev) => ({ ...prev, [key]: isChecked }));
+      }
+    });
+
+    setCartAndWishListRd1((prevRd1 = []) => {
+      let updated = [...prevRd1];
+      const targetState = type === "Wish" ? 1 : 0;
+      const existingIndex = updated.findIndex((item) => {
+        if (Number(item?.IsWishList) !== targetState) return false;
+        if (ele?.autocode && item?.autocode && String(item.autocode) === String(ele.autocode)) return true;
+        if (ele?.ArticleNo && item?.ArticleNo && String(item.ArticleNo) === String(ele.ArticleNo)) return true;
+        if (ele?.designno && item?.designno && String(item.designno) === String(ele.designno)) return true;
+        return false;
+      });
+
+      if (isChecked) {
+        if (existingIndex < 0) {
+          updated.push({
+            autocode: ele?.autocode,
+            designno: ele?.designno,
+            ArticleNo: ele?.ArticleNo,
+            IsWishList: targetState,
+          });
+        }
+      } else {
+        if (existingIndex >= 0) {
+          updated.splice(existingIndex, 1);
+        }
+      }
+      return updated;
+    });
+
+    if (isChecked) {
+      await CartAndWishListAPI(type, prodObj, cookie)
+        .then((res) => {
+          if (res) {
+            let cartC = res?.Data?.rd[0]?.Cartlistcount;
+            let wishC = res?.Data?.rd[0]?.Wishlistcount;
+            if (wishC !== undefined) setWishCountNum(wishC);
+            if (cartC !== undefined) setCartCountNum(cartC);
+            if (type === "Cart") {
+              broadcast(
+                "UPDATE_CART_COUNT",
+                cartC,
+                prodObj?.autocode,
+                "cart",
+                true,
+              );
+            } else {
+              broadcast(
+                "UPDATE_WISH_COUNT",
+                wishC,
+                prodObj?.autocode,
+                "wish",
+                true,
+              );
+            }
+            fetchGetCountData();
+          }
+        })
+        .catch((err) => console.log("addtocartwishErr", err));
+    } else {
+      await RemoveCartAndWishAPI(
+        type,
+        ele?.autocode,
+        cookie,
+        false,
+        "",
+        ele?.ArticleNo,
+      )
+        .then((res1) => {
+          if (res1) {
+            let cartC = res1?.Data?.rd[0]?.Cartlistcount;
+            let wishC = res1?.Data?.rd[0]?.Wishlistcount;
+            if (wishC !== undefined) setWishCountNum(wishC);
+            if (cartC !== undefined) setCartCountNum(cartC);
+            if (type === "Cart") {
+              broadcast(
+                "UPDATE_CART_COUNT",
+                cartC,
+                prodObj?.autocode,
+                "cart",
+                false,
+              );
+            } else {
+              broadcast(
+                "UPDATE_WISH_COUNT",
+                wishC,
+                prodObj?.autocode,
+                "wish",
+                false,
+              );
+            }
+            fetchGetCountData();
+          }
+        })
+        .catch((err) => console.log("removecartwishErr", err));
+    }
   };
 
   useEffect(() => {

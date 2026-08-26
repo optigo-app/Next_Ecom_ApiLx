@@ -59,13 +59,17 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
 
   const initialDecodeUrl = useMemo(() => {
     const rawP = unwrappedSearchParams?.p || (typeof window !== "undefined" ? new URLSearchParams(window.location.search).get("p") : null);
+    console.log("[PRODUCT DETAIL LOG] rawP:", rawP);
     if (rawP) {
       const decompressed = decodeAndDecompress(rawP);
+      console.log("[PRODUCT DETAIL LOG] decompressed from rawP:", decompressed);
       if (decompressed) return decompressed;
     }
     const result = ParseAndDecodeSearchParams(unwrappedSearchParams);
     const navVal = result[0]?.split("=")[1];
-    return decodeAndDecompress(navVal);
+    const decompressed = decodeAndDecompress(navVal);
+    console.log("[PRODUCT DETAIL LOG] decompressed from searchParams:", decompressed);
+    return decompressed;
   }, [unwrappedSearchParams]);
 
   const hasPreHydratedData = Boolean(
@@ -207,8 +211,13 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
             if (cdnThumb) {
               const numCount = (count && Number(count) > 0) ? Number(count) : 1;
               const ext = l || "webp";
+              const hasColorInImg = Boolean(
+                initialDecodeUrl?.img &&
+                sessionColorCode &&
+                initialDecodeUrl.img.toLowerCase().includes(`~${sessionColorCode.toLowerCase()}.`)
+              );
               const thumbPath = Array.from({ length: numCount }, (_, i) => {
-                const suffix = sessionColorCode
+                const suffix = (sessionColorCode && hasColorInImg)
                   ? `${b}~${i + 1}~${sessionColorCode}`
                   : `${b}~${i + 1}`;
                 return {
@@ -219,7 +228,7 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
               setPdThumbImg(thumbPath);
               setThumbImgIndex(0);
 
-              const mainSuffix = sessionColorCode
+              const mainSuffix = (sessionColorCode && hasColorInImg)
                 ? `${b}~1~${sessionColorCode}`
                 : `${b}~1`;
               const mainUrl = initialDecodeUrl?.img || `${cdnFol}${mainSuffix}.${ext}`;
@@ -2146,8 +2155,8 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
                     })),
                   ] || []).filter(item => item.src && !item.src.includes("undefined"))
                 }
-                isMediaReady={mediaBuildDone}
-                mediaBuildDone={mediaBuildDone}
+                isMediaReady={derivedIsMediaReady}
+                mediaBuildDone={derivedMediaBuildDone}
                 HandleImageDialogOpen={HandleImageDialogOpen}
               />
               <RightSide

@@ -156,13 +156,14 @@ export default function Trending({ storeInit }) {
   // ── Navigation to PDP ─────────────────────────────────────────────────────
   const handleNavigation = (item) => {
     const cdnFol = storeInit?.CDNDesignImageFol || "";
+    const itemMetalColorId = item?.MetalColorid ?? item?.MetalColorId ?? item?.metalcolorid;
     let imgUrl = item?.src || (cdnFol && item?.designno ? `${cdnFol}${item?.designno}~1.${item?.ImageExtension || "webp"}` : "");
     if (item?.ImageVideoDetail && item.ImageVideoDetail !== "0") {
       try {
         const parsed = typeof item.ImageVideoDetail === "string" ? JSON.parse(item.ImageVideoDetail) : item.ImageVideoDetail;
         if (Array.isArray(parsed) && parsed.length > 0) {
           const mtColorLocal = getSession("MetalColorCombo") || [];
-          const targetColorObj = mtColorLocal.find(ele => Number(ele.id) === Number(item?.MetalColorid));
+          const targetColorObj = mtColorLocal.find(ele => Number(ele.id) === Number(itemMetalColorId));
           const targetColorCode = targetColorObj?.colorcode || item?.MetalColor;
 
           let matchedColorImg = null;
@@ -189,13 +190,21 @@ export default function Trending({ storeInit }) {
     let obj = {
       a: item?.autocode,
       b: item?.designno,
-      m: loginUserDetail?.MetalId,
-      d: loginUserDetail?.cmboDiaQCid,
-      c: loginUserDetail?.cmboCSQCid,
+      m: loginUserDetail?.MetalId ?? storeInit?.MetalId,
+      d: loginUserDetail?.cmboDiaQCid ?? storeInit?.cmboDiaQCid,
+      c: loginUserDetail?.cmboCSQCid ?? storeInit?.cmboCSQCid,
       f: {},
-      l: item?.ImageExtension,
-      count: item?.ImageCount,
+      g: {},
       img: imgUrl,
+      ArticleNo: item?.ArticleNo ?? "",
+      ArticleId: item?.ArticleId ?? null ?? "",
+      title: item?.TitleLine ?? "",
+      nwt: item?.Nwt ?? 0,
+      price: item?.UnitCostWithMarkUp ?? 0,
+      mediaDet: item?.ImageVideoDetail ?? "",
+      metalColorId: itemMetalColorId ?? loginUserDetail?.MetalColorId ?? storeInit?.MetalColorId ?? null,
+      l: item?.ImageExtension || "webp",
+      count: item?.ImageCount || 1,
     };
     let encodeObj = compressAndEncode(JSON.stringify(obj));
     push(`/d/${formatRedirectTitleLine(item?.TitleLine)}${item?.designno}?p=${encodeURIComponent(encodeObj)}`);

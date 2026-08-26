@@ -875,14 +875,58 @@ const useCart = () => {
   const compressAndEncode = (inputString) => {
     try {
       const uint8Array = new TextEncoder().encode(inputString);
-
-      const compressed = pako.deflate(uint8Array, { to: "string" });
-
-      return btoa(String.fromCharCode.apply(null, compressed));
+      const compressed = pako.deflate(uint8Array);
+      if (typeof compressed === "string") {
+        return btoa(compressed);
+      }
+      let binary = "";
+      const len = compressed.byteLength;
+      for (let i = 0; i < len; i++) {
+        binary += String.fromCharCode(compressed[i]);
+      }
+      return btoa(binary);
     } catch (error) {
       console.error("Error compressing and encoding:", error);
       return null;
     }
+  };
+
+  const getCardImageUrl = (data, storeInit) => {
+    const cdnFol = storeInit?.CDNDesignImageFol || "";
+    if (!cdnFol || !data?.designno) return "";
+    const ext = data?.ImageExtension || "webp";
+
+    if (data?.ImageVideoDetail && data.ImageVideoDetail !== "0") {
+      try {
+        const parsed = typeof data.ImageVideoDetail === "string" 
+          ? JSON.parse(data.ImageVideoDetail) 
+          : data.ImageVideoDetail;
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          const targetColorId = data?.metalcolorid || data?.MetalColorid;
+          const mtColorLocal = getSession("MetalColorCombo") || metalColorCombo || [];
+          const targetColorObj = mtColorLocal.find(ele => Number(ele.id) === Number(targetColorId));
+          const targetColorCode = targetColorObj?.colorcode || data?.metalcolorname || data?.MetalColor;
+
+          if (targetColorCode) {
+            const targetLower = targetColorCode.toLowerCase().trim();
+            const matchedColorImg = parsed.find(item => {
+              if (Number(item?.TI) !== 2 || !item?.CN) return false;
+              const cnLower = item.CN.toLowerCase().trim();
+              return cnLower === targetLower || cnLower.includes(targetLower) || targetLower.includes(cnLower);
+            });
+            if (matchedColorImg) {
+              return `${cdnFol}${data.designno}~${matchedColorImg.Nm}~${matchedColorImg.CN}.${matchedColorImg.Ex || ext}`;
+            }
+          }
+
+          const normalImg = parsed.find(item => Number(item?.TI) === 1);
+          if (normalImg) {
+            return `${cdnFol}${data.designno}~${normalImg.Nm}.${normalImg.Ex || ext}`;
+          }
+        }
+      } catch (e) {}
+    }
+    return `${cdnFol}${data.designno}~1.${ext}`;
   };
 
   const handleMoveToDetail = (cartData) => {
@@ -890,8 +934,9 @@ const useCart = () => {
     const storeInit = getSession("storeInit");
     const createAndNavigate = (obj) => {
       const encodedObj = compressAndEncode(JSON.stringify(obj));
+      console.log("NAVIGATE FROM CART:", { cartData, obj, encodedObj });
       navigate(
-        `/d/${formatRedirectTitleLine(cartData?.TitleLine)}${cartData?.designno}?p=${encodeURIComponent(encodedObj)}`,
+        `/d/${formatRedirectTitleLine(cartData?.TitleLine)}${cartData?.designno}?p=${encodedObj}`,
       );
     };
 
@@ -906,27 +951,8 @@ const useCart = () => {
         : (cartData?.cmboCSQCid || logindata?.cmboCSQCid);
 
     const targetColorId = cartData?.metalcolorid || cartData?.MetalColorid;
-    const mtColorLocal = getSession("MetalColorCombo") || metalColorCombo || [];
-    const targetColorObj = mtColorLocal.find(
-      (ele) => Number(ele.id) === Number(targetColorId)
-    );
-    const colorCode = targetColorObj?.colorcode || cartData?.metalcolorname || cartData?.MetalColor;
-    const cdnFol = storeInit?.CDNDesignImageFol || "";
     const ext = cartData?.ImageExtension || "webp";
-    let imgUrl = "";
-    if (cartData?.ImageVideoDetail && cartData.ImageVideoDetail !== "0") {
-      try {
-        const parsed = typeof cartData.ImageVideoDetail === "string" ? JSON.parse(cartData.ImageVideoDetail) : cartData.ImageVideoDetail;
-        if (Array.isArray(parsed) && colorCode) {
-          const colorLower = colorCode.toLowerCase().trim();
-          const colorImg = parsed.find(x => Number(x?.TI) === 2 && (x?.CN || "").toLowerCase().trim() === colorLower);
-          if (colorImg) imgUrl = `${cdnFol}${cartData.designno}~${colorImg.Nm}~${colorImg.CN}.${colorImg.Ex || ext}`;
-        }
-      } catch {}
-    }
-    if (!imgUrl && cartData?.designno && cdnFol) {
-      imgUrl = `${cdnFol}${cartData.designno}~1${colorCode ? `~${colorCode}` : ""}.${ext}`;
-    }
+    const imgUrl = getCardImageUrl(cartData, storeInit);
 
     const commonObj = {
       a: cartData?.autocode,

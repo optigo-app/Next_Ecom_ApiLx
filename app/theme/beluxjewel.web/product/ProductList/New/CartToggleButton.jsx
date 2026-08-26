@@ -6,9 +6,13 @@ import LocalMallIcon from "@mui/icons-material/LocalMall";
 
 const CartToggleButton = ({ productData, cartArr, handleCartandWish }) => {
   const isInCart =
-    cartArr?.[productData?.autocode] ?? productData?.IsInCart === 1
-      ? true
-      : false;
+    (productData?.autocode && cartArr?.[productData.autocode] !== undefined
+      ? cartArr[productData.autocode]
+      : productData?.ArticleNo && cartArr?.[productData.ArticleNo] !== undefined
+      ? cartArr[productData.ArticleNo]
+      : productData?.designno && cartArr?.[productData.designno] !== undefined
+      ? cartArr[productData.designno]
+      : productData?.IsInCart === 1) ? true : false;
 
   return (
     <Box

@@ -17,7 +17,7 @@ import { useBroadcaster } from "@/app/(core)/contexts/BoardCastContext";
 import { useStore } from "@/app/(core)/contexts/StoreProvider";
 import Cookies from "js-cookie";
 
-const CartItem = ({ item, index, CartCardImageFunc, onSelect, CurrencyData, showRemark1, decodeEntities, isSelected, selectedItem, selectedItemsLength, isActive, border, handleBorder, multiSelect, onRemove, itemLength, showRemark, productRemark, handleAddRemark, handleRemarkChange, handleSave, handleCancel, openHandleUpdateCartModal }) => {
+const CartItem = ({ item, index, CartCardImageFunc, onSelect, handleMoveToDetail, CurrencyData, showRemark1, decodeEntities, isSelected, selectedItem, selectedItemsLength, isActive, border, handleBorder, multiSelect, onRemove, itemLength, showRemark, productRemark, handleAddRemark, handleRemarkChange, handleSave, handleCancel, openHandleUpdateCartModal }) => {
   const [remark, setRemark] = useState(item.Remarks || "");
   const noImageFound = "/image-not-found.jpg";
   const { setCartCountNum, loginUserDetail, storeInit } = useStore();
@@ -27,6 +27,13 @@ const CartItem = ({ item, index, CartCardImageFunc, onSelect, CurrencyData, show
   const { broadcast } = useBroadcaster();
   // const [countstatus, setCountStatus] = useState();
 
+  const handleItemClick = () => {
+    if (typeof handleMoveToDetail === "function") {
+      handleMoveToDetail(item);
+    } else if (typeof onSelect === "function") {
+      onSelect(item);
+    }
+  };
   
   const isLoading = item?.loading;
   
@@ -147,6 +154,7 @@ const CartItem = ({ item, index, CartCardImageFunc, onSelect, CurrencyData, show
 
       {/* Image Wrapper */}
       <Box
+        onClick={handleItemClick}
         sx={{
           width: "100%",
           height: "100%",
@@ -161,6 +169,7 @@ const CartItem = ({ item, index, CartCardImageFunc, onSelect, CurrencyData, show
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
+          cursor: "pointer",
         }}
       >
         {isLoading === true ? (
@@ -173,12 +182,13 @@ const CartItem = ({ item, index, CartCardImageFunc, onSelect, CurrencyData, show
             loading='eager'
             draggable={false}
             onContextMenu={(e) => e.preventDefault()}
-            onClick={() => onSelect(item)}
+            onClick={handleItemClick}
             sx={{
               width: "100%",
               height: "100%",
               objectFit: "contain",
               mixBlendMode: "multiply",
+              cursor: "pointer",
               '&:focus': { outline: 'none' },
               '&:active': { outline: 'none' },
             }}
@@ -199,6 +209,7 @@ const CartItem = ({ item, index, CartCardImageFunc, onSelect, CurrencyData, show
       <Box sx={{ width: "100%", px: 2, py: 1, display: "flex", flexDirection: "column", gap: 1, boxSizing: 'border-box' }}>
         <Typography
           variant="body1"
+          onClick={handleItemClick}
           sx={{
             fontWeight: 600,
             lineHeight: 1.35,
@@ -210,6 +221,7 @@ const CartItem = ({ item, index, CartCardImageFunc, onSelect, CurrencyData, show
             textOverflow: "ellipsis",
             minHeight: "1.3em",
             fontSize: { xs: "0.82rem", sm: "0.9rem", md: "0.94rem", lg: "1rem" },
+            cursor: "pointer",
           }}
         >
           {formatTitleLine(item?.TitleLine)}

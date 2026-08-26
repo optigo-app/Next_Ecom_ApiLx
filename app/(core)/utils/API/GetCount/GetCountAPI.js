@@ -31,7 +31,10 @@ export const GetCountAPI = async (visiterId) => {
 
     try {
         const res = await CommonAPI(body);
-        ReVal = res?.Data?.rd[0];
+        ReVal = {
+            ...(res?.Data?.rd[0] || {}),
+            rd1: res?.Data?.rd1 || []
+        };
         return ReVal;
     } catch (err) {
         console.log("GetCountErr", err);

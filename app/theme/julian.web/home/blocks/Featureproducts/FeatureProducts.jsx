@@ -460,15 +460,57 @@ export default function ChopardCarousel() {
   // ── PDP navigation (same compress/encode pattern as your other components) ─
   const handleNavigateToProduct = (product) => {
     const item = product.raw;
+    const cdnFol = storeInit?.CDNDesignImageFol || "";
+    const itemMetalColorId = item?.MetalColorid ?? item?.MetalColorId ?? item?.metalcolorid;
+    let imgUrl = item?.src || (cdnFol && item?.designno ? `${cdnFol}${item?.designno}~1.${item?.ImageExtension || "webp"}` : "");
+    if (item?.ImageVideoDetail && item.ImageVideoDetail !== "0") {
+      try {
+        const parsed = typeof item.ImageVideoDetail === "string" ? JSON.parse(item.ImageVideoDetail) : item.ImageVideoDetail;
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          const mtColorLocal = getSession("MetalColorCombo") || [];
+          const targetColorObj = mtColorLocal.find(ele => Number(ele.id) === Number(itemMetalColorId));
+          const targetColorCode = targetColorObj?.colorcode || item?.MetalColor;
+
+          let matchedColorImg = null;
+          if (targetColorCode) {
+            const targetLower = targetColorCode.toLowerCase().trim();
+            matchedColorImg = parsed.find(i => {
+              if (Number(i?.TI) !== 2 || !i?.CN) return false;
+              const cnLower = i.CN.toLowerCase().trim();
+              return cnLower === targetLower || cnLower.includes(targetLower) || targetLower.includes(cnLower);
+            });
+          }
+
+          if (matchedColorImg) {
+            imgUrl = `${cdnFol}${item?.designno}~${matchedColorImg.Nm}~${matchedColorImg.CN}.${matchedColorImg.Ex || item?.ImageExtension || "webp"}`;
+          } else {
+            const normalImg = parsed.find(i => Number(i?.TI) === 1);
+            if (normalImg) {
+              imgUrl = `${cdnFol}${item?.designno}~${normalImg.Nm}.${normalImg.Ex || item?.ImageExtension || "webp"}`;
+            }
+          }
+        }
+      } catch (e) {}
+    }
+
     const obj = {
       a: item?.autocode,
       b: item?.designno,
-      m: loginUserDetail?.MetalId,
-      d: loginUserDetail?.cmboDiaQCid,
-      c: loginUserDetail?.cmboCSQCid,
+      m: loginUserDetail?.MetalId ?? storeInit?.MetalId,
+      d: loginUserDetail?.cmboDiaQCid ?? storeInit?.cmboDiaQCid,
+      c: loginUserDetail?.cmboCSQCid ?? storeInit?.cmboCSQCid,
       f: {},
-      l: item?.ImageExtension,
-      count: item?.ImageCount,
+      g: {},
+      img: imgUrl,
+      ArticleNo: item?.ArticleNo ?? "",
+      ArticleId: item?.ArticleId ?? null ?? "",
+      title: item?.TitleLine ?? "",
+      nwt: item?.Nwt ?? 0,
+      price: item?.UnitCostWithMarkUp ?? 0,
+      mediaDet: item?.ImageVideoDetail ?? "",
+      metalColorId: itemMetalColorId ?? loginUserDetail?.MetalColorId ?? storeInit?.MetalColorId ?? null,
+      l: item?.ImageExtension || "webp",
+      count: item?.ImageCount || 1,
     };
     const encodeObj = compressAndEncode(JSON.stringify(obj));
     push(`${product.href}?p=${encodeURIComponent(encodeObj)}`);

@@ -8,6 +8,7 @@ const CartList = ({
   openHandleUpdateCartModal,
   CartCardImageFunc,
   onSelect,
+  handleMoveToDetail,
   CurrencyData,
   decodeEntities,
   selectedItem,
@@ -29,7 +30,7 @@ const CartList = ({
       {items?.map((item, index) => (
         <Grid size={{
           xs: 12, sm: 6, md: 4, lg: 3
-        }} key={item} >
+        }} key={`${item?.autocode || item?.id || 'cart'}-${index}`} >
           <CartItem
             item={item}
             index={index}
@@ -37,6 +38,7 @@ const CartList = ({
             CurrencyData={CurrencyData}
             decodeEntities={decodeEntities}
             onSelect={onSelect}
+            handleMoveToDetail={handleMoveToDetail}
             selectedItem={selectedItem}
             selectedItemsLength={selectedItems?.length}
             isActive={selectedItems?.includes(item)}

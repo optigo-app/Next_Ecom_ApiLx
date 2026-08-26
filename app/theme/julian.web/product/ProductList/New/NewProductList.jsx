@@ -171,7 +171,7 @@ const JewelryProductGrid = ({
             <Grid container spacing={0}>
               {productListData.map((prod, index) => (
                 <Grid
-                  key={prod?.id || prod?.autocode || index}
+                  key={`${prod?.autocode || prod?.id || 'prod'}-${index}`}
                   size={{
                     xs: 6,
                     sm: 6,
@@ -489,12 +489,14 @@ const ProductCard = ({
 
       {/* --- CARD CONTENT BELOW IMAGE --- */}
       <CardContent
+        onClick={() => handleMoveToDetail(productData, imageUrl)}
         sx={{
           px: 2.4,
           py: 2,
           display: "flex",
           flexDirection: "column",
           gap: 0.8,
+          cursor: "pointer",
         }}
       >
         {/* PRICE ROW */}
