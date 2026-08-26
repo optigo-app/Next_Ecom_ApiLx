@@ -3,15 +3,33 @@ import { Box, Checkbox, Typography } from "@mui/material";
 import { motion, AnimatePresence } from "framer-motion";
 import LocalMallOutlinedIcon from "@mui/icons-material/LocalMallOutlined";
 import LocalMallIcon from "@mui/icons-material/LocalMall";
+import { useNextRouterLikeRR } from "@/app/(core)/hooks/useLocationRd";
 
 const MobileCartToggleButton = ({ productData, cartArr, handleCartandWish }) => {
-    const isInCart =
-        cartArr?.[productData?.autocode] ?? productData?.IsInCart === 1
-            ? true
-            : false;
+    const navigate = useNextRouterLikeRR();
+
+    const autocodeKey = productData?.autocode ? String(productData.autocode) : null;
+    const articleKey = productData?.ArticleNo ? String(productData.ArticleNo) : null;
+    const designKey = productData?.designno ? String(productData.designno) : null;
+
+    const isInCart = Boolean(
+        cartArr?.[autocodeKey] ??
+        cartArr?.[articleKey] ??
+        cartArr?.[designKey] ??
+        (productData?.IsInCart === 1)
+    );
+
+    const handleCartClick = (e) => {
+        e.stopPropagation();
+        if (isInCart) {
+            navigate.push("/cartPage");
+        } else {
+            handleCartandWish(e, productData, "Cart");
+        }
+    };
 
     return (
-        <Box>
+        <Box onClick={handleCartClick}>
             <AnimatePresence mode="wait">
                 <motion.div
                     key={isInCart ? "in-cart" : "not-in-cart"}
@@ -22,10 +40,7 @@ const MobileCartToggleButton = ({ productData, cartArr, handleCartandWish }) => 
                 >
                     <Checkbox
                         checked={isInCart}
-                        onChange={(e) => {
-                            e.stopPropagation();
-                            handleCartandWish(e, productData, "Cart");
-                        }}
+                        onChange={handleCartClick}
                         disableRipple
                         icon={
                             <Box

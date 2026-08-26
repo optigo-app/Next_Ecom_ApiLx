@@ -30,6 +30,7 @@ import { ColorStoneQualityColorComboAPI } from "@/app/(core)/utils/API/Combo/Col
 import { MetalColorCombo } from "@/app/(core)/utils/API/Combo/MetalColorCombo";
 import { CartAndWishListAPI } from "@/app/(core)/utils/API/CartAndWishList/CartAndWishListAPI";
 import { RemoveCartAndWishAPI } from "@/app/(core)/utils/API/RemoveCartandWishAPI/RemoveCartAndWishAPI";
+import { GetCountAPI } from "@/app/(core)/utils/API/GetCount/GetCountAPI";
 import {
   formatRedirectTitleLine,
   formatter,
@@ -167,6 +168,7 @@ const ProductList = ({ storeinit, searchParams, params }) => {
   const [close, setClose] = useState(false);
   const [cartArr, setCartArr] = useState({});
   const [wishArr, setWishArr] = useState({});
+  const [cartAndWishListRd1, setCartAndWishListRd1] = useState([]);
   const [visibleIndices, setVisibleIndices] = useState([]);
   const [inputPage, setInputPage] = useState(currPage);
   const [priceRangeValue, setPriceRangeValue] = useState(["", ""]);
@@ -1603,6 +1605,51 @@ const ProductList = ({ storeinit, searchParams, params }) => {
     handelFilterClearAll();
   }, [location]); // location (pathname) changes on navigation — safe replacement for location.key
 
+  const syncCartAndWishStates = (rd1Array = []) => {
+    const newCartObj = {};
+    const newWishObj = {};
+    rd1Array.forEach((item) => {
+      const autocodeKey = item?.autocode ? String(item.autocode) : null;
+      const articleKey = item?.ArticleNo ? String(item.ArticleNo) : null;
+      const designKey = item?.designno ? String(item.designno) : null;
+
+      const keys = [autocodeKey, articleKey, designKey].filter(Boolean);
+
+      keys.forEach((key) => {
+        if (item?.IsWishList === 1) {
+          newWishObj[key] = true;
+        } else if (item?.IsWishList === 0) {
+          newCartObj[key] = true;
+        }
+      });
+    });
+    setCartArr((prev) => ({ ...prev, ...newCartObj }));
+    setWishArr((prev) => ({ ...prev, ...newWishObj }));
+  };
+
+  const fetchGetCountData = async () => {
+    if (!finalId) return;
+    try {
+      const res = await GetCountAPI(finalId);
+      if (res) {
+        if (res?.cartcount !== undefined) setCartCountNum(res.cartcount);
+        if (res?.wishcount !== undefined) setWishCountNum(res.wishcount);
+        if (res?.rd1) {
+          setCartAndWishListRd1(res.rd1);
+          syncCartAndWishStates(res.rd1);
+        }
+      }
+    } catch (err) {
+      console.log("fetchGetCountErr", err);
+    }
+  };
+
+  useEffect(() => {
+    if (finalId) {
+      fetchGetCountData();
+    }
+  }, [finalId]);
+
   const handleCartandWish = async (e, ele, type) => {
     const prodObj = {
       autocode: ele?.autocode,
@@ -1628,27 +1675,56 @@ const ProductList = ({ storeinit, searchParams, params }) => {
       ArticleNo: ele?.ArticleNo,
     };
 
-    if (type === "Wish") {
-      setWishArr((prev) => ({
-        ...prev,
-        [ele?.autocode]: e.target.checked,
-      }));
-    }
-    if (type === "Cart") {
-      setCartArr((prev) => ({
-        ...prev,
-        [ele?.autocode]: e.target.checked,
-      }));
-    }
+    const isChecked = e.target.checked;
+    const autocodeKey = ele?.autocode ? String(ele.autocode) : null;
+    const articleKey = ele?.ArticleNo ? String(ele.ArticleNo) : null;
+    const designKey = ele?.designno ? String(ele.designno) : null;
+    const keys = [autocodeKey, articleKey, designKey].filter(Boolean);
 
-    if (e.target.checked) {
+    keys.forEach((key) => {
+      if (type === "Wish") {
+        setWishArr((prev) => ({ ...prev, [key]: isChecked }));
+      } else if (type === "Cart") {
+        setCartArr((prev) => ({ ...prev, [key]: isChecked }));
+      }
+    });
+
+    setCartAndWishListRd1((prevRd1 = []) => {
+      let updated = [...prevRd1];
+      const targetState = type === "Wish" ? 1 : 0;
+      const existingIndex = updated.findIndex((item) => {
+        if (Number(item?.IsWishList) !== targetState) return false;
+        if (ele?.autocode && item?.autocode && String(item.autocode) === String(ele.autocode)) return true;
+        if (ele?.ArticleNo && item?.ArticleNo && String(item.ArticleNo) === String(ele.ArticleNo)) return true;
+        if (ele?.designno && item?.designno && String(item.designno) === String(ele.designno)) return true;
+        return false;
+      });
+
+      if (isChecked) {
+        if (existingIndex < 0) {
+          updated.push({
+            autocode: ele?.autocode,
+            designno: ele?.designno,
+            ArticleNo: ele?.ArticleNo,
+            IsWishList: targetState,
+          });
+        }
+      } else {
+        if (existingIndex >= 0) {
+          updated.splice(existingIndex, 1);
+        }
+      }
+      return updated;
+    });
+
+    if (isChecked) {
       await CartAndWishListAPI(type, prodObj, cookie)
         .then((res) => {
           if (res) {
             let cartC = res?.Data?.rd[0]?.Cartlistcount;
             let wishC = res?.Data?.rd[0]?.Wishlistcount;
-            setWishCountNum(wishC);
-            setCartCountNum(cartC);
+            if (wishC !== undefined) setWishCountNum(wishC);
+            if (cartC !== undefined) setCartCountNum(cartC);
             if (type === "Cart") {
               broadcast(
                 "UPDATE_CART_COUNT",
@@ -1666,6 +1742,7 @@ const ProductList = ({ storeinit, searchParams, params }) => {
                 true,
               );
             }
+            fetchGetCountData();
           }
         })
         .catch((err) => console.log("addtocartwishErr", err));
@@ -1682,8 +1759,8 @@ const ProductList = ({ storeinit, searchParams, params }) => {
           if (res1) {
             let cartC = res1?.Data?.rd[0]?.Cartlistcount;
             let wishC = res1?.Data?.rd[0]?.Wishlistcount;
-            setWishCountNum(wishC);
-            setCartCountNum(cartC);
+            if (wishC !== undefined) setWishCountNum(wishC);
+            if (cartC !== undefined) setCartCountNum(cartC);
             if (type === "Cart") {
               broadcast(
                 "UPDATE_CART_COUNT",
@@ -1701,6 +1778,7 @@ const ProductList = ({ storeinit, searchParams, params }) => {
                 false,
               );
             }
+            fetchGetCountData();
           }
         })
         .catch((err) => console.log("removecartwishErr", err));
@@ -2831,6 +2909,7 @@ const ProductList = ({ storeinit, searchParams, params }) => {
     // decodeAndDecompress()
 
     let encodeObj = compressAndEncode(JSON.stringify(obj));
+    console.log("NAVIGATE FROM PRODUCT LISTING:", { productData, obj, encodeObj });
 
     // Save target designno in sessionStorage to restore scroll position later
     if (typeof window !== "undefined") {

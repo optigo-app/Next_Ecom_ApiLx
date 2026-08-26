@@ -6,9 +6,13 @@ import FavoriteIcon from "@mui/icons-material/Favorite";
 
 const WishToggleButton = ({ productData, wishArr, handleCartandWish }) => {
   const isInWish =
-    wishArr?.[productData?.autocode] ?? productData?.IsInWish === 1
-      ? true
-      : false;
+    (productData?.autocode && wishArr?.[productData.autocode] !== undefined
+      ? wishArr[productData.autocode]
+      : productData?.ArticleNo && wishArr?.[productData.ArticleNo] !== undefined
+      ? wishArr[productData.ArticleNo]
+      : productData?.designno && wishArr?.[productData.designno] !== undefined
+      ? wishArr[productData.designno]
+      : productData?.IsInWish === 1) ? true : false;
 
   return (
     <Box

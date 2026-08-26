@@ -91,7 +91,7 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
         autocode: initialDecodeUrl.a ?? "",
         ImageExtension: "webp",
         ImageCount: 1,
-        MetalColorid: loginUserDetail?.MetalColorId || loginInfo?.MetalColorId,
+        MetalColorid: initialDecodeUrl?.metalColorId ?? loginUserDetail?.MetalColorId ?? loginInfo?.MetalColorId,
         ImageVideoDetail: initialDecodeUrl.mediaDet ?? "0",
       };
     }
@@ -137,7 +137,16 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
   const [filterData, setFilterData] = useState([]);
   const [showPlaceholder, setShowPlaceholder] = useState(false);
   const { imageRefs, handleMouseMove, handleMouseLeave } = useImageZoom(2.2);
-  const [selectedMetalColor, setSelectedMetalColor] = useState();
+  const [selectedMetalColor, setSelectedMetalColor] = useState(() => {
+    if (initialDecodeUrl?.metalColorId) {
+      const mtColorLocal = getSession("MetalColorCombo") || [];
+      const matchedObj = mtColorLocal.find(
+        (ele) => Number(ele.id) === Number(initialDecodeUrl.metalColorId)
+      );
+      return matchedObj?.colorcode || undefined;
+    }
+    return undefined;
+  });
   const getBreadCrumData = getSession("breadcrumbData");
   const [isMediaReady, setIsMediaReady] = useState(false);
   const [mediaBuildDone, setMediaBuildDone] = useState(false);
@@ -184,25 +193,34 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
         // ── Path B: l+count based pre-load (FGStore pattern) ──────────────────
         const { b, l, count } = initialDecodeUrl;
         if (!initialDecodeUrl.mediaDet || initialDecodeUrl.mediaDet === "0") {
-          if (b && l && count) {
+          if (b) {
             const cdnThumb = storeinit?.CDNDesignImageFolThumb || storeInit?.CDNDesignImageFolThumb;
+            const cdnFol = storeinit?.CDNDesignImageFol || storeInit?.CDNDesignImageFol;
             if (cdnThumb) {
-              const numCount = Number(count);
-              if (numCount > 0) {
-                const thumbPath = Array.from({ length: numCount }, (_, i) => {
-                  // Use session color code to match what ProdCardImageFunc will build
-                  const suffix = sessionColorCode
-                    ? `${b}~${i + 1}~${sessionColorCode}`
-                    : `${b}~${i + 1}`;
-                  return {
-                    thumbImageUrl: `${cdnThumb}${suffix}.jpg`,
-                    originalImageExtension: l,
-                  };
-                });
-                setPdThumbImg(thumbPath);
-                setThumbImgIndex(0);
-                // Do NOT call setMediaBuildDone here — ProdCardImageFunc owns that gate
-              }
+              const numCount = (count && Number(count) > 0) ? Number(count) : 1;
+              const ext = l || "webp";
+              const hasColorInImg = Boolean(
+                initialDecodeUrl?.img &&
+                sessionColorCode &&
+                initialDecodeUrl.img.toLowerCase().includes(`~${sessionColorCode.toLowerCase()}.`)
+              );
+              const thumbPath = Array.from({ length: numCount }, (_, i) => {
+                const suffix = (sessionColorCode && hasColorInImg)
+                  ? `${b}~${i + 1}~${sessionColorCode}`
+                  : `${b}~${i + 1}`;
+                return {
+                  thumbImageUrl: `${cdnThumb}${suffix}.jpg`,
+                  originalImageExtension: ext,
+                };
+              });
+              setPdThumbImg(thumbPath);
+              setThumbImgIndex(0);
+
+              const mainSuffix = (sessionColorCode && hasColorInImg)
+                ? `${b}~1~${sessionColorCode}`
+                : `${b}~1`;
+              const mainUrl = initialDecodeUrl?.img || `${cdnFol}${mainSuffix}.${ext}`;
+              if (!imageSrc) setImageSrc(mainUrl);
             }
           }
           return;
@@ -1030,7 +1048,7 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
         autocode: decodeobj.a ?? "",
         ImageExtension: "webp",
         ImageCount: 1,
-        MetalColorid: loginUserDetail?.MetalColorId || loginInfo?.MetalColorId,
+        MetalColorid: decodeobj?.metalColorId ?? loginUserDetail?.MetalColorId ?? loginInfo?.MetalColorId,
         ImageVideoDetail: decodeobj.mediaDet ?? "0",
       };
       setSingleProd(initialProd);
@@ -1039,8 +1057,10 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
         setImageSrc(decodeobj.img);
       }
       setisPriceLoading(false);
+      setloadingdata(false);
     } else {
       setisPriceLoading(true);
+      setloadingdata(true);
       setSingleProd1({});
       setSingleProd({});
     }
@@ -1987,7 +2007,7 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
 
   const mtColorLocalForFallback = getSession("MetalColorCombo") || [];
   const loginInfoForFallback = getSession("loginUserDetail");
-  const urlMetalColorId = initialDecodeUrl?.m || decodeUrl?.m;
+  const urlMetalColorId = initialDecodeUrl?.metalColorId || decodeUrl?.metalColorId || initialDecodeUrl?.m || decodeUrl?.m;
   const fallbackColorId = singleProd?.MetalColorid || urlMetalColorId || loginUserDetail?.MetalColorId || loginInfoForFallback?.MetalColorId || mtColorLocalForFallback?.[0]?.id;
   const fallbackColorObj = mtColorLocalForFallback.find(ele => Number(ele.id) === Number(fallbackColorId));
   const activeColorCode = selectedMetalColor || fallbackColorObj?.colorcode;
@@ -2017,7 +2037,12 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
   const ext = singleProd?.ImageExtension || "webp";
   const baseFol = storeInit?.CDNDesignImageFol || storeinit?.CDNDesignImageFol;
   if (resolvedImages.length === 0 && dNo && baseFol) {
-    const colorSuffix = activeColorCode ? `~${activeColorCode}` : "";
+    const hasColorInImg = Boolean(
+      validPassedImg &&
+      activeColorCode &&
+      validPassedImg.toLowerCase().includes(`~${activeColorCode.toLowerCase()}.`)
+    );
+    const colorSuffix = (activeColorCode && hasColorInImg) ? `~${activeColorCode}` : "";
     resolvedImages = [`${baseFol}${dNo}~1${colorSuffix}.${ext}`];
   }
 
@@ -2103,8 +2128,8 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
                     })),
                   ] || []).filter(item => item.src && !item.src.includes("undefined"))
                 }
-                isMediaReady={mediaBuildDone}
-                mediaBuildDone={mediaBuildDone}
+                isMediaReady={derivedIsMediaReady}
+                mediaBuildDone={derivedMediaBuildDone}
                 HandleImageDialogOpen={HandleImageDialogOpen}
               />
               <RightSide

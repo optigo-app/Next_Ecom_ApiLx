@@ -33,10 +33,17 @@ import pako from 'pako';
 export const decodeAndDecompress = (encodedString) => {
     try {
         if (!encodedString) return null;
+
+        let str = encodedString;
+        if (typeof str === "string" && str.includes("%")) {
+            try {
+                str = decodeURIComponent(str);
+            } catch (e) {}
+        }
         
         // 1. Sanitize common URL transmission corruptions
         // Replaces spaces back to '+' (in case URL decoding converted them)
-        let sanitized = encodedString.replace(/ /g, '+');
+        let sanitized = str.replace(/ /g, '+');
         
         // Convert URL-safe characters to standard Base64 characters
         sanitized = sanitized.replace(/-/g, '+').replace(/_/g, '/');

@@ -165,20 +165,14 @@ const MaxBestSeller = ({ storeInit }) => {
   }, [islogin, pricingContext, storeInit, fetchAndSetBestSellers, finalId]);
 
   // ── Image URL builder ────────────────────────────────────────────────────────
-  const validateImageURLs = async () => {
-    if (!bestSellerData?.length) return;
-    const result = await Promise.all(
-      bestSellerData.map(async (item) => {
-        const imageURL = `${imageUrl}${item?.designno}~1.${item?.ImageExtension || "webp"}`;
-        return { ...item, validatedImageURL: imageURL };
-      }),
-    );
-    setValidatedData(result);
-  };
-
   useEffect(() => {
-    validateImageURLs();
-  }, [bestSellerData]);
+    if (!bestSellerData?.length) return;
+    const result = bestSellerData.map((item) => {
+      const imageURL = getCardImageUrl(item) || `${imageUrl}${item?.designno}~1.${item?.ImageExtension || "webp"}`;
+      return { ...item, validatedImageURL: imageURL };
+    });
+    setValidatedData(result);
+  }, [bestSellerData, imageUrl, storeInit]);
 
   // ── Navigation helper ────────────────────────────────────────────────────────
   const compressAndEncode = (inputString) => {
@@ -192,54 +186,87 @@ const MaxBestSeller = ({ storeInit }) => {
     }
   };
 
+  const getCardImageUrl = (productData) => {
+    const cdnFol = storeInit?.CDNDesignImageFol || "";
+    if (!cdnFol || !productData?.designno) return "";
+    const ext = productData?.ImageExtension || "webp";
+
+    if (productData?.ImageVideoDetail && productData.ImageVideoDetail !== "0") {
+      try {
+        const parsed =
+          typeof productData.ImageVideoDetail === "string"
+            ? JSON.parse(productData.ImageVideoDetail)
+            : productData.ImageVideoDetail;
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          const itemMetalColorId = productData?.MetalColorid ?? productData?.MetalColorId ?? productData?.metalcolorid;
+          const mtColorLocal = getSession("MetalColorCombo") || [];
+          const targetColorObj = mtColorLocal.find(
+            (ele) => Number(ele.id) === Number(itemMetalColorId)
+          );
+          let targetColorCode = targetColorObj?.colorcode || productData?.MetalColor;
+
+          if (!targetColorCode) {
+            const colorImg = parsed.find(x => Number(x?.TI) === 2 && x?.CN);
+            if (colorImg?.CN) targetColorCode = colorImg.CN;
+          }
+
+          if (targetColorCode) {
+            const targetLower = targetColorCode.toLowerCase().trim();
+            const matchedColorImg = parsed.find((item) => {
+              if (Number(item?.TI) !== 2 || !item?.CN) return false;
+              const cnLower = item.CN.toLowerCase().trim();
+              return (
+                cnLower === targetLower ||
+                cnLower.includes(targetLower) ||
+                targetLower.includes(cnLower)
+              );
+            });
+            if (matchedColorImg) {
+              return `${cdnFol}${productData.designno}~${matchedColorImg.Nm}~${matchedColorImg.CN}.${matchedColorImg.Ex || ext}`;
+            }
+          }
+
+          const normalImg = parsed.find((item) => Number(item?.TI) === 1);
+          if (normalImg) {
+            return `${cdnFol}${productData.designno}~${normalImg.Nm}.${normalImg.Ex || ext}`;
+          }
+        }
+      } catch (e) {}
+    }
+    return `${cdnFol}${productData.designno}~1.${ext}`;
+  };
+
   const handleNavigation = (item, index) => {
     const designNo = item?.designno;
     const autoCode = item?.autocode;
     const titleLine = item?.TitleLine;
-
-    // Resolve color code for this product to build a color-matched img URL
-    const mtColorLocal = getSession("MetalColorCombo") || [];
-    const targetColorObj = mtColorLocal.find(ele => Number(ele.id) === Number(item?.MetalColorid));
-    const colorCode = targetColorObj?.colorcode;
-    const cdnFol = storeInit?.CDNDesignImageFol || "";
-    const ext = item?.ImageExtension || "webp";
-    let imgUrl = "";
-    if (item?.ImageVideoDetail && item.ImageVideoDetail !== "0") {
-      try {
-        const parsed = typeof item.ImageVideoDetail === "string" ? JSON.parse(item.ImageVideoDetail) : item.ImageVideoDetail;
-        if (Array.isArray(parsed) && colorCode) {
-          const colorLower = colorCode.toLowerCase().trim();
-          const colorImg = parsed.find(x => Number(x?.TI) === 2 && (x?.CN || "").toLowerCase().trim() === colorLower);
-          if (colorImg) imgUrl = `${cdnFol}${designNo}~${colorImg.Nm}~${colorImg.CN}.${colorImg.Ex || ext}`;
-        }
-      } catch {}
-    }
-    if (!imgUrl) imgUrl = `${cdnFol}${designNo}~1.${ext}`;
+    const itemMetalColorId = item?.MetalColorid ?? item?.MetalColorId ?? item?.metalcolorid;
 
     const obj = {
       a: autoCode,
       b: designNo,
-      // fallback to storeInit so guest users (not logged in) still get valid pricing params
       m: loginUserDetail?.MetalId ?? storeInit?.MetalId,
       d: loginUserDetail?.cmboDiaQCid ?? storeInit?.cmboDiaQCid,
       c: loginUserDetail?.cmboCSQCid ?? storeInit?.cmboCSQCid,
       f: {},
-      metalColorId: item?.MetalColorid ?? null,
-      mediaDet: item?.ImageVideoDetail ?? "",
-      img: imgUrl,
+      g: {},
+      img: getCardImageUrl(item),
+      ArticleNo: item?.ArticleNo ?? "",
+      ArticleId: item?.ArticleId ?? null ?? "",
       title: titleLine ?? "",
-      price: item?.UnitCostWithMarkUp ?? 0,
       nwt: item?.Nwt ?? 0,
+      price: item?.UnitCostWithMarkUp ?? 0,
+      mediaDet: item?.ImageVideoDetail ?? "",
+      metalColorId: itemMetalColorId ?? loginUserDetail?.MetalColorId ?? storeInit?.MetalColorId ?? null,
       l: item?.ImageExtension,
       count: item?.ImageCount,
-      ArticleNo: item?.ArticleNo ?? designNo ?? "",
-      ArticleId: item?.ArticleId ?? item?.id ?? null,
     };
-    sessionStorage.setItem("scrollToProduct1", `product-${index}`);
+    if (index !== undefined) {
+      sessionStorage.setItem("scrollToProduct1", `product-${index}`);
+    }
     const encodeObj = compressAndEncode(JSON.stringify(obj));
-    // encodeURIComponent prevents Base64 '+' chars being decoded as spaces in the URL
     navigation.push(
-      `/d/${formatRedirectTitleLine(titleLine)}${designNo}?p=${encodeURIComponent(encodeObj)}`,
+      `/d/${formatRedirectTitleLine(titleLine)}${designNo}?p=${encodeObj}`
     );
   };
 

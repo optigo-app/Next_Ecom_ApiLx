@@ -422,15 +422,58 @@ const Usewishlist = () => {
   const compressAndEncode = (inputString) => {
     try {
       const uint8Array = new TextEncoder().encode(inputString);
-
-      const compressed = pako.deflate(uint8Array, { to: 'string' });
-
-
-      return btoa(String.fromCharCode.apply(null, compressed));
+      const compressed = pako.deflate(uint8Array);
+      if (typeof compressed === "string") {
+        return btoa(compressed);
+      }
+      let binary = "";
+      const len = compressed.byteLength;
+      for (let i = 0; i < len; i++) {
+        binary += String.fromCharCode(compressed[i]);
+      }
+      return btoa(binary);
     } catch (error) {
       console.error('Error compressing and encoding:', error);
       return null;
     }
+  };
+
+  const getCardImageUrl = (data, storeInit) => {
+    const cdnFol = storeInit?.CDNDesignImageFol || "";
+    if (!cdnFol || !data?.designno) return "";
+    const ext = data?.ImageExtension || "webp";
+
+    if (data?.ImageVideoDetail && data.ImageVideoDetail !== "0") {
+      try {
+        const parsed = typeof data.ImageVideoDetail === "string" 
+          ? JSON.parse(data.ImageVideoDetail) 
+          : data.ImageVideoDetail;
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          const targetColorId = data?.metalcolorid || data?.MetalColorid;
+          const mtColorLocal = getSession("MetalColorCombo") || metalColorCombo || [];
+          const targetColorObj = mtColorLocal.find(ele => Number(ele.id) === Number(targetColorId));
+          const targetColorCode = targetColorObj?.colorcode || data?.metalcolorname || data?.MetalColor;
+
+          if (targetColorCode) {
+            const targetLower = targetColorCode.toLowerCase().trim();
+            const matchedColorImg = parsed.find(item => {
+              if (Number(item?.TI) !== 2 || !item?.CN) return false;
+              const cnLower = item.CN.toLowerCase().trim();
+              return cnLower === targetLower || cnLower.includes(targetLower) || targetLower.includes(cnLower);
+            });
+            if (matchedColorImg) {
+              return `${cdnFol}${data.designno}~${matchedColorImg.Nm}~${matchedColorImg.CN}.${matchedColorImg.Ex || ext}`;
+            }
+          }
+
+          const normalImg = parsed.find(item => Number(item?.TI) === 1);
+          if (normalImg) {
+            return `${cdnFol}${data.designno}~${normalImg.Nm}.${normalImg.Ex || ext}`;
+          }
+        }
+      } catch (e) {}
+    }
+    return `${cdnFol}${data.designno}~1.${ext}`;
   };
 
   const handleMoveToDetail = (wishtData) => {
@@ -448,27 +491,8 @@ const Usewishlist = () => {
       navigate(navigateUrl);
     } else {
       const targetColorId = wishtData?.MetalColorid || wishtData?.metalcolorid;
-      const mtColorLocal = getSession("MetalColorCombo") || metalColorCombo || [];
-      const targetColorObj = mtColorLocal.find(
-        (ele) => Number(ele.id) === Number(targetColorId)
-      );
-      const colorCode = targetColorObj?.colorcode || wishtData?.metalcolorname || wishtData?.MetalColor;
-      const cdnFol = storeInit?.CDNDesignImageFol || "";
       const ext = wishtData?.ImageExtension || "webp";
-      let imgUrl = "";
-      if (wishtData?.ImageVideoDetail && wishtData.ImageVideoDetail !== "0") {
-        try {
-          const parsed = typeof wishtData.ImageVideoDetail === "string" ? JSON.parse(wishtData.ImageVideoDetail) : wishtData.ImageVideoDetail;
-          if (Array.isArray(parsed) && colorCode) {
-            const colorLower = colorCode.toLowerCase().trim();
-            const colorImg = parsed.find(x => Number(x?.TI) === 2 && (x?.CN || "").toLowerCase().trim() === colorLower);
-            if (colorImg) imgUrl = `${cdnFol}${wishtData.designno}~${colorImg.Nm}~${colorImg.CN}.${colorImg.Ex || ext}`;
-          }
-        } catch {}
-      }
-      if (!imgUrl && wishtData?.designno && cdnFol) {
-        imgUrl = `${cdnFol}${wishtData.designno}~1${colorCode ? `~${colorCode}` : ""}.${ext}`;
-      }
+      const imgUrl = getCardImageUrl(wishtData, storeInit);
 
       let obj = {
         a: wishtData?.autocode,
@@ -490,6 +514,7 @@ const Usewishlist = () => {
         nwt: wishtData?.Nwt || wishtData?.CW_Nwt || wishtData?.CW_Gwt || 0,
       };
       let encodeObj = compressAndEncode(JSON.stringify(obj));
+      console.log("NAVIGATE FROM WISHLIST:", { wishtData, obj, encodeObj });
       navigate(`/d/${formatRedirectTitleLine(wishtData?.TitleLine)}${wishtData?.designno}?p=${encodeURIComponent(encodeObj)}`);
     }
   };
