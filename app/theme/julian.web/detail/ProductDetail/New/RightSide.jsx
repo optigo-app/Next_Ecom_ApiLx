@@ -201,6 +201,14 @@ const RightSide = ({
     },
   ].filter((item) => isLoading || item.cost !== 0);
 
+  console.log(activeArticle ,
+    activeArticle?.UnitCostWithmarkup ??
+                      activeArticle?.TotalUnitCost ??
+                      singleProd?.UnitCostWithmarkup ??
+                      singleProd?.UnitCostWithMarkUp ??
+                      0
+  )
+
   return (
     <>
       <Grid

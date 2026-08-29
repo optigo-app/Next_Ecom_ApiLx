@@ -234,7 +234,7 @@ const NewStockitems = ({ stockItemArr, storeInit, loginInfo, cartArr, handleCart
                       icon={<LocalMallOutlinedIcon sx={{ fontSize: 21, color: "text.secondary" }} />}
                       checkedIcon={<LocalMallIcon sx={{ fontSize: 21, color: "success.main" }} />}
                       onChange={(e) => handleCartandWish(e, ele, "Cart")}
-                      checked={cartArr[ele?.StockId] ?? ele?.IsInCart === 1 ? true : false}
+                      checked={cartArr?.[ele?.StockId] ?? (ele?.IsInCart === 1 ? true : false)}
                       sx={{
                         "&:hover": {
                           backgroundColor: alpha("#2e7d32", 0.08),
