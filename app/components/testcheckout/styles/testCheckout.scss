@@ -1,0 +1,104 @@
+/* testCheckout.scss - Luxury Unified Cart & Checkout Styling with CSS Variables */
+
+.testCheckout_wrapper {
+  min-height: 100vh;
+  font-family: inherit;
+  color: #222;
+
+  .testCheckout_wrapper_Container{
+    padding-inline: 150px;
+    @media (max-width: 1600px) {
+      padding-inline: 90px;
+    }
+    @media (max-width: 1400px) {
+      padding-inline: 60px;
+    }
+    @media (max-width: 1200px) {
+      padding-inline: 40px;
+    }
+      @media (max-width: 960px) {
+      padding-inline: 20px;
+    }
+       @media (max-width: 420px) {
+      padding-inline: 10px;
+    }
+  }
+  /* Primary Button Override for Checkout UI */
+  .btnColorProCatProduct,
+  .testCheckout_primary_btn {
+    background-color: var(--checkout-primary, #cca182) !important;
+    border: 1px solid var(--checkout-primary, #cca182) !important;
+    color: var(--checkout-btn-color, #ffffff) !important;
+    transition: all 0.2s ease !important;
+
+    &:hover {
+      background-color: var(--checkout-primary-hover, #b88d6e) !important;
+      border-color: var(--checkout-primary-hover, #b88d6e) !important;
+      color: var(--checkout-btn-color, #ffffff) !important;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1) !important;
+    }
+
+    &:disabled {
+      background-color: #e0e0e0 !important;
+      border-color: #e0e0e0 !important;
+      color: #999999 !important;
+    }
+  }
+
+  .testCheckout_itemCard {
+    background-color: #fff;
+    &--editing {
+      background-color: var(--checkout-primary-light, #faf4ee) !important;
+      border-left: 3px solid var(--checkout-primary, #cca182);
+    }
+  }
+
+  .testCheckout_itemImageWrapper {
+    background-color: #f8f8f8;
+    img {
+      transition: transform 0.2s ease;
+    }
+    &:hover img {
+      transform: scale(1.02);
+    }
+  }
+
+  .testCheckout_select {
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23777' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    background-size: 13px;
+    background-color: #fff;
+    cursor: pointer;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+
+    &:focus {
+      border-color: var(--checkout-primary, #cca182);
+      box-shadow: 0 0 0 2px var(--checkout-primary-light-border, #edd8c7);
+      outline: none;
+    }
+  }
+
+  .testCheckout_optionGroup {
+    label {
+      font-size: 0.82rem;
+      font-weight: 500;
+      color: #555;
+    }
+  }
+
+  /* Hide number input spinners */
+  input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  /* Responsive Adjustments */
+  @media (max-width: 900px) {
+    .testCheckout_editPanel {
+      margin-top: 16px;
+    }
+  }
+}
