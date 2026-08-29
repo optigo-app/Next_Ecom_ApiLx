@@ -1,6 +1,8 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { getSession } from "@/app/(core)/utils/FetchSessionData";
+import Cookies from "js-cookie";
 import {
   Box,
   Typography,
@@ -67,13 +69,23 @@ export default function CheckoutPanel({
   onCheckout,
 }) {
   const router = useRouter();
-  const { islogin } = useStore();
+  const { islogin: storeIsLogin } = useStore();
+  const [mounted, setMounted] = useState(false);
   const [isAddressModalOpen, setIsAddressModalOpen] = useState(false);
   const [isOrderRemarkModalOpen, setIsOrderRemarkModalOpen] = useState(false);
 
-  const isSummaryLoading = isLoadingCart || isLoadingTax;
-  const isAddrLoading = isLoadingCart || isLoadingAddress;
-  const isPayLoading = isLoadingCart || !paymentMethods || paymentMethods.length === 0;
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const islogin = mounted
+    ? Boolean(storeIsLogin || getSession("LoginUser") || getSession("loginUserDetail") || Cookies.get("LoginUser"))
+    : Boolean(storeIsLogin);
+
+  const isInitialLoading = !mounted || isLoadingCart;
+  const isSummaryLoading = isInitialLoading || isLoadingTax;
+  const isAddrLoading = isInitialLoading || isLoadingAddress;
+  const isPayLoading = isInitialLoading || !paymentMethods || paymentMethods.length === 0;
 
   const hasAddress = Boolean(
     selectedAddress &&
@@ -255,97 +267,115 @@ export default function CheckoutPanel({
                 </Box>
               </Box>
 
-              <Typography variant="body2" sx={{ color: "#555", fontSize: "0.85rem", fontWeight: 500, lineHeight: 1.6, pl: 4.2 }}>
-                {selectedAddress?.street}
-                <br />
-                {selectedAddress?.city} - {selectedAddress?.zip}, {selectedAddress?.state}, {selectedAddress?.country}
-              </Typography>
+              <Box sx={{ display: "flex", alignItems: "flex-start", gap: 1, mt: 1.2, pl: 4.2 }}>
+                <Typography variant="body2" sx={{ color: "#444", fontSize: "0.88rem", lineHeight: 1.5 }}>
+                  {[
+                    selectedAddress?.street,
+                    selectedAddress?.address1,
+                    selectedAddress?.address2,
+                    selectedAddress?.city,
+                    selectedAddress?.state,
+                    selectedAddress?.country,
+                    selectedAddress?.zip,
+                  ]
+                    .filter(Boolean)
+                    .join(", ")}
+                </Typography>
+              </Box>
 
               {selectedAddress?.shippingmobile && (
-                <Box sx={{ display: "flex", alignItems: "center", gap: 0.8, mt: 1, pl: 4.2 }}>
-                  <PhoneOutlinedIcon sx={{ fontSize: 14, color: "#888" }} />
-                  <Typography variant="caption" sx={{ color: "#444", fontWeight: 600, fontSize: "0.82rem" }}>
+                <Box sx={{ display: "flex", alignItems: "center", gap: 1, mt: 0.8, pl: 4.2 }}>
+                  <PhoneOutlinedIcon sx={{ fontSize: 16, color: "#666", flexShrink: 0 }} />
+                  <Typography variant="body2" sx={{ color: "#555", fontSize: "0.85rem", fontWeight: 600 }}>
                     {selectedAddress?.shippingmobile}
                   </Typography>
                 </Box>
               )}
             </Box>
           ) : (
-            /* Logged In without address state: Prompt to Set Delivery Address */
-            <Box sx={{ my: 2, textAlign: "center" }}>
+            /* Logged In but No Address Saved yet */
+            <Box
+              sx={{
+                p: 3,
+                textAlign: "center",
+                bgcolor: "#FAFAFA",
+                borderRadius: "10px",
+                border: "1px dashed #DDD",
+              }}
+            >
+              <Typography variant="body2" color="#666" sx={{ mb: 1.5 }}>
+                No delivery address selected yet.
+              </Typography>
               <Button
-                variant="contained"
-                fullWidth
+                variant="outlined"
+                size="small"
                 onClick={() => setIsAddressModalOpen(true)}
                 sx={{
-                  py: 1.3,
-                  fontWeight: 700,
-                  fontSize: "0.92rem",
                   textTransform: "none",
-                  borderRadius: "8px",
-                  bgcolor: "#111",
-                  color: "#fff",
-                  boxShadow: "none",
-                  "&:hover": { bgcolor: "#333", boxShadow: "0 4px 12px rgba(0,0,0,0.15)" },
+                  fontWeight: 600,
+                  borderRadius: "6px",
+                  borderColor: "var(--checkout-primary, #cca182)",
+                  color: "var(--checkout-primary, #cca182)",
+                  "&:hover": {
+                    borderColor: "var(--checkout-primary-hover, #b88d6e)",
+                    bgcolor: "var(--checkout-primary-light, #faf4ee)",
+                  },
                 }}
               >
-                Set Your Delivery Address
+                + Add / Select Address
               </Button>
-              <Typography variant="caption" sx={{ display: "block", mt: 1, color: "#888", fontWeight: 500 }}>
-                Add your delivery address to proceed with checkout
-              </Typography>
             </Box>
           )}
 
-          {/* Order Remarks Action & Card */}
-          <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 1 }}>
+          {/* Special Order Instructions / Remark Strip */}
+          <Box
+            sx={{
+              mt: 2,
+              pt: 2,
+              borderTop: "1px dashed #eee",
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
+            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+              <NotesOutlinedIcon sx={{ fontSize: 18, color: "#888" }} />
+              <Typography variant="body2" sx={{ color: "#666", fontSize: "0.85rem", fontWeight: 500 }}>
+                {orderRemark ? "Special Instruction added" : "Add Order Instructions / Note"}
+              </Typography>
+            </Box>
             <Button
               size="small"
               onClick={() => setIsOrderRemarkModalOpen(true)}
-              startIcon={<NotesOutlinedIcon sx={{ fontSize: "15px !important" }} />}
               sx={{
-                color: "#555",
+                textTransform: "none",
                 fontSize: "0.78rem",
                 fontWeight: 600,
-                textTransform: "none",
-                borderRadius: "6px",
-                p: "4px 8px",
-                "&:hover": { color: "#111", bgcolor: "#F5F5F7" },
+                color: "var(--checkout-primary-text, #9c6d48)",
+                p: 0,
+                minWidth: "auto",
+                "&:hover": { bgcolor: "transparent", textDecoration: "underline" },
               }}
             >
-              {orderRemark ? "Edit Order Note" : "Add Order Note"}
+              {orderRemark ? "Edit Note" : "+ Add Note"}
             </Button>
           </Box>
 
           {orderRemark && (
-            <Box
-              sx={{
-                mt: 1.2,
-                p: 1.5,
-                bgcolor: "#FAFAF9",
-                border: "1px dashed #DDD",
-                borderRadius: "8px",
-                display: "flex",
-                gap: 1,
-                alignItems: "flex-start",
-              }}
-            >
-              <NotesOutlinedIcon sx={{ fontSize: 16, color: "#666", mt: 0.3 }} />
-              <Box>
-                <Typography variant="caption" sx={{ fontWeight: 700, color: "#444", display: "block", textTransform: "uppercase", fontSize: "10px", letterSpacing: "0.5px" }}>
-                  Order Note
-                </Typography>
-                <Typography variant="body2" sx={{ color: "#333", fontSize: "0.85rem", mt: 0.2 }}>
-                  {orderRemark}
-                </Typography>
-              </Box>
+            <Box sx={{ mt: 1, p: 1.2, bgcolor: "#f9f9f9", borderRadius: "6px", border: "1px solid #f0f0f0" }}>
+              <Typography variant="caption" sx={{ color: "#888", display: "block", fontWeight: 600 }}>
+                Note for seller:
+              </Typography>
+              <Typography variant="body2" sx={{ color: "#333", fontSize: "0.85rem", mt: 0.2 }}>
+                {orderRemark}
+              </Typography>
             </Box>
           )}
         </Paper>
       )}
 
-      {/* 3. Payment Method Card (Only shown when logged in) */}
-      {islogin && (
+      {/* 3. Payment Method Card (Shown when logged in or during initial loading) */}
+      {(isInitialLoading || islogin) && (
         <Paper
           elevation={0}
           sx={{
@@ -389,111 +419,58 @@ export default function CheckoutPanel({
                 renderValue={(val) => {
                   const method = paymentMethods.find((m) => String(m.id) === String(val));
                   if (!method) {
-                    return <Typography sx={{ color: "#999", fontSize: "0.9rem" }}>Select a Payment Gateway</Typography>;
+                    return <Typography sx={{ color: "#999" }}>Choose payment method</Typography>;
                   }
                   const info = PAYMENT_METHODS_INFO[method.id] || { icon: <CreditCardIcon />, color: "#555" };
                   return (
-                    <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, width: "100%" }}>
-                      <Box
-                        sx={{
-                          fontSize: "1.3rem",
-                          color: info.color,
-                          display: "flex",
-                          alignItems: "center",
-                        }}
-                      >
+                    <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, py: 0.2 }}>
+                      <Box sx={{ color: info.color, fontSize: "1.2rem", display: "flex", alignItems: "center" }}>
                         {info.icon}
                       </Box>
-                      <Box sx={{ textAlign: "left" }}>
-                        <Typography
-                          variant="body2"
-                          sx={{
-                            fontWeight: 600,
-                            color: "#222",
-                            fontSize: "0.92rem",
-                            lineHeight: 1.2,
-                          }}
-                        >
+                      <Box>
+                        <Typography sx={{ fontWeight: 600, color: "#111", fontSize: "0.92rem", lineHeight: 1.2 }}>
                           {method.GatewayName}
                         </Typography>
-                        <Typography
-                          variant="caption"
-                          sx={{ color: "#777", fontSize: "0.72rem", display: "block" }}
-                        >
+                        <Typography variant="caption" sx={{ color: "#777", fontSize: "0.75rem" }}>
                           {method.id === 3 ? "Pay on delivery" : "Online Payment"}
                         </Typography>
                       </Box>
                     </Box>
                   );
                 }}
-                MenuProps={{
-                  PaperProps: {
-                    sx: {
-                      maxHeight: 280,
-                      borderRadius: "8px",
-                      boxShadow: "0 8px 24px rgba(0,0,0,0.12)",
-                      mt: 1,
-                      "& .MuiMenuItem-root": {
-                        py: 1.2,
-                        px: 2,
-                        gap: 1.5,
-                        transition: "all 0.15s ease",
-                        "&.Mui-selected": {
-                          bgcolor: "var(--checkout-primary-light, #faf4ee) !important",
-                        },
-                        "&:hover": {
-                          bgcolor: "#f9f9f9",
-                        },
-                      },
-                    },
-                  },
-                }}
-                sx={{
-                  "& .MuiSelect-select": {
-                    display: "flex",
-                    alignItems: "center",
-                    py: 1,
-                    px: 1.5,
-                  },
-                }}
               >
-                {paymentMethods?.map((method) => {
+                {paymentMethods.map((method) => {
                   const isSelected = String(selectedPaymentMethod) === String(method.id);
                   const info = PAYMENT_METHODS_INFO[method.id] || { icon: <CreditCardIcon />, color: "#555" };
                   return (
-                    <MenuItem key={method.id} value={String(method.id)}>
-                      <Box
-                        sx={{
-                          fontSize: "1.3rem",
-                          color: info.color,
-                          display: "flex",
-                          alignItems: "center",
-                        }}
-                      >
-                        {info.icon}
+                    <MenuItem
+                      key={method.id}
+                      value={String(method.id)}
+                      sx={{
+                        py: 1.5,
+                        px: 2,
+                        bgcolor: isSelected ? "var(--checkout-primary-light, #faf4ee) !important" : "transparent",
+                        "&:hover": {
+                          bgcolor: "var(--checkout-primary-light, #faf4ee)",
+                        },
+                      }}
+                    >
+                      <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, width: "100%" }}>
+                        <Box sx={{ color: info.color, fontSize: "1.3rem", display: "flex", alignItems: "center" }}>
+                          {info.icon}
+                        </Box>
+                        <Box sx={{ flex: 1 }}>
+                          <Typography sx={{ fontWeight: 600, color: isSelected ? "var(--checkout-primary-text, #9c6d48)" : "#222", fontSize: "0.92rem" }}>
+                            {method.GatewayName}
+                          </Typography>
+                          <Typography variant="caption" sx={{ color: "#777", fontSize: "0.75rem", display: "block" }}>
+                            {method.id === 3 ? "Pay on delivery" : "Online Payment"}
+                          </Typography>
+                        </Box>
+                        {isSelected && (
+                          <CheckCircleIcon sx={{ fontSize: 18, color: "var(--checkout-primary, #cca182)" }} />
+                        )}
                       </Box>
-                      <Box sx={{ flexGrow: 1 }}>
-                        <Typography
-                          variant="body2"
-                          sx={{
-                            fontWeight: 600,
-                            color: "#222",
-                            fontSize: "0.9rem",
-                            lineHeight: 1.2,
-                          }}
-                        >
-                          {method.GatewayName}
-                        </Typography>
-                        <Typography
-                          variant="caption"
-                          sx={{ color: "#888", fontSize: "0.72rem", display: "block" }}
-                        >
-                          {method.id === 3 ? "Pay on delivery" : "Online Payment"}
-                        </Typography>
-                      </Box>
-                      {isSelected && (
-                        <CheckCircleIcon sx={{ color: "var(--checkout-primary, #cca182)", fontSize: 18, ml: 1 }} />
-                      )}
                     </MenuItem>
                   );
                 })}
@@ -503,8 +480,14 @@ export default function CheckoutPanel({
         </Paper>
       )}
 
-      {/* 4. Action Button: CHECKOUT (if logged in) or Single LOG IN CTA (if guest) */}
-      {!islogin ? (
+      {/* 4. Action Button: SKELETON (while loading) | LOG IN CTA (if guest) | CHECKOUT (if logged in) */}
+      {isInitialLoading ? (
+        <Skeleton
+          variant="rectangular"
+          height={54}
+          sx={{ borderRadius: "4px" }}
+        />
+      ) : !islogin ? (
         <Box sx={{ display: "flex", flexDirection: "column", gap: 0.8 }}>
           <Button
             variant="contained"
@@ -516,7 +499,7 @@ export default function CheckoutPanel({
               fontSize: "1.05rem",
               fontWeight: 700,
               letterSpacing: "1px",
-              borderRadius: "1px",
+              borderRadius: "4px",
               textTransform: "uppercase",
               bgcolor: "var(--checkout-primary, #cca182)",
               color: "var(--checkout-btn-color, #ffffff)",
