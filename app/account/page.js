@@ -5,7 +5,8 @@ import { LocalSetup } from "../env";
 
 export default async function Page() {
   const storeInit = await getStoreInit();
-  if (LocalSetup === "fgstore.mapp")
+  if (storeInit?.domain === "fgstore.mapp" || LocalSetup === "fgstore.mapp"){
     return <AccountMobile Storeinit={storeInit} />;
+  }
   return <Account Storeinit={storeInit} />;
 }
