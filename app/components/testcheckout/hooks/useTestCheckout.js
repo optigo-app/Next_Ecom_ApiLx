@@ -52,7 +52,18 @@ const PAYMENT_METHODS_INFO = {
 
 export function useTestCheckout(initialStoreInit) {
   const router = useRouter();
-  const { islogin, loginUserDetail, setCartCountNum, storeinit: contextStoreInit } = useStore();
+  const { islogin: storeIsLogin, loginUserDetail: storeLoginUserDetail, setCartCountNum, storeinit: contextStoreInit } = useStore();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const islogin = mounted
+    ? Boolean(storeIsLogin || getSession("LoginUser") || getSession("loginUserDetail") || Cookies.get("LoginUser"))
+    : Boolean(storeIsLogin);
+
+  const loginUserDetail = storeLoginUserDetail || (mounted ? getSession("loginUserDetail") : null);
   const storeinit = initialStoreInit || contextStoreInit || getSession("storeInit");
 
   // Cart States
@@ -163,8 +174,12 @@ export function useTestCheckout(initialStoreInit) {
   }, []);
 
   useEffect(() => {
-    loadAddresses();
-  }, [loadAddresses]);
+    if (islogin) {
+      loadAddresses();
+    } else if (mounted) {
+      setIsLoadingAddress(false);
+    }
+  }, [islogin, mounted, loadAddresses]);
 
   // 4. Load Estimate Tax & Order Remarks
   const loadTaxData = useCallback(async () => {
