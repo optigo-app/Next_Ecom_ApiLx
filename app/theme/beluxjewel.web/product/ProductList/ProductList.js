@@ -52,6 +52,7 @@ import { readCache, writeCache } from "@/app/(core)/cache_utility/cacheActions";
 import { usePathname, useSearchParams } from "next/navigation";
 import { useNextRouterLikeRR } from "@/app/(core)/hooks/useLocationRd";
 import { ParseAndDecodeSearchParams } from "@/app/(core)/utils/GlobalFunctions/Parser";
+import { useListingPage } from "@/app/(core)/hooks/useListingPage";
 
 const ProductList = ({ storeinit, searchParams, params }) => {
   const { setCartCountNum, setWishCountNum, loginUserDetail, finalId } = useStore();

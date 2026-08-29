@@ -75,7 +75,8 @@ const FilterSidebar = ({
     filterCount,
     handelFilterClearAll,
     filterData,
-    storeInit,
+    storeInit: storeInitProp,
+    storeinit: storeinitProp,
     loginCurrency,
     formatter,
     decodeEntities,
@@ -134,6 +135,7 @@ const FilterSidebar = ({
     setSelectedDiaId,
     isBelow768
 }) => {
+    const storeInit = storeInitProp || storeinitProp;
     return (
         <>
             {/* HEADER */}

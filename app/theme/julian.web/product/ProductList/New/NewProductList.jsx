@@ -24,9 +24,127 @@ import CartToggleButton from "./CartToggleButton";
 import WishToggleButton from "./WishToggleButton";
 import MobileCartToggleButton from "./MobileCartButton";
 import NoProductFound from "./NoProductFound";
+import { getSession } from "@/app/(core)/utils/FetchSessionData";
 
 const IsSetupFor = true;
 const noImageFound = "/image-not-found.jpg";
+
+const ALL_METAL_ID_MAP = {
+  1: "#E5E7EB", // PWD
+  2: "#E5C378", // Yellow
+  3: "#D0D5DD", // White
+  4: "#E8A398", // Rose
+  6: "#E5C378", // YW
+  7: "#E5E7EB", // P-W
+  8: "#E8A398", // RG
+  10: "#E8A398", // PW
+  11: "#E5C378", // TYellow
+  12: "#E5C378", // PYellow
+  13: "#E5E7EB", // P
+  14: "#D0D5DD", // W
+  15: "#E5C378", // Y
+  16: "#E8A398", // ROSE AND WHITE GOLD
+  17: "#D0D5DD", // White G
+  19: "#E5C378", // Yellow Gold
+  20: "#E5C378", // PYW
+  21: "#E5C378", // Y-W
+  22: "#E5C378", // Y-W-P
+  23: "#E8A398", // Rose Gold
+  24: "#D0D5DD", // White Gold
+  25: "#E5C378", // Yellow1
+  26: "#E5C378", // FYellow1
+  27: "#E5C378", // YLSYN
+  28: "#D0D5DD", // WR.
+  29: "#E5C378", // YLL
+  30: "#E5C378", // Glossy
+  31: "#E5C378", // MV
+  32: "#E5C378", // polo
+  33: "#E5C378", // YELLOW-PH
+  34: "#E8A398", // ROSE GOLD -PH
+  35: "#C0C0C0", // silver
+  36: "#D4E157", // Green Gold
+  37: "#D0D5DD", // WG
+  38: "#E5C378", // YG
+};
+
+const getMetalColorHex = (targetObj, prodData) => {
+  const colorId = Number(targetObj?.id || prodData?.MetalColorid);
+  if (colorId && ALL_METAL_ID_MAP[colorId]) {
+    return ALL_METAL_ID_MAP[colorId];
+  }
+
+  const sessionCode = targetObj?.colorcode;
+  if (sessionCode && sessionCode.startsWith("#")) {
+    return sessionCode;
+  }
+
+  const nameKey = (
+    targetObj?.metalcolorname ||
+    targetObj?.colorname ||
+    prodData?.MetalColor ||
+    ""
+  )
+    .toLowerCase()
+    .trim();
+
+  if (nameKey) {
+    if (nameKey.includes("rose") || nameKey === "rg") return "#E8A398";
+    if (nameKey.includes("yellow") || nameKey === "yg" || nameKey.includes("yl")) return "#E5C378";
+    if (nameKey.includes("white") || nameKey === "wg" || nameKey.includes("silver")) return "#D0D5DD";
+    if (nameKey.includes("green")) return "#D4E157";
+    if (nameKey.includes("black")) return "#2D3748";
+    if (nameKey === "p" || nameKey === "pwd" || nameKey === "p-w") return "#E5E7EB";
+  }
+
+  if (prodData?.MetalColorCode && prodData.MetalColorCode.startsWith("#")) {
+    return prodData.MetalColorCode;
+  }
+
+  return "#E5C378";
+};
+
+const WeightBadge = ({ label, value }) => {
+  return (
+    <Box
+      sx={{
+        display: "inline-flex",
+        alignItems: "center",
+        height: 20,
+        px: 0.7,
+        bgcolor: "#F7F6F2",
+        border: "1px solid #E2DFD7",
+        borderRadius: "2px",
+        fontSize: { xs: "0.6rem", sm: "0.64rem" },
+        lineHeight: 1,
+        whiteSpace: "nowrap",
+        userSelect: "none",
+      }}
+    >
+      <Typography
+        component="span"
+        sx={{
+          fontSize: "inherit",
+          fontWeight: 400,
+          color: "#666666",
+          mr: 0.4,
+          letterSpacing: "0.01em",
+        }}
+      >
+        {label}&nbsp;:
+      </Typography>
+      <Typography
+        component="span"
+        sx={{
+          fontSize: "inherit",
+          fontWeight: 600,
+          color: "#1a1a1a",
+        }}
+      >
+        {value}
+      </Typography>
+    </Box>
+  );
+};
 
 const ChipBar = (title, bgcolor, position) => {
   return (
@@ -39,12 +157,11 @@ const ChipBar = (title, bgcolor, position) => {
           border: "1px solid #EFE6DA",
           fontWeight: 500,
           fontSize: {
-            xs: "0.6rem", // phones
-            sm: "0.65rem", // small tablets
-            md: "0.7rem", // tablets
-            lg: "0.75rem", // desktop
+            xs: "0.6rem",
+            sm: "0.65rem",
+            md: "0.7rem",
+            lg: "0.75rem",
           },
-
           letterSpacing: "0.03em",
           height: {
             xs: 18,
@@ -59,11 +176,9 @@ const ChipBar = (title, bgcolor, position) => {
             md: 0.7,
             lg: 0.8,
           },
-
           py: 0,
           textTransform: "uppercase",
           boxShadow: "none",
-
           "& .MuiChip-label": {
             px: {
               xs: 0.6,
@@ -116,6 +231,7 @@ const JewelryProductGrid = ({
   const getDynamicImages = (designno, extension) => {
     return `${getDesignImageFol}${designno}~${1}.${extension}`;
   };
+
   const getDynamicRollImages = (designno, count, extension) => {
     if (count > 1) {
       return `${getDesignImageFol}${designno}~${2}.${extension}`;
@@ -132,7 +248,10 @@ const JewelryProductGrid = ({
   };
 
   const showSkeletons = isFiltering || !productListData;
-  const isNoProduct = !isFiltering && Array.isArray(productListData) && productListData.length === 0;
+  const isNoProduct =
+    !isFiltering &&
+    Array.isArray(productListData) &&
+    productListData.length === 0;
 
   if (isNoProduct) {
     return <NoProductFound />;
@@ -169,48 +288,58 @@ const JewelryProductGrid = ({
 
           return (
             <Grid container spacing={0}>
-              {productListData.map((prod, index) => (
-                <Grid
-                  key={`${prod?.autocode || prod?.id || 'prod'}-${index}`}
-                  size={{
-                    xs: 6,
-                    sm: 6,
-                    md: isMedium ? 6 : 3,
-                  }}
-                >
-                  <ProductCard
-                    product={prod}
-                    index={index}
-                    StoreInit={storeinit}
-                    productData={prod}
-                    handleCartandWish={handleCartandWish}
-                    cartArr={cartArr}
-                    wishArr={wishArr}
-                    loginCurrency={loginUserDetail}
-                    imageUrl={getDynamicImages(
-                      prod?.designno,
-                      prod?.ImageExtension,
-                    )}
-                    videoUrl={getDynamicVideo(
-                      prod?.designno,
-                      prod?.VideoCount,
-                      prod?.VideoExtension,
-                    )}
-                    RollImageUrl={getDynamicRollImages(
-                      prod?.designno,
-                      prod?.ImageCount,
-                      prod?.ImageExtension,
-                    )}
-                    handleMoveToDetail={handleMoveToDetail}
-                    ImageCount={prod?.ImageCount}
-                    VideoCount={prod?.VideoCount}
-                    showFilter={showFilter}
-                    filter={filter}
-                    filterData={filterData}
-                    isMobile={isMobile}
-                  />
-                </Grid>
-              ))}
+              {productListData.map((prod, index) => {
+                const columns = isMedium ? 2 : 4;
+                return (
+                  <Grid
+                    key={`${prod?.autocode || prod?.id || 'prod'}-${index}`}
+                    size={{
+                      xs: 6,
+                      sm: 6,
+                      md: isMedium ? 6 : 3,
+                    }}
+                    sx={{
+                      border: "1px solid #e5e5e5",
+                      borderLeft:
+                        index % columns === 0 ? "1px solid #e5e5e5" : "0",
+                      borderTop: index < columns ? "1px solid #e5e5e5" : "0",
+                      boxSizing: "border-box",
+                    }}
+                  >
+                    <ProductCard
+                      product={prod}
+                      index={index}
+                      StoreInit={storeinit}
+                      productData={prod}
+                      handleCartandWish={handleCartandWish}
+                      cartArr={cartArr}
+                      wishArr={wishArr}
+                      loginCurrency={loginUserDetail}
+                      imageUrl={getDynamicImages(
+                        prod?.designno,
+                        prod?.ImageExtension,
+                      )}
+                      videoUrl={getDynamicVideo(
+                        prod?.designno,
+                        prod?.VideoCount,
+                        prod?.VideoExtension,
+                      )}
+                      RollImageUrl={getDynamicRollImages(
+                        prod?.designno,
+                        prod?.ImageCount,
+                        prod?.ImageExtension,
+                      )}
+                      handleMoveToDetail={handleMoveToDetail}
+                      ImageCount={prod?.ImageCount}
+                      VideoCount={prod?.VideoCount}
+                      showFilter={showFilter}
+                      filter={filter}
+                      filterData={filterData}
+                      isMobile={isMobile}
+                    />
+                  </Grid>
+                );
+              })}
             </Grid>
           );
         })()}
@@ -241,7 +370,6 @@ const ProductCard = ({
   ImageCount,
   VideoCount,
   isMobile,
-  columnsPerRow = 4,
 }) => {
   const cardVariants = {
     hidden: {
@@ -260,9 +388,7 @@ const ProductCard = ({
       },
     },
   };
-  const isFirstInRow = index % columnsPerRow === 0;
-  const isFirstRow = index < columnsPerRow;
-  // const hasUpperTags = productData?.IsInReadyStock == 1 || productData?.IsBestSeller == 1 || productData?.IsTrending == 1 || productData?.IsNewArrival == 1;
+
   const hasUpperTags =
     productData?.IsInReadyStock == 1 ||
     productData?.IsBestSeller == 1 ||
@@ -271,6 +397,34 @@ const ProductCard = ({
 
   const Article = productData?.ArticleNo;
   const DesignNo = productData?.designno;
+
+  const mtColorLocal = useMemo(() => {
+    try {
+      return getSession("MetalColorCombo") || [];
+    } catch {
+      return [];
+    }
+  }, []);
+
+  const targetColorObj = useMemo(() => {
+    if (!productData?.MetalColorid || !Array.isArray(mtColorLocal)) return null;
+    return mtColorLocal.find(
+      (ele) => Number(ele?.id) === Number(productData?.MetalColorid)
+    );
+  }, [productData?.MetalColorid, mtColorLocal]);
+
+  const colorHex = getMetalColorHex(targetColorObj, productData);
+  const colorName =
+    targetColorObj?.metalcolorname || targetColorObj?.colorname || "";
+  const purityText =
+    productData?.MetalTypePurity ||
+    productData?.MetalTypeName ||
+    productData?.MetalPurity ||
+    "";
+  const metalText =
+    [purityText, colorName].filter(Boolean).join(" ") ||
+    productData?.Categoryname ||
+    "";
 
   return (
     <MotionCard
@@ -281,11 +435,19 @@ const ProductCard = ({
       sx={{
         boxShadow: "none !important",
         outline: "none !important",
-        borderRight: "1px solid #e5e5e5",
-        borderBottom: "1px solid #e5e5e5",
-        borderLeft: isFirstInRow ? "1px solid #e5e5e5" : "none",
-        borderTop: isFirstRow ? "1px solid #e5e5e5" : "none",
+        border: "none !important",
         borderRadius: 0,
+        overflow: "hidden",
+        backgroundColor: "#ffffff",
+        height: "100%",
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "space-between",
+        position: "relative",
+        transition: "all 0.2s ease",
+        "&:hover": {
+          zIndex: 2,
+        },
       }}
     >
       {/* --- PRODUCT IMAGE CONTAINER --- */}
@@ -372,7 +534,7 @@ const ProductCard = ({
                   }}
                   onContextMenu={(e) => e.preventDefault()}
                   sx={{
-                    objectFit: "cover !important",
+                    objectFit: "contain !important",
                     borderRadius: 0,
                     transition: "opacity 0.4s ease",
                     width: "100%",
@@ -418,7 +580,7 @@ const ProductCard = ({
                     sx={{
                       width: "100%",
                       height: "100%",
-                      objectFit: "cover",
+                      objectFit: "contain",
                       borderRadius: 0,
                       transition: "opacity 0.4s ease",
                       mixBlendMode: "multiply",
@@ -444,8 +606,8 @@ const ProductCard = ({
         <Box
           sx={{
             position: "absolute",
-            top: 20,
-            left: 12,
+            top: 10,
+            left: 10,
             zIndex: 22,
             display: "flex",
             flexDirection: { xs: "column", md: "row" },
@@ -489,103 +651,166 @@ const ProductCard = ({
 
       {/* --- CARD CONTENT BELOW IMAGE --- */}
       <CardContent
-        onClick={() => handleMoveToDetail(productData, imageUrl)}
         sx={{
-          px: 2.4,
-          py: 2,
+          px: 1.5,
+          pt: 1.2,
+          pb: "0.8rem !important",
+          "&:last-child": {
+            pb: "0.8rem !important",
+          },
+          borderTop: "1px solid #e5e5e5",
           display: "flex",
           flexDirection: "column",
-          gap: 0.8,
-          cursor: "pointer",
+          gap: 0.3,
+          backgroundColor: "#ffffff",
         }}
       >
-        {/* PRICE ROW */}
+        {/* Metal Color Swatch & Quality / Category Line */}
+        {metalText ? (
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              gap: 0.8,
+              mt: 0.1,
+            }}
+          >
+            <Box
+              sx={{
+                width: 11,
+                height: 11,
+                backgroundColor: colorHex,
+                border: "1px solid rgba(0,0,0,0.3)",
+                borderRadius: "1px",
+                flexShrink: 0,
+              }}
+            />
+            <Typography
+              variant="caption"
+              sx={{
+                fontSize: { xs: "0.68rem", sm: "0.72rem", md: "0.76rem" },
+                fontWeight: 400,
+                color: "#666666",
+                letterSpacing: "0.01em",
+                whiteSpace: "nowrap",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+              }}
+            >
+              {metalText}
+            </Typography>
+          </Box>
+        ) : null}
+
+        {/* Title */}
+        <Typography
+          variant="body1"
+          sx={{
+            fontSize: {
+              xs: "0.82rem",
+              sm: "0.88rem",
+              md: "0.92rem",
+            },
+            fontWeight: 500,
+            lineHeight: 1.3,
+            color: "#1a1a1a",
+            textAlign: "left",
+            whiteSpace: "nowrap",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            minHeight: "1.3em",
+            visibility: productData?.TitleLine ? "visible" : "hidden",
+          }}
+        >
+          {productData?.TitleLine
+            ? formatTitleLine(productData?.TitleLine)
+            : " "}
+        </Typography>
+
+        {/* Price */}
         {StoreInit?.IsPriceShow == 1 && (
-          <Box sx={{ display: "flex", alignItems: "center", gap: 0.8, flexWrap: "wrap" }}>
+          <Typography
+            variant="body1"
+            sx={{
+              fontWeight: 700,
+              fontSize: { xs: "0.85rem", sm: "0.92rem", md: "0.98rem" },
+              color: "#000000",
+              textAlign: "left",
+              mt: 0.1,
+            }}
+          >
+            <span
+              dangerouslySetInnerHTML={{
+                __html: decodeEntities(
+                  loginCurrency?.CurrencyCode ?? StoreInit?.CurrencyCode,
+                ),
+              }}
+              style={{ paddingRight: "0.25rem" }}
+            />
+            {formatter(productData?.UnitCostWithMarkUp)}
+          </Typography>
+        )}
+
+        {/* Meta Details — Article & Squared Weight Chips */}
+        <Box
+          sx={{
+            mt: 0.3,
+            display: "flex",
+            flexDirection: "column",
+            gap: 0.4,
+          }}
+        >
+          {Article && (
             <Typography
               sx={{
                 fontWeight: 600,
-                fontSize: { xs: "0.78rem", sm: "0.85rem", md: "0.9rem" },
-                color: "#050505",
+                fontSize: { xs: "0.66rem", sm: "0.72rem" },
+                color: "#555555",
+                letterSpacing: "0.03em",
+                textTransform: "uppercase",
               }}
             >
-              <span
-                dangerouslySetInnerHTML={{
-                  __html: decodeEntities(
-                    loginCurrency?.CurrencyCode ?? StoreInit?.CurrencyCode,
-                  ),
-                }}
-                style={{ paddingRight: "0.3rem" }}
-              />
-              {formatter(productData?.UnitCostWithMarkUp)}
+              {Article}
             </Typography>
+          )}
+
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              flexWrap: "wrap",
+              gap: 0.5,
+            }}
+          >
+            {Number(productData?.Nwt) > 0 && (
+              <WeightBadge label="NWT" value={productData?.Nwt?.toFixed(3)} />
+            )}
+
+            {StoreInit?.IsDiamondWeight == 1 &&
+              Number(productData?.Dwt) !== 0 && (
+                <WeightBadge
+                  label="DWT"
+                  value={`${productData?.Dwt?.toFixed(3)}${
+                    StoreInit?.IsDiamondPcs === 1 ? `/${productData?.Dpcs}` : ""
+                  }`}
+                />
+              )}
+
+            {StoreInit?.IsGrossWeight == 1 && Number(productData?.Gwt) > 0 && (
+              <WeightBadge label="GWT" value={productData?.Gwt?.toFixed(3)} />
+            )}
+          </Box>
+        </Box>
+
+        {isMobile && (
+          <Box position="relative" sx={{ mt: 0.2 }}>
+            <MobileCartToggleButton
+              productData={productData}
+              cartArr={cartArr}
+              handleCartandWish={handleCartandWish}
+            />
           </Box>
         )}
-
-        {/* ARTICLE NO (LEFT) AND NWT (RIGHT) ROW */}
-        <Box sx={{ mt: 1 }}>
-          <Grid container spacing={0.8}>
-            <Grid item size={{ xs: 6 }}>
-              <Box sx={{ display: "flex", alignItems: "center" }}>
-                <Typography
-                  variant="body2"
-                  sx={{
-                    fontWeight: 300,
-                    fontSize: { xs: "0.62rem", sm: "0.8rem", md: "0.85rem" },
-                    color: "#000",
-                    letterSpacing: "0.03em",
-                    textTransform: "uppercase",
-                  }}
-                >
-                  {Article}
-                </Typography>
-              </Box>
-            </Grid>
-
-            <Grid item size={{ xs: 6 }}>
-              <Box
-                sx={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 0.5,
-                  justifyContent: "flex-end",
-                }}
-              >
-                <Typography
-                  variant="body2"
-                  sx={{
-                    fontWeight: 300,
-                    fontSize: { xs: "0.62rem", sm: "0.8rem", md: "0.85rem" },
-                    color: "#000",
-                    letterSpacing: "0.02em",
-                  }}
-                >
-                  NWT&nbsp;:
-                </Typography>
-                <Typography
-                  variant="body2"
-                  sx={{
-                    fontWeight: 300,
-                    fontSize: { xs: "0.7rem", sm: "0.8rem", md: "0.85rem" },
-                    color: "#000",
-                  }}
-                >
-                  {productData?.Nwt ? productData?.Nwt?.toFixed(3) : "0.000"}
-                </Typography>
-              </Box>
-            </Grid>
-
-            {isMobile && (
-              <Grid item size={{ xs: 12, sm: 12 }} position={"relative"}>
-                <MobileCartToggleButton
-                  productData={productData}
-                  cartArr={cartArr}
-                  handleCartandWish={handleCartandWish}
-                />
-              </Grid>
-            )}
-          </Grid>
-        </Box>
       </CardContent>
     </MotionCard>
   );
