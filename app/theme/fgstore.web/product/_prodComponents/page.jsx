@@ -31,6 +31,7 @@ import BreadCrumbs from './BreadCrums';
 import { useStore } from '@/app/(core)/contexts/StoreProvider';
 import { ParseAndDecodeSearchParams } from '@/app/(core)/utils/GlobalFunctions/Parser';
 import { getSession, setSession } from '@/app/(core)/utils/FetchSessionData';
+import { useListingPage } from '@/app/(core)/hooks/useListingPage';
 
 const MobileFilter = dynamic(() => import('./MobileFilter'), { ssr: false });
 
