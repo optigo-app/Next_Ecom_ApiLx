@@ -192,22 +192,47 @@ export const decodeEntities = (html) => {
 };
 
 /**
- * Parse Breadcrumb structure from current URL search params
+/**
+ * Parse Breadcrumb structure from current URL search params and pathname
  */
 export const BreadCumsObj = (location) => {
-  const searchStr = typeof window !== "undefined" ? window.location.search : "";
-  let BreadCum;
-  try {
-    BreadCum = decodeURI(atob(searchStr.slice(3)))?.split("/");
-  } catch (_) {
-    BreadCum = ["", ""];
+  let searchStr = "";
+  let mParam = "";
+  if (typeof window !== "undefined") {
+    try {
+      searchStr = window.location.search || "";
+      const urlParams = new URLSearchParams(window.location.search);
+      mParam = urlParams.get("M") || "";
+    } catch (_) {}
   }
 
-  const values = BreadCum[0]?.split(",");
-  const labels = BreadCum[1]?.split(",");
+  if (!mParam && searchStr.includes("M=")) {
+    try {
+      const match = searchStr.match(/[?&]M=([^&]+)/);
+      if (match) mParam = match[1];
+    } catch (_) {}
+  }
+
+  let BreadCum = ["", ""];
+  if (mParam) {
+    try {
+      const decoded = atob(mParam);
+      BreadCum = decodeURI(decoded)?.split("/") || ["", ""];
+    } catch (e) {
+      try {
+        const decoded = atob(decodeURIComponent(mParam));
+        BreadCum = decodeURI(decoded)?.split("/") || ["", ""];
+      } catch (_) {
+        BreadCum = ["", ""];
+      }
+    }
+  }
+
+  const values = BreadCum[0] ? BreadCum[0].split(",") : [];
+  const labels = BreadCum[1] ? BreadCum[1].split(",") : [];
 
   const updatedBreadCum = labels?.reduce((acc, label, index) => {
-    acc[label] = values[index] || "";
+    if (label) acc[label] = values[index] || "";
     return acc;
   }, {});
 
@@ -220,7 +245,29 @@ export const BreadCumsObj = (location) => {
     }, {});
 
   res = res || {};
-  res.menuname = decodeURI(location || "")?.slice(3)?.slice(0, -1)?.split("/")[0];
+
+  // Extract path segments cleanly without chopping off trailing characters
+  const rawLocation = typeof location === "string" ? location : (typeof window !== "undefined" ? window.location.pathname : "");
+  const cleanPath = decodeURI(rawLocation || "").split("?")[0].replace(/^\/+|\/+$/g, "");
+  const segments = cleanPath.split("/").filter(Boolean);
+  const pIdx = segments.indexOf("p");
+  const actualSegments = pIdx !== -1 ? segments.slice(pIdx + 1) : segments;
+
+  res.menuname = actualSegments[0] ? decodeURIComponent(actualSegments[0]) : (res.FilterVal || "");
+
+  // Fallback: if query ?M= was absent or empty, populate filter values from URL path segments
+  if (!res.FilterVal && actualSegments.length > 0) {
+    res.FilterKey = "Category";
+    res.FilterVal = decodeURIComponent(actualSegments[0]);
+  }
+  if (!res.FilterVal1 && actualSegments.length > 1) {
+    res.FilterKey1 = "SubCategory";
+    res.FilterVal1 = decodeURIComponent(actualSegments[1]);
+  }
+  if (!res.FilterVal2 && actualSegments.length > 2) {
+    res.FilterKey2 = "Collection";
+    res.FilterVal2 = decodeURIComponent(actualSegments[2]);
+  }
 
   return res;
 };
@@ -278,7 +325,8 @@ export const handleBreadcums = ({ mparams, isCollectionMenu, navigate, location 
     .join(",");
 
   const menuEncoded = `${queryParameters}/${otherparamUrl}`;
-  const url = `/p/${BreadCumsObj(location)?.menuname}/${queryParameters1}/?M=${btoa(menuEncoded)}`;
+  const menuName = BreadCumsObj(location)?.menuname || "product";
+  const url = `/p/${menuName}/${queryParameters1}/?M=${btoa(menuEncoded)}`;
 
   navigate?.push(url);
 };

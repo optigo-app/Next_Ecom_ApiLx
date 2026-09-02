@@ -848,10 +848,14 @@ const useCart = () => {
   }, [cartData, cartStatus]);
 
   useEffect(() => {
+    if (!finalCartData || finalCartData.length === 0) return;
     if (loadingIndex >= finalCartData?.length) return;
 
     const loadNextProductImages = () => {
       setFinalCartData((prevData) => {
+        if (!prevData || prevData.length === 0 || !prevData[loadingIndex]) {
+          return prevData || [];
+        }
         const newData = [...prevData];
         newData[loadingIndex] = {
           ...newData[loadingIndex],
