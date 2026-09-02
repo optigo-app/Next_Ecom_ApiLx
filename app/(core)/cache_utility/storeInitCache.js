@@ -210,22 +210,24 @@ export function getStoreInitMemory(host) {
 }
 
 /**
- * warmStoreInitCache(host)
- * ───────────────────────
- * Call this once at startup (e.g. in a route handler or layout) to pre-warm
- * the memory cache from disk, avoiding the first-hit disk read.
+ * clearStoreInitCache()
+ * ─────────────────────
+ * Clears in-process memory cache and deletes all disk cache files in public/storeInit
  */
-export async function warmStoreInitCache(host) {
-  const cacheKey = sanitizeKey(host);
-  if (memoryCache.has(cacheKey)) return; // already warm
-  const disk = readDiskSync(diskPath(cacheKey));
-  if (disk) {
-    memoryCache.set(cacheKey, { data: disk, cachedAt: Date.now() });
-    if (isDiskStale(diskPath(cacheKey))) {
-      triggerRevalidate(cacheKey, disk);
+export async function clearStoreInitCache() {
+  memoryCache.clear();
+  pendingMap.clear();
+  if (fs.existsSync(STORE_INIT_DIR)) {
+    try {
+      const files = await fs.promises.readdir(STORE_INIT_DIR);
+      for (const file of files) {
+        if (file.endsWith(".json") || file.endsWith(".tmp")) {
+          await fs.promises.unlink(path.join(STORE_INIT_DIR, file)).catch(() => {});
+        }
+      }
+      console.log("[StoreInit] Cleared all storeInit disk and memory cache");
+    } catch (err) {
+      console.error("[StoreInit] Error clearing storeInit cache:", err);
     }
-  } else {
-    // No disk file — fetch now (warm on startup, not on first user request)
-    await triggerRevalidate(cacheKey, null, { awaitResult: true });
   }
 }

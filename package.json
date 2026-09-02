@@ -21,6 +21,7 @@
     "@next/bundle-analyzer": "^15.5.4",
     "@uidotdev/usehooks": "^2.4.1",
     "axios": "^1.12.2",
+    "better-sqlite3": "^13.0.3",
     "canvas-confetti": "^1.9.4",
     "cors": "^2.8.5",
     "cross-env": "^10.0.0",

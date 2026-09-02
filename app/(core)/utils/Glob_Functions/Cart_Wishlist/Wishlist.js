@@ -155,18 +155,16 @@ const Usewishlist = () => {
     const visiterId = Cookies.get('visiterId');
     let param = "wish";
     try {
+      setWishlistData([]);
+      setFinalWishData([]);
+      setDiamondWishData([]);
+      setLoadingIndex(0);
       const response = await removeFromCartList('IsDeleteAll', param, visiterId);
-      let resStatus = response.Data.rd[0];
-      if (resStatus?.msg == "success") {
-        setWishlistData([]);
-        setFinalWishData([]);
-        setDiamondWishData([]);
-        return resStatus;
-      } else {
-        console.log('Failed to remove all products or products not found');
-      }
+      let resStatus = response?.Data?.rd?.[0];
+      return resStatus || { msg: "success" };
     } catch (error) {
       console.error("Error:", error);
+      return { msg: "error" };
     }
   };
 
@@ -379,7 +377,11 @@ const Usewishlist = () => {
 
   // Initialize finalWishData once when wishlistData changes
   useEffect(() => {
-    if (!wishlistData) return;
+    if (!wishlistData || wishlistData.length === 0) {
+      setFinalWishData([]);
+      setLoadingIndex(0);
+      return;
+    }
 
     const initialProducts = wishlistData.map(data => ({
       ...data,
@@ -393,10 +395,14 @@ const Usewishlist = () => {
 
   // Load images sequentially after finalWishData is set
   useEffect(() => {
+    if (!finalWishData || finalWishData.length === 0) return;
     if (loadingIndex >= finalWishData.length) return;
 
     const loadNextProductImages = () => {
       setFinalWishData(prevData => {
+        if (!prevData || prevData.length === 0 || !prevData[loadingIndex]) {
+          return prevData || [];
+        }
         const newData = [...prevData];
         newData[loadingIndex] = {
           ...newData[loadingIndex],

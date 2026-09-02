@@ -282,7 +282,7 @@ const ProductList = ({ storeinit, searchParams, params }) => {
         <BreadCrumbBar
           productListData={productListData}
           decodeURIComponent={decodeURIComponent}
-          IsBreadCumShow={Boolean(result?.length)}
+          IsBreadCumShow={true}
           BreadCumsObj={getBreadCumsObj}
           handleBreadcums={handleBreadcrumbClick}
           isFiltering={isOnlyProdLoading || isProdLoading}

@@ -1,8 +1,11 @@
+"use client";
+
+import React, { useMemo } from "react";
 import { Box, Chip, useTheme, useMediaQuery, Skeleton } from "@mui/material";
 import ChevronRightIcon from "@mui/icons-material/ChevronRightRounded";
 import { useNextRouterLikeRR } from "@/app/(core)/hooks/useLocationRd";
-import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { usePathname, useSearchParams } from "next/navigation";
+import { BreadCumsObj, handleBreadcums } from "@/app/(core)/utils/product/productListingHelpers";
 
 const chipBaseStyles = {
   fontSize: "13px",
@@ -12,7 +15,7 @@ const chipBaseStyles = {
   borderRadius: 15,
   border: "1px solid #e5e5e5",
   px: 1,
-  height: 26, // 👈 reduced height (premium feel)
+  height: 26,
   display: "flex",
   alignItems: "center",
   transition: "all 0.2s ease",
@@ -30,32 +33,46 @@ const chipPrimaryStyles = {
   border: "1px solid #0a1f47",
   boxShadow: "0 1px 2px rgba(0,0,0,0.08)",
   transition: "all 0.2s ease",
-
   "&:hover": {
     backgroundColor: "#0a1f47",
     borderColor: "#0a1f47",
   },
 };
 
-// #0a1f47
-
-
-const BreadCrumbBar = ({ isFiltering, decodeURIComponent, productListData, IsBreadCumShow, BreadCumsObj, handleBreadcums }) => {
+const BreadCrumbBar = ({
+  isFiltering,
+  productListData,
+  IsBreadCumShow = true,
+  BreadCumsObj: customBreadCumsObj,
+  handleBreadcums: customHandleBreadcums,
+}) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
-  // FIX 2026-04-29: usePathname() returns a plain string — it has NO .search or .pathname properties.
-  // location.search on a string returns String.prototype.search (a function, truthy) → .charAt() crashes.
-  // Use window.location.search for the query string and location (pathname) for path segments.
-  const location = usePathname(); // plain pathname string, e.g. "/p/Rings/Gold/"
-  const [windowSearch, setWindowSearch] = useState("");
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      setWindowSearch(window.location.search); // e.g. "?M=abc123"
-    }
-  }, [location]); // refresh when pathname changes
+  const location = usePathname();
+  const searchParams = useSearchParams();
   const navigate = useNextRouterLikeRR();
-  // First char of query string after "?" — e.g. "?N=..." → 'N'
-  const searchFirstChar = windowSearch.charAt(1);
+
+  const searchStr = searchParams?.toString()
+    ? `?${searchParams.toString()}`
+    : typeof window !== "undefined"
+    ? window.location.search
+    : "";
+
+  const searchFirstChar = searchStr.startsWith("?") ? searchStr.charAt(1) : "";
+
+  const breadcrumb = useMemo(() => {
+    if (typeof customBreadCumsObj === "function") {
+      try {
+        const obj = customBreadCumsObj(location);
+        if (obj && (obj.menuname || obj.FilterVal)) return obj;
+      } catch (_) {}
+    }
+    return BreadCumsObj(location);
+  }, [customBreadCumsObj, location, searchStr]);
+
+  const onBreadcrumbClick = customHandleBreadcums || ((mparams, isCol) =>
+    handleBreadcums({ mparams, isCollectionMenu: isCol, navigate, location })
+  );
 
   if (isFiltering) {
     return (
@@ -69,7 +86,7 @@ const BreadCrumbBar = ({ isFiltering, decodeURIComponent, productListData, IsBre
           mb: 1,
         }}
       >
-        {Array?.from(new Array(3)).map((_, i) => (
+        {Array.from(new Array(3)).map((_, i) => (
           <Box key={i} sx={{ display: "flex", alignItems: "center" }}>
             <Skeleton
               variant="rounded"
@@ -109,6 +126,7 @@ const BreadCrumbBar = ({ isFiltering, decodeURIComponent, productListData, IsBre
         mb: 2,
       }}
     >
+      {/* Home Chip */}
       <Chip
         label="Home"
         onClick={() => navigate.push("/")}
@@ -117,110 +135,124 @@ const BreadCrumbBar = ({ isFiltering, decodeURIComponent, productListData, IsBre
         sx={chipBaseStyles}
       />
 
-      {/* Chevron */}
-      <ChevronRightIcon
-        sx={{
-          fontSize: 18,
-          color: "#bdbdbd",
-        }}
-      />
-
-      {/* 🆕 New Arrival or S Path or Breadcrumbs Object */}
+      {/* Special Query Views */}
       {searchFirstChar === "N" && (
-        <Chip
-          label="New Arrival"
-          size={isMobile ? "small" : "medium"}
-          sx={chipPrimaryStyles}
-        />
-      )}
-      {searchFirstChar === "A" && (
-        <Chip
-          label={location?.split("/")[2]?.replaceAll('%20', '')}
-          size={isMobile ? "small" : "medium"}
-          sx={chipPrimaryStyles}
-        />
-      )}
-      {searchFirstChar === "S" && (
-        <Chip
-          label={decodeURIComponent(location?.split("/")[2])}
-          size={isMobile ? "small" : "medium"}
-          sx={chipBaseStyles}
-        />
-      )}
-      {searchFirstChar === "T" && (
-        <Chip
-          label={'Trending'}
-          size={isMobile ? "small" : "medium"}
-          sx={chipBaseStyles}
-        />
-      )}
-      {searchFirstChar === "B" && (
-        <Chip
-          label={'Best Seller'}
-          size={isMobile ? "small" : "medium"}
-          sx={chipBaseStyles}
-        />
-      )}
-
-
-      {IsBreadCumShow && (
         <>
-          {BreadCumsObj()?.menuname && (
-            <>
-              <Chip
-                label={BreadCumsObj()?.menuname}
-                onClick={() =>
-                  handleBreadcums({
-                    [BreadCumsObj()?.FilterKey]: BreadCumsObj()?.FilterVal,
-                  }, BreadCumsObj()?.menuname?.toLowerCase() === "collection")
-                }
-                size={isMobile ? "small" : "medium"}
-                clickable
-                sx={chipPrimaryStyles}
-
-              />
-
-              {BreadCumsObj()?.FilterVal1 && (
-                <>
-                  <ChevronRightIcon sx={{ fontSize: 18, color: "#bdbdbd" }} />
-                  <Chip
-                    label={BreadCumsObj()?.FilterVal1}
-                    onClick={() =>
-                      handleBreadcums({
-                        [BreadCumsObj()?.FilterKey]: BreadCumsObj()?.FilterVal,
-                        [BreadCumsObj()?.FilterKey1]: BreadCumsObj()?.FilterVal1,
-                      })
-                    }
-                    size={isMobile ? "small" : "medium"}
-                    clickable
-                    sx={chipPrimaryStyles}
-
-                  />
-                </>
-              )}
-
-              {BreadCumsObj()?.FilterVal2 && (
-                <>
-                  <ChevronRightIcon sx={{ fontSize: 18, color: "#bdbdbd" }} />
-                  <Chip
-                    label={BreadCumsObj()?.FilterVal2}
-                    onClick={() =>
-                      handleBreadcums({
-                        [BreadCumsObj()?.FilterKey]: BreadCumsObj()?.FilterVal,
-                        [BreadCumsObj()?.FilterKey1]: BreadCumsObj()?.FilterVal1,
-                        [BreadCumsObj()?.FilterKey2]: BreadCumsObj()?.FilterVal2,
-                      })
-                    }
-                    size={isMobile ? "small" : "medium"}
-                    clickable
-                    sx={chipPrimaryStyles}
-                  />
-                </>
-              )}
-            </>
-          )}
+          <ChevronRightIcon sx={{ fontSize: 18, color: "#bdbdbd" }} />
+          <Chip
+            label="New Arrival"
+            size={isMobile ? "small" : "medium"}
+            sx={chipPrimaryStyles}
+          />
         </>
       )}
+
+      {searchFirstChar === "A" && (
+        <>
+          <ChevronRightIcon sx={{ fontSize: 18, color: "#bdbdbd" }} />
+          <Chip
+            label={decodeURIComponent(location?.split("/")[2] || "").replaceAll("%20", " ")}
+            size={isMobile ? "small" : "medium"}
+            sx={chipPrimaryStyles}
+          />
+        </>
+      )}
+
+      {searchFirstChar === "S" && (
+        <>
+          <ChevronRightIcon sx={{ fontSize: 18, color: "#bdbdbd" }} />
+          <Chip
+            label={decodeURIComponent(location?.split("/")[2] || "")}
+            size={isMobile ? "small" : "medium"}
+            sx={chipBaseStyles}
+          />
+        </>
+      )}
+
+      {searchFirstChar === "T" && (
+        <>
+          <ChevronRightIcon sx={{ fontSize: 18, color: "#bdbdbd" }} />
+          <Chip
+            label="Trending"
+            size={isMobile ? "small" : "medium"}
+            sx={chipPrimaryStyles}
+          />
+        </>
+      )}
+
+      {searchFirstChar === "B" && (
+        <>
+          <ChevronRightIcon sx={{ fontSize: 18, color: "#bdbdbd" }} />
+          <Chip
+            label="Best Seller"
+            size={isMobile ? "small" : "medium"}
+            sx={chipPrimaryStyles}
+          />
+        </>
+      )}
+
+      {/* Category / Menu Hierarchy Navigation */}
+      {searchFirstChar !== "N" &&
+        searchFirstChar !== "A" &&
+        searchFirstChar !== "S" &&
+        searchFirstChar !== "T" &&
+        searchFirstChar !== "B" &&
+        breadcrumb?.menuname && (
+          <>
+            <ChevronRightIcon sx={{ fontSize: 18, color: "#bdbdbd" }} />
+            <Chip
+              label={breadcrumb.menuname}
+              onClick={() =>
+                onBreadcrumbClick(
+                  {
+                    [breadcrumb.FilterKey || "Category"]: breadcrumb.FilterVal || breadcrumb.menuname,
+                  },
+                  breadcrumb.menuname?.toLowerCase() === "collection"
+                )
+              }
+              size={isMobile ? "small" : "medium"}
+              clickable
+              sx={chipPrimaryStyles}
+            />
+
+            {breadcrumb.FilterVal1 && (
+              <>
+                <ChevronRightIcon sx={{ fontSize: 18, color: "#bdbdbd" }} />
+                <Chip
+                  label={breadcrumb.FilterVal1}
+                  onClick={() =>
+                    onBreadcrumbClick({
+                      [breadcrumb.FilterKey || "Category"]: breadcrumb.FilterVal || breadcrumb.menuname,
+                      [breadcrumb.FilterKey1 || "SubCategory"]: breadcrumb.FilterVal1,
+                    })
+                  }
+                  size={isMobile ? "small" : "medium"}
+                  clickable
+                  sx={chipPrimaryStyles}
+                />
+              </>
+            )}
+
+            {breadcrumb.FilterVal2 && (
+              <>
+                <ChevronRightIcon sx={{ fontSize: 18, color: "#bdbdbd" }} />
+                <Chip
+                  label={breadcrumb.FilterVal2}
+                  onClick={() =>
+                    onBreadcrumbClick({
+                      [breadcrumb.FilterKey || "Category"]: breadcrumb.FilterVal || breadcrumb.menuname,
+                      [breadcrumb.FilterKey1 || "SubCategory"]: breadcrumb.FilterVal1,
+                      [breadcrumb.FilterKey2 || "Collection"]: breadcrumb.FilterVal2,
+                    })
+                  }
+                  size={isMobile ? "small" : "medium"}
+                  clickable
+                  sx={chipPrimaryStyles}
+                />
+              </>
+            )}
+          </>
+        )}
     </Box>
   );
 };

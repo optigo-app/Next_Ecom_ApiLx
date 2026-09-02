@@ -261,8 +261,8 @@ const ProductList = ({ storeinit, searchParams, params }) => {
         <BreadCrumbBar
           productListData={productListData}
           decodeURIComponent={decodeURIComponent}
-          IsBreadCumShow={IsBreadCumShow}
-          BreadCumsObj={BreadCumsObj}
+          IsBreadCumShow={true}
+          BreadCumsObj={() => BreadCumsObj(location)}
           handleBreadcums={(mparams, isCollectionMenu) =>
             handleBreadcums({ mparams, isCollectionMenu, navigate, location })
           }
