@@ -53,36 +53,21 @@ const setApiUrl = async () => {
 
   apiUrlPromise = (async () => {
     try {
-      const existingStoreInit = getStoreInitData();
-      if (existingStoreInit && Object.keys(existingStoreInit).length > 0) {
-        applyStoreInitData(existingStoreInit);
-        return APIURL;
+      const storeData = await initStore();
+      if (storeData) {
+        applyStoreInitData(storeData);
+        if (APIURL && typeof APIURL === "string" && APIURL.length > 0) {
+          return APIURL;
+        }
       }
 
-      let fetchUrl = `/api/store-init`;
-      if (typeof window === "undefined") {
-        const domainInfo = await getDomainInfo();
-        const { hostname, protocol } = domainInfo;
-        fetchUrl = `${protocol}//${hostname}/api/store-init`;
-      }
-
-      const datas = await fetch(fetchUrl, { method: "GET" });
-      const parseddata = await datas.json();
-      const domainInfo = await getDomainInfo();
+      const domainInfo = await getDomainInfo().catch(() => ({}));
       const hostname = domainInfo?.hostname || "";
       const cleanHost = hostname.split(":")[0];
-
-      if (parseddata) {
-        applyStoreInitData(parseddata);
-        return;
-      }
 
       if (isLocalHost(cleanHost)) {
         APIURL = "http://newnextjs.web/api/report";
       } else {
-        APIURL = "https://apilx.optigoapps.com/api/report";
-      }
-      if (!APIURL) {
         APIURL = "https://apilx.optigoapps.com/api/report";
       }
       return APIURL;

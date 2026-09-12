@@ -3,8 +3,11 @@ import path from "path";
 
 const CACHE_DIR = path.join(process.cwd(), ".next_cache");
 const MENU_CACHE_DIR = path.join(CACHE_DIR, "menu");
-if (!fs.existsSync(CACHE_DIR)) fs.mkdirSync(CACHE_DIR, { recursive: true });
-if (!fs.existsSync(MENU_CACHE_DIR)) fs.mkdirSync(MENU_CACHE_DIR, { recursive: true });
+
+try {
+  if (!fs.existsSync(CACHE_DIR)) fs.mkdirSync(CACHE_DIR, { recursive: true });
+  if (!fs.existsSync(MENU_CACHE_DIR)) fs.mkdirSync(MENU_CACHE_DIR, { recursive: true });
+} catch (_) {}
 
 const defaultTTL = 12 * 60 * 60 * 1000; // 12h
 const safeKey = (key) => key.replace(/[^a-zA-Z0-9_\-]/g, "_");
@@ -63,11 +66,10 @@ export async function setCache(key, data, meta) {
     if (!fs.existsSync(dir)) {
       await fs.promises.mkdir(dir, { recursive: true });
     }
-    // Optimization: Remove pretty-printing (null, 2) to reduce file size and I/O
     await fs.promises.writeFile(file, JSON.stringify(payload), "utf8");
     console.log(`✅ [CACHE SAVED] ${key}`);
   } catch (err) {
-    console.error(`❌ Cache write failed for ${key}:`, err);
+    console.warn(`⚠️ [CACHE WRITE SKIPPED] ${key} (${err.code || err.message})`);
   }
 }
 

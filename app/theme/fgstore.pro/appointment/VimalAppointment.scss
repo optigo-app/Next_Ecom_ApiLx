@@ -1,0 +1,350 @@
+@use '../style/variable.scss' as *;
+
+.eleev_appointment_page {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  font-family: $fontSansSerif !important;
+
+
+  .for_error-message_box {
+    margin-top: 1rem;
+    margin-bottom: 0;
+    text-align: center;
+    color: red;
+  }
+
+  .elvee_banner_app {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 7rem;
+
+    @media screen and (max-width: 968px) {
+      padding: 0 1rem;
+      flex-direction: column-reverse;
+      text-align: center;
+
+      .content {
+        flex: 1;
+
+        p {
+          font-size: 14.5px;
+        }
+      }
+    }
+
+    .content {
+      flex: 1;
+      padding: 2rem 0;
+
+      @media screen and (max-width: 1200px) {
+        font-size: 15px;
+      }
+    }
+
+    .image {
+      flex: 1;
+
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+    }
+  }
+
+  .grid_col_2_elvee {
+    width: 100%;
+    height: 100%;
+    padding: 2rem 0;
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+
+    .grid_content_banner {
+      width: 40%;
+      margin: 0 auto;
+
+      @media screen and (max-width: 1520px) {
+        width: 85%;
+      }
+
+      @media screen and (max-width: 1300px) {
+        width: 80%;
+      }
+
+      @media screen and (max-width: 928px) {
+        width: 70%;
+      }
+
+      @media screen and (max-width: 768px) {
+        width: 80%;
+      }
+
+      @media screen and (max-width: 520px) {
+        width: 95%;
+      }
+
+      h1 {
+        text-transform: uppercase;
+        font-weight: 600;
+        font-size: 18px;
+      }
+
+      p {
+        font-size: 14px;
+        color: gray;
+        font-weight: 400;
+      }
+    }
+
+    .grid_layout_card {
+      width: 55%;
+      margin: 0 auto;
+      padding: 1rem 0;
+
+      @media screen and (max-width: 768px) {
+        width: 80%;
+      }
+
+      @media screen and (max-width: 520px) {
+        width: 95%;
+      }
+
+      @media screen and (max-width: 1520px) {
+        width: 85%;
+      }
+
+      @media screen and (max-width: 1300px) {
+        width: 80%;
+      }
+
+      @media screen and (max-width: 1038px) {
+        width: 94%;
+      }
+
+      .service_bar {
+        display: flex;
+        width: 100%;
+        margin-top: 1rem;
+        font-size: 18px;
+
+        span {
+          text-decoration: underline;
+          font-weight: 600;
+          color: rgb(1, 1, 46);
+        }
+      }
+
+      .service_bar_1 {
+        display: flex;
+        width: 100%;
+        margin-top: 1rem;
+        justify-content: center;
+        font-size: 20px;
+
+        h2 {
+          text-transform: uppercase;
+          font-weight: 600;
+          color: rgb(1, 1, 46);
+          font-size: 24px;
+        }
+      }
+
+      .layout_elvee_grid {
+        display: grid;
+        margin-top: 2rem;
+        gap: 3rem;
+        grid-template-columns: repeat(auto-fit, minmax(40%, 1fr));
+
+        @media screen and (max-width: 768px) {
+          grid-template-columns: repeat(auto-fit, minmax(80%, 1fr));
+        }
+
+        .elvee_card_app {
+          // border: 1px solid rgb(0, 0, 34);
+          border: 1px solid #c9c9c9;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          cursor: pointer;
+
+          .det_elvee_card {
+            flex: 1;
+            text-align: center;
+            font-weight: 500;
+            font-size: 15px;
+          }
+        }
+      }
+
+      .from_elvee_appointmnet {
+        margin-top: 2rem;
+        width: 100%;
+        height: auto;
+        display: flex;
+        flex-direction: column;
+        align-items: start;
+        gap: 2rem;
+
+        .time_grid_elvee {
+          width: 100%;
+          gap: 3rem;
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(40%, 1fr));
+          place-items: start;
+          place-content: start;
+
+          @media screen and (max-width: 548px) {
+            grid-template-columns: repeat(auto-fit, minmax(85%, 1fr));
+          }
+
+          .elv_date_time_picker {
+            .css-v0pjtz-MuiStack-root {
+              width: 100%;
+              border: none;
+            }
+          }
+
+          .elv_lab_1 {
+            width: 100%;
+            padding: 2px 0;
+            border-bottom: 1px solid rgb(0, 0, 19);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: relative;
+
+            .elv_date_icon {
+              position: absolute;
+              right: 0;
+            }
+
+
+            input {
+              border: none;
+              outline: none;
+              background: transparent;
+              width: 100%;
+            }
+          }
+
+          .elv_lab_2 {
+            width: 48%;
+            // width: 100%;
+            padding: 2px 0;
+            border-bottom: 1px solid rgb(0, 0, 19);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: relative;
+
+            @media screen and (max-width: 548px) {
+              width: 100%;
+              margin-inline: 0;
+            }
+          }
+
+          .elvee_input_from {
+            width: 100%;
+            border: none;
+            border-bottom: 1px solid rgb(255, 255, 255) !important;
+            outline: none;
+
+            .for_error-message {
+              margin-top: 3px;
+              margin-bottom: 0;
+              text-align: left;
+              color: red;
+            }
+          }
+
+          .elv_date_icon {
+            position: absolute;
+            background-color: white;
+            cursor: pointer;
+            right: 0;
+          }
+
+          input {
+            border: none;
+            outline: none;
+            background: transparent;
+            width: 100%;
+          }
+        }
+
+        .form_grid_elvee {
+          width: 100%;
+          gap: 3rem;
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(40%, 1fr));
+          place-items: start;
+          place-content: start;
+
+          div {
+            width: 100%;
+            border: none;
+            border-bottom: 1px solid rgb(255, 255, 255) !important;
+            outline: none;
+
+            p {
+              margin-top: 3px;
+              margin-bottom: 0;
+              text-align: left;
+              color: red;
+            }
+          }
+
+          @media screen and (max-width: 548px) {
+
+            display: flex;
+            flex-direction: column;
+          }
+
+          input {
+            width: 100%;
+            border: none;
+            border-bottom: 1px solid rgb(0, 0, 12) !important;
+            outline: none;
+          }
+
+          .btn_el_vee {
+            grid-column: span 2;
+            padding: 10px 0;
+            width: 24rem;
+            margin-inline: auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+
+            @media screen and (max-width: 548px) {
+              width: 100%;
+              margin-inline: 0;
+            }
+
+            button {
+              box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+              border: none;
+              // background-color: #00185a;
+              outline: none;
+              font-size: 16px;
+              padding: 12px 5rem;
+              // border-radius: 8px;
+              color: white;
+
+              @media screen and (max-width: 548px) {
+                width: 100%;
+                margin-inline: 0;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

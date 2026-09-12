@@ -62,11 +62,13 @@ const CustomFormControlLabel = styled(FormControlLabel)(() => ({
   flexDirection: "row-reverse",
 }));
 
-const ProductList = ({ storeinit, searchParams, params }) => {
-  const { loginUserDetail, finalId } = useStore();
+const ProductList = ({ storeinit, searchParams, params, initialData, initialFilterData }) => {
+  const { setCartCountNum, setWishCountNum, loginUserDetail, finalId } = useStore();
   const location = usePathname();
-  const cookie = Cookies.get("visiterId");
+  let cookie = Cookies.get("visiterId");
   const navigate = useNextRouterLikeRR();
+  const theme = useTheme();
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
   const isBelow768 = useMediaQuery("(max-width:768px)");
   const maxwidth464px = useMediaQuery("(max-width:464px)");
   const searchParamsHook = useSearchParams();
@@ -188,6 +190,8 @@ const ProductList = ({ storeinit, searchParams, params }) => {
     storeinit,
     loginUserDetail,
     finalId,
+    initialData,
+    initialFilterData,
   });
 
   const handleMoveToDetailOnClick = useCallback(

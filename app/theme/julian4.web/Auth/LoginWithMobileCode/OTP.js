@@ -3,13 +3,19 @@ import { InputBase as BaseInput } from '@mui/material';
 import { Box, styled } from '@mui/system';
 
 function OTP({
-    separator,
-    length,
+    separator = <span> </span>,
+    length = 6,
     value,
+    otp,
     onChange,
+    setOtp,
     onSubmit, // Add onSubmit prop
 }) {
+    const rawVal = value !== undefined && value !== null ? value : (otp ?? '');
+    const actualValue = typeof rawVal === 'string' ? rawVal : String(rawVal);
+    const actualOnChange = onChange || setOtp || (() => {});
     const inputRefs = React.useRef(new Array(length).fill(null));
+
     React.useEffect(() => {
         if (inputRefs.current[0]) {
             inputRefs.current[0].focus();
@@ -44,10 +50,9 @@ function OTP({
                 break;
             case 'Delete':
                 event.preventDefault();
-                onChange((prevOtp) => {
-                    const otp =
-                        prevOtp.slice(0, currentIndex) + prevOtp.slice(currentIndex + 1);
-                    return otp;
+                actualOnChange((prevOtp = '') => {
+                    const str = String(prevOtp ?? '');
+                    return str.slice(0, currentIndex) + str.slice(currentIndex + 1);
                 });
                 break;
             case 'Backspace':
@@ -56,15 +61,14 @@ function OTP({
                     focusInput(currentIndex - 1);
                     selectInput(currentIndex - 1);
                 }
-                onChange((prevOtp) => {
-                    const otp =
-                        prevOtp.slice(0, currentIndex) + prevOtp.slice(currentIndex + 1);
-                    return otp;
+                actualOnChange((prevOtp = '') => {
+                    const str = String(prevOtp ?? '');
+                    return str.slice(0, currentIndex) + str.slice(currentIndex + 1);
                 });
                 break;
             case 'Enter':
                 event.preventDefault();
-                if (currentIndex === length - 1) {
+                if (currentIndex === length - 1 && typeof onSubmit === 'function') {
                     onSubmit();
                 }
                 break;
@@ -85,8 +89,8 @@ function OTP({
             }
         }
 
-        onChange((prev) => {
-            const otpArray = prev.split('');
+        actualOnChange((prev = '') => {
+            const otpArray = String(prev ?? '').split('');
             const lastValue = currentValue[currentValue.length - 1];
             otpArray[indexToEnter] = lastValue;
             return otpArray.join('');
@@ -110,7 +114,7 @@ function OTP({
         event.preventDefault();
         const clipboardData = event.clipboardData;
 
-        if (clipboardData.types.includes('text/plain')) {
+        if (clipboardData?.types?.includes('text/plain')) {
             let pastedText = clipboardData.getData('text/plain');
             pastedText = pastedText.substring(0, length).trim();
             let indexToEnter = 0;
@@ -123,12 +127,12 @@ function OTP({
                 }
             }
 
-            const otpArray = value.split('');
+            const otpArray = actualValue.split('');
             for (let i = indexToEnter; i < length; i += 1) {
                 const lastValue = pastedText[i - indexToEnter] ?? ' ';
                 otpArray[i] = lastValue;
             }
-            onChange(otpArray.join(''));
+            actualOnChange(otpArray.join(''));
         }
     };
 
@@ -148,7 +152,7 @@ function OTP({
                             onChange: (event) => handleChange(event, index),
                             onClick: (event) => handleClick(event, index),
                             onPaste: (event) => handlePaste(event, index),
-                            value: value[index] ?? '',
+                            value: actualValue[index] ?? '',
                         }}
                         type="text"
                         inputMode="numeric"

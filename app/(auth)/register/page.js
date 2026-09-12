@@ -1,5 +1,5 @@
 import { getActiveTheme } from "@/app/(core)/lib/getActiveTheme";
-import { IsUserLoggedIn } from "@/app/(core)/utils/GlobalFunctions/GlobalFunctions";
+import { IsUserLoggedIn, getStoreInit } from "@/app/(core)/utils/GlobalFunctions/GlobalFunctions";
 import { redirect } from "next/navigation";
 import { themeMap } from "@/app/(core)/utils/ThemeMap";
 import React from "react";
@@ -11,10 +11,10 @@ const page = async ({ params, searchParams }) => {
   }
   const theme = await getActiveTheme();
   const themeData = themeMap[theme];
+  const storeInit = await getStoreInit();
   const [awaitedParams, awaitedSearchParams] = await Promise.all([params, searchParams]);
   const Register = await resolveRegister(themeData.page);
-  return <Register params={awaitedParams} searchParams={awaitedSearchParams} />;
+  return <Register storeInit={storeInit} params={awaitedParams} searchParams={awaitedSearchParams} />;
 };
-
 
 export default page;

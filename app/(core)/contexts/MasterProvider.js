@@ -180,17 +180,31 @@ export const MasterProvider = ({
 
     try {
       if (isBelux) {
-        // For beluxjewel.web: Only fetch CountryCodeListApi & PayMaster (skip heavy metal/diamond/colorstone combos)
         const storedCountry = getSession("CountryCodeListApi");
-        if (storedCountry && storedCountry.length > 0) {
-          setIsMasterReady(true);
-          return;
+        const storedB2BMaster = getSession("B2BRegisterMasterApi");
+
+        const fetchPromises = [];
+
+        if (!storedCountry || storedCountry.length === 0) {
+          fetchPromises.push(
+            CountryCodeListApi(finalID).then((res) => {
+              if (res?.Data?.rd) setSession("CountryCodeListApi", res.Data.rd);
+            })
+          );
         }
 
-        const country = await CountryCodeListApi(finalID);
-        if (country?.Data?.rd) {
-          setSession("CountryCodeListApi", country.Data.rd);
+        if (!storedB2BMaster) {
+          fetchPromises.push(
+            RegisterMasterApi(finalID).then((res) => {
+              if (res?.Data?.rd) setSession("B2BRegisterMasterApi", res.Data.rd);
+            })
+          );
         }
+
+        if (fetchPromises.length > 0) {
+          await Promise.all(fetchPromises);
+        }
+
         setIsMasterReady(true);
         return;
       }
@@ -203,11 +217,12 @@ export const MasterProvider = ({
         "ColorStoneQualityColorCombo",
         "CurrencyCombo",
         "CountryCodeListApi",
+        "B2BRegisterMasterApi",
       ];
 
       const hasAllKeys = requiredKeys.every((key) => {
         const val = getSession(key);
-        return val && val.length > 0;
+        return val && (Array.isArray(val) ? val.length > 0 : Object.keys(val).length > 0);
       });
 
       if (hasAllKeys) {
@@ -223,13 +238,14 @@ export const MasterProvider = ({
       );
 
       // 2. Fetch all individual APIs concurrently for other themes
-      const [mt, dia, mc, cs, curr, country] = await Promise.all([
+      const [mt, dia, mc, cs, curr, country, b2bMaster] = await Promise.all([
         MetalTypeComboAPI(finalID),
         DiamondQualityColorComboAPI(finalID),
         MetalColorCombo(finalID),
         ColorStoneQualityColorComboAPI(finalID),
         CurrencyComboAPI(finalID),
         CountryCodeListApi(finalID),
+        RegisterMasterApi(finalID),
       ]);
 
       // 3. Store the fresh combo data in session storage
@@ -239,6 +255,7 @@ export const MasterProvider = ({
       if (cs?.Data?.rd) setSession("ColorStoneQualityColorCombo", cs.Data.rd);
       if (curr?.Data?.rd) setSession("CurrencyCombo", curr.Data.rd);
       if (country?.Data?.rd) setSession("CountryCodeListApi", country.Data.rd);
+      if (b2bMaster?.Data?.rd) setSession("B2BRegisterMasterApi", b2bMaster.Data.rd);
 
       console.log("All combo APIs completed and cache updated");
       setIsMasterReady(true);

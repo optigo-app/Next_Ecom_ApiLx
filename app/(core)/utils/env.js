@@ -15,6 +15,7 @@ export const WEBSITE_DOMAINS = {
   JULIANWEB: "nxtjulian.web",
   JULIAN4WEB: "nxtjulian4.web",
   BELUXJEWELWEB: "beluxjewel.web",
+  PROCATALOG: "procatalog.web"
 };
 
 export const NEXT_APP_WEB = WEBSITE_DOMAINS.JULIANWEB;

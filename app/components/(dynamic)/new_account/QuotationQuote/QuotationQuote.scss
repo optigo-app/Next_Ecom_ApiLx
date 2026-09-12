@@ -1,0 +1,185 @@
+// .quotationQuote_Account_SMR{
+
+
+.AcountSales>div {
+    padding-left: 0;
+    padding-right: 0;
+}
+
+.salesApiTableQWeb thead tr th:first-child {
+    border-top-left-radius: 4px;
+}
+
+.salesApiTableQWeb thead tr th:last-child {
+    border-top-right-radius: 4px;
+}
+
+.salesApiTableQWeb tbody tr:last-child th:first-child {
+    border-bottom-left-radius: 4px;
+}
+
+.salesApiTableQWeb tbody tr:last-child th:last-child {
+    border-bottom-right-radius: 4px;
+}
+
+.salesApiTableQWeb .MuiTablePagination-root {
+    border-left: 1px solid rgba(224, 224, 224, 1);
+    border-right: 1px solid rgba(224, 224, 224, 1);
+    border-bottom: 1px solid rgba(224, 224, 224, 1);
+}
+
+.salesApiTableQWeb .MuiTablePagination-selectLabel,
+.salesApiTableQWeb .MuiTablePagination-displayedRows {
+    margin-bottom: 0;
+}
+
+.salesApiTableQWeb>.MuiTableContainer-root {
+    max-height: 590px;
+}
+
+.salesApiTableQWeb>div>table {
+    position: relative;
+}
+
+.salesApiTableQWeb thead>tr:first-child {
+    position: sticky;
+    top: 0;
+    background-color: rgb(235, 235, 235);
+}
+
+.salesApiSectionQWeb svg {
+    font-size: 20px !important;
+    color: #7d7f85;
+}
+
+.salesApiSectionQWeb * {
+    font-size: 14px !important;
+    line-height: 120%;
+}
+
+.muiSmilingRocksBtn {
+    border: 1px solid #7d7f85 !important;
+}
+
+.muiSmilingRocksBtn:hover {
+    background: #fff !important;
+    color: #7d7f85;
+}
+
+.muiSmilingRocksBtn:hover svg {
+    color: #7d7f85 !important;
+}
+
+.AllQuoteBtn {
+    padding-bottom: 35px;
+}
+
+@media(max-width: 768px) {
+    .QuotePadSec {
+        padding-bottom: 15px !important;
+    }
+
+    .AcountSales>div>p>div {
+        padding: 15px 10px;
+    }
+
+
+
+    .salesApiTableQWeb .MuiTablePagination-root {
+        padding-bottom: 0 !important;
+        max-height: 50px;
+        overflow: hidden;
+    }
+
+    .salesApiTableQWeb .MuiTablePagination-root .MuiTablePagination-toolbar {
+        padding: 0 5px;
+    }
+
+    .salesApiTableQWeb .MuiTablePagination-root .MuiInputBase-colorPrimary.MuiTablePagination-input {
+        margin-right: 5px;
+    }
+
+    .salesApiTableQWeb .MuiTablePagination-root .MuiInputBase-colorPrimary.MuiTablePagination-input div[role="combobox"] {
+        padding-left: 0;
+        margin-left: -5px;
+        padding-right: 20px;
+    }
+
+    .salesApiTableQWeb .MuiTablePagination-root .MuiTablePagination-actions {
+        margin-left: 5px;
+    }
+
+    .salesApiTableQWeb .MuiTablePagination-root .MuiTablePagination-actions button {
+        padding-right: 0;
+        padding-left: 0;
+    }
+}
+
+// @media(max-width: 576px) {
+//     .salesApiTableQWeb table thead tr {
+//         // display: flex;
+//         // flex-direction: column;
+//         overflow: auto;
+//         width: 100%;
+//         display: unset;
+//     }
+
+//     .salesApiTableQWeb>div>table {
+//         min-width: 100%;
+//         // display: flex;
+//         // flex-direction: column;
+//         display: unset;
+//         position: static !important;
+//         border: unset;
+//     }
+
+//     .salesApiTableQWeb>div>table>thead>tr>th,
+//     .salesApiTableQWeb>div>table>tbody>tr>td {
+//         text-align: start !important;
+//         padding: 5px 10px !important;
+//     }
+
+//     .salesApiTableQWeb>div>table>thead>tr>th svg {
+//         position: absolute;
+//         right: -30px;
+//     }
+
+//     .salesApiTableQWeb>div>table>tbody>tr {
+//         width: 100%;
+//         // display: flex;
+//         // flex-direction: column;
+//         display: unset;
+//     }
+
+//     .salesApiTableQWeb>div>table>tbody>tr>td:last-child {
+//         // border-bottom: 1px solid #9b978f !important;
+//     }
+
+//     .salesApiTableQWeb>div>table>tbody>tr>td {
+//         min-height: 31.02px;
+//     }
+
+//     .salesApiTableQWeb>div>table>tbody>tr:first-child>td:first-child {
+//         border-top: 1px solid #9b978f !important;
+//     }
+//     .salesApiTableQWeb>div>table>thead>tr>th:last-child, .salesApiTableQWeb>div>table>thead>tr>th:first-child,.salesApiTableQWeb>div>table>thead>tr {
+//         border-radius: 0 !important;
+//     }
+//     .d_flex_quote{
+//         display: flex !important;
+//         flex-direction: column !important;
+//     }
+//     .w_q{
+//         width: 100% !important;
+//     }
+//     .w_20_q{
+//         width: 20% !important;
+//     }
+//     .w_80_q{
+//         width: 80% !important;
+//     }
+//     .pad_left_q{
+//         margin-left: 3px !important;
+//     }
+// }
+// }

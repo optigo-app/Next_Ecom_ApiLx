@@ -1,59 +1,57 @@
+.mobile-smr {
+  width: 100% !important;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  align-items: flex-start !important;
+  position: relative;
+  gap: 10px;
+  .m-txt-msg {
+    font-size: 14px;
+    font-weight: 500;
+    /* Removed display: flex and gap */
+    display: inline; /* Keeps it simple, respects container width */
+    line-height: 1.4;
+    color: #000;
+  }
 
-.mobile-smr{
-    width: 420px !important;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    align-items: flex-start !important;
-    position: relative;
-    gap: 10px;
-    .m-txt-msg{
-        font-size: 14px;
-        font-weight: 500;
-        display: flex;
-        align-items: center;
-        gap: 4px;
-    }
-       @media screen and (max-width:700px){
-        width: 80% !important;
-    }
-    .county_Dropdown_list{
-        width: 100%;
-        position: absolute;
-        border-radius: 4px;
-        background-color: white;
-        height: auto;
-        top: 70px;
-        z-index: 999;
+  .whatsapp-text {
+    color: #25d366;
+    font-weight: 600;
+    white-space: nowrap; /* Ensures "WhatsApp" doesn't break mid-word */
+  }
+  @media screen and (max-width: 700px) {
+    width: 100% !important;
+  }
+  .county_Dropdown_list {
+    width: 100%;
+    position: absolute;
+    border-radius: 4px;
+    background-color: white;
+    height: auto;
+    top: 70px;
+    z-index: 999;
+  }
+  .MOBILE_CODE {
+    margin-top: 10px;
+    flex: 0.15;
 
+    input {
+      width: 100%;
+      border-radius: 4px;
+      padding: 15px 8px;
+      border: 1px solid rgb(196, 196, 196);
+      text-align: center;
+      &:hover {
+        border: 1px solid black;
+      }
     }
-    .MOBILE_CODE{
-        margin-top: 10px;
-        flex: 0.2;
-     
-        input{
-            width: 100%;
-            border-radius: 4px;
-            padding: 15px 8px;
-            border: 1px solid rgb(196,196,196);
-            text-align: center;
-            &:hover{
-            border: 1px solid black;
-            }
-        }
+  }
+  .labgrowRegister {
+    flex: 1;
+    margin-block: 10px !important;
+    .css-16wblaj-MuiInputBase-input-MuiOutlinedInput-input {
+      padding: 14.5px 14px;
     }
-    .labgrowRegister{
-        flex: 1;
-        margin-block: 10px !important;
-        .css-16wblaj-MuiInputBase-input-MuiOutlinedInput-input{
-
-            padding: 14.5px 14px;
-        }
-    }
-    // @media screen and (max-width:510px){
-    //     width: 80% !important;
-    // }
-    @media screen and (max-width: 510px) {
-        width: 93% !important;
-    }
+  }
 }

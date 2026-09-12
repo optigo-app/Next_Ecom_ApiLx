@@ -316,12 +316,13 @@
 
 
     .badgeColor .MuiBadge-badge {
-        background-color: #c0bbb1 !important;
+        background-color: #000000 !important;
+        color: #ffffff !important;
     }
 
     .badgeColorFix .MuiBadge-badge {
-        background-color: white !important;
-        color: #c0bbb1 !important;
+        background-color: #000000 !important;
+        color: #ffffff !important;
     }
 
     @media screen and (min-width:1201px) {

@@ -1,5 +1,5 @@
 import React from "react";
-import { getStoreInit } from "@/app/(core)/utils/GlobalFunctions/GlobalFunctions";
+import { getStoreInit, IsUserLoggedIn } from "@/app/(core)/utils/GlobalFunctions/GlobalFunctions";
 import { generatePageMetadata } from "@/app/(core)/utils/HeadMeta";
 import { pages } from "@/app/(core)/utils/pages";
 import { Box } from "@mui/material";
@@ -18,14 +18,26 @@ import MaxNewsletter from "./blocks/MaxNewsletter";
 import SocialMediaVideoSection from "./blocks/SocialMedia";
 import CraftsmanshipPage from "../craftsmanship/page";
 import MaxDesignLibrary from "./blocks/MaxDesignLibrary";
+import { syncAllCatalogProducts } from "@/app/(core)/utils/sqlite/syncAllProducts";
 
 export const metadata = generatePageMetadata(pages["/"], "Sonasons");
 
 const SonasonsHome = async () => {
   const storeData = await getStoreInit();
+  const isLoggedIn = await IsUserLoggedIn().catch(() => false);
+  const isB2B = storeData?.IsB2BWebsite === 1 || storeData?.IsB2BWebsite === "1";
+
   const { trendingBanner, lookbookBanner } = useHomeBannerImages({
     host: assetBase,
   });
+
+  // Background catalog sync into SQLite (non-blocking)
+  // For B2B websites, only sync when logged in; for public stores, sync whenever storeData is loaded
+  if (storeData && Object.keys(storeData).length > 0 && (!isB2B || isLoggedIn)) {
+    syncAllCatalogProducts(storeData, storeData?.domain).catch((err) => {
+      console.warn("[SonasonsHome] Background catalog sync error:", err.message);
+    });
+  }
 
   return (
     <Box

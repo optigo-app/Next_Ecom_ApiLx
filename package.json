@@ -9,7 +9,9 @@
     "start": "next start -p 5009",
     "lint": "eslint",
     "ng": "next build && next start",
-    "dev:watch": "nodemon --watch \"app/(core)/utils/env.js\" --exec \"next dev -p 5009 --turbo\""
+    "dev:watch": "nodemon --watch \"app/(core)/utils/env.js\" --exec \"next dev -p 5009 --turbo\"",
+    "db:init": "node db/initAllDatabases.js --run",
+    "db:query": "node db/runQuery.js --run"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
