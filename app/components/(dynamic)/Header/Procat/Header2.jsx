@@ -74,6 +74,59 @@ const Header2 = ({ storeinit, logos }) => {
         });
 
         setMenuItems(uniqueMenuItems);
+
+        // Store first album navigation URL into sessionStorage for empty bag & default navigation
+        if (uniqueMenuItems && uniqueMenuItems.length > 0) {
+            try {
+                const firstMenu = uniqueMenuItems[0];
+                const firstParam1 = firstMenu?.param1?.[0];
+                const firstParam2 = firstParam1?.param2?.[0];
+
+                const firstData = {
+                    menuname: firstMenu?.menuname || firstParam1?.menuname || "",
+                    FilterKey: firstMenu?.param0name || "",
+                    FilterVal: firstMenu?.param0dataname || "",
+                    FilterKey1: firstParam1?.param1name || "",
+                    FilterVal1: firstParam1?.param1dataname || "",
+                    FilterKey2: firstParam2?.param2name || "",
+                    FilterVal2: firstParam2?.param2dataname || "",
+                };
+
+                const queryParameters1 = [
+                    firstData?.FilterKey && `${firstData.FilterVal}`,
+                    firstData?.FilterKey1 && `${firstData.FilterVal1}`,
+                    firstData?.FilterKey2 && `${firstData.FilterVal2}`,
+                ].filter(Boolean).join('/');
+
+                const queryParameters = [
+                    firstData?.FilterKey && `${firstData.FilterVal}`,
+                    firstData?.FilterKey1 && `${firstData.FilterVal1}`,
+                    firstData?.FilterKey2 && `${firstData.FilterVal2}`,
+                ].filter(Boolean).join(',');
+
+                const otherparamUrl = Object.entries({
+                    b: firstData?.FilterKey,
+                    g: firstData?.FilterKey1,
+                    c: firstData?.FilterKey2,
+                })
+                    .filter(([key, value]) => value !== undefined)
+                    .map(([key, value]) => value)
+                    .filter(Boolean)
+                    .join(',');
+
+                let menuEncoded = `${queryParameters}/${otherparamUrl}`;
+                const firstUrl = `/p/${firstData?.menuname || "collection"}/${queryParameters1}/?M=${btoa(menuEncoded)}`;
+
+                if (typeof window !== "undefined") {
+                    sessionStorage.setItem("firstAlbumUrl", firstUrl);
+                    if (!sessionStorage.getItem("menuparams")) {
+                        sessionStorage.setItem("menuparams", JSON.stringify(firstData));
+                    }
+                }
+            } catch (err) {
+                console.error("Error setting first album url:", err);
+            }
+        }
     }, [menuData]);
 
     const fetchData = () => {
@@ -131,8 +184,10 @@ const Header2 = ({ storeinit, logos }) => {
         sessionStorage.removeItem('remarks');
         sessionStorage.removeItem('registerMobile');
         sessionStorage.removeItem('allproductlist');
+        sessionStorage.clear();
         window.location.href = "/";
     }
+
 
 
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -256,7 +311,7 @@ const Header2 = ({ storeinit, logos }) => {
 
     return (
         <div className='smr_header2_mainDiv'>
-
+    
             {serachsShowOverlay && (
                 <>
                     <div className="smr_smlingSearchoverlay">

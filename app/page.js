@@ -11,5 +11,6 @@ export default async function Page() {
   const theme = await getActiveTheme();
   const themeData = themeMap[theme];
   const Home = await resolveHome(themeData.page);
+
   return <Home storeinit={storeData} />;
 }

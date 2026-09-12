@@ -1,0 +1,57 @@
+@use "../style/variable.scss" as *;
+
+.craftsmanshipContainer {
+  background-color: #ffffff;
+}
+
+.craftsmanshipHero {
+  text-align: center;
+}
+
+.craftsmanshipOverline {
+  color: $btnBg !important;
+}
+
+.craftsmanshipTitle {
+  color: #1a1a1a !important;
+}
+
+.craftsmanshipBody {
+  color: #555555 !important;
+}
+
+.craftsmanshipSection {
+  border-top: 1px solid #eaeaea;
+}
+
+.craftsmanshipIcon {
+  color: $btnBg !important;
+}
+
+.craftsmanshipButton {
+  color: #1a1a1a !important;
+  border-color: #1a1a1a !important;
+
+  &:hover {
+    background-color: #1a1a1a !important;
+    color: #ffffff !important;
+    border-color: #1a1a1a !important;
+  }
+}
+
+.craftsmanshipDivider {
+  border-color: #eaeaea !important;
+}
+
+.craftsmanshipCard {
+  background-color: #fafafa;
+  border: 1px solid #f0f0f0;
+  &:hover {
+    border-color: $btnBg !important;
+  }
+}
+
+.craftsmanshipStepBadge {
+  background-color: $btnBg !important;
+  color: #ffffff !important;
+}

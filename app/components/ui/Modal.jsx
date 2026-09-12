@@ -50,11 +50,19 @@ const ReusableConfirmModal = ({ open, onClose, onConfirm, type }) => {
       confirmColor: "error",
       cancelColor: "inherit",
     },
+    logout: {
+      title: "Log Out",
+      icon: <HighlightOffIcon color="error" />,
+      message: "Are you sure you want to log out?",
+      confirmText: "Log Out",
+      cancelText: "Cancel",
+      confirmColor: "error",
+      cancelColor: "inherit",
+    },
   };
 
-  const { title, icon, message, confirmText, cancelText, confirmColor, cancelColor } = modalConfigs[type] || {};
-
-  if (!type || !modalConfigs[type]) return null;
+  const selectedConfig = (type && modalConfigs[type]) ? modalConfigs[type] : modalConfigs.logout;
+  const { title, icon, message, confirmText, cancelText, confirmColor, cancelColor } = selectedConfig;
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="xs" fullWidth aria-labelledby="confirm-modal-title">

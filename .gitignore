@@ -69,6 +69,10 @@ GIT_PUSH_FIX.md
 vs 
 .sqlite
 sqlite
+*.db
+*.db-wal
+*.db-shm
+*.db-journal
 
 ports.json
 

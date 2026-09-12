@@ -11,12 +11,13 @@ import { MetalColorCombo } from "@/app/(core)/utils/API/Combo/MetalColorCombo";
 import { CartAndWishListAPI } from "@/app/(core)/utils/API/CartAndWishList/CartAndWishListAPI";
 import { RemoveCartAndWishAPI } from "@/app/(core)/utils/API/RemoveCartandWishAPI/RemoveCartAndWishAPI";
 import ProductListApi from "@/app/(core)/utils/API/ProductListAPI/ProductListApi";
-import { FilterListAPI } from "@/app/(core)/utils/API/FilterAPI/FilterListAPI";
 import { useStore } from "@/app/(core)/contexts/StoreProvider";
 import { useSyncStore } from "@/app/(core)/hooks/useStore";
 import { getSession, setSession } from "@/app/(core)/utils/FetchSessionData";
-import { readCache, writeCache } from "@/app/(core)/cache_utility/cacheActions";
+// import { readCache, writeCache } from "@/app/(core)/cache_utility/cacheActions";
+import { getSqliteProducts } from "@/app/(core)/utils/sqlite/sqliteActions";
 import { ParseAndDecodeSearchParams } from "@/app/(core)/utils/GlobalFunctions/Parser";
+
 import {
   compressAndEncode,
   getCardImageUrl,
@@ -55,11 +56,18 @@ export function useListingPage({
   storeinit,
   loginUserDetail,
   finalId,
+  initialData,
+  initialFilterData,
+  initialTotalCount,
 } = {}) {
   const { setCartCountNum, setWishCountNum, islogin } = useStore();
   const syncProductList = useSyncStore((state) => state.syncProductList);
   const location = usePathname();
   const cookie = Cookies.get("visiterId");
+
+  // Initial SSR Data check
+  const initialProducts = initialData?.pdList ?? initialData?.rd ?? [];
+  const hasInitialData = initialData?.success === true || (Array.isArray(initialProducts) && initialProducts.length > 0);
 
   // Selection Combos
   const [selectedMetalId, setSelectedMetalId] = useState(
@@ -84,11 +92,14 @@ export function useListingPage({
   }, [initialCsId]);
 
   // Product & Data States
-  const [productListData, setProductListData] = useState([]);
-  const [isProdLoading, setIsProdLoading] = useState(true);
-  const [isOnlyProdLoading, setIsOnlyProdLoading] = useState(true);
-  const [filterData, setFilterData] = useState([]);
-  const [afterFilterCount, setAfterFilterCount] = useState(0);
+  const isInitialMount = useRef(true);
+  const [productListData, setProductListData] = useState(initialProducts);
+  const [isProdLoading, setIsProdLoading] = useState(!hasInitialData);
+  const [isOnlyProdLoading, setIsOnlyProdLoading] = useState(!hasInitialData);
+  const [filterData, setFilterData] = useState(initialFilterData || []);
+  const [afterFilterCount, setAfterFilterCount] = useState(
+    initialTotalCount ?? initialData?.totalCount ?? initialProducts.length
+  );
   const [afterCountStatus, setAfterCountStatus] = useState(false);
 
   // Combos
@@ -105,9 +116,10 @@ export function useListingPage({
   const [rollOverImgPd, setRolloverImgPd] = useState({});
 
   // Filter & Pagination States
+  const initialPageNo = Number(searchParams?.page || searchParams?.PageNo || 1);
   const [filterChecked, setFilterChecked] = useState({});
-  const [currPage, setCurrPage] = useState(1);
-  const [inputPage, setInputPage] = useState(1);
+  const [currPage, setCurrPage] = useState(initialPageNo);
+  const [inputPage, setInputPage] = useState(initialPageNo);
   const [sortBySelect, setSortBySelect] = useState("Recommended");
 
   // Sliders & Range States
@@ -306,7 +318,31 @@ export function useListingPage({
     }));
   }, []);
 
-  const FilterValueWithCheckedOnly = useCallback(() => {
+  const getPageFromUrlOrProps = useCallback(() => {
+    if (typeof window !== "undefined") {
+      try {
+        const urlParams = new URLSearchParams(window.location.search);
+        const p = urlParams.get("page") || urlParams.get("PageNo");
+        if (p && !isNaN(Number(p))) return Number(p);
+      } catch (_) {}
+    }
+    return Number(searchParams?.page || searchParams?.PageNo || 1);
+  }, [searchParams]);
+
+  const resetUrlPage = useCallback(() => {
+    if (typeof window !== "undefined") {
+      try {
+        const url = new URL(window.location.href);
+        if (url.searchParams.has("page") || url.searchParams.has("PageNo")) {
+          url.searchParams.delete("page");
+          url.searchParams.delete("PageNo");
+          window.history.replaceState({}, "", url.toString());
+        }
+      } catch (_) {}
+    }
+  }, []);
+
+  const getOnlyCheckedFilters = useCallback(() => {
     let onlyTrueFilterValue = Object.values(filterChecked).filter((ele) => ele.checked);
 
     const priceValues = onlyTrueFilterValue
@@ -334,14 +370,19 @@ export function useListingPage({
       }
     }
 
+    return output;
+  }, [filterChecked]);
+
+  const FilterValueWithCheckedOnly = useCallback(() => {
+    const output = getOnlyCheckedFilters();
     setCurrPage(1);
     setInputPage(1);
+    resetUrlPage();
     if (typeof window !== "undefined") {
       sessionStorage.setItem("key", JSON.stringify(output));
     }
-
     return output;
-  }, [filterChecked]);
+  }, [getOnlyCheckedFilters, resetUrlPage]);
 
   // ----------------------------------------------------
   // 5. Clear All Filters Handler
@@ -395,8 +436,9 @@ export function useListingPage({
       setIsReset(false);
       setFilterChecked({});
       setIsClearAllClicked(true);
+      resetUrlPage();
     }
-  }, [filterData, filterChecked, sliderValue, sliderValue1, sliderValue2, priceRangeValue]);
+  }, [filterData, filterChecked, sliderValue, sliderValue1, sliderValue2, priceRangeValue, resetUrlPage]);
 
   const anyFilterApplied = useMemo(() => {
     const isFilterChecked = Object.values(filterChecked).some((ele) => ele.checked);
@@ -426,11 +468,28 @@ export function useListingPage({
   // ----------------------------------------------------
   const handelPageChange = useCallback(
     async (event, value) => {
-      let output = FilterValueWithCheckedOnly();
+      const targetPage = Number(value) || 1;
+      let output = getOnlyCheckedFilters();
       let obj = { mt: selectedMetalId, dia: selectedDiaId, cs: selectedCsId };
       setIsOnlyProdLoading(true);
-      setCurrPage(value);
-      setInputPage(value);
+      setCurrPage(targetPage);
+      setInputPage(targetPage);
+
+      // 1. Sync URL so ?page=X persists and survives browser refresh
+      if (typeof window !== "undefined") {
+        try {
+          const url = new URL(window.location.href);
+          if (targetPage > 1) {
+            url.searchParams.set("page", targetPage);
+          } else {
+            url.searchParams.delete("page");
+            url.searchParams.delete("PageNo");
+          }
+          window.history.replaceState({ page: targetPage }, "", url.toString());
+        } catch (urlErr) {
+          console.error("URL update error:", urlErr);
+        }
+      }
 
       setTimeout(() => {
         if (typeof window !== "undefined") {
@@ -447,46 +506,49 @@ export function useListingPage({
         output = { ...output, PriceMin: priceRangeValue[0], PriceMax: priceRangeValue[1] };
       }
 
-      let cacheKey = null;
-      const isDefaultState =
-        Object.keys(filterChecked).length === 0 &&
-        (!DiaRange || (DiaRange.DiaMin === "" && DiaRange.DiaMax === "")) &&
-        (!netRange || (netRange.netMin === "" && netRange.netMax === "")) &&
-        (!grossRange || (grossRange.grossMin === "" && grossRange.grossMax === ""));
+      // Fetch from SQLite directly from our server with page & pageSize
+      const menuIdent =
+        (typeof window !== "undefined" && window.location?.pathname?.replace(/^\/p\//, "").replace(/\/+$/, "")) ||
+        "default";
 
-      if (value === 1 && isDefaultState && finalId && searchParams && typeof searchParams === "object") {
-        const queryParts = [];
-        const sortedEntries = Object.entries(searchParams).sort((a, b) => a[0].localeCompare(b[0]));
-        sortedEntries.forEach(([k, v]) => {
-          if (v && typeof v === "string") {
-            queryParts.push(`${k}_${v.replace(/[^a-zA-Z0-9_\-]/g, "_")}`);
-          }
-        });
-        if (queryParts.length > 0) {
-          cacheKey = `menu/pl_${finalId}_${queryParts.join("_")}`;
+      const savedMenu = getSession("menuparams");
+      const targetQuery = (savedMenu && (savedMenu.FilterKey || savedMenu.FilterKey1 || savedMenu.FilterKey2))
+        ? savedMenu
+        : (prodListType || searchParams || menuIdent);
+
+      const sqliteFilters = {
+        priceMin: priceRangeValue?.[0] || undefined,
+        priceMax: priceRangeValue?.[1] || undefined,
+        metalColorId: selectedMetalId || undefined,
+        grossMin: grossRange?.grossMin || undefined,
+        grossMax: grossRange?.grossMax || undefined,
+        netMin: netRange?.netMin || undefined,
+        netMax: netRange?.netMax || undefined,
+        diaMin: DiaRange?.DiaMin || undefined,
+        diaMax: DiaRange?.DiaMax || undefined,
+        sortBy: sortBySelect || undefined,
+        page: targetPage,
+        pageSize: storeinit?.PageSize || 10,
+      };
+
+      let sqliteLoaded = false;
+      try {
+        const sqliteRes = await getSqliteProducts(targetQuery, sqliteFilters);
+        if (sqliteRes?.success) {
+          setProductListData(sqliteRes.rd || []);
+          setAfterFilterCount(sqliteRes.totalCount || 0);
+          setIsOnlyProdLoading(false);
+          setIsProdLoading(false);
+          return;
         }
+      } catch (sqlErr) {
+        console.warn("[SQLite] Query failed, falling back to API:", sqlErr);
       }
 
-      let cachedRes = null;
-      if (cacheKey) {
-        try {
-          const diskCached = await readCache(cacheKey);
-          if (diskCached?.cached && diskCached.data?.pdList) {
-            cachedRes = diskCached.data;
-          }
-        } catch (_) {}
-      }
-
-      if (cachedRes) {
-        setProductListData(cachedRes?.pdList || []);
-        if (cachedRes?.pdResp?.rd1?.[0]?.designcount) {
-          setAfterFilterCount(cachedRes.pdResp.rd1[0].designcount);
-        }
-        setIsOnlyProdLoading(false);
-      } else {
+      if (!sqliteLoaded) {
         ProductListApi(
           output,
-          value,
+          targetPage,
           obj,
           prodListType,
           cookie,
@@ -501,9 +563,6 @@ export function useListingPage({
               if (res?.pdResp?.rd1?.[0]?.designcount) {
                 setAfterFilterCount(res?.pdResp?.rd1[0]?.designcount);
               }
-              if (cacheKey) {
-                writeCache(cacheKey, res).catch(() => {});
-              }
             }
             return res;
           })
@@ -514,9 +573,10 @@ export function useListingPage({
             }, 100);
           });
       }
+
     },
     [
-      FilterValueWithCheckedOnly,
+      getOnlyCheckedFilters,
       selectedMetalId,
       selectedDiaId,
       selectedCsId,
@@ -531,8 +591,7 @@ export function useListingPage({
       prodListType,
       cookie,
       sortBySelect,
-      filterChecked,
-      finalId,
+      storeinit,
       searchParams,
     ]
   );
@@ -548,10 +607,41 @@ export function useListingPage({
 
       setCurrPage(1);
       setInputPage(1);
+      resetUrlPage();
 
       const DiaRange = parseRangeData(filterData, "Dia", Rangeval, inputDia);
       const grossRange = parseRangeData(filterData, "Gross", sliderValue2, inputGross);
       const netRange = parseRangeData(filterData, "net", sliderValue1, inputNet);
+
+      const menuIdent =
+        (typeof window !== "undefined" && window.location?.pathname?.replace(/^\/p\//, "").replace(/\/+$/, "")) ||
+        "default";
+
+      const sqliteFilters = {
+        priceMin: priceRangeValue?.[0] || undefined,
+        priceMax: priceRangeValue?.[1] || undefined,
+        metalColorId: selectedMetalId || undefined,
+        grossMin: grossRange?.grossMin || undefined,
+        grossMax: grossRange?.grossMax || undefined,
+        netMin: netRange?.netMin || undefined,
+        netMax: netRange?.netMax || undefined,
+        diaMin: DiaRange?.DiaMin || undefined,
+        diaMax: DiaRange?.DiaMax || undefined,
+        sortBy: sortBySelect || undefined,
+      };
+
+      try {
+        const sqliteRes = await getSqliteProducts(menuIdent, sqliteFilters);
+        if (sqliteRes?.success) {
+          setProductListData(sqliteRes.rd || []);
+          setAfterFilterCount(sqliteRes.totalCount || 0);
+          setIsOnlyProdLoading(false);
+          setIsProdLoading(false);
+          return;
+        }
+      } catch (sqlErr) {
+        console.warn("[SQLite] Range filter query failed:", sqlErr);
+      }
 
       try {
         const res = await ProductListApi(
@@ -586,9 +676,11 @@ export function useListingPage({
       inputGross,
       sliderValue1,
       inputNet,
+      priceRangeValue,
       prodListType,
       cookie,
       sortBySelect,
+      resetUrlPage,
     ]
   );
 
@@ -604,6 +696,37 @@ export function useListingPage({
 
       setCurrPage(1);
       setInputPage(1);
+      resetUrlPage();
+
+      const menuIdent =
+        (typeof window !== "undefined" && window.location?.pathname?.replace(/^\/p\//, "").replace(/\/+$/, "")) ||
+        "default";
+
+      const sqliteFilters = {
+        priceMin: priceRangeValue?.[0] || undefined,
+        priceMax: priceRangeValue?.[1] || undefined,
+        metalColorId: selectedMetalId || undefined,
+        grossMin: grossRange?.grossMin || undefined,
+        grossMax: grossRange?.grossMax || undefined,
+        netMin: netRange?.netMin || undefined,
+        netMax: netRange?.netMax || undefined,
+        diaMin: DiaRange?.DiaMin || undefined,
+        diaMax: DiaRange?.DiaMax || undefined,
+        sortBy: sortBySelect || undefined,
+      };
+
+      try {
+        const sqliteRes = await getSqliteProducts(menuIdent, sqliteFilters);
+        if (sqliteRes?.success) {
+          setProductListData(sqliteRes.rd || []);
+          setAfterFilterCount(sqliteRes.totalCount || 0);
+          setIsOnlyProdLoading(false);
+          setIsProdLoading(false);
+          return;
+        }
+      } catch (sqlErr) {
+        console.warn("[SQLite] Range filter 1 query failed:", sqlErr);
+      }
 
       try {
         const res = await ProductListApi(
@@ -638,9 +761,11 @@ export function useListingPage({
       sliderValue2,
       inputGross,
       inputNet,
+      priceRangeValue,
       prodListType,
       cookie,
       sortBySelect,
+      resetUrlPage,
     ]
   );
 
@@ -656,6 +781,37 @@ export function useListingPage({
 
       setCurrPage(1);
       setInputPage(1);
+      resetUrlPage();
+
+      const menuIdent =
+        (typeof window !== "undefined" && window.location?.pathname?.replace(/^\/p\//, "").replace(/\/+$/, "")) ||
+        "default";
+
+      const sqliteFilters = {
+        priceMin: priceRangeValue?.[0] || undefined,
+        priceMax: priceRangeValue?.[1] || undefined,
+        metalColorId: selectedMetalId || undefined,
+        grossMin: grossRange?.grossMin || undefined,
+        grossMax: grossRange?.grossMax || undefined,
+        netMin: netRange?.netMin || undefined,
+        netMax: netRange?.netMax || undefined,
+        diaMin: DiaRange?.DiaMin || undefined,
+        diaMax: DiaRange?.DiaMax || undefined,
+        sortBy: sortBySelect || undefined,
+      };
+
+      try {
+        const sqliteRes = await getSqliteProducts(menuIdent, sqliteFilters);
+        if (sqliteRes?.success) {
+          setProductListData(sqliteRes.rd || []);
+          setAfterFilterCount(sqliteRes.totalCount || 0);
+          setIsOnlyProdLoading(false);
+          setIsProdLoading(false);
+          return;
+        }
+      } catch (sqlErr) {
+        console.warn("[SQLite] Range filter 2 query failed:", sqlErr);
+      }
 
       try {
         const res = await ProductListApi(
@@ -689,9 +845,11 @@ export function useListingPage({
       inputDia,
       sliderValue1,
       inputNet,
+      priceRangeValue,
       prodListType,
       cookie,
       sortBySelect,
+      resetUrlPage,
     ]
   );
 
@@ -706,12 +864,42 @@ export function useListingPage({
       setProductListData([]);
       setIsOnlyProdLoading(true);
 
-      let output = FilterValueWithCheckedOnly();
-      let obj = { mt: selectedMetalId, dia: selectedDiaId, cs: selectedCsId };
-
       const DiaRange = parseRangeData(filterData, "Dia", sliderValue, inputDia);
       const grossRange = parseRangeData(filterData, "Gross", sliderValue2, inputGross);
       const netRange = parseRangeData(filterData, "net", sliderValue1, inputNet);
+
+      const menuIdent =
+        (typeof window !== "undefined" && window.location?.pathname?.replace(/^\/p\//, "").replace(/\/+$/, "")) ||
+        "default";
+
+      const sqliteFilters = {
+        priceMin: priceRangeValue?.[0] || undefined,
+        priceMax: priceRangeValue?.[1] || undefined,
+        metalColorId: selectedMetalId || undefined,
+        grossMin: grossRange?.grossMin || undefined,
+        grossMax: grossRange?.grossMax || undefined,
+        netMin: netRange?.netMin || undefined,
+        netMax: netRange?.netMax || undefined,
+        diaMin: DiaRange?.DiaMin || undefined,
+        diaMax: DiaRange?.DiaMax || undefined,
+        sortBy: sortby,
+      };
+
+      try {
+        const sqliteRes = await getSqliteProducts(menuIdent, sqliteFilters);
+        if (sqliteRes?.success) {
+          setProductListData(sqliteRes.rd || []);
+          setAfterFilterCount(sqliteRes.totalCount || 0);
+          setIsOnlyProdLoading(false);
+          setIsProdLoading(false);
+          return;
+        }
+      } catch (sqlErr) {
+        console.warn("[SQLite] Sort query failed:", sqlErr);
+      }
+
+      let output = FilterValueWithCheckedOnly();
+      let obj = { mt: selectedMetalId, dia: selectedDiaId, cs: selectedCsId };
 
       const inputPriceField = JSON.stringify(priceRangeValue) !== JSON.stringify(["", ""]);
       if (inputPriceField) {
@@ -720,6 +908,7 @@ export function useListingPage({
 
       setCurrPage(1);
       setInputPage(1);
+      resetUrlPage();
 
       try {
         const res = await ProductListApi(
@@ -758,8 +947,10 @@ export function useListingPage({
       priceRangeValue,
       prodListType,
       cookie,
+      resetUrlPage,
     ]
   );
+
 
   // ----------------------------------------------------
   // 9. Master Orchestrator: Fetch Product List & Filter List
@@ -804,11 +995,15 @@ export function useListingPage({
 
     if (MenuVal.length > 0) {
       try {
-        let menuDecode = atob(MenuVal?.split("=")[1]);
-        let key = menuDecode?.split("/")[1]?.split(",");
-        let val = menuDecode?.split("/")[0]?.split(",");
-        productlisttype = [key, val];
-        setDetailsMenu(productlisttype);
+        const rawB64 = MenuVal.split("=")[1];
+        const menuDecode = atob(decodeURIComponent(rawB64));
+        if (menuDecode.includes("/")) {
+          const [valPart, keyPart] = menuDecode.split("/");
+          const key = keyPart.split(",").map((s) => s.trim().replace(/[^a-zA-Z0-9_]/g, "")).filter(Boolean);
+          const val = valPart.split(",").map((s) => s.trim().replace(/%20/g, " ")).filter(Boolean);
+          productlisttype = [key, val];
+          setDetailsMenu(productlisttype);
+        }
       } catch (_) {}
     } else if (SearchVar) {
       productlisttype = SearchVar;
@@ -836,6 +1031,15 @@ export function useListingPage({
       : sortBySelect ?? "Recommended";
 
     setTrend(effectiveSortBy);
+
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      if (hasInitialData) {
+        setIsProdLoading(false);
+        setIsOnlyProdLoading(false);
+        return;
+      }
+    }
 
     const fetchData = async () => {
       try {
@@ -871,23 +1075,54 @@ export function useListingPage({
           }
         }
 
-        let cachedRes = null;
-        if (cacheKey) {
-          try {
-            const diskCached = await readCache(cacheKey);
-            if (diskCached?.cached && diskCached.data?.pdList) {
-              cachedRes = diskCached.data;
-            }
-          } catch (_) {}
+        // --- Read/Write Cache commented out in favor of SQLite ---
+        // let cachedRes = null;
+        // if (cacheKey) {
+        //   try {
+        //     const diskCached = await readCache(cacheKey);
+        //     if (diskCached?.cached && diskCached.data?.pdList) {
+        //       cachedRes = diskCached.data;
+        //     }
+        //   } catch (_) {}
+        // }
+
+        // 1. Fetch from SQLite on our server with pagination
+        const menuIdent =
+          (typeof window !== "undefined" && window.location?.pathname?.replace(/^\/p\//, "").replace(/\/+$/, "")) ||
+          "default";
+
+        const initialPage = getPageFromUrlOrProps();
+
+        let sqliteLoaded = false;
+        try {
+          const savedMenu = getSession("menuparams");
+          const targetQuery = (savedMenu && (savedMenu.FilterKey || savedMenu.FilterKey1 || savedMenu.FilterKey2))
+            ? savedMenu
+            : (productlisttype || searchParams || menuIdent);
+
+          const sqliteRes = await getSqliteProducts(targetQuery, {
+            sortBy: effectiveSortBy,
+            page: initialPage,
+            pageSize: storeinit?.PageSize || 10,
+          });
+          if (sqliteRes?.success) {
+            setProductListData(sqliteRes.rd || []);
+            setAfterFilterCount(sqliteRes.totalCount || 0);
+            setCurrPage(initialPage);
+            setInputPage(initialPage);
+            setIsProdLoading(false);
+            setIsOnlyProdLoading(false);
+            sqliteLoaded = true;
+          }
+        } catch (sqlErr) {
+          console.warn("[SQLite] Fetch failed, falling back to API:", sqlErr);
         }
 
-        if (cachedRes) {
-          setProductListData(cachedRes?.pdList || []);
-          setAfterFilterCount(cachedRes?.pdResp?.rd1?.[0]?.designcount || 0);
-        } else {
+        // Fallback to API ONLY IF SQLite does not have data yet (e.g. first load)
+        if (!sqliteLoaded) {
           const res = await ProductListApi(
             {},
-            1,
+            initialPage,
             obj,
             productlisttype,
             cookie,
@@ -900,41 +1135,11 @@ export function useListingPage({
           if (res) {
             setProductListData(res?.pdList || []);
             setAfterFilterCount(res?.pdResp?.rd1?.[0]?.designcount || 0);
-            if (cacheKey) {
-              writeCache(cacheKey, res).catch(() => {});
-            }
+            setCurrPage(initialPage);
+            setInputPage(initialPage);
           }
         }
 
-        // 2. Fetch Filter Sidebar Options AFTER ProductListApi with 500ms delay (Prevents SQL query collision)
-        try {
-          await new Promise((resolve) => setTimeout(resolve, 500));
-          const res1 = await FilterListAPI(productlisttype, cookie);
-          if (res1) {
-            setFilterData(res1);
-            let diafilter =
-              res1?.filter((ele) => ele?.Name === "Diamond")[0]?.options?.length > 0
-                ? JSON.parse(res1.filter((ele) => ele?.Name === "Diamond")[0].options)[0]
-                : [];
-            let diafilter1 =
-              res1?.filter((ele) => ele?.Name === "NetWt")[0]?.options?.length > 0
-                ? JSON.parse(res1.filter((ele) => ele?.Name === "NetWt")[0].options)[0]
-                : [];
-            let diafilter2 =
-              res1?.filter((ele) => ele?.Name === "Gross")[0]?.options?.length > 0
-                ? JSON.parse(res1.filter((ele) => ele?.Name === "Gross")[0].options)[0]
-                : [];
-
-            setSliderValue(diafilter?.Min != null || diafilter?.Max != null ? [diafilter.Min, diafilter.Max] : []);
-            setInputDia(diafilter?.Min != null || diafilter?.Max != null ? [diafilter.Min, diafilter.Max] : []);
-            setSliderValue1(diafilter1?.Min != null || diafilter1?.Max != null ? [diafilter1.Min, diafilter1.Max] : []);
-            setInputNet(diafilter1?.Min != null || diafilter1?.Max != null ? [diafilter1.Min, diafilter1.Max] : []);
-            setSliderValue2(diafilter2?.Min != null || diafilter2?.Max != null ? [diafilter2.Min, diafilter2.Max] : []);
-            setInputGross(diafilter2?.Min != null || diafilter2?.Max != null ? [diafilter2.Min, diafilter2.Max] : []);
-          }
-        } catch (err) {
-          console.error("FilterListAPI error:", err);
-        }
       } catch (err) {
         console.error("useListingPage fetchData error:", err);
       } finally {
@@ -944,9 +1149,7 @@ export function useListingPage({
     };
 
     fetchData();
-    setCurrPage(1);
-    setInputPage(1);
-  }, [location, result, syncProductList?.ts]);
+  }, [location, result, syncProductList?.ts, getPageFromUrlOrProps]);
 
   // ----------------------------------------------------
   // 10. Filter Checkbox Change Effect (Debounced)

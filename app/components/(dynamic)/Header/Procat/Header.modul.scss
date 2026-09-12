@@ -1,506 +1,520 @@
-@use '../../../../theme/fgstore.pro/style/variable.scss' as *;
+@use "../../../../theme/fgstore.pro/style/variable.scss" as *;
 
 .ProCat_headerMain_div {
+  .smiling_Top_header {
+    height: 90px;
+    // background-color: $backgroundColor;
+  }
 
-    .smiling_Top_header {
-        height: 110px;
-        // background-color: $backgroundColor;
+  .smiling_Top_header_sub {
+    padding-inline: 6%;
+    display: flex;
+    height: 100%;
+    background-color: #fff;
+  }
+
+  .smiling_Top_header_div1 {
+    width: 33.33%;
+    display: flex;
+    align-items: center;
+  }
+
+  .smiling_Top_header_div2_web {
+    width: 50%;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+  }
+
+  // Normal header logo — constrained to header height so it never overflows or gets cut
+  .smr_logo_header {
+    display: block;
+    max-height: 75px; // slightly less than the 90px header so it has breathing room
+    width: auto;
+    max-width: 100%;
+    object-fit: contain;
+    object-position: left center;
+  }
+
+  .smiling_Top_header_div3 {
+    width: 80%;
+    justify-content: flex-end;
+    display: flex;
+    align-items: center;
+  }
+
+  .nav_ul_shop {
+    list-style: none;
+    display: flex;
+    align-items: center;
+    margin: 0px;
+    padding: 0px 15px;
+    gap: 20px;
+  }
+
+  .nav_li_smining_shop:hover {
+    height: 150px;
+    // width: 110px;
+    display: flex;
+    align-items: center;
+  }
+
+  .nav_li_smining_Icone {
+    color: black;
+    font-size: $fontSize1;
+    font-weight: 500;
+    position: relative;
+    cursor: pointer;
+    display: inline-block;
+  }
+
+  .nav_li_smining {
+    color: black;
+    font-size: $fontSize2;
+    font-weight: 500;
+    letter-spacing: 1px;
+    position: relative;
+    display: inline-block;
+    font-family: $primaryFontFamily;
+  }
+
+  .nav_li_smining::before {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 0%;
+    height: 1px;
+    background-color: white;
+    transition: width 0.3s ease-out;
+  }
+
+  .nav_li_smining:hover::before {
+    width: 100%;
+    left: 0;
+    right: auto;
+    transition: width 0.3s ease-out;
+  }
+
+  .nav_li_smining_Fixed_Icone {
+    color: black;
+    font-size: $fontSize2;
+    font-weight: 500;
+    position: relative;
+    display: inline-block;
+  }
+
+  .nav_li_smining_Fixed {
+    color: black;
+    font-size: $fontSize2;
+    font-weight: 500;
+    position: relative;
+    display: inline-block;
+    font-family: $primaryFontFamily;
+  }
+
+  .nav_li_smining_Fixed::before {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 0%;
+    height: 1px;
+    background-color: white;
+    transition: width 0.3s ease-out;
+  }
+
+  .nav_li_smining_Fixed:hover::before {
+    width: 100%;
+    left: 0;
+    right: auto;
+    transition: width 0.3s ease-out;
+  }
+
+  // Sticky header logo — matches normal logo size
+  .smr_logo_header_Fixed {
+    display: block;
+    max-height: 75px; // matches normal logo max-height
+    width: auto;
+    max-width: 100%;
+    object-fit: contain;
+    object-position: left center;
+  }
+
+  .Smining-Top-Header-fixed-main {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    text-align: center;
+    transform: translateY(-200px);
+    height: 90px; // matches normal header height
+    // background-color: #fff;
+  }
+
+  .Smining-Top-Header-fixed-main.fixed {
+    position: fixed;
+    top: 0;
+    box-shadow: 0 2px 5px rgba(20, 19, 19, 0.1);
+    z-index: 1000;
+    transform: translateY(0px);
+    transition: all 0.4s ease;
+    height: 90px; // matches normal header height
+    // background-color: #fff;
+  }
+
+  /// open dropdownList
+  .shop-dropdown {
+    height: auto;
+    width: 100%;
+    position: absolute;
+    background: #fff;
+    top: 72px;
+    left: 0;
+    display: none;
+    transition: all 0.5s ease;
+    box-shadow: 0 0 25px 0 rgba(200, 200, 200, 0.5);
+  }
+
+  .shop-dropdown.open {
+    display: block;
+    position: absolute;
+    z-index: 111111;
+    width: 88%;
+    margin-left: 6%;
+    margin-top: 37px;
+    transition: all 0.5s ease;
+  }
+
+  .shop-dropdown.open.fixed {
+    position: fixed;
+    top: 90px;
+    box-shadow: 0 2px 5px rgba(20, 19, 19, 0.1);
+    z-index: 1000;
+    transform: translateY(0px);
+    transition: all 0.4s ease;
+  }
+
+  .muilistMenutext {
+    font-size: 15px !important;
+    font-weight: 600;
+    margin: 5px 5px 5px 0px;
+    text-decoration: underline;
+  }
+
+  .smr_menuSubTitle {
+    font-size: 13px;
+    text-decoration: none;
+    color: #9b978f;
+    // color: rgb(192 187 184);
+  }
+
+  .muilist2ndSubMenutext {
+    font-size: 12px;
+    margin: 5px;
+    cursor: pointer;
+  }
+
+  .muilist2ndSubMenutext:hover {
+    color: black;
+  }
+
+  .smr_underline_button {
+    background-color: transparent;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    border: 1px solid lightgray;
+    width: 80px;
+    height: 25px;
+    margin-top: 15px;
+    font-size: 13px;
+  }
+
+  .smr_listMain {
+    display: flex;
+    flex-flow: column wrap;
+    height: 350px;
+    margin-right: 20px !important;
+  }
+
+  .srm_MobileSiderBarMain {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 150%;
+    background-color: rgba(192, 187, 177, 1.8);
+    z-index: 999999999999;
+    transition: all 0.9s ease-in-out;
+  }
+
+  //search box styling......
+  .smr_smlingSearchoverlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 150%;
+    background-color: rgba(0, 0, 0, 0.4);
+    display: flex;
+    z-index: 999;
+  }
+
+  .smr_smlingTopSerachOver {
+    height: 70px;
+    background-color: white;
+    width: 100%;
+    margin: 10px 100px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .smr_serachinputBoxOverly {
+    width: 95%;
+    height: 50px;
+    border: none;
+    outline: none;
+  }
+
+  .smr_smlingTopSerachOver-Fixed {
+    height: 60px;
+    background-color: white;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .smr_smlingSearchoverlayNew {
+    position: relative;
+    transform: translateY(-200px);
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 150%;
+    background-color: rgba(0, 0, 0, 0.4);
+    display: flex;
+    z-index: 999;
+  }
+
+  .smr_smlingSearchoverlayNew.fixed {
+    position: fixed;
+    top: 0;
+    left: 0;
+    box-shadow: 0 2px 5px rgba(20, 19, 19, 0.1);
+    z-index: 1000;
+    transform: translateY(0px);
+    transition: all 0.4s ease;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.4);
+    display: flex;
+    transform: translateY(0px);
+    transition: all 0.4s ease;
+  }
+
+  .Smining-Top-Header-fixed-main.fixed.searchoverly {
+    z-index: -500 !important;
+  }
+
+  .srm_MobileSiderBarMain::-webkit-scrollbar {
+    display: none !important;
+  }
+
+  .smr_showDropOptionMainDiv {
+    overflow: auto;
+  }
+
+  .smr_showDropOptionMainDiv::-webkit-scrollbar {
+    // display: none!important;
+    height: 5px !important;
+  }
+
+  .badgeColor .MuiBadge-badge {
+    background-color: #000000 !important;
+    color: #ffffff !important;
+  }
+
+  .badgeColorFix .MuiBadge-badge {
+    background-color: #000000 !important;
+    color: #ffffff !important;
+    margin-left: 10px !important;
+  }
+
+  .smr_mobile_viewAllBtn {
+    border: none;
+    background-color: transparent;
+    color: white;
+    text-decoration: underline;
+    font-size: 15px;
+  }
+
+  .smr_mobile_subMenu {
+    margin: 0px 0px 0px 15px;
+    padding-block: 5px;
+    color: #f6f6f6;
+  }
+
+  .mobileSideBarSearch::placeholder {
+    color: white;
+  }
+
+  @media screen and (max-width: 1500px) {
+    .smr_headerOptionSingleDiv {
+      min-width: 200px !important;
     }
+  }
 
-    .smiling_Top_header_sub {
-        padding-inline: 6%;
-        display: flex;
-        height: 100%;
-    }
-
+  @media screen and (max-width: 1700px) {
     .smiling_Top_header_div1 {
-        width: 33.33%;
-        display: flex;
-        align-items: center;
+      width: 40% !important;
     }
 
     .smiling_Top_header_div2_web {
-        width: 50%;
-        display: flex;
-        align-items: center;
+      width: 20% !important;
     }
 
+    .smiling_Top_header_div2_web {
+      width: 20% !important;
+    }
+  }
+
+  @media screen and (min-width: 1201px) {
+    .nav_ul_shop_menu_Mobile {
+      display: none;
+    }
+  }
+
+  @media screen and (max-width: 1200px) {
+    .smr_mobileHeader_top_div1 {
+      width: 33.33%;
+    }
+
+    .smr_mobileHeader_top_div2 {
+      width: 33.33%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .smr_mobileHeader_top_div3 {
+      width: 33.33%;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+    }
+
+    .smiling_Top_header {
+      height: 80px !important;
+    }
+
+    // On mobile, logo should be a bit smaller
     .smr_logo_header {
-        max-width: 1000px;
-    }
-
-    .smiling_Top_header_div3 {
-        width: 80%;
-        justify-content: flex-end;
-        display: flex;
-        align-items: center;
-    }
-
-    .nav_ul_shop {
-        list-style: none;
-        display: flex;
-        align-items: center;
-        margin: 0px;
-        padding: 0px 15px;
-        gap: 20px;
-    }
-
-    .nav_li_smining_shop:hover {
-        height: 150px;
-        // width: 110px;
-        display: flex;
-        align-items: center;
-    }
-
-
-    .nav_li_smining_Icone {
-        color: black;
-        font-size: $fontSize1;
-        font-weight: 500;
-        position: relative;
-        cursor: pointer;
-        display: inline-block;
-    }
-
-    .nav_li_smining {
-        color: black;
-        font-size: $fontSize2;
-        font-weight: 500;
-        letter-spacing: 1px;
-        position: relative;
-        display: inline-block;
-        font-family: $primaryFontFamily;
-    }
-
-    .nav_li_smining::before {
-        content: '';
-        position: absolute;
-        bottom: 0;
-        right: 0;
-        width: 0%;
-        height: 1px;
-        background-color: white;
-        transition: width 0.3s ease-out;
-    }
-
-    .nav_li_smining:hover::before {
-        width: 100%;
-        left: 0;
-        right: auto;
-        transition: width 0.3s ease-out;
-    }
-
-    .nav_li_smining_Fixed_Icone {
-        color: #7d7f85;
-        font-size: 13px;
-        font-weight: 500;
-        position: relative;
-        display: inline-block;
-    }
-
-    .nav_li_smining_Fixed {
-        color: #7d7f85;
-        font-size: 13px;
-        font-weight: 500;
-        position: relative;
-        display: inline-block;
-    }
-
-    .nav_li_smining_Fixed::before {
-        content: '';
-        position: absolute;
-        bottom: 0;
-        right: 0;
-        width: 0%;
-        height: 1px;
-        background-color: #7d7f85;
-        transition: width 0.3s ease-out;
-    }
-
-    .nav_li_smining_Fixed:hover::before {
-        width: 100%;
-        left: 0;
-        right: auto;
-        transition: width 0.3s ease-out;
+      max-height: 55px;
     }
 
     .smr_logo_header_Fixed {
-        max-width: 1000px;
-    }
-
-    .Smining-Top-Header-fixed-main {
-        width: 100%;
-        background-color: white;
-        display: flex;
-        align-items: center;
-        text-align: center;
-        transform: translateY(-200px);
-        height: 60px;
-    }
-
-    .Smining-Top-Header-fixed-main.fixed {
-        position: fixed;
-        top: 0;
-        box-shadow: 0 2px 5px rgba(20, 19, 19, 0.1);
-        z-index: 1000;
-        transform: translateY(0px);
-        transition: all 0.4s ease;
-        height: 60px;
-    }
-
-
-    /// open dropdownList 
-    .shop-dropdown {
-        height: auto;
-        width: 100%;
-        position: absolute;
-        background: #fff;
-        top: 72px;
-        left: 0;
-        display: none;
-        transition: all 0.5s ease;
-        box-shadow: 0 0 25px 0 rgba(200, 200, 200, .5);
-    }
-
-    .shop-dropdown.open {
-        display: block;
-        position: absolute;
-        z-index: 111111;
-        width: 88%;
-        margin-left: 6%;
-        margin-top: 37px;
-        transition: all 0.5s ease;
-    }
-
-    .shop-dropdown.open.fixed {
-        position: fixed;
-        top: 0;
-        box-shadow: 0 2px 5px rgba(20, 19, 19, 0.1);
-        z-index: 1000;
-        transform: translateY(0px);
-        transition: all 0.4s ease;
-        height: 60px;
+      max-height: 50px;
     }
 
     .muilistMenutext {
-        font-size: 15px !important;
-        font-weight: 600;
-        margin: 5px 5px 5px 0px;
-        text-decoration: underline;
+      text-decoration: none;
     }
 
-    .smr_menuSubTitle {
-        font-size: 13px;
-        text-decoration: none;
-        color: #9b978f;
-        // color: rgb(192 187 184);
+    .smiling_Top_header_sub {
+      padding-inline: 1% !important;
     }
-
-    .muilist2ndSubMenutext {
-        font-size: 12px;
-        margin: 5px;
-        cursor: pointer;
-    }
-
-    .muilist2ndSubMenutext:hover {
-        color: black;
-
-    }
-
-    .smr_underline_button {
-        background-color: transparent;
-        border: none;
-        outline: none;
-        cursor: pointer;
-        border: 1px solid lightgray;
-        width: 80px;
-        height: 25px;
-        margin-top: 15px;
-        font-size: 13px;
-    }
-
-    .smr_listMain {
-        display: flex;
-        flex-flow: column wrap;
-        height: 350px;
-        margin-right: 20px !important;
-    }
-
-
 
     .srm_MobileSiderBarMain {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 150%;
-        background-color: rgba(192, 187, 177, 1.8);
-        z-index: 999999999999;
-        transition: all 0.9s ease-in-out;
+      height: 100%;
+      width: 100%;
+      overflow: scroll;
     }
 
+    // .nav_li_smining_shop {
+    //     display: none;
+    // }
 
-    //search box styling......
-    .smr_smlingSearchoverlay {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 150%;
-        background-color: rgba(0, 0, 0, 0.40);
-        display: flex;
-        z-index: 999;
+    // .nav_li_smining_Mobile {
+    //     display: none;
+    // }
+
+    .nav_ul_shop_menu_Mobile {
+      padding: 0px;
+      margin: 0px !important;
     }
 
-    .smr_smlingTopSerachOver {
-        height: 70px;
-        background-color: white;
-        width: 100%;
-        margin: 10px 100px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
+    .smr_menuStaicMobile {
+      margin: 0px;
+      color: white;
+      padding: 5px 0px 5px 15px;
     }
 
-    .smr_serachinputBoxOverly {
-        width: 95%;
-        height: 50px;
-        border: none;
-        outline: none;
+    .smr_menuStaicMobilePage {
+      margin: 0px;
+      border-bottom: 1px solid white;
+      color: white;
+      padding: 5px 0px 5px 20px;
     }
 
-
-
-    .smr_smlingTopSerachOver-Fixed {
-        height: 60px;
-        background-color: white;
-        width: 100%;
-        display: flex;
-        justify-content: center;
-        align-items: center;
+    .smr_menuStaicMobilePageLink {
+      margin: 0px;
+      color: white;
+      font-weight: 500;
+      padding: 5px 0px 5px 20px;
     }
 
-    .smr_smlingSearchoverlayNew {
-        position: relative;
-        transform: translateY(-200px);
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 150%;
-        background-color: rgba(0, 0, 0, 0.40);
-        display: flex;
-        z-index: 999;
+    .smr_ListMenuSiderMobile {
+      margin-top: 0px !important;
     }
 
-    .smr_smlingSearchoverlayNew.fixed {
-        position: fixed;
-        top: 0;
-        left: 0;
-        box-shadow: 0 2px 5px rgba(20, 19, 19, 0.1);
-        z-index: 1000;
-        transform: translateY(0px);
-        transition: all 0.4s ease;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0, 0, 0, 0.40);
-        display: flex;
-        transform: translateY(0px);
-        transition: all 0.4s ease;
+    // .smiling_Top_header_div3 padding-right intentionally unset
+  }
+
+  @media screen and (max-width: 600px) {
+    .smr_mobileHideIcone {
+      display: none !important;
     }
 
-    .Smining-Top-Header-fixed-main.fixed.searchoverly {
-        z-index: -500 !important;
+    // .smiling_Top_header_div3 padding-right intentionally unset at 600px
+  }
+
+  @media screen and (min-width: 501px) {
+    .smiling_Top_header_div2_mobile {
+      display: none !important;
+    }
+  }
+
+  @media screen and (max-width: 500px) {
+    .smiling_Top_header_div2_web {
+      display: none !important;
     }
 
-    .srm_MobileSiderBarMain::-webkit-scrollbar {
-        display: none !important;
+    .smiling_Top_header_div2_mobile {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
     }
 
-    .smr_showDropOptionMainDiv {
-        overflow: auto;
+    // Mobile logo (companyMlogo) — fits the 80px mobile header
+    .smr_logo_header {
+      max-height: 50px;
     }
 
-    .smr_showDropOptionMainDiv::-webkit-scrollbar {
-        // display: none!important;
-        height: 5px !important;
+    .smr_logo_header_Fixed {
+      max-height: 45px;
+    }
+  }
+
+  @media screen and (max-width: 400px) {
+    .nav_ul_shop {
+      gap: 8px !important;
     }
 
-
-
-    .badgeColor .MuiBadge-badge {
-        background-color: #c0bbb1 !important;
+    .nav_li_smining {
+      font-size: 12px !important;
     }
-
-    .badgeColorFix .MuiBadge-badge {
-        background-color: rgb(214 204 204) !important;
-        color: black !important;
-        margin-left: 10px !important;
-
-    }
-
-    .smr_mobile_viewAllBtn {
-        border: none;
-        background-color: transparent;
-        color: white;
-        text-decoration: underline;
-        font-size: 15px;
-    }
-
-    .smr_mobile_subMenu {
-        margin: 0px 0px 0px 15px;
-        padding-block: 5px;
-        color: #f6f6f6;
-
-    }
-
-    .mobileSideBarSearch::placeholder {
-        color: white;
-    }
-
-
-    @media screen and (max-width:1500px) {
-        .smr_headerOptionSingleDiv {
-            min-width: 200px !important;
-        }
-    }
-
-    @media screen and (max-width:1700px) {
-
-        .smiling_Top_header_div1 {
-            width: 40% !important;
-        }
-
-        .smiling_Top_header_div2_web {
-            width: 20% !important;
-        }
-
-    }
-
-    @media screen and (min-width:1201px) {
-        .nav_ul_shop_menu_Mobile {
-            display: none;
-        }
-
-
-    }
-
-    @media screen and (max-width:1200px) {
-
-
-        .smr_mobileHeader_top_div1 {
-            width: 33.33%;
-        }
-
-        .smr_mobileHeader_top_div2 {
-            width: 33.33%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .smr_mobileHeader_top_div3 {
-            width: 33.33%;
-            display: flex;
-            align-items: center;
-            justify-content: flex-end;
-        }
-
-        .smiling_Top_header {
-            height: 80px !important;
-        }
-
-        .muilistMenutext {
-            text-decoration: none;
-        }
-
-        .smiling_Top_header_sub {
-            padding-inline: 1% !important;
-        }
-
-        .srm_MobileSiderBarMain {
-            height: 100%;
-            width: 100%;
-            overflow: scroll;
-        }
-
-        // .nav_li_smining_shop {
-        //     display: none;
-        // }
-
-        // .nav_li_smining_Mobile {
-        //     display: none;
-        // }
-
-        .nav_ul_shop_menu_Mobile {
-            padding: 0px;
-            margin: 0px !important;
-        }
-
-        .smr_menuStaicMobile {
-            margin: 0px;
-            color: white;
-            padding: 5px 0px 5px 15px;
-        }
-
-        .smr_menuStaicMobilePage {
-            margin: 0px;
-            border-bottom: 1px solid white;
-            color: white;
-            padding: 5px 0px 5px 20px;
-        }
-
-        .smr_menuStaicMobilePageLink {
-            margin: 0px;
-            color: white;
-            font-weight: 500;
-            padding: 5px 0px 5px 20px;
-        }
-
-        .smr_ListMenuSiderMobile {
-            margin-top: 0px !important;
-        }
-
-        .smiling_Top_header_div3 {
-            // padding-right: 5px;
-        }
-
-    }
-
-
-    @media screen and (max-width: 600px) {
-        .smr_mobileHideIcone {
-            display: none !important;
-        }
-
-        .smiling_Top_header_div3 {
-            // padding-right: 15px !important;
-        }
-    }
-
-    @media screen and (min-width: 501px) {
-        .smiling_Top_header_div2_mobile {
-            display: none !important;
-        }
-    }
-
-    @media screen and (max-width: 500px) {
-        .smiling_Top_header_div2_web {
-            display: none !important;
-        }
-
-        .smiling_Top_header_div2_mobile {
-            display: flex;
-            align-items: center;
-        }
-    }
-
-    @media screen and (max-width: 400px) {
-        .nav_ul_shop {
-            gap: 8px !important;
-        }
-
-        .nav_li_smining {
-            font-size: 12px !important;
-        }
-    }
+  }
 }

@@ -1,0 +1,42 @@
+[
+  {
+    "background": "linear-gradient(135deg, #4ca1af → #c4e0e5)",
+    "color": "#FFFFFF"
+  },
+  {
+    "background": "linear-gradient(135deg, #ffafbd, #ffdde1)",
+    "color": "#FFFFFF"
+  },
+  {
+    "background": "linear-gradient(135deg, #eacda3 , #494150)",
+    "color": "#FFFFFF"
+  },
+  {
+    "background": "linear-gradient(135deg, #d66d75, #e29587)",
+    "color": "#FFFFFF"
+  },
+  {
+    "background": "linear-gradient(135deg, #dd5e89, #f7bb97)",
+    "color": "#FFFFFF"
+  },
+  {
+    "background": "linear-gradient(135deg, #eecda3, #ef629f)",
+    "color": "#FFFFFF"
+  },
+  {
+    "background": "linear-gradient(135deg, #eacda3, #d6ae7b)",
+    "color": "#FFFFFF"
+  },
+  {
+    "background": "linear-gradient(135deg, #ddd6f3, #faaca8)",
+    "color": "#FFFFFF"
+  },
+  {
+    "background": "linear-gradient(135deg, #ba5370, #f4e2d8)",
+    "color": "#FFFFFF"
+  },
+  {
+    "background": "linear-gradient(135deg, #ffd89b, #19547b)",
+    "color": "#FFFFFF"
+  }
+]

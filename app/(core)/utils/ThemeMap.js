@@ -12,6 +12,10 @@ export const themeMap = {
     page: "fgstore.web",
     // page: LocalSetup,
   },
+   "procatalog.web": {
+    page: "fgstore.pro",
+    // page: LocalSetup,
+  },
   // local dev
   "nxtmobileapp.web": {
     // page: LocalSetup,

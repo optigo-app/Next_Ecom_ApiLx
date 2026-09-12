@@ -1,5 +1,7 @@
 import { getSession } from "../../FetchSessionData";
 import { CommonAPI } from "../CommonAPI/CommonAPI";
+import { syncFiltersToSqlite } from "../../sqlite/sqliteSync";
+
 
 export const FilterListAPI = async (mainData, visiterId) => {
   const storeinit = getSession("storeInit");
@@ -102,5 +104,13 @@ export const FilterListAPI = async (mainData, visiterId) => {
       finalfilterData = res?.Data?.rd;
     }
   });
+
+  // Background sync filters to SQLite without blocking UI
+  if (Array.isArray(finalfilterData) && finalfilterData.length > 0) {
+    const menuIdent = (typeof window !== "undefined" && window.location?.pathname) || MenuParams?.FilterVal || "default";
+    syncFiltersToSqlite(menuIdent, finalfilterData, storeinit?.domain);
+  }
+
   return finalfilterData;
 };
+

@@ -3,13 +3,40 @@ import { IoMdCall, IoMdMail } from "react-icons/io";
 import { IoLocationOutline } from "react-icons/io5";
 import Link from "next/link";
 
-const Footer = ({ fromPage, companyInfoData, socialMediaData }) => {
+const Footer = ({ list, fromPage, companyInfoData, socialMediaData }) => {
   const hasCompanyInfo =
     companyInfoData?.FrontEndAddress ||
     companyInfoData?.FrontEndCity ||
     companyInfoData?.FrontEndZipCode ||
     companyInfoData?.FrontEndContactno1 ||
     companyInfoData?.FrontEndEmail1;
+
+  const getContactNumbers = () => {
+    const numbers = [];
+    const parse = (val) => {
+      if (val === undefined || val === null) return [];
+      const str = String(val);
+      return str
+        .split(/[,/]/)
+        .map(n => {
+          let trimmed = n.trim();
+          trimmed = trimmed.replace(/^\+\s*\+/, '+');
+          return trimmed;
+        })
+        .filter(Boolean);
+    };
+    try {
+      if (companyInfoData?.FrontEndContactno1) {
+        numbers.push(...parse(companyInfoData.FrontEndContactno1));
+      }
+      if (companyInfoData?.FrontEndContactno2) {
+        numbers.push(...parse(companyInfoData.FrontEndContactno2));
+      }
+    } catch (e) {
+      console.error("Error parsing contact numbers:", e);
+    }
+    return numbers;
+  };
 
   return (
     <footer
@@ -19,7 +46,7 @@ const Footer = ({ fromPage, companyInfoData, socialMediaData }) => {
       <div className="footerContent">
         {/* CONTACT SECTION */}
         <div className="footerColumn">
-          {hasCompanyInfo && <h4 className="footerTitle">Contact Us</h4>}
+          {hasCompanyInfo && <h4 className="footerTitle color_jeweliita">Contact Us</h4>}
 
           {companyInfoData?.FrontEndAddress && (
             <div className="footerRow">
@@ -32,17 +59,16 @@ const Footer = ({ fromPage, companyInfoData, socialMediaData }) => {
             </div>
           )}
 
-          {companyInfoData?.FrontEndContactno1 && (
+          {getContactNumbers().length > 0 && (
             <div className="footerRow">
               <IoMdCall className="footerIcon" />
-              <span>
-                {companyInfoData?.FrontEndContactno1}
-                {companyInfoData?.FrontEndContactno2 && (
-                  <>
-                    , {companyInfoData?.FrontEndContactno2}
-                  </>
-                )}
-              </span>
+              <div style={{ display: "flex", flexDirection: "column" }}>
+                {getContactNumbers().map((num, index) => (
+                  <span key={index} style={{ whiteSpace: "nowrap" }}>
+                    {num}
+                  </span>
+                ))}
+              </div>
             </div>
           )}
 
@@ -61,25 +87,30 @@ const Footer = ({ fromPage, companyInfoData, socialMediaData }) => {
 
         {/* LINKS SECTION */}
         <div className="footerColumn">
-          <h4 className="footerTitle">Quick Links</h4>
+          <h4 className="footerTitle color_jeweliita">Quick Links</h4>
           <div className="footerLinks">
-            <Link href="/terms-and-conditions">Terms & Conditions</Link>
-            <Link href="/privacy-policy">Privacy Policy</Link>
+            {list && list?.length > 0 && list?.map((item, i) => (
+              <Link key={i} href={item?.href} prefetch={true}>
+                {item?.label}
+              </Link>
+            ))}
+            {/* <Link href="/terms-and-conditions">Terms & Conditions</Link>
+            <Link href="/privacyPolicy">Privacy Policy</Link>
             <Link href="/aboutUs">About Us</Link>
             <Link href="/refund-policy">Refund Policy</Link>
-            <Link href="/shipping-policy">Shipping Policy</Link>
+            <Link href="/shipping-policy">Shipping Policy</Link> */}
           </div>
         </div>
 
         {/* SOCIAL SECTION */}
         {socialMediaData?.length > 0 && (
           <div className="footerColumn">
-            <h4 className="footerTitle">Follow Us</h4>
+            <h4 className="footerTitle color_jeweliita">Follow Us</h4>
             <div className="footerSocial">
               {socialMediaData.map((social, i) => (
                 <a
                   key={i}
-                  href={`https://${social?.SLink}`}
+                  href={social?.SLink}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="footerSocialIcon"
@@ -96,7 +127,7 @@ const Footer = ({ fromPage, companyInfoData, socialMediaData }) => {
       </div>
 
       <div className="footerBottom">
-        <p style={{textTransform:'capitalize'}}>© {new Date().getFullYear()} {companyInfoData?.companyname_menu}. All rights reserved.</p>
+        <p className="color_jeweliita__footer" style={{ textTransform: 'capitalize' }}>© {new Date().getFullYear()} {companyInfoData?.companyname_menu}. All rights reserved.</p>
       </div>
     </footer>
   );

@@ -1,0 +1,327 @@
+@use "../../../../theme/fgstore.pro/style/variable.scss" as *;
+
+.proCat_AlbumImageMainPopup {
+  width: 19%;
+  padding: 5px;
+  margin: 5px;
+  cursor: pointer;
+  box-shadow: rgba(125, 125, 125, 0.2) 0px 0px 5px;
+}
+
+.proCat_AlbumLockIcone_popup {
+  height: 25px;
+  position: absolute;
+  right: 40%;
+  top: 40%;
+}
+
+.proCat_AlbumImageMainPopup_img {
+  width: 100%;
+  object-fit: contain;
+  min-height: 200px;
+}
+
+.lock_icon {
+  background-color: #fff;
+  box-shadow: 5px 5px 10px rgba(25, 25, 25, 0.6);
+  display: inline-block;
+  padding: 13px;
+  width: 50px;
+  border-radius: 50%;
+  height: 50px;
+  object-fit: contain;
+}
+
+.proCat_model_overFlow {
+  scrollbar-width: none;
+}
+
+.proCat_model_overFlow::-webkit-scrollbar {
+  width: 0px !important;
+}
+
+.proCat_albumName {
+  color: $homePageFontColor;
+  font-family: $homePageFontFamily;
+  margin: 0px;
+  text-align: center;
+  word-break: break-word;
+}
+
+.proCat_album_box_main {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #fff;
+  box-shadow:
+    0px 11px 15px -7px rgba(0, 0, 0, 0.2),
+    0px 24px 38px 3px rgba(0, 0, 0, 0.14),
+    0px 9px 46px 8px rgba(0, 0, 0, 0.12);
+  width: 70%;
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+  border: none;
+  outline: none;
+  border-radius: 12px;
+  overflow: hidden;
+
+  @media screen and (max-width: 1200px) {
+    width: 96% !important;
+  }
+}
+
+.proCat_modalHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 24px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  background: #fff;
+}
+
+.proCat_modalTitle {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: $homePageFontColor;
+  font-family: $homePageFontFamily;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.proCat_modalCloseBtn {
+  color: #333 !important;
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.05) !important;
+  }
+}
+
+.pro_pressESCClose {
+  margin: 0;
+  padding: 8px 16px;
+  font-size: 0.75rem;
+  color: #888;
+  text-align: right;
+  background: #fdfdfd;
+  border-top: 1px solid #eee;
+
+  @media screen and (max-width: 900px) {
+    display: none !important;
+  }
+}
+
+.proCat_model_overFlow {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+  background: #f9f9f9;
+
+  scrollbar-width: thin;
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+  }
+}
+
+.proCat_modalMasonry {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: center;
+  width: 100%;
+}
+
+.proCat_modalCard {
+  width: 280px;
+  cursor: pointer;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid #eee;
+  background: #fff;
+  transition: all 0.2s ease;
+  display: flex;
+  flex-direction: column;
+
+  @media screen and (max-width: 600px) {
+    width: 45%;
+  }
+
+  @media screen and (max-width: 400px) {
+    width: 100%;
+  }
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+  }
+}
+
+.proCat_modalCardMedia {
+  position: relative;
+  width: 100%;
+}
+
+.proCat_modalCardImg {
+  width: 100%;
+  height: auto;
+  display: block;
+  object-fit: contain;
+  background: #fff;
+  min-height: 150px;
+}
+
+.proCat_modalCardTitle {
+  padding: 10px;
+  margin: 0;
+  text-align: center;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: $homePageFontColor;
+  font-family: $homePageFontFamily;
+}
+
+.proCat_alubmMainDiv {
+  margin-inline: 60px;
+
+  .smr_AlbumImageMain {
+    width: 100% !important;
+    padding: 0px;
+    margin: 0 0 10px 0 !important;
+    cursor: pointer;
+    border: 1px solid lightgray;
+    height: fit-content;
+    display: inline-block;
+    break-inside: avoid;
+  }
+
+  .proCat_albumTitle {
+    color: $homePageFontColor;
+    font-family: $homePageFontFamily;
+    font-size: $fontSize5;
+    text-align: center;
+    margin: 15px 0px 15px 0px;
+  }
+
+  .smr_AlbumImageMain_img {
+    width: 100%;
+    min-height: 280px;
+    object-fit: contain;
+
+    @media (max-width: 1820px) {
+      min-height: 240px;
+    }
+
+    @media (max-width: 1580px) {
+      min-height: 200px;
+    }
+
+    @media (max-width: 1350px) {
+      min-height: 170px;
+    }
+
+    @media (max-width: 380px) {
+      min-height: 140px;
+    }
+  }
+
+  .proCat_albumALL_div {
+    column-count: 5;
+    column-gap: 10px;
+  }
+
+  .proCat_AlbumLockIcone {
+    height: 50px;
+    position: absolute;
+    right: 40%;
+    top: 40%;
+  }
+
+  .lock_icon {
+    background-color: #fff;
+    box-shadow: 5px 5px 10px rgba(25, 25, 25, 0.6);
+    display: inline-block;
+    padding: 13px;
+    width: 50px;
+    border-radius: 50%;
+    height: 50px;
+    object-fit: contain;
+  }
+
+  .proCat_album_box_main {
+    width: 70%;
+  }
+
+  .proCat_album_box_main {
+    max-height: 85vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    border: none;
+    outline: none;
+  }
+
+  .proCat_model_overFlow {
+    flex: 1;
+    overflow: auto;
+  }
+
+  @media screen and (max-width: 1200px) {
+    .proCat_albumALL_div {
+      column-count: 4;
+      column-gap: 10px;
+    }
+
+    .proCat_album_box_main {
+      width: 96% !important;
+    }
+  }
+
+  @media screen and (max-width: 1000px) {
+    margin-inline: 10px !important;
+  }
+
+  @media screen and (max-width: 850px) {
+    .proCat_albumALL_div {
+      column-count: 3;
+      column-gap: 8px;
+    }
+  }
+
+  @media screen and (max-width: 650px) {
+    margin-inline: 2px !important;
+
+    .proCat_albumTitle {
+      display: none;
+    }
+
+    .proCat_albumALL_div {
+      width: 100%;
+      column-count: 2;
+      column-gap: 6px;
+    }
+
+    .smr_AlbumImageMain {
+      margin: 0 0 8px 0 !important;
+    }
+  }
+
+  @media screen and (max-width: 450px) {
+    .proCat_albumALL_div {
+      column-count: 2;
+      column-gap: 6px;
+    }
+  }
+
+  @media screen and (max-width: 380px) {
+    .proCat_albumALL_div {
+      column-count: 1;
+      column-gap: 0px;
+    }
+  }
+}
+

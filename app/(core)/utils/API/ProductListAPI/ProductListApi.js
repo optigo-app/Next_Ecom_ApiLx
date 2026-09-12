@@ -1,5 +1,7 @@
 import { getSession } from "../../FetchSessionData";
 import { CommonAPI } from "../CommonAPI/CommonAPI";
+import { syncProductsToSqlite } from "../../sqlite/sqliteSync";
+import { getSqliteProducts } from "../../sqlite/sqliteActions";
 
 const ProductListApi = async (
   filterObj = {},
@@ -16,47 +18,44 @@ const ProductListApi = async (
   album = "",
 ) => {
   let MenuParams = {};
-  let serachVar = "";
+  let serachVar = {};
 
-  if (Array.isArray(mainData)) {
-    if (mainData?.length > 0) {
-      const savedMenu = getSession("menuparams");
-      if (savedMenu && savedMenu.FilterKey !== undefined) {
-        MenuParams.FilterKey = savedMenu.FilterKey ?? "";
-        MenuParams.FilterVal = savedMenu.FilterVal ?? "";
-        MenuParams.FilterKey1 = savedMenu.FilterKey1 ?? "";
-        MenuParams.FilterVal1 = savedMenu.FilterVal1 ?? "";
-        MenuParams.FilterKey2 = savedMenu.FilterKey2 ?? "";
-        MenuParams.FilterVal2 = savedMenu.FilterVal2 ?? "";
-      } else {
-        Object.values(mainData[0])?.forEach((ele, index) => {
-          let keyName = `FilterKey${index === 0 ? "" : index}`;
-          MenuParams[keyName] = ele.replace(/%20/g, " ");
-        });
-        Object.values(mainData[1])?.forEach((ele, index) => {
-          let keyName = `FilterVal${index === 0 ? "" : index}`;
-          MenuParams[keyName] = ele.replace(/%20/g, " ");
-        });
+  if (Array.isArray(mainData) && mainData.length >= 2 && mainData[0] && mainData[1]) {
+    const keys = Array.isArray(mainData[0]) ? mainData[0] : Object.values(mainData[0]);
+    const vals = Array.isArray(mainData[1]) ? mainData[1] : Object.values(mainData[1]);
+    keys.forEach((k, index) => {
+      if (k) {
+        const keyName = `FilterKey${index === 0 ? "" : index}`;
+        const valName = `FilterVal${index === 0 ? "" : index}`;
+        MenuParams[keyName] = String(k).trim().replace(/%20/g, " ");
+        MenuParams[valName] = String(vals[index] ?? "").trim().replace(/%20/g, " ");
       }
+    });
+  } else if (mainData !== "" && typeof mainData === "string") {
+    if (mainData.split("=")[0] === "S") {
+      try {
+        serachVar = JSON.parse(atob(decodeURIComponent(mainData.split("=")[1])));
+      } catch (_) {}
+    } else {
+      try {
+        if (atob(decodeURIComponent(mainData)).split("=")[0] === "AlbumName") {
+          MenuParams.FilterKey = atob(decodeURIComponent(mainData)).split("=")[0];
+          MenuParams.FilterVal = atob(decodeURIComponent(mainData)).split("=")[1];
+        } else {
+          MenuParams.FilterKey = atob(decodeURIComponent(mainData));
+          MenuParams.FilterVal = atob(decodeURIComponent(mainData));
+        }
+      } catch (_) {}
     }
   } else {
-    if (mainData !== "") {
-      if (mainData?.split("=")[0] == "S") {
-        serachVar = JSON.parse(atob(mainData?.split("=")[1]));
-      } else {
-        MenuParams.FilterKey = atob(mainData);
-        MenuParams.FilterVal = atob(mainData);
-      }
-
-      if (mainData?.split("=")[0] !== "S") {
-        if (atob(mainData)?.split("=")[0] == "AlbumName") {
-          MenuParams.FilterKey = atob(mainData)?.split("=")[0];
-          MenuParams.FilterVal = atob(mainData)?.split("=")[1];
-        } else {
-          MenuParams.FilterKey = atob(mainData);
-          MenuParams.FilterVal = atob(mainData);
-        }
-      }
+    const savedMenu = getSession("menuparams");
+    if (savedMenu && savedMenu.FilterKey !== undefined) {
+      MenuParams.FilterKey = savedMenu.FilterKey ?? "";
+      MenuParams.FilterVal = savedMenu.FilterVal ?? "";
+      MenuParams.FilterKey1 = savedMenu.FilterKey1 ?? "";
+      MenuParams.FilterVal1 = savedMenu.FilterVal1 ?? "";
+      MenuParams.FilterKey2 = savedMenu.FilterKey2 ?? "";
+      MenuParams.FilterVal2 = savedMenu.FilterVal2 ?? "";
     }
   }
 
@@ -125,8 +124,8 @@ const ProductListApi = async (
     FilterKey2: MenuParams?.FilterKey2 ?? "",
     FilterVal2: MenuParams?.FilterVal2 ?? "",
     SearchKey: serachVar?.b ?? "",
-    PageNo: page ?? "",
-    PageSize: storeinit?.PageSize ?? "",
+    PageNo: page ?? 1,
+    PageSize: 1000000 ?? storeinit?.PageSize ?? "",
     Metalid: mtid ?? "",
     DiaQCid: diaQc ?? "",
     CsQCid: csQc ?? "0,0",
@@ -183,10 +182,24 @@ const ProductListApi = async (
     IsSolitaireWebsite: storeinit?.IsSolitaireWebsite ?? 0,
   };
 
-  let encData = JSON.stringify(data);
+  // 1. Ultra-fast SQLite query first (< 5ms)
+  try {
+    const targetDomain = storeinit?.domain;
+    const sqliteRes = await getSqliteProducts(data, {}, targetDomain);
+    if (sqliteRes?.success) {
+      return {
+        pdList: sqliteRes.pdList,
+        pdResp: sqliteRes.pdResp,
+      };
+    }
+  } catch (sqlErr) {
+    console.warn("[ProductListApi] SQLite lookup skipped:", sqlErr?.message);
+  }
 
+  // 2. Fallback to network API if SQLite does not have the products yet
+  let encData = JSON.stringify(data);
   let body = {
-    con: `{\"id\":\"\",\"mode\":\"GETPRODUCTLIST\",\"appuserid\":\"${customerEmail ?? ""}\"}`,
+    con: `{\"id\":\"\",\"mode\":\"GETPRODUCTFULLLIST\",\"appuserid\":\"${customerEmail ?? ""}\"}`,
     f: "onlogin (GETPRODUCTLIST)",
     p: encData
   };
@@ -196,11 +209,16 @@ const ProductListApi = async (
 
   await CommonAPI(body).then((res) => {
     if (res) {
-      pdList = res?.Data.rd;
-      pdResp = res?.Data;
+      pdList = res?.Data?.rd || [];
+      pdResp = res?.Data || {};
     }
   });
 
+  // Background sync to SQLite without blocking UI
+  if (Array.isArray(pdList) && pdList.length > 0) {
+    const menuIdent = (typeof window !== "undefined" && window.location?.pathname) || MenuParams?.FilterVal || "default";
+    syncProductsToSqlite(menuIdent, pdList, storeinit?.domain);
+  }
   return { pdList, pdResp };
 };
 

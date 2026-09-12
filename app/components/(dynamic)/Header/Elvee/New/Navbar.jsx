@@ -384,18 +384,8 @@ const ElveePreNavbar = ({ storeInit: storeinit, logos }) => {
     return { url, finalData };
   };
 
-  const prefetchedUrlsRef = useRef(new Set());
-
-  const handlePrefetch = (param, param1, param2, isFilterKey2Ignore) => {
-    try {
-      const { url } = getMenuUrl(param, param1, param2, isFilterKey2Ignore);
-      if (url && url !== "#" && !prefetchedUrlsRef.current.has(url)) {
-        prefetchedUrlsRef.current.add(url);
-        router.prefetch(url);
-      }
-    } catch (err) {
-      // ignore prefetch errors
-    }
+  const handlePrefetch = () => {
+    // Disabled to prevent unwanted network overhead on hover
   };
 
   const handelMenu = (param, param1, param2, event, isFilterKey2Ignore) => {

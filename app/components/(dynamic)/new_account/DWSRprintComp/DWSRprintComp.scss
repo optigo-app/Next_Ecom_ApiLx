@@ -1,0 +1,140 @@
+// .dsr_Account_SMR{
+
+
+.dsr_container{
+    max-width: 1350px;
+    padding: 10px;
+    font-family: calibri;
+    box-sizing: border-box;
+    margin-bottom: 60px;
+}
+.dsr_headtitle{
+    font-size: 20px;
+    background-color: #939292;
+    color: #FFF;
+    padding: 4px 0px 5px 6px !important;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+.viewImage_dsr{
+    width: 200px;
+    height: 200px;
+    cursor: pointer;
+    margin: 2px 0px;
+    display: inline;
+    border: 1px solid #cccccc;
+}
+.card_section_dsr{
+    display: inline-block;
+    text-align: center;
+    margin: 5px;
+    padding: 5px;
+}
+.header_content_dsr{
+    font-size: 13px;
+}
+.card_content_dsr{
+    font-size: 11px;
+    white-space: nowrap;
+    color: #333333;
+}
+.card_content_dsr2{
+    font-size: 12px;
+    white-space: nowrap;
+    color: #333333;
+    font-weight: bold;
+}
+.card_content_dsr3{
+    font-size: 10px;
+    white-space: nowrap;
+    color: #333333;
+    font-weight: bold;
+}
+.w_100_dsr_page{
+    display: flex;
+    width: 100%;
+    justify-content: flex-start;
+}
+.card_loop_dsr{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+}
+.printBtnDSR{
+    background: linear-gradient(180deg, #fff, #ebebeb);
+    border: 1px solid #c9c9c9;
+    border-radius: 5px;
+    -o-box-shadow: inset 0 1px 0 #f0f0f0, 0 4px 0 0 #dbdbdb, 0 2px 3px #999;
+    box-shadow: inset 0 1px 0 #f0f0f0, 0 4px 0 0 #dbdbdb, 0 2px 3px #999;
+    color: #000;
+    cursor: pointer;
+    font-family: Calibri;
+    font-size: 14px;
+    padding: 5px 7px 5px 5px;
+    position: relative;
+    text-decoration: none;
+    border-left: 4px solid #5994bb !important;
+}
+.pd_dwse{
+    padding-left: 5px;
+}
+
+@media print {
+    .dsr_headtitle {
+        font-size: 16px;
+        margin-bottom:5px
+    }
+    .print_btn_none_dsr {
+        display: none !important;
+    }
+    .viewImage_dsr {
+        width: 100px;
+        height: 100px;
+        cursor: pointer;
+        margin: 2px 0px;
+        display: inline;
+        border: 0px;
+    }
+    .card_content_dsr {
+        font-size: 9px;
+        line-height: 10px;
+    }
+    .card_content_dsr2 {
+        font-size: 10px;
+        line-height: 11px;
+    }
+    .card_content_dsr3 {
+        font-size: 9px;
+        line-height: 10px;
+    }
+
+    /* Update the card loop to display 5 cards per row */
+    .card_loop_dsr {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr); /* 5 cards per row */
+        gap: 10px; /* Adjust spacing between cards */
+    }
+
+    .card_section_dsr {
+        text-align: center;
+        margin: 5px;
+        padding: 5px;
+        box-sizing: border-box;
+        border: 1px solid #e8e8e8;
+        page-break-inside: avoid !important;
+
+    }
+    .dsr_container{
+        margin-bottom: 0px;
+        padding: 0px;
+    }
+    .header_content_dsr{
+        font-size: 12px;
+        line-height: 16px;
+    }
+    .header_content_dsr2{
+        font-size: 14px !important;
+        line-height: 18px !important;
+    }
+}
+// }

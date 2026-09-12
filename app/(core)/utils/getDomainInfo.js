@@ -18,16 +18,26 @@ export async function getDomainInfo() {
             const rawHost = headerList?.get("x-forwarded-host") || headerList?.get("host") || "";
             const rawProto = headerList?.get("x-forwarded-proto") || "https";
 
+            let host = rawHost.split(":")[0];
+            if (!host || host === "localhost" || host === "127.0.0.1") {
+                host = NEXT_APP_WEB;
+            }
+
             return {
-                hostname: rawHost || NEXT_APP_WEB,
+                hostname: host || NEXT_APP_WEB,
                 protocol: `${rawProto}:`,
             };
         }
         const { hostname, protocol } = window.location;
+        let clientHost = hostname.replace(/^www\./, "");
+        if (clientHost === "localhost" || clientHost === "127.0.0.1") {
+            clientHost = NEXT_APP_WEB;
+        }
         return {
-            hostname: hostname.replace(/^www\./, ""),
+            hostname: clientHost || NEXT_APP_WEB,
             protocol,
         };
+
     } catch (error) {
         return {
             hostname: NEXT_APP_WEB,

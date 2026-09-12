@@ -4,11 +4,12 @@ import path from "path";
 // const CACHE_DIR = path.resolve("F:/next-ecomm(apilx)/app/next_cache");
 const CACHE_DIR = path.join(process.cwd(), ".next_cache");
 
-if (!fs.existsSync(CACHE_DIR)) fs.mkdirSync(CACHE_DIR, { recursive: true });
+try {
+  if (!fs.existsSync(CACHE_DIR)) fs.mkdirSync(CACHE_DIR, { recursive: true });
+} catch (_) {}
 
 const defaultTTL = 12 * 60 * 60 * 1000; // 12h
 const safeKey = (key) => key.replace(/[^a-zA-Z0-9_\-]/g, "_");
-
 
 export async function setCache(key, data, meta) {
   const now = Date.now();
@@ -19,10 +20,13 @@ export async function setCache(key, data, meta) {
     data,
   };
 
-  fs.promises
-    .writeFile(file, JSON.stringify(payload, null, 2), "utf8")
-    .then(() => console.log(`✅ [CACHE SAVED] ${key}`))
-    .catch((err) => console.error(`❌ Cache write failed for ${key}:`, err));
+  try {
+    await fs.promises.writeFile(file, JSON.stringify(payload, null, 2), "utf8");
+    console.log(`✅ [CACHE SAVED] ${key}`);
+  } catch (err) {
+    // Gracefully handle permission errors in restricted production environments
+    console.warn(`⚠️ [CACHE WRITE SKIPPED] ${key} (${err.code || err.message})`);
+  }
 }
 
 export async function getCache(key, ttlMs = defaultTTL) {

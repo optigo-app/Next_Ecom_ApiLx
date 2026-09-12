@@ -84,7 +84,7 @@ const CustomFormControlLabel = styled(FormControlLabel)(() => ({
   flexDirection: "row-reverse",
 }));
 
-const ProductList = ({ storeinit, searchParams, params }) => {
+const ProductList = ({ storeinit, searchParams, params, initialData, initialFilterData }) => {
   const { setCartCountNum, setWishCountNum, loginUserDetail, finalId } = useStore();
   const location = usePathname();
   let cookie = Cookies.get("visiterId");
@@ -200,6 +200,8 @@ const ProductList = ({ storeinit, searchParams, params }) => {
     storeinit,
     loginUserDetail,
     finalId,
+    initialData,
+    initialFilterData,
   });
 
   const handleChangeTrend = (event) => {

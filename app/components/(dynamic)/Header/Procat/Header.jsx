@@ -14,6 +14,8 @@ import { useStore } from "@/app/(core)/contexts/StoreProvider";
 import { useNextRouterLikeRR } from "@/app/(core)/hooks/useLocationRd";
 import { useRouter } from "next/navigation";
 import './Header.modul.scss'
+import ReusableConfirmModal from '../../../ui/Modal'
+
 
 const Header = ({ storeinit, logos }) => {
   const { islogin, setislogin, cartCountNum, setCartCountNum, wishCountNum, setWishCountNum, setCartOpenStateB2C } = useStore();
@@ -26,21 +28,43 @@ const Header = ({ storeinit, logos }) => {
 
   const [menuData, setMenuData] = useState([]);
   const [menuItems, setMenuItems] = useState([]);
+  const [OpenLogoutModal, setOpenLogoutModal] = useState(false)
 
   const [searchText, setSearchText] = useState("")
   const webLogo = storeinit?.companylogo;
   const mobileLogo = storeinit?.companyMlogo;
   const IsB2BWebsiteChek = storeinit?.IsB2BWebsite;
 
-  let navigate = useNextRouterLikeRR().push;
+  const location = useNextRouterLikeRR();
+  const navigation = location.push;
+  const navigate = location.push;
+
+  const getSecurityKeyFromUrl = () => {
+    // 1. From path segment K=
+    const pathSegments = location?.pathname?.split("/") || [];
+    const kSegment = pathSegments.find(s => s.includes("K="));
+    const pathKey = kSegment?.split("?")[0]?.split("K=")[1];
+    if (pathKey) {
+      try {
+        return atob(decodeURIComponent(pathKey));
+      } catch (e) {
+        console.error("Error decoding path key:", e);
+      }
+    }
+
+    // 2. From searchParams (SK or SecurityKey)
+    const sk = location?.searchParams?.SK || location?.searchParams?.SecurityKey;
+    if (sk) return sk;
+
+    return "";
+  };
+
   let cookie = Cookies.get('visiterId')
 
   // const countdown = useCountdown();
 
 
   const [serachsShowOverlay, setSerachShowOverlay] = useState(false);
-  const navigation = useNextRouterLikeRR().push;
-
 
   // for rember me
   // }, [location.key])
@@ -96,8 +120,8 @@ const Header = ({ storeinit, logos }) => {
   useEffect(() => {
     const handleScroll = () => {
       const scrollPosition = window.scrollY;
-      setIsHeaderFixed(scrollPosition > 100);
-      setIsHeaderFixedDropShow(scrollPosition > 100);
+      setIsHeaderFixed(scrollPosition > 10);
+      setIsHeaderFixedDropShow(scrollPosition > 10);
     };
     window.addEventListener('scroll', handleScroll);
     return () => {
@@ -130,8 +154,8 @@ const Header = ({ storeinit, logos }) => {
   const handleLogout = () => {
     setislogin(false);
     Cookies.remove("userLoginCookie");
-    window.sessionStorage.clear();
-    window.location.reload();
+    Cookies.remove("visitorId");
+    Cookies.remove("visiterId");
     sessionStorage.setItem("LoginUser", false);
     sessionStorage.removeItem("loginUserDetail");
     sessionStorage.removeItem("remarks");
@@ -147,12 +171,15 @@ const Header = ({ storeinit, logos }) => {
     sessionStorage.removeItem("MetalColorCombo");
     sessionStorage.removeItem("metalTypeCombo");
     // sessionStorage.removeItem("myAccountFlags");
-    sessionStorage.removeItem("registerEmail");
-    sessionStorage.removeItem("selectedAddressId");
     window.localStorage.removeItem("AuthToken");
     Cookies.remove('visiterId');
+    sessionStorage.removeItem("previousUrl")
+    sessionStorage.removeItem("redirectURL")
+    sessionStorage.removeItem("SecurityKey")
+    window.sessionStorage.clear();
     window.location.href = "/";
   };
+
 
 
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -218,11 +245,10 @@ const Header = ({ storeinit, logos }) => {
     ].join('&');
 
     let menuEncoded = `${queryParameters}/${otherparamUrl}`;
-    // const url = `/productlist?V=${queryParameters}/K=${otherparamUrl}`;
-    const url = `/p/${queryParameters1}/?M=${btoa(menuEncoded)}`;
 
-    // let d = new Date();
-    // let randomno = Math.floor(Math.random() * 1000 * d.getMilliseconds() * d.getSeconds() * d.getDate() * d.getHours() * d.getMinutes())
+    const securityKey = getSecurityKeyFromUrl();
+    const url = `/p/${queryParameters1}/?M=${btoa(menuEncoded)}${securityKey ? `&SK=${encodeURIComponent(securityKey)}` : ""}`;
+
     handleDropdownClose()
     navigate(url)
   }
@@ -293,93 +319,104 @@ const Header = ({ storeinit, logos }) => {
         };
 
         let encodeObj = btoa(JSON.stringify(obj))
-        navigation(`/p/${searchText}?S=${encodeObj}`);
+        const securityKey = getSecurityKeyFromUrl();
+        navigation(`/p/${searchText}?S=${encodeObj}${securityKey ? `&SK=${encodeURIComponent(securityKey)}` : ""}`);
         setSearchText("")
       }
     }
   };
 
+  const OpenLogoutMode = () => setOpenLogoutModal(true);
+  const CloseLogoutMode = () => setOpenLogoutModal(false);
+
 
   return (
-    <div className='ProCat_headerMain_div'>
-      {serachsShowOverlay && (
-        <>
-          <div className="smr_smlingSearchoverlay">
-            <div className="smr_smlingTopSerachOver">
-              <IoSearchOutline style={{ height: "15px", width: "15px", marginRight: "10px" }} />
-              <input
-                type="text"
-                placeholder="Enter Design Number End Click Enter"
-                value={searchText}
-                autoFocus
-                onChange={(e) => setSearchText(e.target.value)}
-                className="smr_serachinputBoxOverly"
-                onKeyDown={searchDataFucn}
-              />
-              <IoClose
-                style={{
-                  height: "30px",
-                  width: "30px",
-                  color: "#7d7f85",
-                  cursor: "pointer",
-                }}
-                onClick={toggleOverlay}
-              />
-            </div>
-          </div>
-
-          <div className={`smr_smlingSearchoverlayNew ${isHeaderFixedDropShow ? "fixed" : ""}`}>
-            <div className="smr_smlingTopSerachOver-Fixed">
-              <IoSearchOutline style={{ height: "15px", width: "15px", marginRight: "10px" }} />
-              <input
-                type="text"
-                placeholder="Enter Design Number End Click Enter"
-                value={searchText}
-                autoFocus
-                onChange={(e) => setSearchText(e.target.value)}
-                className="smr_serachinputBoxOverly"
-                onKeyDown={searchDataFucn}
-              />
-              <IoClose
-                style={{
-                  height: "30px",
-                  width: "30px",
-                  color: "#7d7f85",
-                  cursor: "pointer",
-                }}
-                onClick={toggleOverlay}
-              />
-            </div>
-          </div>
-        </>
-      )}
-
-      {drawerShowOverlay && (
-        <>
-          <div className="srm_MobileSiderBarMain">
-            <div style={{ margin: '20px 10px 0px 10px', display: 'flex', justifyContent: 'space-between' }}>
-              <div className='smr_mobileHeader_top_div1'>
+    <>
+      <ReusableConfirmModal
+        open={OpenLogoutModal}
+        onConfirm={handleLogout}
+        onClose={CloseLogoutMode}
+        type="logout"
+      />
+      <div className='ProCat_headerMain_div'>
+        {serachsShowOverlay && (
+          <>
+            <div className="smr_smlingSearchoverlay">
+              <div className="smr_smlingTopSerachOver">
+                <IoSearchOutline style={{ height: "15px", width: "15px", marginRight: "10px" }} />
+                <input
+                  type="text"
+                  placeholder="Enter Design Number End Click Enter"
+                  value={searchText}
+                  autoFocus
+                  onChange={(e) => setSearchText(e.target.value)}
+                  className="smr_serachinputBoxOverly"
+                  onKeyDown={searchDataFucn}
+                />
                 <IoClose
                   style={{
                     height: "30px",
                     width: "30px",
-                    color: "white",
+                    color: "#7d7f85",
                     cursor: "pointer",
                   }}
-                  onClick={toggleDrawerOverlay}
+                  onClick={toggleOverlay}
                 />
               </div>
-              <div className='smr_mobileHeader_top_div2'>
-                <a href="/" aria-label="Go to homepage" title="Go to homepage">
-                  <img src={compnyLogo ? compnyLogo : webLogo} loading='lazy' className='smr_logo_header' />
-                </a>
+            </div>
+
+            <div className={`smr_smlingSearchoverlayNew ${isHeaderFixedDropShow ? "fixed" : ""}`}>
+              <div className="smr_smlingTopSerachOver-Fixed">
+                <IoSearchOutline style={{ height: "15px", width: "15px", marginRight: "10px" }} />
+                <input
+                  type="text"
+                  placeholder="Enter Design Number End Click Enter"
+                  value={searchText}
+                  autoFocus
+                  onChange={(e) => setSearchText(e.target.value)}
+                  className="smr_serachinputBoxOverly"
+                  onKeyDown={searchDataFucn}
+                />
+                <IoClose
+                  style={{
+                    height: "30px",
+                    width: "30px",
+                    color: "#7d7f85",
+                    cursor: "pointer",
+                  }}
+                  onClick={toggleOverlay}
+                />
               </div>
+            </div>
+          </>
+        )}
 
-              <div className='smr_mobileHeader_top_div3'>
+        {drawerShowOverlay && (
+          <>
+            <div className="srm_MobileSiderBarMain">
+              <div style={{ margin: '20px 10px 0px 10px', display: 'flex', justifyContent: 'space-between' }}>
+                <div className='smr_mobileHeader_top_div1'>
+                  <IoClose
+                    style={{
+                      height: "30px",
+                      width: "30px",
+                      color: "white",
+                      cursor: "pointer",
+                    }}
+                    onClick={toggleDrawerOverlay}
+                  />
+                </div>
+                <div className='smr_mobileHeader_top_div2'>
+                  <a href="/" aria-label="Go to homepage" title="Go to homepage">
+                    <img src={compnyLogo ? compnyLogo : webLogo} loading='lazy' className='smr_logo_header' />
+                  </a>
+                </div>
 
-                {!!islogin &&
-                  <>
-                    {/* <Badge
+                <div className='smr_mobileHeader_top_div3'>
+
+                  {!!islogin &&
+                    <>
+                      {/* <Badge
                       badgeContent={wishCountNum}
                       max={1000}
                       overlap={"rectangular"}
@@ -402,385 +439,226 @@ const Header = ({ storeinit, logos }) => {
                         </li>
                       </Tooltip>
                     </Badge> */}
-                    {/* <li
+                      {/* <li
                       className="nav_li_smining_Icone smr_mobileHideIcone"
                       onClick={toggleOverlay}>
                       <IoSearchOutline
                         style={{ height: "20px", cursor: "pointer", width: "20px" }}
                       />
                     </li> */}
-                    <Badge
-                      badgeContent={cartCountNum}
-                      max={1000}
-                      overlap={"rectangular"}
-                      color="secondary"
-                      className='badgeColorFix'
-                      style={{ marginInline: '15px' }}
-                    >
-                      <Tooltip title="Cart">
+                      <Badge
+                        badgeContent={cartCountNum}
+                        max={1000}
+                        overlap={"rectangular"}
+                        color="secondary"
+                        className='badgeColorFix'
+                        style={{ marginInline: '15px' }}
+                      >
+                        <Tooltip title="Cart">
 
-                        <li
-                          onClick={() => { navigate('/cartPage') }}
-                          className="nav_li_smining_Icone"
-                        >
-                          <ShoppingCartOutlinedIcon
-                            sx={{
-                              height: '30px', width: '30px',
-                              color: 'black'
+                          <li
+                            onClick={() => { navigate('/cartPage') }}
+                            className="nav_li_smining_Icone color_jeweliita"
+                          >
+                            <ShoppingCartOutlinedIcon
+                              sx={{
+                                height: '30px', width: '30px',
+                              }}
+                            />
+                          </li>
+                        </Tooltip>
+                      </Badge>
+                    </>
+                  }
 
-                            }}
-                          />
-                        </li>
-                      </Tooltip>
-                    </Badge>
-                  </>
-                }
-
+                </div>
               </div>
-            </div>
-            <div className='smr_mobileMenuSubDivMain'>
-              <List className='smr_ListMenuSiderMobile' sx={{ paddingTop: '0', marginBottom: '0px', marginTop: '15px' }}>
-                {menuItems.map(menuItem => (
-                  <div key={menuItem.menuid}>
-                    <ButtonBase
-                      component="div"
-                      className="muilistMenutext"
-                      onClick={() => handleLoginMenuClick(menuItem.menuname, null, "iconclicked")}
-                      style={{ width: '100%' }}
-                    >
-                      <ListItem style={{ padding: '5px', borderBottom: '1px solid white' }}>
-                        <p className='smr_menuStaicMobile'>{menuItem.menuname}</p>
-                      </ListItem>
-                    </ButtonBase>
-                    {selectedMenu === menuItem.menuname && (
-                      <>
-                        <ButtonBase
-                          component="div"
-                          onClick={() => handelMenu({ "menuname": menuItem?.menuname, "key": menuItem?.param0name, "value": menuItem?.param0dataname })}
-                          style={{ width: '100%', display: 'flex', justifyContent: 'start' }}
-                        >
-                          <div style={{ paddingLeft: '10px', fontSize: '15px', marginTop: '5px' }}>
-                            <button className="smr_mobile_viewAllBtn">View All</button>
-                          </div>
-                        </ButtonBase>
-                        <List className='smr_mobileMenuScroll'>
-                          {menuItem.param1.map(subMenuItem => (
-                            <div key={subMenuItem.param1dataid}>
-                              <ButtonBase
-                                component="div"
-                                onClick={() => handelMenu({ "menuname": menuItem?.menuname, "key": menuItem?.param0name, "value": menuItem?.param0dataname }, { "key": subMenuItem.param1name, "value": subMenuItem.param1dataname })}
-                                style={{ width: '100%' }}
-                              >
-                                <p style={{ margin: '0px 0px 0px 15px', width: '100%', fontWeight: '600', color: 'white' }}>{subMenuItem.param1dataname}</p>
-                              </ButtonBase>
-                              {/* {selectedSubMenu === subMenuItem.param1dataname && ( */}
-                              {selectedMenu === menuItem.menuname && (
-                                <>
-                                  {/* <div style={{ paddingLeft: '10px' }}>
+              <div className='smr_mobileMenuSubDivMain'>
+                <List className='smr_ListMenuSiderMobile' sx={{ paddingTop: '0', marginBottom: '0px', marginTop: '15px' }}>
+                  {menuItems.map(menuItem => (
+                    <div key={menuItem.menuid}>
+                      <ButtonBase
+                        component="div"
+                        className="muilistMenutext"
+                        onClick={() => handleLoginMenuClick(menuItem.menuname, null, "iconclicked")}
+                        style={{ width: '100%' }}
+                      >
+                        <ListItem style={{ padding: '5px', borderBottom: '1px solid white' }}>
+                          <p className='smr_menuStaicMobile'>{menuItem.menuname}</p>
+                        </ListItem>
+                      </ButtonBase>
+                      {selectedMenu === menuItem.menuname && (
+                        <>
+                          <ButtonBase
+                            component="div"
+                            onClick={() => handelMenu({ "menuname": menuItem?.menuname, "key": menuItem?.param0name, "value": menuItem?.param0dataname })}
+                            style={{ width: '100%', display: 'flex', justifyContent: 'start' }}
+                          >
+                            <div style={{ paddingLeft: '10px', fontSize: '15px', marginTop: '5px' }}>
+                              <button className="smr_mobile_viewAllBtn">View All</button>
+                            </div>
+                          </ButtonBase>
+                          <List className='smr_mobileMenuScroll'>
+                            {menuItem.param1.map(subMenuItem => (
+                              <div key={subMenuItem.param1dataid}>
+                                <ButtonBase
+                                  component="div"
+                                  onClick={() => handelMenu({ "menuname": menuItem?.menuname, "key": menuItem?.param0name, "value": menuItem?.param0dataname }, { "key": subMenuItem.param1name, "value": subMenuItem.param1dataname })}
+                                  style={{ width: '100%' }}
+                                >
+                                  <p style={{ margin: '0px 0px 0px 15px', width: '100%', fontWeight: '600', color: 'white' }}>{subMenuItem.param1dataname}</p>
+                                </ButtonBase>
+                                {/* {selectedSubMenu === subMenuItem.param1dataname && ( */}
+                                {selectedMenu === menuItem.menuname && (
+                                  <>
+                                    {/* <div style={{ paddingLeft: '10px' }}>
                                     <button class="underline-button" onClick={() => handleSubMenuClick(menuItem, subMenuItem.param1dataname, subMenuItem)}>View All</button>
                                   </div> */}
-                                  <List style={{ paddingTop: '0px', paddingBottom: '0px' }}>
-                                    {subMenuItem.param2.map(subSubMenuItem => (
-                                      <ButtonBase
-                                        component="div"
-                                        onClick={() => handelMenu({ "menuname": menuItem?.menuname, "key": menuItem?.param0name, "value": menuItem?.param0dataname }, { "key": subMenuItem.param1name, "value": subMenuItem.param1dataname }, { "key": subSubMenuItem.param2name, "value": subSubMenuItem.param2dataname })}
-                                        style={{ width: '100%', display: 'flex', justifyContent: 'start' }}
-                                      >
-                                        <p className="smr_mobile_subMenu">{subSubMenuItem.param2dataname}</p>
-                                      </ButtonBase>
-                                    ))}
-                                  </List>
-                                </>
-                              )}
-                            </div>
-                          ))}
-                        </List>
-                      </>
-                    )}
-                  </div>
-                ))}
-              </List>
-            </div>
-            {/* <div>
+                                    <List style={{ paddingTop: '0px', paddingBottom: '0px' }}>
+                                      {subMenuItem.param2.map(subSubMenuItem => (
+                                        <ButtonBase
+                                          component="div"
+                                          onClick={() => handelMenu({ "menuname": menuItem?.menuname, "key": menuItem?.param0name, "value": menuItem?.param0dataname }, { "key": subMenuItem.param1name, "value": subMenuItem.param1dataname }, { "key": subSubMenuItem.param2name, "value": subSubMenuItem.param2dataname })}
+                                          style={{ width: '100%', display: 'flex', justifyContent: 'start' }}
+                                        >
+                                          <p className="smr_mobile_subMenu">{subSubMenuItem.param2dataname}</p>
+                                        </ButtonBase>
+                                      ))}
+                                    </List>
+                                  </>
+                                )}
+                              </div>
+                            ))}
+                          </List>
+                        </>
+                      )}
+                    </div>
+                  ))}
+                </List>
+              </div>
+              {/* <div>
               <p className='smr_menuStaicMobilePage'>About us</p>
             </div> */}
 
-            {/* <div>
+              {/* <div>
               <p className='smr_menuStaicMobilePageLink' style={{ marginTop: '10px' }} onClick={() => { setDrawerShowOverlay(false); navigation('/myWishList') }}>WishList</p>
             </div> */}
 
-            <div>
-              <p className='smr_menuStaicMobilePageLink' style={{ marginTop: '10px' }} onClick={() => { setDrawerShowOverlay(false); navigation('/Lookbook') }}>Lookbook</p>
-            </div>
-
-            {isMounted && !!islogin == true &&
               <div>
-                <p className='smr_menuStaicMobilePageLink' onClick={() => { setDrawerShowOverlay(false); navigation('/account') }}>Account</p>
+                <p className='smr_menuStaicMobilePageLink' style={{ marginTop: '10px' }} onClick={() => { setDrawerShowOverlay(false); navigation('/Lookbook') }}>Lookbook</p>
               </div>
-            }
-            <div>
-              <p className='smr_menuStaicMobilePageLink' onClick={() => { setDrawerShowOverlay(false); handleLogout(); }}>Log Out</p>
-            </div>
 
-            {isMounted && !!islogin && (
-              <div
-                style={{
-                  display: "flex",
-                  borderBottom: "1px solid white",
-                  alignItems: "end",
-                  marginInline: '15px'
-                }}
-              >
-                <input
-                  type="text"
-                  placeholder="Search"
+              {isMounted && !!islogin == true &&
+                <>
+                  {storeinit?.IsCustomOrder == 1 &&
+                    <div>
+                      <p className='smr_menuStaicMobilePageLink' onClick={() => { setDrawerShowOverlay(false); navigation('/custom-orders') }}>Custom Order</p>
+                    </div>
+                  }
+                  <div>
+                    <p className='smr_menuStaicMobilePageLink' onClick={() => { setDrawerShowOverlay(false); navigation('/account') }}>Account</p>
+                  </div>
+                </>
+              }
+              <div>
+                <p className='smr_menuStaicMobilePageLink' onClick={() => { setDrawerShowOverlay(false); OpenLogoutMode(); }}>Log Out</p>
+              </div>
+
+              {isMounted && !!islogin && (
+                <div
                   style={{
-                    width: "100%",
+                    display: "flex",
                     borderBottom: "1px solid white",
-                    border: "none",
-                    outline: "none",
-                    backgroundColor: "rgba(192, 187, 177, 1.8)",
-                    marginTop: "15px",
-                    fontWeight: 500,
-                    color: "white",
-                    fontSize: '17px'
+                    alignItems: "end",
+                    marginInline: '15px'
                   }}
-                  className="mobileSideBarSearch"
-                />
-                <IoSearchOutline
-                  style={{
-                    height: "20px",
-                    cursor: "pointer",
-                    color: "white",
-                    width: "20px",
-                    marginInline: "5px",
-                  }}
-                />
-              </div>
-            )
-            }
-          </div>
-        </>
-      )}
+                >
+                  <input
+                    type="text"
+                    placeholder="Search"
+                    style={{
+                      width: "100%",
+                      borderBottom: "1px solid white",
+                      border: "none",
+                      outline: "none",
+                      backgroundColor: "rgba(192, 187, 177, 1.8)",
+                      marginTop: "15px",
+                      fontWeight: 500,
+                      color: "white",
+                      fontSize: '17px'
+                    }}
+                    className="mobileSideBarSearch"
+                  />
+                  <IoSearchOutline
+                    style={{
+                      height: "20px",
+                      cursor: "pointer",
+                      color: "white",
+                      width: "20px",
+                      marginInline: "5px",
+                    }}
+                  />
+                </div>
+              )
+              }
+            </div>
+          </>
+        )}
 
-      <div className='smiling_Top_header'>
-        <div className='smiling_Top_header_sub'>
-          <div className='smiling_Top_header_div2_web'>
-            <a href="/" aria-label="Go to homepage" title="Go to homepage">
-              <img alt='PROCAT_LOGO' src={compnyLogo ? compnyLogo : webLogo} loading='lazy' className='smr_logo_header' />
-            </a>
-          </div>
-          <div className='smiling_Top_header_div2_mobile'>
-            <a href="/" aria-label="Go to homepage" title="Go to homepage">
-              <img alt='PROCAT_LOGO' src={compnyLogoM} loading='lazy' className='smr_logo_header' />
-            </a>
-          </div>
-          <div className='smiling_Top_header_div3'>
-            {isMounted && <ul className="nav_ul_shop">
-              {/* <li
+        <div className='smiling_Top_header'>
+          <div className='smiling_Top_header_sub'>
+            <div className='smiling_Top_header_div2_web'>
+              <a href="/" aria-label="Go to homepage" title="Go to homepage">
+                <img alt='PROCAT_LOGO' src={compnyLogo ? compnyLogo : webLogo} loading='lazy' className='smr_logo_header' />
+              </a>
+            </div>
+            <div className='smiling_Top_header_div2_mobile'>
+              <a href="/" aria-label="Go to homepage" title="Go to homepage">
+                <img alt='PROCAT_LOGO' src={compnyLogoM} loading='lazy' className='smr_logo_header' />
+              </a>
+            </div>
+            <div className='smiling_Top_header_div3'>
+              {isMounted && <ul className="nav_ul_shop ">
+                {/* <li
                 className="nav_li_smining nav_li_smining_Mobile"
                 style={{ cursor: "pointer" }}
                 onClick={() => navigation("/aboutUs")}
               >
                 ABOUT US
               </li> */}
-              {
-                !!islogin == true &&
-                <li
-                  className="nav_li_smining nav_li_smining_Mobile"
-                  style={{ cursor: "pointer" }}
-                  onClick={() => navigation("/account")}
-                >
-                  ACCOUNT
-                </li>
-
-              }
-              {!!islogin ? (
-                <li
-                  className="nav_li_smining nav_li_smining_Mobile"
-                  style={{ cursor: "pointer" }}
-                  onClick={handleLogout}
-                >
-                  LOG OUT
-                </li>
-
-              ) : (
-                <li
-                  className="nav_li_smining"
-                  style={{ cursor: "pointer" }}
-                  onClick={() => navigation("/LoginOption")}
-                >
-                  LOG IN
-                </li>
-              )}
-
-              {
-
-                IsB2BWebsiteChek == 0 ?
-                  <>
-                    {/* <Badge
-                      badgeContent={wishCountNum}
-                      max={1000}
-                      overlap={"rectangular"}
-                      color="secondary"
-                      className='badgeColorFix smr_mobileHideIcone'
-                    >
-                      <Tooltip title="WishList">
-                        <li
-                          className="nav_li_smining_Icone"
-                          onClick={() => navigation("/myWishList")}>
-                          <PiStarThin
-                            style={{
-                              height: "20px",
-                              cursor: "pointer",
-                              width: "20px",
-                              color: 'black'
-                            }}
-                          />
-                        </li>
-                      </Tooltip>
-                    </Badge> */}
-                    {/* <li
-                      className="nav_li_smining_Icone smr_mobileHideIcone"
-                      onClick={toggleOverlay} style={{}}>
-                      <IoSearchOutline
-                        style={{ height: "20px", cursor: "pointer", width: "20px", color: 'black' }}
-                      />
-                    </li> */}
-                    <Badge
-                      badgeContent={cartCountNum}
-                      max={1000}
-                      overlap={"rectangular"}
-                      color="secondary"
-                      className='badgeColorFix'
-                    >
-                      <Tooltip title="Cart">
-                        <li
-                          onClick={() => navigation("/cartPage")}
-                          className="nav_li_smining_Icone"
-                        >
-                          <ShoppingCartOutlinedIcon
-                            sx={{
-                              height: '30px', width: '30px',
-                              color: 'black'
-                            }}
-                          />
-                        </li>
-                      </Tooltip>
-                    </Badge>
-                  </>
-                  :
-                  !!islogin &&
-                  <>
-                    {/* <Badge
-                      badgeContent={wishCountNum}
-                      max={1000}
-                      overlap={"rectangular"}
-                      color="secondary"
-                      className='badgeColorFix smr_mobileHideIcone'
-                    >
-                      <Tooltip title="WishList">
-                        <li
-                          className="nav_li_smining_Icone"
-                          onClick={() => navigation("/myWishList")}>
-                          <PiStarThin
-                            style={{
-                              height: "20px",
-                              cursor: "pointer",
-                              width: "20px",
-                              color: 'black'
-                            }}
-                          />
-                        </li>
-                      </Tooltip>
-                    </Badge> */}
-                    {/* <li
-                      className="nav_li_smining_Icone smr_mobileHideIcone"
-                      onClick={toggleOverlay} style={{}}>
-                      <IoSearchOutline
-                        style={{ height: "20px", cursor: "pointer", width: "20px" }}
-                      />
-                    </li> */}
-                    <Badge
-                      badgeContent={cartCountNum}
-                      max={1000}
-                      overlap={"rectangular"}
-                      color="secondary"
-                      className='badgeColorFix'
-                    >
-                      <Tooltip title="Cart">
-                        <li
-                          onClick={() => { navigate('/cartPage') }}
-                          className="nav_li_smining_Icone"
-                        >
-                          <ShoppingCartOutlinedIcon
-                            sx={{
-                              height: '30px', width: '30px',
-                              color: 'black'
-                            }}
-                          />
-                        </li>
-                      </Tooltip>
-                    </Badge>
-                  </>
-              }
-
-
-            </ul>}
-          </div>
-        </div>
-
-        <div
-          className={`Smining-Top-Header-fixed-main ${isHeaderFixed ? "fixed" : ""}  ${serachsShowOverlay ? "searchoverly" : ""}`}
-        >
-          <div className='smiling_Top_header_sub' style={{ width: '100%' }}>
-            <div className='smiling_Top_header_div2_web'>
-              <a href="/" aria-label="Go to homepage" title="Go to homepage">
-                <img alt='PROCAT_LOGO' src={compnyLogo ? compnyLogo : webLogo} loading='lazy' className='smr_logo_header_Fixed' />
-              </a>
-            </div>
-            <div className='smiling_Top_header_div2_mobile'>
-              <a href="/" aria-label="Go to homepage" title="Go to homepage">
-                <img alt='PROCAT_LOGO' src={compnyLogoM} loading='lazy' className='smr_logo_header_Fixed' />
-              </a>
-            </div>
-            <div className='smiling_Top_header_div3'>
-              <ul className="nav_ul_shop">
-                {/* <li
-                  className="nav_li_smining_Fixed nav_li_smining_Mobile"
-                  style={{ cursor: "pointer" }}
-                  onClick={() => navigation("/aboutUs")}
-                >
-                  ABOUT US
-                </li> */}
-
-
                 {
-                  !!islogin &&
-                  <li
-                    className="nav_li_smining_Fixed nav_li_smining_Mobile"
-                    style={{ cursor: "pointer" }}
-                    // onClick={() => navigation("/LoginOption")}
-                    onClick={() => navigation("/account")}
-                  >
-                    ACCOUNT
-                  </li>
+                  !!islogin == true &&
+                  <>
+                    {storeinit?.IsCustomOrder == 1 &&
+                      <li
+                        className="nav_li_smining nav_li_smining_Mobile color_jeweliita "
+                        style={{ cursor: "pointer" }}
+                        onClick={() => navigation("/custom-orders")}
+                      >
+                        CUSTOM ORDER
+                      </li>
+                    }
+                    <li
+                      className="nav_li_smining nav_li_smining_Mobile color_jeweliita "
+                      style={{ cursor: "pointer" }}
+                      onClick={() => navigation("/account")}
+                    >
+                      ACCOUNT
+                    </li>
+                  </>
                 }
-
-
-
                 {!!islogin ? (
-
                   <li
-                    className="nav_li_smining_Fixed nav_li_smining_Mobile"
+                    className="nav_li_smining nav_li_smining_Mobile color_jeweliita"
                     style={{ cursor: "pointer" }}
-                    onClick={handleLogout}
+                    onClick={()=>OpenLogoutMode()}
                   >
                     LOG OUT
                   </li>
+
                 ) : (
                   <li
-                    className="nav_li_smining_Fixed"
+                    className="nav_li_smining color_jeweliita"
                     style={{ cursor: "pointer" }}
                     onClick={() => navigation("/LoginOption")}
                   >
@@ -789,50 +667,54 @@ const Header = ({ storeinit, logos }) => {
                 )}
 
                 {
+
                   IsB2BWebsiteChek == 0 ?
                     <>
                       {/* <Badge
-                        badgeContent={wishCountNum}
-                        max={1000}
-                        overlap={"rectangular"}
-                        color="secondary"
-                        className='badgeColor smr_mobileHideIcone'
-                      >
-                        <Tooltip title="WishList">
-                          <li
-                            className="nav_li_smining_Fixed_Icone smr_mobileHideIcone"
-                            onClick={() => navigation("/myWishList")}>
-                            <PiStarThin
-                              style={{
-                                height: "20px",
-                                cursor: "pointer",
-                                width: "20px",
-                              }}
-                            />
-                          </li>
-                        </Tooltip>
-                      </Badge> */}
+                      badgeContent={wishCountNum}
+                      max={1000}
+                      overlap={"rectangular"}
+                      color="secondary"
+                      className='badgeColorFix smr_mobileHideIcone'
+                    >
+                      <Tooltip title="WishList">
+                        <li
+                          className="nav_li_smining_Icone"
+                          onClick={() => navigation("/myWishList")}>
+                          <PiStarThin
+                            style={{
+                              height: "20px",
+                              cursor: "pointer",
+                              width: "20px",
+                              color: 'black'
+                            }}
+                          />
+                        </li>
+                      </Tooltip>
+                    </Badge> */}
                       {/* <li
-                        className="nav_li_smining_Fixed_Icone smr_mobileHideIcone"
-                        onClick={toggleOverlay} style={{}}>
-                        <IoSearchOutline
-                          style={{ height: "20px", cursor: "pointer", width: "20px" }}
-                        />
-                      </li> */}
+                      className="nav_li_smining_Icone smr_mobileHideIcone"
+                      onClick={toggleOverlay} style={{}}>
+                      <IoSearchOutline
+                        style={{ height: "20px", cursor: "pointer", width: "20px", color: 'black' }}
+                      />
+                    </li> */}
                       <Badge
                         badgeContent={cartCountNum}
                         max={1000}
                         overlap={"rectangular"}
                         color="secondary"
-                        className='badgeColor'
+                        className='badgeColorFix'
                       >
                         <Tooltip title="Cart">
                           <li
                             onClick={() => navigation("/cartPage")}
-                            className="nav_li_smining_Fixed_Icone"
+                            className="nav_li_smining_Icone color_jeweliita"
                           >
                             <ShoppingCartOutlinedIcon
-                              sx={{ height: '30px', width: '30px' }}
+                              sx={{
+                                height: '30px', width: '30px',
+                              }}
                             />
                           </li>
                         </Tooltip>
@@ -842,6 +724,135 @@ const Header = ({ storeinit, logos }) => {
                     !!islogin &&
                     <>
                       {/* <Badge
+                      badgeContent={wishCountNum}
+                      max={1000}
+                      overlap={"rectangular"}
+                      color="secondary"
+                      className='badgeColorFix smr_mobileHideIcone'
+                    >
+                      <Tooltip title="WishList">
+                        <li
+                          className="nav_li_smining_Icone"
+                          onClick={() => navigation("/myWishList")}>
+                          <PiStarThin
+                            style={{
+                              height: "20px",
+                              cursor: "pointer",
+                              width: "20px",
+                              color: 'black'
+                            }}
+                          />
+                        </li>
+                      </Tooltip>
+                    </Badge> */}
+                      {/* <li
+                      className="nav_li_smining_Icone smr_mobileHideIcone"
+                      onClick={toggleOverlay} style={{}}>
+                      <IoSearchOutline
+                        style={{ height: "20px", cursor: "pointer", width: "20px" }}
+                      />
+                    </li> */}
+                      <Badge
+                        badgeContent={cartCountNum}
+                        max={1000}
+                        overlap={"rectangular"}
+                        color="secondary"
+                        className='badgeColorFix'
+                      >
+                        <Tooltip title="Cart">
+                          <li
+                            onClick={() => { navigate('/cartPage') }}
+                            className="nav_li_smining_Icone color_jeweliita"
+                          >
+                            <ShoppingCartOutlinedIcon
+                              sx={{
+                                height: '30px', width: '30px',
+                              }}
+                            />
+                          </li>
+                        </Tooltip>
+                      </Badge>
+                    </>
+                }
+
+
+              </ul>}
+            </div>
+          </div>
+
+          <div
+            className={`setFullThemeBack sticky_part_header_pk Smining-Top-Header-fixed-main ${isHeaderFixed ? "fixed" : ""}  ${serachsShowOverlay ? "searchoverly" : ""}`}
+          >
+            <div className='smiling_Top_header_sub' style={{ width: '100%' }}>
+              <div className='smiling_Top_header_div2_web'>
+                <a href="/" aria-label="Go to homepage" title="Go to homepage">
+                  <img alt='PROCAT_LOGO' src={compnyLogo ? compnyLogo : webLogo} loading='lazy' className='smr_logo_header_Fixed' />
+                </a>
+              </div>
+              <div className='smiling_Top_header_div2_mobile'>
+                <a href="/" aria-label="Go to homepage" title="Go to homepage">
+                  <img alt='PROCAT_LOGO' src={compnyLogoM} loading='lazy' className='smr_logo_header_Fixed' />
+                </a>
+              </div>
+              <div className='smiling_Top_header_div3'>
+                <ul className="nav_ul_shop">
+                  {/* <li
+                  className="nav_li_smining_Fixed nav_li_smining_Mobile"
+                  style={{ cursor: "pointer" }}
+                  onClick={() => navigation("/aboutUs")}
+                >
+                  ABOUT US
+                </li> */}
+
+
+                  {
+                    !!islogin &&
+                    <>
+                      {storeinit?.IsCustomOrder == 1 &&
+                        <li
+                          className="nav_li_smining_Fixed nav_li_smining_Mobile color_jeweliita"
+                          style={{ cursor: "pointer" }}
+                          onClick={() => navigation("/custom-orders")}
+                        >
+                          CUSTOM ORDER
+                        </li>
+                      }
+                      <li
+                        className="nav_li_smining_Fixed nav_li_smining_Mobile color_jeweliita"
+                        style={{ cursor: "pointer" }}
+                        // onClick={() => navigation("/LoginOption")}
+                        onClick={() => navigation("/account")}
+                      >
+                        ACCOUNT
+                      </li>
+                    </>
+                  }
+
+
+
+                  {!!islogin ? (
+
+                    <li
+                      className="nav_li_smining_Fixed nav_li_smining_Mobile color_jeweliita"
+                      style={{ cursor: "pointer" }}
+                      onClick={OpenLogoutMode}
+                    >
+                      LOG OUT
+                    </li>
+                  ) : (
+                    <li
+                      className="nav_li_smining_Fixed color_jeweliita"
+                      style={{ cursor: "pointer" }}
+                      onClick={() => navigation("/LoginOption")}
+                    >
+                      LOG IN
+                    </li>
+                  )}
+
+                  {
+                    IsB2BWebsiteChek == 0 ?
+                      <>
+                        {/* <Badge
                         badgeContent={wishCountNum}
                         max={1000}
                         overlap={"rectangular"}
@@ -862,72 +873,123 @@ const Header = ({ storeinit, logos }) => {
                           </li>
                         </Tooltip>
                       </Badge> */}
-                      {/* <li
+                        {/* <li
                         className="nav_li_smining_Fixed_Icone smr_mobileHideIcone"
                         onClick={toggleOverlay} style={{}}>
                         <IoSearchOutline
                           style={{ height: "20px", cursor: "pointer", width: "20px" }}
                         />
                       </li> */}
-                      <Badge
-                        badgeContent={cartCountNum}
+                        <Badge
+                          badgeContent={cartCountNum}
+                          max={1000}
+                          overlap={"rectangular"}
+                          color="secondary"
+                          className='badgeColor'
+                        >
+                          <Tooltip title="Cart">
+                            <li
+                              onClick={() => navigation("/cartPage")}
+                              className="nav_li_smining_Fixed_Icone color_jeweliita"
+                            >
+                              <ShoppingCartOutlinedIcon
+                                sx={{ height: '30px', width: '30px' }}
+                              />
+                            </li>
+                          </Tooltip>
+                        </Badge>
+                      </>
+                      :
+                      !!islogin &&
+                      <>
+                        {/* <Badge
+                        badgeContent={wishCountNum}
                         max={1000}
                         overlap={"rectangular"}
                         color="secondary"
-                        className='badgeColor'
+                        className='badgeColor smr_mobileHideIcone'
                       >
-                        <Tooltip title="Cart">
+                        <Tooltip title="WishList">
                           <li
-                            onClick={() => { navigate('/cartPage') }}
-                            className="nav_li_smining_Fixed_Icone"
-                          >
-                            <ShoppingCartOutlinedIcon
-                              sx={{ height: '30px', width: '30px' }}
+                            className="nav_li_smining_Fixed_Icone smr_mobileHideIcone"
+                            onClick={() => navigation("/myWishList")}>
+                            <PiStarThin
+                              style={{
+                                height: "20px",
+                                cursor: "pointer",
+                                width: "20px",
+                              }}
                             />
                           </li>
                         </Tooltip>
-                      </Badge>
-                    </>
-                }
+                      </Badge> */}
+                        {/* <li
+                        className="nav_li_smining_Fixed_Icone smr_mobileHideIcone"
+                        onClick={toggleOverlay} style={{}}>
+                        <IoSearchOutline
+                          style={{ height: "20px", cursor: "pointer", width: "20px" }}
+                        />
+                      </li> */}
+                        <Badge
+                          badgeContent={cartCountNum}
+                          max={1000}
+                          overlap={"rectangular"}
+                          color="secondary"
+                          className='badgeColor'
+                        >
+                          <Tooltip title="Cart">
+                            <li
+                              onClick={() => { navigate('/cartPage') }}
+                              className="nav_li_smining_Fixed_Icone color_jeweliita"
+                            >
+                              <ShoppingCartOutlinedIcon
 
-              </ul>
+                                sx={{ height: '30px', width: '30px' }}
+                              />
+                            </li>
+                          </Tooltip>
+                        </Badge>
+                      </>
+                  }
+
+                </ul>
+              </div>
             </div>
           </div>
-        </div>
 
-        <div
-          onMouseEnter={handleDropdownOpen}
-          onMouseLeave={handleDropdownClose}
-          className={`shop-dropdown ${isDropdownOpen ? "open" : ""} ${isHeaderFixed ? "fixed" : ""}`}
-          style={{ backgroundColor: isHeaderFixed && 'transparent' }}
-        >
           <div
-            style={{
-              display: "flex",
-              padding: "25px",
-              color: "#7d7f85",
-              backgroundColor: "white",
-              gap: "50px",
-              justifyContent: 'space-between',
-              marginTop: isHeaderFixed && '20px'
-            }}
-            className='smr_showDropOptionMainDiv'
             onMouseEnter={handleDropdownOpen}
             onMouseLeave={handleDropdownClose}
+            className={`shop-dropdown ${isDropdownOpen ? "open" : ""} ${isHeaderFixed ? "fixed" : ""}`}
+            style={{ backgroundColor: isHeaderFixed && 'transparent' }}
           >
-            <div style={{ display: 'flex' }}>
-              {menuItems.map(menuItem => (
-                <div key={menuItem.menuid} className='smr_headerOptionSingleDiv' style={{ minWidth: '150px', borderRight: '1px solid lightgray', paddingLeft: '25px' }}>
-                  <ButtonBase
-                    component="div"
-                    onClick={() => handelMenu({ "menuname": menuItem?.menuname, "key": menuItem?.param0name, "value": menuItem?.param0dataname })}
-                  >
-                    <ListItem style={{ padding: '0px 5px 0px 5px' }}>
-                      <p className="muilistMenutext">{menuItem.menuname}</p>
-                    </ListItem>
-                  </ButtonBase>
-                  <>
-                    {/* <ButtonBase
+            <div
+              style={{
+                display: "flex",
+                padding: "25px",
+                color: "#7d7f85",
+                backgroundColor: "white",
+                gap: "50px",
+                justifyContent: 'space-between',
+                marginTop: isHeaderFixed && '20px'
+              }}
+              className='smr_showDropOptionMainDiv'
+              onMouseEnter={handleDropdownOpen}
+              onMouseLeave={handleDropdownClose}
+            >
+              <div style={{ display: 'flex' }}>
+                {menuItems.map(menuItem => (
+                  <div key={menuItem.menuid} className='smr_headerOptionSingleDiv' style={{ minWidth: '150px', borderRight: '1px solid lightgray', paddingLeft: '25px' }}>
+                    <ButtonBase
+                      component="div"
+                      onClick={() => handelMenu({ "menuname": menuItem?.menuname, "key": menuItem?.param0name, "value": menuItem?.param0dataname })}
+                    >
+                      <ListItem style={{ padding: '0px 5px 0px 5px' }}>
+                        <p className="muilistMenutext">{menuItem.menuname}</p>
+                      </ListItem>
+                    </ButtonBase>
+                    <>
+                      {/* <ButtonBase
                       component="div"
                       style={{ display: 'flex', justifyContent: 'start' }}
                     >
@@ -935,58 +997,60 @@ const Header = ({ storeinit, logos }) => {
                         <button className="smr_underline_button" onClick={() => handelMenu({ "menuname": menuItem?.menuname, "key": menuItem?.param0name, "value": menuItem?.param0dataname })}>view all</button>
                       </div>
                     </ButtonBase> */}
-                    <List className='smr_listMain'>
-                      {menuItem.param1.map(subMenuItem => (
-                        <div key={subMenuItem.param1dataid}>
-                          <ButtonBase
-                            component="div"
-                            style={{ width: '100%', display: 'flex', justifyContent: 'start', height: '25px' }}
-                          // onClick={() => handelMenu({ "menuname": menuItem?.menuname, "key": menuItem?.param0name, "value": menuItem?.param0dataname }, { "key": subMenuItem.param1name, "value": subMenuItem.param1dataname })}
-                          >
-                            {/* <a href='#' className='smr_menuSubTitle'> */}
-                            <a
-                              href={`/p/${menuItem?.param0dataname}/${subMenuItem.param1dataname}/?M=${btoa(`${menuItem?.param0dataname},${subMenuItem.param1dataname}/${menuItem?.param0name},${subMenuItem.param1name}`)}`}
-                              className='smr_menuSubTitle'
+                      <List className='smr_listMain'>
+                        {menuItem.param1.map(subMenuItem => (
+                          <div key={subMenuItem.param1dataid}>
+                            <ButtonBase
+                              component="div"
+                              style={{ width: '100%', display: 'flex', justifyContent: 'start', height: '25px' }}
+                            // onClick={() => handelMenu({ "menuname": menuItem?.menuname, "key": menuItem?.param0name, "value": menuItem?.param0dataname }, { "key": subMenuItem.param1name, "value": subMenuItem.param1dataname })}
                             >
-                              <p style={{ margin: '0px 0px 0px 6px', fontWeight: 500 }}>
-                                {subMenuItem.param1dataname}
-                              </p>
-                            </a>
-                            {/* </a> */}
-                          </ButtonBase>
-                          <>
-                            <List style={{ paddingTop: '0px', paddingBottom: '0px' }}>
-                              {subMenuItem.param2.map(subSubMenuItem => (
-                                <div
-                                  component="div"
-                                  style={{ width: '100%' }}
-                                  onClick={() => handelMenu({ "menuname": menuItem?.menuname, "key": menuItem?.param0name, "value": menuItem?.param0dataname }, { "key": subMenuItem.param1name, "value": subMenuItem.param1dataname }, { "key": subSubMenuItem.param2name, "value": subSubMenuItem.param2dataname })}
+                              {/* <a href='#' className='smr_menuSubTitle'> */}
+                              <a
+                                href={`/p/${menuItem?.param0dataname}/${subMenuItem.param1dataname}/?M=${btoa(`${menuItem?.param0dataname},${subMenuItem.param1dataname}/${menuItem?.param0name},${subMenuItem.param1name}`)}`}
+                                className='smr_menuSubTitle'
+                              >
+                                <p style={{ margin: '0px 0px 0px 6px', fontWeight: 500 }}>
+                                  {subMenuItem.param1dataname}
+                                </p>
+                              </a>
+                              {/* </a> */}
+                            </ButtonBase>
+                            <>
+                              <List style={{ paddingTop: '0px', paddingBottom: '0px' }}>
+                                {subMenuItem.param2.map(subSubMenuItem => (
+                                  <div
+                                    component="div"
+                                    style={{ width: '100%' }}
+                                    onClick={() => handelMenu({ "menuname": menuItem?.menuname, "key": menuItem?.param0name, "value": menuItem?.param0dataname }, { "key": subMenuItem.param1name, "value": subMenuItem.param1dataname }, { "key": subSubMenuItem.param2name, "value": subSubMenuItem.param2dataname })}
 
-                                >
-                                  <a
-                                    href={`/p/${menuItem?.param0dataname}/${subMenuItem.param1dataname}/${subSubMenuItem.param2dataname}/?M=${btoa(`${menuItem?.param0dataname},${subMenuItem.param1dataname},${subSubMenuItem.param2dataname}/${menuItem?.param0name},${subMenuItem.param1name},${subSubMenuItem.param2name}`)}`}
-                                    className='smr_menuSubTitle'
                                   >
-                                    {/* <ListItem key={subSubMenuItem.param2dataid} style={{ paddingLeft: '0px', paddingTop: '0px', paddingBottom: '0px' }}> */}
-                                    <p className="muilist2ndSubMenutext">{subSubMenuItem.param2dataname}</p>
-                                    {/* </ListItem> */}
-                                  </a>
-                                </div>
-                              ))}
-                            </List>
-                          </>
-                        </div>
-                      ))}
-                      <button className="smr_underline_button" onClick={() => handelMenu({ "menuname": menuItem?.menuname, "key": menuItem?.param0name, "value": menuItem?.param0dataname })}>view all</button>
-                    </List>
-                  </>
-                </div>
-              ))}
+                                    <a
+                                      href={`/p/${menuItem?.param0dataname}/${subMenuItem.param1dataname}/${subSubMenuItem.param2dataname}/?M=${btoa(`${menuItem?.param0dataname},${subMenuItem.param1dataname},${subSubMenuItem.param2dataname}/${menuItem?.param0name},${subMenuItem.param1name},${subSubMenuItem.param2name}`)}`}
+                                      className='smr_menuSubTitle'
+                                    >
+                                      {/* <ListItem key={subSubMenuItem.param2dataid} style={{ paddingLeft: '0px', paddingTop: '0px', paddingBottom: '0px' }}> */}
+                                      <p className="muilist2ndSubMenutext">{subSubMenuItem.param2dataname}</p>
+                                      {/* </ListItem> */}
+                                    </a>
+                                  </div>
+                                ))}
+                              </List>
+                            </>
+                          </div>
+                        ))}
+                        <button className="smr_underline_button" onClick={() => handelMenu({ "menuname": menuItem?.menuname, "key": menuItem?.param0name, "value": menuItem?.param0dataname })}>view all</button>
+                      </List>
+                    </>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    </div >
+      </div >
+
+    </>
   )
 }
 
