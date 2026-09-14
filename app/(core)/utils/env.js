@@ -18,5 +18,5 @@ export const WEBSITE_DOMAINS = {
   PROCATALOG: "procatalog.web"
 };
 
-export const NEXT_APP_WEB = WEBSITE_DOMAINS.JULIANWEB;
+export const NEXT_APP_WEB = WEBSITE_DOMAINS.BELUXJEWELWEB;
 export const NEXT_PUBLIC_SITE_URL = NEXT_APP_WEB;

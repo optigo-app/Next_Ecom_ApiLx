@@ -3,8 +3,7 @@
  * Atomically creates an order, inserts order items, and updates product inventory
  */
 export default function sp_createOrder(db, { orderId, userId, items = [], totalAmount, shippingAddress = {} }) {
-    // db.transaction guarantees atomicity (all-or-nothing, automatic rollback on error)
-    return db.transaction(() => {
+    const result = db.transaction(() => {
         const insertOrderStmt = db.prepare(`
             INSERT INTO orders (order_id, user_id, total_amount, status, payment_status, shipping_address_json)
             VALUES (?, ?, ?, 'pending', 'pending', ?)
@@ -44,4 +43,11 @@ export default function sp_createOrder(db, { orderId, userId, items = [], totalA
             message: "Order placed successfully",
         };
     })();
+
+    // Flush WAL so external GUI tools & clients see order immediately
+    try {
+        db.pragma("wal_checkpoint(PASSIVE)");
+    } catch (_) {}
+
+    return result;
 }

@@ -35,7 +35,7 @@ export function getActiveConfigDomain() {
             }
         }
     } catch (_) {}
-    return "beluxjewel.web";
+    return "";
 }
 
 /**
@@ -104,12 +104,18 @@ export function closeTenantDb(domain) {
         const cleanDomain = sanitizeDomainName(domain);
         if (dbPool.has(cleanDomain)) {
             const db = dbPool.get(cleanDomain);
+            try {
+                db.pragma("wal_checkpoint(PASSIVE)");
+            } catch (_) {}
             db.close();
             dbPool.delete(cleanDomain);
         }
     } else {
         for (const [key, db] of dbPool.entries()) {
             try {
+                try {
+                    db.pragma("wal_checkpoint(PASSIVE)");
+                } catch (_) {}
                 db.close();
             } catch (err) {
                 console.error(`Error closing DB for ${key}:`, err);

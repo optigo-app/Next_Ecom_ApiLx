@@ -7,6 +7,8 @@ export { batchInsertDesigns } from "./batchInsertDesigns.js";
 export { saveMenuFilters } from "./saveMenuFilters.js";
 export { getDesigns, getDesignsByMenu } from "./getDesignsByMenu.js";
 export { getMenuFilters } from "./getMenuFilters.js";
+export { saveStoreInit } from "./saveStoreInit.js";
+export { getStoreInit } from "./getStoreInit.js";
 
 /**
  * Executes a procedure by name on a specific domain's database
