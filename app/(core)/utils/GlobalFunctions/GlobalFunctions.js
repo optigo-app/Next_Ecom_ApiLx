@@ -37,8 +37,20 @@ export const getMyAccountFlags = async () => {
 
 export const getCompanyInfoData = async () => {
   const cookieStore = await cookies();
-  const storeData = safeParse(cookieStore?.get("x-CompanyInfoData-data")?.value);
-  return storeData;
+  const rawCookie = cookieStore?.get("x-CompanyInfoData-data")?.value;
+  if (rawCookie) {
+    const parsed = safeParse(rawCookie);
+    if (parsed && Object.keys(parsed).length > 0) {
+      return parsed;
+    }
+  }
+  try {
+    const { getStoreInitData } = await import("@/app/(core)/cache_utility/storeInitCache");
+    const fullData = await getStoreInitData().catch(() => null);
+    return fullData?.rd2?.[0] || {};
+  } catch {
+    return {};
+  }
 };
 
 export const GetVistitorId = async () => {

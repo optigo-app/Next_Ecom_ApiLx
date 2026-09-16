@@ -3,8 +3,12 @@ import fs from "fs";
 import path from "path";
 import { initSchema } from "./schema.js";
 
-// In-memory connection pool to avoid reopening file descriptors
-const dbPool = new Map();
+// In-memory connection pool on globalThis to avoid reopening file descriptors across Next.js HMR reloads
+const globalForDb = globalThis;
+if (!globalForDb.__tenantDbPool) {
+    globalForDb.__tenantDbPool = new Map();
+}
+const dbPool = globalForDb.__tenantDbPool;
 
 /**
  * Root directory for all tenant databases

@@ -1,9 +1,10 @@
 import { getActiveTheme } from "@/app/(core)/lib/getActiveTheme";
 import { themeMap } from "@/app/(core)/utils/ThemeMap";
 import { getStoreInit } from "@/app/(core)/utils/GlobalFunctions/GlobalFunctions";
-import { headers } from "next/headers";
+import { headers, cookies } from "next/headers";
 import { resolveProductList } from "@/app/(core)/utils/ThemeRouteResolver";
 import { getSqliteProducts, getSqliteFilters } from "@/app/(core)/utils/sqlite/sqliteActions";
+import { getPricingPolicyParams, getDynamicDesignTableName } from "@/app/(core)/utils/product/pricingPolicy";
 import {
   getDynamicMetadata,
   generateCollectionJsonLd,
@@ -83,7 +84,7 @@ function extractSsrFilters(slugArr = [], searchParams = {}) {
         filters.collection = decodedSlugs[0];
         filters.category = decodedSlugs[1];
       } else if (decodedSlugs.length === 1) {
-        filters.category = decodedSlugs[0];
+        filters.menuSlug = decodedSlugs[0];
       }
     }
   }
@@ -173,15 +174,36 @@ export default async function Page({ params, searchParams }) {
     const pageNo = Number(awaitedSearchParams?.page || awaitedSearchParams?.PageNo || 1);
     const pageSize = Number(storeInit?.PageSize || 10);
 
+    let serverLoginUser = null;
+    let cookieTableName = null;
+    try {
+      const cookieStore = await cookies().catch(() => null);
+      cookieTableName = cookieStore?.get("pricing_table_name")?.value || cookieStore?.get("policy_table")?.value;
+      const loginCookie = cookieStore?.get("loginUserDetail")?.value;
+      if (loginCookie) {
+        let raw = loginCookie;
+        try { raw = decodeURIComponent(loginCookie); } catch (_) {}
+        serverLoginUser = JSON.parse(raw);
+      }
+    } catch (_) {}
+
+    const policyParams = getPricingPolicyParams({
+      storeinit: storeInit,
+      loginUserDetail: serverLoginUser,
+      islogin: Boolean(serverLoginUser),
+    });
+
+    const activeTableName = cookieTableName || getDynamicDesignTableName(policyParams);
+
     const [sqliteRes, sqliteFiltersRes] = await Promise.all([
       getSqliteProducts(
-        ssrFilters,
-        { page: pageNo, pageSize: pageSize },
+        { ...ssrFilters, ...policyParams, tableName: activeTableName },
+        { page: pageNo, pageSize: pageSize, ...policyParams, tableName: activeTableName },
         targetDomain
       ).catch(() => null),
       getSqliteFilters(
-        ssrFilters,
-        {},
+        { ...ssrFilters, ...policyParams, tableName: activeTableName },
+        { tableName: activeTableName },
         targetDomain
       ).catch(() => null),
     ]);

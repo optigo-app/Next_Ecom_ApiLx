@@ -2,6 +2,7 @@ import { getSession } from "../../FetchSessionData";
 import { CommonAPI } from "../CommonAPI/CommonAPI";
 import { syncProductsToSqlite } from "../../sqlite/sqliteSync";
 import { getSqliteProducts } from "../../sqlite/sqliteActions";
+import { getPricingPolicyParams } from "@/app/(core)/utils/product/pricingPolicy";
 
 const ProductListApi = async (
   filterObj = {},
@@ -157,26 +158,11 @@ const ProductListApi = async (
         : (Array.isArray(filPrice) ? filPrice : filPrice ? [filPrice] : []),
     CurrencyRate: loginInfo?.CurrencyRate ?? storeinit?.CurrencyRate ?? "",
     SortBy: sortby ?? "",
-    Laboursetid: isGuest
-      ? (storeinit?.pricemanagement_laboursetid ?? "")
-      : (loginInfo?.pricemanagement_laboursetid ??
-        storeinit?.pricemanagement_laboursetid ??
-        ""),
-    diamondpricelistname: isGuest
-      ? (storeinit?.diamondpricelistname ?? "")
-      : (loginInfo?.diamondpricelistname ??
-        storeinit?.diamondpricelistname ??
-        ""),
-    colorstonepricelistname: isGuest
-      ? (storeinit?.colorstonepricelistname ?? "")
-      : (loginInfo?.colorstonepricelistname ??
-        storeinit?.colorstonepricelistname ??
-        ""),
-    SettingPriceUniqueNo: isGuest
-      ? (storeinit?.SettingPriceUniqueNo ?? "")
-      : (loginInfo?.SettingPriceUniqueNo ??
-        storeinit?.SettingPriceUniqueNo ??
-        ""),
+    ...getPricingPolicyParams({
+      storeinit,
+      loginUserDetail: loginInfo,
+      islogin,
+    }),
     IsStockWebsite: storeinit?.IsStockWebsite ?? "",
     Size: "",
     IsFromDesDet: "",

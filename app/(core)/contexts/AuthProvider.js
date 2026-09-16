@@ -6,6 +6,7 @@ import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import Cookies from "js-cookie";
 import { WebLoginWithMobileToken } from "../utils/API/Auth/WebLoginWithMobileToken";
 import { getSession, setSession, removeSession } from "../utils/FetchSessionData";
+import { syncUserDetailToCookies } from "../utils/product/pricingPolicy";
 
 const MOBILE_APP_REDIRECT_PATH = "/";
 
@@ -60,13 +61,15 @@ export function AuthProvider({ children, storeInit, theme }) {
       setSession("token", token);
       localStorage.setItem("token", token);
     }
-    const existingLoginUser = getSession("LoginUser");
+    const existingLoginUser = getSession("LoginUser") || Cookies.get("LoginUser");
     const existingDetail = getSession("loginUserDetail");
-    if ((existingLoginUser === true || existingLoginUser === "true") && existingDetail && !token) {
+    const hasUserCookie = !!Cookies.get("userLoginCookie");
+    if ((existingLoginUser === true || existingLoginUser === "true" || hasUserCookie) && existingDetail && !token) {
       const pkgId = existingDetail?.PackageId ?? existingDetail?.packageId ?? existingDetail?.PackageID;
       if (pkgId != null && pkgId !== "" && String(pkgId) !== "undefined" && String(pkgId) !== "null") {
         Cookies.set("userPackageId", String(pkgId), { path: "/", expires: 7 });
       }
+      syncUserDetailToCookies(existingDetail, storeInit);
       setislogin(true);
       setLoginUserDetail(existingDetail);
       setIsLoading(false);
@@ -91,6 +94,7 @@ export function AuthProvider({ children, storeInit, theme }) {
               if (pkgId != null && pkgId !== "" && String(pkgId) !== "undefined" && String(pkgId) !== "null") {
                 Cookies.set("userPackageId", String(pkgId), { path: "/", expires: 7 });
               }
+              syncUserDetailToCookies(userDetail, storeInit);
               setislogin(true);
               setSession("LoginUser", true);
               setSession("loginUserDetail", userDetail);
@@ -106,6 +110,7 @@ export function AuthProvider({ children, storeInit, theme }) {
             } else {
               removeSession("LoginUser");
               removeSession("loginUserDetail");
+              syncUserDetailToCookies(null, storeInit);
               Cookies.remove("userLoginCookie", { path: "/" });
               Cookies.remove("LoginUser", { path: "/" });
               setislogin(false);
@@ -116,6 +121,7 @@ export function AuthProvider({ children, storeInit, theme }) {
             console.error("Login API verification error:", err);
             removeSession("LoginUser");
             removeSession("loginUserDetail");
+            syncUserDetailToCookies(null, storeInit);
             Cookies.remove("userLoginCookie", { path: "/" });
             Cookies.remove("LoginUser", { path: "/" });
             setislogin(false);
@@ -125,6 +131,7 @@ export function AuthProvider({ children, storeInit, theme }) {
       } else {
         removeSession("LoginUser");
         removeSession("loginUserDetail");
+        syncUserDetailToCookies(null, storeInit);
         Cookies.remove("userLoginCookie", { path: "/" });
         Cookies.remove("LoginUser", { path: "/" });
         setislogin(false);

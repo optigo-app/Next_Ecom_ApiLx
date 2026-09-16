@@ -3,6 +3,7 @@
 import Pako from "pako";
 import { formatRedirectTitleLine } from "@/app/(core)/utils/Glob_Functions/GlobalFunction";
 import { getSession } from "@/app/(core)/utils/FetchSessionData";
+import { saveRecentlyViewedDesign } from "@/app/(core)/utils/sqlite/recentlyViewedActions";
 
 /**
  * Compress & Base64 encode JSON parameter payload (for product detail URLs)
@@ -145,6 +146,14 @@ export const handleMoveToDetail = ({
 
   if (typeof window !== "undefined") {
     sessionStorage.setItem("scroll_to_product", productData?.ArticleNo);
+  }
+
+  // Record to SQLite Recently Viewed (zero external API, customer-wise)
+  if (productData?.designno) {
+    saveRecentlyViewedDesign({
+      designno: productData.designno,
+      autocode: productData.autocode,
+    }).catch(() => {});
   }
 
   const url = `/d/${formatRedirectTitleLine(productData?.TitleLine)}${productData?.designno}?p=${encodeObj}`;

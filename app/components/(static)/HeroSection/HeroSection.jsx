@@ -5,9 +5,6 @@ import { BELUX_JEWEL } from "@/app/(core)/constants/ElveeFlag";
 
 
 export default async function TopSection() {
-  const banners = await getHomeBannerImages({ host: assetBase });
-  const videoUrl = banners?.mainBanner?.video?.[0] ? banners.mainBanner.video[0].replace(".mp4", ".webm") : null;
-
   if (BELUX_JEWEL) {
     return (
       <Box
@@ -43,8 +40,11 @@ export default async function TopSection() {
         />
       </Box>
     );
-  } else {
-    return (
+  }
+  const banners = await getHomeBannerImages({ host: assetBase });
+  const videoUrl = banners?.mainBanner?.video?.[0] ? banners.mainBanner.video[0].replace(".mp4", ".webm") : null;
+
+  return (
       <Box
         component="section"
         sx={{
@@ -82,6 +82,5 @@ export default async function TopSection() {
         </Box>
       </Box>
     );
-  }
 }
 

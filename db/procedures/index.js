@@ -19,6 +19,17 @@ export { deleteMenus } from "./deleteMenus.js";
 export { deleteMenuFilters } from "./deleteMenuFilters.js";
 export { deleteStoreInit } from "./deleteStoreInit.js";
 export { deletePackageMaster } from "./deletePackageMaster.js";
+export {
+  getHomeProducts,
+  getHomeBestsellers,
+  getHomeNewArrivals,
+  getHomeTrending,
+  resolveHomeTable,
+} from "./getHomeProducts.js";
+export {
+  saveRecentlyViewed,
+  getRecentlyViewed,
+} from "./recentlyViewed.js";
 
 /**
  * Executes a procedure by name on a specific domain's database

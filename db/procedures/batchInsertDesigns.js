@@ -1,3 +1,5 @@
+import { ensureDynamicDesignTable, sanitizeSqlIdentifier } from "../schema/dynamicDesigns.js";
+
 /**
  * Batch inserts or updates design records into SQLite.
  * Enforces UNIQUE(ArticleNo) to prevent duplicate product entries.
@@ -8,17 +10,12 @@
  * @param {Array<object>} rawPayload
  * @param {string} [menuIdentifier='GLOBAL']
  * @param {object} [options={}]
- * @returns {{ totalReceived: number, insertedCount: number, updatedCount: number, totalInDatabase: number, duplicatesInPayload: number, success: boolean }}
+ * @param {string} [tableName='designs']
+ * @returns {{ totalReceived: number, insertedCount: number, updatedCount: number, totalInDatabase: number, duplicatesInPayload: number, duplicateCount: number, duplicateArticleNos: Array<string>, duplicateArticles: Array<{ ArticleNo: string, occurrences: number, firstIndex: number, duplicateIndices: Array<number>, designno: string, autocode: string, id: number|null, category: string, TitleLine: string }>, success: boolean }}
  */
-export function batchInsertDesigns(db, rawPayload = [], menuIdentifier = "GLOBAL", options = {}) {
+export function batchInsertDesigns(db, rawPayload = [], menuIdentifier = "GLOBAL", options = {}, tableName = "designs") {
     const cleanMenu = String(menuIdentifier || "GLOBAL").trim();
-
-    // If caller requested truncating/clearing before sync
-    if (options?.truncate || options?.clearBeforeSync || options?.flush) {
-        try {
-            db.prepare("DELETE FROM designs").run();
-        } catch (_) {}
-    }
+    const targetTable = sanitizeSqlIdentifier(options?.tableName || tableName || "designs", "designs");
 
     let designs = [];
     if (Array.isArray(rawPayload)) {
@@ -28,12 +25,35 @@ export function batchInsertDesigns(db, rawPayload = [], menuIdentifier = "GLOBAL
     }
 
     if (!Array.isArray(designs) || designs.length === 0) {
-        const count = db.prepare("SELECT COUNT(*) as count FROM designs").get()?.count || 0;
-        return { totalReceived: 0, insertedCount: 0, updatedCount: 0, totalInDatabase: count, duplicatesInPayload: 0, success: true };
+        const tableExists = db.prepare("SELECT 1 FROM sqlite_master WHERE type='table' AND name = ?").get(targetTable);
+        const count = tableExists ? (db.prepare(`SELECT COUNT(*) as count FROM "${targetTable}"`).get()?.count || 0) : 0;
+        return {
+            totalReceived: 0,
+            insertedCount: 0,
+            updatedCount: 0,
+            totalInDatabase: count,
+            duplicatesInPayload: 0,
+            duplicateCount: 0,
+            duplicateArticleNos: [],
+            duplicateArticles: [],
+            success: true,
+        };
+    }
+
+    // Ensure table and indexes exist if inserting into a dynamic table
+    if (targetTable !== "designs") {
+        ensureDynamicDesignTable(db, targetTable);
+    }
+
+    // If caller requested truncating/clearing before sync
+    if (options?.truncate || options?.clearBeforeSync || options?.flush) {
+        try {
+            db.prepare(`DELETE FROM "${targetTable}"`).run();
+        } catch (_) {}
     }
 
     const upsertStmt = db.prepare(`
-        INSERT INTO designs (
+        INSERT INTO "${targetTable}" (
             id,
             SrNo,
             DesignId,
@@ -251,15 +271,15 @@ export function batchInsertDesigns(db, rawPayload = [], menuIdentifier = "GLOBAL
             occasionid = excluded.occasionid,
             Styleid = excluded.Styleid,
             make_typeid = excluded.make_typeid,
-            category = COALESCE(excluded.category, designs.category),
-            collection = COALESCE(excluded.collection, designs.collection),
-            sub_category = COALESCE(excluded.sub_category, designs.sub_category),
-            gender = COALESCE(excluded.gender, designs.gender),
-            brand = COALESCE(excluded.brand, designs.brand),
-            occasion = COALESCE(excluded.occasion, designs.occasion),
-            product_type = COALESCE(excluded.product_type, designs.product_type),
-            style = COALESCE(excluded.style, designs.style),
-            make_type = COALESCE(excluded.make_type, designs.make_type),
+            category = COALESCE(excluded.category, "${targetTable}".category),
+            collection = COALESCE(excluded.collection, "${targetTable}".collection),
+            sub_category = COALESCE(excluded.sub_category, "${targetTable}".sub_category),
+            gender = COALESCE(excluded.gender, "${targetTable}".gender),
+            brand = COALESCE(excluded.brand, "${targetTable}".brand),
+            occasion = COALESCE(excluded.occasion, "${targetTable}".occasion),
+            product_type = COALESCE(excluded.product_type, "${targetTable}".product_type),
+            style = COALESCE(excluded.style, "${targetTable}".style),
+            make_type = COALESCE(excluded.make_type, "${targetTable}".make_type),
             updated_at = CURRENT_TIMESTAMP
     `);
 
@@ -285,7 +305,7 @@ export function batchInsertDesigns(db, rawPayload = [], menuIdentifier = "GLOBAL
         return Number.isFinite(n) ? n : null;
     };
 
-    const countBefore = db.prepare("SELECT COUNT(*) as count FROM designs").get()?.count || 0;
+    const countBefore = db.prepare(`SELECT COUNT(*) as count FROM "${targetTable}"`).get()?.count || 0;
 
     const executeBatch = db.transaction((rows) => {
         for (const row of rows) {
@@ -376,31 +396,69 @@ export function batchInsertDesigns(db, rawPayload = [], menuIdentifier = "GLOBAL
 
     executeBatch(designs);
 
-    const countAfter = db.prepare("SELECT COUNT(*) as count FROM designs").get()?.count || 0;
+    const countAfter = db.prepare(`SELECT COUNT(*) as count FROM "${targetTable}"`).get()?.count || 0;
     const insertedCount = Math.max(0, countAfter - countBefore);
     const updatedCount = designs.length - insertedCount;
 
-    // Detect if there were duplicate ArticleNos within the incoming batch itself
-    const seenArticles = new Set();
+    // Detect duplicate ArticleNos within incoming batch and collect lightweight tracking info
+    const articleMap = new Map();
     let duplicatesInPayload = 0;
-    for (const row of designs) {
+
+    for (let i = 0; i < designs.length; i++) {
+        const row = designs[i];
         const rawArticle = getVal(row, "ArticleNo", "articleno", "articleNo", "designno", "id", "DesignId");
         const article = toStr(rawArticle);
-        if (article) {
-            if (seenArticles.has(article)) {
-                duplicatesInPayload++;
-            } else {
-                seenArticles.add(article);
-            }
+        if (!article) continue;
+
+        if (articleMap.has(article)) {
+            const entry = articleMap.get(article);
+            entry.count += 1;
+            entry.indices.push(i);
+            duplicatesInPayload++;
+        } else {
+            articleMap.set(article, {
+                ArticleNo: article,
+                count: 1,
+                indices: [i],
+                designno: toStr(getVal(row, "designno", "DesignNo")),
+                autocode: toStr(getVal(row, "autocode", "AutoCode")),
+                id: toNullableNum(getVal(row, "id", "Id", "DesignId")),
+                category: toStr(getVal(row, "category", "Category")),
+                TitleLine: toStr(getVal(row, "TitleLine", "titleline")),
+            });
+        }
+    }
+
+    // Filter only those with count > 1 (duplicates)
+    const duplicateArticles = [];
+    const duplicateArticleNos = [];
+
+    for (const [artNo, entry] of articleMap.entries()) {
+        if (entry.count > 1) {
+            duplicateArticleNos.push(artNo);
+            duplicateArticles.push({
+                ArticleNo: entry.ArticleNo,
+                occurrences: entry.count,
+                firstIndex: entry.indices[0],
+                duplicateIndices: entry.indices.slice(1),
+                designno: entry.designno,
+                autocode: entry.autocode,
+                id: entry.id,
+                category: entry.category,
+                TitleLine: entry.TitleLine,
+            });
         }
     }
 
     // Log to sync_logs
     try {
+        const dupMsg = duplicateArticles.length > 0 
+            ? ` | Found ${duplicateArticles.length} duplicate article numbers (${duplicatesInPayload} duplicate records)`
+            : "";
         db.prepare(`
             INSERT INTO sync_logs (menu_identifier, action, total_received, inserted_count, updated_count, status, message)
             VALUES (?, 'SYNC_PRODUCTS', ?, ?, ?, 'SUCCESS', ?)
-        `).run(cleanMenu, designs.length, insertedCount, updatedCount, `Processed ${designs.length} products (Inserted: ${insertedCount}, Updated: ${updatedCount}, In-DB: ${countAfter})`);
+        `).run(cleanMenu, designs.length, insertedCount, updatedCount, `Processed ${designs.length} products (Inserted: ${insertedCount}, Updated: ${updatedCount}, In-DB: ${countAfter}${dupMsg})`);
     } catch (logErr) {
         console.warn("[sync_logs] Failed writing log:", logErr.message);
     }
@@ -416,6 +474,9 @@ export function batchInsertDesigns(db, rawPayload = [], menuIdentifier = "GLOBAL
         updatedCount,
         totalInDatabase: countAfter,
         duplicatesInPayload,
+        duplicateCount: duplicateArticles.length,
+        duplicateArticleNos,
+        duplicateArticles,
         success: true,
     };
 }

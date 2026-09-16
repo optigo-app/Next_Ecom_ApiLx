@@ -12,6 +12,7 @@ import { ACCOUNT_TABLE_SQL } from "./account.js";
 import { COMPANY_INFO_TABLE_SQL } from "./companyInfo.js";
 import { MENUS_TABLE_SQL } from "./menus.js";
 import { PACKAGEMASTER_TABLE_SQL } from "./packagemaster.js";
+import { RECENTLY_VIEWED_TABLE_SQL } from "./recentlyViewed.js";
 
 // Export individual modular table schemas
 export {
@@ -24,6 +25,7 @@ export {
     COMPANY_INFO_TABLE_SQL,
     MENUS_TABLE_SQL,
     PACKAGEMASTER_TABLE_SQL,
+    RECENTLY_VIEWED_TABLE_SQL,
 };
 
 // Unified DDL across all multi-tenant tables
@@ -37,6 +39,7 @@ export const SCHEMA_SQL = [
     COMPANY_INFO_TABLE_SQL,
     MENUS_TABLE_SQL,
     PACKAGEMASTER_TABLE_SQL,
+    RECENTLY_VIEWED_TABLE_SQL,
 ].join("\n\n");
 
 /**

@@ -1,3 +1,5 @@
+import { getDynamicDesignTableName, sanitizeSqlIdentifier } from "../schema/dynamicDesigns.js";
+
 /**
  * Clean & Ultra-Fast SQLite Query Procedure for Dynamic Filter Lists (GETFILTERLIST)
  * Generates facet options and ranges directly from matching products in SQLite.
@@ -187,6 +189,38 @@ export function getFilterList(db, filtersOrMenu = {}, extraFilters = {}) {
     }
   }
 
+  // 2b. Top-level Menu Slug Mapping (e.g. /p/New Collection)
+  const menuCandidate = filters.menuSlug || filters.menuname || filters.menuName;
+  if (menuCandidate && Object.keys(collectedAttributes).length === 0) {
+    try {
+      const menuRows = db.prepare("SELECT DISTINCT param1name, param1dataname, param2name, param2dataname FROM menus WHERE menuname = ? COLLATE NOCASE").all(menuCandidate);
+      if (menuRows && menuRows.length > 0) {
+        for (const r of menuRows) {
+          if (r.param1name && r.param1dataname && r.param1name.toLowerCase() !== "auto") {
+            const c1 = normalizeKey(r.param1name);
+            if (c1) {
+              if (!collectedAttributes[c1.nameCol]) collectedAttributes[c1.nameCol] = { config: c1, values: [] };
+              collectedAttributes[c1.nameCol].values.push(r.param1dataname);
+            }
+          }
+          if (r.param2name && r.param2dataname && r.param2name.toLowerCase() !== "auto") {
+            const c2 = normalizeKey(r.param2name);
+            if (c2) {
+              if (!collectedAttributes[c2.nameCol]) collectedAttributes[c2.nameCol] = { config: c2, values: [] };
+              collectedAttributes[c2.nameCol].values.push(r.param2dataname);
+            }
+          }
+        }
+      } else {
+        const catCfg = normalizeKey("category");
+        collectedAttributes[catCfg.nameCol] = { config: catCfg, values: [menuCandidate] };
+      }
+    } catch (_) {
+      const catCfg = normalizeKey("category");
+      collectedAttributes[catCfg.nameCol] = { config: catCfg, values: [menuCandidate] };
+    }
+  }
+
   const conditions = [];
   const params = [];
 
@@ -245,6 +279,30 @@ ResolvedPackages(package_id) AS (
         )
     )`);
 
+  // 3b. Product Status Flags
+  if (
+    filters.isNewArrival ||
+    filters.IsNewArrival === 1 ||
+    filters.IsNewArrival === "1" ||
+    filters.N === 1 ||
+    filters.N === "1" ||
+    filters.newArrival ||
+    filters.newarrival
+  ) {
+    conditions.push(
+      `IsNewArrival = 1 AND (FrontEnd1_newArrivalsto IS NULL OR TRIM(FrontEnd1_newArrivalsto) = '' OR DATE(FrontEnd1_newArrivalsto) >= DATE('now', 'localtime'))`
+    );
+  }
+  if (filters.isTrending || filters.IsTrending === 1 || filters.IsTrending === "1") {
+    conditions.push(`IsTrending = 1`);
+  }
+  if (filters.isBestSeller || filters.IsBestSeller === 1 || filters.IsBestSeller === "1") {
+    conditions.push(`IsBestSeller = 1`);
+  }
+  if (filters.isInReadyStock || filters.IsInReadyStock === 1 || filters.IsInReadyStock === "1") {
+    conditions.push(`IsInReadyStock = 1`);
+  }
+
   // 4. Strict exact matching for attributes
   for (const { config, values } of Object.values(collectedAttributes)) {
     const uniqueValues = Array.from(new Set(values.filter(Boolean)));
@@ -274,8 +332,49 @@ ResolvedPackages(package_id) AS (
   const whereClause = conditions.length > 0 ? conditions.join(" AND ") : "1=1";
   const queryParams = [pkgIdParam, pkgNameParam, ...params];
 
+  // Dynamic Table Routing based on Policy or explicit parameter
+  const rawTableName =
+    filters.tableName ||
+    filters.targetTable ||
+    filters.TableName ||
+    filters.TargetTable;
+  let candidateTable = "";
+
+  if (rawTableName) {
+    candidateTable = sanitizeSqlIdentifier(rawTableName);
+  } else {
+    const hasPolicy =
+      filters.Laboursetid != null ||
+      filters.laboursetid != null ||
+      filters.pricemanagement_laboursetid != null ||
+      filters.diamondpricelistname != null ||
+      filters.diamondpricelistName != null ||
+      filters.colorstonepricelistname != null ||
+      filters.colorstonepricelistName != null ||
+      filters.SettingPriceUniqueNo != null ||
+      filters.settingpriceuniqueno != null;
+
+    if (hasPolicy) {
+      candidateTable = getDynamicDesignTableName(filters);
+    }
+  }
+
+  let targetTable = "designs";
+  if (candidateTable && candidateTable !== "designs") {
+    try {
+      const match = db
+        .prepare(
+          "SELECT name FROM sqlite_master WHERE type='table' AND name = ? COLLATE NOCASE"
+        )
+        .get(candidateTable);
+      if (match && match.name) {
+        targetTable = match.name;
+      }
+    } catch (_) {}
+  }
+
   // Common CTE table alias
-  const fromClause = `${ctePrefix} SELECT * FROM designs WHERE ${whereClause}`;
+  const fromClause = `${ctePrefix} SELECT * FROM "${targetTable}" WHERE ${whereClause}`;
 
   // Helper to query distinct attribute options
   const fetchAttributeOptions = (idCol, nameCol) => {
@@ -283,11 +382,11 @@ ResolvedPackages(package_id) AS (
       const sql = `
         WITH FilteredDesigns AS (${fromClause})
         SELECT 
-          CAST("${idCol}" AS INTEGER) AS id,
+          COALESCE(CAST("${idCol}" AS INTEGER), 0) AS id,
           TRIM("${nameCol}") AS Name
         FROM FilteredDesigns
-        WHERE "${idCol}" IS NOT NULL AND "${idCol}" != 0 AND "${nameCol}" IS NOT NULL AND TRIM("${nameCol}") != ''
-        GROUP BY "${idCol}", TRIM("${nameCol}")
+        WHERE "${nameCol}" IS NOT NULL AND TRIM("${nameCol}") != ''
+        GROUP BY TRIM("${nameCol}")
         ORDER BY TRIM("${nameCol}") ASC
       `;
       const rows = db.prepare(sql).all(...queryParams);

@@ -15,9 +15,9 @@ import { FilterListAPI } from "@/app/(core)/utils/API/FilterAPI/FilterListAPI";
 import { useStore } from "@/app/(core)/contexts/StoreProvider";
 import { useSyncStore } from "@/app/(core)/hooks/useStore";
 import { getSession, setSession } from "@/app/(core)/utils/FetchSessionData";
-// import { readCache, writeCache } from "@/app/(core)/cache_utility/cacheActions";
-import { getSqliteProducts } from "@/app/(core)/utils/sqlite/sqliteActions";
+import { getSqliteProducts, getSqliteFilters } from "@/app/(core)/utils/sqlite/sqliteActions";
 import { ParseAndDecodeSearchParams } from "@/app/(core)/utils/GlobalFunctions/Parser";
+import { getPricingPolicyParams, getDynamicDesignTableName } from "@/app/(core)/utils/product/pricingPolicy";
 
 import {
   compressAndEncode,
@@ -68,7 +68,7 @@ export function useListingPage({
 
   // Initial SSR Data check
   const initialProducts = initialData?.pdList ?? initialData?.rd ?? [];
-  const hasInitialData = initialData?.success === true || (Array.isArray(initialProducts) && initialProducts.length > 0);
+  const hasInitialData = Array.isArray(initialProducts) && initialProducts.length > 0;
 
   // Selection Combos
   const [selectedMetalId, setSelectedMetalId] = useState(
@@ -94,6 +94,7 @@ export function useListingPage({
 
   // Product & Data States
   const isInitialMount = useRef(true);
+  const lastLoadedSignatureRef = useRef("");
   const [productListData, setProductListData] = useState(initialProducts);
   const [isProdLoading, setIsProdLoading] = useState(!hasInitialData);
   const [isOnlyProdLoading, setIsOnlyProdLoading] = useState(!hasInitialData);
@@ -159,8 +160,21 @@ export function useListingPage({
       const clean = sanitizeFilterList(initialFilterData);
       setFilterData(clean);
       updateSlidersFromFilterData(clean);
+    } else if (filterData.length === 0) {
+      // Instant SQLite fallback if SSR passed no filters
+      const activeTable = Cookies.get("pricing_table_name") || Cookies.get("policy_table");
+      const filterParams = activeTable ? { tableName: activeTable } : {};
+      getSqliteFilters(filterParams)
+        .then((res) => {
+          if (res?.success && Array.isArray(res?.rd) && res.rd.length > 0) {
+            const clean = sanitizeFilterList(res.rd);
+            setFilterData(clean);
+            updateSlidersFromFilterData(clean);
+          }
+        })
+        .catch(() => {});
     }
-  }, [initialFilterData, sanitizeFilterList, updateSlidersFromFilterData]);
+  }, [initialFilterData, filterData.length, sanitizeFilterList, updateSlidersFromFilterData]);
 
   // Combos
   const [metalTypeCombo, setMetalTypeCombo] = useState(getSession("metalTypeCombo") || []);
@@ -435,14 +449,11 @@ export function useListingPage({
 
   const FilterValueWithCheckedOnly = useCallback(() => {
     const output = getOnlyCheckedFilters();
-    setCurrPage(1);
-    setInputPage(1);
-    resetUrlPage();
     if (typeof window !== "undefined") {
       sessionStorage.setItem("key", JSON.stringify(output));
     }
     return output;
-  }, [getOnlyCheckedFilters, resetUrlPage]);
+  }, [getOnlyCheckedFilters]);
 
   // ----------------------------------------------------
   // 5. Clear All Filters Handler
@@ -526,9 +537,11 @@ export function useListingPage({
   // ----------------------------------------------------
   // 6. Direct SQLite Filter Query Engine
   // ----------------------------------------------------
+  // 6. Direct SQLite Filter Query Engine
+  // ----------------------------------------------------
   const fetchProductsFromSqlite = useCallback(
     async ({
-      targetPage = currPage,
+      targetPage = 1,
       outputFilters = getOnlyCheckedFilters(),
       diaVal = sliderValue,
       grossVal = sliderValue2,
@@ -551,8 +564,15 @@ export function useListingPage({
         ? savedMenu
         : (prodListType || searchParams || menuIdent);
 
+      const policyParams = getPricingPolicyParams({
+        storeinit,
+        loginUserDetail,
+        islogin,
+      });
+
       const queryPayload = {
-        ...(typeof targetQuery === "object" ? targetQuery : {}),
+        ...policyParams,
+        ...(typeof targetQuery === "object" && !Array.isArray(targetQuery) ? targetQuery : {}),
         ...(typeof outputFilters === "object" ? outputFilters : {}),
         Collectionid: outputFilters?.collection,
         Categoryid: outputFilters?.category,
@@ -573,15 +593,37 @@ export function useListingPage({
         diaMin: DiaRange?.DiaMin || undefined,
         diaMax: DiaRange?.DiaMax || undefined,
         sortBy: sortVal || undefined,
+        // Pagination — always last so nothing overwrites these
         page: targetPage,
+        PageNo: targetPage,
         pageSize: storeinit?.PageSize || 10,
+        PageSize: storeinit?.PageSize || 10,
       };
 
+      if (Array.isArray(targetQuery) && targetQuery.length >= 2) {
+        targetQuery[0].forEach((k, idx) => {
+          if (k && targetQuery[1]?.[idx]) queryPayload[k] = targetQuery[1][idx];
+        });
+      } else if (typeof targetQuery === "string" && targetQuery) {
+        queryPayload.M = targetQuery;
+      }
+
+      const activeTable = Cookies.get("pricing_table_name") || Cookies.get("policy_table");
+      if (activeTable) {
+        queryPayload.tableName = activeTable;
+      }
+
       try {
-        const sqliteRes = await getSqliteProducts(targetQuery, queryPayload);
+        const sqliteRes = await getSqliteProducts(
+          typeof targetQuery === "string" ? targetQuery : queryPayload,
+          queryPayload,
+          undefined
+        );
         if (sqliteRes?.success) {
           setProductListData(sqliteRes.rd || []);
           setAfterFilterCount(sqliteRes.totalCount || 0);
+          setCurrPage(targetPage);
+          setInputPage(targetPage);
           return sqliteRes;
         }
       } catch (sqlErr) {
@@ -594,7 +636,6 @@ export function useListingPage({
       return null;
     },
     [
-      currPage,
       getOnlyCheckedFilters,
       filterData,
       inputDia,
@@ -608,6 +649,8 @@ export function useListingPage({
       sortBySelect,
       priceRangeValue,
       storeinit,
+      loginUserDetail,
+      islogin,
     ]
   );
 
@@ -618,7 +661,6 @@ export function useListingPage({
     async (event, value) => {
       const targetPage = Number(value) || 1;
       let output = getOnlyCheckedFilters();
-      let obj = { mt: selectedMetalId, dia: selectedDiaId, cs: selectedCsId };
       setIsOnlyProdLoading(true);
       setCurrPage(targetPage);
       setInputPage(targetPage);
@@ -682,9 +724,6 @@ export function useListingPage({
     [
       getOnlyCheckedFilters,
       fetchProductsFromSqlite,
-      selectedMetalId,
-      selectedDiaId,
-      selectedCsId,
       priceRangeValue,
     ]
   );
@@ -859,13 +898,41 @@ export function useListingPage({
 
     setTrend(effectiveSortBy);
 
+    const policyParams = getPricingPolicyParams({
+      storeinit,
+      loginUserDetail,
+      islogin,
+    });
+    const candidateTable = getDynamicDesignTableName(policyParams);
+    const initialPage = getPageFromUrlOrProps();
+    const currentQuerySig = JSON.stringify({
+      table: candidateTable,
+      page: initialPage,
+      sort: effectiveSortBy,
+      loc: location,
+      menu: productlisttype,
+    });
+
     if (isInitialMount.current) {
       isInitialMount.current = false;
-      if (hasInitialData) {
+      const initialTable = initialData?.targetTable || "";
+      const isInitialMatch = hasInitialData && (
+        !initialTable ||
+        initialTable.toLowerCase() === candidateTable.toLowerCase() ||
+        (!policyParams.isLoggedIn && initialTable.toLowerCase().includes(String(policyParams.Laboursetid)))
+      );
+
+      if (isInitialMatch) {
+        lastLoadedSignatureRef.current = currentQuerySig;
         setIsProdLoading(false);
         setIsOnlyProdLoading(false);
         return;
       }
+    } else if (lastLoadedSignatureRef.current === currentQuerySig && productListData?.length > 0) {
+      // Data with identical parameters already loaded, avoid redundant Server Action
+      setIsProdLoading(false);
+      setIsOnlyProdLoading(false);
+      return;
     }
 
     const fetchData = async () => {
@@ -907,11 +974,33 @@ export function useListingPage({
             ? savedMenu
             : (productlisttype || searchParams || menuIdent);
 
-          const sqliteRes = await getSqliteProducts(targetQuery, {
+          const policyParams = getPricingPolicyParams({
+            storeinit,
+            loginUserDetail,
+            islogin,
+          });
+
+          const queryPayload = {
+            ...policyParams,
+            ...(typeof targetQuery === "object" && !Array.isArray(targetQuery) ? targetQuery : {}),
             sortBy: effectiveSortBy,
             page: initialPage,
             pageSize: storeinit?.PageSize || 10,
-          });
+          };
+
+          if (Array.isArray(targetQuery) && targetQuery.length >= 2) {
+            targetQuery[0].forEach((k, idx) => {
+              if (k && targetQuery[1]?.[idx]) queryPayload[k] = targetQuery[1][idx];
+            });
+          } else if (typeof targetQuery === "string" && targetQuery) {
+            queryPayload.M = targetQuery;
+          }
+
+          const sqliteRes = await getSqliteProducts(
+            typeof targetQuery === "string" ? targetQuery : queryPayload,
+            queryPayload,
+            undefined
+          );
           if (sqliteRes?.success) {
             setProductListData(sqliteRes.rd || []);
             setAfterFilterCount(sqliteRes.totalCount || 0);
@@ -920,44 +1009,39 @@ export function useListingPage({
             setIsProdLoading(false);
             setIsOnlyProdLoading(false);
             sqliteLoaded = true;
+            lastLoadedSignatureRef.current = currentQuerySig;
           }
         } catch (sqlErr) {
           console.warn("[SQLite] Fetch failed:", sqlErr);
         }
 
-        /* Fallback to API commented out as requested
-        if (!sqliteLoaded) {
-          const res = await ProductListApi(
-            {},
-            initialPage,
-            obj,
-            productlisttype,
-            cookie,
-            effectiveSortBy,
-            DiaRange,
-            netRange,
-            grossRange
-          );
-
-          if (res) {
-            setProductListData(res?.pdList || []);
-            setAfterFilterCount(res?.pdResp?.rd1?.[0]?.designcount || 0);
-            setCurrPage(initialPage);
-            setInputPage(initialPage);
+        // 2. Fetch Filter Sidebar Options (ensure full filters from SQLite)
+        if (!filterData || filterData.length <= 2) {
+          try {
+            const cachedFilters = getSession("AllFilter");
+            if (Array.isArray(cachedFilters) && cachedFilters.length > 2) {
+              const cleanFilters = sanitizeFilterList(cachedFilters);
+              setFilterData(cleanFilters);
+              updateSlidersFromFilterData(cleanFilters);
+            } else {
+              const sqliteFilterRes = await getSqliteFilters(queryPayload, {}, undefined);
+              if (sqliteFilterRes?.success && Array.isArray(sqliteFilterRes.rd) && sqliteFilterRes.rd.length > 0) {
+                const cleanFilters = sanitizeFilterList(sqliteFilterRes.rd);
+                setFilterData(cleanFilters);
+                updateSlidersFromFilterData(cleanFilters);
+                setSession("AllFilter", sqliteFilterRes.rd);
+              } else {
+                const resFilters = await FilterListAPI(productlisttype || searchParams, cookie);
+                if (Array.isArray(resFilters) && resFilters.length > 0) {
+                  const cleanFilters = sanitizeFilterList(resFilters);
+                  setFilterData(cleanFilters);
+                  updateSlidersFromFilterData(cleanFilters);
+                }
+              }
+            }
+          } catch (filterErr) {
+            console.error("FilterList fetching error in useListingPage:", filterErr);
           }
-        }
-        */
-
-        // 2. Fetch Filter Sidebar Options
-        try {
-          const resFilters = await FilterListAPI(productlisttype || searchParams, cookie);
-          if (Array.isArray(resFilters) && resFilters.length > 0) {
-            const cleanFilters = sanitizeFilterList(resFilters);
-            setFilterData(cleanFilters);
-            updateSlidersFromFilterData(cleanFilters);
-          }
-        } catch (filterErr) {
-          console.error("FilterListAPI error in useListingPage:", filterErr);
         }
       } catch (err) {
         console.error("useListingPage fetchData error:", err);
@@ -968,16 +1052,28 @@ export function useListingPage({
     };
 
     fetchData();
-  }, [location, result, syncProductList?.ts, getPageFromUrlOrProps]);
+  }, [
+    location,
+    JSON.stringify(result),
+    syncProductList?.ts,
+    loginUserDetail?.pricemanagement_laboursetid,
+    loginUserDetail?.diamondpricelistname,
+    islogin,
+  ]);
 
   // ----------------------------------------------------
   // 10. Filter Checkbox Change Effect (Debounced)
   // ----------------------------------------------------
+  const isFilterMount = useRef(true);
   useEffect(() => {
+    if (isFilterMount.current) {
+      isFilterMount.current = false;
+      return;
+    }
     if (Object.keys(filterChecked).length === 0 && !isClearAllClicked) return;
 
     const timer = setTimeout(async () => {
-      let output = FilterValueWithCheckedOnly();
+      let output = getOnlyCheckedFilters();
 
       const inputPriceField = JSON.stringify(priceRangeValue) !== JSON.stringify(["", ""]);
       if (inputPriceField && !output?.Price?.length) {
@@ -986,6 +1082,7 @@ export function useListingPage({
 
       setCurrPage(1);
       setInputPage(1);
+      resetUrlPage();
 
       await fetchProductsFromSqlite({ targetPage: 1, outputFilters: output });
 
@@ -1016,7 +1113,7 @@ export function useListingPage({
     }, 300);
 
     return () => clearTimeout(timer);
-  }, [filterChecked, FilterValueWithCheckedOnly, fetchProductsFromSqlite, isClearAllClicked, priceRangeValue]);
+  }, [filterChecked, isClearAllClicked, priceRangeValue]);
 
   return {
     // Products & Status

@@ -10,19 +10,12 @@ import {
   formatRedirectTitleLine,
   formatter,
 } from "@/app/(core)/utils/Glob_Functions/GlobalFunction";
-import { Get_Tren_BestS_NewAr_DesigSet_Album } from "@/app/(core)/utils/API/Home/Get_Tren_BestS_NewAr_DesigSet_Album/Get_Tren_BestS_NewAr_DesigSet_Album";
 import Pako from "pako";
 import { useStore } from "@/app/(core)/contexts/StoreProvider";
 import { useNextRouterLikeRR } from "@/app/(core)/hooks/useLocationRd";
 import { HeaderV2 } from "./Header";
-import {
-  normalizeALC,
-  buildAlbumCacheKey,
-  getPricingContext,
-} from "@/app/(core)/cache_utility/CacheBuilder";
-import { readCache, writeCache } from "@/app/(core)/cache_utility/cacheActions";
 import SpireBox from "./Svg";
-import { getSession } from "@/app/(core)/utils/FetchSessionData";
+import { saveRecentlyViewedDesign } from "@/app/(core)/utils/sqlite/recentlyViewedActions";
 
 // ─── Styled Components (mirrors Category.jsx) ────────────────────────────────
 
@@ -42,6 +35,8 @@ const NavButton = styled(IconButton)(({ theme }) => ({
   },
 }));
 
+const imageNotFound = "/image-not-found.jpg";
+
 const BestSellerSkeleton = () => (
   <Box
     sx={{
@@ -56,13 +51,12 @@ const BestSellerSkeleton = () => (
       <Skeleton variant="circular" width={24} height={24} />
       <Skeleton variant="text" width={160} height={32} />
     </Box>
-    <Box sx={{ display: "flex", gap: 2, overflow: "hidden" }}>
+    <Box sx={{ display: "flex", gap: 3, overflow: "hidden" }}>
       {[1, 2, 3, 4, 5].map((item) => (
         <Box key={item} sx={{ flex: "1 1 20%", minWidth: 180 }}>
           <Skeleton
             variant="rectangular"
-            height={260}
-            sx={{ borderRadius: "8px", mb: 1.5 }}
+            sx={{ width: "100%", aspectRatio: "3/3.5", borderRadius: "1px", mb: 1.5 }}
           />
           <Skeleton variant="text" width="80%" height={20} />
           <Skeleton variant="text" width="50%" height={18} />
@@ -74,105 +68,105 @@ const BestSellerSkeleton = () => (
 
 // ─── Main Component ───────────────────────────────────────────────────────────
 
-const MaxBestSeller = ({ storeInit }) => {
+const MaxBestSeller = ({ storeInit, initialData = [] }) => {
   const prevRef = useRef(null);
   const nextRef = useRef(null);
 
-  const [imageUrl, setImageUrl] = useState();
-  const [bestSellerData, setBestSellerData] = useState([]);
-  console.log(bestSellerData , "bestSellerData")
-  const [validatedData, setValidatedData] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [imageUrl, setImageUrl] = useState(storeInit?.CDNDesignImageFol || "");
+  const [bestSellerData, setBestSellerData] = useState(initialData || []);
+  const [loading, setLoading] = useState(!initialData || initialData.length === 0);
 
   const navigation = useNextRouterLikeRR();
   const { finalId, loginUserDetail, islogin } = useStore();
 
-  const pricingContext = useMemo(
-    () => getPricingContext(loginUserDetail, storeInit, islogin),
-    [loginUserDetail, storeInit, islogin],
-  );
   const isFetchingRef = useRef(false);
-  const lastRequestKeyRef = useRef("");
+  const lastUserRef = useRef(null);
 
-  // ── API ──────────────────────────────────────────────────────────────────────
-  const fetchAndSetBestSellers = useCallback(
-    async (finalID, cacheKey) => {
-      if (!pricingContext || !pricingContext.PackageId || isFetchingRef.current)
-        return;
+  // ── Card Image URL builder (old default image without color code conflicts) ──
+  const getCardImageUrl = useCallback((productData) => {
+    const cdnFol = storeInit?.CDNDesignImageFol || imageUrl || "";
+    if (!cdnFol || !productData?.designno) return "";
+    const ext = productData?.ImageExtension || "webp";
 
-      isFetchingRef.current = true;
-
+    if (productData?.ImageVideoDetail && productData.ImageVideoDetail !== "0") {
       try {
-        const cacheRes = await readCache(cacheKey);
-
-        if (cacheRes?.cached && Array.isArray(cacheRes.data)) {
-          console.log("[MaxBestSeller] Serving from cache");
-          setBestSellerData(cacheRes.data);
-          isFetchingRef.current = false;
-          setLoading(false);
-          return;
+        const parsed =
+          typeof productData.ImageVideoDetail === "string"
+            ? JSON.parse(productData.ImageVideoDetail)
+            : productData.ImageVideoDetail;
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          const normalImg = parsed.find((item) => Number(item?.TI) === 1);
+          if (normalImg) {
+            return `${cdnFol}${productData.designno}~${normalImg.Nm}.${normalImg.Ex || ext}`;
+          }
         }
+      } catch (e) {}
+    }
+    return `${cdnFol}${productData.designno}~1.${ext}`;
+  }, [storeInit, imageUrl]);
 
-        console.log("[MaxBestSeller] Cache miss, calling API...");
-        const response = await Get_Tren_BestS_NewAr_DesigSet_Album(
-          storeInit,
-          "GETBestSeller",
-          finalID,
-        );
-        const apiData = response?.Data?.rd || [];
-
-        if (apiData.length > 0) {
-          setBestSellerData(apiData);
-          writeCache(cacheKey, apiData).catch(console.error);
-        } else {
-          setBestSellerData([]);
-        }
-        isFetchingRef.current = false;
-        setLoading(false);
-      } catch (err) {
-        console.log("[MaxBestSeller] Error in fetch:", err);
-        setBestSellerData([]);
-        isFetchingRef.current = false;
-        setLoading(false);
-      }
-    },
-    [pricingContext, storeInit],
-  );
-
-  useEffect(() => {
-    if (!pricingContext || !storeInit) return;
-
-    setImageUrl(storeInit?.CDNDesignImageFol);
-
-    const fetchData = async () => {
-      const visitorId = finalId || "0";
-      const keyALC = normalizeALC("");
-      const { key } = buildAlbumCacheKey(
-        "fg_bestseller",
-        storeInit,
-        pricingContext,
-        visitorId,
-        keyALC,
-      );
-
-      if (isFetchingRef.current || lastRequestKeyRef.current === key) return;
-      lastRequestKeyRef.current = key;
-
-      await fetchAndSetBestSellers(visitorId, key);
-    };
-
-    fetchData();
-  }, [islogin, pricingContext, storeInit, fetchAndSetBestSellers, finalId]);
-
-  // ── Image URL builder ────────────────────────────────────────────────────────
-  useEffect(() => {
-    if (!bestSellerData?.length) return;
-    const result = bestSellerData.map((item) => {
-      const imageURL = getCardImageUrl(item) || `${imageUrl}${item?.designno}~1.${item?.ImageExtension || "webp"}`;
+  // ── Synchronously computed validatedData for instant SSR & first paint ────
+  const validatedData = useMemo(() => {
+    if (!bestSellerData || !bestSellerData.length) return [];
+    const cdnFol = storeInit?.CDNDesignImageFol || imageUrl || "";
+    return bestSellerData.map((item) => {
+      const hasImage = item?.ImageExtension || (item?.ImageVideoDetail && item?.ImageVideoDetail !== "0");
+      const imageURL = hasImage
+        ? (getCardImageUrl(item) || `${cdnFol}${item?.designno}~1.${item?.ImageExtension || "webp"}`)
+        : imageNotFound;
       return { ...item, validatedImageURL: imageURL };
     });
-    setValidatedData(result);
-  }, [bestSellerData, imageUrl, storeInit]);
+  }, [bestSellerData, getCardImageUrl, storeInit, imageUrl]);
+
+  // ── API ──────────────────────────────────────────────────────────────────────
+  const fetchAndSetBestSellers = useCallback(async () => {
+    if (isFetchingRef.current) return;
+    isFetchingRef.current = true;
+
+    try {
+      const response = await fetch("/api/sqlite/home/bestseller", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          storeInit,
+          loginUserDetail,
+        }),
+      });
+      const result = await response.json();
+      const apiData = result?.Data?.rd || result?.rd || [];
+
+      if (apiData.length > 0) {
+        setBestSellerData(apiData);
+      } else {
+        setBestSellerData([]);
+      }
+      setLoading(false);
+    } catch (err) {
+      console.error("[MaxBestSeller] Error fetching bestsellers:", err);
+      setLoading(false);
+    } finally {
+      isFetchingRef.current = false;
+    }
+  }, [storeInit, loginUserDetail]);
+
+  useEffect(() => {
+    if (storeInit?.CDNDesignImageFol) {
+      setImageUrl(storeInit.CDNDesignImageFol);
+    }
+
+    const currentUserSig = `${Boolean(islogin)}_${loginUserDetail?.id || loginUserDetail?.userid || 0}_${loginUserDetail?.pricemanagement_laboursetid || 0}`;
+
+    // If initialData was provided on first mount and matches state, keep it
+    if (lastUserRef.current === null && initialData && initialData.length > 0) {
+      lastUserRef.current = currentUserSig;
+      return;
+    }
+
+    if (lastUserRef.current !== currentUserSig || bestSellerData.length === 0) {
+      lastUserRef.current = currentUserSig;
+      fetchAndSetBestSellers();
+    }
+  }, [islogin, loginUserDetail, storeInit, initialData, fetchAndSetBestSellers, bestSellerData.length]);
 
   // ── Navigation helper ────────────────────────────────────────────────────────
   const compressAndEncode = (inputString) => {
@@ -186,61 +180,10 @@ const MaxBestSeller = ({ storeInit }) => {
     }
   };
 
-  const getCardImageUrl = (productData) => {
-    const cdnFol = storeInit?.CDNDesignImageFol || "";
-    if (!cdnFol || !productData?.designno) return "";
-    const ext = productData?.ImageExtension || "webp";
-
-    if (productData?.ImageVideoDetail && productData.ImageVideoDetail !== "0") {
-      try {
-        const parsed =
-          typeof productData.ImageVideoDetail === "string"
-            ? JSON.parse(productData.ImageVideoDetail)
-            : productData.ImageVideoDetail;
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          const itemMetalColorId = productData?.MetalColorid ?? productData?.MetalColorId ?? productData?.metalcolorid;
-          const mtColorLocal = getSession("MetalColorCombo") || [];
-          const targetColorObj = mtColorLocal.find(
-            (ele) => Number(ele.id) === Number(itemMetalColorId)
-          );
-          let targetColorCode = targetColorObj?.colorcode || productData?.MetalColor;
-
-          if (!targetColorCode) {
-            const colorImg = parsed.find(x => Number(x?.TI) === 2 && x?.CN);
-            if (colorImg?.CN) targetColorCode = colorImg.CN;
-          }
-
-          if (targetColorCode) {
-            const targetLower = targetColorCode.toLowerCase().trim();
-            const matchedColorImg = parsed.find((item) => {
-              if (Number(item?.TI) !== 2 || !item?.CN) return false;
-              const cnLower = item.CN.toLowerCase().trim();
-              return (
-                cnLower === targetLower ||
-                cnLower.includes(targetLower) ||
-                targetLower.includes(cnLower)
-              );
-            });
-            if (matchedColorImg) {
-              return `${cdnFol}${productData.designno}~${matchedColorImg.Nm}~${matchedColorImg.CN}.${matchedColorImg.Ex || ext}`;
-            }
-          }
-
-          const normalImg = parsed.find((item) => Number(item?.TI) === 1);
-          if (normalImg) {
-            return `${cdnFol}${productData.designno}~${normalImg.Nm}.${normalImg.Ex || ext}`;
-          }
-        }
-      } catch (e) {}
-    }
-    return `${cdnFol}${productData.designno}~1.${ext}`;
-  };
-
   const handleNavigation = (item, index) => {
     const designNo = item?.designno;
     const autoCode = item?.autocode;
     const titleLine = item?.TitleLine;
-    const itemMetalColorId = item?.MetalColorid ?? item?.MetalColorId ?? item?.metalcolorid;
 
     const obj = {
       a: autoCode,
@@ -257,13 +200,23 @@ const MaxBestSeller = ({ storeInit }) => {
       nwt: item?.Nwt ?? 0,
       price: item?.UnitCostWithMarkUp ?? 0,
       mediaDet: item?.ImageVideoDetail ?? "",
-      metalColorId: itemMetalColorId ?? loginUserDetail?.MetalColorId ?? storeInit?.MetalColorId ?? null,
+      metalColorId: loginUserDetail?.MetalColorId ?? storeInit?.MetalColorId ?? null,
       l: item?.ImageExtension,
       count: item?.ImageCount,
     };
     if (index !== undefined) {
       sessionStorage.setItem("scrollToProduct1", `product-${index}`);
     }
+
+    // Save to SQLite recently viewed designs
+    if (designNo) {
+      saveRecentlyViewedDesign({
+        designno: designNo,
+        autocode: autoCode,
+        loginUserDetail,
+      }).catch(() => {});
+    }
+
     const encodeObj = compressAndEncode(JSON.stringify(obj));
     navigation.push(
       `/d/${formatRedirectTitleLine(titleLine)}${designNo}?p=${encodeObj}`
@@ -307,39 +260,53 @@ const MaxBestSeller = ({ storeInit }) => {
 
       {/* Swiper wrapper with absolute nav buttons — mirrors Category.jsx */}
       <Box sx={{ position: "relative" }}>
-        {/* Prev button */}
-        <NavButton ref={prevRef} sx={{ left: -16 }}>
-          <ChevronLeft size={20} />
-        </NavButton>
+        {/* Prev button — visible when slides exceed viewport */}
+        {validatedData.length > 5 && (
+          <NavButton ref={prevRef} sx={{ left: -16 }}>
+            <ChevronLeft size={20} />
+          </NavButton>
+        )}
 
-        {/* Next button */}
-        <NavButton ref={nextRef} sx={{ right: -16 }}>
-          <ChevronRight size={20} />
-        </NavButton>
+        {/* Next button — visible when slides exceed viewport */}
+        {validatedData.length > 5 && (
+          <NavButton ref={nextRef} sx={{ right: -16 }}>
+            <ChevronRight size={20} />
+          </NavButton>
+        )}
 
         <Swiper
           modules={[Navigation]}
-          spaceBetween={16}
+          spaceBetween={24}
           slidesPerView={1}
           grabCursor
-          navigation={{
-            prevEl: prevRef.current,
-            nextEl: nextRef.current,
-          }}
+          observer={true}
+          observeParents={true}
+          watchSlidesProgress={true}
+          navigation={
+            validatedData.length > 5
+              ? {
+                  prevEl: prevRef.current,
+                  nextEl: nextRef.current,
+                }
+              : false
+          }
           onBeforeInit={(swiper) => {
-            swiper.params.navigation.prevEl = prevRef.current;
-            swiper.params.navigation.nextEl = nextRef.current;
+            if (validatedData.length > 5) {
+              swiper.params.navigation.prevEl = prevRef.current;
+              swiper.params.navigation.nextEl = nextRef.current;
+            }
           }}
           breakpoints={{
-            480: { slidesPerView: 3, spaceBetween: 8 },
-            768: { slidesPerView: 4, spaceBetween: 12 },
-            1280: { slidesPerView: 5, spaceBetween: 16 },
+            480: { slidesPerView: 2, spaceBetween: 16 },
+            768: { slidesPerView: 3, spaceBetween: 20 },
+            1024: { slidesPerView: 4, spaceBetween: 24 },
+            1280: { slidesPerView: 5, spaceBetween: 24 },
           }}
           style={{ paddingBottom: "20px", paddingTop: "10px" }}
           className="product-card-group-grid"
         >
           {validatedData?.map((item, index) => (
-            <SwiperSlide key={item.id ?? index} style={{ height: "auto" }}>
+            <SwiperSlide key={item.id ?? item.designno ?? index} style={{ height: "auto" }}>
               <ProductCard
                 onClick={() =>
                   handleNavigation(
@@ -359,9 +326,7 @@ const MaxBestSeller = ({ storeInit }) => {
   );
 };
 
-// ─── Product Card (unchanged UI) ─────────────────────────────────────────────
-
-const imageNotFound = `image-not-found.jpg`;
+// ─── Product Card (matches Category dimensions) ───────────────────────────────
 
 const ProductCard = ({ item, storeInit, loginUserDetail, onClick }) => (
   <Box
@@ -372,12 +337,14 @@ const ProductCard = ({ item, storeInit, loginUserDetail, onClick }) => (
       textAlign: "center",
       cursor: "pointer",
       height: "100%",
+      width: "100%",
+      mx: "auto",
       display: "flex",
       flexDirection: "column",
       "&:hover .image-container": { transform: "translateY(-5px)" },
       "&:hover .product-image": { transform: "scale(1.08)" },
       "&:hover .info-overlay": { transform: "translateY(0)", opacity: 1 },
-      borderRadius: 2,
+      borderRadius: "1px",
       boxSizing: "border-box",
     }}
   >
@@ -386,11 +353,11 @@ const ProductCard = ({ item, storeInit, loginUserDetail, onClick }) => (
       sx={{
         position: "relative",
         width: "100%",
-        paddingTop: "130%", // Improved aspect ratio
+        aspectRatio: "3/3.5",
         overflow: "hidden",
         transition: "transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94)",
         backgroundColor: "#f5f5f560",
-        borderRadius: 2,
+        borderRadius: "1px",
       }}
       onClick={onClick}
     >

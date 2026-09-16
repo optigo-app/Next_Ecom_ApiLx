@@ -1,3 +1,5 @@
+import { getDynamicDesignTableName, sanitizeSqlIdentifier } from "../schema/dynamicDesigns.js";
+
 /**
  * Clean & Ultra-Fast SQLite Query Procedure for Jewelry Product Listing (PLP)
  * Strictly filters ONLY the core catalog attributes:
@@ -202,6 +204,38 @@ export function getDesigns(db, filtersOrMenu = {}, extraFilters = {}) {
     }
   }
 
+  // 2b. Top-level Menu Slug Mapping (e.g. /p/New Collection)
+  const menuCandidate = filters.menuSlug || filters.menuname || filters.menuName;
+  if (menuCandidate && Object.keys(collectedAttributes).length === 0) {
+    try {
+      const menuRows = db.prepare("SELECT DISTINCT param1name, param1dataname, param2name, param2dataname FROM menus WHERE menuname = ? COLLATE NOCASE").all(menuCandidate);
+      if (menuRows && menuRows.length > 0) {
+        for (const r of menuRows) {
+          if (r.param1name && r.param1dataname && r.param1name.toLowerCase() !== "auto") {
+            const c1 = normalizeKey(r.param1name);
+            if (c1) {
+              if (!collectedAttributes[c1.nameCol]) collectedAttributes[c1.nameCol] = { config: c1, values: [] };
+              collectedAttributes[c1.nameCol].values.push(r.param1dataname);
+            }
+          }
+          if (r.param2name && r.param2dataname && r.param2name.toLowerCase() !== "auto") {
+            const c2 = normalizeKey(r.param2name);
+            if (c2) {
+              if (!collectedAttributes[c2.nameCol]) collectedAttributes[c2.nameCol] = { config: c2, values: [] };
+              collectedAttributes[c2.nameCol].values.push(r.param2dataname);
+            }
+          }
+        }
+      } else {
+        const catCfg = normalizeKey("category");
+        collectedAttributes[catCfg.nameCol] = { config: catCfg, values: [menuCandidate] };
+      }
+    } catch (_) {
+      const catCfg = normalizeKey("category");
+      collectedAttributes[catCfg.nameCol] = { config: catCfg, values: [menuCandidate] };
+    }
+  }
+
   const conditions = [];
   const params = [];
 
@@ -211,6 +245,8 @@ export function getDesigns(db, filtersOrMenu = {}, extraFilters = {}) {
     filters.packageId ??
     filters.PackageID ??
     filters.packageid ??
+    filters.PackageIdList ??
+    filters.packageidlist ??
     null;
   const rawPkgName = filters.PackageName ?? filters.packageName ?? null;
   const pkgIdParam =
@@ -466,8 +502,18 @@ ResolvedPackages(package_id) AS (
   }
 
   // 9. Product Status Flags
-  if (filters.isNewArrival || filters.IsNewArrival === 1 || filters.IsNewArrival === "1") {
-    conditions.push(`(IsNewArrival = 1 OR FrontEnd1_newArrivalsto = 1)`);
+  if (
+    filters.isNewArrival ||
+    filters.IsNewArrival === 1 ||
+    filters.IsNewArrival === "1" ||
+    filters.N === 1 ||
+    filters.N === "1" ||
+    filters.newArrival ||
+    filters.newarrival
+  ) {
+    conditions.push(
+      `IsNewArrival = 1 AND (FrontEnd1_newArrivalsto IS NULL OR TRIM(FrontEnd1_newArrivalsto) = '' OR DATE(FrontEnd1_newArrivalsto) >= DATE('now', 'localtime'))`
+    );
   }
   if (filters.isTrending || filters.IsTrending === 1 || filters.IsTrending === "1") {
     conditions.push(`IsTrending = 1`);
@@ -494,8 +540,31 @@ ResolvedPackages(package_id) AS (
   const whereClause = conditions.length > 0 ? conditions.join(" AND ") : "1=1";
   const queryParams = [pkgIdParam, pkgNameParam, ...params];
 
+  let targetTable = "designs";
+  let resolvedCandidate = null;
+  const hasLabour =
+    (filters.Laboursetid != null && String(filters.Laboursetid).trim() !== "") ||
+    (filters.laboursetid != null && String(filters.laboursetid).trim() !== "") ||
+    (filters.pricemanagement_laboursetid != null && String(filters.pricemanagement_laboursetid).trim() !== "");
+  const hasDia =
+    (filters.diamondpricelistName != null && String(filters.diamondpricelistName).trim() !== "") ||
+    (filters.diamondpricelistname != null && String(filters.diamondpricelistname).trim() !== "") ||
+    (filters.Diamondpricelistname != null && String(filters.Diamondpricelistname).trim() !== "");
+
+  if (filters.tableName) {
+    resolvedCandidate = sanitizeSqlIdentifier(filters.tableName, "designs");
+    const exists = db.prepare("SELECT name FROM sqlite_master WHERE type='table' AND name = ? COLLATE NOCASE").get(resolvedCandidate);
+    if (exists) targetTable = exists.name;
+  } else if (hasLabour && hasDia) {
+    resolvedCandidate = getDynamicDesignTableName(filters);
+    const exists = db.prepare("SELECT name FROM sqlite_master WHERE type='table' AND name = ? COLLATE NOCASE").get(resolvedCandidate);
+    if (exists) {
+      targetTable = exists.name;
+    }
+  }
+
   // Count query
-  const countSql = `${ctePrefix} SELECT COUNT(*) AS total FROM designs WHERE ${whereClause}`;
+  const countSql = `${ctePrefix} SELECT COUNT(*) AS total FROM "${targetTable}" WHERE ${whereClause}`;
   const countRow = db.prepare(countSql).get(...queryParams);
   const totalCount = countRow ? countRow.total : 0;
 
@@ -515,7 +584,7 @@ ResolvedPackages(package_id) AS (
 
   const querySql = `
         ${ctePrefix}
-        SELECT * FROM designs 
+        SELECT * FROM "${targetTable}" 
         WHERE ${whereClause} 
         ORDER BY ${orderClause}
         ${limitClause}
@@ -526,6 +595,8 @@ ResolvedPackages(package_id) AS (
   return {
     rd: rows,
     totalCount,
+    targetTable,
+    candidateTable: resolvedCandidate,
     stat: 1,
     msg: "success",
   };

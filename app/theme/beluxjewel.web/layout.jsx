@@ -51,21 +51,7 @@ const layout = async ({ children }) => {
           initialMenuData={initialMenuData}
         />
         <Box sx={{ flex: 1, display: "flex", flexDirection: "column" }}>
-          <Suspense
-            fallback={
-              <Box
-                sx={{
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  flex: 1,
-                  minHeight: "90vh",
-                }}
-              ></Box>
-            }
-          >
             {children}
-          </Suspense>
         </Box>
         <FooterNew
           companyInfoData={companyInfoData}

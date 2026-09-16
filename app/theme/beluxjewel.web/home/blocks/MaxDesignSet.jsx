@@ -188,6 +188,16 @@ const MaxDesignSet = ({ data }) => {
   }, [designSetList?.length > 0, pathname ]);
 
   const decodeEntities = (html) => {
+    if (!html || typeof html !== "string") return "";
+    if (typeof document === "undefined") {
+      return html
+        .replace(/&amp;/g, "&")
+        .replace(/&lt;/g, "<")
+        .replace(/&gt;/g, ">")
+        .replace(/&quot;/g, '"')
+        .replace(/&#39;/g, "'")
+        .replace(/&nbsp;/g, " ");
+    }
     var txt = document.createElement("textarea");
     txt.innerHTML = html;
     return txt.value;

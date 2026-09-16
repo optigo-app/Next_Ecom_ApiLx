@@ -198,3 +198,51 @@ button,
   width: auto !important;
 }
 
+/* Mirror Category swiper & slide sizing for SSR / initial paint */
+.product-card-group {
+  width: 100% !important;
+  margin: 0 auto;
+}
+
+.product-card-group-grid:not(.swiper-initialized) .swiper-wrapper {
+  display: flex !important;
+  gap: 24px !important;
+  overflow: hidden !important;
+}
+
+.product-card-group-grid:not(.swiper-initialized) .swiper-slide {
+  width: calc(20% - 19.2px) !important;
+  flex: 0 0 calc(20% - 19.2px) !important;
+}
+
+@media (max-width: 1279px) {
+  .product-card-group-grid:not(.swiper-initialized) .swiper-wrapper {
+    gap: 24px !important;
+  }
+  .product-card-group-grid:not(.swiper-initialized) .swiper-slide {
+    width: calc(25% - 18px) !important;
+    flex: 0 0 calc(25% - 18px) !important;
+  }
+}
+
+@media (max-width: 1023px) {
+  .product-card-group-grid:not(.swiper-initialized) .swiper-wrapper {
+    gap: 20px !important;
+  }
+  .product-card-group-grid:not(.swiper-initialized) .swiper-slide {
+    width: calc(33.333% - 13.33px) !important;
+    flex: 0 0 calc(33.333% - 13.33px) !important;
+  }
+}
+
+@media (max-width: 767px) {
+  .product-card-group-grid:not(.swiper-initialized) .swiper-wrapper {
+    gap: 16px !important;
+  }
+  .product-card-group-grid:not(.swiper-initialized) .swiper-slide {
+    width: calc(50% - 8px) !important;
+    flex: 0 0 calc(50% - 8px) !important;
+  }
+}
+
+
