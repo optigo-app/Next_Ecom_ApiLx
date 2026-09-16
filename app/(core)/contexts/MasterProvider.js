@@ -6,7 +6,8 @@ import { MetalColorCombo } from "@/app/(core)/utils/API/Combo/MetalColorCombo";
 import { ColorStoneQualityColorComboAPI } from "@/app/(core)/utils/API/Combo/ColorStoneQualityColorComboAPI";
 import { DiamondQualityColorComboAPI } from "@/app/(core)/utils/API/Combo/DiamondQualityColorComboAPI";
 import { CountryCodeListApi } from "@/app/(core)/utils/API/Auth/CountryCodeListApi";
-import { MetalTypeComboAPI } from "@/app/(core)//utils/API/Combo/MetalTypeComboAPI";
+import { RegisterMasterApi } from "@/app/(core)/utils/API/Auth/RegisterMasterApi";
+import { MetalTypeComboAPI } from "@/app/(core)/utils/API/Combo/MetalTypeComboAPI";
 import { fetchPayMaster } from "@/app/(core)/utils/API/OrderFlow/Paymaster";
 import Cookies from "js-cookie";
 

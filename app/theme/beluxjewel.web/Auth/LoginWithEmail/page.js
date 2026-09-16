@@ -6,6 +6,7 @@ import "./LoginWithEmail.modul.scss";
 import { LoginWithEmailAPI } from "@/app/(core)/utils/API/Auth/LoginWithEmailAPI";
 import { ForgotPasswordEmailAPI } from "@/app/(core)/utils/API/Auth/ForgotPasswordEmailAPI";
 import Cookies from "js-cookie";
+import { setSession } from "@/app/(core)/utils/FetchSessionData";
 import { CurrencyComboAPI } from "@/app/(core)/utils/API/Combo/CurrencyComboAPI";
 import { MetalColorCombo } from "@/app/(core)/utils/API/Combo/MetalColorCombo";
 import { MetalTypeComboAPI } from "@/app/(core)/utils/API/Combo/MetalTypeComboAPI";
@@ -105,12 +106,19 @@ export default function LoginWithEmail({ params, searchParams, storeInit }) {
         setIsLoading(false);
         if (response.Data.rd[0].stat === 1) {
           const visiterID = Cookies.get("visiterId");
-          Cookies.set("userLoginCookie", response?.Data?.rd[0]?.Token);
-          Cookies.set('LoginUser', true);
+          const userDetail = response?.Data?.rd[0];
+          const pkgId = userDetail?.PackageId ?? userDetail?.packageId ?? userDetail?.PackageID;
+
+          Cookies.set("userLoginCookie", userDetail?.Token, { path: "/", expires: 7 });
+          Cookies.set("LoginUser", "true", { path: "/", expires: 7 });
+          if (pkgId != null && pkgId !== "" && String(pkgId) !== "undefined" && String(pkgId) !== "null") {
+            Cookies.set("userPackageId", String(pkgId), { path: "/", expires: 7 });
+          }
+
           sessionStorage.setItem("registerEmail", email);
           setislogin(true);
-          sessionStorage.setItem("LoginUser", true);
-          sessionStorage.setItem("loginUserDetail", JSON.stringify(response.Data.rd[0]));
+          setSession("LoginUser", true);
+          setSession("loginUserDetail", userDetail);
 
           GetCountAPI(visiterID)
             .then((res) => {

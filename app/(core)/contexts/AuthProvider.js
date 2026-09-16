@@ -63,6 +63,10 @@ export function AuthProvider({ children, storeInit, theme }) {
     const existingLoginUser = getSession("LoginUser");
     const existingDetail = getSession("loginUserDetail");
     if ((existingLoginUser === true || existingLoginUser === "true") && existingDetail && !token) {
+      const pkgId = existingDetail?.PackageId ?? existingDetail?.packageId ?? existingDetail?.PackageID;
+      if (pkgId != null && pkgId !== "" && String(pkgId) !== "undefined" && String(pkgId) !== "null") {
+        Cookies.set("userPackageId", String(pkgId), { path: "/", expires: 7 });
+      }
       setislogin(true);
       setLoginUserDetail(existingDetail);
       setIsLoading(false);
@@ -80,11 +84,17 @@ export function AuthProvider({ children, storeInit, theme }) {
         LoginWithEmailAPI("", "", "", "", cookieValue)
           .then((response) => {
             if (response?.Data?.rd[0]?.stat === 1) {
-              Cookies.set("userLoginCookie", response?.Data?.rd[0]?.Token, { path: "/", expires: 7 });
+              const userDetail = response.Data.rd[0];
+              const pkgId = userDetail?.PackageId ?? userDetail?.packageId ?? userDetail?.PackageID;
+              Cookies.set("userLoginCookie", userDetail?.Token, { path: "/", expires: 7 });
+              Cookies.set("LoginUser", "true", { path: "/", expires: 7 });
+              if (pkgId != null && pkgId !== "" && String(pkgId) !== "undefined" && String(pkgId) !== "null") {
+                Cookies.set("userPackageId", String(pkgId), { path: "/", expires: 7 });
+              }
               setislogin(true);
               setSession("LoginUser", true);
-              setSession("loginUserDetail", response.Data.rd[0]);
-              setLoginUserDetail(response.Data.rd[0]);
+              setSession("loginUserDetail", userDetail);
+              setLoginUserDetail(userDetail);
               if (redirectEmailUrl) {
                 router.replace(redirectEmailUrl);
               } else if (pathname.startsWith("/accountdwsr")) {

@@ -61,6 +61,17 @@ export const setSession = (key, value) => {
             Cookies.set(key, valueToStore, { path: "/", expires: 7 });
         }
 
+        // Set userPackageId cookie for instant Server Side Rendering (SSR)
+        if (key === "loginUserDetail") {
+            const parsed = typeof value === "string" ? parseValue(value) : value;
+            const pkgId = parsed?.PackageId ?? parsed?.packageId ?? parsed?.PackageID ?? parsed?.packageid;
+            if (pkgId != null && pkgId !== "" && String(pkgId) !== "undefined" && String(pkgId) !== "null") {
+                Cookies.set("userPackageId", String(pkgId), { path: "/", expires: 7 });
+            } else {
+                Cookies.remove("userPackageId", { path: "/" });
+            }
+        }
+
         // Sync to Window Globals for easy access
         if (key === "storeInit") window.__STORE_INIT__ = value;
         if (key === "loginUserDetail") window.__LOGIN_USER_DETAIL__ = value;
@@ -79,6 +90,7 @@ export const removeSession = (key) => {
 
     if (key === "loginUserDetail" || key === "LoginUser") {
         Cookies.remove(key, { path: "/" });
+        Cookies.remove("userPackageId", { path: "/" });
     }
 
     // Sync to Window Globals
@@ -95,6 +107,7 @@ export const clearSession = () => {
     Cookies.remove("loginUserDetail", { path: "/" });
     Cookies.remove("LoginUser", { path: "/" });
     Cookies.remove("userLoginCookie", { path: "/" });
+    Cookies.remove("userPackageId", { path: "/" });
 
     // Clear Window Globals
     window.__STORE_INIT__ = null;

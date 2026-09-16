@@ -95,7 +95,9 @@ export default function Account({ Storeinit }) {
 
   const handleLogout = () => {
     setislogin(false);
-    Cookies.remove("userLoginCookie");
+    Cookies.remove("userLoginCookie", { path: "/" });
+    Cookies.remove("LoginUser", { path: "/" });
+    Cookies.remove("userPackageId", { path: "/" });
     sessionStorage.setItem("LoginUser", false);
     sessionStorage.removeItem("storeInit");
     sessionStorage.removeItem("loginUserDetail");
@@ -104,12 +106,9 @@ export default function Account({ Storeinit }) {
     sessionStorage.removeItem("orderNumber");
     sessionStorage.removeItem("registerEmail");
     sessionStorage.removeItem("UploadLogicalPath");
-    sessionStorage.removeItem("remarks");
     sessionStorage.removeItem("registerMobile");
     sessionStorage.removeItem("allproductlist");
     sessionStorage.clear();
-    Cookies.remove("userLoginCookie");
-    Cookies.remove("LoginUser");
     window.location.href = "/";
   };
 

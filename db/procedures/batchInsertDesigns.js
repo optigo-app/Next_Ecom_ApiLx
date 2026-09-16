@@ -5,15 +5,31 @@
  * Automatically logs sync actions in sync_logs table.
  * 
  * @param {import('better-sqlite3').Database} db
- * @param {Array<object>} designs
+ * @param {Array<object>} rawPayload
  * @param {string} [menuIdentifier='GLOBAL']
- * @returns {{ totalReceived: number, insertedCount: number, updatedCount: number, success: boolean }}
+ * @param {object} [options={}]
+ * @returns {{ totalReceived: number, insertedCount: number, updatedCount: number, totalInDatabase: number, duplicatesInPayload: number, success: boolean }}
  */
-export function batchInsertDesigns(db, designs = [], menuIdentifier = "GLOBAL") {
+export function batchInsertDesigns(db, rawPayload = [], menuIdentifier = "GLOBAL", options = {}) {
     const cleanMenu = String(menuIdentifier || "GLOBAL").trim();
 
+    // If caller requested truncating/clearing before sync
+    if (options?.truncate || options?.clearBeforeSync || options?.flush) {
+        try {
+            db.prepare("DELETE FROM designs").run();
+        } catch (_) {}
+    }
+
+    let designs = [];
+    if (Array.isArray(rawPayload)) {
+        designs = rawPayload;
+    } else if (rawPayload && typeof rawPayload === "object") {
+        designs = rawPayload.products || rawPayload.Data?.rd || rawPayload.rd || [];
+    }
+
     if (!Array.isArray(designs) || designs.length === 0) {
-        return { totalReceived: 0, insertedCount: 0, updatedCount: 0, success: true };
+        const count = db.prepare("SELECT COUNT(*) as count FROM designs").get()?.count || 0;
+        return { totalReceived: 0, insertedCount: 0, updatedCount: 0, totalInDatabase: count, duplicatesInPayload: 0, success: true };
     }
 
     const upsertStmt = db.prepare(`
@@ -58,6 +74,8 @@ export function batchInsertDesigns(db, designs = [], menuIdentifier = "GLOBAL") 
             SolPrice,
             MetalPurityid,
             MetalColorid,
+            PackageIdList,
+            ExclusiveCustomerId,
             MetalTypeid,
             MetalTypePurity,
             CartId,
@@ -72,6 +90,15 @@ export function batchInsertDesigns(db, designs = [], menuIdentifier = "GLOBAL") 
             VideoExtension,
             IsImageNameWithRandNo,
             ImageVideoDetail,
+            product_typeid,
+            collectionid,
+            categoryid,
+            sub_categoryid,
+            brandid,
+            genderid,
+            occasionid,
+            Styleid,
+            make_typeid,
             category,
             collection,
             sub_category,
@@ -123,6 +150,8 @@ export function batchInsertDesigns(db, designs = [], menuIdentifier = "GLOBAL") 
             @SolPrice,
             @MetalPurityid,
             @MetalColorid,
+            @PackageIdList,
+            @ExclusiveCustomerId,
             @MetalTypeid,
             @MetalTypePurity,
             @CartId,
@@ -137,6 +166,15 @@ export function batchInsertDesigns(db, designs = [], menuIdentifier = "GLOBAL") 
             @VideoExtension,
             @IsImageNameWithRandNo,
             @ImageVideoDetail,
+            @product_typeid,
+            @collectionid,
+            @categoryid,
+            @sub_categoryid,
+            @brandid,
+            @genderid,
+            @occasionid,
+            @Styleid,
+            @make_typeid,
             @category,
             @collection,
             @sub_category,
@@ -188,6 +226,8 @@ export function batchInsertDesigns(db, designs = [], menuIdentifier = "GLOBAL") 
             SolPrice = excluded.SolPrice,
             MetalPurityid = excluded.MetalPurityid,
             MetalColorid = excluded.MetalColorid,
+            PackageIdList = excluded.PackageIdList,
+            ExclusiveCustomerId = excluded.ExclusiveCustomerId,
             MetalTypeid = excluded.MetalTypeid,
             MetalTypePurity = excluded.MetalTypePurity,
             CartId = excluded.CartId,
@@ -202,6 +242,15 @@ export function batchInsertDesigns(db, designs = [], menuIdentifier = "GLOBAL") 
             VideoExtension = excluded.VideoExtension,
             IsImageNameWithRandNo = excluded.IsImageNameWithRandNo,
             ImageVideoDetail = excluded.ImageVideoDetail,
+            product_typeid = excluded.product_typeid,
+            collectionid = excluded.collectionid,
+            categoryid = excluded.categoryid,
+            sub_categoryid = excluded.sub_categoryid,
+            brandid = excluded.brandid,
+            genderid = excluded.genderid,
+            occasionid = excluded.occasionid,
+            Styleid = excluded.Styleid,
+            make_typeid = excluded.make_typeid,
             category = COALESCE(excluded.category, designs.category),
             collection = COALESCE(excluded.collection, designs.collection),
             sub_category = COALESCE(excluded.sub_category, designs.sub_category),
@@ -214,77 +263,113 @@ export function batchInsertDesigns(db, designs = [], menuIdentifier = "GLOBAL") 
             updated_at = CURRENT_TIMESTAMP
     `);
 
+    const getVal = (row, ...keys) => {
+        for (const k of keys) {
+            if (row[k] !== undefined && row[k] !== null) return row[k];
+        }
+        return undefined;
+    };
+
+    const toStr = (v, def = "") => (v !== undefined && v !== null ? String(v).trim() : def);
+    const toInt = (v, def = 0) => {
+        const n = Number(v);
+        return Number.isFinite(n) ? Math.trunc(n) : def;
+    };
+    const toNum = (v, def = 0) => {
+        const n = Number(v);
+        return Number.isFinite(n) ? n : def;
+    };
+    const toNullableNum = (v) => {
+        if (v === undefined || v === null || v === "") return null;
+        const n = Number(v);
+        return Number.isFinite(n) ? n : null;
+    };
+
     const countBefore = db.prepare("SELECT COUNT(*) as count FROM designs").get()?.count || 0;
 
     const executeBatch = db.transaction((rows) => {
         for (const row of rows) {
-            const article = String(row.ArticleNo || row.designno || row.id || "").trim();
+            const rawArticle = getVal(row, "ArticleNo", "articleno", "articleNo", "designno", "id", "DesignId");
+            const article = toStr(rawArticle);
             if (!article) continue; // Skip invalid entries without ArticleNo
 
             upsertStmt.run({
-                id: row.id ?? row.DesignId ?? null,
-                SrNo: row.SrNo != null ? String(row.SrNo) : "",
-                DesignId: row.DesignId ?? row.id ?? null,
+                id: toNullableNum(getVal(row, "id", "Id", "DesignId")),
+                SrNo: toStr(getVal(row, "SrNo", "srno", "srNo")),
+                DesignId: toNullableNum(getVal(row, "DesignId", "designid", "id")),
                 ArticleNo: article,
-                designno: row.designno ?? "",
-                autocode: row.autocode ?? "",
-                TitleLine: row.TitleLine ?? "",
-                description: row.description ?? "",
-                DisplayOrder: Number(row.DisplayOrder) || 0,
-                IsBestSeller: row.IsBestSeller ? 1 : 0,
-                IsTrending: row.IsTrending ? 1 : 0,
-                IsNewArrival: row.IsNewArrival ? 1 : 0,
-                IsInReadyStock: row.IsInReadyStock ? 1 : 0,
-                IsMrpBase: row.IsMrpBase != null ? (row.IsMrpBase ? 1 : 0) : 1,
-                EntryDate: row.EntryDate ?? null,
-                FrontEnd1_newArrivalsto: row.FrontEnd1_newArrivalsto ?? null,
-                DiaQuaCol: row.DiaQuaCol ?? "",
-                CsQuaCol: row.CsQuaCol ?? "",
-                SoldCnt: Number(row.SoldCnt) || 0,
-                Nwt: Number(row.Nwt) || 0,
-                Gwt: Number(row.Gwt) || 0,
-                Dwt: Number(row.Dwt) || 0,
-                Dpcs: Number(row.Dpcs) || 0,
-                CSwt: Number(row.CSwt) || 0,
-                CSpcs: Number(row.CSpcs) || 0,
-                UnitCost: Number(row.UnitCost) || 0,
-                UnitCostWithMarkUp: Number(row.UnitCostWithMarkUp) || 0,
-                UnitCostWithMarkUpIncTax: Number(row.UnitCostWithMarkUpIncTax) || 0,
-                Metal_Cost: row.Metal_Cost != null ? Number(row.Metal_Cost) : null,
-                Labour_Cost: row.Labour_Cost != null ? Number(row.Labour_Cost) : null,
-                Diamond_Cost: row.Diamond_Cost != null ? Number(row.Diamond_Cost) : null,
-                Diamond_SettingCost: row.Diamond_SettingCost != null ? Number(row.Diamond_SettingCost) : null,
-                ColorStone_Cost: row.ColorStone_Cost != null ? Number(row.ColorStone_Cost) : null,
-                ColorStone_SettingCost: row.ColorStone_SettingCost != null ? Number(row.ColorStone_SettingCost) : null,
-                Misc_Cost: row.Misc_Cost != null ? Number(row.Misc_Cost) : null,
-                Misc_SettingCost: row.Misc_SettingCost != null ? Number(row.Misc_SettingCost) : 0,
-                Other_Cost: row.Other_Cost != null ? Number(row.Other_Cost) : null,
-                SolPrice: Number(row.SolPrice) || 0,
-                MetalPurityid: row.MetalPurityid != null ? Number(row.MetalPurityid) : null,
-                MetalColorid: row.MetalColorid != null ? Number(row.MetalColorid) : null,
-                MetalTypeid: row.MetalTypeid != null ? Number(row.MetalTypeid) : null,
-                MetalTypePurity: row.MetalTypePurity ?? "",
-                CartId: Number(row.CartId) || 0,
-                IsInWish: row.IsInWish ? 1 : 0,
-                IsInCart: row.IsInCart ? 1 : 0,
-                ImageCount: Number(row.ImageCount) || 0,
-                ColorImageCount: Number(row.ColorImageCount) || 0,
-                threeSixtyImageCount: Number(row["360ImageCount"] ?? row.threeSixtyImageCount) || 0,
-                VideoCount: Number(row.VideoCount) || 0,
-                ImageExtension: row.ImageExtension ?? "png",
-                threeSixtyImageExtension: row["360ImageExtension"] ?? row.threeSixtyImageExtension ?? "",
-                VideoExtension: row.VideoExtension ?? "",
-                IsImageNameWithRandNo: row.IsImageNameWithRandNo ? 1 : 0,
-                ImageVideoDetail: typeof row.ImageVideoDetail === "string" ? row.ImageVideoDetail : JSON.stringify(row.ImageVideoDetail || []),
-                category: row.category ?? row.Category ?? null,
-                collection: row.collection ?? row.Collection ?? null,
-                sub_category: row.sub_category ?? row.SubCategory ?? row.subcategory ?? null,
-                gender: row.gender ?? row.Gender ?? null,
-                brand: row.brand ?? row.Brand ?? null,
-                occasion: row.occasion ?? row.Occasion ?? null,
-                product_type: row.product_type ?? row.ProductType ?? row.producttype ?? null,
-                style: row.style ?? row.Style ?? null,
-                make_type: row.make_type ?? row.MakeType ?? row.maketype ?? null,
+                designno: toStr(getVal(row, "designno", "DesignNo")),
+                autocode: toStr(getVal(row, "autocode", "AutoCode")),
+                TitleLine: toStr(getVal(row, "TitleLine", "titleline")),
+                description: toStr(getVal(row, "description", "Description")),
+                DisplayOrder: toInt(getVal(row, "DisplayOrder", "displayorder")),
+                IsBestSeller: getVal(row, "IsBestSeller", "isbestseller") ? 1 : 0,
+                IsTrending: getVal(row, "IsTrending", "istrending") ? 1 : 0,
+                IsNewArrival: getVal(row, "IsNewArrival", "isnewarrival") ? 1 : 0,
+                IsInReadyStock: getVal(row, "IsInReadyStock", "isinreadystock") ? 1 : 0,
+                IsMrpBase: getVal(row, "IsMrpBase", "ismrpbase") != null ? (getVal(row, "IsMrpBase", "ismrpbase") ? 1 : 0) : 1,
+                EntryDate: getVal(row, "EntryDate", "entrydate") ?? null,
+                FrontEnd1_newArrivalsto: getVal(row, "FrontEnd1_newArrivalsto", "frontend1_newarrivalsto") ?? null,
+                DiaQuaCol: toStr(getVal(row, "DiaQuaCol", "diaquacol")),
+                CsQuaCol: toStr(getVal(row, "CsQuaCol", "csquacol")),
+                SoldCnt: toInt(getVal(row, "SoldCnt", "soldcnt")),
+                Nwt: toNum(getVal(row, "Nwt", "nwt")),
+                Gwt: toNum(getVal(row, "Gwt", "gwt")),
+                Dwt: toNum(getVal(row, "Dwt", "dwt")),
+                Dpcs: toInt(getVal(row, "Dpcs", "dpcs")),
+                CSwt: toNum(getVal(row, "CSwt", "cswt")),
+                CSpcs: toInt(getVal(row, "CSpcs", "cspcs")),
+                UnitCost: toNum(getVal(row, "UnitCost", "unitcost")),
+                UnitCostWithMarkUp: toNum(getVal(row, "UnitCostWithMarkUp", "unitcostwithmarkup")),
+                UnitCostWithMarkUpIncTax: toNum(getVal(row, "UnitCostWithMarkUpIncTax", "unitcostwithmarkupinctax")),
+                Metal_Cost: toNullableNum(getVal(row, "Metal_Cost", "metal_cost")),
+                Labour_Cost: toNullableNum(getVal(row, "Labour_Cost", "labour_cost")),
+                Diamond_Cost: toNullableNum(getVal(row, "Diamond_Cost", "diamond_cost")),
+                Diamond_SettingCost: toNullableNum(getVal(row, "Diamond_SettingCost", "diamond_settingcost")),
+                ColorStone_Cost: toNullableNum(getVal(row, "ColorStone_Cost", "colorstone_cost")),
+                ColorStone_SettingCost: toNullableNum(getVal(row, "ColorStone_SettingCost", "colorstone_settingcost")),
+                Misc_Cost: toNullableNum(getVal(row, "Misc_Cost", "misc_cost")),
+                Misc_SettingCost: toNum(getVal(row, "Misc_SettingCost", "misc_settingcost")),
+                Other_Cost: toNullableNum(getVal(row, "Other_Cost", "other_cost")),
+                SolPrice: toNum(getVal(row, "SolPrice", "solprice")),
+                MetalPurityid: toNullableNum(getVal(row, "MetalPurityid", "metalpurityid")),
+                MetalColorid: toNullableNum(getVal(row, "MetalColorid", "metalcolorid")),
+                PackageIdList: toStr(getVal(row, "PackageIdList", "packageidlist", "packageIdList", "Packageidlist")),
+                ExclusiveCustomerId: toStr(getVal(row, "ExclusiveCustomerId", "exclusivecustomerid", "exclusiveCustomerId")),
+                MetalTypeid: toNullableNum(getVal(row, "MetalTypeid", "metaltypeid")),
+                MetalTypePurity: toStr(getVal(row, "MetalTypePurity", "metaltypepurity")),
+                CartId: toInt(getVal(row, "CartId", "cartid")),
+                IsInWish: getVal(row, "IsInWish", "isinwish") ? 1 : 0,
+                IsInCart: getVal(row, "IsInCart", "isincart") ? 1 : 0,
+                ImageCount: toInt(getVal(row, "ImageCount", "imagecount")),
+                ColorImageCount: toInt(getVal(row, "ColorImageCount", "colorimagecount")),
+                threeSixtyImageCount: toInt(getVal(row, "360ImageCount", "threeSixtyImageCount", "360imagecount")),
+                VideoCount: toInt(getVal(row, "VideoCount", "videocount")),
+                ImageExtension: toStr(getVal(row, "ImageExtension", "imageextension"), "png"),
+                threeSixtyImageExtension: toStr(getVal(row, "360ImageExtension", "threeSixtyImageExtension", "360imageextension")),
+                VideoExtension: toStr(getVal(row, "VideoExtension", "videoextension")),
+                IsImageNameWithRandNo: getVal(row, "IsImageNameWithRandNo", "isimagenamewithrandno") ? 1 : 0,
+                ImageVideoDetail: typeof getVal(row, "ImageVideoDetail", "imagevideodetail") === "string" 
+                    ? getVal(row, "ImageVideoDetail", "imagevideodetail") 
+                    : JSON.stringify(getVal(row, "ImageVideoDetail", "imagevideodetail") || []),
+                product_typeid: toNullableNum(getVal(row, "product_typeid", "producttypeid", "Product_Typeid", "ProductTypeid")),
+                collectionid: toNullableNum(getVal(row, "collectionid", "Collectionid", "CollectionId")),
+                categoryid: toNullableNum(getVal(row, "categoryid", "Categoryid", "CategoryId")),
+                sub_categoryid: toNullableNum(getVal(row, "sub_categoryid", "subcategoryid", "Sub_Categoryid", "SubCategoryId")),
+                brandid: toNullableNum(getVal(row, "brandid", "Brandid", "BrandId")),
+                genderid: toNullableNum(getVal(row, "genderid", "Genderid", "GenderId")),
+                occasionid: toNullableNum(getVal(row, "occasionid", "Occasionid", "OccasionId")),
+                Styleid: toNullableNum(getVal(row, "Styleid", "styleid", "StyleId")),
+                make_typeid: toNullableNum(getVal(row, "make_typeid", "maketypeid", "Make_Typeid", "MakeTypeId")),
+                category: getVal(row, "category", "Category") ?? null,
+                collection: getVal(row, "collection", "Collection") ?? null,
+                sub_category: getVal(row, "sub_category", "SubCategory", "subcategory") ?? null,
+                gender: getVal(row, "gender", "Gender") ?? null,
+                brand: getVal(row, "brand", "Brand") ?? null,
+                occasion: getVal(row, "occasion", "Occasion") ?? null,
+                product_type: getVal(row, "product_type", "ProductType", "producttype") ?? null,
+                style: getVal(row, "style", "Style") ?? null,
+                make_type: getVal(row, "make_type", "MakeType", "maketype") ?? null,
             });
         }
     });
@@ -295,25 +380,42 @@ export function batchInsertDesigns(db, designs = [], menuIdentifier = "GLOBAL") 
     const insertedCount = Math.max(0, countAfter - countBefore);
     const updatedCount = designs.length - insertedCount;
 
+    // Detect if there were duplicate ArticleNos within the incoming batch itself
+    const seenArticles = new Set();
+    let duplicatesInPayload = 0;
+    for (const row of designs) {
+        const rawArticle = getVal(row, "ArticleNo", "articleno", "articleNo", "designno", "id", "DesignId");
+        const article = toStr(rawArticle);
+        if (article) {
+            if (seenArticles.has(article)) {
+                duplicatesInPayload++;
+            } else {
+                seenArticles.add(article);
+            }
+        }
+    }
+
     // Log to sync_logs
     try {
         db.prepare(`
             INSERT INTO sync_logs (menu_identifier, action, total_received, inserted_count, updated_count, status, message)
             VALUES (?, 'SYNC_PRODUCTS', ?, ?, ?, 'SUCCESS', ?)
-        `).run(cleanMenu, designs.length, insertedCount, updatedCount, `Processed ${designs.length} products (Inserted: ${insertedCount}, Updated: ${updatedCount})`);
+        `).run(cleanMenu, designs.length, insertedCount, updatedCount, `Processed ${designs.length} products (Inserted: ${insertedCount}, Updated: ${updatedCount}, In-DB: ${countAfter})`);
     } catch (logErr) {
         console.warn("[sync_logs] Failed writing log:", logErr.message);
     }
 
-    // Flush WAL to database.db so external GUI tools see data immediately
+    // Flush WAL to database.db so external GUI tools (DB Browser, SQLite tools) see data immediately
     try {
-        db.pragma("wal_checkpoint(PASSIVE)");
+        db.pragma("wal_checkpoint(TRUNCATE)");
     } catch (_) {}
 
     return {
         totalReceived: designs.length,
         insertedCount,
         updatedCount,
+        totalInDatabase: countAfter,
+        duplicatesInPayload,
         success: true,
     };
 }

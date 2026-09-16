@@ -48,7 +48,8 @@ export const metadata = generatePageMetadata(pages["/"], "Sonasons");
 
 const SonasonsHome = async () => {
   const storeData = await getStoreInit();
-  const islogin = cookies().get("LoginUser");
+  const cookieStore = await cookies();
+  const islogin = cookieStore.get("LoginUser");
   const { bestsellerBanner, newArrivalBanner, trendingBanner, lookbookBanner, mainBanner } = useHomeBannerImages({ host: assetBase });
 
  

@@ -10,6 +10,8 @@ import { SYNC_LOGS_TABLE_SQL } from "./syncLogs.js";
 import { STORE_INIT_TABLE_SQL } from "./storeInit.js";
 import { ACCOUNT_TABLE_SQL } from "./account.js";
 import { COMPANY_INFO_TABLE_SQL } from "./companyInfo.js";
+import { MENUS_TABLE_SQL } from "./menus.js";
+import { PACKAGEMASTER_TABLE_SQL } from "./packagemaster.js";
 
 // Export individual modular table schemas
 export {
@@ -20,6 +22,8 @@ export {
     STORE_INIT_TABLE_SQL,
     ACCOUNT_TABLE_SQL,
     COMPANY_INFO_TABLE_SQL,
+    MENUS_TABLE_SQL,
+    PACKAGEMASTER_TABLE_SQL,
 };
 
 // Unified DDL across all multi-tenant tables
@@ -31,6 +35,8 @@ export const SCHEMA_SQL = [
     STORE_INIT_TABLE_SQL,
     ACCOUNT_TABLE_SQL,
     COMPANY_INFO_TABLE_SQL,
+    MENUS_TABLE_SQL,
+    PACKAGEMASTER_TABLE_SQL,
 ].join("\n\n");
 
 /**
@@ -46,9 +52,11 @@ export function truncateAllData(db) {
             DELETE FROM storeinit;
             DELETE FROM account;
             DELETE FROM companyinfo;
-            DELETE FROM sqlite_sequence WHERE name IN ('menu_filters', 'sync_logs', 'storeinit', 'account', 'companyinfo');
+            DELETE FROM menus;
+            DELETE FROM packagemaster;
+            DELETE FROM sqlite_sequence WHERE name IN ('menu_filters', 'sync_logs', 'storeinit', 'account', 'companyinfo', 'menus', 'packagemaster');
         `);
-        db.pragma("wal_checkpoint(PASSIVE)");
+        db.pragma("wal_checkpoint(TRUNCATE)");
         return true;
     } catch (err) {
         console.error("[truncateAllData] Error truncating tables:", err.message);
@@ -74,6 +82,37 @@ export function initSchema(db, domain, themeInfo = {}) {
             if (existingCols.includes("menu_identifier")) {
                 // Drop legacy table with old schema to ensure fresh clean schema with unique ArticleNo
                 db.exec("DROP TABLE IF EXISTS designs;");
+            } else {
+                const requiredCols = [
+                    { name: "PackageIdList", type: "TEXT" },
+                    { name: "ExclusiveCustomerId", type: "TEXT" },
+                    { name: "product_typeid", type: "INTEGER" },
+                    { name: "collectionid", type: "INTEGER" },
+                    { name: "categoryid", type: "INTEGER" },
+                    { name: "sub_categoryid", type: "INTEGER" },
+                    { name: "brandid", type: "INTEGER" },
+                    { name: "genderid", type: "INTEGER" },
+                    { name: "occasionid", type: "INTEGER" },
+                    { name: "Styleid", type: "INTEGER" },
+                    { name: "make_typeid", type: "INTEGER" },
+                ];
+                for (const col of requiredCols) {
+                    if (!existingCols.includes(col.name)) {
+                        try {
+                            db.exec(`ALTER TABLE designs ADD COLUMN "${col.name}" ${col.type};`);
+                        } catch (_) {}
+                    }
+                }
+            }
+        }
+
+        const pkgExists = db
+            .prepare("SELECT name FROM sqlite_master WHERE type='table' AND name='packagemaster'")
+            .get();
+        if (pkgExists) {
+            const pkgCols = db.prepare("PRAGMA table_info(packagemaster)").all().map((c) => c.name);
+            if (!pkgCols.includes("updated_at")) {
+                db.exec("DROP TABLE IF EXISTS packagemaster;");
             }
         }
     } catch (migErr) {

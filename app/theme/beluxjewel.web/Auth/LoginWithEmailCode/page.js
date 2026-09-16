@@ -4,6 +4,7 @@ import { toast } from 'react-toastify';
 import { LoginWithEmailCodeAPI } from '@/app/(core)/utils/API/Auth/LoginWithEmailCodeAPI';
 import { LoginWithEmailAPI } from '@/app/(core)/utils/API/Auth/LoginWithEmailAPI';
 import Cookies from 'js-cookie';
+import { setSession } from '@/app/(core)/utils/FetchSessionData';
 import OTP from './OTP';
 import './LoginWithEmailCode.modul.scss';
 import { useRouter } from 'next/navigation';
@@ -82,9 +83,19 @@ export default function LoginWithEmailCode({ params, searchParams }) {
     LoginWithEmailAPI(email, '', otp, 'otp_email_login', '', visiterId).then((response) => {
       setIsLoading(false);
       if (response?.Data?.rd[0]?.stat === 1) {
-        Cookies.set('LoginUser', true);
-        sessionStorage.setItem('LoginUser', true);
-        sessionStorage.setItem('loginUserDetail', JSON.stringify(response.Data.rd[0]));
+        const userDetail = response?.Data?.rd[0];
+        const pkgId = userDetail?.PackageId ?? userDetail?.packageId ?? userDetail?.PackageID;
+
+        if (userDetail?.Token) {
+          Cookies.set('userLoginCookie', userDetail.Token, { path: '/', expires: 7 });
+        }
+        Cookies.set('LoginUser', 'true', { path: '/', expires: 7 });
+        if (pkgId != null && pkgId !== '' && String(pkgId) !== 'undefined' && String(pkgId) !== 'null') {
+          Cookies.set('userPackageId', String(pkgId), { path: '/', expires: 7 });
+        }
+
+        setSession('LoginUser', true);
+        setSession('loginUserDetail', userDetail);
 
         if (redirectEmailUrl) {
           window.location.href = redirectEmailUrl;

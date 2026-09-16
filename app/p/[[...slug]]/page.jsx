@@ -3,7 +3,7 @@ import { themeMap } from "@/app/(core)/utils/ThemeMap";
 import { getStoreInit } from "@/app/(core)/utils/GlobalFunctions/GlobalFunctions";
 import { headers } from "next/headers";
 import { resolveProductList } from "@/app/(core)/utils/ThemeRouteResolver";
-import { getSqliteProducts } from "@/app/(core)/utils/sqlite/sqliteActions";
+import { getSqliteProducts, getSqliteFilters } from "@/app/(core)/utils/sqlite/sqliteActions";
 import {
   getDynamicMetadata,
   generateCollectionJsonLd,
@@ -70,8 +70,9 @@ function extractSsrFilters(slugArr = [], searchParams = {}) {
     }
   }
 
-  // 2. Parse slugArr if direct parameters are missing
-  if (slugArr.length > 0) {
+  // 2. Parse slugArr if direct parameters are missing and no explicit query params exist
+  const hasExplicitParams = decodedParams.length > 0 || Object.keys(searchParams || {}).some(k => k === "M" || k === "S" || k === "N" || k === "T" || k === "B");
+  if (!hasExplicitParams && slugArr.length > 0) {
     const decodedSlugs = slugArr
       .map((s) => decodeURIComponent(s).replace(/-/g, " ").trim())
       .filter(Boolean)
@@ -86,7 +87,7 @@ function extractSsrFilters(slugArr = [], searchParams = {}) {
       }
     }
   }
-console.log(filters , "filtersfiltersfilters")
+
   return filters;
 }
 
@@ -172,11 +173,18 @@ export default async function Page({ params, searchParams }) {
     const pageNo = Number(awaitedSearchParams?.page || awaitedSearchParams?.PageNo || 1);
     const pageSize = Number(storeInit?.PageSize || 10);
 
-    const sqliteRes = await getSqliteProducts(
-      ssrFilters,
-      { page: pageNo, pageSize: pageSize },
-      targetDomain
-    ).catch(() => null);
+    const [sqliteRes, sqliteFiltersRes] = await Promise.all([
+      getSqliteProducts(
+        ssrFilters,
+        { page: pageNo, pageSize: pageSize },
+        targetDomain
+      ).catch(() => null),
+      getSqliteFilters(
+        ssrFilters,
+        {},
+        targetDomain
+      ).catch(() => null),
+    ]);
 
     const collectionJsonLd = generateCollectionJsonLd(finalTitle);
     const webSiteJsonLd = generateWebSiteJsonLd(baseUrl);
@@ -197,7 +205,7 @@ export default async function Page({ params, searchParams }) {
           params={awaitedParams}
           searchParams={awaitedSearchParams}
           initialData={sqliteRes?.success ? sqliteRes : null}
-          initialFilterData={[]}
+          initialFilterData={sqliteFiltersRes?.success && Array.isArray(sqliteFiltersRes?.rd) ? sqliteFiltersRes.rd : []}
         />
       </>
     );
