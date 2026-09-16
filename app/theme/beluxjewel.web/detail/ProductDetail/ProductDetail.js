@@ -27,7 +27,11 @@ import { StockItemApi } from "@/app/(core)/utils/API/StockItemAPI/StockItemApi";
 import { DesignSetListAPI } from "@/app/(core)/utils/API/DesignSetListAPI/DesignSetListAPI";
 import DesignSet from "./DesignSet/DesignSet";
 import NewStockitem from "./InstockProduct/NewStockitem";
-import { SaveLastViewDesign } from "@/app/(core)/utils/API/SaveLastViewDesign/SaveLastViewDesign";
+import RecentlyViewed from "./RecentlyViewed/RecentlyViewed";
+import {
+  saveRecentlyViewedDesign,
+  fetchRecentlyViewedDesigns,
+} from "@/app/(core)/utils/sqlite/recentlyViewedActions";
 import useGlobalPreventSave from "@/app/(core)/utils/Glob_Functions/useGlobalPreventSave";
 import LeftSide from "./New/LeftSide";
 import RightSide from "./New/RightSide";
@@ -136,7 +140,7 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
   const [isDataFound, setIsDataFound] = useState(false);
   const [pdLoadImage, setPdLoadImage] = useState(false);
   const location = usePathname();
-  const [saveLastView, setSaveLastView] = useState();
+  const [recentlyViewedArr, setRecentlyViewedArr] = useState([]);
   const [imageSrc, setImageSrc] = useState(initialDecodeUrl?.img || "");
   const [filterData, setFilterData] = useState([]);
   const [showPlaceholder, setShowPlaceholder] = useState(false);
@@ -177,6 +181,33 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
 
     return () => clearTimeout(timer);
   }, []);
+
+  // ── Customer-Wise SQLite Recently Viewed Designs ─────────────────────────
+  useEffect(() => {
+    const activeDesignNo = singleProd?.designno || initialDecodeUrl?.b || initialMockProd?.designno;
+    const activeAutoCode = singleProd?.autocode || initialDecodeUrl?.a || initialMockProd?.autocode;
+
+    if (activeDesignNo) {
+      saveRecentlyViewedDesign({
+        designno: activeDesignNo,
+        autocode: activeAutoCode,
+        loginUserDetail,
+      })
+        .then(() => {
+          return fetchRecentlyViewedDesigns({
+            currentDesignno: activeDesignNo,
+            loginUserDetail,
+            storeInit,
+          });
+        })
+        .then((recentList) => {
+          if (Array.isArray(recentList)) {
+            setRecentlyViewedArr(recentList);
+          }
+        })
+        .catch((err) => console.warn("[RecentlyViewed] SQLite error:", err));
+    }
+  }, [singleProd?.designno, initialDecodeUrl?.b, initialMockProd?.designno, loginUserDetail, storeInit]);
 
   useEffect(() => {
     if (initialDecodeUrl && Object.keys(initialDecodeUrl).length > 0) {
@@ -1274,14 +1305,26 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
             //     .catch((err) => console.log("designsetErr", err));
             // }
 
-            // 5. Save Last View Design (Background)
-            if (prod?.autocode && prod?.designno) {
-              SaveLastViewDesign(cookie, prod.autocode, prod.designno)
-                .then((res) => {
-                  console.log(res,"res")
-                  setSaveLastView(res?.Data?.rd)
+            // 5. Save Recently Viewed Design (SQLite customer-wise, 0 external API calls)
+            if (prod?.designno) {
+              saveRecentlyViewedDesign({
+                designno: prod.designno,
+                autocode: prod.autocode,
+                loginUserDetail,
+              })
+                .then(() => {
+                  return fetchRecentlyViewedDesigns({
+                    currentDesignno: prod.designno,
+                    loginUserDetail,
+                    storeInit: storeinitInside || storeInit,
+                  });
                 })
-                .catch((err) => console.log("saveLastView", err));
+                .then((recentList) => {
+                  if (Array.isArray(recentList)) {
+                    setRecentlyViewedArr(recentList);
+                  }
+                })
+                .catch((err) => console.log("[RecentlyViewed] SQLite error:", err));
             }
           }
         }
@@ -2237,6 +2280,16 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
                   loginInfo={loginData}
                 />
               )}
+
+            {/* Customer-Wise SQLite Recently Viewed Designs */}
+            {recentlyViewedArr?.length > 0 && (
+              <RecentlyViewed
+                recentlyViewedArr={recentlyViewedArr}
+                handleMoveToDetail={handleMoveToDetail}
+                storeInit={storeInit}
+                loginInfo={loginData}
+              />
+            )}
 
             {/* {storeInit?.IsProductDetailDesignSet === 1 &&
               designSetList?.length > 0 &&

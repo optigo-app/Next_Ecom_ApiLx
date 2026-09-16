@@ -95,16 +95,8 @@ const initStore = async () => {
     initPromise = (async () => {
       try {
         let data;
-        if (typeof window === "undefined") {
-          // Server-side: Use disk/memory SWR cached storeInit (0ms latency)
-          const { getStoreInitData } = await import("@/app/(core)/cache_utility/storeInitCache");
-          const storeInitRes = await getStoreInitData();
-          data = storeInitRes?.rd?.[0] || storeInitRes;
-        } else {
-          // Client-side: use the API route
-          const res = await fetch("/api/store-init");
-          data = await res.json();
-        }
+        const storeInitRes = await fetchStoreInitData();
+        data = storeInitRes?.Data?.rd?.[0] || storeInitRes?.rd?.[0] || storeInitRes;
 
         storeInitCache = data;
         APIURL = data?.ApiUrl || {};

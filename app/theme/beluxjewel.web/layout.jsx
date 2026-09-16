@@ -10,12 +10,27 @@ import FooterNew from "@/app/components/(static)/Footer/FooterNew";
 import ChatMenu from "@/app/components/(static)/ChatMenu/ChatMenu";
 import AnnouncementBar from "./home/blocks/AnnouncementBar";
 import BeluxNavbar from "@/app/components/(dynamic)/Header/Elvee/New/BeluxNavbar";
+import { cookies } from "next/headers";
+import { getSqliteMenus } from "@/app/(core)/utils/sqlite/sqliteActions";
 
 const layout = async ({ children }) => {
   const storeData = await getStoreInit();
   const companyInfoData = await getCompanyInfoData();
   const logos = getLogos();
   let extraFlag = await getExtraFlag();
+
+  const cookieStore = await cookies();
+  const userPkgIdCookie = cookieStore.get("userPackageId")?.value;
+  console.log(userPkgIdCookie, "userPkgIdCookie")
+  const activePackageId = userPkgIdCookie ? Number(userPkgIdCookie) : storeData?.PackageId;
+
+  let initialMenuData = [];
+  try {
+    const menuRes = await getSqliteMenus({ packageId: activePackageId });
+    initialMenuData = menuRes?.Data?.rd || [];
+  } catch (err) {
+    console.warn("[beluxjewel layout] SSR menu pre-fetch failed:", err.message);
+  }
 
   return (
     <>
@@ -29,23 +44,14 @@ const layout = async ({ children }) => {
         }}
       >
         <AnnouncementBar />
-        <BeluxNavbar hidden={false} logos={logos} storeInit={storeData} />
+        <BeluxNavbar
+          hidden={false}
+          logos={logos}
+          storeInit={storeData}
+          initialMenuData={initialMenuData}
+        />
         <Box sx={{ flex: 1, display: "flex", flexDirection: "column" }}>
-          <Suspense
-            fallback={
-              <Box
-                sx={{
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  flex: 1,
-                  minHeight: "90vh",
-                }}
-              ></Box>
-            }
-          >
             {children}
-          </Suspense>
         </Box>
         <FooterNew
           companyInfoData={companyInfoData}

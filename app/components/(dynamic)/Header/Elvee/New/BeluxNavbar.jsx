@@ -1,4 +1,3 @@
-
 "use client";
 import { useEffect, useRef, useState, useMemo } from "react";
 import {
@@ -20,7 +19,7 @@ import Link from "next/link";
 import MobileMenu from "./MobileMenu";
 import RightSideMenu from "./RightSideMenu";
 import Cookies from "js-cookie";
-import { GetMenuAPI } from "@/app/(core)/utils/API/GetMenuAPI/GetMenuAPI";
+import { getSqliteMenus } from "@/app/(core)/utils/sqlite/sqliteActions";
 import SearchBarToggle from "./SearchBarToggle";
 import DrawerSearchBar from "./DrawerSearchbar";
 import { Masonry } from "@mui/lab";
@@ -36,11 +35,14 @@ import { useStore } from "@/app/(core)/contexts/StoreProvider";
 import { useSyncStore } from "@/app/(core)/hooks/useStore";
 import { useNextRouterLikeRR } from "@/app/(core)/hooks/useLocationRd";
 import { useMaster } from "@/app/(core)/contexts/MasterProvider";
-import { clearSession, getSession, setSession } from "@/app/(core)/utils/FetchSessionData";
-import { readCache, writeCache } from "@/app/(core)/cache_utility/cacheActions";
+import {
+  clearSession,
+  getSession,
+  setSession,
+} from "@/app/(core)/utils/FetchSessionData";
 import { usePathname, useRouter } from "next/navigation";
 
-const BeluxNavbar = ({ storeInit: storeinit, logos }) => {
+const BeluxNavbar = ({ storeInit: storeinit, logos, initialMenuData = [] }) => {
   const {
     islogin,
     setislogin,
@@ -69,10 +71,8 @@ const BeluxNavbar = ({ storeInit: storeinit, logos }) => {
   const navigate = (url) => Router(url);
   const location = usePathname();
 
-
-
   const [expandedMenu, setExpandedMenu] = useState(null);
-  const [menuLoading, setMenuLoading] = useState(true);
+  const [menuLoading, setMenuLoading] = useState(() => !(Array.isArray(initialMenuData) && initialMenuData.length > 0));
   const [mobileOpen, setMobileOpen] = useState(false);
   const [activeMenu, setActiveMenu] = useState(null);
   const [menuStack, setMenuStack] = useState([]);
@@ -109,7 +109,12 @@ const BeluxNavbar = ({ storeInit: storeinit, logos }) => {
   const [DrawerSearchOpen, setDrawerSearchOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
 
-  const [menuItems, setMenuItems] = useState([]);
+  // Instantly initialize from Server Pre-fetched data if available
+  const [menuItems, setMenuItems] = useState(() =>
+    Array.isArray(initialMenuData) && initialMenuData.length > 0
+      ? buildMenuItems(initialMenuData)
+      : []
+  );
 
   const controls = useAnimation();
   const IsB2BWebsiteChek = storeinit?.IsB2BWebsite;
@@ -151,71 +156,45 @@ const BeluxNavbar = ({ storeInit: storeinit, logos }) => {
     });
   }, [isHovered, isScrolled, controls]);
 
-  // Tracks whether we have already successfully loaded and rendered the menu.
-  // Prevents redundant API calls when islogin / finalId changes but the menu
-  // data is store-level (same for all users) and already in memory.
-  const menuLoadedRef = useRef(false);
+  const menuLoadedRef = useRef(
+    Array.isArray(initialMenuData) && initialMenuData.length > 0
+      ? storeinit?.PackageId ?? "initial"
+      : null
+  );
 
   useEffect(() => {
     let isMounted = true;
 
     const loadMenu = async () => {
-      // ── Store-level cache key ──────────────────────────────────────────────
-      // The menu navigation structure is identical for all users of the same
-      // store (guest or logged-in). Using a store-scoped key means a login /
-      // logout event never busts the cache or triggers a new API call.
-      const storeKey = storeinit?.FrontEnd_RegNo ?? storeinit?.PackageId ?? "default";
-      const cacheKey = `beluxMenu_store_${storeKey}`;
+      const currentPkgId =
+        islogin && loginUserDetail?.PackageId != null
+          ? loginUserDetail.PackageId
+          : storeinit?.PackageId;
 
-      // 1. Guard: if menu is already rendered, skip entirely (login-change re-run)
-      if (menuLoadedRef.current) {
+      // 1. Guard: if menu is already rendered with current package, skip extra fetch
+      if (menuLoadedRef.current === currentPkgId && menuItems.length > 0) {
         if (isMounted) setMenuLoading(false);
         return;
       }
 
-      // Only show skeleton when we truly have nothing cached yet
-      if (isMounted) setMenuLoading(true);
+      if (isMounted && menuItems.length === 0) setMenuLoading(true);
 
       let menuData = null;
 
-      // 2. Server File Cache Check (fast disk/edge cache read)
+      // 2. Fetch directly from SQLite (< 0.1ms) via getSqliteMenus Action
       try {
-        const cacheRes = await readCache(cacheKey);
-        if (cacheRes?.cached && Array.isArray(cacheRes.data) && cacheRes.data.length > 0) {
-          menuData = cacheRes.data;
-          if (isMounted) {
-            setMenuItems(buildMenuItems(menuData));
-            setMenuLoading(false);
-            menuLoadedRef.current = true;
-          }
-          return;
-        }
-      } catch (err) {
-        console.warn("[Navbar] File cache read error:", err);
-      }
-
-      // 3. Cache miss — Call GetMenuAPI
-      try {
-        const res = await GetMenuAPI(finalId);
+        const res = await getSqliteMenus({ packageId: currentPkgId });
         const rawData = res?.Data?.rd || [];
-        const hasError = rawData.some(
-          (item) =>
-            item?.stat === 0 ||
-            (typeof item?.stat_msg === "string" &&
-              item.stat_msg.toLowerCase().includes("error")),
-        );
-
-        if (rawData.length > 0 && !hasError) {
+        if (rawData.length > 0) {
           menuData = rawData;
-          writeCache(cacheKey, rawData).catch(console.error);
         }
       } catch (err) {
-        console.warn("[Navbar] GetMenuAPI failed", err);
+        console.warn("[BeluxNavbar] getSqliteMenus failed", err);
       }
 
       if (isMounted && menuData?.length) {
         setMenuItems(buildMenuItems(menuData));
-        menuLoadedRef.current = true;
+        menuLoadedRef.current = currentPkgId;
       }
 
       if (isMounted) setMenuLoading(false);
@@ -226,21 +205,16 @@ const BeluxNavbar = ({ storeInit: storeinit, logos }) => {
     return () => {
       isMounted = false;
     };
-    // islogin / loginUserDetail kept so a B2B site (IsB2BWebsite=1) that truly
-    // serves different menus per user can still re-check. The menuLoadedRef guard
-    // above short-circuits immediately when the menu was already loaded.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [islogin, loginUserDetail, finalId]);
+  }, [islogin, loginUserDetail?.PackageId, storeinit?.PackageId]);
 
   const currentMenuItems = useMemo(() => {
     return menuItems;
   }, [menuItems]);
 
-
-    const whiteLogo = logos?.web || logos?.white_logo;
+  const whiteLogo = logos?.web || logos?.white_logo;
   const blackLogo = logos?.black_logo || logos?.blackLogo || logos?.web;
-  const compnyLogoM  = logos?.mobile;
-  const activeLogo = (isHovered || isScrolled) ? blackLogo : whiteLogo;
+  const compnyLogoM = logos?.mobile;
+  const activeLogo = isHovered || isScrolled ? blackLogo : whiteLogo;
 
   const getMenuUrl = (param, param1, param2, isFilterKey2Ignore) => {
     if (
@@ -326,9 +300,11 @@ const BeluxNavbar = ({ storeInit: storeinit, logos }) => {
       param2,
       isFilterKey2Ignore,
     );
+
     if (finalData) {
       sessionStorage.setItem("menuparams", JSON.stringify(finalData));
     }
+    console.log({url, finalData} , "url")
     router.push(url);
   };
 
@@ -356,8 +332,9 @@ const BeluxNavbar = ({ storeInit: storeinit, logos }) => {
 
   const handleLogout = () => {
     setislogin(false);
-    Cookies.remove("userLoginCookie");
-    Cookies.remove("LoginUser");
+    Cookies.remove("userLoginCookie", { path: "/" });
+    Cookies.remove("LoginUser", { path: "/" });
+    Cookies.remove("userPackageId", { path: "/" });
     sessionStorage.setItem("LoginUser", false);
     sessionStorage.removeItem("storeInit");
     sessionStorage.removeItem("loginUserDetail");
@@ -373,9 +350,8 @@ const BeluxNavbar = ({ storeInit: storeinit, logos }) => {
       clearAllCacheData();
     }
 
-    sessionStorage.clear();
-    window.location.replace("/");
     clearSession();
+    window.location.replace("/");
   };
 
   const searchDataFucn = (searchText) => {
@@ -401,11 +377,6 @@ const BeluxNavbar = ({ storeInit: storeinit, logos }) => {
     setMobileOpen(false);
     setDrawerSearchOpen(false);
     setMobileOpen(false);
-  };
-
-  const handleMouseLeave = (index) => {
-    setExpandedMenu(null);
-    document.body.style.overflow = "auto";
   };
 
   const tabsData = [
@@ -1117,12 +1088,12 @@ const BeluxNavbar = ({ storeInit: storeinit, logos }) => {
                                 Collection
                               </Box>
                             </Box>
-                              <Box sx={{ position: "relative" }}>
-                                <Box
-                                  component={Link}
-                                  href="/asset-management"
-                                  sx={{
-                                    px: 2,
+                            <Box sx={{ position: "relative" }}>
+                              <Box
+                                component={Link}
+                                href="/asset-management"
+                                sx={{
+                                  px: 2,
                                   py: 3,
                                   bgcolor: "transparent",
                                   border: "none",
@@ -1137,11 +1108,11 @@ const BeluxNavbar = ({ storeInit: storeinit, logos }) => {
                                     isHovered || isScrolled ? "#000" : "#fff",
                                   outline: "none",
                                   boxShadow: "none",
-                                  }}
-                                >
-                                  Marketing Support
-                                </Box>
+                                }}
+                              >
+                                Marketing Support
                               </Box>
+                            </Box>
                             {/* <Box sx={{ position: "relative" }}>
                                 <Box
                                   component={Link}

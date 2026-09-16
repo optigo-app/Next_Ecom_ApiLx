@@ -87,7 +87,8 @@ const FilterSidebar = ({
     filterCount,
     handelFilterClearAll,
     filterData,
-    storeInit,
+    storeInit: storeInitProp,
+    storeinit: storeinitProp,
     loginCurrency,
     formatter,
     decodeEntities,
@@ -146,6 +147,7 @@ const FilterSidebar = ({
     setSelectedDiaId,
     isBelow768
 }) => {
+    const storeInit = storeInitProp || storeinitProp;
     return (
         <>
             {/* HEADER */}
@@ -229,8 +231,16 @@ const FilterSidebar = ({
                 }}
             >
                 {filterData?.map((item, index) => {
-                    // 💡 Category, color, etc.
+                    // 💡 Category, collection, brand, etc.
                     if (!item?.id?.includes("Range") && !item?.id?.includes("Price")) {
+                        let parsedOpts = [];
+                        try {
+                            parsedOpts = JSON.parse(item?.options) ?? [];
+                        } catch (_) {}
+                        if (!Array.isArray(parsedOpts) || parsedOpts.length === 0) {
+                            return null;
+                        }
+
                         return (
                             <Accordion key={index} disableGutters elevation={0} sx={{ borderBottom: "1px solid #eee" }}>
                                 <AccordionSummary
@@ -262,7 +272,7 @@ const FilterSidebar = ({
                                         },
                                     }}
                                 >
-                                    {(JSON.parse(item?.options) ?? []).map((opt) => (
+                                    {parsedOpts.map((opt) => (
                                         <CustomFormControlLabel
                                             key={opt?.id}
                                             sx={{
@@ -310,7 +320,7 @@ const FilterSidebar = ({
                     }
 
                     // 💰 Price filter
-                    if (storeInit?.IsPriceShow == 1 && item?.id?.includes("Price")) {
+                    if ((storeInit?.IsPriceShow == 1 || storeInit?.IsPriceShow === undefined || storeInit?.IsPriceShow == "1") && (item?.id?.includes("Price") || item?.id?.toLowerCase() === "price" || item?.Name === "Price")) {
                         return (
                             <Accordion key={index} disableGutters elevation={0} sx={{ borderBottom: "1px solid #eee" }}>
                                 <AccordionSummary

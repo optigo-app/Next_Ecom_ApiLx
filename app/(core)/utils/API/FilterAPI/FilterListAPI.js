@@ -85,13 +85,9 @@ export const FilterListAPI = async (mainData, visiterId) => {
         storeinit?.SettingPriceUniqueNo ??
         ""),
   };
-  let encData = btoa(JSON.stringify(data));
-
   let body = {
     con: `{\"id\":\"\",\"mode\":\"GETFILTERLIST\",\"appuserid\":\"${customerEmail ?? ""}\"}`,
     f: "onClickofMenuList (GETFILTERLIST)",
-    // "dp": JSON.stringify(data),
-    // "p": encData
     p: JSON.stringify(data),
   };
 

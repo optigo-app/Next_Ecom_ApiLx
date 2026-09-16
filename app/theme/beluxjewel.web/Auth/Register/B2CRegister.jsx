@@ -285,13 +285,21 @@ export default function B2CRegister({ searchParams }) {
                 localStorage.removeItem("b2b_registered_email");
                 localStorage.removeItem("b2b_registered_password");
                 const visiterID = Cookies.get('visiterId');
-                Cookies.set('userLoginCookie', loginResponse?.Data?.rd[0]?.Token);
-                const Token = generateToken(loginResponse?.Data?.rd[0]?.Token, 0);
+                const userDetail = loginResponse?.Data?.rd[0];
+                const pkgId = userDetail?.PackageId ?? userDetail?.packageId ?? userDetail?.PackageID;
+
+                Cookies.set('userLoginCookie', userDetail?.Token, { path: '/', expires: 7 });
+                Cookies.set('LoginUser', 'true', { path: '/', expires: 7 });
+                if (pkgId != null && pkgId !== '' && String(pkgId) !== 'undefined' && String(pkgId) !== 'null') {
+                  Cookies.set('userPackageId', String(pkgId), { path: '/', expires: 7 });
+                }
+
+                const Token = generateToken(userDetail?.Token, 0);
                 setSession('AuthToken', Token);
                 setSession('registerEmail', email);
                 setislogin(true);
                 setSession('LoginUser', true);
-                setSession('loginUserDetail', loginResponse.Data.rd[0]);
+                setSession('loginUserDetail', userDetail);
 
                 GetCountAPI(visiterID).then((res) => {
                   if (res) { setCartCountNum(res?.cartcount); setWishCountNum(res?.wishcount); }

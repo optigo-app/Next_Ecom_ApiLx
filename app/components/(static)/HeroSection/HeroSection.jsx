@@ -5,48 +5,52 @@ import { BELUX_JEWEL } from "@/app/(core)/constants/ElveeFlag";
 
 
 export default async function TopSection() {
-  const banners = await getHomeBannerImages({ host: assetBase });
-  const videoUrl = banners?.mainBanner?.video?.[0] ? banners.mainBanner.video[0].replace(".mp4", ".webm") : null;
-
-  if(BELUX_JEWEL){
-    return(
-      <Box
-      component="section"
-      sx={{
-        position: "relative",
-        width: "100%",
-        aspectRatio:  "16/7",
-        minHeight: "550px",
-        overflow: "hidden",
-        "@media (max-width:1200px)": {
-          minHeight: "auto",
-        },
-      }}
-    >
-       
-      <Box
-       component="img"
-       src={`/${assetBase}/Banner/HomeBanner.png`}
-       alt="Homepage Banner"
-       sx={{
-         position: "absolute",
-         inset: 0,
-         width: "100%",
-         height: "100%",
-         objectFit: "cover",
-       
-       }}
-      />
-    </Box>
-    )
-  }else{
+  if (BELUX_JEWEL) {
     return (
       <Box
         component="section"
         sx={{
           position: "relative",
           width: "100%",
-          aspectRatio:  "16/9",
+          aspectRatio: "16/7",
+          minHeight: "550px",
+          overflow: "hidden",
+          backgroundColor: "#cca182",
+          background: "linear-gradient(135deg, #cca182 0%, #dfc3a7 35%, #cca182 70%, #b98e6d 100%)",
+          "@media (max-width:1200px)": {
+            minHeight: "auto",
+          },
+        }}
+      >
+        <Box
+          component="img"
+          src={`/${assetBase}/Banner/HomeBanner.png`}
+          alt="Homepage Banner"
+          loading="eager"
+          fetchPriority="high"
+          decoding="async"
+          sx={{
+            position: "absolute",
+            inset: 0,
+            width: "100%",
+            height: "100%",
+            objectFit: "cover",
+            display: "block",
+          }}
+        />
+      </Box>
+    );
+  }
+  const banners = await getHomeBannerImages({ host: assetBase });
+  const videoUrl = banners?.mainBanner?.video?.[0] ? banners.mainBanner.video[0].replace(".mp4", ".webm") : null;
+
+  return (
+      <Box
+        component="section"
+        sx={{
+          position: "relative",
+          width: "100%",
+          aspectRatio: "16/9",
           minHeight: "550px",
           overflow: "hidden",
           "@media (max-width:1200px)": {
@@ -62,7 +66,6 @@ export default async function TopSection() {
           playsInline
           controls={false}
           preload="auto"
-          priority="high"
           poster={`/${assetBase}/Banner/homepageVideoPoster5.png`}
           sx={{
             position: "absolute",
@@ -74,16 +77,10 @@ export default async function TopSection() {
         >
           {videoUrl && <source src={`/${assetBase}/Banner/homepageVideoPoster5.mp4`} type="video/webm" />}
           {banners?.mainBanner?.video?.[0] && (
-            // <source src={banners.mainBanner.video[0]} type="video/mp4" />
             <source src={`/${assetBase}/Banner/homepageVideoPoster5.mp4`} type="video/mp4" />
-  
           )}
         </Box>
-        
       </Box>
     );
-
-  }
-
- 
 }
+

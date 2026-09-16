@@ -3,8 +3,12 @@ import fs from "fs";
 import path from "path";
 import { initSchema } from "./schema.js";
 
-// In-memory connection pool to avoid reopening file descriptors
-const dbPool = new Map();
+// In-memory connection pool on globalThis to avoid reopening file descriptors across Next.js HMR reloads
+const globalForDb = globalThis;
+if (!globalForDb.__tenantDbPool) {
+    globalForDb.__tenantDbPool = new Map();
+}
+const dbPool = globalForDb.__tenantDbPool;
 
 /**
  * Root directory for all tenant databases
@@ -35,7 +39,7 @@ export function getActiveConfigDomain() {
             }
         }
     } catch (_) {}
-    return "beluxjewel.web";
+    return "";
 }
 
 /**
@@ -104,12 +108,18 @@ export function closeTenantDb(domain) {
         const cleanDomain = sanitizeDomainName(domain);
         if (dbPool.has(cleanDomain)) {
             const db = dbPool.get(cleanDomain);
+            try {
+                db.pragma("wal_checkpoint(PASSIVE)");
+            } catch (_) {}
             db.close();
             dbPool.delete(cleanDomain);
         }
     } else {
         for (const [key, db] of dbPool.entries()) {
             try {
+                try {
+                    db.pragma("wal_checkpoint(PASSIVE)");
+                } catch (_) {}
                 db.close();
             } catch (err) {
                 console.error(`Error closing DB for ${key}:`, err);

@@ -1,9 +1,10 @@
 import { getActiveTheme } from "@/app/(core)/lib/getActiveTheme";
 import { themeMap } from "@/app/(core)/utils/ThemeMap";
 import { getStoreInit } from "@/app/(core)/utils/GlobalFunctions/GlobalFunctions";
-import { headers } from "next/headers";
+import { headers, cookies } from "next/headers";
 import { resolveProductList } from "@/app/(core)/utils/ThemeRouteResolver";
-import { getSqliteProducts } from "@/app/(core)/utils/sqlite/sqliteActions";
+import { getSqliteProducts, getSqliteFilters } from "@/app/(core)/utils/sqlite/sqliteActions";
+import { getPricingPolicyParams, getDynamicDesignTableName } from "@/app/(core)/utils/product/pricingPolicy";
 import {
   getDynamicMetadata,
   generateCollectionJsonLd,
@@ -70,8 +71,9 @@ function extractSsrFilters(slugArr = [], searchParams = {}) {
     }
   }
 
-  // 2. Parse slugArr if direct parameters are missing
-  if (slugArr.length > 0) {
+  // 2. Parse slugArr if direct parameters are missing and no explicit query params exist
+  const hasExplicitParams = decodedParams.length > 0 || Object.keys(searchParams || {}).some(k => k === "M" || k === "S" || k === "N" || k === "T" || k === "B");
+  if (!hasExplicitParams && slugArr.length > 0) {
     const decodedSlugs = slugArr
       .map((s) => decodeURIComponent(s).replace(/-/g, " ").trim())
       .filter(Boolean)
@@ -82,11 +84,11 @@ function extractSsrFilters(slugArr = [], searchParams = {}) {
         filters.collection = decodedSlugs[0];
         filters.category = decodedSlugs[1];
       } else if (decodedSlugs.length === 1) {
-        filters.category = decodedSlugs[0];
+        filters.menuSlug = decodedSlugs[0];
       }
     }
   }
-console.log(filters , "filtersfiltersfilters")
+
   return filters;
 }
 
@@ -172,11 +174,39 @@ export default async function Page({ params, searchParams }) {
     const pageNo = Number(awaitedSearchParams?.page || awaitedSearchParams?.PageNo || 1);
     const pageSize = Number(storeInit?.PageSize || 10);
 
-    const sqliteRes = await getSqliteProducts(
-      ssrFilters,
-      { page: pageNo, pageSize: pageSize },
-      targetDomain
-    ).catch(() => null);
+    let serverLoginUser = null;
+    let cookieTableName = null;
+    try {
+      const cookieStore = await cookies().catch(() => null);
+      cookieTableName = cookieStore?.get("pricing_table_name")?.value || cookieStore?.get("policy_table")?.value;
+      const loginCookie = cookieStore?.get("loginUserDetail")?.value;
+      if (loginCookie) {
+        let raw = loginCookie;
+        try { raw = decodeURIComponent(loginCookie); } catch (_) {}
+        serverLoginUser = JSON.parse(raw);
+      }
+    } catch (_) {}
+
+    const policyParams = getPricingPolicyParams({
+      storeinit: storeInit,
+      loginUserDetail: serverLoginUser,
+      islogin: Boolean(serverLoginUser),
+    });
+
+    const activeTableName = cookieTableName || getDynamicDesignTableName(policyParams);
+
+    const [sqliteRes, sqliteFiltersRes] = await Promise.all([
+      getSqliteProducts(
+        { ...ssrFilters, ...policyParams, tableName: activeTableName },
+        { page: pageNo, pageSize: pageSize, ...policyParams, tableName: activeTableName },
+        targetDomain
+      ).catch(() => null),
+      getSqliteFilters(
+        { ...ssrFilters, ...policyParams, tableName: activeTableName },
+        { tableName: activeTableName },
+        targetDomain
+      ).catch(() => null),
+    ]);
 
     const collectionJsonLd = generateCollectionJsonLd(finalTitle);
     const webSiteJsonLd = generateWebSiteJsonLd(baseUrl);
@@ -197,7 +227,7 @@ export default async function Page({ params, searchParams }) {
           params={awaitedParams}
           searchParams={awaitedSearchParams}
           initialData={sqliteRes?.success ? sqliteRes : null}
-          initialFilterData={[]}
+          initialFilterData={sqliteFiltersRes?.success && Array.isArray(sqliteFiltersRes?.rd) ? sqliteFiltersRes.rd : []}
         />
       </>
     );

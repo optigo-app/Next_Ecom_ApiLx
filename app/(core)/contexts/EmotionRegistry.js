@@ -6,23 +6,39 @@ import { useServerInsertedHTML } from "next/navigation";
 import { useState } from "react";
 
 export function EmotionRegistry({ children }) {
-  const [cache] = useState(() => {
+  const [{ cache, flush }] = useState(() => {
     const c = createCache({ key: "css", prepend: true });
     c.compat = true; // required for MUI SSR
-    return c;
+    const prevInsert = c.insert;
+    let inserted = [];
+    c.insert = (...args) => {
+      const serialized = args[1];
+      if (c.inserted[serialized.name] === undefined) {
+        inserted.push(serialized.name);
+      }
+      return prevInsert(...args);
+    };
+    const flush = () => {
+      const prevInserted = inserted;
+      inserted = [];
+      return prevInserted;
+    };
+    return { cache: c, flush };
   });
 
   useServerInsertedHTML(() => {
-    const inserted = cache.inserted;
-    const names = Object.keys(inserted);
-
+    const names = flush();
     if (names.length === 0) return null;
-
+    let styles = "";
+    for (const name of names) {
+      styles += cache.inserted[name];
+    }
     return (
       <style
-        data-emotion={`css ${names.join(" ")}`}
+        key={cache.key}
+        data-emotion={`${cache.key} ${names.join(" ")}`}
         dangerouslySetInnerHTML={{
-          __html: names.map((name) => inserted[name]).join(" "),
+          __html: styles,
         }}
       />
     );

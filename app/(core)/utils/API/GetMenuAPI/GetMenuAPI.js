@@ -45,3 +45,5 @@ export const GetMenuAPI = async (finalID) => {
 
   return response;
 };
+
+export default GetMenuAPI;

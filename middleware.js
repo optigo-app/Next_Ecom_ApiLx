@@ -30,16 +30,14 @@ export default async function middleware(req) {
       httpOnly: false,
     },
   );
-
-  response.cookies.set(
-    "x-CompanyInfoData-data",
-    JSON.stringify(storeData?.rd2?.[0] || {}),
-    {
-      path: "/",
-      httpOnly: false,
-    },
-  );
-
+// response.cookies.set(
+//     "x-CompanyInfoData-data",
+//     JSON.stringify(storeData?.rd2?.[0] || {}),
+//     {
+//       path: "/",
+//       httpOnly: false,
+//     },
+//   );
   return response;
 }
 

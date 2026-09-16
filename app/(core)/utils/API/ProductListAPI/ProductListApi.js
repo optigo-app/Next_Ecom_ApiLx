@@ -2,6 +2,7 @@ import { getSession } from "../../FetchSessionData";
 import { CommonAPI } from "../CommonAPI/CommonAPI";
 import { syncProductsToSqlite } from "../../sqlite/sqliteSync";
 import { getSqliteProducts } from "../../sqlite/sqliteActions";
+import { getPricingPolicyParams } from "@/app/(core)/utils/product/pricingPolicy";
 
 const ProductListApi = async (
   filterObj = {},
@@ -92,23 +93,29 @@ const ProductListApi = async (
     : [];
 
   let foreveryPrice = priceData?.value
-    ? { Minval: priceData.value[0], Maxval: priceData.value[1] }
+    ? { Minval: Number(priceData.value[0]) || 0, Maxval: Number(priceData.value[1]) || 0 }
     : {};
 
   const hasValidMin =
-    filterObj.PriceMin !== null && filterObj.PriceMin !== undefined;
+    filterObj?.PriceMin !== null &&
+    filterObj?.PriceMin !== undefined &&
+    filterObj?.PriceMin !== "" &&
+    !isNaN(Number(filterObj?.PriceMin));
   const hasValidMax =
-    filterObj.PriceMax !== null && filterObj.PriceMax !== undefined;
+    filterObj?.PriceMax !== null &&
+    filterObj?.PriceMax !== undefined &&
+    filterObj?.PriceMax !== "" &&
+    !isNaN(Number(filterObj?.PriceMax));
 
   const elveePrice =
     hasValidMin || hasValidMax
       ? {
-          Minval: hasValidMin ? filterObj.PriceMin : filPrice[0]?.Minval,
-          Maxval: hasValidMax ? filterObj.PriceMax : filPrice[0]?.Maxval,
+          Minval: hasValidMin ? Number(filterObj.PriceMin) : (filPrice[0]?.Minval ?? 0),
+          Maxval: hasValidMax ? Number(filterObj.PriceMax) : (filPrice[0]?.Maxval ?? 0),
         }
       : {};
 
-  const isNonEmptyObject = (obj) => obj && Object.keys(obj).length > 0;
+  const isNonEmptyObject = (o) => o && typeof o === "object" && Object.keys(o).length > 0 && (o.Minval !== undefined || o.Maxval !== undefined);
 
   const data = {
     PackageId: loginInfo?.PackageId ?? storeinit?.PackageId ?? "",
@@ -137,6 +144,7 @@ const ProductListApi = async (
     Ocassionid: filterObj?.ocassion ?? "",
     Themeid: filterObj?.theme ?? "",
     Producttypeid: filterObj?.producttype ?? "",
+    MetalColorid: filterObj?.metalcolor ?? filterObj?.MetalColorid ?? "",
     Min_DiaWeight: diaRange?.DiaMin ?? "",
     Max_DiaWeight: diaRange?.DiaMax ?? "",
     Min_GrossWeight: gross?.grossMin ?? "",
@@ -144,32 +152,17 @@ const ProductListApi = async (
     Min_NetWt: netWt?.netMin ?? "",
     Max_NetWt: netWt?.netMax ?? "",
     FilPrice: isNonEmptyObject(foreveryPrice)
-      ? foreveryPrice
+      ? [foreveryPrice]
       : isNonEmptyObject(elveePrice)
-        ? elveePrice
-        : (filPrice ?? ""),
+        ? [elveePrice]
+        : (Array.isArray(filPrice) ? filPrice : filPrice ? [filPrice] : []),
     CurrencyRate: loginInfo?.CurrencyRate ?? storeinit?.CurrencyRate ?? "",
     SortBy: sortby ?? "",
-    Laboursetid: isGuest
-      ? (storeinit?.pricemanagement_laboursetid ?? "")
-      : (loginInfo?.pricemanagement_laboursetid ??
-        storeinit?.pricemanagement_laboursetid ??
-        ""),
-    diamondpricelistname: isGuest
-      ? (storeinit?.diamondpricelistname ?? "")
-      : (loginInfo?.diamondpricelistname ??
-        storeinit?.diamondpricelistname ??
-        ""),
-    colorstonepricelistname: isGuest
-      ? (storeinit?.colorstonepricelistname ?? "")
-      : (loginInfo?.colorstonepricelistname ??
-        storeinit?.colorstonepricelistname ??
-        ""),
-    SettingPriceUniqueNo: isGuest
-      ? (storeinit?.SettingPriceUniqueNo ?? "")
-      : (loginInfo?.SettingPriceUniqueNo ??
-        storeinit?.SettingPriceUniqueNo ??
-        ""),
+    ...getPricingPolicyParams({
+      storeinit,
+      loginUserDetail: loginInfo,
+      islogin,
+    }),
     IsStockWebsite: storeinit?.IsStockWebsite ?? "",
     Size: "",
     IsFromDesDet: "",

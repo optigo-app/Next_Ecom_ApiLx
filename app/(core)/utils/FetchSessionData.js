@@ -1,4 +1,11 @@
 import Cookies from "js-cookie";
+import {
+    syncUserDetailToCookies,
+    clearPolicyCookies,
+    getDynamicDesignTableName,
+    POLICY_TABLE_COOKIE,
+    POLICY_TABLE_ALIAS,
+} from "./product/pricingPolicy.js";
 
 // Safe check for browser
 const isBrowser = () => typeof window !== "undefined";
@@ -26,13 +33,27 @@ export const getSession = (key, defaultValue = null) => {
         const value = sessionStorage.getItem(key);
         if (value !== null) return parseValue(value);
 
-        // Cookie Fallback if sessionStorage was cleared when window closed
+        // LocalStorage Fallback (cross-tab / new tab / browser reload)
         if (key === "loginUserDetail" || key === "LoginUser") {
+            try {
+                const lsVal = localStorage.getItem(key);
+                if (lsVal !== null) {
+                    const parsed = parseValue(lsVal);
+                    try { sessionStorage.setItem(key, typeof lsVal === "object" ? JSON.stringify(lsVal) : lsVal); } catch (_) {}
+                    if (key === "loginUserDetail") window.__LOGIN_USER_DETAIL__ = parsed;
+                    if (key === "LoginUser") window.__LOGIN_USER__ = parsed;
+                    return parsed;
+                }
+            } catch (_) {}
+
+            // Cookie Fallback if sessionStorage and localStorage were not populated
             const cookieVal = Cookies.get(key);
             if (cookieVal !== undefined && cookieVal !== null) {
-                const parsed = parseValue(cookieVal);
+                let raw = cookieVal;
+                try { raw = decodeURIComponent(cookieVal); } catch (_) {}
+                const parsed = parseValue(raw);
                 try {
-                    sessionStorage.setItem(key, typeof cookieVal === "object" ? JSON.stringify(cookieVal) : cookieVal);
+                    sessionStorage.setItem(key, typeof parsed === "object" ? JSON.stringify(parsed) : parsed);
                 } catch (e) {}
                 if (key === "loginUserDetail") window.__LOGIN_USER_DETAIL__ = parsed;
                 if (key === "LoginUser") window.__LOGIN_USER__ = parsed;
@@ -56,9 +77,25 @@ export const setSession = (key, value) => {
             typeof value === "object" ? JSON.stringify(value) : value;
         sessionStorage.setItem(key, valueToStore);
 
-        // Backup auth session keys into Cookies with 7 day expiry
-        if (key === "loginUserDetail" || key === "LoginUser") {
-            Cookies.set(key, valueToStore, { path: "/", expires: 7 });
+        // Backup auth session keys into Cookies and localStorage with 7 day expiry
+        if (key === "loginUserDetail") {
+            const parsed = typeof value === "string" ? parseValue(value) : value;
+            syncUserDetailToCookies(parsed);
+        } else if (key === "LoginUser") {
+            Cookies.set("LoginUser", String(value), { path: "/", expires: 7 });
+            try {
+                localStorage.setItem("LoginUser", String(value));
+            } catch (_) {}
+        } else if (key === "storeInit") {
+            const parsed = typeof value === "string" ? parseValue(value) : value;
+            // If user is guest, automatically set guest table in cookie for instant SSR
+            const isGuest = !Cookies.get("loginUserDetail") && !Cookies.get("LoginUser");
+            if (isGuest && parsed && typeof parsed === "object") {
+                const guestTable = getDynamicDesignTableName(parsed);
+                Cookies.set(POLICY_TABLE_COOKIE, guestTable, { path: "/", expires: 7 });
+                Cookies.set(POLICY_TABLE_ALIAS, guestTable, { path: "/", expires: 7 });
+                try { localStorage.setItem(POLICY_TABLE_COOKIE, guestTable); } catch (_) {}
+            }
         }
 
         // Sync to Window Globals for easy access
@@ -78,7 +115,7 @@ export const removeSession = (key) => {
     sessionStorage.removeItem(key);
 
     if (key === "loginUserDetail" || key === "LoginUser") {
-        Cookies.remove(key, { path: "/" });
+        clearPolicyCookies(window.__STORE_INIT__);
     }
 
     // Sync to Window Globals
@@ -87,14 +124,12 @@ export const removeSession = (key) => {
     if (key === "LoginUser") window.__LOGIN_USER__ = false;
 };
 
-// ✅ Clear all
+// ✅ Clear all (Logout)
 export const clearSession = () => {
     if (!isBrowser()) return;
 
     sessionStorage.clear();
-    Cookies.remove("loginUserDetail", { path: "/" });
-    Cookies.remove("LoginUser", { path: "/" });
-    Cookies.remove("userLoginCookie", { path: "/" });
+    clearPolicyCookies(window.__STORE_INIT__);
 
     // Clear Window Globals
     window.__STORE_INIT__ = null;
