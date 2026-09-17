@@ -5,14 +5,19 @@ import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 
 const WishToggleButton = ({ productData, wishArr, handleCartandWish }) => {
-  const isInWish =
-    (productData?.autocode && wishArr?.[productData.autocode] !== undefined
-      ? wishArr[productData.autocode]
-      : productData?.ArticleNo && wishArr?.[productData.ArticleNo] !== undefined
+  const autocodeKey = productData?.autocode != null ? String(productData.autocode) : null;
+  const unpaddedKey = productData?.autocode != null && !isNaN(productData.autocode) ? String(Number(productData.autocode)) : null;
+  const isInWish = Boolean(
+    (autocodeKey && wishArr?.[autocodeKey] !== undefined)
+      ? wishArr[autocodeKey]
+      : (unpaddedKey && wishArr?.[unpaddedKey] !== undefined)
+      ? wishArr[unpaddedKey]
+      : (productData?.ArticleNo && wishArr?.[productData.ArticleNo] !== undefined)
       ? wishArr[productData.ArticleNo]
-      : productData?.designno && wishArr?.[productData.designno] !== undefined
+      : (productData?.designno && wishArr?.[productData.designno] !== undefined)
       ? wishArr[productData.designno]
-      : productData?.IsInWish === 1) ? true : false;
+      : productData?.IsInWish === 1
+  );
 
   return (
     <Box

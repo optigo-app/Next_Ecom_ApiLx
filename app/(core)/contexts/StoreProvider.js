@@ -5,16 +5,20 @@ import React, {
   useEffect,
   useMemo,
   useState,
+  useCallback,
 } from "react";
 import { ToastContainer, Zoom } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { getSession } from "../utils/FetchSessionData";
 import Cookies from "js-cookie";
-import { GetCountAPI } from "../utils/API/GetCount/GetCountAPI";
+import { GetCountAPI, buildCartAndWishMaps } from "../utils/API/GetCount/GetCountAPI";
 import { LocalSetup } from "@/app/env";
 
 const StoreContext = createContext({
   finalId: "",
+  cartArr: {},
+  wishArr: {},
+  cartAndWishListRd1: [],
 });
 
 const toastStyle = {
@@ -30,6 +34,10 @@ export function StoreProvider({ children, storeInit }) {
   const [user, setUser] = useState(null);
   const [cartCountNum, setCartCountNum] = useState(0);
   const [wishCountNum, setWishCountNum] = useState(0);
+  const [cartAndWishListRd1, setCartAndWishListRd1] = useState([]);
+  const [cartArr, setCartArr] = useState({});
+  const [wishArr, setWishArr] = useState({});
+
   // Lazy initializers read from session/window-globals synchronously on the client.
   // On the server, getSession() returns null (isBrowser() guard), so SSR stays safe.
   // This eliminates the false→true transition on mount that caused every home component
@@ -49,22 +57,31 @@ export function StoreProvider({ children, storeInit }) {
     return loginUserDetail?.id || "0";
   }, [islogin, storeInit]);
 
-  useEffect(() => {
-    if (finalId) {
-      GetCountAPI(finalId)
-        .then((res) => {
-          if (res) {
-            setCartCountNum(res?.cartcount);
-            setWishCountNum(res?.wishcount);
-          }
-        })
-        .catch((err) => {
-          if (err) {
-            console.log("getCountApiErr", err);
-          }
-        });
+  const fetchGetCountData = useCallback(async (id = finalId) => {
+    if (!id) return;
+    try {
+      const res = await GetCountAPI(id);
+      if (res) {
+        if (res?.cartcount !== undefined) setCartCountNum(res.cartcount);
+        if (res?.wishcount !== undefined) setWishCountNum(res.wishcount);
+        if (Array.isArray(res?.rd1)) {
+          setCartAndWishListRd1(res.rd1);
+          const { newCartObj, newWishObj } = buildCartAndWishMaps(res.rd1);
+          setCartArr(newCartObj);
+          setWishArr(newWishObj);
+        }
+      }
+      return res;
+    } catch (err) {
+      console.log("getCountApiErr", err);
     }
   }, [finalId]);
+
+  useEffect(() => {
+    if (finalId) {
+      fetchGetCountData(finalId);
+    }
+  }, [finalId, fetchGetCountData]);
 
   useEffect(() => {
     // Belt-and-suspenders: if lazy initializer missed the session (e.g. race with
@@ -95,7 +112,15 @@ export function StoreProvider({ children, storeInit }) {
     setSoketData,
     finalId,
     storeInit,
+    cartAndWishListRd1,
+    setCartAndWishListRd1,
+    cartArr,
+    setCartArr,
+    wishArr,
+    setWishArr,
+    fetchGetCountData,
   };
+
 
   return (
     <StoreContext.Provider value={value}>
