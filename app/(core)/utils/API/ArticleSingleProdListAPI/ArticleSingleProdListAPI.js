@@ -1,5 +1,6 @@
 import { getSession } from "../../FetchSessionData";
 import { CommonAPI } from "../CommonAPI/CommonAPI";
+import { getSqliteProductArticle } from "../../sqlite/sqliteActions";
 
 export const SingleArticleProdListAPI = async (
   singprod,
@@ -86,6 +87,7 @@ export const SingleArticleProdListAPI = async (
   let pdResp = [];
   let status = [];
 
+  /* OLD WORKING ERP API CALL (COMMENTED AS REQUESTED):
   await CommonAPI(body).then((res) => {
     if (res) {
       // let pdData = res?.Data.rd;
@@ -94,6 +96,29 @@ export const SingleArticleProdListAPI = async (
       status = res;
     }
   });
+  */
+
+  // NEW DIRECT RAW SQLITE SERVER ACTION CALL (NO CACHING, PURE LOCAL SQLITE DATA):
+  try {
+    const payload = {
+      ...data,
+      domain: storeinit?.domain,
+      autocode: singprod?.a || singprod?.autocode || data.autocode,
+      designno: singprod?.b || singprod?.designno || data.designno,
+      ArticleNo: singprod?.ArticleNo || data.ArticleNo,
+    };
+
+    const res = await getSqliteProductArticle(payload, storeinit?.domain);
+
+    if (res && res.Data) {
+      pdList = res.Data.rd || [];
+      pdResp = res.Data;
+      status = res;
+    }
+  } catch (err) {
+    console.error("SingleArticleProdListAPI SQLite Server Action error:", err);
+  }
 
   return { pdList, pdResp, status };
 };
+

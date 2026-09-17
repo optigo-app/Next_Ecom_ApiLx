@@ -30,6 +30,10 @@ export {
   saveRecentlyViewed,
   getRecentlyViewed,
 } from "./recentlyViewed.js";
+export { batchInsertArticles } from "./batchInsertArticles.js";
+export { batchInsertArticleMaterials } from "./batchInsertArticleMaterials.js";
+export { getArticlesByDesign } from "./getArticlesByDesign.js";
+export { getProductArticle } from "./getProductArticle.js";
 
 /**
  * Executes a procedure by name on a specific domain's database

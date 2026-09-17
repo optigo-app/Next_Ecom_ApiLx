@@ -3,11 +3,24 @@ import { getSession } from "../FetchSessionData.js";
 import Cookies from "js-cookie";
 
 export const DESIGN_TABLE_PREFIX = "design_Productlist_";
+export const ARTICLE_TABLE_PREFIX = "article_DesignInfo_Web_";
 
 /**
  * Generates the standardized dynamic table name from policy configuration parameters.
  */
 export function getDynamicDesignTableName(config = {}, prefix = DESIGN_TABLE_PREFIX) {
+  const labour = String(config.Laboursetid ?? config.laboursetid ?? config.pricemanagement_laboursetid ?? "0").trim().replace(/[^a-zA-Z0-9_]/g, "_") || "0";
+  const dia = String(config.diamondpricelistName ?? config.diamondpricelistname ?? config.Diamondpricelistname ?? "default").trim().replace(/[^a-zA-Z0-9_]/g, "_") || "default";
+  const cs = String(config.colorstonepricelistName ?? config.colorstonepricelistname ?? config.Colorstonepricelistname ?? "default").trim().replace(/[^a-zA-Z0-9_]/g, "_") || "default";
+  const setting = String(config.SettingPriceUniqueNo ?? config.settingpriceuniqueno ?? "0").trim().replace(/[^a-zA-Z0-9_]/g, "_") || "0";
+
+  return `${prefix}${labour}_${dia}_${cs}_${setting}`;
+}
+
+/**
+ * Generates the standardized dynamic article table name from policy configuration parameters.
+ */
+export function getDynamicArticleTableName(config = {}, prefix = ARTICLE_TABLE_PREFIX) {
   const labour = String(config.Laboursetid ?? config.laboursetid ?? config.pricemanagement_laboursetid ?? "0").trim().replace(/[^a-zA-Z0-9_]/g, "_") || "0";
   const dia = String(config.diamondpricelistName ?? config.diamondpricelistname ?? config.Diamondpricelistname ?? "default").trim().replace(/[^a-zA-Z0-9_]/g, "_") || "default";
   const cs = String(config.colorstonepricelistName ?? config.colorstonepricelistname ?? config.Colorstonepricelistname ?? "default").trim().replace(/[^a-zA-Z0-9_]/g, "_") || "default";

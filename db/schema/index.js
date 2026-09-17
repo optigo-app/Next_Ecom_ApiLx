@@ -13,6 +13,17 @@ import { COMPANY_INFO_TABLE_SQL } from "./companyInfo.js";
 import { MENUS_TABLE_SQL } from "./menus.js";
 import { PACKAGEMASTER_TABLE_SQL } from "./packagemaster.js";
 import { RECENTLY_VIEWED_TABLE_SQL } from "./recentlyViewed.js";
+import {
+    ARTICLE_INFO_PREFIX,
+    ARTICLE_MATERIAL_PREFIX,
+    ARTICLE_TABLE_PREFIX,
+    getDynamicArticleTableName,
+    getDynamicArticleMaterialTableName,
+    ensureDynamicArticleTable,
+    ensureDynamicArticleMaterialTable,
+    resolveArticleTableName,
+    resolveArticleMaterialTableName,
+} from "./dynamicArticles.js";
 
 // Export individual modular table schemas
 export {
@@ -26,6 +37,15 @@ export {
     MENUS_TABLE_SQL,
     PACKAGEMASTER_TABLE_SQL,
     RECENTLY_VIEWED_TABLE_SQL,
+    ARTICLE_INFO_PREFIX,
+    ARTICLE_MATERIAL_PREFIX,
+    ARTICLE_TABLE_PREFIX,
+    getDynamicArticleTableName,
+    getDynamicArticleMaterialTableName,
+    ensureDynamicArticleTable,
+    ensureDynamicArticleMaterialTable,
+    resolveArticleTableName,
+    resolveArticleMaterialTableName,
 };
 
 // Unified DDL across all multi-tenant tables

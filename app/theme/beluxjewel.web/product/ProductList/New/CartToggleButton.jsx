@@ -5,14 +5,19 @@ import LocalMallOutlinedIcon from "@mui/icons-material/LocalMallOutlined";
 import LocalMallIcon from "@mui/icons-material/LocalMall";
 
 const CartToggleButton = ({ productData, cartArr, handleCartandWish }) => {
-  const isInCart =
-    (productData?.autocode && cartArr?.[productData.autocode] !== undefined
-      ? cartArr[productData.autocode]
-      : productData?.ArticleNo && cartArr?.[productData.ArticleNo] !== undefined
+  const autocodeKey = productData?.autocode != null ? String(productData.autocode) : null;
+  const unpaddedKey = productData?.autocode != null && !isNaN(productData.autocode) ? String(Number(productData.autocode)) : null;
+  const isInCart = Boolean(
+    (autocodeKey && cartArr?.[autocodeKey] !== undefined)
+      ? cartArr[autocodeKey]
+      : (unpaddedKey && cartArr?.[unpaddedKey] !== undefined)
+      ? cartArr[unpaddedKey]
+      : (productData?.ArticleNo && cartArr?.[productData.ArticleNo] !== undefined)
       ? cartArr[productData.ArticleNo]
-      : productData?.designno && cartArr?.[productData.designno] !== undefined
+      : (productData?.designno && cartArr?.[productData.designno] !== undefined)
       ? cartArr[productData.designno]
-      : productData?.IsInCart === 1) ? true : false;
+      : productData?.IsInCart === 1
+  );
 
   return (
     <Box

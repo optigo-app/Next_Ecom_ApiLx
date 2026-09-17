@@ -10,10 +10,12 @@ import { ColorStoneQualityColorComboAPI } from "@/app/(core)/utils/API/Combo/Col
 import { MetalColorCombo } from "@/app/(core)/utils/API/Combo/MetalColorCombo";
 import { CartAndWishListAPI } from "@/app/(core)/utils/API/CartAndWishList/CartAndWishListAPI";
 import { RemoveCartAndWishAPI } from "@/app/(core)/utils/API/RemoveCartandWishAPI/RemoveCartAndWishAPI";
+import { GetCountAPI, buildCartAndWishMaps } from "@/app/(core)/utils/API/GetCount/GetCountAPI";
 import ProductListApi from "@/app/(core)/utils/API/ProductListAPI/ProductListApi";
 import { FilterListAPI } from "@/app/(core)/utils/API/FilterAPI/FilterListAPI";
 import { useStore } from "@/app/(core)/contexts/StoreProvider";
 import { useSyncStore } from "@/app/(core)/hooks/useStore";
+import { useBroadcaster } from "@/app/(core)/contexts/BoardCastContext";
 import { getSession, setSession } from "@/app/(core)/utils/FetchSessionData";
 import { getSqliteProducts, getSqliteFilters } from "@/app/(core)/utils/sqlite/sqliteActions";
 import { ParseAndDecodeSearchParams } from "@/app/(core)/utils/GlobalFunctions/Parser";
@@ -61,8 +63,24 @@ export function useListingPage({
   initialFilterData,
   initialTotalCount,
 } = {}) {
-  const { setCartCountNum, setWishCountNum, islogin } = useStore();
+  const storeCtx = useStore();
+  const {
+    setCartCountNum,
+    setWishCountNum,
+    islogin,
+    cartArr: storeCartArr,
+    setCartArr: setStoreCartArr,
+    wishArr: storeWishArr,
+    setWishArr: setStoreWishArr,
+    cartAndWishListRd1: storeCartAndWishListRd1,
+    setCartAndWishListRd1: setStoreCartAndWishListRd1,
+    fetchGetCountData: storeFetchGetCountData,
+    finalId: storeFinalId,
+  } = storeCtx;
+  const broadcaster = useBroadcaster();
+  const broadcast = broadcaster?.broadcast;
   const syncProductList = useSyncStore((state) => state.syncProductList);
+  const syncData = useSyncStore((state) => state.syncData);
   const location = usePathname();
   const cookie = Cookies.get("visiterId");
 
@@ -182,9 +200,82 @@ export function useListingPage({
   const [csQcCombo, setCsQcCombo] = useState(getSession("ColorStoneQualityColorCombo") || []);
   const [metalColorCombo, setMetalColorCombo] = useState(getSession("MetalColorCombo") || []);
 
-  // Cart & Wishlist Map States
-  const [cartArr, setCartArr] = useState({});
-  const [wishArr, setWishArr] = useState({});
+  // Cart & Wishlist Map States (connected to StoreProvider with local fallback)
+  const [localCartArr, setLocalCartArr] = useState({});
+  const [localWishArr, setLocalWishArr] = useState({});
+
+  const cartArr = storeCartArr !== undefined ? storeCartArr : localCartArr;
+  const setCartArr = setStoreCartArr || setLocalCartArr;
+
+  const wishArr = storeWishArr !== undefined ? storeWishArr : localWishArr;
+  const setWishArr = setStoreWishArr || setLocalWishArr;
+
+  const effectiveFinalId =
+    finalId ||
+    storeFinalId ||
+    (storeinit?.IsB2BWebsite == 0 && !islogin ? cookie : loginUserDetail?.id) ||
+    cookie ||
+    "0";
+
+  const syncCartAndWishStates = useCallback(
+    (rd1Array = []) => {
+      const { newCartObj, newWishObj } = buildCartAndWishMaps(rd1Array);
+      setCartArr(newCartObj);
+      setWishArr(newWishObj);
+      if (setStoreCartAndWishListRd1) {
+        setStoreCartAndWishListRd1(rd1Array);
+      }
+    },
+    [setCartArr, setWishArr, setStoreCartAndWishListRd1]
+  );
+
+  const fetchGetCountData = useCallback(async () => {
+    if (storeFetchGetCountData && effectiveFinalId) {
+      return await storeFetchGetCountData(effectiveFinalId);
+    }
+    if (!effectiveFinalId) return;
+    try {
+      const res = await GetCountAPI(effectiveFinalId);
+      if (res) {
+        if (res?.cartcount !== undefined) setCartCountNum(res.cartcount);
+        if (res?.wishcount !== undefined) setWishCountNum(res.wishcount);
+        if (Array.isArray(res?.rd1)) {
+          syncCartAndWishStates(res.rd1);
+        }
+      }
+      return res;
+    } catch (err) {
+      console.error("fetchGetCountErr in useListingPage:", err);
+    }
+  }, [storeFetchGetCountData, effectiveFinalId, setCartCountNum, setWishCountNum, syncCartAndWishStates]);
+
+  useEffect(() => {
+    if (effectiveFinalId) {
+      fetchGetCountData();
+    }
+  }, [effectiveFinalId, fetchGetCountData]);
+
+  // Sync with broadcast updates from other tabs or components
+  useEffect(() => {
+    if (syncData?.autocode) {
+      const { autocode, type, status } = syncData;
+      const key = String(autocode);
+      const unpadded = !isNaN(autocode) ? String(Number(autocode)) : null;
+      if (type === "cart" || type === "Cart") {
+        setCartArr((prev) => {
+          const next = { ...prev, [key]: status };
+          if (unpadded) next[unpadded] = status;
+          return next;
+        });
+      } else if (type === "wish" || type === "Wish") {
+        setWishArr((prev) => {
+          const next = { ...prev, [key]: status };
+          if (unpadded) next[unpadded] = status;
+          return next;
+        });
+      }
+    }
+  }, [syncData, setCartArr, setWishArr]);
 
   // Hover Rollover Image Map
   const [rollOverImgPd, setRolloverImgPd] = useState({});
@@ -299,14 +390,14 @@ export function useListingPage({
 
       const prodObj = {
         autocode: ele?.autocode,
-        Metalid: selectedMetalId ?? ele?.MetalPurityid,
-        MetalColorId: ele?.MetalColorid,
-        DiaQCid: selectedDiaId ?? loginUserDetail?.cmboDiaQCid,
-        CsQCid: selectedCsId ?? loginUserDetail?.cmboCSQCid,
-        Size: ele?.DefaultSize,
+        Metalid: selectedMetalId ?? ele?.MetalPurityid ?? ele?.MetalId,
+        MetalColorId: ele?.MetalColorid ?? ele?.MetalColorId,
+        DiaQCid: selectedDiaId ?? loginUserDetail?.cmboDiaQCid ?? storeinit?.cmboDiaQCid,
+        CsQCid: selectedCsId ?? loginUserDetail?.cmboCSQCid ?? storeinit?.cmboCSQCid,
+        Size: ele?.DefaultSize ?? "",
         Unitcost: ele?.UnitCost,
         markup: ele?.DesignMarkUp,
-        UnitCostWithmarkup: ele?.UnitCostWithMarkUp,
+        UnitCostWithmarkup: ele?.UnitCostWithMarkUp ?? ele?.UnitCostWithmarkup,
         Remark: "",
         Metal_Cost: ele?.Metal_Cost,
         Labour_Cost: ele?.Labour_Cost,
@@ -321,32 +412,27 @@ export function useListingPage({
         ArticleNo: ele?.ArticleNo,
       };
 
-      const isChecked = e?.target?.checked !== undefined ? Boolean(e.target.checked) : true;
-      const autocodeKey = ele?.autocode ? String(ele.autocode) : null;
-      const articleKey = ele?.ArticleNo ? String(ele.ArticleNo) : null;
-      const designKey = ele?.designno ? String(ele.designno) : null;
-      const keys = [autocodeKey, articleKey, designKey].filter(Boolean);
+      const currentInState =
+        type === "Cart"
+          ? (cartArr?.[ele?.autocode] ??
+            (ele?.ArticleNo ? cartArr?.[ele?.ArticleNo] : undefined) ??
+            (ele?.designno ? cartArr?.[ele?.designno] : undefined) ??
+            (ele?.IsInCart === 1))
+          : (wishArr?.[ele?.autocode] ??
+            (ele?.ArticleNo ? wishArr?.[ele?.ArticleNo] : undefined) ??
+            (ele?.designno ? wishArr?.[ele?.designno] : undefined) ??
+            (ele?.IsInWish === 1));
 
-      if (isChecked) {
-        CartAndWishListAPI(type, prodObj, cookie)
-          .then((res) => {
-            let cartC = res?.Data?.rd[0]?.Cartlistcount;
-            let wishC = res?.Data?.rd[0]?.Wishlistcount;
-            if (wishC !== undefined) setWishCountNum(wishC);
-            if (cartC !== undefined) setCartCountNum(cartC);
-          })
-          .catch(console.error);
-      } else {
-        RemoveCartAndWishAPI(type, ele?.autocode || ele?.ArticleNo, cookie)
-          .then((res) => {
-            let cartC = res?.Data?.rd[0]?.Cartlistcount;
-            let wishC = res?.Data?.rd[0]?.Wishlistcount;
-            if (wishC !== undefined) setWishCountNum(wishC);
-            if (cartC !== undefined) setCartCountNum(cartC);
-          })
-          .catch(console.error);
-      }
+      const isChecked =
+        e?.target?.checked !== undefined ? Boolean(e.target.checked) : !currentInState;
 
+      const autocodeKey = ele?.autocode != null && ele?.autocode !== "" ? String(ele.autocode) : null;
+      const unpaddedAutocode = ele?.autocode != null && !isNaN(ele.autocode) ? String(Number(ele.autocode)) : null;
+      const articleKey = ele?.ArticleNo != null && ele?.ArticleNo !== "" ? String(ele.ArticleNo) : null;
+      const designKey = ele?.designno != null && ele?.designno !== "" ? String(ele.designno) : null;
+      const keys = [autocodeKey, unpaddedAutocode, articleKey, designKey].filter(Boolean);
+
+      // Optimistic state update
       keys.forEach((key) => {
         if (type === "Cart") {
           setCartArr((prev) => ({ ...prev, [key]: isChecked }));
@@ -355,8 +441,98 @@ export function useListingPage({
           setWishArr((prev) => ({ ...prev, [key]: isChecked }));
         }
       });
+
+      const activeCookie = cookie || Cookies.get("visiterId");
+
+      if (isChecked) {
+        CartAndWishListAPI(type, prodObj, activeCookie)
+          .then((res) => {
+            if (res) {
+              const cartC =
+                res?.Data?.rd[0]?.Cartlistcount ??
+                res?.Data?.rd[0]?.Cartcount ??
+                res?.Data?.rd[0]?.cartcount;
+              const wishC =
+                res?.Data?.rd[0]?.Wishlistcount ??
+                res?.Data?.rd[0]?.Wishcount ??
+                res?.Data?.rd[0]?.wishcount;
+              if (wishC !== undefined) setWishCountNum(wishC);
+              if (cartC !== undefined) setCartCountNum(cartC);
+              if (broadcast) {
+                if (type === "Cart") {
+                  broadcast("UPDATE_CART_COUNT", cartC, prodObj?.autocode, "cart", true);
+                } else {
+                  broadcast("UPDATE_WISH_COUNT", wishC, prodObj?.autocode, "wish", true);
+                }
+              }
+              fetchGetCountData();
+            }
+          })
+          .catch((err) => {
+            console.error("addtocartwishErr", err);
+            // Revert on failure
+            keys.forEach((key) => {
+              if (type === "Cart") setCartArr((prev) => ({ ...prev, [key]: !isChecked }));
+              if (type === "Wish") setWishArr((prev) => ({ ...prev, [key]: !isChecked }));
+            });
+          });
+      } else {
+        RemoveCartAndWishAPI(
+          type,
+          ele?.autocode || "",
+          activeCookie,
+          false,
+          "",
+          ele?.ArticleNo || ""
+        )
+          .then((res1) => {
+            if (res1) {
+              const cartC =
+                res1?.Data?.rd[0]?.Cartlistcount ??
+                res1?.Data?.rd[0]?.Cartcount ??
+                res1?.Data?.rd[0]?.cartcount;
+              const wishC =
+                res1?.Data?.rd[0]?.Wishlistcount ??
+                res1?.Data?.rd[0]?.Wishcount ??
+                res1?.Data?.rd[0]?.wishcount;
+              if (wishC !== undefined) setWishCountNum(wishC);
+              if (cartC !== undefined) setCartCountNum(cartC);
+              if (broadcast) {
+                if (type === "Cart") {
+                  broadcast("UPDATE_CART_COUNT", cartC, prodObj?.autocode, "cart", false);
+                } else {
+                  broadcast("UPDATE_WISH_COUNT", wishC, prodObj?.autocode, "wish", false);
+                }
+              }
+              fetchGetCountData();
+            }
+          })
+          .catch((err) => {
+            console.error("removecartwishErr", err);
+            // Revert on failure
+            keys.forEach((key) => {
+              if (type === "Cart") setCartArr((prev) => ({ ...prev, [key]: !isChecked }));
+              if (type === "Wish") setWishArr((prev) => ({ ...prev, [key]: !isChecked }));
+            });
+          });
+      }
     },
-    [selectedMetalId, selectedDiaId, selectedCsId, cookie, loginUserDetail, setCartCountNum, setWishCountNum]
+    [
+      selectedMetalId,
+      selectedDiaId,
+      selectedCsId,
+      cookie,
+      loginUserDetail,
+      storeinit,
+      cartArr,
+      wishArr,
+      setCartCountNum,
+      setWishCountNum,
+      setCartArr,
+      setWishArr,
+      broadcast,
+      fetchGetCountData,
+    ]
   );
 
   // ----------------------------------------------------
@@ -1145,6 +1321,8 @@ export function useListingPage({
     // Cart & Wishlist Map States & Handlers
     cartArr,
     wishArr,
+    cartAndWishListRd1: storeCartAndWishListRd1,
+    fetchGetCountData,
     handleCartandWish,
 
     // Hover Rollover Image Map & Handlers
