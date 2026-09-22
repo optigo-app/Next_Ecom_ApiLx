@@ -45,7 +45,7 @@ export default function MaxPhysicalStore() {
             >
               <Box
                 component="img"
-                src="/store.png"
+                src="/banner/Storebanner.png"
                 alt="Luxury Boutique Interior"
                 sx={{
                   width: "100%",
