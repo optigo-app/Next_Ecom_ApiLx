@@ -1,0 +1,58 @@
+@use "../../style/variable.scss" as *;
+
+.smr_Loginoption_bl {
+  min-height: calc(100vh - 120px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #fbfbfc;
+  padding: 40px 16px;
+
+  .loginMail {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    background-color: $authbtnbg !important;
+    color: $authbtncolor !important;
+    border-radius: 6px !important;
+    text-transform: none !important;
+    font-size: 0.95rem !important;
+    font-weight: 600 !important;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08) !important;
+    transition: all 0.2s ease-in-out !important;
+    padding: 14px 20px !important;
+    width: 100% !important;
+    margin: 0 !important;
+    cursor: pointer;
+
+    &:hover {
+      opacity: 0.92;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+    }
+  }
+
+  .loginMobile {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    background-color: #ffffff !important;
+    color: #111827 !important;
+    border: 1.5px solid #d1d5db !important;
+    border-radius: 6px !important;
+    text-transform: none !important;
+    font-size: 0.95rem !important;
+    font-weight: 600 !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04) !important;
+    transition: all 0.2s ease-in-out !important;
+    padding: 14px 20px !important;
+    width: 100% !important;
+    margin: 0 !important;
+    cursor: pointer;
+
+    &:hover {
+      background-color: #f9fafb !important;
+      border-color: $authbtnbg !important;
+      color: $authbtnbg !important;
+    }
+  }
+}

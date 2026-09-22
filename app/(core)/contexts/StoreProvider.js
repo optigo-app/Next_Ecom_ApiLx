@@ -19,6 +19,10 @@ const StoreContext = createContext({
   cartArr: {},
   wishArr: {},
   cartAndWishListRd1: [],
+  cartCountNum: 0,
+  setCartCountNum: () => {},
+  wishCountNum: 0,
+  setWishCountNum: () => {},
 });
 
 const toastStyle = {

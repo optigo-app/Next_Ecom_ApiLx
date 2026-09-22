@@ -17,6 +17,7 @@ import { EmotionRegistry } from "./(core)/contexts/EmotionRegistry";
 import { defaultFont, defaultFontVariable } from "./(core)/assets/FontSetup";
 import { BroadcasterProvider } from "@/app/(core)/contexts/BoardCastContext";
 import { isOmJiyansh, ActiveMeta, getSiteDetails } from "./(core)/seo";
+import { resolveLayout } from "./(core)/utils/ThemeRouteResolver";
 
 export const viewport = {
   width: "device-width",
@@ -52,10 +53,8 @@ export async function generateMetadata() {
 
 export default async function RootLayout({ children }) {
   const theme = await getActiveTheme();
-  console.log("TCL: RootLayout -> ", theme)
   const themeData = themeMap[theme];
-  const Layout = (await import(`@/app/theme/${themeData.page}/layout.jsx`))
-    .default;
+  const Layout = await resolveLayout(themeData?.page);
   const companyInfo = await getCompanyInfoData();
   const storeInit = await getStoreInit();
   const myAccountFlags = await getMyAccountFlags();
@@ -80,25 +79,25 @@ export default async function RootLayout({ children }) {
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       </head>
-      <BroadcasterProvider>
-        <EmotionRegistry>
-          <body className={`${defaultFont.variable}`} style={{ '--font-default': `var(${defaultFontVariable})` }}>
-            <MasterProvider
-              getCompanyInfoData={companyInfo}
-              getStoreInit={storeInit}
-              getMyAccountFlags={myAccountFlags}
-              theme={themeData?.page}
-            >
-              <StoreProvider storeInit={storeInit}>
+      <EmotionRegistry>
+        <body className={`${defaultFont.variable}`} style={{ '--font-default': `var(${defaultFontVariable})` }}>
+          <MasterProvider
+            getCompanyInfoData={companyInfo}
+            getStoreInit={storeInit}
+            getMyAccountFlags={myAccountFlags}
+            theme={themeData?.page}
+          >
+            <StoreProvider storeInit={storeInit}>
+              <BroadcasterProvider>
                 <AuthProvider theme={themeData?.page} storeInit={storeInit}>
                   <Layout>{children}</Layout>
                   {/* <JewelrySnackbar /> */}
                 </AuthProvider>
-              </StoreProvider>
-            </MasterProvider>
-          </body>
-        </EmotionRegistry>
-      </BroadcasterProvider>
+              </BroadcasterProvider>
+            </StoreProvider>
+          </MasterProvider>
+        </body>
+      </EmotionRegistry>
     </html>
   );
 }

@@ -87,4 +87,8 @@ export const themeMap = {
     "nxt11.optigoapps.com": {
     page: "beluxjewel.web",
   },
+    "sonasons.procatalog.in": {
+    page: "fgstore.pro",
+  },
+  
 };

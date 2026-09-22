@@ -322,6 +322,42 @@ export function useListingPage({
   // Search decoding
   const result = useMemo(() => ParseAndDecodeSearchParams(searchParams), [searchParams]);
 
+  // Menu flags decoded from the current URL params (N/T/B/S) — mirrors the
+  // SSR extractSsrFilters mapping so client-side queries stay consistent
+  // with the server-rendered first page.
+  const menuFlags = useMemo(() => {
+    const UrlVal = Array.isArray(result) ? result : [];
+    const flags = {};
+    const hasPrefix = (p) =>
+      UrlVal.some((ele) => typeof ele === "string" && ele.split("=")[0] === p);
+    if (hasPrefix("N")) flags.isNewArrival = true;
+    if (hasPrefix("T")) flags.isTrending = true;
+    if (hasPrefix("B")) flags.isBestSeller = true;
+    const searchVar = UrlVal.find(
+      (ele) => typeof ele === "string" && ele.split("=")[0] === "S"
+    );
+    if (searchVar) {
+      try {
+        const decoded = JSON.parse(
+          atob(decodeURIComponent(searchVar.split("=")[1]))
+        );
+        flags.SearchKey = decoded?.b || decoded;
+      } catch (_) {
+        try {
+          flags.SearchKey = atob(decodeURIComponent(searchVar.split("=")[1]));
+        } catch (_) {}
+      }
+    }
+    return flags;
+  }, [result]);
+
+  const hasUrlMenuFlag = Boolean(
+    menuFlags.isNewArrival ||
+      menuFlags.isTrending ||
+      menuFlags.isBestSeller ||
+      menuFlags.SearchKey
+  );
+
   // ----------------------------------------------------
   // 1. Combo Hydration with Session Cache Fallback
   // ----------------------------------------------------
@@ -736,7 +772,9 @@ export function useListingPage({
         "default";
 
       const savedMenu = getSession("menuparams");
-      const targetQuery = (savedMenu && (savedMenu.FilterKey || savedMenu.FilterKey1 || savedMenu.FilterKey2))
+      // When the URL itself carries a menu flag (N/T/B/S) it is the source of
+      // truth — a stale `menuparams` session from a previous menu must not win.
+      const targetQuery = (!hasUrlMenuFlag && savedMenu && (savedMenu.FilterKey || savedMenu.FilterKey1 || savedMenu.FilterKey2))
         ? savedMenu
         : (prodListType || searchParams || menuIdent);
 
@@ -749,6 +787,7 @@ export function useListingPage({
       const queryPayload = {
         ...policyParams,
         ...(typeof targetQuery === "object" && !Array.isArray(targetQuery) ? targetQuery : {}),
+        ...menuFlags,
         ...(typeof outputFilters === "object" ? outputFilters : {}),
         Collectionid: outputFilters?.collection,
         Categoryid: outputFilters?.category,
@@ -780,7 +819,7 @@ export function useListingPage({
         targetQuery[0].forEach((k, idx) => {
           if (k && targetQuery[1]?.[idx]) queryPayload[k] = targetQuery[1][idx];
         });
-      } else if (typeof targetQuery === "string" && targetQuery) {
+      } else if (!hasUrlMenuFlag && typeof targetQuery === "string" && targetQuery) {
         queryPayload.M = targetQuery;
       }
 
@@ -790,8 +829,10 @@ export function useListingPage({
       }
 
       try {
+        // Always pass the filter object as arg1 — a raw string (e.g. the
+        // base64 N param) is not a valid filter and returns ALL products.
         const sqliteRes = await getSqliteProducts(
-          typeof targetQuery === "string" ? targetQuery : queryPayload,
+          queryPayload,
           queryPayload,
           undefined
         );
@@ -827,6 +868,8 @@ export function useListingPage({
       storeinit,
       loginUserDetail,
       islogin,
+      menuFlags,
+      hasUrlMenuFlag,
     ]
   );
 
@@ -1144,7 +1187,7 @@ export function useListingPage({
         const initialPage = getPageFromUrlOrProps();
 
         const savedMenu = getSession("menuparams");
-        const targetQuery = (savedMenu && (savedMenu.FilterKey || savedMenu.FilterKey1 || savedMenu.FilterKey2))
+        const targetQuery = (!hasUrlMenuFlag && savedMenu && (savedMenu.FilterKey || savedMenu.FilterKey1 || savedMenu.FilterKey2))
           ? savedMenu
           : (productlisttype || searchParams || menuIdent);
 
@@ -1157,6 +1200,7 @@ export function useListingPage({
         const queryPayload = {
           ...policyParams,
           ...(typeof targetQuery === "object" && !Array.isArray(targetQuery) ? targetQuery : {}),
+          ...menuFlags,
           sortBy: effectiveSortBy,
           page: initialPage,
           pageSize: storeinit?.PageSize || 10,
@@ -1166,7 +1210,7 @@ export function useListingPage({
           targetQuery[0].forEach((k, idx) => {
             if (k && targetQuery[1]?.[idx]) queryPayload[k] = targetQuery[1][idx];
           });
-        } else if (typeof targetQuery === "string" && targetQuery) {
+        } else if (!hasUrlMenuFlag && typeof targetQuery === "string" && targetQuery) {
           queryPayload.M = targetQuery;
         }
 
@@ -1178,7 +1222,7 @@ export function useListingPage({
         let sqliteLoaded = false;
         try {
           const sqliteRes = await getSqliteProducts(
-            typeof targetQuery === "string" ? targetQuery : queryPayload,
+            queryPayload,
             queryPayload,
             undefined
           );

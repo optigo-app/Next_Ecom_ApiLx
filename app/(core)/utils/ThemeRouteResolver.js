@@ -1,9 +1,51 @@
-// Central registry for static theme .
-export async function resolveHome(themePage) {
-  console.log(themePage, "themePage");
+import { IsProcatalogDemo } from "./env.js";
+
+// Central registry for static theme layouts.
+export async function resolveLayout(themePage) {
   switch (themePage) {
     case "beluxjewel.web":
-      return (await import("@/app/theme/beluxjewel.web/home/page.jsx")).default;
+      if (IsProcatalogDemo) {
+        return (await import("@/app/theme/procatalog.web/layout.jsx")).default;
+      } else {
+        return (await import("@/app/theme/beluxjewel.web/layout.jsx")).default;
+      }
+    case "julian.web":
+      return (await import("@/app/theme/julian.web/layout.jsx")).default;
+    case "julian4.web":
+      return (await import("@/app/theme/julian4.web/layout.jsx")).default;
+    case "nxtelvee.web":
+    case "elvee.web":
+      return (await import("@/app/theme/elvee.web/layout.jsx")).default;
+    case "diamondtine.web":
+      return (await import("@/app/theme/diamondtine.web/layout.jsx")).default;
+    case "fgstore.web":
+      return (await import("@/app/theme/fgstore.web/layout.jsx")).default;
+    case "fgstore.pro":
+      return (await import("@/app/theme/procatalog.web/layout.jsx")).default;
+    case "fgstore.mapp":
+      return (await import("@/app/theme/fgstore.mapp/layout.jsx")).default;
+    case "hoq.web":
+      return (await import("@/app/theme/hoq.web/layout.jsx")).default;
+    default:
+      if (IsProcatalogDemo) {
+        return (await import("@/app/theme/procatalog.web/layout.jsx")).default;
+      } else {
+        return (await import("@/app/theme/beluxjewel.web/layout.jsx")).default;
+      }
+  }
+}
+
+// Central registry for static theme .
+export async function resolveHome(themePage) {
+  switch (themePage) {
+    case "beluxjewel.web":
+      if (IsProcatalogDemo) {
+        console.log(IsProcatalogDemo , "IsProcatalogDemo" , "");
+        return (await import("@/app/theme/procatalog.web/home/page.jsx")).default;
+      } else {
+        console.log(IsProcatalogDemo , "IsProcatalogDemo" , "hellow");
+        return (await import("@/app/theme/beluxjewel.web/home/page.jsx")).default;
+      }
     case "julian.web":
       return (await import("@/app/theme/julian.web/home/page.jsx")).default;
     case "julian4.web":
@@ -16,20 +58,28 @@ export async function resolveHome(themePage) {
     case "fgstore.web":
       return (await import("@/app/theme/fgstore.web/home/page.jsx")).default;
     case "fgstore.pro":
-      return (await import("@/app/theme/fgstore.pro/home/page.jsx")).default;
+      return (await import("@/app/theme/procatalog.web/home/page.jsx")).default;
     case "fgstore.mapp":
       return (await import("@/app/theme/fgstore.mapp/home/page.jsx")).default;
     case "hoq.web":
       return (await import("@/app/theme/hoq.web/home/page.jsx")).default;
     default:
-      return (await import("@/app/theme/beluxjewel.web/home/page.jsx")).default;
+      if (IsProcatalogDemo) {
+        return (await import("@/app/theme/procatalog.web/home/page.jsx")).default;
+      } else {
+        return (await import("@/app/theme/beluxjewel.web/home/page.jsx")).default;
+      }
   }
 }
 
 export async function resolveProductList(themePage) {
   switch (themePage) {
     case "beluxjewel.web":
-      return (await import("@/app/theme/beluxjewel.web/product/page.jsx")).default;
+      if (IsProcatalogDemo) {
+        return (await import("@/app/theme/procatalog.web/product/page.jsx")).default;
+      } else {
+        return (await import("@/app/theme/beluxjewel.web/product/page.jsx")).default;
+      }
     case "julian.web":
       return (await import("@/app/theme/julian.web/product/page.jsx")).default;
     case "julian4.web":
@@ -42,20 +92,28 @@ export async function resolveProductList(themePage) {
     case "fgstore.web":
       return (await import("@/app/theme/fgstore.web/product/page.jsx")).default;
     case "fgstore.pro":
-      return (await import("@/app/theme/fgstore.pro/product/page.jsx")).default;
+      return (await import("@/app/theme/procatalog.web/product/page.jsx")).default;
     case "fgstore.mapp":
       return (await import("@/app/theme/fgstore.mapp/product/page.jsx")).default;
     case "hoq.web":
       return (await import("@/app/theme/hoq.web/product/page.jsx")).default;
     default:
-      return (await import("@/app/theme/beluxjewel.web/product/page.jsx")).default;
+      if (IsProcatalogDemo) {
+        return (await import("@/app/theme/procatalog.web/product/page.jsx")).default;
+      } else {
+        return (await import("@/app/theme/beluxjewel.web/product/page.jsx")).default;
+      }
   }
 }
 
 export async function resolveProductDetail(themePage) {
   switch (themePage) {
     case "beluxjewel.web":
-      return (await import("@/app/theme/beluxjewel.web/detail/page.jsx")).default;
+      if (IsProcatalogDemo) {
+        return (await import("@/app/theme/procatalog.web/detail/page.jsx")).default;
+      } else {
+        return (await import("@/app/theme/beluxjewel.web/detail/page.jsx")).default;
+      }
     case "julian.web":
       return (await import("@/app/theme/julian.web/detail/page.jsx")).default;
     case "julian4.web":
@@ -68,20 +126,28 @@ export async function resolveProductDetail(themePage) {
     case "fgstore.web":
       return (await import("@/app/theme/fgstore.web/detail/page.jsx")).default;
     case "fgstore.pro":
-      return (await import("@/app/theme/fgstore.pro/detail/page.jsx")).default;
+      return (await import("@/app/theme/procatalog.web/detail/page.jsx")).default;
     case "fgstore.mapp":
       return (await import("@/app/theme/fgstore.mapp/detail/page.jsx")).default;
     case "hoq.web":
       return (await import("@/app/theme/hoq.web/detail/page.jsx")).default;
     default:
-      return (await import("@/app/theme/beluxjewel.web/detail/page.jsx")).default;
+      if (IsProcatalogDemo) {
+        return (await import("@/app/theme/procatalog.web/detail/page.jsx")).default;
+      } else {
+        return (await import("@/app/theme/beluxjewel.web/detail/page.jsx")).default;
+      }
   }
 }
 
 export async function resolveCart(themePage) {
   switch (themePage) {
     case "beluxjewel.web":
-      return (await import("@/app/theme/beluxjewel.web/cart/page.jsx")).default;
+      if (IsProcatalogDemo) {
+        return (await import("@/app/theme/procatalog.web/cart/page.jsx")).default;
+      } else {
+        return (await import("@/app/theme/beluxjewel.web/cart/page.jsx")).default;
+      }
     case "julian.web":
       return (await import("@/app/theme/julian.web/cart/page.jsx")).default;
     case "julian4.web":
@@ -94,20 +160,28 @@ export async function resolveCart(themePage) {
     case "fgstore.web":
       return (await import("@/app/theme/fgstore.web/cart/page.jsx")).default;
     case "fgstore.pro":
-      return (await import("@/app/theme/fgstore.pro/cart/page.jsx")).default;
+      return (await import("@/app/theme/procatalog.web/cart/page.jsx")).default;
     case "fgstore.mapp":
       return (await import("@/app/theme/fgstore.mapp/cart/page.jsx")).default;
     case "hoq.web":
       return (await import("@/app/theme/hoq.web/cart/page.jsx")).default;
     default:
-      return (await import("@/app/theme/beluxjewel.web/cart/page.jsx")).default;
+      if (IsProcatalogDemo) {
+        return (await import("@/app/theme/procatalog.web/cart/page.jsx")).default;
+      } else {
+        return (await import("@/app/theme/beluxjewel.web/cart/page.jsx")).default;
+      }
   }
 }
 
 export async function resolveWishlist(themePage) {
   switch (themePage) {
     case "beluxjewel.web":
-      return (await import("@/app/theme/beluxjewel.web/Wishlist/page.js")).default;
+      if (IsProcatalogDemo) {
+        return (await import("@/app/theme/procatalog.web/Wishlist/page.js")).default;
+      } else {
+        return (await import("@/app/theme/beluxjewel.web/Wishlist/page.js")).default;
+      }
     case "julian.web":
       return (await import("@/app/theme/julian.web/Wishlist/page.js")).default;
     case "julian4.web":
@@ -120,22 +194,32 @@ export async function resolveWishlist(themePage) {
     case "fgstore.web":
       return (await import("@/app/theme/fgstore.web/Wishlist/page.js")).default;
     case "fgstore.pro":
-      return (await import("@/app/theme/fgstore.pro/Wishlist/page.js")).default;
+      return (await import("@/app/theme/procatalog.web/Wishlist/page.js")).default;
     case "fgstore.mapp":
       return (await import("@/app/theme/fgstore.mapp/Wishlist/page.js")).default;
     case "hoq.web":
       return (await import("@/app/theme/hoq.web/Wishlist/page.js")).default;
     default:
-      return (await import("@/app/theme/beluxjewel.web/Wishlist/page.js")).default;
+      if (IsProcatalogDemo) {
+        return (await import("@/app/theme/procatalog.web/Wishlist/page.js")).default;
+      } else {
+        return (await import("@/app/theme/beluxjewel.web/Wishlist/page.js")).default;
+      }
   }
 }
 
 export async function resolveLoginWithEmail(themePage) {
   switch (themePage) {
     case "beluxjewel.web":
-      return (
-        await import("@/app/theme/beluxjewel.web/Auth/LoginWithEmail/page.js")
-      ).default;
+      if (IsProcatalogDemo) {
+        return (
+          await import("@/app/theme/procatalog.web/Auth/LoginWithEmail/page.js")
+        ).default;
+      } else {
+        return (
+          await import("@/app/theme/beluxjewel.web/Auth/LoginWithEmail/page.js")
+        ).default;
+      }
     case "julian.web":
       return (await import("@/app/theme/julian.web/Auth/LoginWithEmail/page.js")).default;
     case "julian4.web":
@@ -153,7 +237,7 @@ export async function resolveLoginWithEmail(themePage) {
       ).default;
     case "fgstore.pro":
       return (
-        await import("@/app/theme/fgstore.pro/Auth/LoginWithEmail/page.js")
+        await import("@/app/theme/procatalog.web/Auth/LoginWithEmail/page.js")
       ).default;
     case "fgstore.mapp":
       return (
@@ -162,16 +246,26 @@ export async function resolveLoginWithEmail(themePage) {
     case "hoq.web":
       return (await import("@/app/theme/hoq.web/Auth/LoginWithEmail/page.js")).default;
     default:
-      return (
-        await import("@/app/theme/beluxjewel.web/Auth/LoginWithEmail/page.js")
-      ).default;
+      if (IsProcatalogDemo) {
+        return (
+          await import("@/app/theme/procatalog.web/Auth/LoginWithEmail/page.js")
+        ).default;
+      } else {
+        return (
+          await import("@/app/theme/beluxjewel.web/Auth/LoginWithEmail/page.js")
+        ).default;
+      }
   }
 }
 
 export async function resolveRegister(themePage) {
   switch (themePage) {
     case "beluxjewel.web":
-      return (await import("@/app/theme/beluxjewel.web/Auth/Register/page.js")).default;
+      if (IsProcatalogDemo) {
+        return (await import("@/app/theme/procatalog.web/Auth/Register/page.js")).default;
+      } else {
+        return (await import("@/app/theme/beluxjewel.web/Auth/Register/page.js")).default;
+      }
     case "julian.web":
       return (await import("@/app/theme/julian.web/Auth/Register/page.js")).default;
     case "julian4.web":
@@ -184,22 +278,32 @@ export async function resolveRegister(themePage) {
     case "fgstore.web":
       return (await import("@/app/theme/fgstore.web/Auth/Register/page.js")).default;
     case "fgstore.pro":
-      return (await import("@/app/theme/fgstore.pro/Auth/Register/page.js")).default;
+      return (await import("@/app/theme/procatalog.web/Auth/Register/page.js")).default;
     case "fgstore.mapp":
       return (await import("@/app/theme/fgstore.mapp/Auth/Register/page.js")).default;
     case "hoq.web":
       return (await import("@/app/theme/hoq.web/Auth/Register/page.js")).default;
     default:
-      return (await import("@/app/theme/beluxjewel.web/Auth/Register/page.js")).default;
+      if (IsProcatalogDemo) {
+        return (await import("@/app/theme/procatalog.web/Auth/Register/page.js")).default;
+      } else {
+        return (await import("@/app/theme/beluxjewel.web/Auth/Register/page.js")).default;
+      }
   }
 }
 
 export async function resolveLoginOption(themePage) {
   switch (themePage) {
     case "beluxjewel.web":
-      return (
-        await import("@/app/theme/beluxjewel.web/Auth/LoginOption/page.js")
-      ).default;
+      if (IsProcatalogDemo) {
+        return (
+          await import("@/app/theme/procatalog.web/Auth/LoginOption/page.js")
+        ).default;
+      } else {
+        return (
+          await import("@/app/theme/beluxjewel.web/Auth/LoginOption/page.js")
+        ).default;
+      }
     case "julian.web":
       return (await import("@/app/theme/julian.web/Auth/LoginOption/page.js")).default;
     case "julian4.web":
@@ -214,24 +318,36 @@ export async function resolveLoginOption(themePage) {
     case "fgstore.web":
       return (await import("@/app/theme/fgstore.web/Auth/LoginOption/page.js")).default;
     case "fgstore.pro":
-      return (await import("@/app/theme/fgstore.pro/Auth/LoginOption/page.js")).default;
+      return (await import("@/app/theme/procatalog.web/Auth/LoginOption/page.js")).default;
     case "fgstore.mapp":
       return (await import("@/app/theme/fgstore.mapp/Auth/LoginOption/page.js")).default;
     case "hoq.web":
       return (await import("@/app/theme/hoq.web/Auth/LoginOption/page.js")).default;
     default:
-      return (
-        await import("@/app/theme/beluxjewel.web/Auth/LoginOption/page.js")
-      ).default;
+      if (IsProcatalogDemo) {
+        return (
+          await import("@/app/theme/procatalog.web/Auth/LoginOption/page.js")
+        ).default;
+      } else {
+        return (
+          await import("@/app/theme/beluxjewel.web/Auth/LoginOption/page.js")
+        ).default;
+      }
   }
 }
 
 export async function resolveLoginWithMobileCode(themePage) {
   switch (themePage) {
     case "beluxjewel.web":
-      return (
-        await import("@/app/theme/beluxjewel.web/Auth/LoginWithMobileCode/page.js")
-      ).default;
+      if (IsProcatalogDemo) {
+        return (
+          await import("@/app/theme/procatalog.web/Auth/LoginWithMobileCode/page.js")
+        ).default;
+      } else {
+        return (
+          await import("@/app/theme/beluxjewel.web/Auth/LoginWithMobileCode/page.js")
+        ).default;
+      }
     case "julian.web":
       return (await import("@/app/theme/julian.web/Auth/LoginWithMobileCode/page.js")).default;
     case "julian4.web":
@@ -251,7 +367,7 @@ export async function resolveLoginWithMobileCode(themePage) {
       ).default;
     case "fgstore.pro":
       return (
-        await import("@/app/theme/fgstore.pro/Auth/LoginWithMobileCode/page.js")
+        await import("@/app/theme/procatalog.web/Auth/LoginWithMobileCode/page.js")
       ).default;
     case "fgstore.mapp":
       return (
@@ -262,18 +378,30 @@ export async function resolveLoginWithMobileCode(themePage) {
         await import("@/app/theme/hoq.web/Auth/LoginWithMobileCode/page.js")
       ).default;
     default:
-      return (
-        await import("@/app/theme/beluxjewel.web/Auth/LoginWithMobileCode/page.js")
-      ).default;
+      if (IsProcatalogDemo) {
+        return (
+          await import("@/app/theme/procatalog.web/Auth/LoginWithMobileCode/page.js")
+        ).default;
+      } else {
+        return (
+          await import("@/app/theme/beluxjewel.web/Auth/LoginWithMobileCode/page.js")
+        ).default;
+      }
   }
 }
 
 export async function resolveLoginWithEmailCode(themePage) {
   switch (themePage) {
     case "beluxjewel.web":
-      return (
-        await import("@/app/theme/beluxjewel.web/Auth/LoginWithEmailCode/page.js")
-      ).default;
+      if (IsProcatalogDemo) {
+        return (
+          await import("@/app/theme/procatalog.web/Auth/LoginWithEmailCode/page.js")
+        ).default;
+      } else {
+        return (
+          await import("@/app/theme/beluxjewel.web/Auth/LoginWithEmailCode/page.js")
+        ).default;
+      }
     case "julian.web":
       return (await import("@/app/theme/julian.web/Auth/LoginWithEmailCode/page.js")).default;
     case "julian4.web":
@@ -293,7 +421,7 @@ export async function resolveLoginWithEmailCode(themePage) {
       ).default;
     case "fgstore.pro":
       return (
-        await import("@/app/theme/fgstore.pro/Auth/LoginWithEmailCode/page.js")
+        await import("@/app/theme/procatalog.web/Auth/LoginWithEmailCode/page.js")
       ).default;
     case "fgstore.mapp":
       return (
@@ -304,18 +432,30 @@ export async function resolveLoginWithEmailCode(themePage) {
         await import("@/app/theme/hoq.web/Auth/LoginWithEmailCode/page.js")
       ).default;
     default:
-      return (
-        await import("@/app/theme/beluxjewel.web/Auth/LoginWithEmailCode/page.js")
-      ).default;
+      if (IsProcatalogDemo) {
+        return (
+          await import("@/app/theme/procatalog.web/Auth/LoginWithEmailCode/page.js")
+        ).default;
+      } else {
+        return (
+          await import("@/app/theme/beluxjewel.web/Auth/LoginWithEmailCode/page.js")
+        ).default;
+      }
   }
 }
 
 export async function resolveForgotPassword(themePage) {
   switch (themePage) {
     case "beluxjewel.web":
-      return (
-        await import("@/app/theme/beluxjewel.web/Auth/ForgotPassword/page.js")
-      ).default;
+      if (IsProcatalogDemo) {
+        return (
+          await import("@/app/theme/procatalog.web/Auth/ForgotPassword/page.js")
+        ).default;
+      } else {
+        return (
+          await import("@/app/theme/beluxjewel.web/Auth/ForgotPassword/page.js")
+        ).default;
+      }
     case "julian.web":
       return (await import("@/app/theme/julian.web/Auth/ForgotPassword/page.js")).default;
     case "julian4.web":
@@ -333,7 +473,7 @@ export async function resolveForgotPassword(themePage) {
       ).default;
     case "fgstore.pro":
       return (
-        await import("@/app/theme/fgstore.pro/Auth/ForgotPassword/page.js")
+        await import("@/app/theme/procatalog.web/Auth/ForgotPassword/page.js")
       ).default;
     case "fgstore.mapp":
       return (
@@ -342,18 +482,30 @@ export async function resolveForgotPassword(themePage) {
     case "hoq.web":
       return (await import("@/app/theme/hoq.web/Auth/ForgotPassword/page.js")).default;
     default:
-      return (
-        await import("@/app/theme/beluxjewel.web/Auth/ForgotPassword/page.js")
-      ).default;
+      if (IsProcatalogDemo) {
+        return (
+          await import("@/app/theme/procatalog.web/Auth/ForgotPassword/page.js")
+        ).default;
+      } else {
+        return (
+          await import("@/app/theme/beluxjewel.web/Auth/ForgotPassword/page.js")
+        ).default;
+      }
   }
 }
 
 export async function resolveContinueWithEmail(themePage) {
   switch (themePage) {
     case "beluxjewel.web":
-      return (
-        await import("@/app/theme/beluxjewel.web/Auth/ContinueWithEmail/page.js")
-      ).default;
+      if (IsProcatalogDemo) {
+        return (
+          await import("@/app/theme/procatalog.web/Auth/ContinueWithEmail/page.js")
+        ).default;
+      } else {
+        return (
+          await import("@/app/theme/beluxjewel.web/Auth/ContinueWithEmail/page.js")
+        ).default;
+      }
     case "julian.web":
       return (await import("@/app/theme/julian.web/Auth/ContinueWithEmail/page.js")).default;
     case "julian4.web":
@@ -373,7 +525,7 @@ export async function resolveContinueWithEmail(themePage) {
       ).default;
     case "fgstore.pro":
       return (
-        await import("@/app/theme/fgstore.pro/Auth/ContinueWithEmail/page.js")
+        await import("@/app/theme/procatalog.web/Auth/ContinueWithEmail/page.js")
       ).default;
     case "fgstore.mapp":
       return (
@@ -384,18 +536,30 @@ export async function resolveContinueWithEmail(themePage) {
         await import("@/app/theme/hoq.web/Auth/ContinueWithEmail/page.js")
       ).default;
     default:
-      return (
-        await import("@/app/theme/beluxjewel.web/Auth/ContinueWithEmail/page.js")
-      ).default;
+      if (IsProcatalogDemo) {
+        return (
+          await import("@/app/theme/procatalog.web/Auth/ContinueWithEmail/page.js")
+        ).default;
+      } else {
+        return (
+          await import("@/app/theme/beluxjewel.web/Auth/ContinueWithEmail/page.js")
+        ).default;
+      }
   }
 }
 
 export async function resolveContinueWithMobile(themePage) {
   switch (themePage) {
     case "beluxjewel.web":
-      return (
-        await import("@/app/theme/beluxjewel.web/Auth/ContinueWithMobile/page.js")
-      ).default;
+      if (IsProcatalogDemo) {
+        return (
+          await import("@/app/theme/procatalog.web/Auth/ContinueWithMobile/page.js")
+        ).default;
+      } else {
+        return (
+          await import("@/app/theme/beluxjewel.web/Auth/ContinueWithMobile/page.js")
+        ).default;
+      }
     case "julian.web":
       return (await import("@/app/theme/julian.web/Auth/ContinueWithMobile/page.js")).default;
     case "julian4.web":
@@ -415,7 +579,7 @@ export async function resolveContinueWithMobile(themePage) {
       ).default;
     case "fgstore.pro":
       return (
-        await import("@/app/theme/fgstore.pro/Auth/ContinueWithMobile/page.js")
+        await import("@/app/theme/procatalog.web/Auth/ContinueWithMobile/page.js")
       ).default;
     case "fgstore.mapp":
       return (
@@ -426,16 +590,26 @@ export async function resolveContinueWithMobile(themePage) {
         await import("@/app/theme/hoq.web/Auth/ContinueWithMobile/page.js")
       ).default;
     default:
-      return (
-        await import("@/app/theme/beluxjewel.web/Auth/ContinueWithMobile/page.js")
-      ).default;
+      if (IsProcatalogDemo) {
+        return (
+          await import("@/app/theme/procatalog.web/Auth/ContinueWithMobile/page.js")
+        ).default;
+      } else {
+        return (
+          await import("@/app/theme/beluxjewel.web/Auth/ContinueWithMobile/page.js")
+        ).default;
+      }
   }
 }
 
 export async function resolveConfirmation(themePage) {
   switch (themePage) {
     case "beluxjewel.web":
-      return (await import("@/app/theme/beluxjewel.web/confirmation/page.jsx")).default;
+      if (IsProcatalogDemo) {
+        return (await import("@/app/theme/procatalog.web/confirmation/page.jsx")).default;
+      } else {
+        return (await import("@/app/theme/beluxjewel.web/confirmation/page.jsx")).default;
+      }
     case "julian.web":
       return (await import("@/app/theme/julian.web/confirmation/page.jsx")).default;
     case "julian4.web":
@@ -448,20 +622,28 @@ export async function resolveConfirmation(themePage) {
     case "fgstore.web":
       return (await import("@/app/theme/fgstore.web/confirmation/page.jsx")).default;
     case "fgstore.pro":
-      return (await import("@/app/theme/fgstore.pro/confirmation/page.jsx")).default;
+      return (await import("@/app/theme/procatalog.web/confirmation/page.jsx")).default;
     case "fgstore.mapp":
       return (await import("@/app/theme/fgstore.mapp/confirmation/page.jsx")).default;
     case "hoq.web":
       return (await import("@/app/theme/hoq.web/confirmation/page.jsx")).default;
     default:
-      return (await import("@/app/theme/beluxjewel.web/confirmation/page.jsx")).default;
+      if (IsProcatalogDemo) {
+        return (await import("@/app/theme/procatalog.web/confirmation/page.jsx")).default;
+      } else {
+        return (await import("@/app/theme/beluxjewel.web/confirmation/page.jsx")).default;
+      }
   }
 }
 
 export async function resolveLookbook(themePage) {
   switch (themePage) {
     case "beluxjewel.web":
-      return (await import("@/app/theme/beluxjewel.web/Lookbook/page.js")).default;
+      if (IsProcatalogDemo) {
+        return (await import("@/app/theme/procatalog.web/Lookbook/page.js")).default;
+      } else {
+        return (await import("@/app/theme/beluxjewel.web/Lookbook/page.js")).default;
+      }
     case "julian.web":
       return (await import("@/app/theme/julian.web/Lookbook/page.js")).default;
     case "julian4.web":
@@ -473,20 +655,28 @@ export async function resolveLookbook(themePage) {
     case "fgstore.web":
       return (await import("@/app/theme/fgstore.web/Lookbook/page.js")).default;
     case "fgstore.pro":
-      return (await import("@/app/theme/fgstore.pro/Lookbook/page.js")).default;
+      return (await import("@/app/theme/procatalog.web/Lookbook/page.js")).default;
     case "fgstore.mapp":
       return (await import("@/app/theme/fgstore.mapp/Lookbook/page.js")).default;
     case "hoq.web":
       return (await import("@/app/theme/hoq.web/Lookbook/page.js")).default;
     default:
-      return (await import("@/app/theme/beluxjewel.web/Lookbook/page.js")).default;
+      if (IsProcatalogDemo) {
+        return (await import("@/app/theme/procatalog.web/Lookbook/page.js")).default;
+      } else {
+        return (await import("@/app/theme/beluxjewel.web/Lookbook/page.js")).default;
+      }
   }
 }
 
 export async function resolvePayment(themePage) {
   switch (themePage) {
     case "beluxjewel.web":
-      return (await import("@/app/theme/beluxjewel.web/payment/page.jsx")).default;
+      if (IsProcatalogDemo) {
+        return (await import("@/app/theme/procatalog.web/payment/page.jsx")).default;
+      } else {
+        return (await import("@/app/theme/beluxjewel.web/payment/page.jsx")).default;
+      }
     case "julian.web":
       return (await import("@/app/theme/julian.web/payment/page.jsx")).default;
     case "julian4.web":
@@ -499,20 +689,28 @@ export async function resolvePayment(themePage) {
     case "fgstore.web":
       return (await import("@/app/theme/fgstore.web/payment/page.jsx")).default;
     case "fgstore.pro":
-      return (await import("@/app/theme/fgstore.pro/payment/page.jsx")).default;
+      return (await import("@/app/theme/procatalog.web/payment/page.jsx")).default;
     case "fgstore.mapp":
       return (await import("@/app/theme/fgstore.mapp/payment/page.jsx")).default;
     case "hoq.web":
       return (await import("@/app/theme/hoq.web/payment/page.jsx")).default;
     default:
-      return (await import("@/app/theme/beluxjewel.web/payment/page.jsx")).default;
+      if (IsProcatalogDemo) {
+        return (await import("@/app/theme/procatalog.web/payment/page.jsx")).default;
+      } else {
+        return (await import("@/app/theme/beluxjewel.web/payment/page.jsx")).default;
+      }
   }
 }
 
 export async function resolveDelivery(themePage) {
   switch (themePage) {
     case "beluxjewel.web":
-      return (await import("@/app/theme/beluxjewel.web/delivery/page.jsx")).default;
+      if (IsProcatalogDemo) {
+        return (await import("@/app/theme/procatalog.web/delivery/page.jsx")).default;
+      } else {
+        return (await import("@/app/theme/beluxjewel.web/delivery/page.jsx")).default;
+      }
     case "julian.web":
       return (await import("@/app/theme/julian.web/delivery/page.jsx")).default;
     case "julian4.web":
@@ -525,13 +723,17 @@ export async function resolveDelivery(themePage) {
     case "fgstore.web":
       return (await import("@/app/theme/fgstore.web/delivery/page.jsx")).default;
     case "fgstore.pro":
-      return (await import("@/app/theme/fgstore.pro/delivery/page.jsx")).default;
+      return (await import("@/app/theme/procatalog.web/delivery/page.jsx")).default;
     case "fgstore.mapp":
       return (await import("@/app/theme/fgstore.mapp/delivery/page.jsx")).default;
     case "hoq.web":
       return (await import("@/app/theme/hoq.web/delivery/page.jsx")).default;
     default:
-      return (await import("@/app/theme/beluxjewel.web/delivery/page.jsx")).default;
+      if (IsProcatalogDemo) {
+        return (await import("@/app/theme/procatalog.web/delivery/page.jsx")).default;
+      } else {
+        return (await import("@/app/theme/beluxjewel.web/delivery/page.jsx")).default;
+      }
   }
 }
 
@@ -547,7 +749,11 @@ export async function resolveMenu(themePage) {
 export async function resolveCustomOrders(themePage) {
   switch (themePage) {
     case "beluxjewel.web":
-      return (await import("@/app/theme/beluxjewel.web/CustomOrder")).default;
+      if (IsProcatalogDemo) {
+        return (await import("@/app/theme/procatalog.web/CustomOrder")).default;
+      } else {
+        return (await import("@/app/theme/beluxjewel.web/CustomOrder")).default;
+      }
     case "julian.web":
       return (await import("@/app/theme/julian.web/CustomOrder")).default;
     case "julian4.web":
@@ -560,10 +766,14 @@ export async function resolveCustomOrders(themePage) {
     case "fgstore.web":
       return (await import("@/app/theme/fgstore.web/CustomOrder")).default;
     case "fgstore.pro":
-      return (await import("@/app/theme/fgstore.pro/CustomOrder")).default;
+      return (await import("@/app/theme/procatalog.web/CustomOrder")).default;
     case "fgstore.mapp":
       return (await import("@/app/theme/fgstore.mapp/home/CustomOrder")).default;
     default:
-      return (await import("@/app/theme/fgstore.web/CustomOrder")).default;
+      if (IsProcatalogDemo) {
+        return (await import("@/app/theme/procatalog.web/CustomOrder")).default;
+      } else {
+        return (await import("@/app/theme/fgstore.web/CustomOrder")).default;
+      }
   }
 }
