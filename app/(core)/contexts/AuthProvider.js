@@ -97,7 +97,7 @@ export function AuthProvider({ children, storeInit, theme }) {
               syncUserDetailToCookies(userDetail, storeInit);
               setislogin(true);
               setSession("LoginUser", true);
-              setSession("loginUserDetail", );userDetail
+              setSession("loginUserDetail", userDetail);
               setLoginUserDetail(userDetail);
               if (redirectEmailUrl) {
                 router.replace(redirectEmailUrl);
