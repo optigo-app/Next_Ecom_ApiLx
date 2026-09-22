@@ -231,12 +231,12 @@ export default function Account({ Storeinit }) {
             <Tab label="Your Profile" {...a11yProps(0)} />
             <Tab label="ORDER HISTORY" {...a11yProps(1)} />
             <Tab label="MANAGE ADDRESSES" {...a11yProps(2)} />
-            {accountValidation() && <Tab label="ACCOUNT" {...a11yProps(3)} />}
+            {Boolean(accountValidation()) && <Tab label="ACCOUNT" {...a11yProps(3)} />}
             <Tab
               label="CHANGE PASSWORD"
               {...a11yProps(accountValidation() ? 4 : 3)}
             />
-            {loginUserDetail?.IsPLWOn && <Tab label="PLM" {...a11yProps(1)} />}
+            {Boolean(loginUserDetail?.IsPLWOn) && <Tab label="PLM" {...a11yProps(1)} />}
             <Tab label="Log Out" onClick={() => setLogoutModal(true)} />
           </Tabs>
         </Box>
@@ -275,7 +275,7 @@ export default function Account({ Storeinit }) {
                 <ManageAddress />
               </CustomTabPanel>
 
-              {accountValidation() && (
+              {Boolean(accountValidation()) && (
                 <CustomTabPanel
                   value={value}
                   index={3}

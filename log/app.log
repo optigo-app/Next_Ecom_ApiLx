@@ -12,3 +12,10 @@
 [2026-09-22T04:44:41.568Z] [INFO] [beluxjewel.web] [HOME_TRENDING] [TRENDING ACTION] Tenant 'beluxjewel.web' → 17 items from table 'design_Productlist_20_BEdiamond_BEcolorStone_11' | data: {"domain":"beluxjewel.web","table":"design_Productlist_20_BEdiamond_BEcolorStone_11","count":17}
 [2026-09-22T04:44:49.046Z] [INFO] [beluxjewel.web] [STORE_INIT] Fetching StoreInit configuration for tenant: 'beluxjewel.web' | data: {"domain":"beluxjewel.web"}
 [2026-09-22T04:44:49.051Z] [INFO] [beluxjewel.web] [STORE_INIT] Successfully retrieved StoreInit for 'beluxjewel.web' | data: {"domain":"beluxjewel.web","rd":1,"rd1":27,"rd2":1}
+[2026-09-22T04:46:18.572Z] [INFO] [beluxjewel.web] [STORE_INIT] Fetching StoreInit configuration for tenant: 'beluxjewel.web' | data: {"domain":"beluxjewel.web"}
+[2026-09-22T04:46:18.575Z] [INFO] [beluxjewel.web] [STORE_INIT] Successfully retrieved StoreInit for 'beluxjewel.web' | data: {"domain":"beluxjewel.web","rd":1,"rd1":27,"rd2":1}
+[2026-09-22T04:51:01.102Z] [INFO] [beluxjewel.web] [STORE_INIT] Fetching StoreInit configuration for tenant: 'beluxjewel.web' | data: {"domain":"beluxjewel.web"}
+[2026-09-22T04:51:01.104Z] [INFO] [beluxjewel.web] [STORE_INIT] Successfully retrieved StoreInit for 'beluxjewel.web' | data: {"domain":"beluxjewel.web","rd":1,"rd1":27,"rd2":1}
+[2026-09-22T04:51:05.346Z] [INFO] [beluxjewel.web] [HOME_BESTSELLER] [BESTSELLER ACTION] Tenant 'beluxjewel.web' → 2 items from table 'design_Productlist_20_BEdiamond_BEcolorStone_11' | data: {"domain":"beluxjewel.web","table":"design_Productlist_20_BEdiamond_BEcolorStone_11","count":2}
+[2026-09-22T04:51:05.347Z] [INFO] [beluxjewel.web] [HOME_NEWARRIVAL] [NEW ARRIVAL ACTION] Tenant 'beluxjewel.web' → 2 items from table 'design_Productlist_20_BEdiamond_BEcolorStone_11' | data: {"domain":"beluxjewel.web","table":"design_Productlist_20_BEdiamond_BEcolorStone_11","count":2}
+[2026-09-22T04:51:05.348Z] [INFO] [beluxjewel.web] [HOME_TRENDING] [TRENDING ACTION] Tenant 'beluxjewel.web' → 17 items from table 'design_Productlist_20_BEdiamond_BEcolorStone_11' | data: {"domain":"beluxjewel.web","table":"design_Productlist_20_BEdiamond_BEcolorStone_11","count":17}

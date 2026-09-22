@@ -361,7 +361,7 @@ export default function YourProfile() {
         />
 
         {/* Edit Mode Actions */}
-        {editMode && (
+        {Boolean(editMode) && (
           <Fade in={editMode}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mt: 1 }}>
               <Button
