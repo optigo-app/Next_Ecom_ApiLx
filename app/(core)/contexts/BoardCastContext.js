@@ -9,8 +9,8 @@ const BroadcasterContext = createContext();
 const CHANNEL_NAME = 'app_sync_channel';
 
 export const BroadcasterProvider = ({ children }) => {
-    const { setSyncData } = useSyncStore();
-    const { setCartCountNum, setWishCountNum } = useStore();
+const setSyncData = useSyncStore((state) => state.setSyncData);
+const { setCartCountNum, setWishCountNum } = useStore();
 
     const channelRef = useRef(null);
 

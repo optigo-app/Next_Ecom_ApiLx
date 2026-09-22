@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, createContext, useState, useContext } from "react";
+import React, { useEffect, createContext, useState, useContext, useMemo } from "react";
 import { CurrencyComboAPI } from "@/app/(core)/utils/API/Combo/CurrencyComboAPI";
 import { MetalColorCombo } from "@/app/(core)/utils/API/Combo/MetalColorCombo";
 import { ColorStoneQualityColorComboAPI } from "@/app/(core)/utils/API/Combo/ColorStoneQualityColorComboAPI";
@@ -15,8 +15,8 @@ import { WebLoginWithMobileToken } from "../utils/API/Auth/WebLoginWithMobileTok
 import { useSearchParams } from "next/navigation";
 import { useNextRouterLikeRR } from "../hooks/useLocationRd";
 import { getSession, setSession } from "../utils/FetchSessionData";
-import { GetCacheList } from "../utils/API/Cache/CacheApi";
-import { fetchStoreInitData } from "../utils/fetchStoreInit";
+// import { GetCacheList } from "../utils/API/Cache/CacheApi";
+// import { fetchStoreInitData } from "../utils/fetchStoreInit";
 
 const masterContext = createContext({
   cacheList: null,
@@ -155,7 +155,6 @@ export const MasterProvider = ({
     return () => clearTimeout(timer);
   }, []);
 
-  console.log(typeof window !== "undefined");
   const callAllApi = async () => {
     const storeInit = getStoreInit || window.__STORE_INIT__;
     const loginUserDetail = getSession("loginUserDetail");
@@ -279,12 +278,13 @@ export const MasterProvider = ({
     setIsMasterReady(false);
   };
 
-  const value = {
-    cacheList,
-    setCacheList,
-    isMasterReady,
-    clearAllCacheData,
-  };
+const value = useMemo(() => ({
+  cacheList,
+  setCacheList,
+  isMasterReady,
+  clearAllCacheData,
+}), [cacheList, isMasterReady, clearAllCacheData]);
+
 
   return (
     <masterContext.Provider value={value}>{children}</masterContext.Provider>

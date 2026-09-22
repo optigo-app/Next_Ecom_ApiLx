@@ -1143,35 +1143,40 @@ export function useListingPage({
 
         const initialPage = getPageFromUrlOrProps();
 
+        const savedMenu = getSession("menuparams");
+        const targetQuery = (savedMenu && (savedMenu.FilterKey || savedMenu.FilterKey1 || savedMenu.FilterKey2))
+          ? savedMenu
+          : (productlisttype || searchParams || menuIdent);
+
+        const policyParams = getPricingPolicyParams({
+          storeinit,
+          loginUserDetail,
+          islogin,
+        });
+
+        const queryPayload = {
+          ...policyParams,
+          ...(typeof targetQuery === "object" && !Array.isArray(targetQuery) ? targetQuery : {}),
+          sortBy: effectiveSortBy,
+          page: initialPage,
+          pageSize: storeinit?.PageSize || 10,
+        };
+
+        if (Array.isArray(targetQuery) && targetQuery.length >= 2) {
+          targetQuery[0].forEach((k, idx) => {
+            if (k && targetQuery[1]?.[idx]) queryPayload[k] = targetQuery[1][idx];
+          });
+        } else if (typeof targetQuery === "string" && targetQuery) {
+          queryPayload.M = targetQuery;
+        }
+
+        const activeTable = Cookies.get("pricing_table_name") || Cookies.get("policy_table");
+        if (activeTable) {
+          queryPayload.tableName = activeTable;
+        }
+
         let sqliteLoaded = false;
         try {
-          const savedMenu = getSession("menuparams");
-          const targetQuery = (savedMenu && (savedMenu.FilterKey || savedMenu.FilterKey1 || savedMenu.FilterKey2))
-            ? savedMenu
-            : (productlisttype || searchParams || menuIdent);
-
-          const policyParams = getPricingPolicyParams({
-            storeinit,
-            loginUserDetail,
-            islogin,
-          });
-
-          const queryPayload = {
-            ...policyParams,
-            ...(typeof targetQuery === "object" && !Array.isArray(targetQuery) ? targetQuery : {}),
-            sortBy: effectiveSortBy,
-            page: initialPage,
-            pageSize: storeinit?.PageSize || 10,
-          };
-
-          if (Array.isArray(targetQuery) && targetQuery.length >= 2) {
-            targetQuery[0].forEach((k, idx) => {
-              if (k && targetQuery[1]?.[idx]) queryPayload[k] = targetQuery[1][idx];
-            });
-          } else if (typeof targetQuery === "string" && targetQuery) {
-            queryPayload.M = targetQuery;
-          }
-
           const sqliteRes = await getSqliteProducts(
             typeof targetQuery === "string" ? targetQuery : queryPayload,
             queryPayload,
