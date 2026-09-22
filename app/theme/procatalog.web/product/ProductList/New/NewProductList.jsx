@@ -1,0 +1,823 @@
+"use client";
+import { useMemo, useState, useEffect } from "react";
+import {
+  Box,
+  Card,
+  CardMedia,
+  CardContent,
+  Typography,
+  IconButton,
+  Chip,
+  useMediaQuery,
+  Button,
+} from "@mui/material";
+import Grid from "@mui/material/Grid";
+import { motion } from "framer-motion";
+import ProductSkeleton from "./Skeleton";
+import { useTheme } from "@emotion/react";
+import "./index.scss";
+import {
+  formatter,
+  formatTitleLine,
+} from "@/app/(core)/utils/Glob_Functions/GlobalFunction";
+import CartToggleButton from "./CartToggleButton";
+import WishToggleButton from "./WishToggleButton";
+import MobileCartToggleButton from "./MobileCartButton";
+import NoProductFound from "./NoProductFound";
+import { getSession } from "@/app/(core)/utils/FetchSessionData";
+
+const IsSetupFor = true;
+const noImageFound = "/image-not-found.jpg";
+
+const ALL_METAL_ID_MAP = {
+  1: "#E5E7EB", // PWD
+  2: "#E5C378", // Yellow
+  3: "#D0D5DD", // White
+  4: "#E8A398", // Rose
+  6: "#E5C378", // YW
+  7: "#E5E7EB", // P-W
+  8: "#E8A398", // RG
+  10: "#E8A398", // PW
+  11: "#E5C378", // TYellow
+  12: "#E5C378", // PYellow
+  13: "#E5E7EB", // P
+  14: "#D0D5DD", // W
+  15: "#E5C378", // Y
+  16: "#E8A398", // ROSE AND WHITE GOLD
+  17: "#D0D5DD", // White G
+  19: "#E5C378", // Yellow Gold
+  20: "#E5C378", // PYW
+  21: "#E5C378", // Y-W
+  22: "#E5C378", // Y-W-P
+  23: "#E8A398", // Rose Gold
+  24: "#D0D5DD", // White Gold
+  25: "#E5C378", // Yellow1
+  26: "#E5C378", // FYellow1
+  27: "#E5C378", // YLSYN
+  28: "#D0D5DD", // WR.
+  29: "#E5C378", // YLL
+  30: "#E5C378", // Glossy
+  31: "#E5C378", // MV
+  32: "#E5C378", // polo
+  33: "#E5C378", // YELLOW-PH
+  34: "#E8A398", // ROSE GOLD -PH
+  35: "#C0C0C0", // silver
+  36: "#D4E157", // Green Gold
+  37: "#D0D5DD", // WG
+  38: "#E5C378", // YG
+};
+
+const getMetalColorHex = (targetObj, prodData) => {
+  // 1. Check direct ID mapping first (most authoritative from API list)
+  const colorId = Number(targetObj?.id || prodData?.MetalColorid);
+  if (colorId && ALL_METAL_ID_MAP[colorId]) {
+    return ALL_METAL_ID_MAP[colorId];
+  }
+
+  // 2. Check if colorcode is an explicit hex code (e.g. #FF0000)
+  const sessionCode = targetObj?.colorcode;
+  if (sessionCode && sessionCode.startsWith("#")) {
+    return sessionCode;
+  }
+
+  // 3. Match by metal color name string
+  const nameKey = (
+    targetObj?.metalcolorname ||
+    targetObj?.colorname ||
+    prodData?.MetalColor ||
+    ""
+  )
+    .toLowerCase()
+    .trim();
+
+  if (nameKey) {
+    if (nameKey.includes("rose") || nameKey === "rg") return "#E8A398";
+    if (nameKey.includes("yellow") || nameKey === "yg" || nameKey.includes("yl")) return "#E5C378";
+    if (nameKey.includes("white") || nameKey === "wg" || nameKey.includes("silver")) return "#D0D5DD";
+    if (nameKey.includes("green")) return "#D4E157";
+    if (nameKey.includes("black")) return "#2D3748";
+    if (nameKey === "p" || nameKey === "pwd" || nameKey === "p-w") return "#E5E7EB";
+  }
+
+  // 4. ProductData direct color code if valid hex
+  if (prodData?.MetalColorCode && prodData.MetalColorCode.startsWith("#")) {
+    return prodData.MetalColorCode;
+  }
+
+  return "#E5C378";
+};
+
+const WeightBadge = ({ label, value }) => {
+  return (
+    <Box
+      sx={{
+        display: "inline-flex",
+        alignItems: "center",
+        height: 20,
+        px: 0.7,
+        bgcolor: "#F7F6F2",
+        border: "1px solid #E2DFD7",
+        borderRadius: "2px",
+        fontSize: { xs: "0.6rem", sm: "0.64rem" },
+        lineHeight: 1,
+        whiteSpace: "nowrap",
+        userSelect: "none",
+      }}
+    >
+      <Typography
+        component="span"
+        sx={{
+          fontSize: "inherit",
+          fontWeight: 400,
+          color: "#666666",
+          mr: 0.4,
+          letterSpacing: "0.01em",
+        }}
+      >
+        {label}&nbsp;:
+      </Typography>
+      <Typography
+        component="span"
+        sx={{
+          fontSize: "inherit",
+          fontWeight: 600,
+          color: "#1a1a1a",
+        }}
+      >
+        {value}
+      </Typography>
+    </Box>
+  );
+};
+
+const ChipBar = (title, bgcolor, position) => {
+  return (
+    <>
+      <Chip
+        label={title}
+        sx={{
+          bgcolor: "#F4F3EE",
+          color: "#222222",
+          border: "1px solid #E2E0D8",
+          fontWeight: 500,
+          fontSize: {
+            xs: "0.6rem",
+            sm: "0.65rem",
+            md: "0.68rem",
+            lg: "0.72rem",
+          },
+          letterSpacing: "0.02em",
+          height: {
+            xs: 20,
+            sm: 22,
+            md: 22,
+            lg: 24,
+          },
+          borderRadius: "2px",
+          px: {
+            xs: 0.5,
+            sm: 0.6,
+            md: 0.7,
+          },
+          py: 0,
+          textTransform: "capitalize",
+          boxShadow: "none",
+          "& .MuiChip-label": {
+            px: {
+              xs: 0.6,
+              sm: 0.7,
+              md: 0.8,
+            },
+            py: 0.1,
+            lineHeight: 1.1,
+          },
+        }}
+      />
+    </>
+  );
+};
+
+const decodeEntities = (html) => {
+  if (!html || typeof html !== "string") return "";
+  if (typeof document === "undefined") {
+    return html
+      .replace(/&amp;/g, "&")
+      .replace(/&lt;/g, "<")
+      .replace(/&gt;/g, ">")
+      .replace(/&quot;/g, '"')
+      .replace(/&#39;/g, "'")
+      .replace(/&nbsp;/g, " ");
+  }
+  var txt = document.createElement("textarea");
+  txt.innerHTML = html;
+  return txt.value;
+};
+
+const MotionCard = motion(Card);
+
+const JewelryProductGrid = ({
+  storeinit,
+  loginUserDetail,
+  productListData,
+  isFiltering,
+  handleMoveToDetail = () => {},
+  showFilter,
+  filter,
+  filterData,
+  handleCartandWish = () => {},
+  cartArr,
+  wishArr,
+}) => {
+  const theme = useTheme();
+  const isMedium = useMediaQuery("(max-width:1000px)");
+  const isMobile = useMediaQuery("(max-width: 640px)");
+
+  const getDesignVideoFol = storeinit?.CDNVPath;
+  const getDesignImageFol = storeinit?.CDNDesignImageFol;
+
+  // Listing display image: always show first image slot (~1.ext).
+  // Color-correct image for navigation is handled by getCardImageUrl in handleMoveToDetail.
+  const getDynamicImages = (designno, extension) => {
+    return `${getDesignImageFol}${designno}~1.${extension}`;
+  };
+
+  const getDynamicRollImages = (designno, count, extension) => {
+    if (count > 1) {
+      return `${getDesignImageFol}${designno}~${2}.${extension}`;
+      // return `${getDesignImageFol}${designno}~${2}.jpg`;
+    }
+    return;
+  };
+
+  const getDynamicVideo = (designno, count, extension) => {
+    if (extension && count > 0) {
+      const url = `${getDesignVideoFol}${designno}~${1}.${extension}`;
+      return url;
+    }
+    return;
+  };
+
+  const showSkeletons = isFiltering || !productListData;
+  const isNoProduct =
+    !isFiltering &&
+    Array.isArray(productListData) &&
+    productListData.length === 0;
+
+  if (isNoProduct) {
+    return <NoProductFound />;
+  }
+
+  return (
+    <Box
+      sx={{
+        py: 3,
+        position: "relative",
+        overflow: "hidden",
+      }}
+    >
+      <Box sx={{ position: "relative", zIndex: 1 }}>
+        {(() => {
+          if (showSkeletons) {
+            return (
+              <Grid container spacing={{ xs: 1, sm: 1, md: 1 }}>
+                {Array.from(new Array(12)).map((_, index) => (
+                  <Grid
+                    key={index}
+                    size={{
+                      xs: 6,
+                      sm: 6,
+                      md: isMedium ? 6 : 3,
+                    }}
+                  >
+                    <ProductSkeleton key={index} />
+                  </Grid>
+                ))}
+              </Grid>
+            );
+          }
+
+          return (
+            <Grid container spacing={0}>
+              {productListData.map((prod, index) => {
+                const columns = isMedium ? 2 : 4;
+                return (
+                  <Grid
+                    key={prod?.ArticleNo ? `${prod.ArticleNo}_${index}` : prod?.autocode ? `${prod.autocode}_${index}` : `${prod?.id || 'prod'}_${index}`}
+                    size={{
+                      xs: 6,
+                      sm: 6,
+                      md: isMedium ? 6 : 3,
+                    }}
+                    sx={{
+                      border: "1px solid #c0c0c096",
+                      borderLeft:
+                        index % columns === 0 ? "1px solid #c0c0c096" : "0",
+                      borderTop: index < columns ? "1px solid #c0c0c096" : "0",
+                      boxSizing: "border-box",
+                    }}
+                  >
+                    <ProductCard
+                      product={prod}
+                      index={index}
+                      StoreInit={storeinit}
+                      productData={prod}
+                      handleCartandWish={handleCartandWish}
+                      cartArr={cartArr}
+                      wishArr={wishArr}
+                      loginCurrency={loginUserDetail}
+                      imageUrl={getDynamicImages(
+                        prod?.designno,
+                        prod?.ImageExtension,
+                      )}
+                      videoUrl={getDynamicVideo(
+                        prod?.designno,
+                        prod?.VideoCount,
+                        prod?.VideoExtension,
+                      )}
+                      RollImageUrl={getDynamicRollImages(
+                        prod?.designno,
+                        prod?.ImageCount,
+                        prod?.ImageExtension,
+                      )}
+                      handleMoveToDetail={handleMoveToDetail}
+                      ImageCount={prod?.ImageCount}
+                      VideoCount={prod?.VideoCount}
+                      showFilter={showFilter}
+                      filter={filter}
+                      filterData={filterData}
+                      isMobile={isMobile}
+                    />
+                  </Grid>
+                );
+              })}
+            </Grid>
+          );
+        })()}
+      </Box>
+    </Box>
+  );
+};
+
+export default JewelryProductGrid;
+
+const ProductCard = ({
+  product,
+  index,
+  productData,
+  StoreInit,
+  calcVal,
+  videoUrl,
+  handleCartandWish,
+  cartArr,
+  wishArr,
+  RollImageUrl,
+  imageUrl,
+  handleMoveToDetail,
+  loginCurrency,
+  showFilter,
+  filter,
+  filterData,
+  ImageCount,
+  VideoCount,
+  isMobile,
+}) => {
+  const cardVariants = {
+    hidden: {
+      opacity: 0,
+      y: 50,
+      scale: 0.95,
+    },
+    visible: {
+      opacity: 1,
+      y: 0,
+      scale: 1,
+      transition: {
+        duration: 0.25,
+        delay: Math.min(index * 0.02, 0.15),
+        ease: [0.25, 0.46, 0.45, 0.94],
+      },
+    },
+  };
+
+  const hasUpperTags =
+    productData?.IsInReadyStock == 1 ||
+    productData?.IsBestSeller == 1 ||
+    productData?.IsTrending == 1 ||
+    productData?.IsNewArrival == 1;
+
+  const Article = productData?.ArticleNo;
+  const DesignNo = productData?.designno;
+
+  const mtColorLocal = useMemo(() => {
+    try {
+      return getSession("MetalColorCombo") || [];
+    } catch {
+      return [];
+    }
+  }, []);
+
+  const targetColorObj = useMemo(() => {
+    if (!productData?.MetalColorid || !Array.isArray(mtColorLocal)) return null;
+    return mtColorLocal.find(
+      (ele) => Number(ele?.id) === Number(productData?.MetalColorid)
+    );
+  }, [productData?.MetalColorid, mtColorLocal]);
+
+  const colorHex = getMetalColorHex(targetColorObj, productData);
+  const colorName =
+    targetColorObj?.metalcolorname || targetColorObj?.colorname || "";
+  const purityText =
+    productData?.MetalTypePurity ||
+    productData?.MetalTypeName ||
+    productData?.MetalPurity ||
+    "";
+  const metalText =
+    [purityText, colorName].filter(Boolean).join(" ") ||
+    productData?.Categoryname ||
+    "";
+
+  return (
+    <MotionCard
+      id={`product-card-${Article}`}
+      variants={cardVariants}
+      initial="hidden"
+      animate="visible"
+      sx={{
+        boxShadow: "none !important",
+        outline: "none !important",
+        border: "none !important",
+        borderRadius: 0,
+        overflow: "hidden",
+        backgroundColor: "#ffffff",
+        height: "100%",
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "space-between",
+        position: "relative",
+        transition: "all 0.2s ease",
+        "&:hover": {
+          zIndex: 2,
+        },
+      }}
+    >
+      <Box
+        className="product-container"
+        onClick={() => handleMoveToDetail(productData, imageUrl)}
+        sx={{
+          position: "relative",
+          width: "100%",
+          overflow: "hidden",
+          aspectRatio: {
+            xs: "3 / 4",
+            sm: "1 / 1.25",
+            md: "1 / 1.2",
+            lg: "1 / 1.18",
+          },
+        }}
+      >
+        {/* Main Image */}
+        <CardMedia
+          component="img"
+          src={imageUrl}
+          alt={product.title}
+          onError={(e) => {
+            e.target.onerror = null;
+            e.stopPropagation();
+            e.target.src = noImageFound;
+            e.onContextMenu = (e) => e.preventDefault();
+          }}
+          draggable={false}
+          onContextMenu={(e) => e.preventDefault()}
+          className="product-image"
+          sx={{
+            width: "100%",
+            height: "100%",
+            objectFit: "contain",
+            borderRadius: 0,
+            transition: "0s ease-in-out",
+            mixBlendMode: "multiply",
+          }}
+          onClick={() => {
+            handleMoveToDetail(productData);
+          }}
+        />
+        {(() => {
+          const validVideo = videoUrl !== undefined;
+          const validImage = RollImageUrl !== undefined;
+
+          if (validVideo) {
+            return (
+              <Box
+                sx={{
+                  position: "absolute",
+                  width: "100%",
+                  height: "100%",
+                  top: 0,
+                  left: 0,
+                  bottom: 0,
+                  right: 0,
+                  bgcolor: "#fff",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+                className="product-hover-image"
+              >
+                <CardMedia
+                  component="video"
+                  src={videoUrl}
+                  autoPlay
+                  muted
+                  loop
+                  playsInline
+                  onError={(e) => {
+                    e.target.poster = noImageFound;
+                    e.stopPropagation();
+                    e.onContextMenu = (e) => e.preventDefault();
+                  }}
+                  onClick={() => {
+                    handleMoveToDetail(productData, imageUrl);
+                  }}
+                  onContextMenu={(e) => e.preventDefault()}
+                  sx={{
+                    objectFit: "contain !important",
+                    borderRadius: 0,
+                    transition: "opacity 0.4s ease",
+                    width: "100%",
+                    height: "100%",
+                  }}
+                />
+              </Box>
+            );
+          }
+
+          if (validImage) {
+            return (
+              <>
+                <Box
+                  sx={{
+                    position: "absolute",
+                    width: "100%",
+                    height: "100%",
+                    top: 0,
+                    left: 0,
+                    bottom: 0,
+                    right: 0,
+                    bgcolor: "#e9e9e91a",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                  className="product-hover-image"
+                >
+                  <CardMedia
+                    component="img"
+                    src={RollImageUrl}
+                    alt="Roll Up Image"
+                    draggable={false}
+                    onContextMenu={(e) => e.preventDefault()}
+                    onError={(e) => {
+                      e.target.src = noImageFound;
+                      e.stopPropagation();
+                    }}
+                    onClick={() => {
+                      handleMoveToDetail(productData, RollImageUrl);
+                    }}
+                    sx={{
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "contain",
+                      borderRadius: 0,
+                      transition: "opacity 0.4s ease",
+                      mixBlendMode: "multiply",
+                    }}
+                  />
+                </Box>
+              </>
+            );
+          }
+          return null;
+        })()}
+
+        {!isMobile && (
+          <Box>
+            <CartToggleButton
+              productData={productData}
+              cartArr={cartArr}
+              handleCartandWish={handleCartandWish}
+            />
+          </Box>
+        )}
+        {/* --- UPPER BOX --- */}
+        <Box
+          sx={{
+            position: "absolute",
+            top: 10,
+            left: 10,
+            zIndex: 22,
+            display: "flex",
+            flexDirection: { xs: "column", md: "row" },
+            gap: 0.8,
+          }}
+        >
+          {productData?.IsInReadyStock == 1 && ChipBar("In Stock")}
+          {productData?.IsBestSeller == 1 && ChipBar("Best Seller")}
+          {productData?.IsTrending == 1 && ChipBar("Trending")}
+          {productData?.IsNewArrival == 1 && ChipBar("New", "#163164")}
+          {!IsSetupFor &&
+            !hasUpperTags &&
+            productData?.MakeType &&
+            ChipBar(productData.MakeType, "bottom")}
+        </Box>
+
+        {hasUpperTags && (
+          <Box
+            sx={{
+              position: "absolute",
+              top: 50,
+              left: 12,
+              zIndex: 22,
+              display: "flex",
+              flexDirection: { xs: "column", md: "row" },
+              gap: 0.8,
+            }}
+          >
+            {!IsSetupFor &&
+              productData?.MakeType &&
+              ChipBar(productData.MakeType, "bottom")}
+          </Box>
+        )}
+
+        <WishToggleButton
+          productData={productData}
+          wishArr={wishArr}
+          handleCartandWish={handleCartandWish}
+        />
+      </Box>
+
+      <CardContent
+        sx={{
+          px: 1.5,
+          pt: 1.2,
+          pb: "0.8rem !important",
+          "&:last-child": {
+            pb: "0.8rem !important",
+          },
+          borderTop: "1px solid #c0c0c096",
+          display: "flex",
+          flexDirection: "column",
+          gap: 0.3,
+          backgroundColor: "#ffffff",
+          zIndex:9999
+        }}
+      >
+        {/* Metal Color Swatch & Quality / Category Line */}
+        {metalText ? (
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              gap: 0.8,
+              mt: 0.1,
+            }}
+          >
+            <Box
+              sx={{
+                width: 11,
+                height: 11,
+                backgroundColor: colorHex,
+                border: "1px solid rgba(0,0,0,0.3)",
+                borderRadius: "1px",
+                flexShrink: 0,
+              }}
+            />
+            <Typography
+              variant="caption"
+              sx={{
+                fontSize: { xs: "0.68rem", sm: "0.72rem", md: "0.76rem" },
+                fontWeight: 400,
+                color: "#666666",
+                letterSpacing: "0.01em",
+                whiteSpace: "nowrap",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+              }}
+            >
+              {metalText}
+            </Typography>
+          </Box>
+        ) : null}
+
+        {/* Title */}
+        <Typography
+          variant="body1"
+          sx={{
+            fontSize: {
+              xs: "0.82rem",
+              sm: "0.88rem",
+              md: "0.92rem",
+            },
+            fontWeight: 500,
+            lineHeight: 1.3,
+            color: "#1a1a1a",
+            textAlign: "left",
+            whiteSpace: "nowrap",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            minHeight: "1.3em",
+            visibility: productData?.TitleLine ? "visible" : "hidden",
+          }}
+        >
+          {productData?.TitleLine
+            ? formatTitleLine(productData?.TitleLine)
+            : " "}
+        </Typography>
+
+        {/* Price (Single clean price, no discount price) */}
+        {StoreInit?.IsPriceShow == 1 && (
+          <Typography
+            variant="body1"
+            sx={{
+              fontWeight: 700,
+              fontSize: { xs: "0.85rem", sm: "0.92rem", md: "0.98rem" },
+              color: "#000000",
+              textAlign: "left",
+              mt: 0.1,
+            }}
+          >
+            <span
+              dangerouslySetInnerHTML={{
+                __html: decodeEntities(
+                  loginCurrency?.CurrencyCode ?? StoreInit?.CurrencyCode,
+                ),
+              }}
+              style={{ paddingRight: "0.25rem" }}
+            />
+            {formatter(productData?.UnitCostWithMarkUp)}
+          </Typography>
+        )}
+
+        {/* Meta Details — Article & Squared Weight Chips */}
+        <Box
+          sx={{
+            mt: 0.3,
+            display: "flex",
+            flexDirection: "column",
+            gap: 0.4,
+          }}
+        >
+          {Article && (
+            <Typography
+              sx={{
+                fontWeight: 600,
+                fontSize: { xs: "0.66rem", sm: "0.72rem" },
+                color: "#555555",
+                letterSpacing: "0.03em",
+                textTransform: "uppercase",
+              }}
+            >
+              {Article}
+            </Typography>
+          )}
+
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              flexWrap: "wrap",
+              gap: 0.5,
+            }}
+          >
+            {Number(productData?.Nwt) > 0 && (
+              <WeightBadge label="NWT" value={productData?.Nwt?.toFixed(3)} />
+            )}
+
+            {StoreInit?.IsDiamondWeight == 1 &&
+              Number(productData?.Dwt) !== 0 && (
+                <WeightBadge
+                  label="DWT"
+                  value={`${productData?.Dwt?.toFixed(3)}${
+                    StoreInit?.IsDiamondPcs === 1 ? `/${productData?.Dpcs}` : ""
+                  }`}
+                />
+              )}
+
+            {StoreInit?.IsGrossWeight == 1 && Number(productData?.Gwt) > 0 && (
+              <WeightBadge label="GWT" value={productData?.Gwt?.toFixed(3)} />
+            )}
+          </Box>
+        </Box>
+
+        {isMobile && (
+          <Box position="relative" sx={{ mt: 0.2 }}>
+            <MobileCartToggleButton
+              productData={productData}
+              cartArr={cartArr}
+              handleCartandWish={handleCartandWish}
+            />
+          </Box>
+        )}
+      </CardContent>
+    </MotionCard>
+  );
+};

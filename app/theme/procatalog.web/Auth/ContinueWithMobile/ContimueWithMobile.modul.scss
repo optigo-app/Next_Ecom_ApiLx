@@ -1,0 +1,33 @@
+@use "../../style/variable.scss" as *;
+
+.fg_smr_continuMobile_bl {
+  min-height: calc(100vh - 120px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #fbfbfc;
+  padding: 40px 16px;
+
+  .submitBtnForgot {
+    background-color: $authbtnbg !important;
+    color: $authbtncolor !important;
+    border-radius: 4px !important;
+    text-transform: none !important;
+    font-size: 0.95rem !important;
+    font-weight: 600 !important;
+    box-shadow: none !important;
+    transition: all 0.2s ease-in-out !important;
+    padding: 12px 20px !important;
+    cursor: pointer;
+
+    &:hover {
+      opacity: 0.92;
+    }
+
+    &:disabled {
+      background-color: #e5e7eb !important;
+      color: #9ca3af !important;
+      cursor: not-allowed;
+    }
+  }
+}

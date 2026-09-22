@@ -1,4 +1,4 @@
-import { NEXT_APP_WEB } from "./env";
+import { NEXT_APP_WEB } from "./env.js";
 
 export async function getDomainInfo() {
     try {

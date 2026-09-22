@@ -21,20 +21,20 @@ const { setCartCountNum, setWishCountNum } = useStore();
         switch (action) {
             case 'UPDATE_CART_COUNT':
                 if (data !== undefined && data !== null) {
-                    setCartCountNum(data);
+                    if (typeof setCartCountNum === 'function') setCartCountNum(data);
                     sessionStorage.setItem('cartCount', data);
                 }
                 break;
 
             case 'UPDATE_WISH_COUNT':
                 if (data !== undefined && data !== null) {
-                    setWishCountNum(data);
+                    if (typeof setWishCountNum === 'function') setWishCountNum(data);
                 }
                 break;
 
             case 'LOGOUT_ALL_TABS':
-                setCartCountNum(0);
-                setWishCountNum(0);
+                if (typeof setCartCountNum === 'function') setCartCountNum(0);
+                if (typeof setWishCountNum === 'function') setWishCountNum(0);
                 break;
 
             default:
