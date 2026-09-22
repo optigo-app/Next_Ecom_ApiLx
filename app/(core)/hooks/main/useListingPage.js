@@ -10,7 +10,7 @@ import { ColorStoneQualityColorComboAPI } from "@/app/(core)/utils/API/Combo/Col
 import { MetalColorCombo } from "@/app/(core)/utils/API/Combo/MetalColorCombo";
 import { CartAndWishListAPI } from "@/app/(core)/utils/API/CartAndWishList/CartAndWishListAPI";
 import { RemoveCartAndWishAPI } from "@/app/(core)/utils/API/RemoveCartandWishAPI/RemoveCartAndWishAPI";
-import { GetCountAPI, buildCartAndWishMaps } from "@/app/(core)/utils/API/GetCount/GetCountAPI";
+import { GetCountAPI, buildCartAndWishMaps, getCartWishKey, isItemInMap } from "@/app/(core)/utils/API/GetCount/GetCountAPI";
 import ProductListApi from "@/app/(core)/utils/API/ProductListAPI/ProductListApi";
 import { FilterListAPI } from "@/app/(core)/utils/API/FilterAPI/FilterListAPI";
 import { useStore } from "@/app/(core)/contexts/StoreProvider";
@@ -77,6 +77,8 @@ export function useListingPage({
     fetchGetCountData: storeFetchGetCountData,
     finalId: storeFinalId,
   } = storeCtx;
+
+
   const broadcaster = useBroadcaster();
   const broadcast = broadcaster?.broadcast;
   const syncProductList = useSyncStore((state) => state.syncProductList);
@@ -116,6 +118,8 @@ export function useListingPage({
   const [productListData, setProductListData] = useState(initialProducts);
   const [isProdLoading, setIsProdLoading] = useState(!hasInitialData);
   const [isOnlyProdLoading, setIsOnlyProdLoading] = useState(!hasInitialData);
+
+
   // Helper to sanitize and filter out empty filter sections (e.g. empty collections, 0-ranges)
   const sanitizeFilterList = useCallback((list) => {
     if (!Array.isArray(list)) return [];
@@ -258,19 +262,22 @@ export function useListingPage({
   // Sync with broadcast updates from other tabs or components
   useEffect(() => {
     if (syncData?.autocode) {
-      const { autocode, type, status } = syncData;
+      const { autocode, ArticleNo, type, status } = syncData;
       const key = String(autocode);
       const unpadded = !isNaN(autocode) ? String(Number(autocode)) : null;
+      const preciseKey = ArticleNo ? getCartWishKey({ autocode, ArticleNo }) : null;
       if (type === "cart" || type === "Cart") {
         setCartArr((prev) => {
           const next = { ...prev, [key]: status };
           if (unpadded) next[unpadded] = status;
+          if (preciseKey) next[preciseKey] = status;
           return next;
         });
       } else if (type === "wish" || type === "Wish") {
         setWishArr((prev) => {
           const next = { ...prev, [key]: status };
           if (unpadded) next[unpadded] = status;
+          if (preciseKey) next[preciseKey] = status;
           return next;
         });
       }
@@ -414,23 +421,16 @@ export function useListingPage({
 
       const currentInState =
         type === "Cart"
-          ? (cartArr?.[ele?.autocode] ??
-            (ele?.ArticleNo ? cartArr?.[ele?.ArticleNo] : undefined) ??
-            (ele?.designno ? cartArr?.[ele?.designno] : undefined) ??
-            (ele?.IsInCart === 1))
-          : (wishArr?.[ele?.autocode] ??
-            (ele?.ArticleNo ? wishArr?.[ele?.ArticleNo] : undefined) ??
-            (ele?.designno ? wishArr?.[ele?.designno] : undefined) ??
-            (ele?.IsInWish === 1));
+          ? isItemInMap(cartArr, ele, ele?.IsInCart === 1)
+          : isItemInMap(wishArr, ele, ele?.IsInWish === 1);
 
       const isChecked =
         e?.target?.checked !== undefined ? Boolean(e.target.checked) : !currentInState;
 
-      const autocodeKey = ele?.autocode != null && ele?.autocode !== "" ? String(ele.autocode) : null;
-      const unpaddedAutocode = ele?.autocode != null && !isNaN(ele.autocode) ? String(Number(ele.autocode)) : null;
-      const articleKey = ele?.ArticleNo != null && ele?.ArticleNo !== "" ? String(ele.ArticleNo) : null;
-      const designKey = ele?.designno != null && ele?.designno !== "" ? String(ele.designno) : null;
-      const keys = [autocodeKey, unpaddedAutocode, articleKey, designKey].filter(Boolean);
+      // Precise variant-exact key (autocode|ArticleNo) is the source of truth;
+      // it never collides across variants sharing the same autocode.
+      const preciseKey = getCartWishKey(ele);
+      const keys = [preciseKey].filter(Boolean);
 
       // Optimistic state update
       keys.forEach((key) => {
@@ -460,9 +460,9 @@ export function useListingPage({
               if (cartC !== undefined) setCartCountNum(cartC);
               if (broadcast) {
                 if (type === "Cart") {
-                  broadcast("UPDATE_CART_COUNT", cartC, prodObj?.autocode, "cart", true);
+                  broadcast("UPDATE_CART_COUNT", cartC, prodObj?.autocode, "cart", true, prodObj?.ArticleNo);
                 } else {
-                  broadcast("UPDATE_WISH_COUNT", wishC, prodObj?.autocode, "wish", true);
+                  broadcast("UPDATE_WISH_COUNT", wishC, prodObj?.autocode, "wish", true, prodObj?.ArticleNo);
                 }
               }
               fetchGetCountData();
@@ -499,9 +499,9 @@ export function useListingPage({
               if (cartC !== undefined) setCartCountNum(cartC);
               if (broadcast) {
                 if (type === "Cart") {
-                  broadcast("UPDATE_CART_COUNT", cartC, prodObj?.autocode, "cart", false);
+                  broadcast("UPDATE_CART_COUNT", cartC, prodObj?.autocode, "cart", false, prodObj?.ArticleNo);
                 } else {
-                  broadcast("UPDATE_WISH_COUNT", wishC, prodObj?.autocode, "wish", false);
+                  broadcast("UPDATE_WISH_COUNT", wishC, prodObj?.autocode, "wish", false, prodObj?.ArticleNo);
                 }
               }
               fetchGetCountData();

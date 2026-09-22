@@ -1,23 +1,26 @@
 import React from "react";
-import { Box, Checkbox, Typography } from "@mui/material";
+import { Box, Checkbox, Skeleton, Typography } from "@mui/material";
 import { motion, AnimatePresence } from "framer-motion";
 import LocalMallOutlinedIcon from "@mui/icons-material/LocalMallOutlined";
 import LocalMallIcon from "@mui/icons-material/LocalMall";
+import { isItemInMap } from "@/app/(core)/utils/API/GetCount/GetCountAPI";
 
 const MobileCartToggleButton = ({ productData, cartArr, handleCartandWish }) => {
-    const autocodeKey = productData?.autocode != null ? String(productData.autocode) : null;
-    const unpaddedKey = productData?.autocode != null && !isNaN(productData.autocode) ? String(Number(productData.autocode)) : null;
-    const isInCart = Boolean(
-        (autocodeKey && cartArr?.[autocodeKey] !== undefined)
-            ? cartArr[autocodeKey]
-            : (unpaddedKey && cartArr?.[unpaddedKey] !== undefined)
-            ? cartArr[unpaddedKey]
-            : (productData?.ArticleNo && cartArr?.[productData.ArticleNo] !== undefined)
-            ? cartArr[productData.ArticleNo]
-            : (productData?.designno && cartArr?.[productData.designno] !== undefined)
-            ? cartArr[productData.designno]
-            : productData?.IsInCart === 1
-    );
+    const isReady = Boolean(cartArr?.__hydrated);
+    const isInCart = isItemInMap(cartArr, productData, productData?.IsInCart === 1);
+
+    if (!isReady) {
+        return (
+            <Box onClick={(e) => e.stopPropagation()} sx={{ width: "100%" }}>
+                <Skeleton
+                    variant="rounded"
+                    width="100%"
+                    height={38}
+                    sx={{ borderRadius: "16px" }}
+                />
+            </Box>
+        );
+    }
 
     return (
         <Box onClick={(e) => e.stopPropagation()}>

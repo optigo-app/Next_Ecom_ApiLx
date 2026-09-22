@@ -24,7 +24,7 @@ export default async function TopSection() {
       >
         <Box
           component="img"
-          src={`/${assetBase}/Banner/HomeBanner.png`}
+          src="/banner/Banner.png"
           alt="Homepage Banner"
           loading="eager"
           fetchPriority="high"
