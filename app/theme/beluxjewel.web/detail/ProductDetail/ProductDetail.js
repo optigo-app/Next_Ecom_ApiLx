@@ -18,6 +18,7 @@ import { MetalColorCombo } from "@/app/(core)/utils/API/Combo/MetalColorCombo";
 import { ColorStoneQualityColorComboAPI } from "@/app/(core)/utils/API/Combo/ColorStoneQualityColorComboAPI";
 import { CartAndWishListAPI } from "@/app/(core)/utils/API/CartAndWishList/CartAndWishListAPI";
 import { RemoveCartAndWishAPI } from "@/app/(core)/utils/API/RemoveCartandWishAPI/RemoveCartAndWishAPI";
+import { getCartWishKey } from "@/app/(core)/utils/API/GetCount/GetCountAPI";
 import {
   formatRedirectTitleLine,
   formatTitleLine,
@@ -55,7 +56,16 @@ const imageNotFound = "/image-not-found.jpg";
 const noImageFound = imageNotFound;
 
 const ProductDetail = ({ storeinit, searchParams, params }) => {
-  const { setCartCountNum, setWishCountNum, loginUserDetail } = useStore();
+  const {
+    setCartCountNum,
+    setWishCountNum,
+    loginUserDetail,
+    cartArr: storeCartArr,
+    wishArr: storeWishArr,
+    setCartArr: setStoreCartArr,
+    setWishArr: setStoreWishArr,
+    fetchGetCountData: storeFetchGetCountData,
+  } = useStore();
 
   const unwrappedSearchParams = (searchParams && typeof searchParams.then === "function")
     ? React.use(searchParams)
@@ -137,6 +147,8 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
   const [pdVideoArr, setPdVideoArr] = useState([]);
   const [addToCardFlag, setAddToCartFlag] = useState(null);
   const [wishListFlag, setWishListFlag] = useState(null);
+  const [isCartBtnLoading, setIsCartBtnLoading] = useState(false);
+  const [isWishBtnLoading, setIsWishBtnLoading] = useState(false);
   const [isDataFound, setIsDataFound] = useState(false);
   const [pdLoadImage, setPdLoadImage] = useState(false);
   const location = usePathname();
@@ -530,6 +542,7 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
   }, [customizationDetail?.ArticleId]);
 
   const handleCart = async (cartFlag) => {
+    setIsCartBtnLoading(true);
     const metal =
       metalTypeCombo?.find((ele) => {
         return ele?.metaltype == metalType;
@@ -641,7 +654,12 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
       singleProd?.ArticleId;
 
     if (cartFlag) {
-      let res = await CartAndWishListAPI("Cart", prodObj, cookie);
+      let res;
+      try {
+        res = await CartAndWishListAPI("Cart", prodObj, cookie);
+      } catch (err) {
+        console.log("addtocartErr", err);
+      }
       if (res) {
         try {
           let cartC = res?.Data?.rd[0]?.Cartlistcount;
@@ -660,13 +678,21 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
               },
             }));
           }
+          // Update global store map with the variant-exact key so listing &
+          // detail stay in sync for this specific ArticleNo
+          const addedKey = getCartWishKey(prodObj);
+          if (addedKey) {
+            setStoreCartArr?.((prev) => ({ ...prev, [addedKey]: true }));
+          }
           broadcast(
             "UPDATE_CART_COUNT",
             cartC,
             prodObj?.autocode,
             "cart",
             true,
+            prodObj?.ArticleNo,
           );
+          storeFetchGetCountData?.();
         } catch (error) {
           console.log("err", error);
         }
@@ -675,15 +701,20 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
     } else {
       const cartEntry = rd1CartMap[activeArticleId];
       const cartIdToRemove = cartEntry?.CartId;
-      let res1 = await RemoveCartAndWishAPI(
-        "Cart",
-        customizationDetail?.autocode || singleProd?.autocode,
-        cookie,
-        false,
-        "",
-        customizationDetail?.ArticleNo || singleProd?.ArticleNo || "",
-        cartIdToRemove,
-      );
+      let res1;
+      try {
+        res1 = await RemoveCartAndWishAPI(
+          "Cart",
+          customizationDetail?.autocode || singleProd?.autocode,
+          cookie,
+          false,
+          "",
+          customizationDetail?.ArticleNo || singleProd?.ArticleNo || "",
+          cartIdToRemove,
+        );
+      } catch (err) {
+        console.log("removecartErr", err);
+      }
       if (res1) {
         try {
           let cartC = res1?.Data?.rd[0]?.Cartlistcount;
@@ -701,23 +732,31 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
               },
             }));
           }
+          const removedKey = getCartWishKey(prodObj);
+          if (removedKey) {
+            setStoreCartArr?.((prev) => ({ ...prev, [removedKey]: false }));
+          }
           broadcast(
             "UPDATE_CART_COUNT",
             cartC,
             prodObj?.autocode,
             "cart",
             false,
+            prodObj?.ArticleNo,
           );
+          storeFetchGetCountData?.();
         } catch (error) {
           console.log("err", error);
         }
         setAddToCartFlag(cartFlag);
       }
     }
+    setIsCartBtnLoading(false);
   };
 
   const handleWishList = async (e, elv) => {
     setWishListFlag(e?.target?.checked);
+    setIsWishBtnLoading(true);
 
     let storeinitInside = storeinit;
     let logininfoInside = loginUserDetail;
@@ -843,7 +882,12 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
       singleProd?.ArticleId;
 
     if (e.target.checked === true) {
-      let res = await CartAndWishListAPI("Wish", prodObj, cookie);
+      let res;
+      try {
+        res = await CartAndWishListAPI("Wish", prodObj, cookie);
+      } catch (err) {
+        console.log("addtowishErr", err);
+      }
       if (res) {
         try {
           let cartC = res?.Data?.rd[0]?.Cartlistcount;
@@ -860,26 +904,37 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
               },
             }));
           }
+          const addedWishKey = getCartWishKey(prodObj);
+          if (addedWishKey) {
+            setStoreWishArr?.((prev) => ({ ...prev, [addedWishKey]: true }));
+          }
           broadcast(
             "UPDATE_WISH_COUNT",
             wishC,
             prodObj?.autocode,
             "wish",
             true,
+            prodObj?.ArticleNo,
           );
+          storeFetchGetCountData?.();
         } catch (error) {
           console.log("err", error);
         }
       }
     } else {
-      let res1 = await RemoveCartAndWishAPI(
-        "Wish",
-        customizationDetail?.autocode || singleProd?.autocode,
-        cookie,
-        false,
-        "",
-        customizationDetail?.ArticleNo || singleProd?.ArticleNo || "",
-      );
+      let res1;
+      try {
+        res1 = await RemoveCartAndWishAPI(
+          "Wish",
+          customizationDetail?.autocode || singleProd?.autocode,
+          cookie,
+          false,
+          "",
+          customizationDetail?.ArticleNo || singleProd?.ArticleNo || "",
+        );
+      } catch (err) {
+        console.log("removewishErr", err);
+      }
       if (res1) {
         try {
           let cartC = res1?.Data?.rd[0]?.Cartlistcount;
@@ -896,18 +951,25 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
               },
             }));
           }
+          const removedWishKey = getCartWishKey(prodObj);
+          if (removedWishKey) {
+            setStoreWishArr?.((prev) => ({ ...prev, [removedWishKey]: false }));
+          }
           broadcast(
             "UPDATE_WISH_COUNT",
             wishC,
             prodObj?.autocode,
             "wish",
             false,
+            prodObj?.ArticleNo,
           );
+          storeFetchGetCountData?.();
         } catch (error) {
           console.log("err", error);
         }
       }
     }
+    setIsWishBtnLoading(false);
   };
 
   useEffect(() => {
@@ -2142,12 +2204,20 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
 
   useEffect(() => {
     if (lastSyncData && lastSyncData.autocode) {
-      const { autocode, type, status } = lastSyncData;
+      const { autocode, ArticleNo, type, status } = lastSyncData;
+      // Keep the global store maps in sync at variant level when ArticleNo is known
+      const preciseKey = ArticleNo ? getCartWishKey({ autocode, ArticleNo }) : null;
       if (type === "cart") {
         setAddToCartFlag(status);
+        if (preciseKey) {
+          setStoreCartArr?.((prev) => ({ ...prev, [preciseKey]: status }));
+        }
       } else if (type === "wish") {
         setWishListFlag(status);
-      } 
+        if (preciseKey) {
+          setStoreWishArr?.((prev) => ({ ...prev, [preciseKey]: status }));
+        }
+      }
     }
   }, [lastSyncData]);
 
@@ -2239,14 +2309,18 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
                 pdLoadImage={pdLoadImage}
                 handleCart={handleCart}
                 addToCardFlag={addToCardFlag}
+                isCartBtnLoading={isCartBtnLoading}
                 handleWishList={handleWishList}
                 wishListFlag={wishListFlag}
+                isWishBtnLoading={isWishBtnLoading}
                 stockItemArr={stockItemArr}
                 rd1={rd1Data}
                 rd2={rd2Data}
                 defaultArticleId={defaultArticleId}
                 customizationDetail={customizationDetail}
                 rd1CartMap={rd1CartMap}
+                storeCartArr={storeCartArr}
+                storeWishArr={storeWishArr}
                 onCustomizerConfirm={handleCustomizerConfirm}
               />
             </Grid>

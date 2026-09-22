@@ -1,23 +1,13 @@
 import React from "react";
-import { Box, Checkbox, Typography } from "@mui/material";
+import { Box, Checkbox, Skeleton, Typography } from "@mui/material";
 import { motion, AnimatePresence } from "framer-motion";
 import LocalMallOutlinedIcon from "@mui/icons-material/LocalMallOutlined";
 import LocalMallIcon from "@mui/icons-material/LocalMall";
+import { isItemInMap } from "@/app/(core)/utils/API/GetCount/GetCountAPI";
 
 const CartToggleButton = ({ productData, cartArr, handleCartandWish }) => {
-  const autocodeKey = productData?.autocode != null ? String(productData.autocode) : null;
-  const unpaddedKey = productData?.autocode != null && !isNaN(productData.autocode) ? String(Number(productData.autocode)) : null;
-  const isInCart = Boolean(
-    (autocodeKey && cartArr?.[autocodeKey] !== undefined)
-      ? cartArr[autocodeKey]
-      : (unpaddedKey && cartArr?.[unpaddedKey] !== undefined)
-      ? cartArr[unpaddedKey]
-      : (productData?.ArticleNo && cartArr?.[productData.ArticleNo] !== undefined)
-      ? cartArr[productData.ArticleNo]
-      : (productData?.designno && cartArr?.[productData.designno] !== undefined)
-      ? cartArr[productData.designno]
-      : productData?.IsInCart === 1
-  );
+  const isReady = Boolean(cartArr?.__hydrated);
+  const isInCart = isItemInMap(cartArr, productData, productData?.IsInCart === 1);
 
   return (
     <Box
@@ -31,6 +21,14 @@ const CartToggleButton = ({ productData, cartArr, handleCartandWish }) => {
       className="product-button-cart-elee"
       data-is-in-cart={isInCart ? "in-cart" : "not-in-cart"}
     >
+      {!isReady ? (
+        <Skeleton
+          variant="rounded"
+          width={110}
+          height={40}
+          sx={{ borderRadius: "9999px" }}
+        />
+      ) : (
       <AnimatePresence mode="wait">
         <motion.div
           key={isInCart ? "in-cart" : "not-in-cart"}
@@ -112,6 +110,7 @@ const CartToggleButton = ({ productData, cartArr, handleCartandWish }) => {
           />
         </motion.div>
       </AnimatePresence>
+      )}
     </Box>
   );
 };

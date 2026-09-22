@@ -47,7 +47,7 @@ const SonasonsHome = async () => {
     >
       <TopSection />
       <BrandInfoMarquee assetBase={assetBase} />
-      <CategoryBlock assetBase={assetBase} storeInit={storeData} />
+      {/* <CategoryBlock assetBase={assetBase} storeInit={storeData} /> */}
       <MaxBestSeller storeInit={storeData} initialData={initialBestSellers} />
       <MaxNewArrival storeInit={storeData} initialData={initialNewArrivals} />
       <MaxPhysicalStore />

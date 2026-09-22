@@ -74,7 +74,12 @@ export function StoreProvider({ children, storeInit }) {
       return res;
     } catch (err) {
       console.log("getCountApiErr", err);
+      // Unblock UI: mark maps hydrated so cart/wish buttons don't stay
+      // in skeleton state forever when the count API fails.
+      setCartArr((prev) => (prev?.__hydrated ? prev : { ...prev, __hydrated: true }));
+      setWishArr((prev) => (prev?.__hydrated ? prev : { ...prev, __hydrated: true }));
     }
+    return null;
   }, [finalId]);
 
   useEffect(() => {

@@ -14,9 +14,9 @@ const { setCartCountNum, setWishCountNum } = useStore();
 
     const channelRef = useRef(null);
 
-    const handleAction = (action, data, autocode, type, boolean) => {
+    const handleAction = (action, data, autocode, type, boolean, articleNo) => {
         if (autocode && type) {
-            setSyncData({ autocode, type, status: boolean });
+            setSyncData({ autocode, type, status: boolean, ArticleNo: articleNo });
         }
         switch (action) {
             case 'UPDATE_CART_COUNT':
@@ -45,8 +45,8 @@ const { setCartCountNum, setWishCountNum } = useStore();
     useEffect(() => {
         channelRef.current = new BroadcastChannel(CHANNEL_NAME);
         channelRef.current.onmessage = (event) => {
-            const { action, data, autocode, type, boolean } = event.data;
-            handleAction(action, data, autocode, type, boolean);
+            const { action, data, autocode, type, boolean, articleNo } = event.data;
+            handleAction(action, data, autocode, type, boolean, articleNo);
         };
 
         return () => {
@@ -54,8 +54,8 @@ const { setCartCountNum, setWishCountNum } = useStore();
         };
     }, [setCartCountNum, setWishCountNum]);
 
-    const broadcast = (action, data, autocode, type, boolean) => {
-        handleAction(action, data, autocode, type, boolean);
+    const broadcast = (action, data, autocode, type, boolean, articleNo) => {
+        handleAction(action, data, autocode, type, boolean, articleNo);
 
         if (channelRef.current) {
             channelRef.current.postMessage({
@@ -63,7 +63,8 @@ const { setCartCountNum, setWishCountNum } = useStore();
                 data,
                 autocode,
                 type,
-                boolean
+                boolean,
+                articleNo
             });
         }
     };

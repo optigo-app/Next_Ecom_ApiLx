@@ -15,6 +15,7 @@ import {
   TableHead,
   TableRow,
   TableContainer,
+  CircularProgress,
 } from "@mui/material";
 
 import { LableField, MenuItemSx, SelectSx } from "../New/CustomField";
@@ -26,6 +27,7 @@ import { getSession } from "@/app/(core)/utils/FetchSessionData";
 import CustomizerDrawer from "../Customiziation";
 import ProductDetailsSection from "./ProductDetailsSection";
 import { getDeliveryInfo } from "./deliveryUtils";
+import { isItemInMap } from "@/app/(core)/utils/API/GetCount/GetCountAPI";
 
 const MotionButton = motion(Button);
 const MotionCheckbox = motion(Checkbox);
@@ -61,8 +63,10 @@ const RightSide = ({
   pdLoadImage,
   handleCart,
   addToCardFlag,
+  isCartBtnLoading = false,
   handleWishList,
   wishListFlag,
+  isWishBtnLoading = false,
   // Customizer drawer props
   rd1 = [],
   rd2 = [],
@@ -70,6 +74,8 @@ const RightSide = ({
   customizationDetail,
   onCustomizerConfirm,
   rd1CartMap = {},
+  storeCartArr,
+  storeWishArr,
 }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [isCustomizerOpen, setIsCustomizerOpen] = useState(false);
@@ -114,21 +120,34 @@ const RightSide = ({
   const activeArticleId = activeArticle?.ArticleId;
   const articleCartEntry = rd1CartMap[activeArticleId];
 
-  // isAddedToCart: prefer rd1CartMap truth for active article, then optimistic addToCardFlag, then singleProd
-  const isAddedToCart =
-    articleCartEntry != null
+  // Variant-exact identity for the active article (autocode + ArticleNo)
+  const activeVariant = {
+    autocode: activeArticle?.autocode ?? singleProd?.autocode,
+    ArticleNo: activeArticle?.ArticleNo ?? singleProd?.ArticleNo,
+  };
+
+  // When the global GetCount maps are hydrated they are the source of truth
+  // (same maps the listing page uses), so the detail page always agrees with
+  // the listing for this exact ArticleNo variant.
+  const isAddedToCart = storeCartArr?.__hydrated
+    ? isItemInMap(storeCartArr, activeVariant)
+    : articleCartEntry != null
       ? articleCartEntry.IsInCart === 1
       : addToCardFlag !== null
         ? addToCardFlag
         : singleProd?.IsInCart === 1;
 
-  // wishlist checked: prefer rd1CartMap truth for active article, then optimistic wishListFlag, then singleProd
-  const isInWishlist =
-    articleCartEntry != null
+  const isInWishlist = storeWishArr?.__hydrated
+    ? isItemInMap(storeWishArr, activeVariant)
+    : articleCartEntry != null
       ? articleCartEntry.IsInWish === 1
       : wishListFlag !== null
         ? wishListFlag
         : singleProd?.IsInWish === 1;
+
+  // Barrier: cart/wish buttons stay skeleton until the GetCount maps are
+  // hydrated so the UI never flashes "Add to cart" -> "In cart".
+  const isCartWishReady = Boolean(storeCartArr?.__hydrated);
 
   const CurrencyCode = loginData?.loginData ?? storeInit?.CurrencyCode;
 
@@ -849,7 +868,7 @@ const RightSide = ({
           />
 
           {/* Action Buttons & Product Info Section */}
-          {loadingdata || isPriceloading ? (
+          {loadingdata || isPriceloading || !isCartWishReady ? (
             <Box
               sx={{
                 display: "flex",
@@ -884,6 +903,7 @@ const RightSide = ({
                   fullWidth
                   variant="outlined"
                   whileTap={{ scale: 0.98 }}
+                  disabled={isCartBtnLoading}
                   onClick={() => handleCart(!isAddedToCart)}
                   sx={{
                     height: 48,
@@ -903,7 +923,13 @@ const RightSide = ({
                     },
                   }}
                 >
-                  {isAddedToCart ? "Remove from cart" : "Add to cart"}
+                  {isCartBtnLoading ? (
+                    <CircularProgress size={20} sx={{ color: isAddedToCart ? "#ffffff" : "#000000" }} />
+                  ) : isAddedToCart ? (
+                    "Remove from cart"
+                  ) : (
+                    "Add to cart"
+                  )}
                 </MotionButton>
 
                 {/* ADD / REMOVE WISHLIST */}
@@ -911,6 +937,7 @@ const RightSide = ({
                   fullWidth
                   variant="contained"
                   whileTap={{ scale: 0.98 }}
+                  disabled={isWishBtnLoading}
                   onClick={(e) => {
                     const fakeEvent = {
                       ...e,
@@ -922,7 +949,7 @@ const RightSide = ({
                     handleWishList(fakeEvent, singleProd);
                   }}
                   startIcon={
-                    isInWishlist ? (
+                    isWishBtnLoading ? null : isInWishlist ? (
                       <FavoriteIcon
                         sx={{
                           fontSize: "20px !important",
@@ -956,7 +983,13 @@ const RightSide = ({
                     },
                   }}
                 >
-                  {isInWishlist ? "In Wishlist" : "Add to wishlist"}
+                  {isWishBtnLoading ? (
+                    <CircularProgress size={20} sx={{ color: "#ffffff" }} />
+                  ) : isInWishlist ? (
+                    "In Wishlist"
+                  ) : (
+                    "Add to wishlist"
+                  )}
                 </MotionButton>
               </Box>
 
