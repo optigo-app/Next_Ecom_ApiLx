@@ -51,8 +51,10 @@ const DesignSet = ({
             pagination={{ clickable: true }}
           // scrollbar={{ draggable: true }}
           >
-            {designSetList?.map((designSetList) => (
-              <SwiperSlide>
+            {designSetList?.map((designSetList, designSetIndex) => (
+              <SwiperSlide
+                key={`design-set-${designSetList?.designsetuniqueno || designSetList?.id || designSetIndex}`}
+              >
                 <div className="compeletethelook_cont">
                   <div className="hoq_ctlImg_containe">
                     <img
@@ -98,6 +100,7 @@ const DesignSet = ({
                       : JSON?.parse(designSetList?.Designdetail)
                     )?.map((ele, i) => (
                       <div
+                        key={`design-set-item-${ele?.ArticleId || ele?.ArticleNo || ele?.autocode || ele?.designno || i}`}
                         className="completethelook_outer"
                         onClick={() => handleMoveToDetail(ele)}
                         style={{ borderTop: i !== 0 ? "none" : "" }}

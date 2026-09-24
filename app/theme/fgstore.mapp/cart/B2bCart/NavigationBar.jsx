@@ -34,7 +34,10 @@ export default function MobileNavbar() {
         bgcolor: "white",
         color: "black",
         borderBottom: "1px solid #eee",
-        top: 0
+        top: 0,
+        width: "100%",
+        zIndex: 1201,
+        isolation: "isolate",
       }}
     >
       <Toolbar
@@ -42,12 +45,15 @@ export default function MobileNavbar() {
           minHeight: 56,
           px: 1,
           display: "flex",
+          width: "100%",
+          boxSizing: "border-box",
           justifyContent: "space-between",
         }}
       >
         {/* Left */}
         <IconButton edge="start" size="small"
           onClick={GoBack}
+          sx={{ flex: "0 0 auto" }}
         >
           <ArrowBackIcon />
         </IconButton>
@@ -63,11 +69,11 @@ export default function MobileNavbar() {
             letterSpacing: 2,
           }}
         >
-          My Cart
+          My Shopping Bag
         </Typography>
 
         {/* Right Icons */}
-        <Box>
+        <Box sx={{ display: "flex", alignItems: "center", gap: 0.25, flex: "0 0 auto", ml: "auto" }}>
 
           <IconButton size="small"
             onClick={GoToWishlist}
@@ -104,7 +110,34 @@ export default function MobileNavbar() {
 
           </IconButton>
 
-
+          <IconButton size="small" onClick={GoToCart}>
+            <Badge
+              badgeContent={cartCountNum}
+              color="primary"
+              overlap="circular"
+              anchorOrigin={{
+                vertical: "top",
+                horizontal: "right",
+              }}
+              sx={{
+                "& .MuiBadge-badge": {
+                  fontSize: "0.65rem",
+                  height: "18px",
+                  minWidth: "18px",
+                  borderRadius: "50%",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  padding: 0,
+                  lineHeight: 1,
+                  bgcolor: COLORS.primary,
+                  color: COLORS.white,
+                },
+              }}
+            >
+              <ShoppingBagOutlinedIcon />
+            </Badge>
+          </IconButton>
         </Box>
       </Toolbar>
     </AppBar>

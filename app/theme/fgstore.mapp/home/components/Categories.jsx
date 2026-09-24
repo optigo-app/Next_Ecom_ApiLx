@@ -1,173 +1,114 @@
 "use client";
-import React, { useState, useEffect, useMemo, useCallback, useRef } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import Headers from "./composable/Headers";
 import { Avatar, Box, Skeleton, Typography } from "@mui/material";
 import { HomeCategoryApi } from "@/app/(core)/utils/API/Home/HomeCategoryApi/HomeCategoryApi";
 import { useStore } from "@/app/(core)/contexts/StoreProvider";
 import { useNextRouterLikeRR } from "@/app/(core)/hooks/useLocationRd";
-import { normalizeALC, buildAlbumCacheKey, getPricingContext } from "@/app/(core)/cache_utility/CacheBuilder";
-import { readCache, writeCache } from "@/app/(core)/cache_utility/cacheActions";
 import Cookies from "js-cookie";
 
+const IMAGE_NOT_FOUND = "/image-not-found.jpg";
 
-const categoryImages = [
-  {
-    CategoryName: "Mangalsutra",
-    ImageUrl: "/category/Mangalsutra1.jpg",
-  },
-  {
-    CategoryName: "Pendants",
-    ImageUrl: "/category/pendent.jpg",
-  },
-  {
-    CategoryName: "Bangles",
-    ImageUrl: "/category/Bangals1.png",
-  },
-  {
-    CategoryName: "Ring",
-    ImageUrl: "/category/rings.jpg",
-  },
-  {
-    CategoryName: "EARING",
-    ImageUrl: "/category/Earings1.png",
-  },
-  {
-    CategoryName: "NACKLACE",
-    ImageUrl: "/category/NECKLACE1.jpg",
-  },
-  {
-    CategoryName: "Bracelet",
-    ImageUrl: "/category/BRACELATE2.jpg",
-  },
-  {
-    "CategoryName": "Pendant",
-    ImageUrl: "/category/pendent.jpg",
-  },
-  {
-    "CategoryName": "Bangle",
-    ImageUrl: "/category/Bangals1.png",
-  },
-  {
-    "CategoryName": "Necklace",
-    ImageUrl: "/category/NECKLACE1.jpg",
-  },
-  {
-    "CategoryName": "Ring",
-    ImageUrl: "/category/rings.jpg",
-  },
-  {
-    "CategoryName": "Bracelet",
-    ImageUrl: "/category/BRACELATE2.jpg",
-  },
-  {
-    "CategoryName": "Earring",
-    ImageUrl: "/category/Earings1.png",
-  },
-  {
-    "CategoryName": "Pendant set",
-    ImageUrl: "/category/pendent_set.jpg",
-  },
-  {
-    "CategoryName": "Mangalsutra",
-    ImageUrl: "/category/Mangalsutra1.jpg",
-  },
-  {
-    "CategoryName": "Mangalsutra Set",
-    ImageUrl: "/category/MangalsutraSet.webp",
-  },
-  {
-    "CategoryName": "Necklace Set",
-    ImageUrl: "/category/Necklace_set.jpg",
+const resolveCategoryImage = (cat, storeInit) => {
+  const cdnFol =
+    storeInit?.CDNDesignImageFolThumb ||
+    storeInit?.CDNDesignImageFol ||
+    storeInit?.DesignImageFol ||
+    "";
+  const p = cat?.firstProduct;
+  if (!p?.designno || p?.ImageCount === 0 || !cdnFol) {
+    return IMAGE_NOT_FOUND;
   }
-];
-
-/** Maps API category data with local fallback images */
-const mapCategoryImages = (apiData) => {
-  return apiData.map((item) => ({
-    ...item,
-    img: categoryImages.find(
-      (cat) =>
-        cat.CategoryName.toLowerCase() ===
-        item.CategoryName?.toLowerCase()
-    )?.ImageUrl,
-  }));
+  return `${cdnFol}${p.designno}~1.jpg`;
 };
 
-const Categories = ({ storeinit }) => {
-  const { loginUserDetail, islogin, finalId } = useStore();
-  const [categories, setCategories] = useState([]);
-  const [loading, setLoading] = useState(true);
+/** Maps API category data with dynamic product image */
+const mapCategoryImages = (apiData, storeInit) => {
+  return (apiData || []).map((item) => {
+    const catName = item.CategoryName || item.categoryName || "";
+    return {
+      ...item,
+      CategoryName: catName,
+      img: resolveCategoryImage(item, storeInit),
+    };
+  });
+};
+
+const Categories = ({ storeinit, initialCategories = [] }) => {
+  const { loginUserDetail, islogin, finalId, storeInit: storeInitCtx } = useStore();
+  const currentStore = storeinit || storeInitCtx;
+
+  const [categories, setCategories] = useState(() => {
+    if (Array.isArray(initialCategories) && initialCategories.length > 0) {
+      return mapCategoryImages(initialCategories, currentStore);
+    }
+    return [];
+  });
+  const [loading, setLoading] = useState(
+    !initialCategories || initialCategories.length === 0,
+  );
   const navigate = useNextRouterLikeRR().push;
-  const pricingContext = useMemo(() => getPricingContext(loginUserDetail, storeinit, islogin), [loginUserDetail, storeinit, islogin]);
 
   const isFetchingRef = useRef(false);
-  const lastRequestKeyRef = useRef("");
+  const lastUserRef = useRef(null);
 
-  const fetchAndSetCategories = useCallback(
-    async (finalID, cacheKey) => {
-      if (!pricingContext || !pricingContext.PackageId || isFetchingRef.current) return;
+  const fetchAndSetCategories = useCallback(async () => {
+    if (isFetchingRef.current) return;
+    isFetchingRef.current = true;
 
-      isFetchingRef.current = true;
-      setLoading(true);
+    try {
+      const response = await fetch("/api/sqlite/home-category", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          storeInit: storeinit,
+          loginUserDetail,
+        }),
+      });
+      const result = await response.json();
+      const apiData = result?.Data?.rd || result?.rd || [];
 
-      try {
-        const cacheRes = await readCache(cacheKey);
-
-        if (cacheRes?.cached && Array.isArray(cacheRes.data)) {
-          console.log("[Categories] Serving from cache");
-          const mappedData = mapCategoryImages(cacheRes.data);
-          setCategories(mappedData.length > 0 ? mappedData : categoryImages);
-          setLoading(false);
-          isFetchingRef.current = false;
-          return;
-        }
-
-        console.log("[Categories] Cache miss, calling API...");
-        const response = await HomeCategoryApi(finalID);
-        const apiData = response?.Data?.rd || [];
-        console.log("[Categories] API response received, count:", apiData.length);
-
-        if (apiData.length > 0) {
-          const mappedData = mapCategoryImages(apiData);
-          setCategories(mappedData);
-
-          writeCache(cacheKey, apiData).catch(console.error);
-        } else {
-          setCategories(categoryImages);
-        }
-
-        setLoading(false);
-        isFetchingRef.current = false;
-      } catch (err) {
-        console.log("[Categories] Error in fetch:", err);
-        console.error(err);
-        // fallback on error
-        setCategories(categoryImages);
-        isFetchingRef.current = false;
-        setLoading(false);
+      if (Array.isArray(apiData) && apiData.length > 0) {
+        setCategories(mapCategoryImages(apiData, currentStore));
+      } else {
+        const visitorId = finalId || Cookies.get("visiterId") || "";
+        const legacyRes = await HomeCategoryApi(visitorId).catch(() => null);
+        const legacyData = legacyRes?.Data?.rd || [];
+        setCategories(mapCategoryImages(legacyData, currentStore));
       }
-    },
-    [pricingContext, storeinit]
-  );
+      setLoading(false);
+    } catch (err) {
+      console.error("[Categories] Error in fetch:", err);
+      setLoading(false);
+    } finally {
+      isFetchingRef.current = false;
+    }
+  }, [currentStore, loginUserDetail, finalId]);
 
   useEffect(() => {
-    if (!pricingContext || !storeinit) return;
+    const currentUserSig = `${Boolean(islogin)}_${loginUserDetail?.id || loginUserDetail?.userid || 0}_${loginUserDetail?.pricemanagement_laboursetid || 0}`;
 
-    const fetchData = async () => {
-      const visitorId = finalId || Cookies.get("visiterId") || "";
-      const keyALC = normalizeALC("");
-      const { key } = buildAlbumCacheKey("home_category", storeinit, pricingContext, visitorId, keyALC);
+    // If initialCategories was provided on first mount and matches state, keep it
+    if (
+      lastUserRef.current === null &&
+      initialCategories &&
+      initialCategories.length > 0
+    ) {
+      lastUserRef.current = currentUserSig;
+      return;
+    }
 
-      if (isFetchingRef.current || lastRequestKeyRef.current === key) return;
-      lastRequestKeyRef.current = key;
-
-      await fetchAndSetCategories(visitorId, key);
-    };
-
-    fetchData();
-  }, [islogin, pricingContext, storeinit, fetchAndSetCategories, loginUserDetail?.id, finalId]);
-
-
+    if (lastUserRef.current !== currentUserSig || categories.length === 0) {
+      lastUserRef.current = currentUserSig;
+      fetchAndSetCategories();
+    }
+  }, [
+    islogin,
+    loginUserDetail,
+    initialCategories,
+    fetchAndSetCategories,
+    categories.length,
+  ]);
 
   const handleNavigate = (name) => {
     let finalData = {
@@ -180,8 +121,18 @@ const Categories = ({ storeinit }) => {
       FilterVal2: "",
     };
     sessionStorage.setItem("menuparams", JSON.stringify(finalData));
-    const queryParameters1 = [finalData?.FilterKey && `${finalData.FilterVal}`, finalData?.FilterKey1 && `${finalData.FilterVal1}`, finalData?.FilterKey2 && `${finalData.FilterVal2}`].filter(Boolean).join("/");
-    const queryParameters = [finalData?.FilterKey && `${finalData.FilterVal}`, finalData?.FilterKey1 && `${finalData.FilterVal1}`, finalData?.FilterKey2 && `${finalData.FilterVal2}`].join(",");
+    const queryParameters1 = [
+      finalData?.FilterKey && `${finalData.FilterVal}`,
+      finalData?.FilterKey1 && `${finalData.FilterVal1}`,
+      finalData?.FilterKey2 && `${finalData.FilterVal2}`,
+    ]
+      .filter(Boolean)
+      .join("/");
+    const queryParameters = [
+      finalData?.FilterKey && `${finalData.FilterVal}`,
+      finalData?.FilterKey1 && `${finalData.FilterVal1}`,
+      finalData?.FilterKey2 && `${finalData.FilterVal2}`,
+    ].join(",");
     const otherparamUrl = Object.entries({
       b: finalData?.FilterKey,
       g: finalData?.FilterKey1,
@@ -202,41 +153,83 @@ const Categories = ({ storeinit }) => {
 
   return (
     <>
-      <Headers title={"Categories"}
-        showViewMoreBtn={false}
-      />
-      <Box sx={{ display: "flex", overflowX: "auto", gap: 2, px: 1.5, py: 1.5, "&::-webkit-scrollbar": { display: "none" } }}>
-        {
-          loading ? (
-            Array.from(new Array(8)).map((_, index) => (
+      <Headers title={"Categories"} showViewMoreBtn={false} />
+      <Box
+        sx={{
+          display: "flex",
+          overflowX: "auto",
+          gap: 2,
+          px: 1.5,
+          py: 1.5,
+          "&::-webkit-scrollbar": { display: "none" },
+        }}
+      >
+        {loading
+          ? Array.from(new Array(6)).map((_, index) => (
               <Box key={index} sx={{ minWidth: "80px", width: "80px" }}>
                 <Skeleton
-                  variant="rectangular"
-                  width="90px"
-                  height="90px"
-                  sx={{ borderRadius: 50, bgcolor: "rgba(0,0,0,0.06)" }}
+                  variant="circular"
+                  width={80}
+                  height={80}
+                  sx={{ mb: 1, bgcolor: "rgba(0,0,0,0.06)" }}
                 />
+                <Skeleton variant="text" width={60} sx={{ mx: "auto" }} />
               </Box>
             ))
-          ) : (categories.map((cat, index) => (
-            <Box key={index}
-              onClick={() => handleNavigate(cat.CategoryName)}
-              sx={{ display: "flex", flexDirection: "column", alignItems: "center", minWidth: "90px" }}>
-              <Avatar src={cat.img || cat.ImageUrl} sx={{ width: 90, height: 90, mb: 1, boxShadow: "0 4px 10px rgba(0,0,0,0.08)" }} />
-              <Typography
-                sx={{
-                  fontSize: "13px",
-                  fontWeight: 500,
-                  whiteSpace: "nowrap",
-                  overflow: "hidden",
-                  textOverflow: "ellipsis",
-                }}
-              >
-                {cat.CategoryName}
-              </Typography>{" "}
-            </Box>
-          ))
-          )}
+          : categories.map((cat, index) => {
+              const name = cat.CategoryName || cat.categoryName;
+              return (
+                <Box
+                  key={cat.categoryId || cat.id || index}
+                  onClick={() => handleNavigate(name)}
+                  sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    minWidth: "80px",
+                    cursor: "pointer",
+                  }}
+                >
+                  <Avatar
+                    src={cat.img}
+                    alt={name}
+                    imgProps={{
+                      onError: (e) => {
+                        e.target.onerror = null;
+                        e.target.src = IMAGE_NOT_FOUND;
+                      },
+                    }}
+                    sx={{
+                      width: 80,
+                      height: 80,
+                      mb: 1,
+                      backgroundColor: "#f5f5f5",
+                      boxShadow: "0 4px 10px rgba(0,0,0,0.08)",
+                      border: "1px solid rgba(0,0,0,0.04)",
+                      "& img": {
+                        objectFit: "contain",
+                        width: "85%",
+                        height: "85%",
+                        mixBlendMode: "multiply",
+                      },
+                    }}
+                  />
+                  <Typography
+                    sx={{
+                      fontSize: "12px",
+                      fontWeight: 500,
+                      whiteSpace: "nowrap",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                      maxWidth: "85px",
+                      textAlign: "center",
+                    }}
+                  >
+                    {name}
+                  </Typography>
+                </Box>
+              );
+            })}
       </Box>
     </>
   );

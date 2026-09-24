@@ -42,6 +42,7 @@ export {
 export { getArticlesByDesign } from "./getArticlesByDesign.js";
 export { getProductArticle } from "./getProductArticle.js";
 export { getHomeCategories } from "./getHomeCategories.js";
+export { rebuildPolicyCategories } from "./materializePolicyCategories.js";
 
 /**
  * Executes a procedure by name on a specific domain's database

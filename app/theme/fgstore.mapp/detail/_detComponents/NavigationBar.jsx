@@ -35,7 +35,10 @@ export default function MobileNavbar() {
         bgcolor: "white",
         color: "black",
         borderBottom: "1px solid #eee",
-        top: 0
+        top: 0,
+        width: "100%",
+        zIndex: 1201,
+        isolation: "isolate",
       }}
     >
       <Toolbar
@@ -43,17 +46,20 @@ export default function MobileNavbar() {
           minHeight: 56,
           px: 1,
           display: "flex",
+          width: "100%",
+          boxSizing: "border-box",
           justifyContent: "space-between",
         }}
       >
         {/* Left */}
         <IconButton edge="start" size="small"
           onClick={GoBack}
+          sx={{ flex: "0 0 auto" }}
         >
           <ArrowBackIcon />
         </IconButton>
 
-        <Box>
+        <Box sx={{ display: "flex", alignItems: "center", gap: 0.25, flex: "0 0 auto", ml: "auto" }}>
           <IconButton size="small"
             onClick={GoToWishlist}
           >

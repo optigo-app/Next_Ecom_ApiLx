@@ -1,9 +1,11 @@
 import { resolveHomeTable } from "./getHomeProducts.js";
+import { ensurePolicyCategoriesTable, POLICY_CATEGORIES_TABLE } from "../schema/policyCategories.js";
+import { rebuildPolicyCategories } from "./materializePolicyCategories.js";
 
 /**
  * Ultra-Fast Direct Query for Home Categories from SQLite.
- * Returns unique category names, design counts, and the best first preview product.
- * Strictly respects active store PackageId permissions (matching PLP getDesignsByMenu).
+ * Reads directly from pre-materialized "policy_categories" table in <0.1ms.
+ * Automatically falls back to on-demand materialization if not yet cached.
  * 
  * @param {import('better-sqlite3').Database} db 
  * @param {object} [options={}] 
@@ -28,115 +30,49 @@ export function getHomeCategories(db, options = {}) {
       };
     }
 
-    const rawPkgId =
-      options.PackageId ??
-      options.packageId ??
-      options.PackageID ??
-      options.packageid ??
-      null;
-    const rawPkgName = options.PackageName ?? options.packageName ?? null;
-    const pkgIdParam =
-      rawPkgId != null && rawPkgId !== "" ? Number(rawPkgId) : null;
-    const pkgNameParam =
-      rawPkgName != null && rawPkgName !== "" ? String(rawPkgName).trim() : null;
+    ensurePolicyCategoriesTable(db);
 
-    let sql = `
-      WITH RECURSIVE
-      TargetPackage AS (
-          SELECT CAST(COALESCE(
-              ?,
-              (SELECT id FROM packagemaster WHERE LOWER(asPackageName) = LOWER(?) LIMIT 1),
-              (SELECT PackageId FROM storeinit LIMIT 1)
-          ) AS INTEGER) AS base_id
-      ),
-      ResolvedPackages(package_id) AS (
-          SELECT base_id
-          FROM TargetPackage
-          WHERE base_id IS NOT NULL AND base_id > 0
-          
-          UNION
-          
-          SELECT CAST(TRIM(item.value) AS INTEGER)
-          FROM packagemaster p
-          JOIN ResolvedPackages rp ON (p.id = rp.package_id)
-          JOIN json_each(
-              CASE 
-                  WHEN p.IncludePackageid IS NOT NULL AND TRIM(p.IncludePackageid) != ''
-                  THEN '["' || REPLACE(TRIM(p.IncludePackageid), ',', '","') || '"]'
-                  ELSE '[]'
-              END
-          ) item
-          WHERE TRIM(item.value) != '' AND CAST(TRIM(item.value) AS INTEGER) > 0
-      ),
-      FilteredDesigns AS (
-          SELECT *
-          FROM "${targetTable}"
-          WHERE category IS NOT NULL AND TRIM(category) != ''
-            AND (
-              NOT EXISTS (SELECT 1 FROM ResolvedPackages)
-              OR PackageIdList IS NULL 
-              OR TRIM(PackageIdList) = ''
-              OR EXISTS (
-                  SELECT 1 FROM ResolvedPackages rp
-                  WHERE (',' || REPLACE(COALESCE(PackageIdList, ''), ' ', '') || ',') 
-                        LIKE ('%,' || rp.package_id || ',%')
-              )
-            )
-      ),
-      CategoryCounts AS (
-        SELECT 
-          category,
-          categoryid,
-          COUNT(*) AS designCount
-        FROM FilteredDesigns
-        GROUP BY category
-      ),
-      RankedProducts AS (
-        SELECT 
-          *,
-          ROW_NUMBER() OVER (
-            PARTITION BY category 
-            ORDER BY 
-              CASE WHEN ImageCount > 0 THEN 1 ELSE 2 END ASC,
-              DisplayOrder ASC, 
-              id ASC
-          ) AS rank
-        FROM FilteredDesigns
-      )
+    // 1. Fast Path: Read from pre-computed policy_categories table
+    let selectSql = `
       SELECT 
-        c.category AS CategoryName,
-        c.category AS categoryName,
-        c.categoryid AS categoryId,
-        c.categoryid AS id,
-        c.designCount,
-        p.DesignId,
-        p.designno,
-        p.autocode,
-        p.TitleLine,
-        p.ImageCount,
-        p.ImageExtension,
-        p.ImageVideoDetail,
-        p.UnitCostWithMarkUpIncTax,
-        p.UnitCost,
-        p.MetalColorid,
-        p.MetalPurityid
-      FROM CategoryCounts c
-      JOIN RankedProducts p ON c.category = p.category AND p.rank = 1
-      ORDER BY c.designCount DESC
+        CategoryName,
+        CategoryName AS categoryName,
+        categoryId,
+        categoryId AS id,
+        designCount,
+        DesignId,
+        designno,
+        autocode,
+        TitleLine,
+        ImageCount,
+        ImageExtension,
+        ImageVideoDetail,
+        UnitCostWithMarkUpIncTax,
+        UnitCost,
+        MetalColorid,
+        MetalPurityid
+      FROM "${POLICY_CATEGORIES_TABLE}"
+      WHERE table_name = ?
+      ORDER BY designCount DESC
     `;
 
-    const queryParams = [pkgIdParam, pkgNameParam];
-
+    const queryParams = [targetTable];
     if (limit) {
-      sql += ` LIMIT ?`;
+      selectSql += ` LIMIT ?`;
       queryParams.push(limit);
     }
 
-    const rows = db.prepare(sql).all(...queryParams);
+    let rows = db.prepare(selectSql).all(...queryParams);
+
+    // 2. Fallback: If not yet materialized for this policy, compute once and save
+    if (!rows || rows.length === 0) {
+      const materialized = rebuildPolicyCategories(db, targetTable, options);
+      rows = limit ? materialized.slice(0, limit) : materialized;
+    }
 
     const formattedRows = rows.map((row) => ({
       ...row,
-      firstProduct: {
+      firstProduct: row.firstProduct || {
         DesignId: row.DesignId,
         designno: row.designno,
         autocode: row.autocode,
@@ -167,3 +103,7 @@ export function getHomeCategories(db, options = {}) {
     };
   }
 }
+
+export default {
+  getHomeCategories,
+};

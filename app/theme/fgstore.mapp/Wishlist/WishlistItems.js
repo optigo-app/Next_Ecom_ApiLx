@@ -37,15 +37,27 @@ const WishlistItems = ({ item, index, selectedValue, itemInCart, updateCount, co
     return () => clearTimeout(timer);
   }, [index]);
 
-  // useEffect(() => {
-  //   if (item?.ImageCount > 0) {
-  //     WishCardImageFunc(item).then((src) => {
-  //       setImageSrc(src);
-  //     });
-  //   } else {
-  //     setImageSrc(noImageFound);
-  //   }
-  // }, [item]);
+  useEffect(() => {
+    let cancelled = false;
+    const fallbackImage = `${CDNDesignImageFolThumb || ""}${item?.designno || ""}~1.jpg` || noImageFound;
+
+    const loadWishlistImage = async () => {
+      if (!item?.designno || Number(item?.ImageCount) <= 0) {
+        if (!cancelled) setImageSrc(noImageFound);
+        return;
+      }
+
+      try {
+        const resolvedImage = await Promise.resolve(WishCardImageFunc?.(item));
+        if (!cancelled) setImageSrc(resolvedImage || fallbackImage || noImageFound);
+      } catch {
+        if (!cancelled) setImageSrc(fallbackImage || noImageFound);
+      }
+    };
+
+    loadWishlistImage();
+    return () => { cancelled = true; };
+  }, [item?.designno, item?.ImageCount, item?.metalcolorname, CDNDesignImageFolThumb]);
 
   const handleWishlistToCartFun = async (item) => {
     const returnValue = await handleWishlistToCart(item);
@@ -121,7 +133,7 @@ const WishlistItems = ({ item, index, selectedValue, itemInCart, updateCount, co
               ) : (
                 <CardMedia
                   component="img"
-                  image={item?.images}
+                  image={imageSrc || item?.images || noImageFound}
                   alt=" "
                   loading="lazy"
                   className="smr_WlListImage"
@@ -269,7 +281,7 @@ const WishlistItems = ({ item, index, selectedValue, itemInCart, updateCount, co
               ) : (
                 <CardMedia
                   component="img"
-                  image={item?.images}
+                  image={imageSrc || item?.images || noImageFound}
                   alt={item?.TitleLine}
                   className="smr_WlListImage2"
                   loading="lazy"

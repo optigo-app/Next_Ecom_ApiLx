@@ -13,7 +13,13 @@ import ShowCaseBlock from "./components/ShowCaseBlock";
 import OrderBlock from "./CustomOrder/OrderBlock";
 import TokenWrapper from "./TokenWrapper";
 
-export default function Home({ storeinit }) {
+export default function Home({
+  storeinit,
+  initialBestSellers = [],
+  initialNewArrivals = [],
+  initialTrending = [],
+  initialCategories = [],
+}) {
   return (
     <>
       <TokenWrapper>
@@ -22,19 +28,19 @@ export default function Home({ storeinit }) {
             <Searchbar storeinit={storeinit} />
             <ProductTypeBar storeinit={storeinit} />
             <PromotionCarousel />
-            <Categories storeinit={storeinit} />
+            <Categories storeinit={storeinit} initialCategories={initialCategories} />
             <OrderBlock />
           </Box>
           {/* <AlbumSection /> */}
-          <GiftBlock storeinit={storeinit} />
+          {/* <GiftBlock storeinit={storeinit} /> */}
           {/* storeinit?.IsHomeAlbum === 0 && */}
-          <BestSellers storeinit={storeinit} />
+          <BestSellers storeinit={storeinit} initialData={initialBestSellers} />
           {/* storeinit?.IsHomeBestSeller === 0 && */}
           <ShowCaseBlock />
-          <Trendings storeinit={storeinit} />
+          <Trendings storeinit={storeinit} initialData={initialTrending} />
           {/* storeinit?.IsHomeTrending === 0 && */}
           {/* <Collection storeinit={storeinit} /> */}
-          <NewArrival storeinit={storeinit} />
+          <NewArrival storeinit={storeinit} initialData={initialNewArrivals} />
           {/* storeinit?.IsHomeNewArrival === 0 && */}
         </Box>
       </TokenWrapper>

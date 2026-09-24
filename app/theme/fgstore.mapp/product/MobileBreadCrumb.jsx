@@ -17,6 +17,7 @@ const BreadCrumbs = ({
     menuDecode,
     count,
     afterCountStatus,
+    afterFilterCount
 
 }) => {
     const [anchorEl, setAnchorEl] = useState(null);

@@ -3,22 +3,7 @@ import React, { useEffect, useMemo, useRef, useState, useCallback } from "react"
 import "./ProductList.modul.scss";
 import { styled } from "@mui/material/styles";
 import Typography from "@mui/material/Typography";
-import {
-  Button,
-  Divider,
-  Drawer,
-  IconButton,
-  PaginationItem,
-  Skeleton,
-  Stack,
-  useMediaQuery,
-  useTheme,
-  Accordion,
-  Box,
-  FormControlLabel,
-  Input,
-  Slider,
-} from "@mui/material";
+import {  Button,  Divider,  Drawer,  IconButton,  PaginationItem,  Skeleton,  Stack,  useMediaQuery,  useTheme,  Accordion,  Box,  FormControlLabel,  Input,  Slider,} from "@mui/material";
 import Cookies from "js-cookie";
 import { toast } from "react-toastify";
 import {
@@ -241,6 +226,72 @@ const ProductList = ({ storeinit, searchParams, params, initialData, initialFilt
     });
   };
 
+  const filterSidebarProps = {
+    CustomLabel,
+    CustomFormControlLabel,
+    PriceRangeInputs,
+    RangeFilterView1,
+    RangeFilterView2,
+    RangeFilterView,
+    open: openFilter,
+    onClose: () => setOpenFilter(false),
+    filterCount: afterFilterCount || 0,
+    filterData,
+    storeinit,
+    loginCurrency: loginUserDetail,
+    formatter,
+    decodeEntities,
+    filterChecked,
+    handleCheckboxChange,
+    handelFilterClearAll,
+    setIsOnlyProdLoading,
+    priceRangeValue,
+    setPriceRangeValue,
+    lowestPrice,
+    highestPrice,
+    setLowestPrice,
+    setHighestPrice,
+    setProductListData,
+    setAfterFilterCount,
+    selectedMetalId,
+    selectedDiaId,
+    selectedCsId,
+    prodListType,
+    cookie,
+    isReset,
+    setIsReset,
+    sliderValue,
+    setSliderValue,
+    handleRangeFilterApi,
+    show,
+    setShow,
+    appliedRange1,
+    setAppliedRange1,
+    sliderValue1,
+    setSliderValue1,
+    handleRangeFilterApi1,
+    show1,
+    setShow1,
+    appliedRange2,
+    setAppliedRange2,
+    sliderValue2,
+    setSliderValue2,
+    handleRangeFilterApi2,
+    show2,
+    setShow2,
+    appliedRange3,
+    setAppliedRange3,
+    isFiltering: isOnlyProdLoading || isProdLoading,
+    isBelow768,
+    sortingSelect: trend,
+    handleSortby,
+    handleChangeTrend,
+    metalType,
+    setSelectedMetalId,
+    diamondType,
+    setSelectedDiaId,
+  };
+
   return (
     <>
       <title>{DynamicListPageTitleLineFunc()}</title>
@@ -271,114 +322,39 @@ const ProductList = ({ storeinit, searchParams, params, initialData, initialFilt
           isFiltering={isOnlyProdLoading || isProdLoading}
         />
 
-        <Drawer
-          anchor="left"
-          open={openFilter}
-          onClose={() => setOpenFilter(false)}
-          transitionDuration={100}
-          sx={{
-            "& .MuiDrawer-paper": {
-              width: { xs: "90%", sm: "454px" },
-              border: "none",
-              boxShadow: "0 8px 24px rgba(0,0,0,0.1)",
-              backgroundColor: "#fff",
-              borderRadius: 0,
-              overflow: "hidden",
-              display: "flex",
-              flexDirection: "column",
-            },
-          }}
-        >
-          <FilterSidebar
-            CustomLabel={CustomLabel}
-            CustomFormControlLabel={CustomFormControlLabel}
-            PriceRangeInputs={PriceRangeInputs}
-            RangeFilterView1={RangeFilterView1}
-            RangeFilterView2={RangeFilterView2}
-            RangeFilterView={RangeFilterView}
-            /** Drawer Controls */
+        {/* Mobile-only: Drawer overlay */}
+        {isBelow768 && (
+          <Drawer
+            anchor="left"
             open={openFilter}
             onClose={() => setOpenFilter(false)}
-            /** Summary Count */
-            filterCount={afterFilterCount || 0}
-            /** Core Filter Data */
-            filterData={filterData}
-            storeinit={storeinit}
-            loginCurrency={loginUserDetail}
-            formatter={formatter}
-            decodeEntities={decodeEntities}
-            filterChecked={filterChecked}
-            /** Event Handlers */
-            handleCheckboxChange={handleCheckboxChange}
-            handelFilterClearAll={handelFilterClearAll}
-            setIsOnlyProdLoading={setIsOnlyProdLoading}
-            /** Price Range Related */
-            priceRangeValue={priceRangeValue}
-            setPriceRangeValue={setPriceRangeValue}
-            lowestPrice={lowestPrice}
-            highestPrice={highestPrice}
-            setLowestPrice={setLowestPrice}
-            setHighestPrice={setHighestPrice}
-            setProductListData={setProductListData}
-            setAfterFilterCount={setAfterFilterCount}
-            selectedMetalId={selectedMetalId}
-            selectedDiaId={selectedDiaId}
-            selectedCsId={selectedCsId}
-            prodListType={prodListType}
-            cookie={cookie}
-            isReset={isReset}
-            setIsReset={setIsReset}
-            /** Diamond Range Filter */
-            sliderValue={sliderValue}
-            setSliderValue={setSliderValue}
-            handleRangeFilterApi={handleRangeFilterApi}
-            show={show}
-            setShow={setShow}
-            appliedRange1={appliedRange1}
-            setAppliedRange1={setAppliedRange1}
-            /** Net Weight Range Filter */
-            sliderValue1={sliderValue1}
-            setSliderValue1={setSliderValue1}
-            handleRangeFilterApi1={handleRangeFilterApi1}
-            show1={show1}
-            setShow1={setShow1}
-            appliedRange2={appliedRange2}
-            setAppliedRange2={setAppliedRange2}
-            /** Gross Weight Range Filter */
-            sliderValue2={sliderValue2}
-            setSliderValue2={setSliderValue2}
-            handleRangeFilterApi2={handleRangeFilterApi2}
-            show2={show2}
-            setShow2={setShow2}
-            appliedRange3={appliedRange3}
-            setAppliedRange3={setAppliedRange3}
-            isFiltering={isOnlyProdLoading || isProdLoading}
-            isBelow768={isBelow768}
-            // Sorting
-            sortingSelect={trend}
-            handleSortby={handleSortby}
-            handleChangeTrend={handleChangeTrend}
-            // Metal
-            metalType={metalType}
-            setSelectedMetalId={setSelectedMetalId}
-            // Diamond
-            diamondType={diamondType}
-            setSelectedDiaId={setSelectedDiaId}
-          />
-        </Drawer>
+            transitionDuration={100}
+            sx={{
+              "& .MuiDrawer-paper": {
+                width: { xs: "90%", sm: "360px" },
+                border: "none",
+                boxShadow: "0 8px 24px rgba(0,0,0,0.1)",
+                backgroundColor: "#fff",
+                borderRadius: 0,
+                overflow: "hidden",
+                display: "flex",
+                flexDirection: "column",
+              },
+            }}
+          >
+            <FilterSidebar {...filterSidebarProps} />
+          </Drawer>
+        )}
 
         <ShopHeader
           decodedSearchResult={result}
           isBelow768={isBelow768}
-          // Sorting
           sortingSelect={trend}
           handleSortby={handleSortby}
           handleChangeTrend={handleChangeTrend}
-          // Metal
           metalType={metalType}
           selectedMetalId={selectedMetalId}
           setSelectedMetalId={setSelectedMetalId}
-          // Diamond
           diamondType={diamondType}
           selectedDiaId={selectedDiaId}
           setSelectedDiaId={setSelectedDiaId}
@@ -387,41 +363,77 @@ const ProductList = ({ storeinit, searchParams, params, initialData, initialFilt
           filterCount={afterFilterCount}
           storeinit={storeinit}
           isFiltering={isOnlyProdLoading || isProdLoading}
-          // Clear All
           anyFilterApplied={anyFilterApplied}
           handelFilterClearAll={handelFilterClearAll}
         />
 
-        <JewelryProductGrid
-          productListData={productListData}
-          isFiltering={isOnlyProdLoading || isProdLoading}
-          handleMoveToDetail={handleMoveToDetail}
-          showFilter={showFilter}
-          filter={filter}
-          filterData={filterData}
-          handleCartandWish={handleCartandWish}
-          cartArr={cartArr}
-          wishArr={wishArr}
-          storeinit={storeinit}
-          loginUserDetail={loginUserDetail}
-        />
-
-        {storeinit?.IsProductListPagination == 1 &&
-          Math.ceil(afterFilterCount / storeinit.PageSize) > 1 && (
-            <NewPagination
-              currentPage={currPage}
-              totalItems={afterFilterCount}
-              itemsPerPage={storeinit.PageSize}
-              onPageChange={handelPageChange}
-              inputPage={inputPage}
-              setInputPage={setInputPage}
-              handlePageInputChange={handlePageInputChange}
-              maxwidth464px={maxwidth464px}
-              totalPages={totalPages}
-              currPage={currPage}
-              isShowButton={false}
-            />
+        {/* Desktop: persistent sidebar + products side by side */}
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "flex-start",
+            gap: 0,
+          }}
+        >
+          {/* Persistent Sidebar — desktop only */}
+          {!isBelow768 && (
+            <Box
+              sx={{
+                width: "260px",
+                flexShrink: 0,
+                borderRight: "1px solid #e5e5e5",
+                height: "100vh",
+                position: "sticky",
+                top: 0,
+                display: "flex",
+                flexDirection: "column",
+                backgroundColor: "#fff",
+                overflowY: "auto",
+                "&::-webkit-scrollbar": { width: "4px" },
+                "&::-webkit-scrollbar-thumb": {
+                  background: "#e0e0e0",
+                  borderRadius: "4px",
+                },
+              }}
+            >
+              <FilterSidebar {...filterSidebarProps} isInline />
+            </Box>
           )}
+
+          {/* Product Grid */}
+          <Box sx={{ flex: 1, minWidth: 0 }}>
+            <JewelryProductGrid
+              productListData={productListData}
+              isFiltering={isOnlyProdLoading || isProdLoading}
+              handleMoveToDetail={handleMoveToDetail}
+              showFilter={showFilter}
+              filter={filter}
+              filterData={filterData}
+              handleCartandWish={handleCartandWish}
+              cartArr={cartArr}
+              wishArr={wishArr}
+              storeinit={storeinit}
+              loginUserDetail={loginUserDetail}
+            />
+
+            {storeinit?.IsProductListPagination == 1 &&
+              Math.ceil(afterFilterCount / storeinit.PageSize) > 1 && (
+                <NewPagination
+                  currentPage={currPage}
+                  totalItems={afterFilterCount}
+                  itemsPerPage={storeinit.PageSize}
+                  onPageChange={handelPageChange}
+                  inputPage={inputPage}
+                  setInputPage={setInputPage}
+                  handlePageInputChange={handlePageInputChange}
+                  maxwidth464px={maxwidth464px}
+                  totalPages={totalPages}
+                  currPage={currPage}
+                  isShowButton={false}
+                />
+              )}
+          </Box>
+        </Box>
       </Box>
     </>
   );

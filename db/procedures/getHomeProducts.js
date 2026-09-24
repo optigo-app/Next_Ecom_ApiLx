@@ -22,17 +22,17 @@ export function resolveHomeTable(db, options = {}) {
     if (exists) return exists.name;
   }
 
-  // 2. Policy-derived table name
-  const hasLabour =
+  // 2. Policy-derived table name from options
+  const hasLabourInOpts =
     options.Laboursetid != null ||
     options.laboursetid != null ||
     options.pricemanagement_laboursetid != null;
-  const hasDia =
+  const hasDiaInOpts =
     options.diamondpricelistName != null ||
     options.diamondpricelistname != null ||
     options.Diamondpricelistname != null;
 
-  if (hasLabour || hasDia) {
+  if (hasLabourInOpts || hasDiaInOpts) {
     const candidate = getDynamicDesignTableName(options);
     const exists = db
       .prepare("SELECT name FROM sqlite_master WHERE type='table' AND name = ? COLLATE NOCASE")
@@ -40,17 +40,33 @@ export function resolveHomeTable(db, options = {}) {
     if (exists) return exists.name;
   }
 
-  // 3. Standard 'designs' table
-  const defaultDesigns = db
-    .prepare("SELECT name FROM sqlite_master WHERE type='table' AND name = 'designs'")
-    .get();
-  if (defaultDesigns) return defaultDesigns.name;
+  // 3. Try resolving policy from storeinit in DB
+  try {
+    const s = db
+      .prepare(
+        "SELECT pricemanagement_laboursetid, diamondpricelistname, colorstonepricelistname, SettingPriceUniqueNo FROM storeinit LIMIT 1"
+      )
+      .get();
+    if (s && (s.pricemanagement_laboursetid != null || s.diamondpricelistname != null)) {
+      const candidateFromStore = getDynamicDesignTableName(s);
+      const exists = db
+        .prepare("SELECT name FROM sqlite_master WHERE type='table' AND name = ? COLLATE NOCASE")
+        .get(candidateFromStore);
+      if (exists) return exists.name;
+    }
+  } catch (_) {}
 
-  // 4. Any existing dynamic design table
+  // 4. Any existing dynamic design table with data
   const anyDynamic = db
     .prepare("SELECT name FROM sqlite_master WHERE type='table' AND name LIKE 'design_Productlist_%' LIMIT 1")
     .get();
   if (anyDynamic) return anyDynamic.name;
+
+  // 5. Standard 'designs' table
+  const defaultDesigns = db
+    .prepare("SELECT name FROM sqlite_master WHERE type='table' AND name = 'designs'")
+    .get();
+  if (defaultDesigns) return defaultDesigns.name;
 
   return "designs";
 }

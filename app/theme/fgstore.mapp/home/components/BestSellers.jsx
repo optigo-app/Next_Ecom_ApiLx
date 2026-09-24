@@ -2,27 +2,46 @@
 import React, { useEffect, useState, useMemo, useCallback, useRef } from "react";
 import Headers from "./composable/Headers";
 import ProductCard from "./composable/Card";
-import { Box } from "@mui/material";
+import { Box, Skeleton } from "@mui/material";
 import { Get_Tren_BestS_NewAr_DesigSet_Album } from "@/app/(core)/utils/API/Home/Get_Tren_BestS_NewAr_DesigSet_Album/Get_Tren_BestS_NewAr_DesigSet_Album";
 import { useStore } from "@/app/(core)/contexts/StoreProvider";
 import { formatRedirectTitleLine, formatter, formatTitleLine } from "@/app/(core)/utils/Glob_Functions/GlobalFunction";
 import { useNextRouterLikeRR } from "@/app/(core)/hooks/useLocationRd";
 import { compressAndEncode } from "@/app/(core)/utils/Encoder&Decoder";
-import { BookCache } from "@/app/(core)/utils/API/Cache/CacheApi";
-import { normalizeALC, buildAlbumCacheKey, getPricingContext } from "@/app/(core)/cache_utility/CacheBuilder";
-import { readCache, writeCache } from "@/app/(core)/cache_utility/cacheActions";
 import Cookies from "js-cookie";
 
-function BestSellers({ storeinit }) {
-  const { loginUserDetail, islogin } = useStore();
-  const [bestSellerData, setBestSellerData] = useState([]);
+function BestSellers({ storeinit, initialData = [] }) {
+  const { loginUserDetail, islogin, storeInit: storeInitCtx } = useStore();
+  const currentStore = storeinit || storeInitCtx;
   const { push } = useNextRouterLikeRR();
-  const [loading, setLoading] = useState(true);
-
-  const pricingContext = useMemo(() => getPricingContext(loginUserDetail, storeinit, islogin), [loginUserDetail, storeinit, islogin]);
 
   const isFetchingRef = useRef(false);
-  const lastRequestKeyRef = useRef("");
+  const lastUserRef = useRef(null);
+
+  /** Build card image URL - always .jpg for CDN thumbnails */
+  const getCardImageUrl = useCallback((item) => {
+    const cdnFol = currentStore?.CDNDesignImageFolThumb || currentStore?.CDNDesignImageFol || "";
+    if (!item?.designno || item?.ImageCount === 0 || !cdnFol) {
+      return "/image-not-found.jpg";
+    }
+    return `${cdnFol}${item.designno}~1.jpg`;
+  }, [currentStore]);
+
+  /** Maps bestseller data with validated image URLs */
+  const mapBestSellerImages = useCallback((apiData) => {
+    return (apiData || []).map((item) => ({
+      ...item,
+      validatedImageURL: getCardImageUrl(item),
+    }));
+  }, [getCardImageUrl]);
+
+  const [bestSellerData, setBestSellerData] = useState(() => {
+    if (Array.isArray(initialData) && initialData.length > 0) {
+      return mapBestSellerImages(initialData);
+    }
+    return [];
+  });
+  const [loading, setLoading] = useState(!initialData || initialData.length === 0);
 
   const handleNavigation = (product) => {
     const designNo = product?.designno;
@@ -49,81 +68,58 @@ function BestSellers({ storeinit }) {
     push(`/d/${formatRedirectTitleLine(titleLine)}${designNo}?p=${encodeURIComponent(encodeObj)}`);
   };
 
-  /** Maps API bestseller data with validated image URLs */
-  const mapBestSellerImages = useCallback((apiData) => {
-    return apiData.map((item) => {
-      const imageURL = `${storeinit?.CDNDesignImageFolThumb}${item?.designno}~1.jpg`;
-      return { ...item, validatedImageURL: imageURL };
-    });
-  }, [storeinit?.CDNDesignImageFolThumb]);
+  const fetchAndSetBestSellers = useCallback(async () => {
+    if (isFetchingRef.current) return;
+    isFetchingRef.current = true;
 
-  const fetchAndSetBestSellers = useCallback(
-    async (finalID, cacheKey) => {
-      if (!pricingContext || !pricingContext.PackageId || isFetchingRef.current) return;
+    try {
+      const response = await fetch("/api/sqlite/home/bestseller", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          storeInit: storeinit,
+          loginUserDetail,
+        }),
+      });
+      const result = await response.json();
+      const apiData = result?.Data?.rd || result?.rd || [];
 
-      isFetchingRef.current = true;
-      setLoading(true);
-
-      try {
-        const cacheRes = await readCache(cacheKey);
-
-        if (cacheRes?.cached && Array.isArray(cacheRes.data)) {
-          console.log("[BestSellers] Serving from cache");
-          const mappedData = mapBestSellerImages(cacheRes.data);
-          setBestSellerData(mappedData);
-          setLoading(false);
-          isFetchingRef.current = false;
-          return;
-        }
-
-        console.log("[BestSellers] Cache miss, calling API...");
-        const res = await Get_Tren_BestS_NewAr_DesigSet_Album(storeinit, "GETBestSeller", finalID);
-        const apiData = res?.Data?.rd || [];
-        console.log("[BestSellers] API response received, count:", apiData.length);
-
-        if (apiData.length > 0) {
-          const mappedData = mapBestSellerImages(apiData);
-          setBestSellerData(mappedData);
-
-          writeCache(cacheKey, apiData).catch(console.error);
-        } else {
-          setBestSellerData([]);
-        }
-
-        setLoading(false);
-        isFetchingRef.current = false;
-      } catch (err) {
-        console.log("[BestSellers] Error in fetch:", err);
-        console.error(err);
-        setBestSellerData([]);
-        isFetchingRef.current = false;
-        setLoading(false);
+      if (Array.isArray(apiData) && apiData.length > 0) {
+        setBestSellerData(mapBestSellerImages(apiData));
+      } else {
+        // Fallback to legacy API if SQLite has no records
+        const visiterID = Cookies.get("visiterId");
+        const userId = loginUserDetail?.id;
+        const finalID = storeinit?.IsB2BWebsite === 0 ? (islogin ? userId || "" : visiterID) : userId || "";
+        const res = await Get_Tren_BestS_NewAr_DesigSet_Album(storeinit, "GETBestSeller", finalID).catch(() => null);
+        const legacyData = res?.Data?.rd || [];
+        setBestSellerData(mapBestSellerImages(legacyData));
       }
-    },
-    [pricingContext, storeinit, mapBestSellerImages]
-  );
+      setLoading(false);
+    } catch (err) {
+      console.error("[BestSellers] Fetch error:", err);
+      setLoading(false);
+    } finally {
+      isFetchingRef.current = false;
+    }
+  }, [storeinit, loginUserDetail, islogin, mapBestSellerImages]);
 
   useEffect(() => {
-    if (!pricingContext || !storeinit) return;
+    const currentUserSig = `${Boolean(islogin)}_${loginUserDetail?.id || loginUserDetail?.userid || 0}_${loginUserDetail?.pricemanagement_laboursetid || 0}`;
 
-    const fetchData = async () => {
-      const visiterID = Cookies.get("visiterId");
-      const userId = loginUserDetail?.id;
-      const finalID = storeinit?.IsB2BWebsite === 0 ? (islogin ? userId || "" : visiterID) : userId || "";
+    // If initialData was provided on first mount and matches state, keep it
+    if (lastUserRef.current === null && initialData && initialData.length > 0) {
+      lastUserRef.current = currentUserSig;
+      return;
+    }
 
-      const keyALC = normalizeALC("");
-      const { key } = buildAlbumCacheKey("home_bestseller", storeinit, pricingContext, finalID, keyALC);
+    if (lastUserRef.current !== currentUserSig || bestSellerData.length === 0) {
+      lastUserRef.current = currentUserSig;
+      fetchAndSetBestSellers();
+    }
+  }, [islogin, loginUserDetail, initialData, fetchAndSetBestSellers, bestSellerData.length]);
 
-      if (isFetchingRef.current || lastRequestKeyRef.current === key) return;
-      lastRequestKeyRef.current = key;
-
-      await fetchAndSetBestSellers(finalID, key);
-    };
-
-    fetchData();
-  }, [islogin, pricingContext, storeinit, fetchAndSetBestSellers, loginUserDetail?.id]);
-
-  if (!loading && bestSellerData?.length == 0) {
+  if (!loading && bestSellerData?.length === 0) {
     return null;
   }
 
@@ -142,21 +138,32 @@ function BestSellers({ storeinit }) {
           px: 1.5,
         }}
       >
-        {bestSellerData?.map((product, index) => (
-          <ProductCard
-            key={`best_sellers_${index}`}
-            product={product}
-            minWidth="150px"
-            maxWidth="150px"
-            onClick={() => handleNavigation(product)}
-            image={product?.validatedImageURL}
-            title={[product?.designno, product?.TitleLine && formatTitleLine(product?.TitleLine)]?.filter(Boolean)?.join(" - ")}
-            price={formatter(product?.UnitCostWithMarkUp)}
-          />
-        ))}
+        {loading ? (
+          Array.from(new Array(6)).map((_, index) => (
+            <Box key={index} sx={{ minWidth: 150, width: 150 }}>
+              <Skeleton variant="rectangular" width={150} height={180} sx={{ borderRadius: 2, bgcolor: "rgba(0,0,0,0.06)" }} />
+              <Skeleton variant="text" width="80%" sx={{ mt: 1 }} />
+              <Skeleton variant="text" width="50%" />
+            </Box>
+          ))
+        ) : (
+          bestSellerData?.map((product, index) => (
+            <ProductCard
+              key={`best_sellers_${product?.designno || index}`}
+              product={product}
+              minWidth="150px"
+              maxWidth="150px"
+              onClick={() => handleNavigation(product)}
+              image={product?.validatedImageURL}
+              title={[product?.designno, product?.TitleLine && formatTitleLine(product?.TitleLine)]?.filter(Boolean)?.join(" - ")}
+              price={formatter(product?.UnitCostWithMarkUp)}
+            />
+          ))
+        )}
       </Box>
     </>
   );
 }
 
 export default BestSellers;
+

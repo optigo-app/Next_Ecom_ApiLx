@@ -13,17 +13,18 @@ import { COLORS } from '@/app/(core)/constants/MobileAppTheme';
 import { getPricingContext, buildMenuCacheKey } from '@/app/(core)/cache_utility/CacheBuilder';
 import { readCache, writeCache } from '@/app/(core)/cache_utility/cacheActions';
 
-const Menu = ({ storeInit }) => {
+const Menu = ({ storeInit, initialMenuData = [] }) => {
     const { islogin, loginUserDetail } = useStore();
     const navigation = useNextRouterLikeRR().push;
 
-    const [menuData, setMenuData] = useState([]);
-    const [loading, setLoading] = useState(true);
+    const [menuData, setMenuData] = useState(() => initialMenuData);
+    const [loading, setLoading] = useState(() => initialMenuData.length === 0);
     const [activeTab, setActiveTab] = useState(0);
 
     const pricingContext = useMemo(() => getPricingContext(loginUserDetail, storeInit, islogin), [loginUserDetail, storeInit, islogin]);
     const isFetchingRef = useRef(false);
     const lastRequestKeyRef = useRef("");
+    const initialMenuConsumedRef = useRef(false);
 
     // Reset the lastRequestKey lock whenever login-state changes so a fresh fetch can happen.
     useEffect(() => {
@@ -56,6 +57,16 @@ const Menu = ({ storeInit }) => {
         const eventName = "home_menu";
         const menuPricing = { PackageId: pricingContext.PackageId };
         const { key } = buildMenuCacheKey(eventName, storeInit, menuPricing, finalID);
+
+        // The route server-prefetches SQLite menu data, matching Belux's layout
+        // behavior. Do not make a second API/cache request on first render.
+        if (initialMenuData.length > 0 && !initialMenuConsumedRef.current) {
+            initialMenuConsumedRef.current = true;
+            setMenuData(initialMenuData);
+            setLoading(false);
+            lastRequestKeyRef.current = key;
+            return;
+        }
 
         // Prevent duplicate calls with same key
         if (isFetchingRef.current || lastRequestKeyRef.current === key) return;
@@ -100,7 +111,7 @@ const Menu = ({ storeInit }) => {
         };
 
         fetchMenu();
-    }, [islogin, storeInit, loginUserDetail, pricingContext]);
+    }, [islogin, storeInit, loginUserDetail, pricingContext, initialMenuData]);
 
     // ==========================================
     // 2. FORMAT MENU DATA FOR NEW UI
@@ -309,8 +320,8 @@ const Menu = ({ storeInit }) => {
                             </ButtonBase>
                         </Box>
 
-                        {formattedMenu[activeTab]?.children.map((sub) => (
-                            <Box key={sub.id} sx={{ mb: 4 }}>
+                        {formattedMenu[activeTab]?.children.map((sub, subIndex) => (
+                            <Box key={`${formattedMenu[activeTab]?.menuid || activeTab}-sub-${sub.id || sub.name || "item"}-${subIndex}`} sx={{ mb: 4 }}>
                                 <Typography
                                     onClick={() => handleNavigate(formattedMenu[activeTab], sub)}
                                     sx={{ fontWeight: 700, fontSize: '15px', mb: 1.5, display: 'flex', alignItems: 'center', cursor: 'pointer' }}
@@ -319,9 +330,9 @@ const Menu = ({ storeInit }) => {
                                 </Typography>
 
                                 <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-                                    {sub.subChildren.map((child) => (
+                                    {sub.subChildren.map((child, childIndex) => (
                                         <ButtonBase
-                                            key={child.id}
+                                            key={`${formattedMenu[activeTab]?.menuid || activeTab}-sub-${sub.id || subIndex}-child-${child.id || child.name || "item"}-${childIndex}`}
                                             onClick={() => handleNavigate(formattedMenu[activeTab], sub, child)}
                                             sx={{
                                                 px: 2,

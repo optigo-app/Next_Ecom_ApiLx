@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 import React, { useEffect, useState, useMemo, useCallback, useRef } from "react";
 import Headers from "./composable/Headers";
@@ -9,20 +9,40 @@ import { useStore } from "@/app/(core)/contexts/StoreProvider";
 import { useNextRouterLikeRR } from "@/app/(core)/hooks/useLocationRd";
 import { compressAndEncode } from "@/app/(core)/utils/Encoder&Decoder";
 import { formatRedirectTitleLine, formatter, formatTitleLine } from "@/app/(core)/utils/Glob_Functions/GlobalFunction";
-import { normalizeALC, buildAlbumCacheKey, getPricingContext } from "@/app/(core)/cache_utility/CacheBuilder";
-import { readCache, writeCache } from "@/app/(core)/cache_utility/cacheActions";
 import Cookies from "js-cookie";
 
-function Trendings({ storeinit }) {
-  const { loginUserDetail, islogin } = useStore();
-  const [TrendingData, setTrendingData] = useState([]);
+function Trendings({ storeinit, initialData = [] }) {
+  const { loginUserDetail, islogin, storeInit: storeInitCtx } = useStore();
+  const currentStore = storeinit || storeInitCtx;
   const { push } = useNextRouterLikeRR();
-  const [loading, setLoading] = useState(true);
-
-  const pricingContext = useMemo(() => getPricingContext(loginUserDetail, storeinit, islogin), [loginUserDetail, storeinit, islogin]);
 
   const isFetchingRef = useRef(false);
-  const lastRequestKeyRef = useRef("");
+  const lastUserRef = useRef(null);
+
+  /** Build card image URL - always .jpg for CDN thumbnails */
+  const getCardImageUrl = useCallback((item) => {
+    const cdnFol = currentStore?.CDNDesignImageFolThumb || currentStore?.CDNDesignImageFol || "";
+    if (!item?.designno || item?.ImageCount === 0 || !cdnFol) {
+      return "/image-not-found.jpg";
+    }
+    return `${cdnFol}${item.designno}~1.jpg`;
+  }, [currentStore]);
+
+  /** Maps API trending data with validated image URLs */
+  const mapTrendingImages = useCallback((apiData) => {
+    return (apiData || []).map((item) => ({
+      ...item,
+      validatedImageURL: getCardImageUrl(item),
+    }));
+  }, [getCardImageUrl]);
+
+  const [TrendingData, setTrendingData] = useState(() => {
+    if (Array.isArray(initialData) && initialData.length > 0) {
+      return mapTrendingImages(initialData);
+    }
+    return [];
+  });
+  const [loading, setLoading] = useState(!initialData || initialData.length === 0);
 
   const handleNavigation = (product, index) => {
     const designNo = product?.designno;
@@ -50,81 +70,58 @@ function Trendings({ storeinit }) {
     push(`/d/${formatRedirectTitleLine(titleLine)}${designNo}?p=${encodeURIComponent(encodeObj)}`);
   };
 
-  /** Maps API trending data with validated image URLs */
-  const mapTrendingImages = useCallback((apiData) => {
-    return apiData.map((item) => {
-      const imageURL = `${storeinit?.CDNDesignImageFolThumb}${item?.designno}~1.jpg`;
-      return { ...item, validatedImageURL: imageURL };
-    });
-  }, [storeinit?.CDNDesignImageFolThumb]);
+  const fetchAndSetTrendings = useCallback(async () => {
+    if (isFetchingRef.current) return;
+    isFetchingRef.current = true;
 
-  const fetchAndSetTrendings = useCallback(
-    async (finalID, cacheKey) => {
-      if (!pricingContext || !pricingContext.PackageId || isFetchingRef.current) return;
+    try {
+      const response = await fetch("/api/sqlite/home/trending", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          storeInit: storeinit,
+          loginUserDetail,
+        }),
+      });
+      const result = await response.json();
+      const apiData = result?.Data?.rd || result?.rd || [];
 
-      isFetchingRef.current = true;
-      setLoading(true);
-
-      try {
-        const cacheRes = await readCache(cacheKey);
-
-        if (cacheRes?.cached && Array.isArray(cacheRes.data)) {
-          console.log("[Trendings] Serving from cache");
-          const mappedData = mapTrendingImages(cacheRes.data);
-          setTrendingData(mappedData);
-          setLoading(false);
-          isFetchingRef.current = false;
-          return;
-        }
-
-        console.log("[Trendings] Cache miss, calling API...");
-        const res = await Get_Tren_BestS_NewAr_DesigSet_Album(storeinit, "GETTrending", finalID);
-        const apiData = res?.Data?.rd || [];
-        console.log("[Trendings] API response received, count:", apiData.length);
-
-        if (apiData.length > 0) {
-          const mappedData = mapTrendingImages(apiData);
-          setTrendingData(mappedData);
-
-          writeCache(cacheKey, apiData).catch(console.error);
-        } else {
-          setTrendingData([]);
-        }
-
-        setLoading(false);
-        isFetchingRef.current = false;
-      } catch (err) {
-        console.log("[Trendings] Error in fetch:", err);
-        console.error(err);
-        setTrendingData([]);
-        isFetchingRef.current = false;
-        setLoading(false);
+      if (Array.isArray(apiData) && apiData.length > 0) {
+        setTrendingData(mapTrendingImages(apiData));
+      } else {
+        // Fallback to legacy API if SQLite has no records
+        const visiterID = Cookies.get("visiterId");
+        const userId = loginUserDetail?.id;
+        const finalID = storeinit?.IsB2BWebsite === 0 ? (islogin ? userId || "" : visiterID) : userId || "";
+        const res = await Get_Tren_BestS_NewAr_DesigSet_Album(storeinit, "GETTrending", finalID).catch(() => null);
+        const legacyData = res?.Data?.rd || [];
+        setTrendingData(mapTrendingImages(legacyData));
       }
-    },
-    [pricingContext, storeinit, mapTrendingImages]
-  );
+      setLoading(false);
+    } catch (err) {
+      console.error("[Trendings] Fetch error:", err);
+      setLoading(false);
+    } finally {
+      isFetchingRef.current = false;
+    }
+  }, [storeinit, loginUserDetail, islogin, mapTrendingImages]);
 
   useEffect(() => {
-    if (!pricingContext || !storeinit) return;
+    const currentUserSig = `${Boolean(islogin)}_${loginUserDetail?.id || loginUserDetail?.userid || 0}_${loginUserDetail?.pricemanagement_laboursetid || 0}`;
 
-    const fetchData = async () => {
-      const visiterID = Cookies.get("visiterId");
-      const userId = loginUserDetail?.id;
-      const finalID = storeinit?.IsB2BWebsite === 0 ? (islogin ? userId || "" : visiterID) : userId || "";
+    // If initialData was provided on first mount and matches state, keep it
+    if (lastUserRef.current === null && initialData && initialData.length > 0) {
+      lastUserRef.current = currentUserSig;
+      return;
+    }
 
-      const keyALC = normalizeALC("");
-      const { key } = buildAlbumCacheKey("home_trending", storeinit, pricingContext, finalID, keyALC);
+    if (lastUserRef.current !== currentUserSig || TrendingData.length === 0) {
+      lastUserRef.current = currentUserSig;
+      fetchAndSetTrendings();
+    }
+  }, [islogin, loginUserDetail, initialData, fetchAndSetTrendings, TrendingData.length]);
 
-      if (isFetchingRef.current || lastRequestKeyRef.current === key) return;
-      lastRequestKeyRef.current = key;
-
-      await fetchAndSetTrendings(finalID, key);
-    };
-
-    fetchData();
-  }, [islogin, pricingContext, storeinit, fetchAndSetTrendings, loginUserDetail?.id]);
-
-  if (!loading && TrendingData?.length == 0) {
+  if (!loading && TrendingData?.length === 0) {
     return null;
   }
 
@@ -147,20 +144,22 @@ function Trendings({ storeinit }) {
       >
         {
           loading ? (
-            Array.from(new Array(8)).map((_, index) => (
-              <Box key={index} sx={{ minWidth: 160, width: "100%" }}>
+            Array.from(new Array(6)).map((_, index) => (
+              <Box key={index} sx={{ minWidth: 150, width: 150 }}>
                 <Skeleton
                   variant="rectangular"
                   width="150px"
                   height="180px"
                   sx={{ borderRadius: 3, bgcolor: "rgba(0,0,0,0.06)" }}
                 />
+                <Skeleton variant="text" width="80%" sx={{ mt: 1 }} />
+                <Skeleton variant="text" width="50%" />
               </Box>
             ))
           ) : (
             TrendingData?.map((product, index) => (
               <ProductCard
-                key={`trending_${index}`}
+                key={`trending_${product?.designno || index}`}
                 product={product}
                 minWidth="150px"
                 maxWidth="150px"
@@ -182,4 +181,4 @@ function Trendings({ storeinit }) {
   );
 }
 
-export default Trendings;
+export default Trendings;

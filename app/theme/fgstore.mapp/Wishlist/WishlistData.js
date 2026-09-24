@@ -94,7 +94,7 @@ const WishlistData = ({
           <Grid container spacing={2} className='smr_wlListGrid'>
             {items.map((item, index) => (
               <WishlistItems
-                key={item.id}
+                key={`wishlist-${item?.ArticleId || item?.ArticleNo || item?.autocode || item?.id || "item"}-${index}`}
                 selectedValue={alignment}
                 item={item}
                 index={index}
