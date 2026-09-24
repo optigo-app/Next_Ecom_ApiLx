@@ -226,6 +226,7 @@ export default async function Page({ params, searchParams }) {
         <Product
           params={awaitedParams}
           searchParams={awaitedSearchParams}
+          storeinit={storeInit}
           initialData={sqliteRes?.success ? sqliteRes : null}
           initialFilterData={sqliteFiltersRes?.success && Array.isArray(sqliteFiltersRes?.rd) ? sqliteFiltersRes.rd : []}
         />

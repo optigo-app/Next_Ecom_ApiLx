@@ -760,6 +760,7 @@ export function useListingPage({
       netVal = sliderValue1,
       sortVal = sortBySelect,
       priceVal = priceRangeValue,
+      append = false,
     } = {}) => {
       setIsOnlyProdLoading(true);
 
@@ -837,7 +838,24 @@ export function useListingPage({
           undefined
         );
         if (sqliteRes?.success) {
-          setProductListData(sqliteRes.rd || []);
+          const nextProducts = sqliteRes.rd || [];
+          setProductListData((previousProducts) => {
+            if (!append) return nextProducts;
+
+            const existingKeys = new Set(
+              (previousProducts || []).map((item, index) =>
+                getCartWishKey(item) || `${item?.autocode || item?.ArticleNo || "item"}-${index}`
+              )
+            );
+            const uniqueNextProducts = nextProducts.filter((item, index) => {
+              const key = getCartWishKey(item) || `${item?.autocode || item?.ArticleNo || "item"}-${index}`;
+              if (existingKeys.has(key)) return false;
+              existingKeys.add(key);
+              return true;
+            });
+
+            return [...(previousProducts || []), ...uniqueNextProducts];
+          });
           setAfterFilterCount(sqliteRes.totalCount || 0);
           setCurrPage(targetPage);
           setInputPage(targetPage);
@@ -871,6 +889,18 @@ export function useListingPage({
       menuFlags,
       hasUrlMenuFlag,
     ]
+  );
+
+  const loadMoreProducts = useCallback(
+    async (targetPage) => {
+      const output = getOnlyCheckedFilters();
+      return fetchProductsFromSqlite({
+        targetPage,
+        outputFilters: output,
+        append: true,
+      });
+    },
+    [getOnlyCheckedFilters, fetchProductsFromSqlite]
   );
 
   // ----------------------------------------------------
@@ -1448,6 +1478,7 @@ export function useListingPage({
     sortBySelect,
     setSortBySelect,
     handelPageChange,
+    loadMoreProducts,
     handleSortby,
     cookie,
   };

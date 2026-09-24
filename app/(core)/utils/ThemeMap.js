@@ -12,7 +12,7 @@ export const themeMap = {
     page: "fgstore.web",
     // page: LocalSetup,
   },
-   "procatalog.web": {
+  "procatalog.web": {
     page: "fgstore.pro",
     // page: LocalSetup,
   },
@@ -27,7 +27,6 @@ export const themeMap = {
   "nxtelvee.web": {
     page: "elvee.web",
     // page: LocalSetup,
-     
   },
   "nxtdiamondtine.web": {
     page: "diamondtine.web",
@@ -61,7 +60,7 @@ export const themeMap = {
   },
   "sonasons.optigoapps.com": {
     // page: "fgstore.web",
-      page: "beluxjewel.web"
+    page: "beluxjewel.web",
   },
   "nxt09.optigoapps.com": {
     page: "fgstore.mapp",
@@ -84,11 +83,13 @@ export const themeMap = {
   "nxt10.optigoapps.com": {
     page: "beluxjewel.web",
   },
-    "nxt11.optigoapps.com": {
+  "nxt11.optigoapps.com": {
     page: "beluxjewel.web",
   },
-    "sonasons.procatalog.in": {
+  "nxt08.optigoapps.com": {
+    page: "beluxjewel.web",
+  },
+  "sonasons.procatalog.in": {
     page: "fgstore.pro",
   },
-  
 };

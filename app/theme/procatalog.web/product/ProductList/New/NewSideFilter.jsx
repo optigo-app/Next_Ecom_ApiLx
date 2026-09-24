@@ -145,12 +145,16 @@ const FilterSidebar = ({
     setSelectedMetalId,
     diamondType,
     setSelectedDiaId,
-    isBelow768
+    isBelow768,
+    /** When true the sidebar is always visible (desktop inline) — hides the close button */
+    isInline = false,
 }) => {
     const storeInit = storeInitProp || storeinitProp;
     return (
         <>
-            {/* HEADER */}
+        <Box sx={isInline ? { display: "flex", flexDirection: "column", height: "100%" } : {}}>
+            {/* HEADER — only shown in Drawer/mobile mode */}
+            {!isInline && (
             <Box
                 sx={{
                     display: "flex",
@@ -217,6 +221,7 @@ const FilterSidebar = ({
 
                 <IconButton sx={{ visibility: "hidden" }} />
             </Box>
+            )}
 
             {/* FILTER SECTIONS */}
             <Box
@@ -816,6 +821,7 @@ const FilterSidebar = ({
                     Apply
                 </Button>
             </Box>
+        </Box>
         </>
     );
 };

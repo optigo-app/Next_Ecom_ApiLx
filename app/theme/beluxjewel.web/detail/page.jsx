@@ -12,5 +12,3 @@ const ProductList = async ({ params, searchParams }) => {
 };
 
 export default ProductList;
-
-

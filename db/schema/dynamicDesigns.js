@@ -176,6 +176,9 @@ export function ensureDynamicDesignTable(db, tableName) {
     CREATE INDEX IF NOT EXISTS idx_${cleanTable}_sort_price_asc ON "${cleanTable}"(UnitCostWithMarkUpIncTax ASC, DisplayOrder ASC);
     CREATE INDEX IF NOT EXISTS idx_${cleanTable}_sort_price_desc ON "${cleanTable}"(UnitCostWithMarkUpIncTax DESC, DisplayOrder ASC);
     CREATE INDEX IF NOT EXISTS idx_${cleanTable}_sort_new ON "${cleanTable}"(EntryDate DESC, id DESC);
+    CREATE INDEX IF NOT EXISTS idx_${cleanTable}_bestseller ON "${cleanTable}"(IsBestSeller, DisplayOrder ASC);
+    CREATE INDEX IF NOT EXISTS idx_${cleanTable}_newarrival ON "${cleanTable}"(IsNewArrival, DisplayOrder ASC);
+    CREATE INDEX IF NOT EXISTS idx_${cleanTable}_trending ON "${cleanTable}"(IsTrending, DisplayOrder ASC);
   `;
 
   db.exec(createTableSql);
