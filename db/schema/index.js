@@ -13,6 +13,8 @@ import { COMPANY_INFO_TABLE_SQL } from "./companyInfo.js";
 import { MENUS_TABLE_SQL } from "./menus.js";
 import { PACKAGEMASTER_TABLE_SQL } from "./packagemaster.js";
 import { RECENTLY_VIEWED_TABLE_SQL } from "./recentlyViewed.js";
+import { ALBUMS_TABLE_SQL } from "./albums.js";
+import { ensurePolicyCategoriesTable, POLICY_CATEGORIES_TABLE } from "./policyCategories.js";
 import {
     ARTICLE_INFO_PREFIX,
     ARTICLE_MATERIAL_PREFIX,
@@ -37,6 +39,7 @@ export {
     MENUS_TABLE_SQL,
     PACKAGEMASTER_TABLE_SQL,
     RECENTLY_VIEWED_TABLE_SQL,
+    ALBUMS_TABLE_SQL,
     ARTICLE_INFO_PREFIX,
     ARTICLE_MATERIAL_PREFIX,
     ARTICLE_TABLE_PREFIX,
@@ -60,6 +63,7 @@ export const SCHEMA_SQL = [
     MENUS_TABLE_SQL,
     PACKAGEMASTER_TABLE_SQL,
     RECENTLY_VIEWED_TABLE_SQL,
+    ALBUMS_TABLE_SQL,
 ].join("\n\n");
 
 /**
@@ -77,7 +81,8 @@ export function truncateAllData(db) {
             DELETE FROM companyinfo;
             DELETE FROM menus;
             DELETE FROM packagemaster;
-            DELETE FROM sqlite_sequence WHERE name IN ('menu_filters', 'sync_logs', 'storeinit', 'account', 'companyinfo', 'menus', 'packagemaster');
+            DELETE FROM albums;
+            DELETE FROM sqlite_sequence WHERE name IN ('menu_filters', 'sync_logs', 'storeinit', 'account', 'companyinfo', 'menus', 'packagemaster', 'albums');
         `);
         db.pragma("wal_checkpoint(TRUNCATE)");
         return true;
@@ -143,6 +148,7 @@ export function initSchema(db, domain, themeInfo = {}) {
     }
 
     db.exec(SCHEMA_SQL);
+    ensurePolicyCategoriesTable(db);
 }
 
 export default initSchema;

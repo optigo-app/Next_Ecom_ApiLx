@@ -5,19 +5,60 @@ import {
 import { getDynamicDesignTableName } from "../schema/dynamicDesigns.js";
 
 /**
+ * Builds the tightest single-condition WHERE clause for article/material lookup.
+ *
+ * Priority: designno > autocode > ArticleNo
+ *
+ * Why single condition vs OR chain:
+ *   The original `(autocode != '' AND autocode = ?) OR (designno != '' AND designno = ? COLLATE NOCASE)`
+ *   pattern forces SQLite to evaluate all OR branches even when most params are empty strings.
+ *   SQLite cannot use a selective index seek when the query has an OR with an always-true branch.
+ *   A single targeted condition lets SQLite use the exact covering index for that column.
+ *
+ * @param {string} designno
+ * @param {string} autocode
+ * @param {string} articleNo
+ * @returns {{ whereClause: string, params: string[], matchField: string }}
+ */
+function buildLookupCondition(designno, autocode, articleNo) {
+  if (designno) {
+    return {
+      whereClause: "designno = ? COLLATE NOCASE",
+      params: [designno],
+      matchField: "designno",
+    };
+  }
+  if (autocode) {
+    return {
+      whereClause: "autocode = ?",
+      params: [autocode],
+      matchField: "autocode",
+    };
+  }
+  return {
+    whereClause: "ArticleNo = ? COLLATE NOCASE",
+    params: [articleNo],
+    matchField: "articleNo",
+  };
+}
+
+/**
  * Executes raw SQLite queries matching the Optigo ERP GETPRODUCTARTICLE stored procedure.
- * Produces pure SQLite direct data without caching:
- * - Data.rd: Design master info & media details
+ * Production-grade: uses targeted single-condition WHERE clauses + NOCASE composite indexes
+ * for instant lookups without full table scans.
+ *
+ * Produces pure SQLite direct data:
+ * - Data.rd:  Design master info & media details
  * - Data.rd1: Article variant combinations with metal type, color, size, and pricing
  * - Data.rd2: Full material breakdown (metals, diamonds, colorstones)
- * 
- * @param {import('better-sqlite3').Database} db 
+ *
+ * @param {import('better-sqlite3').Database} db
  * @param {object} options
  * @returns {{ Status: string, Message: string, Data: { rd: Array<object>, rd1: Array<object>, rd2: Array<object> } }}
  */
 export function getProductArticle(db, options = {}) {
-  const autocode = String(options.autocode ?? options.a ?? "").trim();
-  const designno = String(options.designno ?? options.b ?? options.design_no ?? "").trim();
+  const autocode  = String(options.autocode  ?? options.a ?? "").trim();
+  const designno  = String(options.designno  ?? options.b ?? options.design_no ?? "").trim();
   const articleNo = String(options.ArticleNo ?? options.articleno ?? "").trim();
 
   if (!autocode && !designno && !articleNo) {
@@ -28,15 +69,17 @@ export function getProductArticle(db, options = {}) {
     };
   }
 
+  // Single targeted condition — used across all three queries (rd, rd1, rd2)
+  const condition = buildLookupCondition(designno, autocode, articleNo);
+
   // 1. Resolve dynamic tables partitioned by policy
   const articleTable = resolveArticleTableName(db, options);
-  const matTable = resolveArticleMaterialTableName(db, options, articleTable);
-  const designTable = getDynamicDesignTableName(options);
+  const matTable     = resolveArticleMaterialTableName(db, options, articleTable);
+  const designTable  = getDynamicDesignTableName(options);
 
-  // 2. Query Design Header (rd)
+  // ── 2. DESIGN HEADER (rd) ──────────────────────────────────────────────────
   let rd = [];
   try {
-    // Check dynamic design table first
     const hasDesignTable = db
       .prepare("SELECT name FROM sqlite_master WHERE type='table' AND name = ? COLLATE NOCASE")
       .get(designTable);
@@ -47,8 +90,9 @@ export function getProductArticle(db, options = {}) {
       .get(targetDesignTable);
 
     if (hasAnyDesignTable) {
+      // Single targeted WHERE — uses (designno COLLATE NOCASE) or (autocode) index directly
       const designSql = `
-        SELECT 
+        SELECT
           id,
           COALESCE(DesignId, id) AS DesignId,
           autocode,
@@ -65,19 +109,17 @@ export function getProductArticle(db, options = {}) {
           COALESCE(IsImageNameWithRandNo, 0) AS IsImageNameWithRandNo,
           COALESCE(ImageVideoDetail, '') AS ImageVideoDetail
         FROM "${targetDesignTable}"
-        WHERE (autocode != '' AND autocode = ?) OR (designno != '' AND designno = ? COLLATE NOCASE)
+        WHERE ${condition.whereClause}
         LIMIT 1
       `;
-      const dRow = db.prepare(designSql).get(autocode, designno);
-      if (dRow) {
-        rd = [dRow];
-      }
+      const dRow = db.prepare(designSql).get(...condition.params);
+      if (dRow) rd = [dRow];
     }
   } catch (dErr) {
-    console.warn(`[getProductArticle] Design header query warning:`, dErr.message);
+    console.warn("[getProductArticle] Design header query warning:", dErr.message);
   }
 
-  // 3. Query Articles (rd1) via Raw SQL with Metal CTE
+  // ── 3. ARTICLES / VARIANTS (rd1) ──────────────────────────────────────────
   let rd1 = [];
   try {
     const hasArtTable = db
@@ -89,26 +131,33 @@ export function getProductArticle(db, options = {}) {
         .prepare("SELECT name FROM sqlite_master WHERE type='table' AND name = ? COLLATE NOCASE")
         .get(matTable);
 
-      let artSql = "";
       if (hasMatTable) {
-        artSql = `
+        // MetalCTE mirrors the ERP GETPRODUCTARTICLE stored procedure exactly:
+        // metal fields come ONLY from the material detail table (StoneTypeid 4/5),
+        // first row per article by material id — never from the article info table
+        // (whose MetalType columns can carry the diamond row from the full-article feed).
+        // Joined on ArticleNo because synced material rows may have NULL ArticleId.
+        const artSql = `
           WITH MetalCTE AS (
-            SELECT 
-              ArticleId,
-              TRIM(Shape || ' ' || Quality) AS MetalType,
+            SELECT
+              ArticleNo,
+              TRIM(COALESCE(Shape, '') || ' ' || COALESCE(Quality, '')) AS MetalType,
               QualityId AS MetalTypeId,
               Color AS MetalColor,
               ColorId AS MetalColorId,
-              ROW_NUMBER() OVER (PARTITION BY ArticleId ORDER BY id ASC) AS rn
+              ROW_NUMBER() OVER (
+                PARTITION BY ArticleNo
+                ORDER BY COALESCE(id, row_id) ASC
+              ) AS rn
             FROM "${matTable}"
-            WHERE ((autocode != '' AND autocode = ?) OR (designno != '' AND designno = ? COLLATE NOCASE))
+            WHERE ${condition.whereClause}
               AND StoneTypeid IN (4, 5)
               AND QualityId > 0
               AND ColorId > 0
               AND TRIM(COALESCE(Shape, '') || ' ' || COALESCE(Quality, '')) != ''
               AND TRIM(COALESCE(Color, '')) != ''
           )
-          SELECT 
+          SELECT
             a.autocode,
             a.designno,
             a.ArticleId,
@@ -152,10 +201,10 @@ export function getProductArticle(db, options = {}) {
             a.ToolItemId,
             a.TotalCSSettingCost,
             a.TotalDiaSettingCost,
-            COALESCE(NULLIF(a.MetalTypeId, 0), m.MetalTypeId, 0) AS MetalTypeId,
-            COALESCE(NULLIF(a.MetalType, ''), m.MetalType, '') AS MetalType,
-            COALESCE(NULLIF(a.MetalColorId, 0), m.MetalColorId, 0) AS MetalColorId,
-            COALESCE(NULLIF(a.MetalColor, ''), m.MetalColor, '') AS MetalColor,
+            m.MetalTypeId AS MetalTypeId,
+            m.MetalType AS MetalType,
+            m.MetalColorId AS MetalColorId,
+            m.MetalColor AS MetalColor,
             COALESCE(a.Size, '') AS Size,
             COALESCE(a.CartId, 0) AS CartId,
             COALESCE(a.IsInWish, 0) AS IsInWish,
@@ -165,16 +214,16 @@ export function getProductArticle(db, options = {}) {
             COALESCE(a.InStock, 0) AS InStock,
             COALESCE(a.StockBarcode, '') AS StockBarcode
           FROM "${articleTable}" a
-          LEFT JOIN MetalCTE m ON a.ArticleId = m.ArticleId AND m.rn = 1
-          WHERE (a.autocode != '' AND a.autocode = ?) 
-             OR (a.designno != '' AND a.designno = ? COLLATE NOCASE)
-             OR (a.ArticleNo != '' AND a.ArticleNo = ? COLLATE NOCASE)
+          INNER JOIN MetalCTE m ON a.ArticleNo = m.ArticleNo COLLATE NOCASE AND m.rn = 1
+          WHERE a.${condition.whereClause}
           ORDER BY a.ArticleId ASC, a.id ASC
         `;
-        rd1 = db.prepare(artSql).all(autocode, designno, autocode, designno, articleNo);
+        // condition.params used twice: once for MetalCTE, once for the outer WHERE
+        rd1 = db.prepare(artSql).all(...condition.params, ...condition.params);
       } else {
-        artSql = `
-          SELECT 
+        // No material table — simpler query, same targeted WHERE
+        const artSql = `
+          SELECT
             autocode,
             designno,
             ArticleId,
@@ -231,19 +280,17 @@ export function getProductArticle(db, options = {}) {
             COALESCE(InStock, 0) AS InStock,
             COALESCE(StockBarcode, '') AS StockBarcode
           FROM "${articleTable}"
-          WHERE (autocode != '' AND autocode = ?) 
-             OR (designno != '' AND designno = ? COLLATE NOCASE)
-             OR (ArticleNo != '' AND ArticleNo = ? COLLATE NOCASE)
+          WHERE ${condition.whereClause}
           ORDER BY ArticleId ASC, id ASC
         `;
-        rd1 = db.prepare(artSql).all(autocode, designno, articleNo);
+        rd1 = db.prepare(artSql).all(...condition.params);
       }
     }
   } catch (artErr) {
     console.error(`[getProductArticle] Article query error on '${articleTable}':`, artErr.message);
   }
 
-  // If rd is empty but rd1 has articles, build minimal design header from rd1
+  // Fallback: if design header missing but articles found, build minimal rd from rd1
   if (rd.length === 0 && rd1.length > 0) {
     const firstArt = rd1[0];
     rd = [
@@ -267,7 +314,7 @@ export function getProductArticle(db, options = {}) {
     ];
   }
 
-  // 4. Query Materials (rd2) via Raw SQL
+  // ── 4. MATERIALS (rd2) ────────────────────────────────────────────────────
   let rd2 = [];
   try {
     const hasMatTable = db
@@ -275,14 +322,23 @@ export function getProductArticle(db, options = {}) {
       .get(matTable);
 
     if (hasMatTable) {
+      // Single targeted WHERE — uses (designno NOCASE, ArticleId) composite index
+      // ERP material rows may arrive with NULL ArticleId — backfill it from the
+      // article table via ArticleNo so frontend rd1<->rd2 matching stays intact.
+      const hasArtTableForMat = db
+        .prepare("SELECT name FROM sqlite_master WHERE type='table' AND name = ? COLLATE NOCASE")
+        .get(articleTable);
+      const articleIdExpr = hasArtTableForMat
+        ? `COALESCE(mt.ArticleId, (SELECT a2.ArticleId FROM "${articleTable}" a2 WHERE a2.ArticleNo = mt.ArticleNo COLLATE NOCASE LIMIT 1))`
+        : "mt.ArticleId";
       const matSql = `
-        SELECT 
-          id,
-          DesignId,
-          autocode,
-          designno,
-          ArticleId,
-          ArticleNo,
+        SELECT
+          mt.id,
+          mt.DesignId,
+          mt.autocode,
+          mt.designno,
+          ${articleIdExpr} AS ArticleId,
+          mt.ArticleNo,
           MaterialTypeId,
           MaterialTypeName,
           StoneTypeid,
@@ -318,13 +374,11 @@ export function getProductArticle(db, options = {}) {
           findingAccessoriesId,
           findingtypename,
           findingAccessories
-        FROM "${matTable}"
-        WHERE (autocode != '' AND autocode = ?) 
-           OR (designno != '' AND designno = ? COLLATE NOCASE)
-           OR (ArticleNo != '' AND ArticleNo = ? COLLATE NOCASE)
-        ORDER BY ArticleId ASC, id ASC
+        FROM "${matTable}" mt
+        WHERE mt.${condition.whereClause}
+        ORDER BY ArticleId ASC, mt.id ASC
       `;
-      rd2 = db.prepare(matSql).all(autocode, designno, articleNo);
+      rd2 = db.prepare(matSql).all(...condition.params);
     }
   } catch (matErr) {
     console.error(`[getProductArticle] Material query error on '${matTable}':`, matErr.message);
@@ -333,11 +387,7 @@ export function getProductArticle(db, options = {}) {
   return {
     Status: "200",
     Message: "Request processed successfully.",
-    Data: {
-      rd,
-      rd1,
-      rd2,
-    },
+    Data: { rd, rd1, rd2 },
   };
 }
 

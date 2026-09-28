@@ -62,13 +62,7 @@ export function getHomeCategories(db, options = {}) {
       queryParams.push(limit);
     }
 
-    let rows = db.prepare(selectSql).all(...queryParams);
-
-    // 2. Fallback: If not yet materialized for this policy, compute once and save
-    if (!rows || rows.length === 0) {
-      const materialized = rebuildPolicyCategories(db, targetTable, options);
-      rows = limit ? materialized.slice(0, limit) : materialized;
-    }
+    let rows = db.prepare(selectSql).all(...queryParams) || [];
 
     const formattedRows = rows.map((row) => ({
       ...row,

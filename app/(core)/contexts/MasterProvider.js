@@ -32,8 +32,7 @@ export const MasterProvider = ({
   getMyAccountFlags,
   theme,
 }) => {
-  console.log(theme , "theme")
-  const isBelux = theme === "beluxjewel.web" || theme === "julian.web";
+  const isBelux = true || theme === "beluxjewel.web" || theme === "julian.web";
   if (typeof window !== "undefined") {
     window.__STORE_INIT__ = getStoreInit;
     window.__LOGIN_USER__ =

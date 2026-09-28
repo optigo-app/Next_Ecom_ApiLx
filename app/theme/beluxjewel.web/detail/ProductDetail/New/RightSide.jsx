@@ -389,12 +389,12 @@ const RightSide = ({
                     textTransform: "uppercase",
                   }}
                 >
-                  {isLoading && !activeArticle && !metalType && !singleProd?.MetalTypePurity ? (
+                  {isLoading && !activeArticle && !singleProd?.MetalTypePurity ? (
                     <Skeleton variant="text" width={60} />
                   ) : singleProd?.IsMrpBase === 1 ? (
                     singleProd?.MetalTypePurity || metalType || "-"
                   ) : (
-                    activeArticle?.MetalType || metalType || singleProd?.MetalTypePurity || "-"
+                    activeArticle?.MetalType || singleProd?.MetalTypePurity || metalType || "-"
                   )}
                 </Typography>
               </Grid>
@@ -410,7 +410,7 @@ const RightSide = ({
                   Metal Color
                 </Typography>
                 <Typography sx={{ fontSize: "15px", fontWeight: 600 }}>
-                  {isLoading && !activeArticle && !metalColor ? (
+                  {isLoading && !activeArticle ? (
                     <Skeleton variant="text" width={60} />
                   ) : (
                     activeArticle?.MetalColor || metalColor || "-"
@@ -431,7 +431,7 @@ const RightSide = ({
                   </Typography>
 
                   <Typography sx={{ fontSize: "15px", fontWeight: 600 }}>
-                    {isLoading && !activeArticle && !defaultDiaQcLabel && !selectDiaQc ? (
+                    {isLoading && !activeArticle && !defaultDiaQcLabel ? (
                       <Skeleton variant="text" width={80} />
                     ) : (
                       defaultDiaQcLabel || (selectDiaQc && selectDiaQc !== "undefined,undefined" ? selectDiaQc.replace(",", "-") : "-")

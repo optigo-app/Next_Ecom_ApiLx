@@ -136,6 +136,9 @@ export function ensureDynamicArticleTable(db, tableName) {
     CREATE INDEX IF NOT EXISTS idx_${cleanTable}_combo ON "${cleanTable}"(designno, MetalTypeId, MetalColorId);
     CREATE INDEX IF NOT EXISTS idx_${cleanTable}_size ON "${cleanTable}"(designno, Size);
     CREATE INDEX IF NOT EXISTS idx_${cleanTable}_cost ON "${cleanTable}"(UnitCostWithmarkup ASC);
+    CREATE INDEX IF NOT EXISTS idx_${cleanTable}_designno_nc ON "${cleanTable}"(designno COLLATE NOCASE, ArticleId ASC);
+    CREATE INDEX IF NOT EXISTS idx_${cleanTable}_autocode_art ON "${cleanTable}"(autocode, ArticleId ASC);
+    CREATE INDEX IF NOT EXISTS idx_${cleanTable}_articleno_nc ON "${cleanTable}"(ArticleNo COLLATE NOCASE, ArticleId ASC);
   `;
 
   db.exec(createTableSql);
@@ -209,6 +212,9 @@ export function ensureDynamicArticleMaterialTable(db, tableName) {
     CREATE INDEX IF NOT EXISTS idx_${cleanTable}_autocode ON "${cleanTable}"(autocode);
     CREATE INDEX IF NOT EXISTS idx_${cleanTable}_stone_type ON "${cleanTable}"(StoneTypeid);
     CREATE INDEX IF NOT EXISTS idx_${cleanTable}_combo ON "${cleanTable}"(designno, StoneTypeid, Shapeid);
+    CREATE INDEX IF NOT EXISTS idx_${cleanTable}_des_stone_nc ON "${cleanTable}"(designno COLLATE NOCASE, StoneTypeid, ArticleId);
+    CREATE INDEX IF NOT EXISTS idx_${cleanTable}_auto_stone ON "${cleanTable}"(autocode, StoneTypeid, ArticleId);
+    CREATE INDEX IF NOT EXISTS idx_${cleanTable}_artno_nc ON "${cleanTable}"(ArticleNo COLLATE NOCASE, ArticleId);
   `;
 
   db.exec(createTableSql);

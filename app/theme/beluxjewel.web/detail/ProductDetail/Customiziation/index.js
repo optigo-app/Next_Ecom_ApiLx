@@ -715,7 +715,7 @@ export default function CustomizerDrawer({
                   }}
                 />
               )}
-              <Chip
+              {/* <Chip
                 label={`Art# ${activeArticle.ArticleId}`}
                 size="small"
                 sx={{
@@ -726,7 +726,7 @@ export default function CustomizerDrawer({
                   borderRadius: "6px",
                   height: "24px",
                 }}
-              />
+              /> */}
             </Box>
           </Box>
         )}
