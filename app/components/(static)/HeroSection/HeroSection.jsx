@@ -1,4 +1,4 @@
-import { Box } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import getHomeBannerImages from "@/app/(core)/utils/Glob_Functions/ThemesBanner/ThemesBanner";
 import { assetBase } from "@/app/(core)/lib/ServerHelper";
 import { BELUX_JEWEL } from "@/app/(core)/constants/ElveeFlag";
@@ -22,14 +22,31 @@ export default async function TopSection() {
           },
         }}
       >
-        <Box
-          component="img"
-          src="/banner/Banner.png"
-          alt="Homepage Banner"
+        <Typography
+          component="h1"
+          sx={{
+            position: "absolute",
+            width: "1px",
+            height: "1px",
+            padding: 0,
+            margin: "-1px",
+            overflow: "hidden",
+            clip: "rect(0, 0, 0, 0)",
+            whiteSpace: "nowrap",
+            border: 0,
+          }}
+        >
+          Exclusive Handcrafted Fine Jewelry Collections
+        </Typography>
+        <img
+          src="/banner/Banner.webp"
+          alt="Exclusive Handcrafted Fine Jewelry Collections"
+          width="1920"
+          height="840"
           loading="eager"
           fetchPriority="high"
           decoding="async"
-          sx={{
+          style={{
             position: "absolute",
             inset: 0,
             width: "100%",

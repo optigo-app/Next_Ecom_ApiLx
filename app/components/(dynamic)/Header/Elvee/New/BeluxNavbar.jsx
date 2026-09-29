@@ -123,7 +123,7 @@ const BeluxNavbar = ({ storeInit: storeinit, logos, initialMenuData = [] }) => {
     if (location === "/") {
       setIsScrolled(window.scrollY > 10);
       const handleScroll = () => setIsScrolled(window.scrollY > 10);
-      window.addEventListener("scroll", handleScroll);
+      window.addEventListener("scroll", handleScroll, { passive: true });
       return () => window.removeEventListener("scroll", handleScroll);
     } else {
       setIsScrolled(true);
@@ -450,6 +450,7 @@ const BeluxNavbar = ({ storeInit: storeinit, logos, initialMenuData = [] }) => {
 
               {!isMobile && is1400px && (
                 <IconButton
+                  aria-label="Open navigation menu"
                   disableRipple
                   disableFocusRipple
                   disableTouchRipple
@@ -482,6 +483,7 @@ const BeluxNavbar = ({ storeInit: storeinit, logos, initialMenuData = [] }) => {
               >
                 {isMobile && (
                   <IconButton
+                    aria-label="Open navigation menu"
                     disableRipple
                     disableFocusRipple
                     disableTouchRipple
@@ -502,6 +504,7 @@ const BeluxNavbar = ({ storeInit: storeinit, logos, initialMenuData = [] }) => {
                 <Box
                   component={Link}
                   href="/"
+                  aria-label="Home page"
                   sx={{
                     position: "relative",
                     display: "inline-flex",
@@ -513,7 +516,9 @@ const BeluxNavbar = ({ storeInit: storeinit, logos, initialMenuData = [] }) => {
                   <Box
                     component="img"
                     src={whiteLogo}
-                    alt="Logo"
+                    alt={storeinit?.companyname || "Store Logo"}
+                    width="150"
+                    height="40"
                     sx={{
                       width: "100%",
                       height: "auto",
@@ -528,7 +533,9 @@ const BeluxNavbar = ({ storeInit: storeinit, logos, initialMenuData = [] }) => {
                   <Box
                     component="img"
                     src={blackLogo}
-                    alt="Logo"
+                    alt={storeinit?.companyname || "Store Logo"}
+                    width="150"
+                    height="40"
                     sx={{
                       position: "absolute",
                       top: 0,
@@ -1203,6 +1210,7 @@ const BeluxNavbar = ({ storeInit: storeinit, logos, initialMenuData = [] }) => {
           <Box sx={{ display: "flex", alignItems: "center", gap: 0.6 }}>
             {islogin && (
               <IconButton
+                aria-label="Search"
                 onClick={() => setDrawerSearchOpen((prev) => !prev)}
                 sx={{ color: "#000" }}
               >
@@ -1211,6 +1219,7 @@ const BeluxNavbar = ({ storeInit: storeinit, logos, initialMenuData = [] }) => {
             )}
             {islogin && (
               <IconButton
+                aria-label="Wishlist"
                 sx={{ color: "#000" }}
                 onClick={() => navigateToMenu("/myWishList")}
               >
@@ -1221,7 +1230,7 @@ const BeluxNavbar = ({ storeInit: storeinit, logos, initialMenuData = [] }) => {
                 </Badge>
               </IconButton>
             )}
-            <IconButton onClick={handleDrawerToggle}>
+            <IconButton aria-label="Close navigation menu" onClick={handleDrawerToggle}>
               <CloseIcon />
             </IconButton>
           </Box>

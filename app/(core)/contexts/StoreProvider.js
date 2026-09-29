@@ -13,6 +13,7 @@ import { getSession } from "../utils/FetchSessionData";
 import Cookies from "js-cookie";
 import { GetCountAPI, buildCartAndWishMaps } from "../utils/API/GetCount/GetCountAPI";
 import { LocalSetup } from "@/app/env";
+import { getOrCreateVisitorId } from "../utils/VisitorId";
 
 const StoreContext = createContext({
   finalId: "",
@@ -53,18 +54,27 @@ export function StoreProvider({ children, storeInit }) {
 
   const finalId = useMemo(() => {
     const loginUserDetail = getSession("loginUserDetail");
-    const visiterID = Cookies.get("visiterId");
-    if (storeInit?.IsB2BWebsite == 0) {
-      return islogin === false ? visiterID : loginUserDetail?.id || "0";
+    const isUserLoggedIn = Boolean(islogin) && Boolean(loginUserDetail?.id);
+    if (isUserLoggedIn) {
+      return String(loginUserDetail.id);
     }
 
-    return loginUserDetail?.id || "0";
+    if (storeInit?.IsB2BWebsite == 0) {
+      const visitor = getOrCreateVisitorId(storeInit?.VisitorId);
+      return visitor || "0";
+    }
+
+    return "0";
   }, [islogin, storeInit]);
 
   const fetchGetCountData = useCallback(async (id = finalId) => {
-    if (!id) return;
+    let resolvedId = id;
+    if (!resolvedId || resolvedId === "undefined" || resolvedId === "null" || resolvedId === "0") {
+      resolvedId = finalId || getOrCreateVisitorId(storeInit?.VisitorId);
+    }
+    if (!resolvedId || resolvedId === "undefined") return;
     try {
-      const res = await GetCountAPI(id);
+      const res = await GetCountAPI(resolvedId);
       if (res) {
         if (res?.cartcount !== undefined) setCartCountNum(res.cartcount);
         if (res?.wishcount !== undefined) setWishCountNum(res.wishcount);

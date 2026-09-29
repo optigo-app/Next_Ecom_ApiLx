@@ -3,6 +3,7 @@ import { CommonAPI } from "../CommonAPI/CommonAPI";
 import { syncProductsToSqlite } from "../../sqlite/sqliteSync";
 import { getSqliteProducts } from "../../sqlite/sqliteActions";
 import { getPricingPolicyParams } from "@/app/(core)/utils/product/pricingPolicy";
+import { getOrCreateVisitorId } from "@/app/(core)/utils/VisitorId";
 
 const ProductListApi = async (
   filterObj = {},
@@ -65,11 +66,18 @@ const ProductListApi = async (
 
   const islogin = getSession("LoginUser") ?? false;
 
+  let cleanVisiterId = visiterId;
+  if (!cleanVisiterId || cleanVisiterId === "undefined" || cleanVisiterId === "null" || cleanVisiterId === "0") {
+    cleanVisiterId = getOrCreateVisitorId(storeinit?.VisitorId);
+  }
+
   const isGuest =
     storeinit?.IsB2BWebsite == 0 && (islogin == false || islogin == null);
 
-  const customerId = isGuest ? visiterId : (loginInfo?.id ?? 0);
-  const customerEmail = isGuest ? visiterId : (loginInfo?.userid ?? "");
+  const rawCustomerId = isGuest ? cleanVisiterId : (loginInfo?.id ?? 0);
+  const customerId = (rawCustomerId === "undefined" || rawCustomerId === "null" || rawCustomerId == null) ? (cleanVisiterId || 0) : rawCustomerId;
+  const rawCustomerEmail = isGuest ? cleanVisiterId : (loginInfo?.userid ?? "");
+  const customerEmail = (rawCustomerEmail === "undefined" || rawCustomerEmail === "null" || rawCustomerEmail == null) ? (cleanVisiterId || "") : rawCustomerEmail;
 
   let diaQc =
     obj?.dia === undefined

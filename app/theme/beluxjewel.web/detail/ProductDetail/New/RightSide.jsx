@@ -111,6 +111,7 @@ const RightSide = ({
       : null);
 
   const decodeEntities = (html) => {
+    if (typeof document === "undefined" || !html) return html || "";
     var txt = document.createElement("textarea");
     txt.innerHTML = html;
     return txt.value;

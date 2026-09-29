@@ -126,6 +126,7 @@ export default function SocialMediaVideoSection({}) {
               href={item.platform}
               target="_blank"
               rel="noopener noreferrer"
+              aria-label={`Visit our ${item.platform.replace('https://www.', '').replace('https://', '').replace('.com/', '')} profile`}
               style={{ textDecoration: "none" }}
             >
               <VideoCard
@@ -138,9 +139,10 @@ export default function SocialMediaVideoSection({}) {
                   muted
                   playsInline
                   preload="metadata"
+                  width="350"
+                  height="530"
                   style={{
                     width: "100%",
-                    // height: "100%",
                     height: "530px",
                     display: "block",
                     objectFit: "cover",
@@ -148,11 +150,14 @@ export default function SocialMediaVideoSection({}) {
                   }}
                 />
 
-                <IconButton
+                <Box
+                  aria-hidden="true"
                   sx={{
                     position: "absolute",
                     bottom: 16,
                     left: 16,
+                    width: 44,
+                    height: 44,
                     background: "rgba(255,255,255,0.95)",
                     backdropFilter: "blur(12px)",
                     borderRadius: "50%",
@@ -169,7 +174,7 @@ export default function SocialMediaVideoSection({}) {
                   }}
                 >
                   {item.icon}
-                </IconButton>
+                </Box>
               </VideoCard>
             </Link>
           </SwiperSlide>

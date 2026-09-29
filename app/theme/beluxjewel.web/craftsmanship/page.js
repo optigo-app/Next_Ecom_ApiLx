@@ -13,7 +13,7 @@ const CRAFTSMANSHIP_STEPS = [
       "Our design process begins with a meticulous sketch detailing dimensions and profiles. Once approved, specialized artisans render the design in hyper-precise CAD (Computer-Aided Design) files, simulating weight, stone fit, and reflections before any precious metal is touched.",
     body2:
       "This guarantees absolute transparency and perfect proportion alignment, allowing you to preview your bespoke creation.",
-    image: "/WebSiteStaticImage/SimilingRock/static/2.png",
+    image: "/WebSiteStaticImage/SimilingRock/static/2.webp",
     alt: "Precision CAD Design Sketch",
   },
   {
@@ -21,10 +21,10 @@ const CRAFTSMANSHIP_STEPS = [
     overline: "THE MODEL & CASTING",
     title: "Bringing Structure to Precious Metals",
     body1:
-      "The virtual CAD model is materialized into a highly detailed three-dimensional wax print. Our goldsmiths use lost-wax casting methods to inject molten gold, platinum, or custom alloys into the plaster molds, transforming soft waxes into rigid luxury mountings.",
+      "Our design process begins with a meticulous sketch detailing dimensions and profiles. Once approved, specialized artisans render the design in hyper-precise CAD (Computer-Aided Design) files, simulating weight, stone fit, and reflections before any precious metal is touched.",
     body2:
-      "Every setting undergoes rigorous hand-polishing and detailing to ensure seamless structural integrity and smooth inner comfort.",
-    image: "/WebSiteStaticImage/SimilingRock/static/3.png",
+      "This guarantees absolute transparency and perfect proportion alignment, allowing you to preview your bespoke creation.",
+    image: "/WebSiteStaticImage/SimilingRock/static/3.webp",
     alt: "Precision Wax Casting & Goldsmithing",
   },
   {
@@ -35,7 +35,7 @@ const CRAFTSMANSHIP_STEPS = [
       "Under high-powered microscopes, master setters individually position and secure diamonds and gems. Pratt-prongs, pavé beads, and bezels are sculpted from gold with surgical accuracy, locking in each stone while allowing optimal light refraction.",
     body2:
       "A final multi-stage mirror polish, ultrasonic bath, and structural inspection complete the journey of a true masterpiece.",
-    image: "/WebSiteStaticImage/SimilingRock/static/4.png",
+    image: "/WebSiteStaticImage/SimilingRock/static/4.webp",
     alt: "Microscopic Diamond Setting",
   },
 ];
@@ -121,6 +121,7 @@ export default function CraftsmanshipBlock({ assetBase }) {
             </Typography>
             <Typography
               variant="h3"
+              component="h2"
               className="craftsmanshipTitle"
               sx={{
                 fontFamily: "Prata, Playfair Display, serif",
@@ -167,8 +168,12 @@ export default function CraftsmanshipBlock({ assetBase }) {
                   <Box
                     key={index}
                     component="img"
+                    loading="lazy"
+                    decoding="async"
                     src={item.image}
                     alt={item.alt}
+                    width="1200"
+                    height="800"
                     sx={{
                       position: "absolute",
                       inset: 0,
@@ -271,6 +276,7 @@ export default function CraftsmanshipBlock({ assetBase }) {
 
                       <Typography
                         variant="h4"
+                        component="h3"
                         className="craftsmanshipTitle"
                         sx={{
                           fontFamily: "Prata, Playfair Display, serif",

@@ -1,15 +1,23 @@
 import { getSession } from "../../FetchSessionData";
 import { CommonAPI } from "../CommonAPI/CommonAPI";
+import { getOrCreateVisitorId } from "@/app/(core)/utils/VisitorId";
 
 export const fetchCartDetails = async (visiterId) => {
     let storeInit = (typeof window !== 'undefined' && window.__STORE_INIT__) ? window.__STORE_INIT__ : getSession('storeInit');
     const data = getSession("loginUserDetail");
     const islogin = getSession("LoginUser");
 
+    let cleanVisiterId = visiterId;
+    if (!cleanVisiterId || cleanVisiterId === "undefined" || cleanVisiterId === "null" || cleanVisiterId === "0") {
+      cleanVisiterId = getOrCreateVisitorId(storeInit?.VisitorId);
+    }
+
     const isGuest = storeInit?.IsB2BWebsite == 0 && (islogin == false || islogin == null);
 
-    const customerId = isGuest ? visiterId : (data?.id ?? 0);
-    const customerEmail = isGuest ? visiterId : (data?.userid ?? "");
+    const rawCustomerId = isGuest ? cleanVisiterId : (data?.id ?? 0);
+    const customerId = (rawCustomerId === "undefined" || rawCustomerId === "null" || rawCustomerId == null) ? (cleanVisiterId || 0) : rawCustomerId;
+    const rawCustomerEmail = isGuest ? cleanVisiterId : (data?.userid ?? "");
+    const customerEmail = (rawCustomerEmail === "undefined" || rawCustomerEmail === "null" || rawCustomerEmail == null) ? (cleanVisiterId || "") : rawCustomerEmail;
 
     let packageId = isGuest ? (storeInit?.PackageId ?? 0) : (data?.PackageId ?? storeInit?.PackageId ?? 0);
     let laboursetid = isGuest ? (storeInit?.pricemanagement_laboursetid ?? "") : (data?.pricemanagement_laboursetid ?? storeInit?.pricemanagement_laboursetid ?? "");

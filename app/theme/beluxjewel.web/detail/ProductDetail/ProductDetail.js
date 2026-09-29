@@ -1004,19 +1004,19 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
           diaArr = diaQcLocal?.filter(
             (ele) =>
               ele?.QualityId ==
-                (decodeobj?.d
-                  ? decodeobj?.d?.split(",")[0]
-                  : (
-                      logininfoInside?.cmboDiaQCid ??
-                      storeinitInside?.cmboDiaQCid
-                    ).split(",")[0]) &&
+              (decodeobj?.d
+                ? decodeobj?.d?.split(",")[0]
+                : (
+                  logininfoInside?.cmboDiaQCid ??
+                  storeinitInside?.cmboDiaQCid
+                ).split(",")[0]) &&
               ele?.ColorId ==
-                (decodeobj?.d
-                  ? decodeobj?.d?.split(",")[1]
-                  : (
-                      logininfoInside?.cmboDiaQCid ??
-                      storeinitInside?.cmboDiaQCid
-                    ).split(",")[1]),
+              (decodeobj?.d
+                ? decodeobj?.d?.split(",")[1]
+                : (
+                  logininfoInside?.cmboDiaQCid ??
+                  storeinitInside?.cmboDiaQCid
+                ).split(",")[1]),
           )[0];
         }
 
@@ -1024,17 +1024,17 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
           csArr = csQcLocal?.filter(
             (ele) =>
               ele?.QualityId ==
-                (decodeobj?.c
-                  ? decodeobj?.c?.split(",")[0]
-                  : (
-                      logininfoInside?.cmboCSQCid ?? storeinitInside?.cmboCSQCid
-                    ).split(",")[0]) &&
+              (decodeobj?.c
+                ? decodeobj?.c?.split(",")[0]
+                : (
+                  logininfoInside?.cmboCSQCid ?? storeinitInside?.cmboCSQCid
+                ).split(",")[0]) &&
               ele?.ColorId ==
-                (decodeobj?.c
-                  ? decodeobj?.c?.split(",")[1]
-                  : (
-                      logininfoInside?.cmboCSQCid ?? storeinitInside?.cmboCSQCid
-                    ).split(",")[1]),
+              (decodeobj?.c
+                ? decodeobj?.c?.split(",")[1]
+                : (
+                  logininfoInside?.cmboCSQCid ?? storeinitInside?.cmboCSQCid
+                ).split(",")[1]),
           )[0];
         }
 
@@ -1152,31 +1152,31 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
           : (logininfoInside?.cmboCSQCid ?? storeinitInside?.cmboCSQCid),
       };
 
-    if (decodeobj?.title) {
-      const loginInfo = getSession("loginUserDetail");
-      const initialProd = {
-        TitleLine: decodeobj.title,
-        Nwt: decodeobj.nwt ? parseFloat(decodeobj.nwt) : 0,
-        UnitCostWithMarkUp: decodeobj.price ? parseFloat(decodeobj.price) : 0,
-        ArticleNo: decodeobj.ArticleNo ?? "",
-        designno: decodeobj.b ?? "",
-        autocode: decodeobj.a ?? "",
-        ImageExtension: "webp",
-        ImageCount: 1,
-        MetalColorid: decodeobj?.metalColorId ?? loginUserDetail?.MetalColorId ?? loginInfo?.MetalColorId,
-        ImageVideoDetail: decodeobj.mediaDet ?? "0",
-      };
-      setSingleProd(initialProd);
-      setSingleProd1(initialProd);
-      if (decodeobj.img) {
-        setImageSrc(decodeobj.img);
+      if (decodeobj?.title) {
+        const loginInfo = getSession("loginUserDetail");
+        const initialProd = {
+          TitleLine: decodeobj.title,
+          Nwt: decodeobj.nwt ? parseFloat(decodeobj.nwt) : 0,
+          UnitCostWithMarkUp: decodeobj.price ? parseFloat(decodeobj.price) : 0,
+          ArticleNo: decodeobj.ArticleNo ?? "",
+          designno: decodeobj.b ?? "",
+          autocode: decodeobj.a ?? "",
+          ImageExtension: "webp",
+          ImageCount: 1,
+          MetalColorid: decodeobj?.metalColorId ?? loginUserDetail?.MetalColorId ?? loginInfo?.MetalColorId,
+          ImageVideoDetail: decodeobj.mediaDet ?? "0",
+        };
+        setSingleProd(initialProd);
+        setSingleProd1(initialProd);
+        if (decodeobj.img) {
+          setImageSrc(decodeobj.img);
+        }
+        setisPriceLoading(false);
+      } else {
+        setisPriceLoading(true);
+        setSingleProd1({});
+        setSingleProd({});
       }
-      setisPriceLoading(false);
-    } else {
-      setisPriceLoading(true);
-      setSingleProd1({});
-      setSingleProd({});
-    }
 
       try {
         const res = await SingleArticleProdListAPI(
@@ -1268,7 +1268,7 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
                 (r) =>
                   r.ArticleNo === decodeobj.ArticleNo ||
                   r.ArticleNo?.toLowerCase() ===
-                    String(decodeobj.ArticleNo).toLowerCase(),
+                  String(decodeobj.ArticleNo).toLowerCase(),
               )) ||
             (decodeobj?.a &&
               mappedRd1.find(
@@ -1330,22 +1330,22 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
                   (prod && prod.DefaultSize !== ""
                     ? prod.DefaultSize
                     : sizeRes?.Data?.rd?.find(
-                          (size) => size.IsDefaultSize === 1,
-                        )?.sizename === undefined
+                      (size) => size.IsDefaultSize === 1,
+                    )?.sizename === undefined
                       ? sizeRes?.Data?.rd?.[0]?.sizename
                       : sizeRes?.Data?.rd?.find(
-                          (size) => size.IsDefaultSize === 1,
-                        )?.sizename);
+                        (size) => size.IsDefaultSize === 1,
+                      )?.sizename);
                 setSizeData(initialsize);
               })
               .catch((err) => console.log("SizeErr", err));
 
             // 2. Stock Items
-            if (storeinitInside?.IsStockWebsite === 1 && prod?.autocode) {
-              StockItemApi(prod.autocode, "stockitem", cookie)
-                .then((res) => setStockItemArr(res?.Data?.rd))
-                .catch((err) => console.log("stockItemErr", err));
-            }
+            // if (storeinitInside?.IsStockWebsite === 1 && prod?.autocode) {
+            //   StockItemApi(prod.autocode, "stockitem", cookie)
+            //     .then((res) => setStockItemArr(res?.Data?.rd))
+            //     .catch((err) => console.log("stockItemErr", err));
+            // }
 
             // 3. Similar Products
             if (
@@ -1716,6 +1716,7 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
   };
 
   const decodeEntities = (html) => {
+    if (typeof document === "undefined" || !html) return html || "";
     var txt = document.createElement("textarea");
     txt.innerHTML = html;
     return txt.value;
@@ -2139,8 +2140,8 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
   const rawPassedImg = (decodeUrl?.img && !decodeUrl.img.includes("undefined") && !decodeUrl.img.startsWith("undefined"))
     ? decodeUrl.img
     : (initialDecodeUrl?.img && !initialDecodeUrl.img.includes("undefined") && !initialDecodeUrl.img.startsWith("undefined"))
-    ? initialDecodeUrl.img
-    : null;
+      ? initialDecodeUrl.img
+      : null;
 
   const mtColorLocalForFallback = getSession("MetalColorCombo") || [];
   const loginInfoForFallback = getSession("loginUserDetail");
@@ -2331,7 +2332,7 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
               stockItemArr={stockItemArr}
             />
 
-            {stockItemArr?.length > 0 &&
+            {/* {stockItemArr?.length > 0 &&
               stockItemArr?.[0]?.stat_code != 1005 &&
               storeInit?.IsStockWebsite === 1 && (
                 <NewStockitem
@@ -2342,7 +2343,7 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
                   check={storeInit?.IsPriceShow === 1}
                   handleCartandWish={handleCartandWish}
                 />
-              )}
+              )} */}
 
             {storeInit?.IsProductDetailSimilarDesign == 1 &&
               SimilarBrandArr?.length > 0 &&

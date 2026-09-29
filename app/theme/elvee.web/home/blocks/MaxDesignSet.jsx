@@ -11,7 +11,7 @@ import { Get_Tren_BestS_NewAr_DesigSet_Album } from '@/app/(core)/utils/API/Home
 import Pako from "pako";
 import Cookies from "js-cookie";
 import { useStore } from '@/app/(core)/contexts/StoreProvider';
-import '../blocks/Css/DesignSet.module.scss'
+import '../blocks/Css/DesignSet.scss'
 import { formatter, formatTitleLine, formatRedirectTitleLine } from "@/app/(core)/utils/Glob_Functions/GlobalFunction";
 import { useNextRouterLikeRR } from '@/app/(core)/hooks/useLocationRd';
 import { usePathname } from 'next/navigation';

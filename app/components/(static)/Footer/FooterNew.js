@@ -215,29 +215,28 @@ const PremiumFooter = ({
                 mb: { xs: 2, lg: 0 },
               }}
             >
-              <Typography
-                variant="h4"
+              <Box
                 sx={{
-                  fontWeight: 300,
-                  letterSpacing: "0.2em",
                   mb: 3,
-                  fontSize: { xs: "1.5rem", md: "1.75rem" },
                 }}
                 onClick={MoveToTop}
               >
-                <Box component={Link} href="/" onClick={MoveToTop}>
+                <Box component={Link} href="/" aria-label="Go to homepage" onClick={MoveToTop}>
                   <Box
                     component="img"
                     src={logos?.web}
-                    alt="footer_logo"
+                    alt={storeInit?.companyname || "footer_logo"}
+                    width="140"
+                    height="36"
                     sx={{
                       width: "auto",
+                      maxHeight: "45px",
                       cursor: "pointer",
                     }}
                     className="el_without_headerLogo_side"
                   />
                 </Box>
-              </Typography>
+              </Box>
 
               {/* Social Links */}
               <Stack direction="row" spacing={1}>
@@ -249,7 +248,7 @@ const PremiumFooter = ({
                       href={social.SLink}
                       target="_blank"
                       rel="noopener noreferrer"
-                      aria-label={social.SName}
+                      aria-label={social.SName || "Social Link"}
                       sx={{
                         width: 37,
                         height: 37,
@@ -278,7 +277,9 @@ const PremiumFooter = ({
                       <Box
                         component="img"
                         src={social.SImgPath}
-                        alt={social.SName}
+                        alt={social.SName || "Social media"}
+                        width="30"
+                        height="30"
                         sx={{
                           width: "100%",
                           height: "100%",
@@ -311,8 +312,8 @@ const PremiumFooter = ({
                   mb: 1,
                   display: "block",
                   fontSize: { xs: "0.85rem", md: "1rem" },
-                  color: "#656565",
-                  fontWeight: 400,
+                  color: "#333333",
+                  fontWeight: 600,
                 }}
               >
                 OFFICE
@@ -323,7 +324,7 @@ const PremiumFooter = ({
                   lineHeight: 1.7,
                   mb: 4,
                   fontSize: { xs: "0.875rem", md: "0.9375rem" },
-                  color: "rgba(29, 50, 88, 0.85)",
+                  color: "#333333",
                   mt: 1,
                 }}
               >
@@ -339,14 +340,14 @@ const PremiumFooter = ({
                         width: 22,
                         height: 22,
                         marginTop: 2,
-                        color: "#ffffff",
-                                             }}
+                        color: "#4a4a4a",
+                      }}
                     />
                     <Typography
                       component="span"
                       sx={{
                         lineHeight: 1.6,
-                        color: "#656565bf",
+                        color: "#4a4a4a",
                         fontSize: { xs: "0.875rem", md: "0.9375rem" },
                       }}
                     >
@@ -361,12 +362,13 @@ const PremiumFooter = ({
                       style={{
                         width: 18,
                         height: 18,
+                        color: "#4a4a4a",
                       }}
                     />
                     <Typography
                       component="span"
                       sx={{
-                        color: "#656565bf",
+                        color: "#4a4a4a",
                         fontSize: { xs: "0.875rem", md: "0.9375rem" },
                       }}
                     >
@@ -380,12 +382,13 @@ const PremiumFooter = ({
                       style={{
                         width: 18,
                         height: 18,
+                        color: "#4a4a4a",
                       }}
                     />
                     <Typography
                       component="span"
                       sx={{
-                        color: "#656565bf",
+                        color: "#4a4a4a",
                         fontSize: { xs: "0.875rem", md: "0.9375rem" },
                       }}
                     >
@@ -407,8 +410,8 @@ const PremiumFooter = ({
                   mb: 2,
                   display: "block",
                   fontSize: { xs: "0.85rem", md: "1rem" },
-                  color: "#656565",
-                  fontWeight: 400,
+                  color: "#333333",
+                  fontWeight: 600,
                 }}
               >
                 {section.title}
@@ -433,8 +436,8 @@ const PremiumFooter = ({
                       "&:hover": {
                         textDecoration: "underline",
                       },
-                      color: "#656565bf",
-                      fontWeight: 400,
+                      color: "#4a4a4a",
+                      fontWeight: 500,
                     }}
                   >
                     {link.label}
@@ -453,8 +456,8 @@ const PremiumFooter = ({
                 mb: 1,
                 display: "block",
                 fontSize: { xs: "0.85rem", md: "1rem" },
-                color: "#656565",
-                fontWeight: 400,
+                color: "#333333",
+                fontWeight: 600,
               }}
             >
               Sign up for our updates
@@ -466,7 +469,7 @@ const PremiumFooter = ({
                 lineHeight: 1.7,
                 mb: 3,
                 fontSize: { xs: "0.875rem", md: "0.9375rem" },
-                color: "#656565bf",
+                color: "#4a4a4a",
                 fontWeight: 400,
               }}
             >

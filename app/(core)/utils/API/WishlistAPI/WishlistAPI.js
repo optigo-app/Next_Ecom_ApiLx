@@ -1,13 +1,32 @@
 import { CommonAPI } from "../CommonAPI/CommonAPI";
+import { getOrCreateVisitorId } from "@/app/(core)/utils/VisitorId";
 
 export const fetchWishlistDetails = async (visiterId) => {
-    let storeInit = JSON.parse(sessionStorage.getItem("storeInit"));
-    const storedData = sessionStorage.getItem("loginUserDetail");
-    const islogin = JSON.parse(sessionStorage.getItem("LoginUser"));
-    const data = JSON.parse(storedData);
-    const customerId = storeInit?.IsB2BWebsite == 0 && islogin == false || islogin == null ? visiterId : data.id ?? 0;
-    const customerEmail = storeInit?.IsB2BWebsite == 0 && islogin == false || islogin == null ? visiterId : data.userid ?? "";
-    const { FrontEnd_RegNo } = storeInit;
+    let storeInit = null;
+    try {
+      storeInit = JSON.parse(sessionStorage.getItem("storeInit"));
+    } catch {}
+    const storedData = typeof window !== 'undefined' ? sessionStorage.getItem("loginUserDetail") : null;
+    let islogin = false;
+    try {
+      islogin = JSON.parse(sessionStorage.getItem("LoginUser"));
+    } catch {}
+    let data = null;
+    try {
+      data = JSON.parse(storedData);
+    } catch {}
+
+    let cleanVisiterId = visiterId;
+    if (!cleanVisiterId || cleanVisiterId === "undefined" || cleanVisiterId === "null" || cleanVisiterId === "0") {
+      cleanVisiterId = getOrCreateVisitorId(storeInit?.VisitorId);
+    }
+
+    const isGuest = storeInit?.IsB2BWebsite == 0 && (islogin == false || islogin == null);
+    const rawCustomerId = isGuest ? cleanVisiterId : (data?.id ?? 0);
+    const customerId = (rawCustomerId === "undefined" || rawCustomerId === "null" || rawCustomerId == null) ? (cleanVisiterId || 0) : rawCustomerId;
+    const rawCustomerEmail = isGuest ? cleanVisiterId : (data?.userid ?? "");
+    const customerEmail = (rawCustomerEmail === "undefined" || rawCustomerEmail === "null" || rawCustomerEmail == null) ? (cleanVisiterId || "") : rawCustomerEmail;
+    const { FrontEnd_RegNo } = storeInit || {};
 
     let packageId = storeInit?.IsB2BWebsite == 0 && islogin == false || islogin == null ? storeInit?.PackageId : data?.PackageId ?? 0
     let laboursetid = storeInit?.IsB2BWebsite == 0 && islogin == false || islogin == null ? storeInit?.pricemanagement_laboursetid : data?.pricemanagement_laboursetid ?? 0

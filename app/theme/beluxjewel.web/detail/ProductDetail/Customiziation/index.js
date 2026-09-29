@@ -327,7 +327,7 @@ export default function CustomizerDrawer({
         );
         return {
           ...combo,
-          inStockLabel: hasStock ? "In Stock" : "Made to Order",
+          inStockLabel: hasStock ? "In Stock" : "Make to Order",
         };
       });
   }, [rd1]);
@@ -338,10 +338,10 @@ export default function CustomizerDrawer({
     // Filter matching articles for selected metal
     const matching = selectedMetal
       ? rd1.filter(
-          (r) =>
-            r.MetalTypeId === selectedMetal.MetalTypeId &&
-            r.MetalColorId === selectedMetal.MetalColorId,
-        )
+        (r) =>
+          r.MetalTypeId === selectedMetal.MetalTypeId &&
+          r.MetalColorId === selectedMetal.MetalColorId,
+      )
       : [];
 
     return matching.map((art) => {
@@ -772,6 +772,7 @@ export default function CustomizerDrawer({
                 })}
               </Box>
             </Box>
+
 
             {availableOrigins.length > 0 && (
               <Divider sx={{ mb: 3.5, borderColor: colors.borderLight }} />

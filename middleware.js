@@ -30,19 +30,25 @@ export default async function middleware(req) {
       httpOnly: false,
     },
   );
-// response.cookies.set(
-//     "x-CompanyInfoData-data",
-//     JSON.stringify(storeData?.rd2?.[0] || {}),
-//     {
-//       path: "/",
-//       httpOnly: false,
-//     },
-//   );
+
+  // Ensure visiterId cookie is always valid (not missing, not "undefined", not "null")
+  const currentVisitorId = req.cookies.get("visiterId")?.value;
+  if (!currentVisitorId || currentVisitorId === "undefined" || currentVisitorId === "null" || currentVisitorId === "0") {
+    const validId = String(storeData?.rd2?.[0]?.VisitorId || Math.floor(100000000 + Math.random() * 900000000));
+    response.cookies.set("visiterId", validId, {
+      path: "/",
+      httpOnly: false,
+      maxAge: 60 * 60 * 24 * 30, // 30 days
+    });
+  }
+
   return response;
 }
 
 export const config = {
-  matcher: ["/((?!_next|api|favicon.ico).*)"],
+  matcher: [
+    "/((?!_next|api|favicon.ico|robots.txt|sitemap.xml|.*\\.(?:jpg|jpeg|png|webp|svg|gif|ico|woff|woff2|ttf|mp4|webm)).*)",
+  ],
   runtime: "nodejs",
 };
 

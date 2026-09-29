@@ -55,8 +55,11 @@ export const getCompanyInfoData = async () => {
 
 export const GetVistitorId = async () => {
   const cookieStore = await cookies();
-  const visitorId = cookieStore.get("visiterId")?.value || cookieStore.get("visiterId")?.value || null;
-  return visitorId;
+  const rawId = cookieStore.get("visiterId")?.value;
+  if (!rawId || rawId === "undefined" || rawId === "null" || rawId === "0") {
+    return null;
+  }
+  return rawId;
 };
 
 export const GetUserLoginCookie = async () => {

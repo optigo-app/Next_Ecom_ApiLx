@@ -74,6 +74,7 @@ const ChatMenu = ({
           href={whatsappLink}
           target="_blank"
           rel="noopener noreferrer"
+          aria-label="Chat on WhatsApp"
           sx={{
             width: { xs: 50, sm: 54 },
             height: { xs: 50, sm: 54 },

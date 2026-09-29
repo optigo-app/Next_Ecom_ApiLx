@@ -37,6 +37,7 @@ const RightSideMenu = ({
       >
         {(islogin || IsB2CWebsiteChek) && (
           <IconButton
+            aria-label="Search"
             onClick={() => setSearchOpen((prev) => !prev)}
             sx={{
               "&:hover": { bgcolor: alpha("#fff", 0.08) },
@@ -50,6 +51,7 @@ const RightSideMenu = ({
 
         {!is768px && (islogin || IsB2CWebsiteChek) && (
           <IconButton
+            aria-label="Wishlist"
             sx={{
               "&:hover": { bgcolor: alpha("#fff", 0.08) },
               color: isHovered || isScrolled ? "#000" : "#fff",
@@ -80,6 +82,7 @@ const RightSideMenu = ({
             <>
               {islogin && (
                 <IconButton
+                  aria-label="Account profile"
                   sx={{
                     "&:hover": { bgcolor: alpha("#fff", 0.08) },
                     color: isHovered || isScrolled ? "#000" : "#fff",
@@ -97,6 +100,7 @@ const RightSideMenu = ({
           <>
             {islogin === true && (
               <IconButton
+                aria-label="Account profile"
                 sx={{
                   "&:hover": { bgcolor: alpha("#fff", 0.08) },
                   color: isHovered || isScrolled ? "#000" : "#fff",
@@ -111,6 +115,7 @@ const RightSideMenu = ({
 
         {(islogin || IsB2CWebsiteChek) && (
           <IconButton
+            aria-label="Shopping Cart"
             sx={{
               "&:hover": { bgcolor: alpha("#fff", 0.08) },
               color: isHovered || isScrolled ? "#000" : "#fff",
@@ -136,6 +141,7 @@ const RightSideMenu = ({
         )}
         {islogin && (
           <IconButton
+            aria-label="Log out"
             sx={{
               "&:hover": { bgcolor: alpha("#fff", 0.08) },
               color: isHovered || isScrolled ? "#000" : "#fff",
@@ -147,6 +153,7 @@ const RightSideMenu = ({
         )}
         {!islogin && (
           <IconButton
+            aria-label="Log in"
             sx={{
               "&:hover": { bgcolor: alpha("#fff", 0.08) },
               color: isHovered || isScrolled ? "#000" : "#fff",
