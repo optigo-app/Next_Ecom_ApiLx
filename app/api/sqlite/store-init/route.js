@@ -3,6 +3,7 @@ import { getTenantDb } from "@/db/tenantManager";
 import { saveStoreInit } from "@/db/procedures/saveStoreInit";
 import { getStoreInit } from "@/db/procedures/getStoreInit";
 import { deleteStoreInit } from "@/db/procedures/deleteStoreInit";
+import { syncStoreInit } from "@/app/(core)/utils/sqlite/syncStoreInit";
 import { logger } from "@/db/logger";
 
 export const dynamic = "force-dynamic";
@@ -16,7 +17,7 @@ function extractDomain(req, body = {}) {
     const { searchParams } = new URL(req.url);
     const qDomain = searchParams.get("domain") || searchParams.get("Domain");
     if (qDomain && qDomain.trim()) return qDomain.trim();
-  } catch (_) {}
+  } catch (_) { }
 
   // 2. Read from body (for POST requests)
   if (body?.domain || body?.Domain) {
@@ -68,6 +69,27 @@ export async function POST(req) {
         },
         { status: 400 }
       );
+    }
+
+    // Check if client is requesting an internal sync fetch instead of providing the raw payload
+    if (body.apiurl && body.version) {
+      logger.info("API_STORE_INIT", `POST /api/sqlite/store-init: Detected apiurl. Initiating sync for '${targetDomain}'`);
+      const syncResult = await syncStoreInit({
+        apiurl: body.apiurl,
+        domain: targetDomain,
+        version: body.version,
+        sv: body.sv !== undefined ? body.sv : 0,
+      });
+
+      if (!syncResult.success) {
+        return NextResponse.json(syncResult, { status: 400 });
+      }
+
+      return NextResponse.json({
+        success: true,
+        message: "StoreInit data successfully synced and saved from external API.",
+        ...syncResult
+      }, { status: 200 });
     }
 
     logger.info("API_STORE_INIT", `POST /api/sqlite/store-init: Pushing StoreInit for domain '${targetDomain}'`, { domain: targetDomain });

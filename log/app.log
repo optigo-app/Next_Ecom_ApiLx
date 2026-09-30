@@ -1078,3 +1078,6 @@
 [2026-09-29T11:57:10.756Z] [INFO] [beluxjewel.web] [STORE_INIT] Successfully retrieved StoreInit for 'beluxjewel.web' | data: {"domain":"beluxjewel.web","rd":1,"rd1":27,"rd2":1}
 [2026-09-29T12:02:34.475Z] [INFO] [beluxjewel.web] [STORE_INIT] Fetching StoreInit configuration for tenant: 'beluxjewel.web' | data: {"domain":"beluxjewel.web"}
 [2026-09-29T12:02:34.504Z] [INFO] [beluxjewel.web] [STORE_INIT] Successfully retrieved StoreInit for 'beluxjewel.web' | data: {"domain":"beluxjewel.web","rd":1,"rd1":27,"rd2":1}
+[2026-09-30T04:55:27.854Z] [INFO] [SYSTEM] [API_STORE_INIT] POST /api/sqlite/store-init: Detected apiurl. Initiating sync for 'beluxjewel.web'
+[2026-09-30T04:55:27.859Z] [INFO] [SYSTEM] [STORE_INIT_SYNC] Starting StoreInit sync for domain 'beluxjewel.web' from 'http://newnextjs.web/api/report'
+[2026-09-30T04:55:28.278Z] [INFO] [SYSTEM] [STORE_INIT_SYNC] Successfully synced StoreInit for 'beluxjewel.web' in 419ms | data: {"counts":{"rd":1,"rd1":27,"rd2":1}}
