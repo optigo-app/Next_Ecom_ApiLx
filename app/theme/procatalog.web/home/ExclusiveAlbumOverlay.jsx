@@ -48,7 +48,7 @@ function decodeCurrencySymbol(str) {
       const txt = document.createElement("textarea");
       txt.innerHTML = str;
       return txt.value;
-    } catch (_) {}
+    } catch (_) { }
   }
   return str;
 }
@@ -84,6 +84,7 @@ export default function ExclusiveAlbumOverlay({
     CDNDesignImageFol: "",
     Currencysymbol: "₹",
   });
+  const [initialRandomNo, setInitialRandomNo] = useState("");
 
   // Check URL query param for ?exclusive-album
   const checkUrlParams = useCallback(() => {
@@ -112,11 +113,19 @@ export default function ExclusiveAlbumOverlay({
       }
     }
 
-    return { hasExclusive, custId: custId || "2275" };
+    let randomNo = searchParams.get("randomNo") || searchParams.get("RandomNo") || "";
+    if (!randomNo && typeof window !== "undefined") {
+      const qs = window.location.search || "";
+      const urlParams = new URLSearchParams(qs);
+      randomNo = urlParams.get("randomNo") || urlParams.get("RandomNo") || "";
+    }
+
+    return { hasExclusive, custId: custId || "", randomNo };
   }, [searchParams]);
 
   useEffect(() => {
-    const { hasExclusive, custId } = checkUrlParams();
+    const { hasExclusive, custId, randomNo } = checkUrlParams();
+    setInitialRandomNo(randomNo || "");
 
     if (!hasExclusive) {
       setIsOpen(false);
@@ -129,9 +138,23 @@ export default function ExclusiveAlbumOverlay({
     async function fetchExclusiveAlbums() {
       setLoading(true);
       try {
-        const res = await fetch(
-          `/api/sqlite/exclusive-albums?domain=${targetDomain}&customerId=${custId}`,
-        );
+        let activeCustId = custId;
+        const baseApiUrl = `/api/sqlite/exclusive-albums?domain=${targetDomain}`;
+
+        // If we have randomNo but no customerId, resolve the real customerId first!
+        if (randomNo && !activeCustId) {
+          const resolveRes = await fetch(`${baseApiUrl}&RandomNo=${randomNo}`);
+          const resolveData = await resolveRes.json();
+          if (resolveData?.Status === "200" && resolveData?.Data?.rd?.[0]?.CustomerId) {
+            activeCustId = resolveData.Data.rd[0].CustomerId;
+          }
+        }
+
+        // Fallback if no customerId provided and randomNo didn't resolve
+        if (!activeCustId) activeCustId = "2275";
+
+        // Fetch ALL albums for this customer so the grid is populated when they click "Back"
+        const res = await fetch(`${baseApiUrl}&customerId=${activeCustId}`);
         const data = await res.json();
 
         if (data?.Status === "200" && Array.isArray(data?.Data?.rd)) {
@@ -139,6 +162,13 @@ export default function ExclusiveAlbumOverlay({
           setAlbums(fetchedAlbums);
           if (data.Data.storeConfig) {
             setStoreConfig(data.Data.storeConfig);
+          }
+          // Auto-select single album if randomNo is present
+          if (randomNo) {
+            const albumToSelect = fetchedAlbums.find(a => a.RandomNo === randomNo || a.RandomNo == randomNo);
+            if (albumToSelect) {
+              setSelectedAlbum(albumToSelect);
+            }
           }
         } else {
           setAlbums([]);
@@ -164,11 +194,13 @@ export default function ExclusiveAlbumOverlay({
       nextParams.delete("customerid");
       nextParams.delete("customerId");
       nextParams.delete("CustomerId");
+      nextParams.delete("randomNo");
+      nextParams.delete("RandomNo");
       const cleanUrl = nextParams.toString()
         ? `${pathname}?${nextParams.toString()}`
         : pathname;
-      window.history.replaceState(null, "", cleanUrl);
-    } catch (_) {}
+      router.replace(cleanUrl, { scroll: false });
+    } catch (_) { }
   }, [searchParams, pathname]);
 
   const currencySymbol = useMemo(
@@ -306,8 +338,8 @@ export default function ExclusiveAlbumOverlay({
       transitionDuration={200}
       PaperProps={{
         sx: {
-          backgroundColor: "#FFFFFF",
-          color: "#0F172A",
+          backgroundColor: "#FAF9F6", // elegant off-white
+          color: "#27272A",
           display: "flex",
           flexDirection: "column",
           overflow: "hidden",
@@ -317,13 +349,12 @@ export default function ExclusiveAlbumOverlay({
       {/* ── Top Navigation Bar (Responsive Full-Width Search) ─────── */}
       <Box
         sx={{
-          borderBottom: "1px solid #EEEEEE",
-          backgroundColor: "#FFFFFF",
+          backgroundColor: "transparent",
           position: "sticky",
           top: 0,
           zIndex: 30,
           px: { xs: 2, sm: 3, md: 6 },
-          py: { xs: 1.25, md: 1.75 },
+          py: { xs: 1.5, md: 2 },
         }}
       >
         <Box
@@ -527,21 +558,53 @@ export default function ExclusiveAlbumOverlay({
           }}
         >
           {/* ============================================================= */}
+          {/* INITIAL LOADING STATE FOR SINGLE ALBUM                        */}
+          {/* ============================================================= */}
+          {!selectedAlbum && loading && initialRandomNo && (
+            <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+              <Box sx={{ display: "flex", flexDirection: { xs: "column", sm: "row" }, gap: 3.5, mb: 4, pb: 3.5, borderBottom: "1px solid #EEEEEE" }}>
+                <Skeleton variant="rectangular" width={160} height={160} sx={{ borderRadius: "2px", flexShrink: 0 }} />
+                <Box sx={{ display: 'flex', flexDirection: 'column', pt: 1, width: { xs: '100%', sm: '50%' } }}>
+                  <Skeleton width="30%" height={20} sx={{ mb: 1.5 }} />
+                  <Skeleton width="70%" height={48} sx={{ mb: 2.5 }} />
+                  <Box sx={{ display: 'flex', gap: 3 }}>
+                    <Skeleton width="20%" height={16} />
+                    <Skeleton width="20%" height={16} />
+                  </Box>
+                </Box>
+              </Box>
+              <Box sx={{
+                display: "grid",
+                gridTemplateColumns: { xs: "repeat(2, 1fr)", sm: "repeat(3, 1fr)", md: "repeat(4, 1fr)", lg: "repeat(5, 1fr)", xl: "repeat(6, 1fr)" },
+                gap: 3,
+              }}>
+                {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(i => (
+                  <Box key={i}>
+                    <Skeleton variant="rectangular" width="100%" sx={{ aspectRatio: "1/1", borderRadius: "2px", mb: 1.5 }} />
+                    <Skeleton width="75%" height={22} sx={{ mb: 0.5 }} />
+                    <Skeleton width="45%" height={18} />
+                  </Box>
+                ))}
+              </Box>
+            </Box>
+          )}
+
+          {/* ============================================================= */}
           {/* LEVEL 1: ALL ALBUMS GRID VIEW (Matches Attached Reference)     */}
           {/* ============================================================= */}
-          {!selectedAlbum && (
+          {!selectedAlbum && (!loading || !initialRandomNo) && (
             <>
               {/* Masthead */}
-              <Box sx={{ mb: 4 }}>
+              <Box sx={{ mb: 4, textAlign: 'center' }}>
                 <Typography
                   sx={{
                     fontFamily: "'Playfair Display', Georgia, serif",
-                    fontSize: { xs: "2.2rem", sm: "3rem", md: "3.5rem" },
-                    fontWeight: 700,
+                    fontSize: { xs: "2.5rem", sm: "3.2rem", md: "3.8rem" },
+                    fontWeight: 400,
                     letterSpacing: "-0.01em",
-                    color: "#0F172A",
-                    lineHeight: 1.05,
-                    mb: 0.75,
+                    color: "#27272A",
+                    lineHeight: 1.1,
+                    mb: 1,
                   }}
                 >
                   My Albums
@@ -549,11 +612,13 @@ export default function ExclusiveAlbumOverlay({
                 <Typography
                   sx={{
                     fontSize: "0.95rem",
-                    color: "#64748B",
-                    fontVariantNumeric: "tabular-nums",
+                    color: "#71717A",
+                    fontFamily: "'Inter', sans-serif",
+                    fontWeight: 300,
+                    letterSpacing: "0.02em",
                   }}
                 >
-                  {albums.length} albums curated exclusively for you
+                  A collection of elegantly curated items
                 </Typography>
               </Box>
 
@@ -562,35 +627,21 @@ export default function ExclusiveAlbumOverlay({
                 sx={{
                   display: "flex",
                   alignItems: "center",
-                  justifyContent: "space-between",
-                  borderBottom: "1px solid #EEEEEE",
-                  pb: 1.5,
-                  mb: 3.5,
+                  justifyContent: "flex-end",
+                  mb: 3,
                 }}
               >
-                <Typography
-                  sx={{
-                    fontSize: "0.82rem",
-                    fontWeight: 700,
-                    color: "#0F172A",
-                    letterSpacing: "0.04em",
-                    textTransform: "uppercase",
-                  }}
-                >
-                  Collections
-                </Typography>
-
-                <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+                <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
                   <Box
                     sx={{
                       display: "flex",
                       alignItems: "center",
                       gap: 0.5,
-                      fontSize: "0.82rem",
-                      color: "#64748B",
+                      fontSize: "0.85rem",
+                      color: "#71717A",
                     }}
                   >
-                    <span>Sort:</span>
+                    <span>Sort by:</span>
                     <select
                       value={sortBy}
                       onChange={(e) => setSortBy(e.target.value)}
@@ -598,15 +649,15 @@ export default function ExclusiveAlbumOverlay({
                         border: "none",
                         outline: "none",
                         backgroundColor: "transparent",
-                        fontWeight: 700,
-                        fontSize: "0.82rem",
-                        color: "#0F172A",
+                        fontWeight: 500,
+                        fontSize: "0.85rem",
+                        color: "#27272A",
                         cursor: "pointer",
                       }}
                     >
-                      <option value="name">By name</option>
-                      <option value="count">By items count</option>
-                      <option value="date">By date added</option>
+                      <option value="name">Name</option>
+                      <option value="count">Item count</option>
+                      <option value="date">Date added</option>
                     </select>
                   </Box>
                 </Box>
@@ -701,14 +752,13 @@ export default function ExclusiveAlbumOverlay({
                   sx={{
                     display: "grid",
                     gridTemplateColumns: {
-                      xs: "repeat(2, 1fr)",
-                      sm: "repeat(3, 1fr)",
-                      md: "repeat(4, 1fr)",
-                      lg: "repeat(5, 1fr)",
-                      xl: "repeat(6, 1fr)",
+                      xs: "repeat(1, 1fr)",
+                      sm: "repeat(2, 1fr)",
+                      md: "repeat(3, 1fr)",
+                      lg: "repeat(4, 1fr)",
                     },
-                    columnGap: { xs: 2, sm: 2.5, md: 3 },
-                    rowGap: { xs: 3, sm: 3.5, md: 4 },
+                    columnGap: { xs: 3, sm: 4, md: 5 },
+                    rowGap: { xs: 4, sm: 5, md: 6 },
                   }}
                 >
                   {displayedAlbums.map((album, idx) => {
@@ -727,34 +777,20 @@ export default function ExclusiveAlbumOverlay({
                           cursor: "pointer",
                           display: "flex",
                           flexDirection: "column",
-                          transition: "all 0.2s ease",
-                          "&:hover": {
-                            "& .album-cover": {
-                              borderColor: "#0F172A",
-                              boxShadow: "0 12px 28px rgba(0, 0, 0, 0.12)",
-                              transform: "translateY(-3px)",
-                            },
-                            "& .album-title": {
-                              color: "#002FA7",
-                            },
-                          },
+                          backgroundColor: "#FFFFFF",
+                          borderRadius: "20px",
+                          boxShadow: "0 8px 30px rgba(0, 0, 0, 0.04)",
+                          overflow: "hidden",
                         }}
                       >
-                        {/* Square Album Cover (2px Radius) */}
+                        {/* Image Container with Title Overlay */}
                         <Box
-                          className="album-cover"
                           sx={{
                             width: "100%",
                             aspectRatio: "1 / 1",
-                            borderRadius: "2px",
-                            backgroundColor: "#F8FAFC",
-                            border: "1px solid #E2E8F0",
-                            overflow: "hidden",
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
                             position: "relative",
-                            transition: "all 0.25s ease",
+                            backgroundColor: "#F4F4F5",
+                            overflow: "hidden",
                           }}
                         >
                           <img
@@ -768,87 +804,83 @@ export default function ExclusiveAlbumOverlay({
                             style={{
                               width: "100%",
                               height: "100%",
-                              objectFit:
-                                coverUrl === imageNotFound
-                                  ? "contain"
-                                  : "cover",
-                              padding:
-                                coverUrl === imageNotFound ? "20px" : "0",
+                              objectFit: coverUrl === imageNotFound ? "contain" : "cover",
+                              padding: coverUrl === imageNotFound ? "0px" : "0px",
                             }}
                           />
 
-                          {/* Album Code Badge */}
+                          {/* Gradient Overlay for Readability */}
+                          <Box
+                            sx={{
+                              position: "absolute",
+                              bottom: 0,
+                              left: 0,
+                              width: "100%",
+                              height: "60%",
+                              background: "linear-gradient(to top, rgba(0,0,0,0.65) 0%, transparent 100%)",
+                            }}
+                          />
+
+                          {/* Album Title overlaid on bottom left */}
+                          <Typography
+                            sx={{
+                              position: "absolute",
+                              bottom: 16,
+                              left: 16,
+                              right: 16,
+                              color: "#FFFFFF",
+                              fontFamily: "'Playfair Display', serif",
+                              fontSize: "1.8rem",
+                              fontWeight: 400,
+                              lineHeight: 1.1,
+                              whiteSpace: "nowrap",
+                              overflow: "hidden",
+                              textOverflow: "ellipsis",
+                              zIndex: 2,
+                            }}
+                          >
+                            {album.albumName || "Untitled"}
+                          </Typography>
+                        </Box>
+
+                        {/* Metadata Pills Section */}
+                        <Box
+                          sx={{
+                            p: 2,
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 1.5,
+                            flexWrap: "wrap",
+                          }}
+                        >
+                          {/* Item Count Pill */}
+                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.8, backgroundColor: '#F4F4F5', px: 1.5, py: 0.6, borderRadius: '12px' }}>
+                            <Gem size={14} color="#71717A" strokeWidth={1.5} />
+                            <Typography sx={{ fontSize: '0.75rem', color: '#52525B', fontWeight: 500 }}>
+                              {count > 0 ? count : totalCodes}
+                            </Typography>
+                          </Box>
+
+                          {/* Date Pill */}
+                          {album.EntryDate && (
+                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.8, backgroundColor: '#F4F4F5', px: 1.5, py: 0.6, borderRadius: '12px' }}>
+                              <Calendar size={14} color="#71717A" strokeWidth={1.5} />
+                              <Typography sx={{ fontSize: '0.75rem', color: '#52525B', fontWeight: 500 }}>
+                                {new Date(album.EntryDate).toLocaleDateString("en-US", { year: "numeric", month: "short" })}
+                              </Typography>
+                            </Box>
+                          )}
+
+                          {/* Album Code Pill */}
                           {album.albumcode && (
-                            <Box
-                              sx={{
-                                position: "absolute",
-                                top: 8,
-                                right: 8,
-                                backgroundColor: "rgba(15, 23, 42, 0.85)",
-                                color: "#FFFFFF",
-                                px: 0.8,
-                                py: 0.25,
-                                borderRadius: "2px",
-                                fontSize: "0.68rem",
-                                fontWeight: 700,
-                                letterSpacing: "0.04em",
-                              }}
-                            >
-                              {album.albumcode}
+                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.8, backgroundColor: '#F4F4F5', px: 1.5, py: 0.6, borderRadius: '12px' }}>
+                              <FolderOpen size={14} color="#71717A" strokeWidth={1.5} />
+                              <Typography sx={{ fontSize: '0.75rem', color: '#52525B', fontWeight: 500 }}>
+                                {album.albumcode}
+                              </Typography>
                             </Box>
                           )}
                         </Box>
-
-                        {/* Title and Metadata */}
-                        <Typography
-                          className="album-title"
-                          sx={{
-                            mt: 1.5,
-                            fontSize: "0.92rem",
-                            fontWeight: 700,
-                            color: "#0F172A",
-                            lineHeight: 1.25,
-                            overflow: "hidden",
-                            textOverflow: "ellipsis",
-                            whiteSpace: "nowrap",
-                            transition: "color 0.15s ease",
-                          }}
-                        >
-                          {album.albumName || "Untitled Album"}
-                        </Typography>
-
-                        <Typography
-                          sx={{
-                            fontSize: "0.78rem",
-                            color: "#64748B",
-                            mt: 0.3,
-                            fontVariantNumeric: "tabular-nums",
-                          }}
-                        >
-                          {count > 0
-                            ? `${count} designs available`
-                            : `${totalCodes} items in catalog`}
-                        </Typography>
-
-                        {album.EntryDate && (
-                          <Typography
-                            sx={{
-                              fontSize: "0.72rem",
-                              color: "#94A3B8",
-                              mt: 0.2,
-                              fontVariantNumeric: "tabular-nums",
-                            }}
-                          >
-                            {new Date(album.EntryDate).toLocaleDateString(
-                              "en-US",
-                              {
-                                year: "numeric",
-                                month: "short",
-                                day: "numeric",
-                              },
-                            )}
-                          </Typography>
-                        )}
                       </Box>
                     );
                   })}
@@ -877,13 +909,13 @@ export default function ExclusiveAlbumOverlay({
                 {/* Album Cover Art */}
                 <Box
                   sx={{
-                    width: { xs: 120, sm: 160 },
-                    height: { xs: 120, sm: 160 },
-                    borderRadius: "2px",
-                    backgroundColor: "#F8FAFC",
-                    border: "1px solid #E2E8F0",
+                    width: { xs: 140, sm: 180, md: 220 },
+                    height: { xs: 140, sm: 180, md: 220 },
+                    borderRadius: "20px",
+                    backgroundColor: "#F4F4F5",
                     overflow: "hidden",
                     flexShrink: 0,
+                    boxShadow: "0 8px 30px rgba(0, 0, 0, 0.04)"
                   }}
                 >
                   <img
@@ -906,23 +938,23 @@ export default function ExclusiveAlbumOverlay({
                   <Typography
                     sx={{
                       fontSize: "0.75rem",
-                      fontWeight: 700,
-                      letterSpacing: "0.08em",
+                      fontWeight: 600,
+                      letterSpacing: "0.1em",
                       textTransform: "uppercase",
-                      color: "#64748B",
+                      color: "#71717A",
                       mb: 0.5,
                     }}
                   >
-                    ALBUM COLLECTION
+                    Curated Collection
                   </Typography>
                   <Typography
                     sx={{
                       fontFamily: "'Playfair Display', Georgia, serif",
-                      fontSize: { xs: "1.8rem", sm: "2.4rem", md: "2.8rem" },
-                      fontWeight: 700,
-                      color: "#0F172A",
+                      fontSize: { xs: "2.2rem", sm: "3rem", md: "3.5rem" },
+                      fontWeight: 400,
+                      color: "#27272A",
                       lineHeight: 1.1,
-                      mb: 1,
+                      mb: 2,
                     }}
                   >
                     {selectedAlbum.albumName}
@@ -933,28 +965,35 @@ export default function ExclusiveAlbumOverlay({
                       display: "flex",
                       flexWrap: "wrap",
                       alignItems: "center",
-                      gap: 2,
-                      fontSize: "0.82rem",
-                      color: "#64748B",
-                      fontVariantNumeric: "tabular-nums",
+                      gap: 1.5,
                     }}
                   >
-                    {selectedAlbum.albumcode && (
-                      <span>
-                        <strong>Code:</strong> {selectedAlbum.albumcode}
-                      </span>
-                    )}
-                    <span>
-                      <strong>Items:</strong> {selectedAlbum.designCount || 0}{" "}
-                      designs available
-                    </span>
+                    {/* Item Count Pill */}
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.8, backgroundColor: '#FFFFFF', border: '1px solid #E4E4E7', px: 1.5, py: 0.6, borderRadius: '12px' }}>
+                      <Gem size={14} color="#71717A" strokeWidth={1.5} />
+                      <Typography sx={{ fontSize: '0.8rem', color: '#52525B', fontWeight: 500 }}>
+                        {selectedAlbum.designCount || 0} items
+                      </Typography>
+                    </Box>
+
+                    {/* Expiry Pill */}
                     {selectedAlbum.ExpiryDate && (
-                      <span>
-                        <strong>Valid until:</strong>{" "}
-                        {new Date(
-                          selectedAlbum.ExpiryDate,
-                        ).toLocaleDateString()}
-                      </span>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.8, backgroundColor: '#FFFFFF', border: '1px solid #E4E4E7', px: 1.5, py: 0.6, borderRadius: '12px' }}>
+                        <Calendar size={14} color="#71717A" strokeWidth={1.5} />
+                        <Typography sx={{ fontSize: '0.8rem', color: '#52525B', fontWeight: 500 }}>
+                          Valid until {new Date(selectedAlbum.ExpiryDate).toLocaleDateString()}
+                        </Typography>
+                      </Box>
+                    )}
+
+                    {/* Code Pill */}
+                    {selectedAlbum.albumcode && (
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.8, backgroundColor: '#FFFFFF', border: '1px solid #E4E4E7', px: 1.5, py: 0.6, borderRadius: '12px' }}>
+                        <FolderOpen size={14} color="#71717A" strokeWidth={1.5} />
+                        <Typography sx={{ fontSize: '0.8rem', color: '#52525B', fontWeight: 500 }}>
+                          {selectedAlbum.albumcode}
+                        </Typography>
+                      </Box>
                     )}
                   </Box>
                 </Box>
@@ -995,11 +1034,11 @@ export default function ExclusiveAlbumOverlay({
                   sx={{
                     display: "grid",
                     gridTemplateColumns: {
-                      xs: "repeat(auto-fill, minmax(220px, 1fr))",
-                      sm: "repeat(auto-fill, minmax(240px, 1fr))",
-                      md: "repeat(auto-fill, minmax(260px, 300px))",
+                      xs: "repeat(2, 1fr)",
+                      sm: "repeat(auto-fill, minmax(260px, 1fr))",
+                      md: "repeat(auto-fill, minmax(280px, 1fr))",
                     },
-                    gap: 2.5,
+                    gap: { xs: 2.5, sm: 3, md: 4 },
                   }}
                 >
                   {currentAlbumDesigns.map((design, index) => {
@@ -1015,35 +1054,26 @@ export default function ExclusiveAlbumOverlay({
                         key={`${design.id || design.autocode}-${design.designno}-${index}`}
                         onClick={() => handleMoveToProductDetail(design)}
                         sx={{
-                          borderRadius: "2px",
+                          borderRadius: "20px",
                           backgroundColor: "#FFFFFF",
-                          border: "1px solid #E2E8F0",
+                          boxShadow: "0 8px 30px rgba(0, 0, 0, 0.03)",
                           overflow: "hidden",
                           cursor: "pointer",
                           display: "flex",
                           flexDirection: "column",
-                          transition: "all 0.2s ease",
-                          "&:hover": {
-                            borderColor: "#0F172A",
-                            boxShadow: "0 8px 24px rgba(15, 23, 42, 0.08)",
-                            "& img": {
-                              transform: "scale(1.04)",
-                            },
-                          },
                         }}
                       >
-                        {/* Image Container (Squared 2px) */}
+                        {/* Image Container */}
                         <Box
                           sx={{
                             width: "100%",
                             aspectRatio: "1 / 1",
-                            backgroundColor: "#F8FAFC",
+                            backgroundColor: "#F4F4F5",
                             position: "relative",
                             overflow: "hidden",
                             display: "flex",
                             alignItems: "center",
                             justifyContent: "center",
-                            borderBottom: "1px solid #F1F5F9",
                           }}
                         >
                           <img
@@ -1057,9 +1087,7 @@ export default function ExclusiveAlbumOverlay({
                             style={{
                               width: "100%",
                               height: "100%",
-                              objectFit: "contain",
-                              padding: "16px",
-                              transition: "transform 0.3s ease",
+                              objectFit: "cover",
                             }}
                           />
 
@@ -1067,16 +1095,16 @@ export default function ExclusiveAlbumOverlay({
                           <Box
                             sx={{
                               position: "absolute",
-                              top: 10,
-                              left: 10,
-                              backgroundColor: "#0F172A",
-                              color: "#FFFFFF",
-                              px: 1,
-                              py: 0.3,
-                              borderRadius: "2px",
+                              top: 12,
+                              right: 12,
+                              backgroundColor: "#FFFFFF",
+                              color: "#27272A",
+                              px: 1.2,
+                              py: 0.5,
+                              borderRadius: "12px",
                               fontSize: "0.7rem",
-                              fontWeight: 700,
-                              letterSpacing: "0.04em",
+                              fontWeight: 600,
+                              boxShadow: "0 2px 10px rgba(0,0,0,0.05)",
                             }}
                           >
                             {design.designno}

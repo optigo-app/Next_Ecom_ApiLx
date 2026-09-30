@@ -1,4 +1,5 @@
-import { cookies } from "next/headers";
+import { headers, cookies } from "next/headers";
+import { getStoreInitData } from "@/app/(core)/cache_utility/storeInitCache";
 import fs from "fs";
 import path from "path";
 
@@ -24,33 +25,24 @@ function safeParse(value) {
 }
 
 export const getStoreInit = async () => {
-  const cookieStore = await cookies();
-  const storeData = safeParse(cookieStore?.get("x-store-data")?.value);
-  return storeData;
+  const headersList = await headers();
+  const host = headersList.get("host");
+  const storeData = await getStoreInitData(host);
+  return storeData?.rd?.[0] || {};
 };
 
 export const getMyAccountFlags = async () => {
-  const cookieStore = await cookies();
-  const storeData = safeParse(cookieStore?.get("x-myAccountFlags-data")?.value);
-  return storeData;
+  const headersList = await headers();
+  const host = headersList.get("host");
+  const storeData = await getStoreInitData(host);
+  return storeData?.rd1 || [];
 };
 
 export const getCompanyInfoData = async () => {
-  const cookieStore = await cookies();
-  const rawCookie = cookieStore?.get("x-CompanyInfoData-data")?.value;
-  if (rawCookie) {
-    const parsed = safeParse(rawCookie);
-    if (parsed && Object.keys(parsed).length > 0) {
-      return parsed;
-    }
-  }
-  try {
-    const { getStoreInitData } = await import("@/app/(core)/cache_utility/storeInitCache");
-    const fullData = await getStoreInitData().catch(() => null);
-    return fullData?.rd2?.[0] || {};
-  } catch {
-    return {};
-  }
+  const headersList = await headers();
+  const host = headersList.get("host");
+  const storeData = await getStoreInitData(host);
+  return storeData?.rd2?.[0] || {};
 };
 
 export const GetVistitorId = async () => {

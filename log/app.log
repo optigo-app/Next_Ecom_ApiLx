@@ -1081,3 +1081,234 @@
 [2026-09-30T04:55:27.854Z] [INFO] [SYSTEM] [API_STORE_INIT] POST /api/sqlite/store-init: Detected apiurl. Initiating sync for 'beluxjewel.web'
 [2026-09-30T04:55:27.859Z] [INFO] [SYSTEM] [STORE_INIT_SYNC] Starting StoreInit sync for domain 'beluxjewel.web' from 'http://newnextjs.web/api/report'
 [2026-09-30T04:55:28.278Z] [INFO] [SYSTEM] [STORE_INIT_SYNC] Successfully synced StoreInit for 'beluxjewel.web' in 419ms | data: {"counts":{"rd":1,"rd1":27,"rd2":1}}
+[2026-09-30T05:00:47.223Z] [INFO] [beluxjewel.web] [STORE_INIT] Successfully retrieved StoreInit for 'beluxjewel.web' | data: {"domain":"beluxjewel.web","rd":1,"rd1":27,"rd2":1}
+[2026-09-30T05:00:47.088Z] [INFO] [beluxjewel.web] [STORE_INIT] Fetching StoreInit configuration for tenant: 'beluxjewel.web' | data: {"domain":"beluxjewel.web"}
+[2026-09-30T05:00:50.033Z] [INFO] [beluxjewel.web] [HOME_BESTSELLER] [BESTSELLER ACTION] Tenant 'beluxjewel.web' → 2 items from table 'design_Productlist_20_BEdiamond_BEcolorStone_11' | data: {"domain":"beluxjewel.web","table":"design_Productlist_20_BEdiamond_BEcolorStone_11","count":2}
+[2026-09-30T05:00:50.038Z] [INFO] [beluxjewel.web] [HOME_NEWARRIVAL] [NEW ARRIVAL ACTION] Tenant 'beluxjewel.web' → 2 items from table 'design_Productlist_20_BEdiamond_BEcolorStone_11' | data: {"domain":"beluxjewel.web","table":"design_Productlist_20_BEdiamond_BEcolorStone_11","count":2}
+[2026-09-30T05:00:50.041Z] [INFO] [beluxjewel.web] [HOME_TRENDING] [TRENDING ACTION] Tenant 'beluxjewel.web' → 17 items from table 'design_Productlist_20_BEdiamond_BEcolorStone_11' | data: {"domain":"beluxjewel.web","table":"design_Productlist_20_BEdiamond_BEcolorStone_11","count":17}
+[2026-09-30T05:00:50.046Z] [INFO] [beluxjewel.web] [HOME_CATEGORY] [CATEGORY ACTION] Tenant 'beluxjewel.web' → 17 categories from table 'design_Productlist_20_BEdiamond_BEcolorStone_11' | data: {"domain":"beluxjewel.web","table":"design_Productlist_20_BEdiamond_BEcolorStone_11","count":17}
+[2026-09-30T05:35:53.280Z] [INFO] [beluxjewel.web] [STORE_INIT] Fetching StoreInit configuration for tenant: 'beluxjewel.web' | data: {"domain":"beluxjewel.web"}
+[2026-09-30T05:35:53.341Z] [INFO] [beluxjewel.web] [STORE_INIT] Successfully retrieved StoreInit for 'beluxjewel.web' | data: {"domain":"beluxjewel.web","rd":1,"rd1":27,"rd2":1}
+[2026-09-30T05:36:44.211Z] [INFO] [beluxjewel.web] [STORE_INIT] Fetching StoreInit configuration for tenant: 'beluxjewel.web' | data: {"domain":"beluxjewel.web"}
+[2026-09-30T05:36:44.214Z] [INFO] [beluxjewel.web] [STORE_INIT] Successfully retrieved StoreInit for 'beluxjewel.web' | data: {"domain":"beluxjewel.web","rd":1,"rd1":27,"rd2":1}
+[2026-09-30T05:36:44.464Z] [INFO] [beluxjewel.web] [HOME_BESTSELLER] [BESTSELLER ACTION] Tenant 'beluxjewel.web' → 2 items from table 'design_Productlist_20_BEdiamond_BEcolorStone_11' | data: {"domain":"beluxjewel.web","table":"design_Productlist_20_BEdiamond_BEcolorStone_11","count":2}
+[2026-09-30T05:36:44.466Z] [INFO] [beluxjewel.web] [HOME_NEWARRIVAL] [NEW ARRIVAL ACTION] Tenant 'beluxjewel.web' → 2 items from table 'design_Productlist_20_BEdiamond_BEcolorStone_11' | data: {"domain":"beluxjewel.web","table":"design_Productlist_20_BEdiamond_BEcolorStone_11","count":2}
+[2026-09-30T05:36:44.468Z] [INFO] [beluxjewel.web] [HOME_TRENDING] [TRENDING ACTION] Tenant 'beluxjewel.web' → 17 items from table 'design_Productlist_20_BEdiamond_BEcolorStone_11' | data: {"domain":"beluxjewel.web","table":"design_Productlist_20_BEdiamond_BEcolorStone_11","count":17}
+[2026-09-30T05:36:49.118Z] [INFO] [beluxjewel.web] [STORE_INIT] Fetching StoreInit configuration for tenant: 'beluxjewel.web' | data: {"domain":"beluxjewel.web"}
+[2026-09-30T05:36:49.120Z] [INFO] [beluxjewel.web] [STORE_INIT] Successfully retrieved StoreInit for 'beluxjewel.web' | data: {"domain":"beluxjewel.web","rd":1,"rd1":27,"rd2":1}
+[2026-09-30T05:37:47.394Z] [INFO] [beluxjewel.web] [STORE_INIT] Fetching StoreInit configuration for tenant: 'beluxjewel.web' | data: {"domain":"beluxjewel.web"}
+[2026-09-30T05:37:47.399Z] [INFO] [beluxjewel.web] [STORE_INIT] Successfully retrieved StoreInit for 'beluxjewel.web' | data: {"domain":"beluxjewel.web","rd":1,"rd1":27,"rd2":1}
+[2026-09-30T05:37:48.689Z] [INFO] [beluxjewel.web] [STORE_INIT] Fetching StoreInit configuration for tenant: 'beluxjewel.web' | data: {"domain":"beluxjewel.web"}
+[2026-09-30T05:37:48.692Z] [INFO] [beluxjewel.web] [STORE_INIT] Successfully retrieved StoreInit for 'beluxjewel.web' | data: {"domain":"beluxjewel.web","rd":1,"rd1":27,"rd2":1}
+[2026-09-30T05:37:48.718Z] [INFO] [beluxjewel.web] [HOME_CATEGORY] [CATEGORY ACTION] Tenant 'beluxjewel.web' → 17 categories from table 'design_Productlist_20_BEdiamond_BEcolorStone_11' | data: {"domain":"beluxjewel.web","table":"design_Productlist_20_BEdiamond_BEcolorStone_11","count":17}
+[2026-09-30T05:37:51.387Z] [INFO] [beluxjewel.web] [HOME_CATEGORY] [CATEGORY ACTION] Tenant 'beluxjewel.web' → 17 categories from table 'design_Productlist_20_BEdiamond_BEcolorStone_11' | data: {"domain":"beluxjewel.web","table":"design_Productlist_20_BEdiamond_BEcolorStone_11","count":17}
+[2026-09-30T05:37:53.512Z] [INFO] [beluxjewel.web] [STORE_INIT] Fetching StoreInit configuration for tenant: 'beluxjewel.web' | data: {"domain":"beluxjewel.web"}
+[2026-09-30T05:37:53.514Z] [INFO] [beluxjewel.web] [STORE_INIT] Successfully retrieved StoreInit for 'beluxjewel.web' | data: {"domain":"beluxjewel.web","rd":1,"rd1":27,"rd2":1}
+[2026-09-30T05:57:34.768Z] [INFO] [beluxjewel.web] [STORE_INIT] Fetching StoreInit configuration for tenant: 'beluxjewel.web' | data: {"domain":"beluxjewel.web"}
+[2026-09-30T05:57:34.829Z] [INFO] [beluxjewel.web] [STORE_INIT] Successfully retrieved StoreInit for 'beluxjewel.web' | data: {"domain":"beluxjewel.web","rd":1,"rd1":27,"rd2":1}
+[2026-09-30T05:58:21.154Z] [INFO] [beluxjewel.web] [STORE_INIT] Fetching StoreInit configuration for tenant: 'beluxjewel.web' | data: {"domain":"beluxjewel.web"}
+[2026-09-30T05:58:21.157Z] [INFO] [beluxjewel.web] [STORE_INIT] Successfully retrieved StoreInit for 'beluxjewel.web' | data: {"domain":"beluxjewel.web","rd":1,"rd1":27,"rd2":1}
+[2026-09-30T05:58:21.335Z] [INFO] [beluxjewel.web] [HOME_CATEGORY] [CATEGORY ACTION] Tenant 'beluxjewel.web' → 17 categories from table 'design_Productlist_20_BEdiamond_BEcolorStone_11' | data: {"domain":"beluxjewel.web","table":"design_Productlist_20_BEdiamond_BEcolorStone_11","count":17}
+[2026-09-30T05:58:25.255Z] [INFO] [beluxjewel.web] [STORE_INIT] Fetching StoreInit configuration for tenant: 'beluxjewel.web' | data: {"domain":"beluxjewel.web"}
+[2026-09-30T05:58:25.257Z] [INFO] [beluxjewel.web] [STORE_INIT] Successfully retrieved StoreInit for 'beluxjewel.web' | data: {"domain":"beluxjewel.web","rd":1,"rd1":27,"rd2":1}
+[2026-09-30T05:59:37.754Z] [INFO] [beluxjewel.web] [STORE_INIT] Fetching StoreInit configuration for tenant: 'beluxjewel.web' | data: {"domain":"beluxjewel.web"}
+[2026-09-30T05:59:37.757Z] [INFO] [beluxjewel.web] [STORE_INIT] Successfully retrieved StoreInit for 'beluxjewel.web' | data: {"domain":"beluxjewel.web","rd":1,"rd1":27,"rd2":1}
+[2026-09-30T05:59:38.155Z] [INFO] [beluxjewel.web] [STORE_INIT] Fetching StoreInit configuration for tenant: 'beluxjewel.web' | data: {"domain":"beluxjewel.web"}
+[2026-09-30T05:59:38.156Z] [INFO] [beluxjewel.web] [STORE_INIT] Successfully retrieved StoreInit for 'beluxjewel.web' | data: {"domain":"beluxjewel.web","rd":1,"rd1":27,"rd2":1}
+[2026-09-30T05:59:38.172Z] [INFO] [beluxjewel.web] [HOME_CATEGORY] [CATEGORY ACTION] Tenant 'beluxjewel.web' → 17 categories from table 'design_Productlist_20_BEdiamond_BEcolorStone_11' | data: {"domain":"beluxjewel.web","table":"design_Productlist_20_BEdiamond_BEcolorStone_11","count":17}
+[2026-09-30T05:59:40.412Z] [INFO] [beluxjewel.web] [STORE_INIT] Fetching StoreInit configuration for tenant: 'beluxjewel.web' | data: {"domain":"beluxjewel.web"}
+[2026-09-30T05:59:40.417Z] [INFO] [beluxjewel.web] [STORE_INIT] Successfully retrieved StoreInit for 'beluxjewel.web' | data: {"domain":"beluxjewel.web","rd":1,"rd1":27,"rd2":1}
+[2026-09-30T05:59:41.995Z] [INFO] [SYSTEM] [API_EXCLUSIVE_ALBUMS] Reading exclusive albums for customer 2275 on domain 'beluxjewel.web'
+[2026-09-30T06:01:20.215Z] [INFO] [beluxjewel.web] [STORE_INIT] Successfully retrieved StoreInit for 'beluxjewel.web' | data: {"domain":"beluxjewel.web","rd":1,"rd1":27,"rd2":1}
+[2026-09-30T06:01:20.213Z] [INFO] [beluxjewel.web] [STORE_INIT] Fetching StoreInit configuration for tenant: 'beluxjewel.web' | data: {"domain":"beluxjewel.web"}
+[2026-09-30T06:01:20.655Z] [INFO] [beluxjewel.web] [STORE_INIT] Fetching StoreInit configuration for tenant: 'beluxjewel.web' | data: {"domain":"beluxjewel.web"}
+[2026-09-30T06:01:20.657Z] [INFO] [beluxjewel.web] [STORE_INIT] Successfully retrieved StoreInit for 'beluxjewel.web' | data: {"domain":"beluxjewel.web","rd":1,"rd1":27,"rd2":1}
+[2026-09-30T06:01:20.700Z] [INFO] [beluxjewel.web] [HOME_CATEGORY] [CATEGORY ACTION] Tenant 'beluxjewel.web' → 17 categories from table 'design_Productlist_20_BEdiamond_BEcolorStone_11' | data: {"domain":"beluxjewel.web","table":"design_Productlist_20_BEdiamond_BEcolorStone_11","count":17}
+[2026-09-30T06:01:21.785Z] [INFO] [beluxjewel.web] [STORE_INIT] Fetching StoreInit configuration for tenant: 'beluxjewel.web' | data: {"domain":"beluxjewel.web"}
+[2026-09-30T06:01:21.789Z] [INFO] [beluxjewel.web] [STORE_INIT] Successfully retrieved StoreInit for 'beluxjewel.web' | data: {"domain":"beluxjewel.web","rd":1,"rd1":27,"rd2":1}
+[2026-09-30T06:01:22.935Z] [INFO] [beluxjewel.web] [HOME_CATEGORY] [CATEGORY ACTION] Tenant 'beluxjewel.web' → 17 categories from table 'design_Productlist_20_BEdiamond_BEcolorStone_11' | data: {"domain":"beluxjewel.web","table":"design_Productlist_20_BEdiamond_BEcolorStone_11","count":17}
+[2026-09-30T06:01:23.988Z] [INFO] [beluxjewel.web] [STORE_INIT] Fetching StoreInit configuration for tenant: 'beluxjewel.web' | data: {"domain":"beluxjewel.web"}
+[2026-09-30T06:01:23.992Z] [INFO] [beluxjewel.web] [STORE_INIT] Successfully retrieved StoreInit for 'beluxjewel.web' | data: {"domain":"beluxjewel.web","rd":1,"rd1":27,"rd2":1}
+[2026-09-30T06:01:26.483Z] [INFO] [beluxjewel.web] [HOME_CATEGORY] [CATEGORY ACTION] Tenant 'beluxjewel.web' → 17 categories from table 'design_Productlist_20_BEdiamond_BEcolorStone_11' | data: {"domain":"beluxjewel.web","table":"design_Productlist_20_BEdiamond_BEcolorStone_11","count":17}
+[2026-09-30T06:01:27.833Z] [INFO] [beluxjewel.web] [STORE_INIT] Fetching StoreInit configuration for tenant: 'beluxjewel.web' | data: {"domain":"beluxjewel.web"}
+[2026-09-30T06:01:27.835Z] [INFO] [beluxjewel.web] [STORE_INIT] Successfully retrieved StoreInit for 'beluxjewel.web' | data: {"domain":"beluxjewel.web","rd":1,"rd1":27,"rd2":1}
+[2026-09-30T06:01:28.013Z] [INFO] [SYSTEM] [API_EXCLUSIVE_ALBUMS] Reading exclusive albums for customer 2275 on domain 'beluxjewel.web'
+[2026-09-30T06:07:54.677Z] [INFO] [SYSTEM] [API_EXCLUSIVE_ALBUMS] Reading exclusive albums for customer 2275 on domain 'beluxjewel.web'
+[2026-09-30T06:08:37.223Z] [INFO] [beluxjewel.web] [STORE_INIT] Fetching StoreInit configuration for tenant: 'beluxjewel.web' | data: {"domain":"beluxjewel.web"}
+[2026-09-30T06:08:37.226Z] [INFO] [beluxjewel.web] [STORE_INIT] Successfully retrieved StoreInit for 'beluxjewel.web' | data: {"domain":"beluxjewel.web","rd":1,"rd1":27,"rd2":1}
+[2026-09-30T06:08:39.810Z] [INFO] [beluxjewel.web] [STORE_INIT] Fetching StoreInit configuration for tenant: 'beluxjewel.web' | data: {"domain":"beluxjewel.web"}
+[2026-09-30T06:08:39.814Z] [INFO] [beluxjewel.web] [STORE_INIT] Successfully retrieved StoreInit for 'beluxjewel.web' | data: {"domain":"beluxjewel.web","rd":1,"rd1":27,"rd2":1}
+[2026-09-30T06:08:39.839Z] [INFO] [beluxjewel.web] [HOME_CATEGORY] [CATEGORY ACTION] Tenant 'beluxjewel.web' → 17 categories from table 'design_Productlist_20_BEdiamond_BEcolorStone_11' | data: {"domain":"beluxjewel.web","table":"design_Productlist_20_BEdiamond_BEcolorStone_11","count":17}
+[2026-09-30T06:08:41.191Z] [INFO] [beluxjewel.web] [STORE_INIT] Fetching StoreInit configuration for tenant: 'beluxjewel.web' | data: {"domain":"beluxjewel.web"}
+[2026-09-30T06:08:41.193Z] [INFO] [beluxjewel.web] [STORE_INIT] Successfully retrieved StoreInit for 'beluxjewel.web' | data: {"domain":"beluxjewel.web","rd":1,"rd1":27,"rd2":1}
+[2026-09-30T06:08:41.249Z] [INFO] [SYSTEM] [API_EXCLUSIVE_ALBUMS] Reading exclusive albums for customer 2275 on domain 'beluxjewel.web'
+[2026-09-30T06:08:49.659Z] [INFO] [beluxjewel.web] [HOME_CATEGORY] [CATEGORY ACTION] Tenant 'beluxjewel.web' → 17 categories from table 'design_Productlist_20_BEdiamond_BEcolorStone_11' | data: {"domain":"beluxjewel.web","table":"design_Productlist_20_BEdiamond_BEcolorStone_11","count":17}
+[2026-09-30T06:08:51.018Z] [INFO] [beluxjewel.web] [STORE_INIT] Fetching StoreInit configuration for tenant: 'beluxjewel.web' | data: {"domain":"beluxjewel.web"}
+[2026-09-30T06:08:51.024Z] [INFO] [beluxjewel.web] [STORE_INIT] Successfully retrieved StoreInit for 'beluxjewel.web' | data: {"domain":"beluxjewel.web","rd":1,"rd1":27,"rd2":1}
+[2026-09-30T06:08:51.190Z] [INFO] [SYSTEM] [API_EXCLUSIVE_ALBUMS] Reading exclusive albums for customer 2275 on domain 'beluxjewel.web'
+[2026-09-30T06:08:58.908Z] [INFO] [beluxjewel.web] [HOME_CATEGORY] [CATEGORY ACTION] Tenant 'beluxjewel.web' → 17 categories from table 'design_Productlist_20_BEdiamond_BEcolorStone_11' | data: {"domain":"beluxjewel.web","table":"design_Productlist_20_BEdiamond_BEcolorStone_11","count":17}
+[2026-09-30T06:09:00.252Z] [INFO] [beluxjewel.web] [STORE_INIT] Fetching StoreInit configuration for tenant: 'beluxjewel.web' | data: {"domain":"beluxjewel.web"}
+[2026-09-30T06:09:00.254Z] [INFO] [beluxjewel.web] [STORE_INIT] Successfully retrieved StoreInit for 'beluxjewel.web' | data: {"domain":"beluxjewel.web","rd":1,"rd1":27,"rd2":1}
+[2026-09-30T06:09:00.436Z] [INFO] [SYSTEM] [API_EXCLUSIVE_ALBUMS] Reading exclusive albums for customer 2275 on domain 'beluxjewel.web'
+[2026-09-30T06:09:06.513Z] [INFO] [beluxjewel.web] [HOME_CATEGORY] [CATEGORY ACTION] Tenant 'beluxjewel.web' → 17 categories from table 'design_Productlist_20_BEdiamond_BEcolorStone_11' | data: {"domain":"beluxjewel.web","table":"design_Productlist_20_BEdiamond_BEcolorStone_11","count":17}
+[2026-09-30T06:09:08.133Z] [INFO] [beluxjewel.web] [STORE_INIT] Fetching StoreInit configuration for tenant: 'beluxjewel.web' | data: {"domain":"beluxjewel.web"}
+[2026-09-30T06:09:08.136Z] [INFO] [beluxjewel.web] [STORE_INIT] Successfully retrieved StoreInit for 'beluxjewel.web' | data: {"domain":"beluxjewel.web","rd":1,"rd1":27,"rd2":1}
+[2026-09-30T06:09:08.310Z] [INFO] [SYSTEM] [API_EXCLUSIVE_ALBUMS] Reading exclusive albums for customer 2275 on domain 'beluxjewel.web'
+[2026-09-30T06:09:44.991Z] [INFO] [beluxjewel.web] [STORE_INIT] Fetching StoreInit configuration for tenant: 'beluxjewel.web' | data: {"domain":"beluxjewel.web"}
+[2026-09-30T06:09:44.994Z] [INFO] [beluxjewel.web] [STORE_INIT] Successfully retrieved StoreInit for 'beluxjewel.web' | data: {"domain":"beluxjewel.web","rd":1,"rd1":27,"rd2":1}
+[2026-09-30T06:09:45.374Z] [INFO] [beluxjewel.web] [STORE_INIT] Fetching StoreInit configuration for tenant: 'beluxjewel.web' | data: {"domain":"beluxjewel.web"}
+[2026-09-30T06:09:45.376Z] [INFO] [beluxjewel.web] [STORE_INIT] Successfully retrieved StoreInit for 'beluxjewel.web' | data: {"domain":"beluxjewel.web","rd":1,"rd1":27,"rd2":1}
+[2026-09-30T06:09:45.388Z] [INFO] [beluxjewel.web] [HOME_CATEGORY] [CATEGORY ACTION] Tenant 'beluxjewel.web' → 17 categories from table 'design_Productlist_20_BEdiamond_BEcolorStone_11' | data: {"domain":"beluxjewel.web","table":"design_Productlist_20_BEdiamond_BEcolorStone_11","count":17}
+[2026-09-30T06:09:46.963Z] [INFO] [beluxjewel.web] [STORE_INIT] Fetching StoreInit configuration for tenant: 'beluxjewel.web' | data: {"domain":"beluxjewel.web"}
+[2026-09-30T06:09:46.965Z] [INFO] [beluxjewel.web] [STORE_INIT] Successfully retrieved StoreInit for 'beluxjewel.web' | data: {"domain":"beluxjewel.web","rd":1,"rd1":27,"rd2":1}
+[2026-09-30T06:09:47.121Z] [INFO] [SYSTEM] [API_EXCLUSIVE_ALBUMS] Reading exclusive albums for customer 2275 on domain 'beluxjewel.web'
+[2026-09-30T06:12:12.884Z] [INFO] [beluxjewel.web] [STORE_INIT] Fetching StoreInit configuration for tenant: 'beluxjewel.web' | data: {"domain":"beluxjewel.web"}
+[2026-09-30T06:12:12.886Z] [INFO] [beluxjewel.web] [STORE_INIT] Successfully retrieved StoreInit for 'beluxjewel.web' | data: {"domain":"beluxjewel.web","rd":1,"rd1":27,"rd2":1}
+[2026-09-30T06:12:13.683Z] [INFO] [beluxjewel.web] [STORE_INIT] Fetching StoreInit configuration for tenant: 'beluxjewel.web' | data: {"domain":"beluxjewel.web"}
+[2026-09-30T06:12:13.685Z] [INFO] [beluxjewel.web] [STORE_INIT] Successfully retrieved StoreInit for 'beluxjewel.web' | data: {"domain":"beluxjewel.web","rd":1,"rd1":27,"rd2":1}
+[2026-09-30T06:12:13.743Z] [INFO] [beluxjewel.web] [HOME_CATEGORY] [CATEGORY ACTION] Tenant 'beluxjewel.web' → 17 categories from table 'design_Productlist_20_BEdiamond_BEcolorStone_11' | data: {"domain":"beluxjewel.web","table":"design_Productlist_20_BEdiamond_BEcolorStone_11","count":17}
+[2026-09-30T06:12:59.296Z] [INFO] [SYSTEM] [API_EXCLUSIVE_ALBUMS] Reading exclusive albums for customer null on domain 'beluxjewel.web'
+[2026-09-30T06:13:00.591Z] [INFO] [SYSTEM] [API_EXCLUSIVE_ALBUMS] Reading exclusive albums for customer null on domain 'beluxjewel.web'
+[2026-09-30T06:13:00.615Z] [INFO] [SYSTEM] [API_EXCLUSIVE_ALBUMS] Reading exclusive albums for customer 25 on domain 'beluxjewel.web'
+[2026-09-30T06:13:01.187Z] [INFO] [SYSTEM] [API_EXCLUSIVE_ALBUMS] Reading exclusive albums for customer 25 on domain 'beluxjewel.web'
+[2026-09-30T06:13:24.402Z] [INFO] [beluxjewel.web] [STORE_INIT] Fetching StoreInit configuration for tenant: 'beluxjewel.web' | data: {"domain":"beluxjewel.web"}
+[2026-09-30T06:13:24.406Z] [INFO] [beluxjewel.web] [STORE_INIT] Successfully retrieved StoreInit for 'beluxjewel.web' | data: {"domain":"beluxjewel.web","rd":1,"rd1":27,"rd2":1}
+[2026-09-30T06:13:26.830Z] [INFO] [beluxjewel.web] [STORE_INIT] Fetching StoreInit configuration for tenant: 'beluxjewel.web' | data: {"domain":"beluxjewel.web"}
+[2026-09-30T06:13:26.832Z] [INFO] [beluxjewel.web] [STORE_INIT] Successfully retrieved StoreInit for 'beluxjewel.web' | data: {"domain":"beluxjewel.web","rd":1,"rd1":27,"rd2":1}
+[2026-09-30T06:13:27.032Z] [INFO] [beluxjewel.web] [HOME_CATEGORY] [CATEGORY ACTION] Tenant 'beluxjewel.web' → 17 categories from table 'design_Productlist_20_BEdiamond_BEcolorStone_11' | data: {"domain":"beluxjewel.web","table":"design_Productlist_20_BEdiamond_BEcolorStone_11","count":17}
+[2026-09-30T06:13:29.217Z] [INFO] [beluxjewel.web] [STORE_INIT] Fetching StoreInit configuration for tenant: 'beluxjewel.web' | data: {"domain":"beluxjewel.web"}
+[2026-09-30T06:13:29.219Z] [INFO] [beluxjewel.web] [STORE_INIT] Successfully retrieved StoreInit for 'beluxjewel.web' | data: {"domain":"beluxjewel.web","rd":1,"rd1":27,"rd2":1}
+[2026-09-30T06:13:29.350Z] [INFO] [SYSTEM] [API_EXCLUSIVE_ALBUMS] Reading exclusive albums for customer 2275 on domain 'beluxjewel.web'
+[2026-09-30T06:13:42.224Z] [INFO] [beluxjewel.web] [HOME_CATEGORY] [CATEGORY ACTION] Tenant 'beluxjewel.web' → 17 categories from table 'design_Productlist_20_BEdiamond_BEcolorStone_11' | data: {"domain":"beluxjewel.web","table":"design_Productlist_20_BEdiamond_BEcolorStone_11","count":17}
+[2026-09-30T06:13:46.139Z] [INFO] [beluxjewel.web] [STORE_INIT] Successfully retrieved StoreInit for 'beluxjewel.web' | data: {"domain":"beluxjewel.web","rd":1,"rd1":27,"rd2":1}
+[2026-09-30T06:13:46.137Z] [INFO] [beluxjewel.web] [STORE_INIT] Fetching StoreInit configuration for tenant: 'beluxjewel.web' | data: {"domain":"beluxjewel.web"}
+[2026-09-30T06:13:46.300Z] [INFO] [SYSTEM] [API_EXCLUSIVE_ALBUMS] Reading exclusive albums for customer null on domain 'beluxjewel.web'
+[2026-09-30T06:13:46.886Z] [INFO] [SYSTEM] [API_EXCLUSIVE_ALBUMS] Reading exclusive albums for customer 25 on domain 'beluxjewel.web'
+[2026-09-30T06:14:47.330Z] [INFO] [beluxjewel.web] [STORE_INIT] Fetching StoreInit configuration for tenant: 'beluxjewel.web' | data: {"domain":"beluxjewel.web"}
+[2026-09-30T06:14:47.333Z] [INFO] [beluxjewel.web] [STORE_INIT] Successfully retrieved StoreInit for 'beluxjewel.web' | data: {"domain":"beluxjewel.web","rd":1,"rd1":27,"rd2":1}
+[2026-09-30T06:14:49.179Z] [INFO] [beluxjewel.web] [STORE_INIT] Fetching StoreInit configuration for tenant: 'beluxjewel.web' | data: {"domain":"beluxjewel.web"}
+[2026-09-30T06:14:49.194Z] [INFO] [beluxjewel.web] [STORE_INIT] Successfully retrieved StoreInit for 'beluxjewel.web' | data: {"domain":"beluxjewel.web","rd":1,"rd1":27,"rd2":1}
+[2026-09-30T06:14:49.242Z] [INFO] [beluxjewel.web] [HOME_CATEGORY] [CATEGORY ACTION] Tenant 'beluxjewel.web' → 17 categories from table 'design_Productlist_20_BEdiamond_BEcolorStone_11' | data: {"domain":"beluxjewel.web","table":"design_Productlist_20_BEdiamond_BEcolorStone_11","count":17}
+[2026-09-30T06:14:49.578Z] [INFO] [SYSTEM] [API_EXCLUSIVE_ALBUMS] Reading exclusive albums for customer null on domain 'beluxjewel.web'
+[2026-09-30T06:14:50.296Z] [INFO] [SYSTEM] [API_EXCLUSIVE_ALBUMS] Reading exclusive albums for customer null on domain 'beluxjewel.web'
+[2026-09-30T06:14:50.347Z] [INFO] [SYSTEM] [API_EXCLUSIVE_ALBUMS] Reading exclusive albums for customer 25 on domain 'beluxjewel.web'
+[2026-09-30T06:14:50.784Z] [INFO] [SYSTEM] [API_EXCLUSIVE_ALBUMS] Reading exclusive albums for customer 25 on domain 'beluxjewel.web'
+[2026-09-30T06:15:07.159Z] [INFO] [beluxjewel.web] [HOME_CATEGORY] [CATEGORY ACTION] Tenant 'beluxjewel.web' → 17 categories from table 'design_Productlist_20_BEdiamond_BEcolorStone_11' | data: {"domain":"beluxjewel.web","table":"design_Productlist_20_BEdiamond_BEcolorStone_11","count":17}
+[2026-09-30T06:15:10.769Z] [INFO] [beluxjewel.web] [STORE_INIT] Fetching StoreInit configuration for tenant: 'beluxjewel.web' | data: {"domain":"beluxjewel.web"}
+[2026-09-30T06:15:10.771Z] [INFO] [beluxjewel.web] [STORE_INIT] Successfully retrieved StoreInit for 'beluxjewel.web' | data: {"domain":"beluxjewel.web","rd":1,"rd1":27,"rd2":1}
+[2026-09-30T06:15:10.982Z] [INFO] [SYSTEM] [API_EXCLUSIVE_ALBUMS] Reading exclusive albums for customer null on domain 'beluxjewel.web'
+[2026-09-30T06:15:11.828Z] [INFO] [SYSTEM] [API_EXCLUSIVE_ALBUMS] Reading exclusive albums for customer 25 on domain 'beluxjewel.web'
+[2026-09-30T06:15:13.995Z] [INFO] [beluxjewel.web] [HOME_CATEGORY] [CATEGORY ACTION] Tenant 'beluxjewel.web' → 17 categories from table 'design_Productlist_20_BEdiamond_BEcolorStone_11' | data: {"domain":"beluxjewel.web","table":"design_Productlist_20_BEdiamond_BEcolorStone_11","count":17}
+[2026-09-30T06:15:17.702Z] [INFO] [beluxjewel.web] [STORE_INIT] Fetching StoreInit configuration for tenant: 'beluxjewel.web' | data: {"domain":"beluxjewel.web"}
+[2026-09-30T06:15:17.709Z] [INFO] [beluxjewel.web] [STORE_INIT] Successfully retrieved StoreInit for 'beluxjewel.web' | data: {"domain":"beluxjewel.web","rd":1,"rd1":27,"rd2":1}
+[2026-09-30T06:15:17.851Z] [INFO] [SYSTEM] [API_EXCLUSIVE_ALBUMS] Reading exclusive albums for customer null on domain 'beluxjewel.web'
+[2026-09-30T06:15:18.530Z] [INFO] [SYSTEM] [API_EXCLUSIVE_ALBUMS] Reading exclusive albums for customer 25 on domain 'beluxjewel.web'
+[2026-09-30T06:16:14.622Z] [INFO] [SYSTEM] [API_EXCLUSIVE_ALBUMS] Reading exclusive albums for customer null on domain 'beluxjewel.web'
+[2026-09-30T06:16:51.191Z] [INFO] [beluxjewel.web] [STORE_INIT] Fetching StoreInit configuration for tenant: 'beluxjewel.web' | data: {"domain":"beluxjewel.web"}
+[2026-09-30T06:16:51.195Z] [INFO] [beluxjewel.web] [STORE_INIT] Successfully retrieved StoreInit for 'beluxjewel.web' | data: {"domain":"beluxjewel.web","rd":1,"rd1":27,"rd2":1}
+[2026-09-30T06:16:53.821Z] [INFO] [beluxjewel.web] [STORE_INIT] Fetching StoreInit configuration for tenant: 'beluxjewel.web' | data: {"domain":"beluxjewel.web"}
+[2026-09-30T06:16:53.823Z] [INFO] [beluxjewel.web] [STORE_INIT] Successfully retrieved StoreInit for 'beluxjewel.web' | data: {"domain":"beluxjewel.web","rd":1,"rd1":27,"rd2":1}
+[2026-09-30T06:16:53.855Z] [INFO] [beluxjewel.web] [HOME_CATEGORY] [CATEGORY ACTION] Tenant 'beluxjewel.web' → 17 categories from table 'design_Productlist_20_BEdiamond_BEcolorStone_11' | data: {"domain":"beluxjewel.web","table":"design_Productlist_20_BEdiamond_BEcolorStone_11","count":17}
+[2026-09-30T06:16:57.508Z] [INFO] [beluxjewel.web] [STORE_INIT] Fetching StoreInit configuration for tenant: 'beluxjewel.web' | data: {"domain":"beluxjewel.web"}
+[2026-09-30T06:16:57.511Z] [INFO] [beluxjewel.web] [STORE_INIT] Successfully retrieved StoreInit for 'beluxjewel.web' | data: {"domain":"beluxjewel.web","rd":1,"rd1":27,"rd2":1}
+[2026-09-30T06:16:57.654Z] [INFO] [SYSTEM] [API_EXCLUSIVE_ALBUMS] Reading exclusive albums for customer null on domain 'beluxjewel.web'
+[2026-09-30T06:17:05.199Z] [INFO] [SYSTEM] [API_EXCLUSIVE_ALBUMS] Reading exclusive albums for customer null on domain 'beluxjewel.web'
+[2026-09-30T06:17:05.959Z] [INFO] [SYSTEM] [API_EXCLUSIVE_ALBUMS] Reading exclusive albums for customer 25 on domain 'beluxjewel.web'
+[2026-09-30T06:18:38.673Z] [INFO] [SYSTEM] [API_EXCLUSIVE_ALBUMS] Reading exclusive albums for customer null on domain 'beluxjewel.web'
+[2026-09-30T06:18:39.316Z] [INFO] [SYSTEM] [API_EXCLUSIVE_ALBUMS] Reading exclusive albums for customer 25 on domain 'beluxjewel.web'
+[2026-09-30T06:18:55.434Z] [INFO] [beluxjewel.web] [STORE_INIT] Fetching StoreInit configuration for tenant: 'beluxjewel.web' | data: {"domain":"beluxjewel.web"}
+[2026-09-30T06:18:55.438Z] [INFO] [beluxjewel.web] [STORE_INIT] Successfully retrieved StoreInit for 'beluxjewel.web' | data: {"domain":"beluxjewel.web","rd":1,"rd1":27,"rd2":1}
+[2026-09-30T06:18:58.422Z] [INFO] [beluxjewel.web] [STORE_INIT] Fetching StoreInit configuration for tenant: 'beluxjewel.web' | data: {"domain":"beluxjewel.web"}
+[2026-09-30T06:18:58.427Z] [INFO] [beluxjewel.web] [STORE_INIT] Successfully retrieved StoreInit for 'beluxjewel.web' | data: {"domain":"beluxjewel.web","rd":1,"rd1":27,"rd2":1}
+[2026-09-30T06:18:58.466Z] [INFO] [beluxjewel.web] [HOME_CATEGORY] [CATEGORY ACTION] Tenant 'beluxjewel.web' → 17 categories from table 'design_Productlist_20_BEdiamond_BEcolorStone_11' | data: {"domain":"beluxjewel.web","table":"design_Productlist_20_BEdiamond_BEcolorStone_11","count":17}
+[2026-09-30T06:19:00.296Z] [INFO] [beluxjewel.web] [STORE_INIT] Fetching StoreInit configuration for tenant: 'beluxjewel.web' | data: {"domain":"beluxjewel.web"}
+[2026-09-30T06:19:00.297Z] [INFO] [beluxjewel.web] [STORE_INIT] Successfully retrieved StoreInit for 'beluxjewel.web' | data: {"domain":"beluxjewel.web","rd":1,"rd1":27,"rd2":1}
+[2026-09-30T06:19:00.306Z] [INFO] [SYSTEM] [API_EXCLUSIVE_ALBUMS] Reading exclusive albums for customer null on domain 'beluxjewel.web'
+[2026-09-30T06:19:02.720Z] [INFO] [beluxjewel.web] [HOME_CATEGORY] [CATEGORY ACTION] Tenant 'beluxjewel.web' → 17 categories from table 'design_Productlist_20_BEdiamond_BEcolorStone_11' | data: {"domain":"beluxjewel.web","table":"design_Productlist_20_BEdiamond_BEcolorStone_11","count":17}
+[2026-09-30T06:19:04.168Z] [INFO] [beluxjewel.web] [STORE_INIT] Fetching StoreInit configuration for tenant: 'beluxjewel.web' | data: {"domain":"beluxjewel.web"}
+[2026-09-30T06:19:04.170Z] [INFO] [beluxjewel.web] [STORE_INIT] Successfully retrieved StoreInit for 'beluxjewel.web' | data: {"domain":"beluxjewel.web","rd":1,"rd1":27,"rd2":1}
+[2026-09-30T06:19:04.311Z] [INFO] [SYSTEM] [API_EXCLUSIVE_ALBUMS] Reading exclusive albums for customer null on domain 'beluxjewel.web'
+[2026-09-30T06:19:08.126Z] [INFO] [beluxjewel.web] [HOME_CATEGORY] [CATEGORY ACTION] Tenant 'beluxjewel.web' → 17 categories from table 'design_Productlist_20_BEdiamond_BEcolorStone_11' | data: {"domain":"beluxjewel.web","table":"design_Productlist_20_BEdiamond_BEcolorStone_11","count":17}
+[2026-09-30T06:19:11.878Z] [INFO] [beluxjewel.web] [STORE_INIT] Fetching StoreInit configuration for tenant: 'beluxjewel.web' | data: {"domain":"beluxjewel.web"}
+[2026-09-30T06:19:11.881Z] [INFO] [beluxjewel.web] [STORE_INIT] Successfully retrieved StoreInit for 'beluxjewel.web' | data: {"domain":"beluxjewel.web","rd":1,"rd1":27,"rd2":1}
+[2026-09-30T06:19:12.050Z] [INFO] [SYSTEM] [API_EXCLUSIVE_ALBUMS] Reading exclusive albums for customer null on domain 'beluxjewel.web'
+[2026-09-30T06:19:12.581Z] [INFO] [SYSTEM] [API_EXCLUSIVE_ALBUMS] Reading exclusive albums for customer 25 on domain 'beluxjewel.web'
+[2026-09-30T06:19:51.891Z] [INFO] [beluxjewel.web] [STORE_INIT] Fetching StoreInit configuration for tenant: 'beluxjewel.web' | data: {"domain":"beluxjewel.web"}
+[2026-09-30T06:19:51.896Z] [INFO] [beluxjewel.web] [STORE_INIT] Successfully retrieved StoreInit for 'beluxjewel.web' | data: {"domain":"beluxjewel.web","rd":1,"rd1":27,"rd2":1}
+[2026-09-30T06:19:51.924Z] [INFO] [beluxjewel.web] [HOME_CATEGORY] [CATEGORY ACTION] Tenant 'beluxjewel.web' → 17 categories from table 'design_Productlist_20_BEdiamond_BEcolorStone_11' | data: {"domain":"beluxjewel.web","table":"design_Productlist_20_BEdiamond_BEcolorStone_11","count":17}
+[2026-09-30T06:19:53.923Z] [INFO] [beluxjewel.web] [STORE_INIT] Fetching StoreInit configuration for tenant: 'beluxjewel.web' | data: {"domain":"beluxjewel.web"}
+[2026-09-30T06:19:53.925Z] [INFO] [beluxjewel.web] [STORE_INIT] Successfully retrieved StoreInit for 'beluxjewel.web' | data: {"domain":"beluxjewel.web","rd":1,"rd1":27,"rd2":1}
+[2026-09-30T06:19:54.048Z] [INFO] [SYSTEM] [API_EXCLUSIVE_ALBUMS] Reading exclusive albums for customer null on domain 'beluxjewel.web'
+[2026-09-30T06:19:54.573Z] [INFO] [SYSTEM] [API_EXCLUSIVE_ALBUMS] Reading exclusive albums for customer 25 on domain 'beluxjewel.web'
+[2026-09-30T06:19:55.726Z] [INFO] [beluxjewel.web] [HOME_CATEGORY] [CATEGORY ACTION] Tenant 'beluxjewel.web' → 17 categories from table 'design_Productlist_20_BEdiamond_BEcolorStone_11' | data: {"domain":"beluxjewel.web","table":"design_Productlist_20_BEdiamond_BEcolorStone_11","count":17}
+[2026-09-30T06:20:00.255Z] [INFO] [beluxjewel.web] [STORE_INIT] Fetching StoreInit configuration for tenant: 'beluxjewel.web' | data: {"domain":"beluxjewel.web"}
+[2026-09-30T06:20:00.258Z] [INFO] [beluxjewel.web] [STORE_INIT] Successfully retrieved StoreInit for 'beluxjewel.web' | data: {"domain":"beluxjewel.web","rd":1,"rd1":27,"rd2":1}
+[2026-09-30T06:20:00.425Z] [INFO] [SYSTEM] [API_EXCLUSIVE_ALBUMS] Reading exclusive albums for customer null on domain 'beluxjewel.web'
+[2026-09-30T06:20:00.944Z] [INFO] [SYSTEM] [API_EXCLUSIVE_ALBUMS] Reading exclusive albums for customer 25 on domain 'beluxjewel.web'
+[2026-09-30T06:22:37.303Z] [INFO] [beluxjewel.web] [STORE_INIT] Fetching StoreInit configuration for tenant: 'beluxjewel.web' | data: {"domain":"beluxjewel.web"}
+[2026-09-30T06:22:37.341Z] [INFO] [beluxjewel.web] [STORE_INIT] Successfully retrieved StoreInit for 'beluxjewel.web' | data: {"domain":"beluxjewel.web","rd":1,"rd1":27,"rd2":1}
+[2026-09-30T06:22:41.883Z] [INFO] [beluxjewel.web] [STORE_INIT] Fetching StoreInit configuration for tenant: 'beluxjewel.web' | data: {"domain":"beluxjewel.web"}
+[2026-09-30T06:22:41.885Z] [INFO] [beluxjewel.web] [STORE_INIT] Successfully retrieved StoreInit for 'beluxjewel.web' | data: {"domain":"beluxjewel.web","rd":1,"rd1":27,"rd2":1}
+[2026-09-30T06:22:41.920Z] [INFO] [beluxjewel.web] [HOME_CATEGORY] [CATEGORY ACTION] Tenant 'beluxjewel.web' → 17 categories from table 'design_Productlist_20_BEdiamond_BEcolorStone_11' | data: {"domain":"beluxjewel.web","table":"design_Productlist_20_BEdiamond_BEcolorStone_11","count":17}
+[2026-09-30T06:22:41.986Z] [INFO] [SYSTEM] [API_EXCLUSIVE_ALBUMS] Reading exclusive albums for customer null on domain 'beluxjewel.web'
+[2026-09-30T06:22:44.495Z] [INFO] [SYSTEM] [API_EXCLUSIVE_ALBUMS] Reading exclusive albums for customer 25 on domain 'beluxjewel.web'
+[2026-09-30T06:22:45.059Z] [INFO] [beluxjewel.web] [STORE_INIT] Fetching StoreInit configuration for tenant: 'beluxjewel.web' | data: {"domain":"beluxjewel.web"}
+[2026-09-30T06:22:45.063Z] [INFO] [beluxjewel.web] [STORE_INIT] Successfully retrieved StoreInit for 'beluxjewel.web' | data: {"domain":"beluxjewel.web","rd":1,"rd1":27,"rd2":1}
+[2026-09-30T06:22:45.205Z] [INFO] [SYSTEM] [API_EXCLUSIVE_ALBUMS] Reading exclusive albums for customer null on domain 'beluxjewel.web'
+[2026-09-30T06:22:45.896Z] [INFO] [SYSTEM] [API_EXCLUSIVE_ALBUMS] Reading exclusive albums for customer 25 on domain 'beluxjewel.web'
+[2026-09-30T06:22:52.951Z] [INFO] [beluxjewel.web] [HOME_CATEGORY] [CATEGORY ACTION] Tenant 'beluxjewel.web' → 17 categories from table 'design_Productlist_20_BEdiamond_BEcolorStone_11' | data: {"domain":"beluxjewel.web","table":"design_Productlist_20_BEdiamond_BEcolorStone_11","count":17}
+[2026-09-30T06:22:56.802Z] [INFO] [beluxjewel.web] [STORE_INIT] Fetching StoreInit configuration for tenant: 'beluxjewel.web' | data: {"domain":"beluxjewel.web"}
+[2026-09-30T06:22:56.804Z] [INFO] [beluxjewel.web] [STORE_INIT] Successfully retrieved StoreInit for 'beluxjewel.web' | data: {"domain":"beluxjewel.web","rd":1,"rd1":27,"rd2":1}
+[2026-09-30T06:22:56.938Z] [INFO] [SYSTEM] [API_EXCLUSIVE_ALBUMS] Reading exclusive albums for customer null on domain 'beluxjewel.web'
+[2026-09-30T06:22:57.454Z] [INFO] [SYSTEM] [API_EXCLUSIVE_ALBUMS] Reading exclusive albums for customer 25 on domain 'beluxjewel.web'
+[2026-09-30T06:24:23.304Z] [INFO] [SYSTEM] [API_EXCLUSIVE_ALBUMS] Reading exclusive albums for customer null on domain 'beluxjewel.web'
+[2026-09-30T06:24:24.108Z] [INFO] [SYSTEM] [API_EXCLUSIVE_ALBUMS] Reading exclusive albums for customer 25 on domain 'beluxjewel.web'
+[2026-09-30T06:24:46.765Z] [INFO] [beluxjewel.web] [STORE_INIT] Fetching StoreInit configuration for tenant: 'beluxjewel.web' | data: {"domain":"beluxjewel.web"}
+[2026-09-30T06:24:46.768Z] [INFO] [beluxjewel.web] [STORE_INIT] Successfully retrieved StoreInit for 'beluxjewel.web' | data: {"domain":"beluxjewel.web","rd":1,"rd1":27,"rd2":1}
+[2026-09-30T06:24:49.584Z] [INFO] [beluxjewel.web] [STORE_INIT] Fetching StoreInit configuration for tenant: 'beluxjewel.web' | data: {"domain":"beluxjewel.web"}
+[2026-09-30T06:24:49.587Z] [INFO] [beluxjewel.web] [STORE_INIT] Successfully retrieved StoreInit for 'beluxjewel.web' | data: {"domain":"beluxjewel.web","rd":1,"rd1":27,"rd2":1}
+[2026-09-30T06:24:49.616Z] [INFO] [beluxjewel.web] [HOME_CATEGORY] [CATEGORY ACTION] Tenant 'beluxjewel.web' → 17 categories from table 'design_Productlist_20_BEdiamond_BEcolorStone_11' | data: {"domain":"beluxjewel.web","table":"design_Productlist_20_BEdiamond_BEcolorStone_11","count":17}
+[2026-09-30T06:24:49.702Z] [INFO] [SYSTEM] [API_EXCLUSIVE_ALBUMS] Reading exclusive albums for customer null on domain 'beluxjewel.web'
+[2026-09-30T06:24:50.398Z] [INFO] [beluxjewel.web] [HOME_CATEGORY] [CATEGORY ACTION] Tenant 'beluxjewel.web' → 17 categories from table 'design_Productlist_20_BEdiamond_BEcolorStone_11' | data: {"domain":"beluxjewel.web","table":"design_Productlist_20_BEdiamond_BEcolorStone_11","count":17}
+[2026-09-30T06:24:50.550Z] [INFO] [SYSTEM] [API_EXCLUSIVE_ALBUMS] Reading exclusive albums for customer 25 on domain 'beluxjewel.web'
+[2026-09-30T06:25:53.167Z] [INFO] [beluxjewel.web] [STORE_INIT] Fetching StoreInit configuration for tenant: 'beluxjewel.web' | data: {"domain":"beluxjewel.web"}
+[2026-09-30T06:25:53.169Z] [INFO] [beluxjewel.web] [STORE_INIT] Successfully retrieved StoreInit for 'beluxjewel.web' | data: {"domain":"beluxjewel.web","rd":1,"rd1":27,"rd2":1}
+[2026-09-30T06:25:53.549Z] [INFO] [beluxjewel.web] [STORE_INIT] Fetching StoreInit configuration for tenant: 'beluxjewel.web' | data: {"domain":"beluxjewel.web"}
+[2026-09-30T06:25:53.550Z] [INFO] [beluxjewel.web] [STORE_INIT] Successfully retrieved StoreInit for 'beluxjewel.web' | data: {"domain":"beluxjewel.web","rd":1,"rd1":27,"rd2":1}
+[2026-09-30T06:25:53.561Z] [INFO] [beluxjewel.web] [HOME_CATEGORY] [CATEGORY ACTION] Tenant 'beluxjewel.web' → 17 categories from table 'design_Productlist_20_BEdiamond_BEcolorStone_11' | data: {"domain":"beluxjewel.web","table":"design_Productlist_20_BEdiamond_BEcolorStone_11","count":17}
+[2026-09-30T06:26:01.010Z] [INFO] [beluxjewel.web] [HOME_CATEGORY] [CATEGORY ACTION] Tenant 'beluxjewel.web' → 17 categories from table 'design_Productlist_20_BEdiamond_BEcolorStone_11' | data: {"domain":"beluxjewel.web","table":"design_Productlist_20_BEdiamond_BEcolorStone_11","count":17}
+[2026-09-30T06:26:02.722Z] [INFO] [SYSTEM] [API_EXCLUSIVE_ALBUMS] Reading exclusive albums for customer null on domain 'beluxjewel.web'
+[2026-09-30T06:26:02.983Z] [INFO] [beluxjewel.web] [STORE_INIT] Fetching StoreInit configuration for tenant: 'beluxjewel.web' | data: {"domain":"beluxjewel.web"}
+[2026-09-30T06:26:02.986Z] [INFO] [beluxjewel.web] [STORE_INIT] Successfully retrieved StoreInit for 'beluxjewel.web' | data: {"domain":"beluxjewel.web","rd":1,"rd1":27,"rd2":1}
+[2026-09-30T06:26:03.251Z] [INFO] [SYSTEM] [API_EXCLUSIVE_ALBUMS] Reading exclusive albums for customer 25 on domain 'beluxjewel.web'
+[2026-09-30T06:26:17.634Z] [INFO] [beluxjewel.web] [STORE_INIT] Fetching StoreInit configuration for tenant: 'beluxjewel.web' | data: {"domain":"beluxjewel.web"}
+[2026-09-30T06:26:17.637Z] [INFO] [beluxjewel.web] [STORE_INIT] Successfully retrieved StoreInit for 'beluxjewel.web' | data: {"domain":"beluxjewel.web","rd":1,"rd1":27,"rd2":1}
+[2026-09-30T06:26:17.686Z] [INFO] [beluxjewel.web] [HOME_CATEGORY] [CATEGORY ACTION] Tenant 'beluxjewel.web' → 17 categories from table 'design_Productlist_20_BEdiamond_BEcolorStone_11' | data: {"domain":"beluxjewel.web","table":"design_Productlist_20_BEdiamond_BEcolorStone_11","count":17}
+[2026-09-30T06:26:17.770Z] [INFO] [SYSTEM] [API_EXCLUSIVE_ALBUMS] Reading exclusive albums for customer null on domain 'beluxjewel.web'
+[2026-09-30T06:26:19.544Z] [INFO] [SYSTEM] [API_EXCLUSIVE_ALBUMS] Reading exclusive albums for customer 25 on domain 'beluxjewel.web'
+[2026-09-30T06:26:22.395Z] [INFO] [beluxjewel.web] [STORE_INIT] Fetching StoreInit configuration for tenant: 'beluxjewel.web' | data: {"domain":"beluxjewel.web"}
+[2026-09-30T06:26:22.397Z] [INFO] [beluxjewel.web] [STORE_INIT] Successfully retrieved StoreInit for 'beluxjewel.web' | data: {"domain":"beluxjewel.web","rd":1,"rd1":27,"rd2":1}
+[2026-09-30T06:26:22.410Z] [INFO] [SYSTEM] [API_EXCLUSIVE_ALBUMS] Reading exclusive albums for customer null on domain 'beluxjewel.web'
+[2026-09-30T06:26:22.889Z] [INFO] [SYSTEM] [API_EXCLUSIVE_ALBUMS] Reading exclusive albums for customer 25 on domain 'beluxjewel.web'
+[2026-09-30T06:27:17.914Z] [INFO] [SYSTEM] [API_EXCLUSIVE_ALBUMS] Reading exclusive albums for customer null on domain 'beluxjewel.web'
+[2026-09-30T06:27:18.724Z] [INFO] [SYSTEM] [API_EXCLUSIVE_ALBUMS] Reading exclusive albums for customer 25 on domain 'beluxjewel.web'
+[2026-09-30T06:27:35.401Z] [INFO] [SYSTEM] [API_EXCLUSIVE_ALBUMS] Reading exclusive albums for customer null on domain 'beluxjewel.web'
+[2026-09-30T06:27:35.975Z] [INFO] [SYSTEM] [API_EXCLUSIVE_ALBUMS] Reading exclusive albums for customer 25 on domain 'beluxjewel.web'
+[2026-09-30T06:28:23.830Z] [INFO] [beluxjewel.web] [STORE_INIT] Fetching StoreInit configuration for tenant: 'beluxjewel.web' | data: {"domain":"beluxjewel.web"}
+[2026-09-30T06:28:23.832Z] [INFO] [beluxjewel.web] [STORE_INIT] Successfully retrieved StoreInit for 'beluxjewel.web' | data: {"domain":"beluxjewel.web","rd":1,"rd1":27,"rd2":1}
+[2026-09-30T06:28:39.067Z] [INFO] [beluxjewel.web] [STORE_INIT] Fetching StoreInit configuration for tenant: 'beluxjewel.web' | data: {"domain":"beluxjewel.web"}
+[2026-09-30T06:28:39.070Z] [INFO] [beluxjewel.web] [STORE_INIT] Successfully retrieved StoreInit for 'beluxjewel.web' | data: {"domain":"beluxjewel.web","rd":1,"rd1":27,"rd2":1}
+[2026-09-30T06:28:39.440Z] [INFO] [beluxjewel.web] [STORE_INIT] Fetching StoreInit configuration for tenant: 'beluxjewel.web' | data: {"domain":"beluxjewel.web"}
+[2026-09-30T06:28:39.442Z] [INFO] [beluxjewel.web] [STORE_INIT] Successfully retrieved StoreInit for 'beluxjewel.web' | data: {"domain":"beluxjewel.web","rd":1,"rd1":27,"rd2":1}
+[2026-09-30T06:28:39.476Z] [INFO] [beluxjewel.web] [HOME_CATEGORY] [CATEGORY ACTION] Tenant 'beluxjewel.web' → 17 categories from table 'design_Productlist_20_BEdiamond_BEcolorStone_11' | data: {"domain":"beluxjewel.web","table":"design_Productlist_20_BEdiamond_BEcolorStone_11","count":17}
+[2026-09-30T06:28:43.064Z] [INFO] [beluxjewel.web] [STORE_INIT] Fetching StoreInit configuration for tenant: 'beluxjewel.web' | data: {"domain":"beluxjewel.web"}
+[2026-09-30T06:28:43.066Z] [INFO] [beluxjewel.web] [STORE_INIT] Successfully retrieved StoreInit for 'beluxjewel.web' | data: {"domain":"beluxjewel.web","rd":1,"rd1":27,"rd2":1}
+[2026-09-30T06:28:43.182Z] [INFO] [SYSTEM] [API_EXCLUSIVE_ALBUMS] Reading exclusive albums for customer null on domain 'beluxjewel.web'
+[2026-09-30T06:28:43.704Z] [INFO] [SYSTEM] [API_EXCLUSIVE_ALBUMS] Reading exclusive albums for customer 25 on domain 'beluxjewel.web'
+[2026-09-30T06:28:59.947Z] [INFO] [beluxjewel.web] [HOME_CATEGORY] [CATEGORY ACTION] Tenant 'beluxjewel.web' → 17 categories from table 'design_Productlist_20_BEdiamond_BEcolorStone_11' | data: {"domain":"beluxjewel.web","table":"design_Productlist_20_BEdiamond_BEcolorStone_11","count":17}
+[2026-09-30T06:33:36.142Z] [INFO] [beluxjewel.web] [STORE_INIT] Fetching StoreInit configuration for tenant: 'beluxjewel.web' | data: {"domain":"beluxjewel.web"}
+[2026-09-30T06:33:36.246Z] [INFO] [beluxjewel.web] [STORE_INIT] Successfully retrieved StoreInit for 'beluxjewel.web' | data: {"domain":"beluxjewel.web","rd":1,"rd1":27,"rd2":1}
+[2026-09-30T06:33:38.768Z] [INFO] [beluxjewel.web] [HOME_BESTSELLER] [BESTSELLER ACTION] Tenant 'beluxjewel.web' → 2 items from table 'design_Productlist_20_BEdiamond_BEcolorStone_11' | data: {"domain":"beluxjewel.web","table":"design_Productlist_20_BEdiamond_BEcolorStone_11","count":2}
+[2026-09-30T06:33:38.776Z] [INFO] [beluxjewel.web] [HOME_NEWARRIVAL] [NEW ARRIVAL ACTION] Tenant 'beluxjewel.web' → 2 items from table 'design_Productlist_20_BEdiamond_BEcolorStone_11' | data: {"domain":"beluxjewel.web","table":"design_Productlist_20_BEdiamond_BEcolorStone_11","count":2}
+[2026-09-30T06:33:38.779Z] [INFO] [beluxjewel.web] [HOME_TRENDING] [TRENDING ACTION] Tenant 'beluxjewel.web' → 17 items from table 'design_Productlist_20_BEdiamond_BEcolorStone_11' | data: {"domain":"beluxjewel.web","table":"design_Productlist_20_BEdiamond_BEcolorStone_11","count":17}
+[2026-09-30T06:33:38.784Z] [INFO] [beluxjewel.web] [HOME_CATEGORY] [CATEGORY ACTION] Tenant 'beluxjewel.web' → 17 categories from table 'design_Productlist_20_BEdiamond_BEcolorStone_11' | data: {"domain":"beluxjewel.web","table":"design_Productlist_20_BEdiamond_BEcolorStone_11","count":17}
