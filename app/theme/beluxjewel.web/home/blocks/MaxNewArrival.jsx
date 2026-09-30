@@ -100,7 +100,7 @@ const MaxNewArrival = ({ storeInit, initialData = [] }) => {
             return `${cdnFol}${productData.designno}~${normalImg.Nm}.${normalImg.Ex || ext}`;
           }
         }
-      } catch (e) {}
+      } catch (e) { }
     }
     return `${cdnFol}${productData.designno}~1.${ext}`;
   }, [storeInit, imageUrl]);
@@ -214,7 +214,7 @@ const MaxNewArrival = ({ storeInit, initialData = [] }) => {
         designno: designNo,
         autocode: autoCode,
         loginUserDetail,
-      }).catch(() => {});
+      }).catch(() => { });
     }
 
     const encodeObj = compressAndEncode(JSON.stringify(obj));
@@ -262,14 +262,14 @@ const MaxNewArrival = ({ storeInit, initialData = [] }) => {
       <Box sx={{ position: "relative" }}>
         {/* Prev button — visible when slides exceed viewport */}
         {validatedData.length > 5 && (
-          <NavButton ref={prevRef} sx={{ left: -16 }}>
+          <NavButton ref={prevRef} aria-label="Previous slide" sx={{ left: -16 }}>
             <ChevronLeft size={20} />
           </NavButton>
         )}
 
         {/* Next button — visible when slides exceed viewport */}
         {validatedData.length > 5 && (
-          <NavButton ref={nextRef} sx={{ right: -16 }}>
+          <NavButton ref={nextRef} aria-label="Next slide" sx={{ right: -16 }}>
             <ChevronRight size={20} />
           </NavButton>
         )}
@@ -285,9 +285,9 @@ const MaxNewArrival = ({ storeInit, initialData = [] }) => {
           navigation={
             validatedData.length > 5
               ? {
-                  prevEl: prevRef.current,
-                  nextEl: nextRef.current,
-                }
+                prevEl: prevRef.current,
+                nextEl: nextRef.current,
+              }
               : false
           }
           onBeforeInit={(swiper) => {
@@ -362,16 +362,19 @@ const ProductCard = ({ item, storeInit, loginUserDetail, onClick }) => (
       onClick={onClick}
     >
       {/* Product image */}
-      <Box
+      <img
         className="product-image"
-        component="img"
+        loading="lazy"
+        decoding="async"
         src={item.validatedImageURL}
-        alt={item.name}
+        alt={item.TitleLine || item.designno || "Fine Jewelry Design"}
+        width="300"
+        height="350"
         onError={(e) => {
           e.target.src = imageNotFound;
           e.target.alt = "no-image-found";
         }}
-        sx={{
+        style={{
           position: "absolute",
           top: "5%",
           left: "5%",

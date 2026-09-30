@@ -79,7 +79,7 @@ export const HeaderV2 = ({
   return (
     <>
       <SectionHeader>
-        <SectionTitle component="div" {...(sx && sx)} align={alignment}>
+        <SectionTitle component="h2" {...(sx && sx)} align={alignment}>
           {icon && icon}
           {title}
         </SectionTitle>

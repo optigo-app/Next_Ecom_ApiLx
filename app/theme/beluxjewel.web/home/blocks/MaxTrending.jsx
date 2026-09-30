@@ -262,14 +262,14 @@ const MaxTrending = ({ storeInit, initialData = [] }) => {
       <Box sx={{ position: "relative" }}>
         {/* Prev button — visible when slides exceed viewport */}
         {validatedData.length > 5 && (
-          <NavButton ref={prevRef} sx={{ left: -16 }}>
+          <NavButton ref={prevRef} aria-label="Previous slide" sx={{ left: -16 }}>
             <ChevronLeft size={20} />
           </NavButton>
         )}
 
         {/* Next button — visible when slides exceed viewport */}
         {validatedData.length > 5 && (
-          <NavButton ref={nextRef} sx={{ right: -16 }}>
+          <NavButton ref={nextRef} aria-label="Next slide" sx={{ right: -16 }}>
             <ChevronRight size={20} />
           </NavButton>
         )}
@@ -365,8 +365,12 @@ const ProductCard = ({ item, storeInit, loginUserDetail, onClick }) => (
       <Box
         className="product-image"
         component="img"
+        loading="lazy"
+        decoding="async"
         src={item.validatedImageURL}
-        alt={item.name}
+        alt={item.TitleLine || item.designno || "Fine Jewelry Design"}
+        width="300"
+        height="350"
         onError={(e) => {
           e.target.src = imageNotFound;
           e.target.alt = "no-image-found";

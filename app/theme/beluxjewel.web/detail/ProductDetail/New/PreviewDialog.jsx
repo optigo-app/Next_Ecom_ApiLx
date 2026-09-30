@@ -44,12 +44,13 @@ const PreviewDialog = ({ open, onClose, media = [], selectedIndex = 0 }) => {
   };
 
   const pauseAllVideos = () => {
-  document.querySelectorAll("video").forEach((video) => {
-    if (!video.paused) {
-      video.pause();
-    }
-  });
-};
+    if (typeof document === "undefined") return;
+    document.querySelectorAll("video").forEach((video) => {
+      if (!video.paused) {
+        video.pause();
+      }
+    });
+  };
 
 
 

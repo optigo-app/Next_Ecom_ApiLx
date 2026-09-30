@@ -6,7 +6,6 @@ import {
   Junge,
   Scope_One,
   Ysabeau_Infant,
-  Libertinus_Sans,
 } from "next/font/google";
 
 export const poppins = Poppins({
@@ -58,13 +57,6 @@ export const ysabeauInfant = Ysabeau_Infant({
   display: "swap",
 });
 
-export const libertinusSans = Libertinus_Sans({
-  subsets: ["latin"],
-  weight: ["400", "700"],
-  variable: "--font-libertinus",
-  display: "swap",
-});
-
 export const defaultFont = ysabeauInfant;
 
 const fontVariableMap = new Map([
@@ -75,7 +67,6 @@ const fontVariableMap = new Map([
   [junge, "--font-junge"],
   [scopeOne, "--font-scope-one"],
   [ysabeauInfant, "--font-ysabeau"],
-  [libertinusSans, "--font-libertinus"],
 ]);
 
 export const defaultFontVariable =
@@ -90,5 +81,4 @@ export const fonts = {
   junge,
   scopeOne,
   ysabeauInfant,
-  libertinusSans,
 };

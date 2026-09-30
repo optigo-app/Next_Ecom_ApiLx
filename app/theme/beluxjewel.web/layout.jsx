@@ -50,7 +50,7 @@ const layout = async ({ children }) => {
           storeInit={storeData}
           initialMenuData={initialMenuData}
         />
-        <Box sx={{ flex: 1, display: "flex", flexDirection: "column" }}>
+        <Box component="main" id="main-content" sx={{ flex: 1, display: "flex", flexDirection: "column" }}>
             {children}
         </Box>
         <FooterNew

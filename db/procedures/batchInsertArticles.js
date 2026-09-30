@@ -297,4 +297,90 @@ export function batchInsertArticles(db, rawPayload = [], options = {}, tableName
   };
 }
 
+/**
+ * Repairs article-level metal fields after a sync.
+ *
+ * The ERP GETPRODUCTFULLARTICLE rd payload sometimes carries the article's FIRST
+ * material row (often the diamond/colorstone) in MetalType/MetalTypeId/MetalColor/
+ * MetalColorId — e.g. "RND VVS"/"EF" instead of "GOLD 18K"/"Rose". This rewrites
+ * those four columns from the authoritative METAL material row (StoneTypeid = 4,
+ * falling back to FINDING = 5), joined on ArticleNo. Also backfills NULL ArticleId
+ * on material rows from the article table.
+ *
+ * @param {import('better-sqlite3').Database} db
+ * @param {string} articleTable
+ * @param {string} materialTable
+ * @returns {{ articlesRepaired: number, materialIdsBackfilled: number }}
+ */
+export function repairArticleMetalFields(db, articleTable, materialTable) {
+  const artTable = sanitizeSqlIdentifier(articleTable, "articles");
+  const matTable = sanitizeSqlIdentifier(materialTable, "article_materials");
+
+  let articlesRepaired = 0;
+  let materialIdsBackfilled = 0;
+
+  try {
+    const backfill = db.prepare(`
+      UPDATE "${matTable}" AS m
+      SET ArticleId = (
+        SELECT a.ArticleId FROM "${artTable}" a
+        WHERE a.ArticleNo = m.ArticleNo COLLATE NOCASE
+        LIMIT 1
+      )
+      WHERE m.ArticleId IS NULL
+        AND EXISTS (
+          SELECT 1 FROM "${artTable}" a
+          WHERE a.ArticleNo = m.ArticleNo COLLATE NOCASE
+        )
+    `).run();
+    materialIdsBackfilled = backfill.changes;
+  } catch (err) {
+    console.warn(`[repairArticleMetalFields] Material ArticleId backfill failed: ${err.message}`);
+  }
+
+  try {
+    const repair = db.prepare(`
+      WITH MetalRows AS (
+        SELECT
+          ArticleNo,
+          TRIM(COALESCE(Shape, '') || ' ' || COALESCE(Quality, '')) AS MetalType,
+          QualityId AS MetalTypeId,
+          Color AS MetalColor,
+          ColorId AS MetalColorId,
+          ROW_NUMBER() OVER (
+            PARTITION BY ArticleNo
+            ORDER BY CASE WHEN StoneTypeid = 4 THEN 0 ELSE 1 END ASC, row_id ASC
+          ) AS rn
+        FROM "${matTable}"
+        WHERE StoneTypeid IN (4, 5)
+          AND QualityId > 0
+          AND ColorId > 0
+          AND TRIM(COALESCE(Shape, '') || ' ' || COALESCE(Quality, '')) != ''
+          AND TRIM(COALESCE(Color, '')) != ''
+      )
+      UPDATE "${artTable}" AS a
+      SET
+        MetalTypeId = m.MetalTypeId,
+        MetalType = m.MetalType,
+        MetalColorId = m.MetalColorId,
+        MetalColor = m.MetalColor,
+        updated_at = CURRENT_TIMESTAMP
+      FROM MetalRows m
+      WHERE m.rn = 1
+        AND a.ArticleNo = m.ArticleNo COLLATE NOCASE
+        AND (
+          COALESCE(a.MetalType, '') <> m.MetalType
+          OR COALESCE(a.MetalTypeId, 0) <> m.MetalTypeId
+          OR COALESCE(a.MetalColor, '') <> m.MetalColor
+          OR COALESCE(a.MetalColorId, 0) <> m.MetalColorId
+        )
+    `).run();
+    articlesRepaired = repair.changes;
+  } catch (err) {
+    console.warn(`[repairArticleMetalFields] Article metal repair failed: ${err.message}`);
+  }
+
+  return { articlesRepaired, materialIdsBackfilled };
+}
+
 export default batchInsertArticles;

@@ -1,10 +1,11 @@
-import React from "react";
+import React, { Suspense } from "react";
 import { getStoreInit } from "@/app/(core)/utils/GlobalFunctions/GlobalFunctions";
 import { generatePageMetadata } from "@/app/(core)/utils/HeadMeta";
 import { pages } from "@/app/(core)/utils/pages";
 import { Box } from "@mui/material";
 import TopSection from "./TopSection";
 import CategoryAlbumGrid from "./CategoryAlbumGrid";
+import ExclusiveAlbumOverlay from "./ExclusiveAlbumOverlay";
 import { getSqliteHomeCategory } from "@/app/(core)/utils/sqlite/sqliteActions";
 
 export const metadata = generatePageMetadata(pages["/"], "Sonasons");
@@ -32,6 +33,11 @@ const SonasonsHome = async () => {
         initialCategories={initialCategories}
         storeInit={storeData}
       />
+
+      {/* Exclusive Album Overlay triggered when ?exclusive-album&customerid=... is detected */}
+      <Suspense fallback={null}>
+        <ExclusiveAlbumOverlay initialDomain={storeData?.domain || "beluxjewel.web"} />
+      </Suspense>
     </Box>
   );
 };

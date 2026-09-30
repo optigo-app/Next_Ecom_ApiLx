@@ -18,6 +18,8 @@ import { getSession, setSession } from "../utils/FetchSessionData";
 // import { GetCacheList } from "../utils/API/Cache/CacheApi";
 // import { fetchStoreInitData } from "../utils/fetchStoreInit";
 
+import { getOrCreateVisitorId } from "../utils/VisitorId";
+
 const masterContext = createContext({
   cacheList: null,
   setCacheList: () => {},
@@ -32,8 +34,7 @@ export const MasterProvider = ({
   getMyAccountFlags,
   theme,
 }) => {
-  console.log(theme , "theme")
-  const isBelux = theme === "beluxjewel.web" || theme === "julian.web";
+  const isBelux = true || theme === "beluxjewel.web" || theme === "julian.web";
   if (typeof window !== "undefined") {
     window.__STORE_INIT__ = getStoreInit;
     window.__LOGIN_USER__ =
@@ -83,34 +84,8 @@ export const MasterProvider = ({
   const fetchVisitorId = async () => {
     const storeInitData = getStoreInit;
     const CompanyinfoData = getCompanyInfoData;
-    if (CompanyinfoData) {
-      const visitorId = CompanyinfoData?.VisitorId;
-      const cookieStore = Cookies;
-      const existingVisitorId = cookieStore.get("visiterId") ?? "";
-
-      if (!existingVisitorId) {
-        cookieStore.set("visiterId", visitorId, {
-          path: "/",
-          expires: 60 * 60 * 24 * 30,
-        });
-      } else {
-        try {
-          const visitorIdCookie = existingVisitorId.startsWith("{")
-            ? JSON.parse(existingVisitorId)
-            : null;
-          if (visitorIdCookie) {
-            const expirationDate =
-              visitorIdCookie?.expires && new Date(visitorIdCookie.expires);
-
-            if (expirationDate && expirationDate <= new Date()) {
-              cookieStore.remove("visiterId");
-            }
-          }
-        } catch (e) {
-          console.error("Error parsing visiterId cookie:", e);
-        }
-      }
-    }
+    const rawHint = CompanyinfoData?.VisitorId || storeInitData?.VisitorId;
+    getOrCreateVisitorId(rawHint);
 
     if (storeInitData) {
       callAllApi();
@@ -121,9 +96,12 @@ export const MasterProvider = ({
     if (getStoreInit) {
       setSession("storeInit", getStoreInit);
       setSession("myAccountFlags", getMyAccountFlags);
+      if (getCompanyInfoData && Object.keys(getCompanyInfoData).length > 0) {
+        setSession("CompanyInfoData", getCompanyInfoData);
+      }
       fetchVisitorId();
     }
-  }, [getStoreInit, getMyAccountFlags]);
+  }, [getStoreInit, getMyAccountFlags, getCompanyInfoData]);
 
   // Paymaster fetch — fetches and caches payment master in session storage
   useEffect(() => {

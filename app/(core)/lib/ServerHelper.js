@@ -35,7 +35,7 @@ export function storImagePath(host) {
       ? NEXT_APP_WEB
       : NEXT_APP_WEB;
   // return `${protocol}://${base}/WebSiteStaticImage`;
-  return `WebSiteStaticImage`;
+  return `/WebSiteStaticImage`;
 }
 
 export async function getAssetBase() {

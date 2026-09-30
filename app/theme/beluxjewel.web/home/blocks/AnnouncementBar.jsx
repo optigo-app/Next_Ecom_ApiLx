@@ -36,8 +36,9 @@ export default function AnnouncementBar() {
     >
       <IconButton
         ref={prevRef}
+        aria-label="Previous announcement"
         size="small"
-        sx={{ color: "white", p: 0, width: 28, height: 28, flexShrink: 0 }}
+        sx={{ color: "#111827", p: 0, width: 28, height: 28, flexShrink: 0 }}
       >
         <ChevronLeftRoundedIcon fontSize="small" />
       </IconButton>
@@ -79,6 +80,7 @@ export default function AnnouncementBar() {
                   whiteSpace: "nowrap",
                   overflow: "hidden",
                   textOverflow: "ellipsis",
+                  color: "#111827",
                 }}
               >
                 {item}
@@ -90,8 +92,9 @@ export default function AnnouncementBar() {
 
       <IconButton
         ref={nextRef}
+        aria-label="Next announcement"
         size="small"
-        sx={{ color: "white", p: 0, width: 28, height: 28, flexShrink: 0 }}
+        sx={{ color: "#111827", p: 0, width: 28, height: 28, flexShrink: 0 }}
       >
         <ChevronRightRoundedIcon fontSize="small" />
       </IconButton>

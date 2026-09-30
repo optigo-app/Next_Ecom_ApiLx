@@ -96,25 +96,45 @@ export const buildCartAndWishMaps = (rd1Array = []) => {
     return { newCartObj, newWishObj };
 };
 
+import { getOrCreateVisitorId } from "@/app/(core)/utils/VisitorId";
+
 export const GetCountAPI = async (visiterId) => {
     let storeInit = getSession("storeInit");
     let loginInfo = getSession("loginUserDetail");
     const islogin = getSession("LoginUser") ?? false;
 
-    const visitor = visiterId || Cookies.get("visiterId") || "";
-    const customerId = (storeInit?.IsB2BWebsite == 0 && (islogin == false || islogin == null)) ? visitor : (loginInfo?.id ?? 0);
-    const customerEmail = (storeInit?.IsB2BWebsite == 0 && (islogin == false || islogin == null)) ? visitor : (loginInfo?.userid ?? "");
+    let visitor = visiterId || Cookies.get("visiterId") || "";
+    if (!visitor || visitor === "undefined" || visitor === "null" || visitor === "0") {
+      visitor = getOrCreateVisitorId(storeInit?.VisitorId);
+    }
+
+    const isLoggedInUser = Boolean(islogin) && Boolean(loginInfo?.id || loginInfo?.userid);
+
+    const customerId = isLoggedInUser
+      ? (loginInfo?.id ?? 0)
+      : (storeInit?.IsB2BWebsite == 0 ? visitor : (loginInfo?.id ?? 0));
+
+    const customerEmail = isLoggedInUser
+      ? (loginInfo?.userid ?? "")
+      : (storeInit?.IsB2BWebsite == 0 ? visitor : (loginInfo?.userid ?? ""));
+
+    const safeCustomerId = (customerId === "undefined" || customerId === "null" || customerId == null)
+      ? (visitor || "0")
+      : customerId;
+    const safeCustomerEmail = (customerEmail === "undefined" || customerEmail === "null" || customerEmail == null)
+      ? (visitor || "")
+      : customerEmail;
 
     let data = {
         "FrontEnd_RegNo": `${storeInit?.FrontEnd_RegNo ?? ""}`,
-        "Customerid": `${customerId ?? 0}`,
+        "Customerid": `${safeCustomerId}`,
         IsPLW: storeInit?.IsPLW ?? 0
     };
 
     let stringify = JSON.stringify(data);
 
     let body = {
-        "con": `{\"id\":\"\",\"mode\":\"Getcount\",\"appuserid\":\"${customerEmail ?? ""}\"}`,
+        "con": `{\"id\":\"\",\"mode\":\"Getcount\",\"appuserid\":\"${safeCustomerEmail}\"}`,
         "f": "zen (getCount)",
         "p": stringify
     };

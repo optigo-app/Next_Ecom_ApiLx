@@ -88,6 +88,11 @@ CREATE INDEX IF NOT EXISTS idx_designs_article ON designs(ArticleNo);
 CREATE INDEX IF NOT EXISTS idx_designs_designno ON designs(designno);
 CREATE INDEX IF NOT EXISTS idx_designs_autocode ON designs(autocode);
 
+-- NOCASE lookup indexes: PDP queries filter with "designno = ? COLLATE NOCASE" /
+-- "ArticleNo = ? COLLATE NOCASE", which the plain BINARY indexes above cannot serve
+CREATE INDEX IF NOT EXISTS idx_designs_designno_nc ON designs(designno COLLATE NOCASE);
+CREATE INDEX IF NOT EXISTS idx_designs_article_nc ON designs(ArticleNo COLLATE NOCASE);
+
 -- Single-column NOCASE indexes for ultra-fast filtering
 CREATE INDEX IF NOT EXISTS idx_designs_gender_nc ON designs(gender COLLATE NOCASE);
 CREATE INDEX IF NOT EXISTS idx_designs_category_nc ON designs(category COLLATE NOCASE);

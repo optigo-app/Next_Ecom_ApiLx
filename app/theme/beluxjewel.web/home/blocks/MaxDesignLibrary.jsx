@@ -21,7 +21,7 @@ export default function MaxDesignLibrary() {
     <Box className="designLibContainer" sx={{ py: { xs: 8, md: 12 }, overflow: "hidden" }}>
       <Container maxWidth="lg">
         <Grid container spacing={{ xs: 6, md: 8 }} alignItems="center">
-          
+
           {/* Left Column: Promotion Banner Details */}
           <Grid
             item
@@ -47,6 +47,7 @@ export default function MaxDesignLibrary() {
 
               <Typography
                 variant="h3"
+                component="h2"
                 className="designLibTitle"
                 sx={{
                   fontFamily: "Prata, Playfair Display, serif",
@@ -168,11 +169,14 @@ export default function MaxDesignLibrary() {
                     overflow: "hidden",
                   }}
                 >
-                  <Box
-                    component="img"
+                  <img
+                    loading="lazy"
+                    decoding="async"
                     src="/WebSiteStaticImage/category/diamond-style-stud-earrings-for-women.webp"
                     alt="Stud Earrings"
-                    sx={{ width: "80%", height: "80%", objectFit: "contain", mixBlendMode: "multiply" }}
+                    width="160"
+                    height="160"
+                    style={{ width: "80%", height: "80%", objectFit: "contain", mixBlendMode: "multiply" }}
                   />
                 </Box>
                 <Typography variant="caption" sx={{ mt: 1, fontWeight: 600, color: "#888", textAlign: "center" }}>
@@ -208,11 +212,14 @@ export default function MaxDesignLibrary() {
                     overflow: "hidden",
                   }}
                 >
-                  <Box
-                    component="img"
+                  <img
+                    loading="lazy"
+                    decoding="async"
                     src="/WebSiteStaticImage/category/Bangal.webp"
                     alt="Rose Gold Bangle"
-                    sx={{ width: "80%", height: "80%", objectFit: "contain", mixBlendMode: "multiply" }}
+                    width="160"
+                    height="160"
+                    style={{ width: "80%", height: "80%", objectFit: "contain", mixBlendMode: "multiply" }}
                   />
                 </Box>
                 <Typography variant="caption" sx={{ mt: 1, fontWeight: 600, color: "#888", textAlign: "center" }}>
@@ -247,15 +254,19 @@ export default function MaxDesignLibrary() {
                     overflow: "hidden",
                   }}
                 >
-                  <Box
-                    component="img"
+                  <img
+                    loading="lazy"
+                    decoding="async"
                     src="/WebSiteStaticImage/category/ring.webp"
                     alt="Solitaire Ring"
-                    sx={{ width: "85%", height: "85%", objectFit: "contain", mixBlendMode: "multiply" }}
+                    width="180"
+                    height="180"
+                    style={{ width: "85%", height: "85%", objectFit: "contain", mixBlendMode: "multiply" }}
                   />
                 </Box>
                 <Typography
                   variant="subtitle2"
+                  component="p"
                   sx={{
                     mt: 1.5,
                     fontWeight: 600,

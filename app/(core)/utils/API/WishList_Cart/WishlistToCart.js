@@ -1,17 +1,25 @@
 import { getSession } from "../../FetchSessionData";
 import { CommonAPI } from "../CommonAPI/CommonAPI";
+import { getOrCreateVisitorId } from "@/app/(core)/utils/VisitorId";
 
 export const handleWishlistToCartAPI = async (param, item, visiterId) => {
   const storeInit = getSession("storeInit");
   const data = getSession("loginUserDetail");
   const islogin = getSession("LoginUser");
-  const { FrontEnd_RegNo } = storeInit;
+  const { FrontEnd_RegNo } = storeInit || {};
+
+  let cleanVisiterId = visiterId;
+  if (!cleanVisiterId || cleanVisiterId === "undefined" || cleanVisiterId === "null" || cleanVisiterId === "0") {
+    cleanVisiterId = getOrCreateVisitorId(storeInit?.VisitorId);
+  }
 
   const isGuest =
     storeInit?.IsB2BWebsite == 0 && (islogin == false || islogin == null);
 
-  const customerId = isGuest ? visiterId : (data?.id ?? 0);
-  const customerEmail = isGuest ? visiterId : (data?.userid ?? "");
+  const rawCustomerId = isGuest ? cleanVisiterId : (data?.id ?? 0);
+  const customerId = (rawCustomerId === "undefined" || rawCustomerId === "null" || rawCustomerId == null) ? (cleanVisiterId || 0) : rawCustomerId;
+  const rawCustomerEmail = isGuest ? cleanVisiterId : (data?.userid ?? "");
+  const customerEmail = (rawCustomerEmail === "undefined" || rawCustomerEmail === "null" || rawCustomerEmail == null) ? (cleanVisiterId || "") : rawCustomerEmail;
 
   const Policys = {
     Laboursetid: isGuest

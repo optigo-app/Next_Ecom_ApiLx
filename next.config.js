@@ -1,8 +1,9 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-   output: 'standalone',
-    serverExternalPackages: ['better-sqlite3'],
+  output: 'standalone',
+  serverExternalPackages: ['better-sqlite3'],
   images: {
+    formats: ['image/avif', 'image/webp'],
     remotePatterns: [
       { protocol: 'http', hostname: '**' },
       { protocol: 'https', hostname: '**' },
@@ -49,13 +50,39 @@ const nextConfig = {
           { key: 'Vary', value: 'RSC, Next-Router-State-Tree, Next-Router-Prefetch' },
         ],
       },
+      {
+        // Static assets (CSS, JS) with content hashes — 1 year, immutable
+        source: '/_next/static/:path*',
+        headers: [
+          { key: 'Cache-Control', value: 'public, max-age=31536000, immutable' },
+        ],
+      },
     ];
   },
 
-  // webpack: (config) => {
-  //   config.infrastructureLogging = { level: "error" }; // hides warnings
-  //   return config;
-  // },
+  // Enable Gzip compression in Next.js
+  compress: true,
+
+  webpack: (config, { dev, isServer }) => {
+    // In production client build, consolidate CSS/SCSS into a single styles bundle
+    // to eliminate dozens of render-blocking HTTP requests
+    if (!dev && !isServer) {
+      config.optimization = config.optimization || {};
+      config.optimization.splitChunks = config.optimization.splitChunks || {};
+      config.optimization.splitChunks.cacheGroups = {
+        ...(config.optimization.splitChunks.cacheGroups || {}),
+        styles: {
+          name: 'styles',
+          test: /\.(css|scss|sass)$/,
+          chunks: 'all',
+          enforce: true,
+          priority: 50,
+        },
+      };
+    }
+    return config;
+  },
+
   reactStrictMode: false,
 
   eslint: {
@@ -63,6 +90,13 @@ const nextConfig = {
   },
 
   experimental: {
+    optimizePackageImports: [
+      '@mui/material',
+      '@mui/icons-material',
+      'lucide-react',
+      'lodash',
+      'date-fns',
+    ],
     viewTransition: true,
     serverActions: {
       allowedOrigins: ['*.optigoapps.com', 'optigoapps.com', 'localhost:5009', 'localhost:3000', '*'],

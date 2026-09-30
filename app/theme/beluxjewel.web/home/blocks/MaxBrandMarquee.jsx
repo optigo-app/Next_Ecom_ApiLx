@@ -48,16 +48,16 @@ const MaxBrandMarquee = ({ assetBase }) => {
 
   const LOGO_DATA = {
     kayra: [
-      "logo1.png",
-      "logo2.png",
-      "logo3.png",
-      "logo4.png",
-      "logo5.png",
-      "logo6.png",
+      "logo1.webp",
+      "logo2.webp",
+      "logo3.webp",
+      "logo4.webp",
+      "logo5.webp",
+      "logo6.webp",
     ],
-    omjiyansh: ["logo1.png", "logo2.png", "logo3.png", "logo4.png"],
-    mayora: ["logo1.png", "logo2.jpg", "logo3.png", "logo4.png"],
-    sonasons: ["logo2.png", "logo3.png", "logo4.png", "logo6.png"],
+    omjiyansh: ["logo1.webp", "logo2.webp", "logo3.webp", "logo4.webp"],
+    mayora: ["logo1.webp", "logo2.webp", "logo3.webp", "logo4.webp"],
+    sonasons: ["logo2.webp", "logo3.webp", "logo4.webp", "logo6.webp"],
   };
 
   const ALL_LOGOS = [
@@ -116,6 +116,7 @@ const MaxBrandMarquee = ({ assetBase }) => {
     >
       <Typography
         variant="h6"
+        component="p"
         sx={{
           mb: { xs: 4, md: 6 },
           fontWeight: 400,
@@ -152,7 +153,7 @@ const MaxBrandMarquee = ({ assetBase }) => {
                       justifyContent: "center",
                     }}
                   >
-                    <BrandLogoImg src={logo} alt="Partner" loading="lazy" />
+                    <BrandLogoImg src={logo} alt="Partner" loading="lazy" decoding="async" width="160" height="70" />
                   </motion.div>
                 </AnimatePresence>
               </LogoSlot>
