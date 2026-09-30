@@ -1,14 +1,14 @@
 import { NEXT_APP_WEB } from "@/app/(core)/utils/env";
-import { cookies } from "next/headers";
+import { headers } from "next/headers";
+import { getStoreInitData } from "@/app/(core)/cache_utility/storeInitCache";
 
 export async function getActiveTheme() {
-  const cookieStore = await cookies();
-  const storeData = cookieStore.get("x-store-data");
-  if (!storeData) return NEXT_APP_WEB;
-
   try {
-    const parsed = JSON.parse(storeData.value);
-    return parsed?.domain || NEXT_APP_WEB;
+    const headersList = await headers();
+    const host = headersList.get("host");
+    const storeData = await getStoreInitData(host);
+    const domain = storeData?.rd?.[0]?.domain;
+    return domain || NEXT_APP_WEB;
   } catch (e) {
     return NEXT_APP_WEB;
   }

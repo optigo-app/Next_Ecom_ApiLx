@@ -34,11 +34,13 @@ export async function GET(req) {
       searchParams.get("customerid") ||
       searchParams.get("CustomerId");
 
-    if (!customerId) {
+    const randomNo = searchParams.get("RandomNo") || searchParams.get("randomNo");
+
+    if (!customerId && !randomNo) {
       return NextResponse.json(
         {
           Status: "400",
-          Message: "customerId query parameter is required (e.g. ?customerid=2275)",
+          Message: "customerId or RandomNo query parameter is required",
           Data: { rd: [] },
         },
         { status: 400 }

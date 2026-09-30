@@ -17,10 +17,10 @@ export function getExclusiveAlbumsWithDesigns(db, options = {}) {
   const startTime = performance.now();
   const customerId = options.customerId || options.CustomerId;
 
-  if (customerId === undefined || customerId === null || customerId === "") {
+  if (!customerId && !options.RandomNo) {
     return {
       Status: "400",
-      Message: "customerId is required to fetch exclusive albums.",
+      Message: "customerId or RandomNo is required to fetch exclusive albums.",
       Data: { rd: [] },
     };
   }
@@ -54,9 +54,14 @@ export function getExclusiveAlbumsWithDesigns(db, options = {}) {
       RandomNo,
       EntryDate
     FROM albums
-    WHERE CustomerId = @customerId
+    WHERE 1=1
   `;
-  const params = { customerId: Number(customerId) };
+  const params = {};
+
+  if (customerId) {
+    sql += " AND CustomerId = @customerId";
+    params.customerId = Number(customerId);
+  }
 
   if (options.id !== undefined && options.id !== null && options.id !== "") {
     sql += " AND id = @id";

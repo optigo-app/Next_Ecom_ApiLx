@@ -13,24 +13,6 @@ export default async function middleware(req) {
 
   const response = NextResponse.next();
 
-  response.cookies.set(
-    "x-store-data",
-    JSON.stringify(storeData?.rd?.[0] || {}),
-    {
-      path: "/",
-      httpOnly: false,
-    },
-  );
-
-  response.cookies.set(
-    "x-myAccountFlags-data",
-    JSON.stringify(storeData?.rd1 || []),
-    {
-      path: "/",
-      httpOnly: false,
-    },
-  );
-
   // Ensure visiterId cookie is always valid (not missing, not "undefined", not "null")
   const currentVisitorId = req.cookies.get("visiterId")?.value;
   if (!currentVisitorId || currentVisitorId === "undefined" || currentVisitorId === "null" || currentVisitorId === "0") {

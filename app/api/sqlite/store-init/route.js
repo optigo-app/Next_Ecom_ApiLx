@@ -4,6 +4,7 @@ import { saveStoreInit } from "@/db/procedures/saveStoreInit";
 import { getStoreInit } from "@/db/procedures/getStoreInit";
 import { deleteStoreInit } from "@/db/procedures/deleteStoreInit";
 import { syncStoreInit } from "@/app/(core)/utils/sqlite/syncStoreInit";
+import { clearStoreInitCache } from "@/app/(core)/cache_utility/storeInitCache";
 import { logger } from "@/db/logger";
 
 export const dynamic = "force-dynamic";
@@ -85,6 +86,9 @@ export async function POST(req) {
         return NextResponse.json(syncResult, { status: 400 });
       }
 
+      // Instantly invalidate the cache so the website shows the new data
+      await clearStoreInitCache();
+
       return NextResponse.json({
         success: true,
         message: "StoreInit data successfully synced and saved from external API.",
@@ -102,6 +106,9 @@ export async function POST(req) {
       counts: result.count,
       elapsedMs: result.elapsedMs,
     });
+
+    // Instantly invalidate the cache so the website shows the new data
+    await clearStoreInitCache();
 
     return NextResponse.json(
       {
