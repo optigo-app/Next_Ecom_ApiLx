@@ -392,7 +392,7 @@ const QuotationJob = () => {
       // }
       if (
         e?.MetalType?.toString()?.toLowerCase() ===
-          metalPurities?.toString()?.toLowerCase() ||
+        metalPurities?.toString()?.toLowerCase() ||
         metalPurities?.toLowerCase() === "all"
       ) {
         flags.metalPurity = true;
@@ -403,7 +403,7 @@ const QuotationJob = () => {
       // }
       if (
         e?.MetalColor?.toString()?.toLowerCase() ===
-          MetalColors?.toString()?.toLowerCase() ||
+        MetalColors?.toString()?.toLowerCase() ||
         MetalColors?.toLowerCase() === "all"
       ) {
         flags.MetalColor = true;
@@ -1923,11 +1923,8 @@ const QuotationJob = () => {
                           className="quotationJobSec"
                           sx={{
                             maxHeight: 810,
+                            overflowX: "auto",
                             overflowY: "auto", // ✅ needed for scrollTop to work
-                            scrollbarColor: "transparent transparent",
-                            "&::-webkit-scrollbar": {
-                              display: "none",
-                            },
                           }}
                         >
                           <Table

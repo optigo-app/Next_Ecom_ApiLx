@@ -839,7 +839,7 @@ const QuotationJob = () => {
                   labelId="demo-multiple-checkbox-label"
                   id="demo-multiple-checkbox"
                   multiple
-                  displayEmpty 
+                  displayEmpty
                   value={selectedStatus} // Assuming selectedStatus is an array of selected values
                   onChange={handleStatus} // Assuming handleStatus function receives selected values
                   MenuProps={MenuProps}
@@ -1189,7 +1189,7 @@ const QuotationJob = () => {
                     labelId="demo-multiple-checkbox-label"
                     id="demo-multiple-checkbox"
                     multiple
-                    displayEmpty 
+                    displayEmpty
                     value={selectedStatus} // Assuming selectedStatus is an array of selected values
                     onChange={handleStatus} // Assuming handleStatus function receives selected values
                     MenuProps={MenuProps}
@@ -1307,11 +1307,8 @@ const QuotationJob = () => {
                           className="quotationJobSec"
                           sx={{
                             maxHeight: 810,
+                            overflowX: "auto",
                             overflowY: "auto", // ✅ needed for scrollTop to work
-                            scrollbarColor: "transparent transparent",
-                            "&::-webkit-scrollbar": {
-                              display: "none",
-                            },
                           }}
                         >
                           <Table stickyHeader aria-label="sticky table" className='quotaionFiltertable'>
