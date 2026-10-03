@@ -11,6 +11,9 @@ import { getDynamicDesignTableName, sanitizeSqlIdentifier } from "../schema/dyna
  * @returns {Array<object>} - Array matching the GETFILTERLIST 'rd' response structure
  */
 export function getFilterList(db, filtersOrMenu = {}, extraFilters = {}) {
+  if (!db) {
+    return [];
+  }
   let filters = {};
 
   if (Array.isArray(filtersOrMenu) && filtersOrMenu.length >= 2) {

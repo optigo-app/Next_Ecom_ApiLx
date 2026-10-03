@@ -47,17 +47,17 @@ export async function POST(req) {
     // Mode 1: Direct payload push
     if (Array.isArray(rawAlbumList) && rawAlbumList.length > 0 && !isSyncTrigger) {
       const db = getTenantDb(targetDomain);
-      const replace = body?.replace === true || searchParams.get("replace") === "true";
-      const saveResult = saveAlbums(db, rawAlbumList, { replace });
+      const saveResult = saveAlbums(db, rawAlbumList);
 
-      logger.info("API_ALBUMS", `Saved ${saveResult.savedCount} direct album items for '${targetDomain}' in ${saveResult.elapsedMs}ms`);
+      logger.info("API_ALBUMS", `Saved ${saveResult.savedCount} albums (deleted ${saveResult.deletedCount} old) for '${targetDomain}' in ${saveResult.elapsedMs}ms`);
 
       return NextResponse.json(
         {
           success: true,
-          message: `Saved ${saveResult.savedCount} albums into SQLite for '${targetDomain}'.`,
+          message: `Saved ${saveResult.savedCount} albums into SQLite for '${targetDomain}' (${saveResult.deletedCount} previous rows deleted).`,
           domain: targetDomain,
           totalReceived: saveResult.totalReceived,
+          deletedCount: saveResult.deletedCount,
           savedCount: saveResult.savedCount,
           elapsedMs: saveResult.elapsedMs,
         },
@@ -69,13 +69,11 @@ export async function POST(req) {
     logger.info("API_ALBUMS", `Triggering internal ERP GetAlbums sync for domain '${targetDomain}'`);
     const appuserid = body?.appuserid || searchParams.get("appuserid");
     const packageId = body?.packageId || body?.PackageId || searchParams.get("packageId") || searchParams.get("PackageId");
-    const replace = body?.replace === true || searchParams.get("replace") === "true";
 
     const syncResult = await syncAlbums({
       domain: targetDomain,
       appuserid,
       packageId: packageId != null ? Number(packageId) : 0,
-      replace,
     });
 
     return NextResponse.json(
@@ -83,9 +81,10 @@ export async function POST(req) {
         success: syncResult.success,
         message: syncResult.error
           ? `ERP Albums sync failed: ${syncResult.error}`
-          : `Synced ${syncResult.savedCount} albums from ERP into SQLite for '${targetDomain}'.`,
+          : `Synced ${syncResult.savedCount} albums from ERP into SQLite for '${targetDomain}' (${syncResult.deletedCount ?? 0} previous rows deleted).`,
         domain: targetDomain,
         totalReceived: syncResult.totalReceived,
+        deletedCount: syncResult.deletedCount ?? 0,
         savedCount: syncResult.savedCount,
         elapsedMs: syncResult.elapsedMs,
         error: syncResult.error,

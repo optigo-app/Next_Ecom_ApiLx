@@ -113,7 +113,7 @@ export default function B2CRegister({ searchParams }) {
     }
 
     if (routeMobileNo) {
-      setMobileNo(routeMobileNo);
+      setMobileNo(String(routeMobileNo));
       setIsMobileThrough(true);
       if (mobileNoRef.current) mobileNoRef.current.disabled = true;
     } else {
@@ -122,7 +122,7 @@ export default function B2CRegister({ searchParams }) {
     }
 
     if (storedCountryCode) {
-      setCountrycodestate(storedCountryCode);
+      setCountrycodestate(String(storedCountryCode));
     }
 
     if (storedEmail) {
@@ -219,33 +219,39 @@ export default function B2CRegister({ searchParams }) {
 
   const handleSubmit = async (e) => {
     if (e) e.preventDefault();
+    const strFirstName = String(firstName || "");
+    const strLastName = String(lastName || "");
+    const strMobileNo = String(mobileNo || "");
+    const strEmail = String(email || "");
+    const strPassword = String(password || "");
+
     const errors = {};
-    if (!firstName.trim()) {
+    if (!strFirstName.trim()) {
       errors.firstName = "First Name is required";
-    } else if (!/^(?![\d\s!@#$%^&*()_+={}\[\]|\\:;"'<>,.?/~`])[^\s][^\n]+$/.test(firstName)) {
+    } else if (!/^(?![\d\s!@#$%^&*()_+={}\[\]|\\:;"'<>,.?/~`])[^\s][^\n]+$/.test(strFirstName)) {
       errors.firstName = "First Name should not start with a numeric, special character, or space";
     }
-    if (!lastName.trim()) {
+    if (!strLastName.trim()) {
       errors.lastName = "Last Name is required";
-    } else if (!/^(?![\d\s!@#$%^&*()_+={}\[\]|\\:;"'<>,.?/~`])[^\s][^\n]+$/.test(lastName)) {
+    } else if (!/^(?![\d\s!@#$%^&*()_+={}\[\]|\\:;"'<>,.?/~`])[^\s][^\n]+$/.test(strLastName)) {
       errors.lastName = "Last Name should not start with a numeric, special character, or space";
     }
-    if (!mobileNo.trim()) {
+    if (!strMobileNo.trim()) {
       errors.mobileNo = "Mobile No. is required";
     } else if (Errors.mobileNo) {
       errors.mobileNo = Errors.mobileNo;
     }
 
-    if (!email.trim()) {
+    if (!strEmail.trim()) {
       errors.email = "Email is required";
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(strEmail)) {
       errors.email = "Please enter a valid email address";
     }
-    if (!currentActiveFlow && password.trim()) {
-      if (!validatePassword(password)) {
+    if (!currentActiveFlow && strPassword.trim()) {
+      if (!validatePassword(strPassword)) {
         setPasswordError("Password must be at least 6 characters long!");
         errors.password = "Invalid Password";
-      } else if (confirmPassword !== password) {
+      } else if (confirmPassword !== strPassword) {
         errors.confirmPassword = "Passwords do not match";
       }
     }
@@ -257,13 +263,13 @@ export default function B2CRegister({ searchParams }) {
       setTermsError("");
     }
 
-    if (Object.keys(errors).length === 0 && (!password.trim() || passwordError.length === 0)) {
-      const finalPassword = password.trim() ? password : "User@" + Math.floor(1000 + Math.random() * 9000).toString() + "A1!";
+    if (Object.keys(errors).length === 0 && (!strPassword.trim() || passwordError.length === 0)) {
+      const finalPassword = strPassword.trim() ? strPassword : "User@" + Math.floor(1000 + Math.random() * 9000).toString() + "A1!";
       const hashedPassword = hashPasswordSHA1(finalPassword);
 
       setIsLoading(true);
 
-      RegisterAPI(firstName, lastName, email, mobileNo, hashedPassword, Countrycodestate, countryShortName, taxId, businessType, city)
+      RegisterAPI(strFirstName, strLastName, strEmail, strMobileNo, hashedPassword, String(Countrycodestate || ""), countryShortName, taxId, businessType, city)
         .then((response) => {
           const result = getEventMessage(response);
           if (result?.eventName && result?.status) {
@@ -278,7 +284,7 @@ export default function B2CRegister({ searchParams }) {
 
           if (response.Data.rd[0].stat === 1) {
             const visiterId = Cookies.get('visiterId');
-            LoginWithEmailAPI(email, '', hashedPassword, '', '', visiterId).then((loginResponse) => {
+            LoginWithEmailAPI(strEmail, '', hashedPassword, '', '', visiterId).then((loginResponse) => {
               if (loginResponse.Data.rd[0].stat === 1) {
                 sessionStorage.removeItem("b2b_registered_email");
                 sessionStorage.removeItem("b2b_registered_password");
@@ -328,12 +334,37 @@ export default function B2CRegister({ searchParams }) {
             });
           } else {
             setIsLoading(false);
-            if (response.Data?.rd[0].ismobileexists === 1) {
-              errors.mobileNo = response.Data.rd[0].stat_msg;
+            const resData = response.Data?.rd?.[0] || {};
+            const isMobileExists =
+              resData.ismobileexists === 1 ||
+              (resData.stat_msg && /mobile/i.test(resData.stat_msg));
+            const isEmailExists =
+              resData.isemailexists === 1 ||
+              (resData.stat_msg && /email/i.test(resData.stat_msg));
+
+            if (isMobileExists) {
+              errors.mobileNo = resData.stat_msg || "Mobile number already exists";
+              setIsMobileThrough(false);
+              if (mobileNoRef.current) {
+                mobileNoRef.current.disabled = false;
+                setTimeout(() => mobileNoRef.current?.focus(), 50);
+              }
+              if (typeof window !== "undefined") {
+                sessionStorage.removeItem("registerMobile");
+              }
             }
-            if (response.Data?.rd[0].isemailexists === 1) {
-              errors.email = response.Data.rd[0].stat_msg;
+
+            if (isEmailExists) {
+              errors.email = resData.stat_msg || "Email already exists";
+              if (emailRef.current) {
+                emailRef.current.disabled = false;
+              }
+              if (typeof window !== "undefined") {
+                sessionStorage.removeItem("registerEmail");
+                sessionStorage.removeItem("email");
+              }
             }
+
             setErrors({ ...errors });
           }
         })

@@ -123,11 +123,11 @@ const Header = ({ storeinit, logos }) => {
 
   useEffect(() => {
     if (storeinit && typeof window !== "undefined") {
+      // Always force-overwrite: storeinit prop is the server-side source of truth.
+      // The old guard (JSON.stringify comparison) could silently block updates
+      // when a new storeInit is pushed but sessionStorage still held the old one.
       window.__STORE_INIT__ = storeinit;
-      const stored = getSession("storeInit");
-      if (!stored || JSON.stringify(stored) !== JSON.stringify(storeinit)) {
-        setSession("storeInit", storeinit);
-      }
+      setSession("storeInit", storeinit);
     }
   }, [storeinit]);
 

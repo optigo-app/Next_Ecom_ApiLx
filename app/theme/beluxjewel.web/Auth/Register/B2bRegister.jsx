@@ -184,12 +184,14 @@ const B2bRegister = ({ searchParams }) => {
       const nextState = { ...prev };
 
       if (routeMobileNo && storedCountryCode) {
+        const strRouteMobileNo = String(routeMobileNo);
+        const strStoredCountryCode = String(storedCountryCode);
         if (
-          prev.mobileNo !== routeMobileNo ||
-          prev.mobileCountry !== storedCountryCode
+          prev.mobileNo !== strRouteMobileNo ||
+          prev.mobileCountry !== strStoredCountryCode
         ) {
-          nextState.mobileNo = routeMobileNo;
-          nextState.mobileCountry = storedCountryCode;
+          nextState.mobileNo = strRouteMobileNo;
+          nextState.mobileCountry = strStoredCountryCode;
           updated = true;
         }
       }
@@ -354,10 +356,10 @@ const B2bRegister = ({ searchParams }) => {
 
       case 1:
         return (
-          formData.first_name.trim() !== "" &&
-          formData.last_name.trim() !== "" &&
-          formData.mobileNo.trim() !== "" &&
-          formData.email.trim() !== "" &&
+          String(formData.first_name || "").trim() !== "" &&
+          String(formData.last_name || "").trim() !== "" &&
+          String(formData.mobileNo || "").trim() !== "" &&
+          String(formData.email || "").trim() !== "" &&
           formData.password !== "" &&
           formData.confirm_password !== "" &&
           formData.password === formData.confirm_password &&
@@ -416,13 +418,13 @@ const B2bRegister = ({ searchParams }) => {
         break;
 
       case 1:
-        if (!formData.first_name.trim())
+        if (!String(formData.first_name || "").trim())
           newErrors.first_name = "First name is required";
-        if (!formData.last_name.trim())
+        if (!String(formData.last_name || "").trim())
           newErrors.last_name = "Last name is required";
-        if (!formData.mobileNo.trim())
+        if (!String(formData.mobileNo || "").trim())
           newErrors.mobileNo = "Mobile number is required";
-        if (!formData.email.trim()) newErrors.email = "Email is required";
+        if (!String(formData.email || "").trim()) newErrors.email = "Email is required";
         if (!formData.password) newErrors.password = "Password is required";
         if (!formData.confirm_password)
           newErrors.confirm_password = "Confirm password is required";
@@ -620,13 +622,32 @@ const B2bRegister = ({ searchParams }) => {
         setCompletedSteps(new Set([0, 1, 2, 3]));
       } else {
         const newErrors = {};
-        if (response.ismobileexists === 1) {
-          newErrors.mobileNo = response.stat_msg;
-          toast.error(response.stat_msg);
+        const isMobileExists =
+          response.ismobileexists === 1 ||
+          (response.stat_msg && /mobile/i.test(response.stat_msg));
+        const isEmailExists =
+          response.isemailexists === 1 ||
+          (response.stat_msg && /email/i.test(response.stat_msg));
+
+        if (isMobileExists) {
+          newErrors.mobileNo = response.stat_msg || "Mobile number already exists";
+          toast.error(response.stat_msg || "Mobile number already exists");
+          setIsMobileThrough(false);
+          if (mobileNoRef.current) {
+            mobileNoRef.current.disabled = false;
+            setTimeout(() => mobileNoRef.current?.focus(), 50);
+          }
+          if (typeof window !== "undefined") {
+            sessionStorage.removeItem("registerMobile");
+          }
         }
-        if (response.isemailexists === 1) {
-          newErrors.email = response.stat_msg;
-          toast.error(response.stat_msg);
+        if (isEmailExists) {
+          newErrors.email = response.stat_msg || "Email already exists";
+          toast.error(response.stat_msg || "Email already exists");
+          if (typeof window !== "undefined") {
+            sessionStorage.removeItem("registerEmail");
+            sessionStorage.removeItem("email");
+          }
         }
         setErrors((prev) => ({ ...prev, ...newErrors }));
       }
@@ -1102,7 +1123,7 @@ const B2bRegister = ({ searchParams }) => {
                     }
                     mobileNoRef={mobileNoRef}
                     IsMobileThrough={IsMobileThrough}
-                    handleKeyDown={() => {}}
+                    handleKeyDown={() => { }}
                     handleInputChange={handleInputChange}
                     Countrycodestate={formData.mobileCountry}
                     setCountrycodestate={(val) =>

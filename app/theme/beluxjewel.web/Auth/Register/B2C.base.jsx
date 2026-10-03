@@ -76,7 +76,7 @@ export default function B2CRegister({ searchParams }) {
         const storedCountryCode = sessionStorage.getItem("Countrycodestate");
 
         if (routeMobileNo) {
-            setMobileNo(routeMobileNo);
+            setMobileNo(String(routeMobileNo));
             setIsMobileThrough(true);
             if (mobileNoRef.current) mobileNoRef.current.disabled = true;
         } else {
@@ -85,7 +85,7 @@ export default function B2CRegister({ searchParams }) {
         }
 
         if (storedCountryCode) {
-            setCountrycodestate(storedCountryCode);
+            setCountrycodestate(String(storedCountryCode));
         }
 
         if (storedEmail) {
@@ -221,18 +221,24 @@ export default function B2CRegister({ searchParams }) {
                 };
             });
         }
+        const strFirstName = String(firstName || "");
+        const strLastName = String(lastName || "");
+        const strMobileNo = String(mobileNo || "");
+        const strEmail = String(email || "");
+        const strPassword = String(password || "");
+
         const errors = {};
-        if (!firstName.trim()) {
+        if (!strFirstName.trim()) {
             errors.firstName = "First Name is required";
-        } else if (!/^(?![\d\s!@#$%^&*()_+={}\[\]|\\:;"'<>,.?/~`])[^\s][^\n]+$/.test(firstName)) {
+        } else if (!/^(?![\d\s!@#$%^&*()_+={}\[\]|\\:;"'<>,.?/~`])[^\s][^\n]+$/.test(strFirstName)) {
             errors.firstName = "First Name should not start with a numeric, special character, or space";
         }
-        if (!lastName.trim()) {
+        if (!strLastName.trim()) {
             errors.lastName = "Last Name is required";
-        } else if (!/^(?![\d\s!@#$%^&*()_+={}\[\]|\\:;"'<>,.?/~`])[^\s][^\n]+$/.test(lastName)) {
+        } else if (!/^(?![\d\s!@#$%^&*()_+={}\[\]|\\:;"'<>,.?/~`])[^\s][^\n]+$/.test(strLastName)) {
             errors.lastName = "Last Name should not start with a numeric, special character, or space";
         }
-        if (!mobileNo.trim()) {
+        if (!strMobileNo.trim()) {
             errors.mobileNo = "Mobile No. is required";
         } else if (Errors.mobileNo) {
             errors.mobileNo = Errors.mobileNo;
@@ -282,11 +288,34 @@ export default function B2CRegister({ searchParams }) {
                         navigation(singupRedirectUrl);
 
                     } else {
-                        if (response.Data?.rd[0].ismobileexists === 1) {
-                            errors.mobileNo = response.Data.rd[0].stat_msg;
+                        const resData = response.Data?.rd?.[0] || {};
+                        const isMobileExists =
+                            resData.ismobileexists === 1 ||
+                            (resData.stat_msg && /mobile/i.test(resData.stat_msg));
+                        const isEmailExists =
+                            resData.isemailexists === 1 ||
+                            (resData.stat_msg && /email/i.test(resData.stat_msg));
+
+                        if (isMobileExists) {
+                            errors.mobileNo = resData.stat_msg || "Mobile number already exists";
+                            setIsMobileThrough(false);
+                            if (mobileNoRef.current) {
+                                mobileNoRef.current.disabled = false;
+                                setTimeout(() => mobileNoRef.current?.focus(), 50);
+                            }
+                            if (typeof window !== "undefined") {
+                                sessionStorage.removeItem("registerMobile");
+                            }
                         }
-                        if (response.Data?.rd[0].isemailexists === 1) {
-                            errors.email = response.Data.rd[0].stat_msg;
+                        if (isEmailExists) {
+                            errors.email = resData.stat_msg || "Email already exists";
+                            if (emailRef.current) {
+                                emailRef.current.disabled = false;
+                            }
+                            if (typeof window !== "undefined") {
+                                sessionStorage.removeItem("registerEmail");
+                                sessionStorage.removeItem("email");
+                            }
                         }
                         setErrors(errors);
                     }

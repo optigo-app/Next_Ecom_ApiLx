@@ -49,14 +49,15 @@ export async function POST(req) {
       const db = getTenantDb(targetDomain);
       const saveResult = savePackageMaster(db, rawPackageList);
 
-      logger.info("API_PACKAGE_MASTER", `Saved ${saveResult.savedCount} direct package items for '${targetDomain}' in ${saveResult.elapsedMs}ms`);
+      logger.info("API_PACKAGE_MASTER", `Saved ${saveResult.savedCount} packages (deleted ${saveResult.deletedCount} old) for '${targetDomain}' in ${saveResult.elapsedMs}ms`);
 
       return NextResponse.json(
         {
           success: true,
-          message: `Saved ${saveResult.savedCount} package master items into SQLite for '${targetDomain}'.`,
+          message: `Saved ${saveResult.savedCount} package master items into SQLite for '${targetDomain}' (${saveResult.deletedCount} previous rows deleted).`,
           domain: targetDomain,
           totalReceived: saveResult.totalReceived,
+          deletedCount: saveResult.deletedCount,
           savedCount: saveResult.savedCount,
           elapsedMs: saveResult.elapsedMs,
         },
@@ -78,9 +79,10 @@ export async function POST(req) {
         success: syncResult.success,
         message: syncResult.error
           ? `ERP Package Master sync failed: ${syncResult.error}`
-          : `Synced ${syncResult.savedCount} package master items from ERP into SQLite for '${targetDomain}'.`,
+          : `Synced ${syncResult.savedCount} package master items from ERP into SQLite for '${targetDomain}' (${syncResult.deletedCount ?? 0} previous rows deleted).`,
         domain: targetDomain,
         totalReceived: syncResult.totalReceived,
+        deletedCount: syncResult.deletedCount ?? 0,
         savedCount: syncResult.savedCount,
         elapsedMs: syncResult.elapsedMs,
         error: syncResult.error,

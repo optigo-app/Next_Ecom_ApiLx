@@ -1,15 +1,13 @@
 /**
- * Saves or updates album items into albums table (from GetAlbums API).
- * Supports raw wrapped payload ({ Data: { rd: [...] } } or { rd: [...] }) or direct array.
- * Enforces PRIMARY KEY (id, albumcode, CustomerId, RandomNo) upsert.
- * 
+ * Saves album items into albums table (from GetAlbums API).
+ * Strategy: DELETE all existing rows first, then INSERT fresh batch — atomic transaction.
+ * This guarantees stale rows (with different composite keys) are fully replaced on every sync.
+ *
  * @param {import('better-sqlite3').Database} db
  * @param {Array<object>|object} rawPayload - array or response payload of album objects
- * @param {object} [options={}]
- * @param {boolean} [options.replace=false] - If true, clears existing albums before inserting
- * @returns {{ totalReceived: number, savedCount: number, elapsedMs: number, success: boolean }}
+ * @returns {{ totalReceived: number, savedCount: number, deletedCount: number, elapsedMs: number, success: boolean }}
  */
-export function saveAlbums(db, rawPayload = [], options = {}) {
+export function saveAlbums(db, rawPayload = []) {
     const startTime = performance.now();
 
     let albumList = [];
@@ -23,18 +21,13 @@ export function saveAlbums(db, rawPayload = [], options = {}) {
         return {
             totalReceived: 0,
             savedCount: 0,
+            deletedCount: 0,
             elapsedMs: Math.round((performance.now() - startTime) * 100) / 100,
             success: true,
         };
     }
 
-    if (options.replace) {
-        try {
-            db.exec("DELETE FROM albums;");
-        } catch (_) {}
-    }
-
-    const upsertStmt = db.prepare(`
+    const insertStmt = db.prepare(`
         INSERT INTO albums (
             id,
             albumName,
@@ -56,49 +49,42 @@ export function saveAlbums(db, rawPayload = [], options = {}) {
             @EntryDate,
             CURRENT_TIMESTAMP
         )
-        ON CONFLICT(id, albumcode, CustomerId, RandomNo) DO UPDATE SET
-            albumName = excluded.albumName,
-            AutocodeList = excluded.AutocodeList,
-            ExpiryDate = excluded.ExpiryDate,
-            EntryDate = excluded.EntryDate,
-            updated_at = CURRENT_TIMESTAMP
     `);
 
+    // ── Atomic: wipe + re-insert in one transaction ──────────────────────────
     const executeBatch = db.transaction((rows) => {
+        // 1. Delete all existing albums (exact sync — no stale rows left behind)
+        const deleteInfo = db.prepare("DELETE FROM albums").run();
+        const deletedCount = deleteInfo.changes;
+
+        // 2. Insert fresh rows
         let count = 0;
         for (const row of rows) {
             if (row.id === undefined || row.id === null) continue;
 
-            const id = Number(row.id);
-            const albumName = String(row.albumName ?? row.AlbumName ?? "").trim();
-            const AutocodeList = String(row.AutocodeList ?? row.autocodeList ?? row.Autocodes ?? "").trim();
-            const ExpiryDate = row.ExpiryDate ? String(row.ExpiryDate).trim() : "";
-            const albumcode = String(row.albumcode ?? row.AlbumCode ?? row.albumCode ?? "").trim();
-            const CustomerId = row.CustomerId != null && row.CustomerId !== "" ? Number(row.CustomerId) : 0;
-            const RandomNo = row.RandomNo != null ? String(row.RandomNo).trim() : "";
-            const EntryDate = row.EntryDate ? String(row.EntryDate).trim() : "";
-
-            upsertStmt.run({
-                id,
-                albumName,
-                AutocodeList,
-                ExpiryDate,
-                albumcode,
-                CustomerId,
-                RandomNo,
-                EntryDate,
+            insertStmt.run({
+                id: Number(row.id),
+                albumName: String(row.albumName ?? row.AlbumName ?? "").trim(),
+                AutocodeList: String(row.AutocodeList ?? row.autocodeList ?? row.Autocodes ?? "").trim(),
+                ExpiryDate: row.ExpiryDate ? String(row.ExpiryDate).trim() : "",
+                albumcode: String(row.albumcode ?? row.AlbumCode ?? row.albumCode ?? "").trim(),
+                CustomerId: row.CustomerId != null && row.CustomerId !== "" ? Number(row.CustomerId) : 0,
+                RandomNo: row.RandomNo != null ? String(row.RandomNo).trim() : "",
+                EntryDate: row.EntryDate ? String(row.EntryDate).trim() : "",
             });
             count++;
         }
-        return count;
+
+        return { savedCount: count, deletedCount };
     });
 
-    const savedCount = executeBatch(albumList);
+    const { savedCount, deletedCount } = executeBatch(albumList);
     const elapsedMs = Math.round((performance.now() - startTime) * 100) / 100;
 
     return {
         totalReceived: albumList.length,
         savedCount,
+        deletedCount,
         elapsedMs,
         success: true,
     };

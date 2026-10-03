@@ -32,6 +32,7 @@ function cleanRow(row, excludeFields = ["id", "created_at", "updated_at", "displ
  * @returns {{ Status: string, Message: string, Data: { rd: object[], rd1: object[], rd2: object[] } }}
  */
 export function getStoreInit(db, options = {}) {
+    if (!db) return null;
     try {
         // 1. Fetch storeinit (rd[0])
         let storeInitRow;

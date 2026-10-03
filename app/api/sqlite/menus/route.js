@@ -49,14 +49,15 @@ export async function POST(req) {
       const db = getTenantDb(targetDomain);
       const saveResult = saveMenus(db, rawMenuList);
 
-      logger.info("API_MENUS", `Saved ${saveResult.savedCount} direct menu items for '${targetDomain}' in ${saveResult.elapsedMs}ms`);
+      logger.info("API_MENUS", `Saved ${saveResult.savedCount} menus (deleted ${saveResult.deletedCount} old) for '${targetDomain}' in ${saveResult.elapsedMs}ms`);
 
       return NextResponse.json(
         {
           success: true,
-          message: `Saved ${saveResult.savedCount} menus into SQLite for '${targetDomain}'.`,
+          message: `Saved ${saveResult.savedCount} menus into SQLite for '${targetDomain}' (${saveResult.deletedCount} previous rows deleted).`,
           domain: targetDomain,
           totalReceived: saveResult.totalReceived,
+          deletedCount: saveResult.deletedCount,
           savedCount: saveResult.savedCount,
           elapsedMs: saveResult.elapsedMs,
         },
@@ -80,9 +81,10 @@ export async function POST(req) {
         success: syncResult.success,
         message: syncResult.error
           ? `ERP Menu sync failed: ${syncResult.error}`
-          : `Synced ${syncResult.savedCount} menus from ERP into SQLite for '${targetDomain}'.`,
+          : `Synced ${syncResult.savedCount} menus from ERP into SQLite for '${targetDomain}' (${syncResult.deletedCount ?? 0} previous rows deleted).`,
         domain: targetDomain,
         totalReceived: syncResult.totalReceived,
+        deletedCount: syncResult.deletedCount ?? 0,
         savedCount: syncResult.savedCount,
         elapsedMs: syncResult.elapsedMs,
         error: syncResult.error,

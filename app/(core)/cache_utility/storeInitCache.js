@@ -31,7 +31,7 @@ const DEFAULT_DATA = { rd: [{}], rd1: [], rd2: [{}] };
 
 // ── In-process memory layer (per Node.js worker, cleared on restart) ─────────
 const memoryCache = new Map(); // cacheKey → { data, cachedAt }
-const pendingMap  = new Map(); // cacheKey → Promise  (dedup concurrent revalidations)
+const pendingMap = new Map(); // cacheKey → Promise  (dedup concurrent revalidations)
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 function sanitizeKey(host) {
@@ -58,7 +58,7 @@ async function writeDisk(filePath, data) {
   } catch (err) {
     console.error("[StoreInit] Disk write failed:", err.message);
     // Clean up orphaned tmp if rename failed
-    fs.promises.unlink(tmpPath).catch(() => {});
+    fs.promises.unlink(tmpPath).catch(() => { });
   }
 }
 
@@ -98,10 +98,10 @@ async function _doRevalidate(cacheKey, existingData) {
     }
 
     // Version check — skip write if data hasn't changed
-    const localVersion  = getVersion(existingData);
+    const localVersion = getVersion(existingData);
     const remoteVersion = getVersion(remote);
-    const sameVersion   = localVersion && remoteVersion && localVersion === remoteVersion;
-    const samePayload   = existingData && JSON.stringify(existingData) === JSON.stringify(remote);
+    const sameVersion = localVersion && remoteVersion && localVersion === remoteVersion;
+    const samePayload = existingData && JSON.stringify(existingData) === JSON.stringify(remote);
 
     if (sameVersion || samePayload) {
       // Refresh TTL in memory without touching disk
@@ -139,7 +139,7 @@ function triggerRevalidate(cacheKey, existingData, { awaitResult = false } = {})
   if (awaitResult) return p;
 
   // Fire-and-forget — never let it bubble up to the caller
-  p.catch(() => {});
+  p.catch(() => { });
   return null;
 }
 
@@ -222,7 +222,7 @@ export async function clearStoreInitCache() {
       const files = await fs.promises.readdir(STORE_INIT_DIR);
       for (const file of files) {
         if (file.endsWith(".json") || file.endsWith(".tmp")) {
-          await fs.promises.unlink(path.join(STORE_INIT_DIR, file)).catch(() => {});
+          await fs.promises.unlink(path.join(STORE_INIT_DIR, file)).catch(() => { });
         }
       }
       console.log("[StoreInit] Cleared all storeInit disk and memory cache");
@@ -230,4 +230,30 @@ export async function clearStoreInitCache() {
       console.error("[StoreInit] Error clearing storeInit cache:", err);
     }
   }
+}
+
+/**
+ * setStoreInitCache(host, data)
+ * ─────────────────────────────
+ * Directly seed both memory and disk cache with the provided data.
+ * Intended for: POST /api/sqlite/store-init after saving to SQLite, so the
+ * website immediately serves fresh data without a cold-start round-trip.
+ *
+ * @param {string} host   - Domain / host key (e.g. "beluxjewel.com")
+ * @param {object} data   - Fresh storeInit payload { rd, rd1, rd2, ... }
+ */
+export async function setStoreInitCache(host, data) {
+  if (!data) return;
+  const cacheKey = sanitizeKey(host);
+  const filePath = diskPath(cacheKey);
+
+  // Cancel any in-flight revalidation for this key so it doesn't overwrite us
+  pendingMap.delete(cacheKey);
+
+  // Write to memory immediately (instant for next request)
+  memoryCache.set(cacheKey, { data, cachedAt: Date.now() });
+
+  // Write to disk atomically (survives worker restarts)
+  await writeDisk(filePath, data);
+  console.log(`[StoreInit] Cache seeded directly for '${cacheKey}'`);
 }

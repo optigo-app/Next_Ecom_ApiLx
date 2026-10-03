@@ -21,6 +21,9 @@ import { getDynamicDesignTableName, sanitizeSqlIdentifier } from "../schema/dyna
  * @returns {{ rd: Array<object>, totalCount: number, stat: number, msg: string }}
  */
 export function getDesigns(db, filtersOrMenu = {}, extraFilters = {}) {
+  if (!db) {
+    return { rd: [], totalCount: 0, stat: 0, msg: "Database not available" };
+  }
   let filters = {};
 
   if (Array.isArray(filtersOrMenu) && filtersOrMenu.length >= 2) {

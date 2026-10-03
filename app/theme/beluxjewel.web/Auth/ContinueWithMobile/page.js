@@ -33,10 +33,12 @@ export default function ContinueWithMobile({ params, searchParams, storeInit }) 
   const search = searchParams?.LoginRedirect || searchParams?.loginRedirect || searchParams?.search || "";
   const securityKey = searchParams?.SK || searchParams?.SecurityKey || "";
 
-  const updatedSearch = search?.replace('?LoginRedirect=', '');
-  const redirectMobileUrl = `/LoginWithMobileCode?${updatedSearch}${securityKey ? `&SK=${encodeURIComponent(securityKey)}` : ""}`;
-  const redirectSignUpUrl = `/register?${updatedSearch}${securityKey ? `&SK=${encodeURIComponent(securityKey)}` : ""}`;
-  const cancelRedireactUrl = `/LoginOption?${search}${securityKey ? `&SK=${encodeURIComponent(securityKey)}` : ""}`;
+  const cleanRedirect = search ? search.replace(/^\?LoginRedirect=/, '') : '';
+  const queryParamStr = `${cleanRedirect ? `?LoginRedirect=${encodeURIComponent(cleanRedirect)}` : ""}${securityKey ? `${cleanRedirect ? '&' : '?'}SK=${encodeURIComponent(securityKey)}` : ""}`;
+
+  const redirectMobileUrl = `/LoginWithMobileCode${queryParamStr}`;
+  const redirectSignUpUrl = `/register${queryParamStr}`;
+  const cancelRedireactUrl = `/LoginOption${queryParamStr}`;
 
   useEffect(() => {
     sessionStorage.removeItem("registerEmail");
