@@ -821,3 +821,5 @@
 [2026-10-02T12:46:08.617Z] [INFO] [beluxjewel.web] [HOME_CATEGORY] [CATEGORY ACTION] Tenant 'beluxjewel.web' → 17 categories from table 'design_Productlist_20_BEdiamond_BEcolorStone_11' | data: {"domain":"beluxjewel.web","table":"design_Productlist_20_BEdiamond_BEcolorStone_11","count":17}
 [2026-10-02T12:46:08.642Z] [INFO] [beluxjewel.web] [STORE_INIT] Fetching StoreInit configuration for tenant: 'beluxjewel.web' | data: {"domain":"beluxjewel.web"}
 [2026-10-02T12:46:08.663Z] [INFO] [beluxjewel.web] [STORE_INIT] Successfully retrieved StoreInit for 'beluxjewel.web' | data: {"domain":"beluxjewel.web","rd":1,"rd1":27,"rd2":1}
+[2026-10-03T04:25:24.698Z] [INFO] [beluxjewel.web] [STORE_INIT] Fetching StoreInit configuration for tenant: 'beluxjewel.web' | data: {"domain":"beluxjewel.web"}
+[2026-10-03T04:25:24.767Z] [INFO] [beluxjewel.web] [STORE_INIT] Successfully retrieved StoreInit for 'beluxjewel.web' | data: {"domain":"beluxjewel.web","rd":1,"rd1":27,"rd2":1}
