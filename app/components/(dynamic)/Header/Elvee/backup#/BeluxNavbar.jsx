@@ -815,12 +815,12 @@ const BeluxNavbar = ({ storeInit: storeinit, logos }) => {
                                                           position: "relative",
                                                           color:
                                                             section?.menuname ===
-                                                            "Collection"
+                                                              "Collection"
                                                               ? "#535353"
                                                               : "#141414",
                                                           fontWeight:
                                                             section?.menuname ===
-                                                            "Collection"
+                                                              "Collection"
                                                               ? 400
                                                               : 700,
                                                           display: "block",
@@ -829,7 +829,7 @@ const BeluxNavbar = ({ storeInit: storeinit, logos }) => {
                                                             "capitalize",
                                                           mb:
                                                             section?.menuname ===
-                                                            "Collection"
+                                                              "Collection"
                                                               ? 0
                                                               : 1,
                                                           wordWrap:
@@ -864,7 +864,7 @@ const BeluxNavbar = ({ storeInit: storeinit, logos }) => {
                                                             (p) =>
                                                               p?.param2dataname &&
                                                               p?.param2dataname.trim() !==
-                                                                "",
+                                                              "",
                                                           )
                                                           .map(
                                                             (
@@ -1159,7 +1159,7 @@ const BeluxNavbar = ({ storeInit: storeinit, logos }) => {
                 sx={{ color: "#000" }}
                 onClick={() => navigateToMenu("/myWishList")}
               >
-                <Badge badgeContent={wishCountNum || 10} color="error">
+                <Badge badgeContent={wishCountNum} color="error">
                   <FavoriteIcon
                     style={{ fontSize: "18px", color: "inherit" }}
                   />
@@ -1183,7 +1183,7 @@ const BeluxNavbar = ({ storeInit: storeinit, logos }) => {
           IsB2BWebsiteChek={IsB2BWebsiteChek}
           DynamicMenu={[]}
           selectedProductType={null}
-          handleTabChange={() => {}}
+          handleTabChange={() => { }}
           showProductTypeTabs={false}
         />
       </Drawer>

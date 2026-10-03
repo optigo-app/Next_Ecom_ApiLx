@@ -1,29 +1,29 @@
 import dayjs from "dayjs";
 
-export function generateOrderEmail(formData, diamondOptions) {
-  const companyLogoUrl = "https://b2b.eliorjewel.com/WebSiteStaticImage/logoIcon/webLogo.png";
-  const customerName = formData.name || "Guest";
-  const designNumber = formData.designNumber || "Not Set";
-  const productColor = formData.color || "Not Set";
-  const karat = formData.karats || "Not Set";
-  const rhodiumOption = formData.rhodium === "Other" ? `Other: ${formData.otherRhodium}` : formData.rhodium;
-  const stampingOption = formData.stamping === "Other" ? `Other: ${formData.otherStamping}` : formData.stamping;
-  const deliveryDateTime = formData.deliveryDate ? dayjs(formData.deliveryDate).format("DD/MM/YYYY") : "Not Set";
-  const deliveryTime = formData.deliveryTime ? dayjs(formData.deliveryTime).format("hh:mm A") : "Not Set";
-  const companyName = formData.company || "Not Set";
-  const contactNumber = formData.mobile || "Not Set";
-  const ProductSizeL =  formData.productSize || "Not Set"
+export function generateOrderEmail(formData, diamondOptions, storeInit = {}) {
+    const companyLogoUrl = storeInit?.companylogo || storeInit?.logo || formData?.companyLogo || "";
+    const customerName = formData.name || "Guest";
+    const designNumber = formData.designNumber || "Not Set";
+    const productColor = formData.color || "Not Set";
+    const karat = formData.karats || "Not Set";
+    const rhodiumOption = formData.rhodium === "Other" ? `Other: ${formData.otherRhodium}` : formData.rhodium;
+    const stampingOption = formData.stamping === "Other" ? `Other: ${formData.otherStamping}` : formData.stamping;
+    const deliveryDateTime = formData.deliveryDate ? dayjs(formData.deliveryDate).format("DD/MM/YYYY") : "Not Set";
+    const deliveryTime = formData.deliveryTime ? dayjs(formData.deliveryTime).format("hh:mm A") : "Not Set";
+    const companyName = storeInit?.companyname || storeInit?.CompanyTitle || formData.company || "";
+    const contactNumber = formData.mobile || "Not Set";
+    const ProductSizeL = formData.productSize || "Not Set"
 
 
-  const diamondSelection =
-    Object.entries(diamondOptions)
-      .filter(([_, checked]) => checked)
-      .map(([key]) => key.replace(/([A-Z])/g, " $1").trim())
-      .join(", ") || "None";
+    const diamondSelection =
+        Object.entries(diamondOptions)
+            .filter(([_, checked]) => checked)
+            .map(([key]) => key.replace(/([A-Z])/g, " $1").trim())
+            .join(", ") || "None";
 
-  const instructions = formData.instructions || "No specific instructions provided.";
+    const instructions = formData.instructions || "No specific instructions provided.";
 
-  return `
+    return `
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -55,13 +55,14 @@ export function generateOrderEmail(formData, diamondOptions) {
                             <td class="padding-container" style="padding: 40px; border: 1px solid #dadce0; border-radius: 8px; background-color: #ffffff;">
                                 
                                 <!-- Company Logo -->
+                                ${companyLogoUrl ? `
                                 <table width="100%" role="presentation">
                                     <tr>
                                         <td align="left">
-                                            <img src=${`https://b2b.eliorjewel.com/WebSiteStaticImage/logoIcon/webLogo.png` || companyLogoUrl} alt="Company Logo" style="display: block;  max-width: 400px; max-height: 120px;">
+                                            <img src="${companyLogoUrl}" alt="${companyName} Logo" style="display: block; max-width: 400px; max-height: 120px;">
                                         </td>
                                     </tr>
-                                </table>
+                                </table>` : ""}
 
                                 <!-- Headline -->
                                 <table width="100%" role="presentation" style="margin-top: 25px;">
@@ -190,7 +191,7 @@ export function generateOrderEmail(formData, diamondOptions) {
                             <tr>
                             <td align="center" style="font-family: Roboto, Helvetica, Arial, sans-serif; font-size: 12px; color: #9aa0a6; line-height: 18px;">
                              <p style="margin: 0; font-size: 11px; color: #999;">
-                  © Elior Jewels. All rights reserved.<br>
+                  © ${companyName || 'Company'}. All rights reserved.<br>
                 </p>
                             </td>
                         </tr>    </td>
@@ -206,28 +207,28 @@ export function generateOrderEmail(formData, diamondOptions) {
   `;
 }
 
-export function generateCustomerConfirmationEmail(formData, diamondOptions) {
-  const companyLogoUrl = "https://b2b.eliorjewel.com/WebSiteStaticImage/logoIcon/webLogo.png";
-  const customerName = formData.name || "Guest";
-  const designNumber = formData.designNumber || "Not Set";
-  const productColor = formData.color || "Not Set";
-  const karat = formData.karats || "Not Set";
-  const rhodiumOption = formData.rhodium === "Other" ? `Other: ${formData.otherRhodium}` : formData.rhodium;
-  const stampingOption = formData.stamping === "Other" ? `Other: ${formData.otherStamping}` : formData.stamping;
-  const deliveryDateTime = formData.deliveryDate ? dayjs(formData.deliveryDate).format("DD/MM/YYYY") : "Not Set";
-  const deliveryTime = formData.deliveryTime ? dayjs(formData.deliveryTime).format("hh:mm A") : "Not Set";
-  const companyName = formData.company || "Not Set";
-  const ProductSizeL = formData.productSize
+export function generateCustomerConfirmationEmail(formData, diamondOptions, storeInit = {}) {
+    const companyLogoUrl = storeInit?.companylogo || storeInit?.logo || formData?.companyLogo || "";
+    const customerName = formData.name || "Guest";
+    const designNumber = formData.designNumber || "Not Set";
+    const productColor = formData.color || "Not Set";
+    const karat = formData.karats || "Not Set";
+    const rhodiumOption = formData.rhodium === "Other" ? `Other: ${formData.otherRhodium}` : formData.rhodium;
+    const stampingOption = formData.stamping === "Other" ? `Other: ${formData.otherStamping}` : formData.stamping;
+    const deliveryDateTime = formData.deliveryDate ? dayjs(formData.deliveryDate).format("DD/MM/YYYY") : "Not Set";
+    const deliveryTime = formData.deliveryTime ? dayjs(formData.deliveryTime).format("hh:mm A") : "Not Set";
+    const companyName = storeInit?.companyname || storeInit?.CompanyTitle || formData.company || "";
+    const ProductSizeL = formData.productSize
 
-  const diamondSelection =
-    Object.entries(diamondOptions)
-      .filter(([_, checked]) => checked)
-      .map(([key]) => key.replace(/([A-Z])/g, " $1").trim())
-      .join(", ") || "None";
+    const diamondSelection =
+        Object.entries(diamondOptions)
+            .filter(([_, checked]) => checked)
+            .map(([key]) => key.replace(/([A-Z])/g, " $1").trim())
+            .join(", ") || "None";
 
-  const instructions = formData.instructions || "No specific instructions provided.";
+    const instructions = formData.instructions || "No specific instructions provided.";
 
-  return `
+    return `
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -262,12 +263,14 @@ export function generateCustomerConfirmationEmail(formData, diamondOptions) {
                             <td class="padding-container" style="padding: 40px; border: 1px solid #dadce0; border-radius: 8px; background-color: #ffffff;">
                                 
                                 <!-- Company Logo -->
+                                ${companyLogoUrl ? `
                                 <table width="100%" role="presentation">
                                     <tr>
                                         <td align="left">
-                                       <img src=${`https://b2b.eliorjewel.com/WebSiteStaticImage/logoIcon/webLogo.png` || companyLogoUrl} alt="Company Logo" style="display: block;  max-width: 400px; max-height: 120px;">                                        </td>
+                                            <img src="${companyLogoUrl}" alt="${companyName} Logo" style="display: block; max-width: 400px; max-height: 120px;">
+                                        </td>
                                     </tr>
-                                </table>
+                                </table>` : ""}
 
                                 <!-- Success Icon (Green Check) -->
                                 <!-- Greeting & Intro -->
@@ -374,7 +377,7 @@ export function generateCustomerConfirmationEmail(formData, diamondOptions) {
                         <tr>
                             <td align="center" style="font-family: Roboto, Helvetica, Arial, sans-serif; font-size: 12px; color: #9aa0a6; line-height: 18px; padding-bottom: 20px;">
                              <p style="margin: 0; font-size: 11px; color: #999;">
-                  © Elior Jewels. All rights reserved.<br>
+                  © ${companyName || 'Company'}. All rights reserved.<br>
                 </p>
                             </td>
                         </tr>

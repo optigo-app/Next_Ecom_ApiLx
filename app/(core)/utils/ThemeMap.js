@@ -8,8 +8,8 @@ export const themeMap = {
     page: "hoq.web",
   },
   "nxtsonasons.web": {
-    // page: "fgstore.mapp",
     page: "fgstore.web",
+    // page: "fgstore.mapp",
     // page: LocalSetup,
   },
   "procatalog.web": {

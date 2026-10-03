@@ -4,7 +4,7 @@ import { saveStoreInit } from "@/db/procedures/saveStoreInit";
 import { getStoreInit } from "@/db/procedures/getStoreInit";
 import { deleteStoreInit } from "@/db/procedures/deleteStoreInit";
 import { syncStoreInit } from "@/app/(core)/utils/sqlite/syncStoreInit";
-import { clearStoreInitCache } from "@/app/(core)/cache_utility/storeInitCache";
+import { clearStoreInitCache, setStoreInitCache } from "@/app/(core)/cache_utility/storeInitCache";
 import { logger } from "@/db/logger";
 
 export const dynamic = "force-dynamic";
@@ -86,35 +86,86 @@ export async function POST(req) {
         return NextResponse.json(syncResult, { status: 400 });
       }
 
-      // Instantly invalidate the cache so the website shows the new data
+      // Instantly seed the server cache with the new data so next page load
+      // gets fresh storeInit without a cold-start round-trip.
+      const db = getTenantDb(targetDomain);
+      const savedRow = db.prepare("SELECT FileCreateDate FROM storeinit ORDER BY id ASC LIMIT 1").get();
+      const savedFileCreateDate = savedRow?.FileCreateDate ?? null;
+      const verified = Boolean(savedFileCreateDate);
+
+      if (!verified) {
+        logger.warn("API_STORE_INIT", `Sync completed but FileCreateDate not found in SQLite for '${targetDomain}'`);
+      } else {
+        logger.info("API_STORE_INIT", `Sync verified — FileCreateDate in SQLite: '${savedFileCreateDate}'`);
+      }
+
+      // Read fresh data from SQLite and seed the cache directly
+      const freshData = getStoreInit(db, { domain: targetDomain });
       await clearStoreInitCache();
+      if (freshData?.Data?.rd?.length > 0) {
+        await setStoreInitCache(targetDomain, freshData);
+      }
 
       return NextResponse.json({
         success: true,
         message: "StoreInit data successfully synced and saved from external API.",
+        verified,
+        savedFileCreateDate,
         ...syncResult
       }, { status: 200 });
     }
 
     logger.info("API_STORE_INIT", `POST /api/sqlite/store-init: Pushing StoreInit for domain '${targetDomain}'`, { domain: targetDomain });
 
+    // Extract the FileCreateDate from incoming payload for post-write verification
+    const dataContainer = body?.Data || body;
+    const sentFileCreateDate =
+      dataContainer?.rd?.[0]?.FileCreateDate ??
+      dataContainer?.rd?.FileCreateDate ??
+      null;
+
     const db = getTenantDb(targetDomain);
     const result = saveStoreInit(db, body);
 
-    logger.info("API_STORE_INIT", `Successfully persisted StoreInit for '${targetDomain}' in ${result.elapsedMs}ms`, {
-      domain: targetDomain,
-      counts: result.count,
-      elapsedMs: result.elapsedMs,
-    });
+    // ── Verify write: read back FileCreateDate from SQLite ─────────────────
+    const savedRow = db.prepare("SELECT FileCreateDate FROM storeinit ORDER BY id ASC LIMIT 1").get();
+    const savedFileCreateDate = savedRow?.FileCreateDate ?? null;
+    const verified = sentFileCreateDate
+      ? sentFileCreateDate === savedFileCreateDate
+      : Boolean(savedFileCreateDate);
 
-    // Instantly invalidate the cache so the website shows the new data
+    if (!verified && sentFileCreateDate) {
+      logger.warn("API_STORE_INIT", `FileCreateDate MISMATCH for '${targetDomain}' — sent: '${sentFileCreateDate}', saved: '${savedFileCreateDate}'. SQLite write may have failed.`, {
+        domain: targetDomain,
+        sentFileCreateDate,
+        savedFileCreateDate,
+      });
+    } else {
+      logger.info("API_STORE_INIT", `Successfully persisted StoreInit for '${targetDomain}' in ${result.elapsedMs}ms — FileCreateDate verified: '${savedFileCreateDate}'`, {
+        domain: targetDomain,
+        counts: result.count,
+        elapsedMs: result.elapsedMs,
+        verified,
+      });
+    }
+
+    // Read fresh data from SQLite and seed the cache directly — zero stale window
+    const freshData = getStoreInit(db, { domain: targetDomain });
     await clearStoreInitCache();
+    if (freshData?.Data?.rd?.length > 0) {
+      await setStoreInitCache(targetDomain, freshData);
+    }
 
     return NextResponse.json(
       {
         success: true,
-        message: "StoreInit data successfully pushed and saved into SQLite.",
+        verified,
+        message: verified
+          ? "StoreInit data successfully pushed and saved into SQLite."
+          : `StoreInit saved but FileCreateDate mismatch — sent: '${sentFileCreateDate}', saved in SQLite: '${savedFileCreateDate}'. Check saveStoreInit upsert logic.`,
         domain: targetDomain,
+        sentFileCreateDate,
+        savedFileCreateDate,
         counts: result.count,
         elapsedMs: result.elapsedMs,
       },

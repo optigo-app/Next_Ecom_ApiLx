@@ -3,7 +3,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import './AppointmentPage.scss';
 import AppointmentForm from './AppointmentForm';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
-import {   isVimalDiamond } from "@/app/(core)/constants/ElveeFlag";
+import { isVimalDiamond } from "@/app/(core)/constants/ElveeFlag";
 import VimalAppointment from './VimalAppointment';
 
 
@@ -93,9 +93,9 @@ const AppointmentPage = ({ assetBase }) => {
         router.push(pathname);
     }
 
-    if(isVimalDiamond){
+    if (isVimalDiamond) {
         return <VimalAppointment />
-    }else{
+    } else {
         return (
             <div className="smrbl_appointment-page">
                 <div
@@ -150,7 +150,7 @@ const AppointmentPage = ({ assetBase }) => {
 
     }
 
-    
+
 };
 
 export default AppointmentPage;

@@ -81,7 +81,7 @@ export async function initAllDatabases(options = {}) {
     for (const domain of domains) {
         const themeInfo = themeMap[domain];
         try {
-            const db = getTenantDb(domain, themeInfo);
+            const db = getTenantDb(domain, { ...themeInfo, createIfMissing: true });
 
             if (isTruncate) {
                 truncateAllData(db);
