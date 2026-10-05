@@ -10,9 +10,56 @@ import { syncUserDetailToCookies } from "../utils/product/pricingPolicy";
 
 const MOBILE_APP_REDIRECT_PATH = "/";
 
-const restrictedPaths = ["/LoginOption", "/ContinueWithEmail", "/ContinueWithMobile", "/LoginWithEmailCode", "/LoginWithMobileCode", "/forgotPass", "/ForgotPass", "/LoginWithEmail", "/register"];
+const restrictedPaths = [
+  "/LoginOption",
+  "/ContinueWithEmail",
+  "/ContinueWithMobile",
+  "/LoginWithEmailCode",
+  "/LoginWithMobileCode",
+  "/forgotPass",
+  "/ForgotPass",
+  "/forgotpass",
+  "/forgetPass",
+  "/forgetpass",
+  "/ForgetPass",
+  "/forgotPassword",
+  "/forgotpassword",
+  "/ForgotPassword",
+  "/LoginWithEmail",
+  "/register"
+];
 
-const publicPages = ["/", "/LoginOption", "/forgotPass", "/privacyPolicy", "/aboutUs", "/contactUs", "/appointment", "/bespoke-jewelry", "/refund-policy", "/shipping-policy", "/terms-and-conditions", "/debug-internal-config-manager-v2", "/cache", "cache", "contactus", "aboutus", "privacypolicy", "servicepolicy", "expertadvice", "bespoke-jewelry", "appointment", "terms-and-conditions", "searchbystock", "funfact", "termspolicy", "natural-diamond",
+const publicPages = [
+  "/",
+  "/LoginOption",
+  "/forgotPass",
+  "/forgotpass",
+  "/forgetPass",
+  "/forgetpass",
+  "/forgotPassword",
+  "/privacyPolicy",
+  "/aboutUs",
+  "/contactUs",
+  "/appointment",
+  "/bespoke-jewelry",
+  "/refund-policy",
+  "/shipping-policy",
+  "/terms-and-conditions",
+  "/debug-internal-config-manager-v2",
+  "/cache",
+  "cache",
+  "contactus",
+  "aboutus",
+  "privacypolicy",
+  "servicepolicy",
+  "expertadvice",
+  "bespoke-jewelry",
+  "appointment",
+  "terms-and-conditions",
+  "searchbystock",
+  "funfact",
+  "termspolicy",
+  "natural-diamond",
   "/account-delete",
   "/copyright",
   "/customization",
@@ -24,7 +71,8 @@ const publicPages = ["/", "/LoginOption", "/forgotPass", "/privacyPolicy", "/abo
   "/blogs/:id",
   "/customer-service",
   "/faq",
-  ...restrictedPaths];
+  ...restrictedPaths
+];
 
 const protectedPages = ["/account", "/delivery", "/payment", "/confirmation", "/accountdwsr", "account", "delivery", "payment", "confirmation", "/asset-management", "asset-management"];
 
@@ -195,7 +243,11 @@ export function AuthProvider({ children, storeInit, theme }) {
     if (storeInit?.IsB2BWebsite === 1) {
       if (islogin === false) {
         const isShopPage = pathname === "/p" || pathname.startsWith("/p/") || pathname === "/d" || pathname === "/blogs/" || pathname.startsWith("/d/") || pathname === "/cartPage" || pathname.startsWith("/cartPage/");
-        const isPublicPage = publicPages.some((page) => pathname === page || pathname.startsWith(page + "/"));
+        const pathLower = pathname?.toLowerCase() || "";
+        const isPublicPage = publicPages.some((page) => {
+          const pLower = page.toLowerCase();
+          return pathLower === pLower || pathLower.startsWith(pLower + "/");
+        });
         if (isShopPage) {
           const redirectUrl = `/LoginOption?LoginRedirect=${encodeURIComponent(fullPath)}`;
           router.replace(redirectUrl);
@@ -214,9 +266,13 @@ export function AuthProvider({ children, storeInit, theme }) {
   }, [isLoading, islogin, pathname, searchParams, storeInit, router]);
 
   useEffect(() => {
+    const pathLower = pathname?.toLowerCase() || "";
     // Prevent access to login/register pages in mobile app domain
     if (isMobileApp) {
-      if (restrictedPaths?.some((path) => pathname.startsWith(path))) {
+      if (restrictedPaths?.some((path) => {
+        const pLower = path.toLowerCase();
+        return pathLower === pLower || pathLower.startsWith(pLower + "/");
+      })) {
         router.replace(MOBILE_APP_REDIRECT_PATH);
         console.log(hasInitializedAuth, "hasInitializedAuth");
         return;
@@ -224,7 +280,10 @@ export function AuthProvider({ children, storeInit, theme }) {
     }
 
     if (islogin === true && !isLoading) {
-      if (restrictedPaths?.some((path) => pathname.startsWith(path))) {
+      if (restrictedPaths?.some((path) => {
+        const pLower = path.toLowerCase();
+        return pathLower === pLower || pathLower.startsWith(pLower + "/");
+      })) {
         if (redirectEmailUrl) {
           console.log(islogin, "islogin 212")
           console.log(hasInitializedAuth, "hasInitializedAuth");
