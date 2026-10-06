@@ -42,12 +42,39 @@ export async function POST(req) {
 
     const rawAlbumList = Array.isArray(body)
       ? body
-      : body?.Data?.rd || body?.rd || body?.albums || null;
+      : body?.Data?.rd ||
+      body?.rd ||
+      body?.data?.rd ||
+      body?.albums ||
+      (Array.isArray(body?.Data) ? body.Data : null) ||
+      (Array.isArray(body?.data) ? body.data : null) ||
+      null;
 
     // Mode 1: Direct payload push
     if (Array.isArray(rawAlbumList) && rawAlbumList.length > 0 && !isSyncTrigger) {
       const db = getTenantDb(targetDomain);
+      if (!db) {
+        return NextResponse.json(
+          {
+            success: false,
+            error: `Tenant database not found or domain '${targetDomain}' is not authorized.`,
+          },
+          { status: 404 }
+        );
+      }
+
       const saveResult = saveAlbums(db, rawAlbumList);
+
+      if (!saveResult.success) {
+        return NextResponse.json(
+          {
+            success: false,
+            error: saveResult.error || "Failed to save albums",
+            domain: targetDomain,
+          },
+          { status: 500 }
+        );
+      }
 
       logger.info("API_ALBUMS", `Saved ${saveResult.savedCount} albums (deleted ${saveResult.deletedCount} old) for '${targetDomain}' in ${saveResult.elapsedMs}ms`);
 

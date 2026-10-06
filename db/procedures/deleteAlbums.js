@@ -1,3 +1,5 @@
+import { ensureAlbumsTable } from "../schema/albums.js";
+
 /**
  * Deletes album records from SQLite.
  * 
@@ -9,6 +11,8 @@
  * @returns {{ deletedCount: number, success: boolean }}
  */
 export function deleteAlbums(db, options = {}) {
+    if (!db) return { deletedCount: 0, success: false };
+    ensureAlbumsTable(db);
     let sql = "DELETE FROM albums";
     const conditions = [];
     const params = {};
