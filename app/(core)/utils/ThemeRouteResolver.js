@@ -11,6 +11,8 @@ export async function resolveLayout(themePage) {
       }
     case "julian.web":
       return (await import("@/app/theme/julian.web/layout.jsx")).default;
+    case "procatalog.web":
+      return (await import("@/app/theme/procatalog.web/layout.jsx")).default;
     case "julian4.web":
       return (await import("@/app/theme/julian4.web/layout.jsx")).default;
     case "nxtelvee.web":
@@ -20,6 +22,7 @@ export async function resolveLayout(themePage) {
       return (await import("@/app/theme/diamondtine.web/layout.jsx")).default;
     case "fgstore.web":
       return (await import("@/app/theme/fgstore.web/layout.jsx")).default;
+    case "procatalog.web":
     case "fgstore.pro":
       return (await import("@/app/theme/procatalog.web/layout.jsx")).default;
     case "fgstore.mapp":
@@ -40,10 +43,10 @@ export async function resolveHome(themePage) {
   switch (themePage) {
     case "beluxjewel.web":
       if (IsProcatalogDemo) {
-        console.log(IsProcatalogDemo , "IsProcatalogDemo" , "");
+        console.log(IsProcatalogDemo, "IsProcatalogDemo", "");
         return (await import("@/app/theme/procatalog.web/home/page.jsx")).default;
       } else {
-        console.log(IsProcatalogDemo , "IsProcatalogDemo" , "hellow");
+        console.log(IsProcatalogDemo, "IsProcatalogDemo", "hellow");
         return (await import("@/app/theme/beluxjewel.web/home/page.jsx")).default;
       }
     case "julian.web":
@@ -57,6 +60,7 @@ export async function resolveHome(themePage) {
       return (await import("@/app/theme/diamondtine.web/home/page.jsx")).default;
     case "fgstore.web":
       return (await import("@/app/theme/fgstore.web/home/page.jsx")).default;
+    case "procatalog.web":
     case "fgstore.pro":
       return (await import("@/app/theme/procatalog.web/home/page.jsx")).default;
     case "fgstore.mapp":
@@ -91,6 +95,7 @@ export async function resolveProductList(themePage) {
       return (await import("@/app/theme/diamondtine.web/product/page.jsx")).default;
     case "fgstore.web":
       return (await import("@/app/theme/fgstore.web/product/page.jsx")).default;
+    case "procatalog.web":
     case "fgstore.pro":
       return (await import("@/app/theme/procatalog.web/product/page.jsx")).default;
     case "fgstore.mapp":
@@ -125,6 +130,7 @@ export async function resolveProductDetail(themePage) {
       return (await import("@/app/theme/diamondtine.web/detail/page.jsx")).default;
     case "fgstore.web":
       return (await import("@/app/theme/fgstore.web/detail/page.jsx")).default;
+    case "procatalog.web":
     case "fgstore.pro":
       return (await import("@/app/theme/procatalog.web/detail/page.jsx")).default;
     case "fgstore.mapp":
@@ -159,6 +165,7 @@ export async function resolveCart(themePage) {
       return (await import("@/app/theme/diamondtine.web/cart/page.jsx")).default;
     case "fgstore.web":
       return (await import("@/app/theme/fgstore.web/cart/page.jsx")).default;
+    case "procatalog.web":
     case "fgstore.pro":
       return (await import("@/app/theme/procatalog.web/cart/page.jsx")).default;
     case "fgstore.mapp":
@@ -193,6 +200,7 @@ export async function resolveWishlist(themePage) {
       return (await import("@/app/theme/diamondtine.web/Wishlist/page.js")).default;
     case "fgstore.web":
       return (await import("@/app/theme/fgstore.web/Wishlist/page.js")).default;
+    case "procatalog.web":
     case "fgstore.pro":
       return (await import("@/app/theme/procatalog.web/Wishlist/page.js")).default;
     case "fgstore.mapp":
@@ -235,6 +243,7 @@ export async function resolveLoginWithEmail(themePage) {
       return (
         await import("@/app/theme/fgstore.web/Auth/LoginWithEmail/page.js")
       ).default;
+    case "procatalog.web":
     case "fgstore.pro":
       return (
         await import("@/app/theme/procatalog.web/Auth/LoginWithEmail/page.js")
@@ -277,6 +286,7 @@ export async function resolveRegister(themePage) {
       return (await import("@/app/theme/diamondtine.web/Auth/Register/page.js")).default;
     case "fgstore.web":
       return (await import("@/app/theme/fgstore.web/Auth/Register/page.js")).default;
+    case "procatalog.web":
     case "fgstore.pro":
       return (await import("@/app/theme/procatalog.web/Auth/Register/page.js")).default;
     case "fgstore.mapp":
@@ -317,6 +327,7 @@ export async function resolveLoginOption(themePage) {
       ).default;
     case "fgstore.web":
       return (await import("@/app/theme/fgstore.web/Auth/LoginOption/page.js")).default;
+    case "procatalog.web":
     case "fgstore.pro":
       return (await import("@/app/theme/procatalog.web/Auth/LoginOption/page.js")).default;
     case "fgstore.mapp":
@@ -365,6 +376,7 @@ export async function resolveLoginWithMobileCode(themePage) {
       return (
         await import("@/app/theme/fgstore.web/Auth/LoginWithMobileCode/page.js")
       ).default;
+    case "procatalog.web":
     case "fgstore.pro":
       return (
         await import("@/app/theme/procatalog.web/Auth/LoginWithMobileCode/page.js")
@@ -419,6 +431,7 @@ export async function resolveLoginWithEmailCode(themePage) {
       return (
         await import("@/app/theme/fgstore.web/Auth/LoginWithEmailCode/page.js")
       ).default;
+    case "procatalog.web":
     case "fgstore.pro":
       return (
         await import("@/app/theme/procatalog.web/Auth/LoginWithEmailCode/page.js")
@@ -471,6 +484,7 @@ export async function resolveForgotPassword(themePage) {
       return (
         await import("@/app/theme/fgstore.web/Auth/ForgotPassword/page.js")
       ).default;
+    case "procatalog.web":
     case "fgstore.pro":
       return (
         await import("@/app/theme/procatalog.web/Auth/ForgotPassword/page.js")
@@ -523,6 +537,7 @@ export async function resolveContinueWithEmail(themePage) {
       return (
         await import("@/app/theme/fgstore.web/Auth/ContinueWithEmail/page.js")
       ).default;
+    case "procatalog.web":
     case "fgstore.pro":
       return (
         await import("@/app/theme/procatalog.web/Auth/ContinueWithEmail/page.js")
@@ -577,6 +592,7 @@ export async function resolveContinueWithMobile(themePage) {
       return (
         await import("@/app/theme/fgstore.web/Auth/ContinueWithMobile/page.js")
       ).default;
+    case "procatalog.web":
     case "fgstore.pro":
       return (
         await import("@/app/theme/procatalog.web/Auth/ContinueWithMobile/page.js")
@@ -621,6 +637,7 @@ export async function resolveConfirmation(themePage) {
       return (await import("@/app/theme/diamondtine.web/confirmation/page.jsx")).default;
     case "fgstore.web":
       return (await import("@/app/theme/fgstore.web/confirmation/page.jsx")).default;
+    case "procatalog.web":
     case "fgstore.pro":
       return (await import("@/app/theme/procatalog.web/confirmation/page.jsx")).default;
     case "fgstore.mapp":
@@ -654,6 +671,7 @@ export async function resolveLookbook(themePage) {
       return (await import("@/app/theme/diamondtine.web/Lookbook/page.js")).default;
     case "fgstore.web":
       return (await import("@/app/theme/fgstore.web/Lookbook/page.js")).default;
+    case "procatalog.web":
     case "fgstore.pro":
       return (await import("@/app/theme/procatalog.web/Lookbook/page.js")).default;
     case "fgstore.mapp":
@@ -688,6 +706,7 @@ export async function resolvePayment(themePage) {
       return (await import("@/app/theme/diamondtine.web/payment/page.jsx")).default;
     case "fgstore.web":
       return (await import("@/app/theme/fgstore.web/payment/page.jsx")).default;
+    case "procatalog.web":
     case "fgstore.pro":
       return (await import("@/app/theme/procatalog.web/payment/page.jsx")).default;
     case "fgstore.mapp":
@@ -722,6 +741,7 @@ export async function resolveDelivery(themePage) {
       return (await import("@/app/theme/diamondtine.web/delivery/page.jsx")).default;
     case "fgstore.web":
       return (await import("@/app/theme/fgstore.web/delivery/page.jsx")).default;
+    case "procatalog.web":
     case "fgstore.pro":
       return (await import("@/app/theme/procatalog.web/delivery/page.jsx")).default;
     case "fgstore.mapp":
@@ -765,6 +785,7 @@ export async function resolveCustomOrders(themePage) {
       return (await import("@/app/theme/diamondtine.web/CustomOrder")).default;
     case "fgstore.web":
       return (await import("@/app/theme/fgstore.web/CustomOrder")).default;
+    case "procatalog.web":
     case "fgstore.pro":
       return (await import("@/app/theme/procatalog.web/CustomOrder")).default;
     case "fgstore.mapp":
