@@ -3,9 +3,6 @@ import { getBrandConfig } from "../../../(core)/constants/BrandConfig";
 const brand = getBrandConfig();
 const Title = brand.name;
 
-
-console.log("TCL: Title", brand)
-
 export const productfaqData = [
   {
     question: "Are lab grown diamonds real diamonds?",
