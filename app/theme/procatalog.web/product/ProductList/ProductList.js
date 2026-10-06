@@ -3,7 +3,7 @@ import React, { useEffect, useMemo, useRef, useState, useCallback } from "react"
 import "./ProductList.modul.scss";
 import { styled } from "@mui/material/styles";
 import Typography from "@mui/material/Typography";
-import {  Button,  Divider,  Drawer,  IconButton,  PaginationItem,  Skeleton,  Stack,  useMediaQuery,  useTheme,  Accordion,  Box,  FormControlLabel,  Input,  Slider,} from "@mui/material";
+import { Button, Divider, Drawer, IconButton, PaginationItem, Skeleton, Stack, useMediaQuery, useTheme, Accordion, Box, FormControlLabel, Input, Slider, } from "@mui/material";
 import Cookies from "js-cookie";
 import { toast } from "react-toastify";
 import {
@@ -381,7 +381,6 @@ const ProductList = ({ storeinit, searchParams, params, initialData, initialFilt
               sx={{
                 width: "260px",
                 flexShrink: 0,
-                borderRight: "1px solid #e5e5e5",
                 height: "100vh",
                 position: "sticky",
                 top: 0,
