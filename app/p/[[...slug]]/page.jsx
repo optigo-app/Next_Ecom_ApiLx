@@ -49,7 +49,9 @@ function extractSsrFilters(slugArr = [], searchParams = {}) {
     } else if (prefix === "S") {
       try {
         const decoded = JSON.parse(Buffer.from(rawVal, "base64").toString("utf-8"));
-        filters.SearchKey = decoded?.b || decoded;
+        filters.SearchKey = decoded?.b || decoded?.SearchKey || decoded?.ArticleNo || (typeof decoded === "string" ? decoded : "");
+        if (decoded?.ArticleNo) filters.ArticleNo = decoded.ArticleNo;
+        if (decoded?.a) filters.autocode = decoded.a;
       } catch (_) {
         try {
           filters.SearchKey = Buffer.from(rawVal, "base64").toString("utf-8");
@@ -69,6 +71,11 @@ function extractSsrFilters(slugArr = [], searchParams = {}) {
     if (k !== "M" && k !== "S" && k !== "N" && k !== "T" && k !== "B" && v && typeof v === "string") {
       filters[k] = v;
     }
+  }
+  if (!filters.SearchKey) {
+    if (filters.search) filters.SearchKey = filters.search;
+    else if (filters.Search) filters.SearchKey = filters.Search;
+    else if (filters.searchKey) filters.SearchKey = filters.searchKey;
   }
 
   // 2. Parse slugArr if direct parameters are missing and no explicit query params exist

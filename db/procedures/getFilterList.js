@@ -1,4 +1,5 @@
 import { getDynamicDesignTableName, sanitizeSqlIdentifier } from "../schema/dynamicDesigns.js";
+import { resolveArticleTableName } from "../schema/dynamicArticles.js";
 
 /**
  * Clean & Ultra-Fast SQLite Query Procedure for Dynamic Filter Lists (GETFILTERLIST)
@@ -330,6 +331,88 @@ ResolvedPackages(package_id) AS (
     } else if (orClauses.length > 1) {
       conditions.push(`(${orClauses.join(" OR ")})`);
     }
+  }
+
+  // 5. SearchKey / designno / autocode / ArticleNo
+  const searchKey = filters.SearchKey ?? filters.searchKey ?? filters.Search ?? filters.search ?? null;
+  const directArticleNo = filters.ArticleNo ?? filters.articleno ?? filters.article_no ?? filters.Article ?? filters.article ?? null;
+  const directDesignNo = filters.designno ?? filters.DesignNo ?? filters.dno ?? null;
+  const directAutoCode = filters.autocode ?? filters.AutoCode ?? null;
+
+  let articleTable = null;
+  try {
+    const candidateArt = resolveArticleTableName(db, filters);
+    if (candidateArt && db.prepare("SELECT name FROM sqlite_master WHERE type='table' AND name = ? COLLATE NOCASE").get(candidateArt)) {
+      articleTable = candidateArt;
+    }
+  } catch (_) {}
+  if (!articleTable) {
+    try {
+      const fallbackArt = db.prepare("SELECT name FROM sqlite_master WHERE type='table' AND (name LIKE 'ArticleManagement_DesignInfo_Web_%' OR name LIKE 'article_DesignInfo_Web_%') ORDER BY name DESC LIMIT 1").get();
+      if (fallbackArt?.name) {
+        articleTable = fallbackArt.name;
+      }
+    } catch (_) {}
+  }
+
+  if (searchKey && typeof searchKey === "string" && searchKey.trim() !== "") {
+    const cleanSearch = searchKey.trim();
+    const sParam = `%${cleanSearch}%`;
+    const normalized = cleanSearch.replace(/[-\s_]/g, "");
+    const nParam = `%${normalized}%`;
+
+    const searchClauses = [
+      `ArticleNo LIKE ?`,
+      `designno LIKE ?`,
+      `autocode LIKE ?`,
+      `TitleLine LIKE ?`,
+      `description LIKE ?`,
+      `category LIKE ?`,
+      `collection LIKE ?`,
+      `brand LIKE ?`,
+    ];
+    params.push(sParam, sParam, sParam, sParam, sParam, sParam, sParam, sParam);
+
+    if (normalized && normalized !== cleanSearch) {
+      searchClauses.push(`REPLACE(REPLACE(COALESCE(ArticleNo, ''), '-', ''), ' ', '') LIKE ?`);
+      searchClauses.push(`REPLACE(REPLACE(COALESCE(designno, ''), '-', ''), ' ', '') LIKE ?`);
+      params.push(nParam, nParam);
+    }
+
+    if (articleTable) {
+      searchClauses.push(`autocode IN (SELECT autocode FROM "${articleTable}" WHERE ArticleNo LIKE ? OR designno LIKE ?)`);
+      searchClauses.push(`designno IN (SELECT designno FROM "${articleTable}" WHERE ArticleNo LIKE ? OR designno LIKE ?)`);
+      params.push(sParam, sParam, sParam, sParam);
+
+      if (normalized && normalized !== cleanSearch) {
+        searchClauses.push(`autocode IN (SELECT autocode FROM "${articleTable}" WHERE REPLACE(REPLACE(COALESCE(ArticleNo, ''), '-', ''), ' ', '') LIKE ?)`);
+        searchClauses.push(`designno IN (SELECT designno FROM "${articleTable}" WHERE REPLACE(REPLACE(COALESCE(ArticleNo, ''), '-', ''), ' ', '') LIKE ?)`);
+        params.push(nParam, nParam);
+      }
+    }
+
+    conditions.push(`(${searchClauses.join(" OR ")})`);
+  }
+
+  if (directArticleNo && typeof directArticleNo === "string" && directArticleNo.trim() !== "") {
+    const cleanArt = directArticleNo.trim();
+    if (articleTable) {
+      conditions.push(`(ArticleNo = ? COLLATE NOCASE OR autocode IN (SELECT autocode FROM "${articleTable}" WHERE ArticleNo = ? COLLATE NOCASE) OR designno IN (SELECT designno FROM "${articleTable}" WHERE ArticleNo = ? COLLATE NOCASE))`);
+      params.push(cleanArt, cleanArt, cleanArt);
+    } else {
+      conditions.push(`ArticleNo = ? COLLATE NOCASE`);
+      params.push(cleanArt);
+    }
+  }
+
+  if (directDesignNo && typeof directDesignNo === "string" && directDesignNo.trim() !== "") {
+    conditions.push(`(designno = ? OR autocode = ?)`);
+    params.push(directDesignNo.trim(), directDesignNo.trim());
+  }
+
+  if (directAutoCode && typeof directAutoCode === "string" && directAutoCode.trim() !== "") {
+    conditions.push(`autocode = ?`);
+    params.push(directAutoCode.trim());
   }
 
   const whereClause = conditions.length > 0 ? conditions.join(" AND ") : "1=1";

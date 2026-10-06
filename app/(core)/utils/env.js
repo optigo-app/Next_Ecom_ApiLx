@@ -20,4 +20,4 @@ export const WEBSITE_DOMAINS = {
 
 export const NEXT_APP_WEB = WEBSITE_DOMAINS.BELUXJEWELWEB;
 export const NEXT_PUBLIC_SITE_URL = NEXT_APP_WEB;
-export const IsProcatalogDemo = true;
+export const IsProcatalogDemo = false;
