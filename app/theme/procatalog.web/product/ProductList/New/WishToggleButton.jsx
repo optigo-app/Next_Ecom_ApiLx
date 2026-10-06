@@ -15,9 +15,9 @@ const WishToggleButton = ({ productData, wishArr, handleCartandWish }) => {
         onClick={(e) => e.stopPropagation()}
         sx={{
           position: "absolute",
-          top: 4,
-          right: 5,
-          zIndex: 5,
+          top: 10,
+          right: 10,
+          zIndex: 25,
         }}
       >
         <Skeleton variant="circular" width={34} height={34} />
@@ -30,10 +30,10 @@ const WishToggleButton = ({ productData, wishArr, handleCartandWish }) => {
       onClick={(e) => e.stopPropagation()}
       sx={{
         position: "absolute",
-        top: 4,
-            right: 5,
-        zIndex: 5,
-        backgroundColor: "rgba(255, 255, 255, 0.75)",
+        top: 10,
+        right: 10,
+        zIndex: 25,
+        backgroundColor: "rgba(255, 255, 255, 0.8)",
         backdropFilter: "blur(4px)",
         borderRadius: "50%",
         width: 34,
@@ -41,10 +41,12 @@ const WishToggleButton = ({ productData, wishArr, handleCartandWish }) => {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
+        boxShadow: "0 2px 6px rgba(0,0,0,0.08)",
         transition: "all 0.25s ease",
         "&:hover": {
           backgroundColor: "#ffffff",
           transform: "scale(1.08)",
+          boxShadow: "0 3px 8px rgba(0,0,0,0.14)",
         },
       }}
     >
@@ -66,9 +68,9 @@ const WishToggleButton = ({ productData, wishArr, handleCartandWish }) => {
             icon={
               <FavoriteBorderIcon
                 sx={{
-                  fontSize: 25,
-                  color: "#000",
-                  opacity: 0.4,
+                  fontSize: 20,
+                  color: "#222",
+                  opacity: 0.65,
                   transition: "opacity 0.25s ease",
                 }}
               />
@@ -76,8 +78,8 @@ const WishToggleButton = ({ productData, wishArr, handleCartandWish }) => {
             checkedIcon={
               <FavoriteIcon
                 sx={{
-                  fontSize: 25,
-                  color: "#000",
+                  fontSize: 20,
+                  color: "#e11d48",
                   transition: "transform 0.25s ease, opacity 0.25s ease",
                 }}
               />
