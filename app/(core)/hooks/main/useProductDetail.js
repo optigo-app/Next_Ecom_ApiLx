@@ -11,13 +11,11 @@ import { MetalColorCombo } from "@/app/(core)/utils/API/Combo/MetalColorCombo";
 import { ColorStoneQualityColorComboAPI } from "@/app/(core)/utils/API/Combo/ColorStoneQualityColorComboAPI";
 import { CartAndWishListAPI } from "@/app/(core)/utils/API/CartAndWishList/CartAndWishListAPI";
 import { RemoveCartAndWishAPI } from "@/app/(core)/utils/API/RemoveCartandWishAPI/RemoveCartAndWishAPI";
-import {
-  formatRedirectTitleLine,
-  formatTitleLine,
-} from "@/app/(core)/utils/Glob_Functions/GlobalFunction";
+import { getCartWishKey } from "@/app/(core)/utils/API/GetCount/GetCountAPI";
+import { formatRedirectTitleLine, formatTitleLine } from "@/app/(core)/utils/Glob_Functions/GlobalFunction";
 import { StockItemApi } from "@/app/(core)/utils/API/StockItemAPI/StockItemApi";
 import { DesignSetListAPI } from "@/app/(core)/utils/API/DesignSetListAPI/DesignSetListAPI";
-import { SaveLastViewDesign } from "@/app/(core)/utils/API/SaveLastViewDesign/SaveLastViewDesign";
+import { saveRecentlyViewedDesign, fetchRecentlyViewedDesigns } from "@/app/(core)/utils/sqlite/recentlyViewedActions";
 import useGlobalPreventSave from "@/app/(core)/utils/Glob_Functions/useGlobalPreventSave";
 import { useBroadcaster } from "@/app/(core)/contexts/BoardCastContext";
 import { useSyncDataStore } from "@/app/(core)/hooks/useStore";
@@ -33,7 +31,16 @@ const imageNotFound = "/image-not-found.jpg";
 const noImageFound = imageNotFound;
 
 export function useProductDetail({ storeinit, searchParams, params }) {
-  const { setCartCountNum, setWishCountNum, loginUserDetail } = useStore();
+  const {
+    setCartCountNum,
+    setWishCountNum,
+    loginUserDetail,
+    cartArr: storeCartArr,
+    wishArr: storeWishArr,
+    setCartArr: setStoreCartArr,
+    setWishArr: setStoreWishArr,
+    fetchGetCountData: storeFetchGetCountData,
+  } = useStore();
 
   const unwrappedSearchParams = (searchParams && typeof searchParams.then === "function")
     ? React.use(searchParams)
@@ -41,13 +48,16 @@ export function useProductDetail({ storeinit, searchParams, params }) {
 
   const initialDecodeUrl = useMemo(() => {
     const rawP = unwrappedSearchParams?.p || (typeof window !== "undefined" ? new URLSearchParams(window.location.search).get("p") : null);
+    console.log("[PRODUCT DETAIL LOG] rawP:", rawP);
     if (rawP) {
       const decompressed = decodeAndDecompress(rawP);
+      console.log("[PRODUCT DETAIL LOG] decompressed from rawP:", decompressed);
       if (decompressed) return decompressed;
     }
     const result = ParseAndDecodeSearchParams(unwrappedSearchParams);
     const navVal = result[0]?.split("=")[1];
     const decompressed = decodeAndDecompress(navVal);
+    console.log("[PRODUCT DETAIL LOG] decompressed from searchParams:", decompressed);
     return decompressed;
   }, [unwrappedSearchParams]);
 
@@ -62,15 +72,13 @@ export function useProductDetail({ storeinit, searchParams, params }) {
   const initialMockProd = useMemo(() => {
     if (hasPreHydratedData) {
       const loginInfo = getSession("loginUserDetail");
-      const rawPrice = initialDecodeUrl?.price ?? initialDecodeUrl?.UnitCostWithMarkUp ?? initialDecodeUrl?.UnitCostWithmarkup ?? initialDecodeUrl?.p;
-      const parsedPrice = rawPrice ? parseFloat(rawPrice) : 100;
       return {
         TitleLine: initialDecodeUrl.title || initialDecodeUrl.ArticleNo || initialDecodeUrl.b || "",
         Nwt: initialDecodeUrl.nwt ? parseFloat(initialDecodeUrl.nwt) : 0,
         NetWeight: initialDecodeUrl.nwt ? parseFloat(initialDecodeUrl.nwt) : 0,
-        UnitCostWithMarkUp: parsedPrice,
-        UnitCostWithmarkup: parsedPrice,
-        TotalUnitCost: parsedPrice,
+        UnitCostWithMarkUp: initialDecodeUrl.price ? parseFloat(initialDecodeUrl.price) : 0,
+        UnitCostWithmarkup: initialDecodeUrl.price ? parseFloat(initialDecodeUrl.price) : 0,
+        TotalUnitCost: initialDecodeUrl.price ? parseFloat(initialDecodeUrl.price) : 0,
         ArticleNo: initialDecodeUrl.ArticleNo ?? "",
         designno: initialDecodeUrl.b ?? "",
         autocode: initialDecodeUrl.a ?? "",
@@ -114,15 +122,19 @@ export function useProductDetail({ storeinit, searchParams, params }) {
   const [pdVideoArr, setPdVideoArr] = useState([]);
   const [addToCardFlag, setAddToCartFlag] = useState(null);
   const [wishListFlag, setWishListFlag] = useState(null);
+  const [isCartBtnLoading, setIsCartBtnLoading] = useState(false);
+  const [isWishBtnLoading, setIsWishBtnLoading] = useState(false);
   const [isDataFound, setIsDataFound] = useState(false);
   const [pdLoadImage, setPdLoadImage] = useState(false);
   const location = usePathname();
-  const [saveLastView, setSaveLastView] = useState();
+  const [recentlyViewedArr, setRecentlyViewedArr] = useState([]);
   const [imageSrc, setImageSrc] = useState(initialDecodeUrl?.img || "");
   const [filterData, setFilterData] = useState([]);
   const [showPlaceholder, setShowPlaceholder] = useState(false);
   const { imageRefs, handleMouseMove, handleMouseLeave } = useImageZoom(2.2);
   const [selectedMetalColor, setSelectedMetalColor] = useState(() => {
+    // Initialize from URL's metalColorId immediately so ProdCardImageFunc always uses
+    // the correct color from the very first render — prevents the Yellow flash
     if (initialDecodeUrl?.metalColorId) {
       const mtColorLocal = getSession("MetalColorCombo") || [];
       const matchedObj = mtColorLocal.find(
@@ -135,16 +147,17 @@ export function useProductDetail({ storeinit, searchParams, params }) {
   const getBreadCrumData = getSession("breadcrumbData");
   const [isMediaReady, setIsMediaReady] = useState(false);
   const [mediaBuildDone, setMediaBuildDone] = useState(false);
+  // Article-level combination data (all articles for this design)
   const [rd1Data, setRd1Data] = useState([]);
   const [rd2Data, setRd2Data] = useState([]);
   const [customizationDetail, setCustomizationDetail] = useState(null);
+  // Per-article cart/wishlist status map: { [ArticleId]: { IsInCart, IsInWish, CartId } }
   const [rd1CartMap, setRd1CartMap] = useState({});
   const Navigate = useNextRouterLikeRR();
   const [isImageDialogOpen, setIsImageDialogOpen] = useState(false);
   const [SelectedImageIndex, setSelectedImageIndex] = useState(null);
-  const { broadcast } = useBroadcaster();
+  const { broadcast } = useBroadcaster(); // Get the broadcaster
   const lastSyncData = useSyncDataStore((s) => s.syncData);
-  const [defaultArticleId, setDefaultArticleId] = useState(null);
 
   useGlobalPreventSave();
 
@@ -156,9 +169,37 @@ export function useProductDetail({ storeinit, searchParams, params }) {
     return () => clearTimeout(timer);
   }, []);
 
+  // ── Customer-Wise SQLite Recently Viewed Designs ─────────────────────────
+  useEffect(() => {
+    const activeDesignNo = singleProd?.designno || initialDecodeUrl?.b || initialMockProd?.designno;
+    const activeAutoCode = singleProd?.autocode || initialDecodeUrl?.a || initialMockProd?.autocode;
+
+    if (activeDesignNo) {
+      saveRecentlyViewedDesign({
+        designno: activeDesignNo,
+        autocode: activeAutoCode,
+        loginUserDetail,
+      })
+        .then(() => {
+          return fetchRecentlyViewedDesigns({
+            currentDesignno: activeDesignNo,
+            loginUserDetail,
+            storeInit,
+          });
+        })
+        .then((recentList) => {
+          if (Array.isArray(recentList)) {
+            setRecentlyViewedArr(recentList);
+          }
+        })
+        .catch((err) => console.warn("[RecentlyViewed] SQLite error:", err));
+    }
+  }, [singleProd?.designno, initialDecodeUrl?.b, initialMockProd?.designno, loginUserDetail, storeInit]);
+
   useEffect(() => {
     if (initialDecodeUrl && Object.keys(initialDecodeUrl).length > 0) {
       try {
+        // ── Resolve metal color from URL parameters (initialDecodeUrl) ─────────
         let sessionColorCode = null;
         if (initialDecodeUrl?.img && initialDecodeUrl.img.includes("~")) {
           const parts = initialDecodeUrl.img.split("~");
@@ -172,12 +213,14 @@ export function useProductDetail({ storeinit, searchParams, params }) {
           const matchedObj = mtColorLocal.find(ele => Number(ele.id) === Number(initialDecodeUrl.m));
           if (matchedObj?.colorcode) sessionColorCode = matchedObj.colorcode;
         }
+        // Resolve from the product's actual metal color id (most reliable — not filter metal type)
         if (!sessionColorCode && initialDecodeUrl?.metalColorId) {
           const mtColorLocal = getSession("MetalColorCombo") || [];
           const matchedObj = mtColorLocal.find(ele => Number(ele.id) === Number(initialDecodeUrl.metalColorId));
           if (matchedObj?.colorcode) sessionColorCode = matchedObj.colorcode;
         }
 
+        // ── Path B: l+count based pre-load (FGStore pattern) ──────────────────
         const { b, l, count } = initialDecodeUrl;
         if (!initialDecodeUrl.mediaDet || initialDecodeUrl.mediaDet === "0") {
           if (b) {
@@ -213,6 +256,9 @@ export function useProductDetail({ storeinit, searchParams, params }) {
           return;
         }
 
+        // ── Path A: mediaDet-based pre-load ───────────────────────────────────
+        // NOTE: do NOT call setMediaBuildDone here — ProdCardImageFunc owns that
+        // gate once singleProd is loaded with authoritative MetalColorid.
         const mediaDet = initialDecodeUrl.mediaDet;
         const parsed = typeof mediaDet === "string" ? JSON.parse(mediaDet) : mediaDet;
         if (!Array.isArray(parsed) || parsed.length === 0) return;
@@ -299,7 +345,6 @@ export function useProductDetail({ storeinit, searchParams, params }) {
   );
   let maxWidth1400px = useMediaQuery("(max-width:1400px)");
   let maxWidth1000px = useMediaQuery("(max-width:1000px)");
-
   useEffect(() => {
     const handleMax1400px = () => {
       if (maxWidth1400pxAndMinWidth1000px) {
@@ -320,6 +365,8 @@ export function useProductDetail({ storeinit, searchParams, params }) {
 
     handleMax1400px();
     handleMax1000px();
+
+    // const getDiamonddata = sessionStorage.getItem
   }, [maxWidth1400px, maxWidth1000px]);
 
   const getDynamicImages = (designno, extension) => {
@@ -331,6 +378,7 @@ export function useProductDetail({ storeinit, searchParams, params }) {
   const hasValidData = singleProd1 && Object.keys(singleProd1).length > 0;
   const product = hasValidData ? singleProd1 : singleProd;
 
+  // Dynamic Product Schema for Rich Results (Price, Availability, etc.)
   const productSchema = {
     "@context": "https://schema.org/",
     "@type": "Product",
@@ -358,16 +406,19 @@ export function useProductDetail({ storeinit, searchParams, params }) {
   useEffect(() => {
     if (!pdVideoArr) return;
 
+    // Normal videos: filename has exactly 2 parts (designno~slot.ext) — no color suffix
     const noColorVideos = pdVideoArr.filter((url) => {
       const parts = url.split("~");
       return parts.length === 2;
     });
 
     if (!selectedMetalColor) {
+      // No color selected yet — show only normal (non-color) videos
       setFilteredVideos(noColorVideos);
       return;
     }
 
+    // Color selected — try to find matching color videos
     const colorMatched = pdVideoArr.filter((url) => {
       const parts = url.split("~");
       const colorPart = parts[2]?.split(".")[0];
@@ -377,9 +428,12 @@ export function useProductDetail({ storeinit, searchParams, params }) {
     if (colorMatched.length > 0) {
       setFilteredVideos(colorMatched);
     } else {
+      // No color match — fall back to normal videos
       setFilteredVideos(noColorVideos);
     }
   }, [pdVideoArr, selectedMetalColor]);
+
+  // API Integration
 
   const [isExpanded, setIsExpanded] = useState(false);
 
@@ -388,6 +442,7 @@ export function useProductDetail({ storeinit, searchParams, params }) {
   };
 
   const [isClamped, setIsClamped] = useState(false);
+
   const descriptionRef = useRef(null);
   const descriptionText = singleProd1?.description ?? singleProd?.description;
 
@@ -415,7 +470,7 @@ export function useProductDetail({ storeinit, searchParams, params }) {
   useEffect(() => {
     setIsClamped(false);
     setIsExpanded(false);
-  }, [location, unwrappedSearchParams]);
+  }, [location, searchParams]);
 
   const mTypeLocal = getSession("metalTypeCombo");
   const diaQcLocal = getSession("diamondQualityColorCombo");
@@ -437,6 +492,11 @@ export function useProductDetail({ storeinit, searchParams, params }) {
     }
   }, [singleProd, metalTypeCombo, metalColorCombo]);
 
+  // useEffect(() => {
+  //   const isInCart = singleProd?.IsInCart === 0 ? false : true;
+  //   setAddToCartFlag(isInCart);
+  // }, [singleProd])
+
   useEffect(() => {
     const activeProd =
       singleProd1 && Object.keys(singleProd1).length > 0
@@ -450,12 +510,14 @@ export function useProductDetail({ storeinit, searchParams, params }) {
     }
   }, [singleProd, singleProd1]);
 
+  // Reset optimistic flags when the active article changes so rd1CartMap is consulted
   useEffect(() => {
     setAddToCartFlag(null);
     setWishListFlag(null);
   }, [customizationDetail?.ArticleId]);
 
   const handleCart = async (cartFlag) => {
+    setIsCartBtnLoading(true);
     const metal =
       metalTypeCombo?.find((ele) => {
         return ele?.metaltype == metalType;
@@ -567,7 +629,12 @@ export function useProductDetail({ storeinit, searchParams, params }) {
       singleProd?.ArticleId;
 
     if (cartFlag) {
-      let res = await CartAndWishListAPI("Cart", prodObj, cookie);
+      let res;
+      try {
+        res = await CartAndWishListAPI("Cart", prodObj, cookie);
+      } catch (err) {
+        console.log("addtocartErr", err);
+      }
       if (res) {
         try {
           let cartC = res?.Data?.rd[0]?.Cartlistcount;
@@ -575,6 +642,7 @@ export function useProductDetail({ storeinit, searchParams, params }) {
           const newCartId = res?.Data?.rd[0]?.CartId;
           setWishCountNum(wishC);
           setCartCountNum(cartC);
+          // Update per-article cart map
           if (activeArticleId) {
             setRd1CartMap((prev) => ({
               ...prev,
@@ -585,13 +653,21 @@ export function useProductDetail({ storeinit, searchParams, params }) {
               },
             }));
           }
+          // Update global store map with the variant-exact key so listing &
+          // detail stay in sync for this specific ArticleNo
+          const addedKey = getCartWishKey(prodObj);
+          if (addedKey) {
+            setStoreCartArr?.((prev) => ({ ...prev, [addedKey]: true }));
+          }
           broadcast(
             "UPDATE_CART_COUNT",
             cartC,
             prodObj?.autocode,
             "cart",
             true,
+            prodObj?.ArticleNo,
           );
+          storeFetchGetCountData?.();
         } catch (error) {
           console.log("err", error);
         }
@@ -600,21 +676,27 @@ export function useProductDetail({ storeinit, searchParams, params }) {
     } else {
       const cartEntry = rd1CartMap[activeArticleId];
       const cartIdToRemove = cartEntry?.CartId;
-      let res1 = await RemoveCartAndWishAPI(
-        "Cart",
-        customizationDetail?.autocode || singleProd?.autocode,
-        cookie,
-        false,
-        "",
-        customizationDetail?.ArticleNo || singleProd?.ArticleNo || "",
-        cartIdToRemove,
-      );
+      let res1;
+      try {
+        res1 = await RemoveCartAndWishAPI(
+          "Cart",
+          customizationDetail?.autocode || singleProd?.autocode,
+          cookie,
+          false,
+          "",
+          customizationDetail?.ArticleNo || singleProd?.ArticleNo || "",
+          cartIdToRemove,
+        );
+      } catch (err) {
+        console.log("removecartErr", err);
+      }
       if (res1) {
         try {
           let cartC = res1?.Data?.rd[0]?.Cartlistcount;
           let wishC = res1?.Data?.rd[0]?.Wishlistcount;
           setWishCountNum(wishC);
           setCartCountNum(cartC);
+          // Clear per-article cart entry
           if (activeArticleId) {
             setRd1CartMap((prev) => ({
               ...prev,
@@ -625,23 +707,31 @@ export function useProductDetail({ storeinit, searchParams, params }) {
               },
             }));
           }
+          const removedKey = getCartWishKey(prodObj);
+          if (removedKey) {
+            setStoreCartArr?.((prev) => ({ ...prev, [removedKey]: false }));
+          }
           broadcast(
             "UPDATE_CART_COUNT",
             cartC,
             prodObj?.autocode,
             "cart",
             false,
+            prodObj?.ArticleNo,
           );
+          storeFetchGetCountData?.();
         } catch (error) {
           console.log("err", error);
         }
         setAddToCartFlag(cartFlag);
       }
     }
+    setIsCartBtnLoading(false);
   };
 
   const handleWishList = async (e, elv) => {
     setWishListFlag(e?.target?.checked);
+    setIsWishBtnLoading(true);
 
     let storeinitInside = storeinit;
     let logininfoInside = loginUserDetail;
@@ -767,13 +857,19 @@ export function useProductDetail({ storeinit, searchParams, params }) {
       singleProd?.ArticleId;
 
     if (e.target.checked === true) {
-      let res = await CartAndWishListAPI("Wish", prodObj, cookie);
+      let res;
+      try {
+        res = await CartAndWishListAPI("Wish", prodObj, cookie);
+      } catch (err) {
+        console.log("addtowishErr", err);
+      }
       if (res) {
         try {
           let cartC = res?.Data?.rd[0]?.Cartlistcount;
           let wishC = res?.Data?.rd[0]?.Wishlistcount;
           setWishCountNum(wishC);
           setCartCountNum(cartC);
+          // Update per-article wish map
           if (activeArticleId) {
             setRd1CartMap((prev) => ({
               ...prev,
@@ -783,32 +879,44 @@ export function useProductDetail({ storeinit, searchParams, params }) {
               },
             }));
           }
+          const addedWishKey = getCartWishKey(prodObj);
+          if (addedWishKey) {
+            setStoreWishArr?.((prev) => ({ ...prev, [addedWishKey]: true }));
+          }
           broadcast(
             "UPDATE_WISH_COUNT",
             wishC,
             prodObj?.autocode,
             "wish",
             true,
+            prodObj?.ArticleNo,
           );
+          storeFetchGetCountData?.();
         } catch (error) {
           console.log("err", error);
         }
       }
     } else {
-      let res1 = await RemoveCartAndWishAPI(
-        "Wish",
-        customizationDetail?.autocode || singleProd?.autocode,
-        cookie,
-        false,
-        "",
-        customizationDetail?.ArticleNo || singleProd?.ArticleNo || "",
-      );
+      let res1;
+      try {
+        res1 = await RemoveCartAndWishAPI(
+          "Wish",
+          customizationDetail?.autocode || singleProd?.autocode,
+          cookie,
+          false,
+          "",
+          customizationDetail?.ArticleNo || singleProd?.ArticleNo || "",
+        );
+      } catch (err) {
+        console.log("removewishErr", err);
+      }
       if (res1) {
         try {
           let cartC = res1?.Data?.rd[0]?.Cartlistcount;
           let wishC = res1?.Data?.rd[0]?.Wishlistcount;
           setWishCountNum(wishC);
           setCartCountNum(cartC);
+          // Clear per-article wish entry
           if (activeArticleId) {
             setRd1CartMap((prev) => ({
               ...prev,
@@ -818,24 +926,34 @@ export function useProductDetail({ storeinit, searchParams, params }) {
               },
             }));
           }
+          const removedWishKey = getCartWishKey(prodObj);
+          if (removedWishKey) {
+            setStoreWishArr?.((prev) => ({ ...prev, [removedWishKey]: false }));
+          }
           broadcast(
             "UPDATE_WISH_COUNT",
             wishC,
             prodObj?.autocode,
             "wish",
             false,
+            prodObj?.ArticleNo,
           );
+          storeFetchGetCountData?.();
         } catch (error) {
           console.log("err", error);
         }
       }
     }
+    setIsWishBtnLoading(false);
   };
 
   useEffect(() => {
     let decodeobj = initialDecodeUrl;
+
     let mtTypeLocal = getSession("metalTypeCombo");
+
     let diaQcLocal = getSession("diamondQualityColorCombo");
+
     let csQcLocal = getSession("ColorStoneQualityColorCombo");
 
     setTimeout(() => {
@@ -861,19 +979,19 @@ export function useProductDetail({ storeinit, searchParams, params }) {
           diaArr = diaQcLocal?.filter(
             (ele) =>
               ele?.QualityId ==
-                (decodeobj?.d
-                  ? decodeobj?.d?.split(",")[0]
-                  : (
-                      logininfoInside?.cmboDiaQCid ??
-                      storeinitInside?.cmboDiaQCid
-                    ).split(",")[0]) &&
+              (decodeobj?.d
+                ? decodeobj?.d?.split(",")[0]
+                : (
+                  logininfoInside?.cmboDiaQCid ??
+                  storeinitInside?.cmboDiaQCid
+                ).split(",")[0]) &&
               ele?.ColorId ==
-                (decodeobj?.d
-                  ? decodeobj?.d?.split(",")[1]
-                  : (
-                      logininfoInside?.cmboDiaQCid ??
-                      storeinitInside?.cmboDiaQCid
-                    ).split(",")[1]),
+              (decodeobj?.d
+                ? decodeobj?.d?.split(",")[1]
+                : (
+                  logininfoInside?.cmboDiaQCid ??
+                  storeinitInside?.cmboDiaQCid
+                ).split(",")[1]),
           )[0];
         }
 
@@ -881,22 +999,24 @@ export function useProductDetail({ storeinit, searchParams, params }) {
           csArr = csQcLocal?.filter(
             (ele) =>
               ele?.QualityId ==
-                (decodeobj?.c
-                  ? decodeobj?.c?.split(",")[0]
-                  : (
-                      logininfoInside?.cmboCSQCid ?? storeinitInside?.cmboCSQCid
-                    ).split(",")[0]) &&
+              (decodeobj?.c
+                ? decodeobj?.c?.split(",")[0]
+                : (
+                  logininfoInside?.cmboCSQCid ?? storeinitInside?.cmboCSQCid
+                ).split(",")[0]) &&
               ele?.ColorId ==
-                (decodeobj?.c
-                  ? decodeobj?.c?.split(",")[1]
-                  : (
-                      logininfoInside?.cmboCSQCid ?? storeinitInside?.cmboCSQCid
-                    ).split(",")[1]),
+              (decodeobj?.c
+                ? decodeobj?.c?.split(",")[1]
+                : (
+                  logininfoInside?.cmboCSQCid ?? storeinitInside?.cmboCSQCid
+                ).split(",")[1]),
           )[0];
         }
 
         setMetalType(metalArr?.metaltype);
+
         setSelectDiaQc(`${diaArr?.Quality},${diaArr?.color}`);
+
         setSelectCsQC(`${csArr?.Quality},${csArr?.color}`);
       }
     }, 500);
@@ -905,9 +1025,11 @@ export function useProductDetail({ storeinit, searchParams, params }) {
   useEffect(() => {
     try {
       if (selectedThumbImg == undefined) return;
+
       if (selectedThumbImg) {
         setImageSrc(selectedThumbImg?.link?.imageUrl);
       } else {
+        // Set a default image if no thumbnail is selected
         setImageSrc(pdVideoArr?.length > 0 ? noImageFound : "p.png");
       }
     } catch (error) {
@@ -944,7 +1066,9 @@ export function useProductDetail({ storeinit, searchParams, params }) {
     setDecodeUrl(decodeobj);
 
     let mtTypeLocal = getSession("metalTypeCombo");
+
     let diaQcLocal = getSession("diamondQualityColorCombo");
+
     let csQcLocal = getSession("ColorStoneQualityColorCombo");
 
     let metalArr;
@@ -953,66 +1077,54 @@ export function useProductDetail({ storeinit, searchParams, params }) {
 
     if (mtTypeLocal?.length) {
       metalArr =
-        mtTypeLocal?.find((ele) => Number(ele?.Metalid) === Number(decodeobj?.m))
+        mtTypeLocal?.filter((ele) => ele?.Metalid == decodeobj?.m)[0]
           ?.Metalid ?? decodeobj?.m;
-    } else {
-      metalArr = decodeobj?.m;
     }
 
-    if (diaQcLocal?.length) {
+    if (diaQcLocal) {
       diaArr =
-        diaQcLocal?.find(
+        diaQcLocal?.filter(
           (ele) =>
             ele?.QualityId == decodeobj?.d?.split(",")[0] &&
             ele?.ColorId == decodeobj?.d?.split(",")[1],
-        ) ?? decodeobj?.d;
-    } else {
-      diaArr = decodeobj?.d;
+        )[0] ?? `${decodeobj?.d?.split(",")[0]},${decodeobj?.d?.split(",")[1]}`;
     }
 
-    if (csQcLocal?.length) {
+    if (csQcLocal) {
       csArr =
-        csQcLocal?.find((ele) => {
+        csQcLocal?.filter((ele) => {
           return (
             ele?.QualityId == decodeobj?.c?.split(",")[0] &&
             ele?.ColorId == decodeobj?.c?.split(",")[1]
           );
-        }) ?? decodeobj?.c;
-    } else {
-      csArr = decodeobj?.c;
+        })[0] ??
+        `${decodeobj?.c?.split(",")[0]},${decodeobj?.c?.split(",")[1]}`;
     }
 
     if (!(decodeobj?.b || decodeobj?.title || decodeobj?.a || decodeobj?.img)) {
       setloadingdata(true);
     }
     const FetchProductData = async () => {
-      const resolvedMetalId =
-        metalArr ||
-        decodeobj?.m ||
-        logininfoInside?.MetalId ||
-        storeinitInside?.MetalId ||
-        storeinitInside?.cmboMetalTypeid ||
-        storeinit?.MetalId ||
-        storeinit?.cmboMetalTypeid;
-
-      const resolvedDiaQc =
-        (typeof diaArr === "string" ? diaArr : (diaArr ? `${diaArr?.QualityId ?? 0},${diaArr?.ColorId ?? 0}` : null)) ||
-        decodeobj?.d ||
-        logininfoInside?.cmboDiaQCid ||
-        storeinitInside?.cmboDiaQCid ||
-        storeinit?.cmboDiaQCid;
-
-      const resolvedCsQc =
-        (typeof csArr === "string" ? csArr : (csArr ? `${csArr?.QualityId ?? 0},${csArr?.ColorId ?? 0}` : null)) ||
-        decodeobj?.c ||
-        logininfoInside?.cmboCSQCid ||
-        storeinitInside?.cmboCSQCid ||
-        storeinit?.cmboCSQCid;
+      let obj1 = {
+        mt: logininfoInside?.MetalId ?? storeinitInside?.MetalId,
+        diaQc: diaArr
+          ? `${diaArr?.QualityId ?? 0},${diaArr?.ColorId ?? 0}`
+          : (logininfoInside?.cmboDiaQCid ?? storeinitInside?.cmboDiaQCid),
+        csQc: csArr
+          ? `${csArr?.QualityId ?? 0},${csArr?.ColorId ?? 0}`
+          : (logininfoInside?.cmboCSQCid ?? storeinitInside?.cmboCSQCid),
+      };
 
       let obj = {
-        mt: resolvedMetalId,
-        diaQc: resolvedDiaQc,
-        csQc: resolvedCsQc,
+        mt: metalArr
+          ? metalArr
+          : (logininfoInside?.MetalId ?? storeinitInside?.MetalId),
+        diaQc: diaArr
+          ? `${diaArr?.QualityId ?? 0},${diaArr?.ColorId ?? 0}`
+          : (logininfoInside?.cmboDiaQCid ?? storeinitInside?.cmboDiaQCid),
+        csQc: csArr
+          ? `${csArr?.QualityId ?? 0},${csArr?.ColorId ?? 0}`
+          : (logininfoInside?.cmboCSQCid ?? storeinitInside?.cmboCSQCid),
       };
 
       if (decodeobj?.title) {
@@ -1051,9 +1163,9 @@ export function useProductDetail({ storeinit, searchParams, params }) {
         if (res && res?.pdList) {
           const prod = res?.pdList[0];
           setSingleProd(prod);
-          setSingleProd1(prod);
-          setnetWTData(prod);
 
+          // After API loads, re-apply the URL-specified metal color so images stay correct
+          // (API may return the design's default metal which could differ from the card clicked)
           if (decodeobj?.metalColorId) {
             const mtColorLocal = getSession("MetalColorCombo") || [];
             const matchedColorObj = mtColorLocal.find(
@@ -1086,7 +1198,6 @@ export function useProductDetail({ storeinit, searchParams, params }) {
               const metalType = r.metal || r.metaltypename || r.MetalType || r.metalpurityname;
               const metalColor = r.metalcolorname || r.MetalColor;
               const netWeight = r.Nwt || r.NetWeight;
-              const unitCost = r.UnitCostWithmarkup || r.UnitCostWithMarkUp || r.TotalUnitCost || r.UnitCost || r.UnitCostWithMarkUpAmount || prod?.UnitCostWithmarkup || prod?.UnitCostWithMarkUp || prod?.TotalUnitCost;
               return {
                 ...r,
                 ArticleId: r.ArticleId || r.id,
@@ -1096,9 +1207,6 @@ export function useProductDetail({ storeinit, searchParams, params }) {
                 MetalType: metalType,
                 MetalColor: metalColor,
                 NetWeight: netWeight,
-                UnitCostWithmarkup: unitCost,
-                UnitCostWithMarkUp: unitCost,
-                TotalUnitCost: unitCost,
               };
             });
             setRd1Data(mappedRd1);
@@ -1135,7 +1243,7 @@ export function useProductDetail({ storeinit, searchParams, params }) {
                 (r) =>
                   r.ArticleNo === decodeobj.ArticleNo ||
                   r.ArticleNo?.toLowerCase() ===
-                    String(decodeobj.ArticleNo).toLowerCase(),
+                  String(decodeobj.ArticleNo).toLowerCase(),
               )) ||
             (decodeobj?.a &&
               mappedRd1.find(
@@ -1154,7 +1262,6 @@ export function useProductDetail({ storeinit, searchParams, params }) {
             );
             setCustomizationDetail({
               ...initialArticle,
-              ...prod,
               ArticleId: initialArticle.ArticleId,
               ArticleNo: initialArticle.ArticleNo,
               autocode: initialArticle.autocode || prod?.autocode || "",
@@ -1172,14 +1279,13 @@ export function useProductDetail({ storeinit, searchParams, params }) {
                 ? `${csStone.QualityId},${csStone.ColorId}`
                 : "0,0",
               Size: initialArticle.Size,
-              NetWeight: initialArticle.NetWeight || prod?.NetWeight || prod?.Nwt,
-              UnitCostWithmarkup: prod?.UnitCostWithmarkup || prod?.UnitCostWithMarkUp || prod?.TotalUnitCost || initialArticle?.UnitCostWithmarkup || initialArticle?.UnitCostWithMarkUp || initialArticle?.TotalUnitCost || initialMockProd?.UnitCostWithMarkUp || 100,
-              UnitCostWithMarkUp: prod?.UnitCostWithmarkup || prod?.UnitCostWithMarkUp || prod?.TotalUnitCost || initialArticle?.UnitCostWithmarkup || initialArticle?.UnitCostWithMarkUp || initialArticle?.TotalUnitCost || initialMockProd?.UnitCostWithMarkUp || 100,
-              TotalUnitCost: prod?.TotalUnitCost || prod?.UnitCostWithMarkUp || prod?.UnitCostWithmarkup || initialArticle?.TotalUnitCost || initialArticle?.UnitCostWithMarkUp || initialMockProd?.UnitCostWithMarkUp || 100,
+              NetWeight: initialArticle.NetWeight,
             });
           }
 
+          // ---------- Progressive Non-Blocking Parallel Secondary API Calls ----------
           if (prod) {
+            // 1. Size Data
             getSizeData(prod, cookie)
               .then((sizeRes) => {
                 setSizeCombo(sizeRes?.Data);
@@ -1199,22 +1305,24 @@ export function useProductDetail({ storeinit, searchParams, params }) {
                   (prod && prod.DefaultSize !== ""
                     ? prod.DefaultSize
                     : sizeRes?.Data?.rd?.find(
-                          (size) => size.IsDefaultSize === 1,
-                        )?.sizename === undefined
+                      (size) => size.IsDefaultSize === 1,
+                    )?.sizename === undefined
                       ? sizeRes?.Data?.rd?.[0]?.sizename
                       : sizeRes?.Data?.rd?.find(
-                          (size) => size.IsDefaultSize === 1,
-                        )?.sizename);
+                        (size) => size.IsDefaultSize === 1,
+                      )?.sizename);
                 setSizeData(initialsize);
               })
               .catch((err) => console.log("SizeErr", err));
 
-            if (storeinitInside?.IsStockWebsite === 1 && prod?.autocode) {
-              StockItemApi(prod.autocode, "stockitem", cookie)
-                .then((res) => setStockItemArr(res?.Data?.rd))
-                .catch((err) => console.log("stockItemErr", err));
-            }
+            // 2. Stock Items
+            // if (storeinitInside?.IsStockWebsite === 1 && prod?.autocode) {
+            //   StockItemApi(prod.autocode, "stockitem", cookie)
+            //     .then((res) => setStockItemArr(res?.Data?.rd))
+            //     .catch((err) => console.log("stockItemErr", err));
+            // }
 
+            // 3. Similar Products
             if (
               storeinitInside?.IsProductDetailSimilarDesign === 1 &&
               prod?.autocode
@@ -1224,12 +1332,36 @@ export function useProductDetail({ storeinit, searchParams, params }) {
                 .catch((err) => console.log("similarbrandErr", err));
             }
 
-            if (prod?.autocode && prod?.designno) {
-              SaveLastViewDesign(cookie, prod.autocode, prod.designno)
-                .then((res) => {
-                  setSaveLastView(res?.Data?.rd);
+            // 4. Design Set List
+            // if (
+            //   storeinitInside?.IsProductDetailDesignSet === 1 &&
+            //   prod?.designno
+            // ) {
+            //   DesignSetListAPI(obj1, prod.designno, cookie)
+            //     .then((res) => setDesignSetList(res?.Data?.rd))
+            //     .catch((err) => console.log("designsetErr", err));
+            // }
+
+            // 5. Save Recently Viewed Design (SQLite customer-wise, 0 external API calls)
+            if (prod?.designno) {
+              saveRecentlyViewedDesign({
+                designno: prod.designno,
+                autocode: prod.autocode,
+                loginUserDetail,
+              })
+                .then(() => {
+                  return fetchRecentlyViewedDesigns({
+                    currentDesignno: prod.designno,
+                    loginUserDetail,
+                    storeInit: storeinitInside || storeInit,
+                  });
                 })
-                .catch((err) => console.log("saveLastView", err));
+                .then((recentList) => {
+                  if (Array.isArray(recentList)) {
+                    setRecentlyViewedArr(recentList);
+                  }
+                })
+                .catch((err) => console.log("[RecentlyViewed] SQLite error:", err));
             }
           }
         }
@@ -1342,12 +1474,21 @@ export function useProductDetail({ storeinit, searchParams, params }) {
     callAllApi();
   }, [storeInit]);
 
+  function checkImageAvailability(imageUrl) {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.onload = () => resolve(true);
+      img.onerror = () => resolve(false);
+      img.src = imageUrl;
+    });
+  }
+
   const handleMetalWiseColorImgWithFlag = async (e) => {
     handleMetalWiseColorImg(e);
   };
 
   const ProdCardImageFunc = async () => {
-    const storeInitObj = storeinit || storeInit;
+    const storeInit = storeinit || storeInit;
     const pd = (singleProd1 && Object.keys(singleProd1).length > 0) ? singleProd1 : singleProd;
     const imageVideoDetail = pd?.ImageVideoDetail;
 
@@ -1383,7 +1524,7 @@ export function useProductDetail({ storeinit, searchParams, params }) {
     if (matchedColorImgs.length > 0) {
       matchedColorImgs.forEach(item => {
         pdImgList.push({
-          imageUrl: `${storeInitObj?.CDNDesignImageFol}${pd.designno}~${item.Nm}~${item.CN}.${item.Ex || "webp"}`,
+          imageUrl: `${storeInit?.CDNDesignImageFol}${pd.designno}~${item.Nm}~${item.CN}.${item.Ex || "webp"}`,
           extension: item.Ex || "webp",
           cn: item.CN
         });
@@ -1391,7 +1532,7 @@ export function useProductDetail({ storeinit, searchParams, params }) {
     } else if (normalImages.length > 0) {
       normalImages.forEach(item => {
         pdImgList.push({
-          imageUrl: `${storeInitObj?.CDNDesignImageFol}${pd.designno}~${item.Nm}.${item.Ex || "webp"}`,
+          imageUrl: `${storeInit?.CDNDesignImageFol}${pd.designno}~${item.Nm}.${item.Ex || "webp"}`,
           extension: item.Ex || "webp",
           cn: ""
         });
@@ -1411,8 +1552,8 @@ export function useProductDetail({ storeinit, searchParams, params }) {
 
       const thumbImagePath = pdImgList.map(item => ({
         thumbImageUrl: item.cn
-          ? `${storeInitObj?.CDNDesignImageFolThumb}${pd.designno}~${item.imageUrl.split("~")[1]}~${item.cn}.jpg`
-          : `${storeInitObj?.CDNDesignImageFolThumb}${pd.designno}~${item.imageUrl.split("~")[1]?.split(".")[0]}.jpg`,
+          ? `${storeInit?.CDNDesignImageFolThumb}${pd.designno}~${item.imageUrl.split("~")[1]}~${item.cn}.jpg`
+          : `${storeInit?.CDNDesignImageFolThumb}${pd.designno}~${item.imageUrl.split("~")[1]?.split(".")[0]}.jpg`,
         originalImageExtension: item.extension
       }));
       setPdThumbImg(thumbImagePath);
@@ -1422,7 +1563,7 @@ export function useProductDetail({ storeinit, searchParams, params }) {
     }
 
     const buildVideoURL = (video, isColor = false) => {
-      const base = storeInitObj?.CDNVPath;
+      const base = storeInit?.CDNVPath;
       return isColor
         ? `${base}${pd.designno}~${video.Nm}~${video.CN}.${video.Ex}`
         : `${base}${pd.designno}~${video.Nm}.${video.Ex}`;
@@ -1442,7 +1583,7 @@ export function useProductDetail({ storeinit, searchParams, params }) {
   useEffect(() => {
     setPdLoadImage(true);
     ProdCardImageFunc();
-  }, [singleProd, location, unwrappedSearchParams]);
+  }, [singleProd, location, searchParams]);
 
   const handleMetalWiseColorImg = async (colorInput) => {
     let selectedColor = "";
@@ -1542,41 +1683,46 @@ export function useProductDetail({ storeinit, searchParams, params }) {
     setMetalColor(mcArr?.colorcode);
   }, [singleProd]);
 
+  const getDynamicVideo = (designno, count, extension) => {
+    const getDesignVideoFol =
+      (storeInit?.DesignImageFol).slice(0, -13) + "video/";
+    const url = `${getDesignVideoFol}${designno}_${count > 0 ? count : 1}.${extension}`;
+    return url;
+  };
+
+  const decodeEntities = (html) => {
+    if (typeof document === "undefined" || !html) return html || "";
+    var txt = document.createElement("textarea");
+    txt.innerHTML = html;
+    return txt.value;
+  };
+
   const handleCustomChange = async (e, type) => {
     let size = sizeData;
+
     let targetMetalType = metalType;
     let targetMetalColor = metalColor;
     let targetSize = sizeData;
 
-    if (type === "all" && e) {
-      targetMetalType = e.MetalType || e.metaltype || e.MetalPurity || metalType;
-      targetMetalColor = e.MetalColor || e.metalcolorname || e.colorcode || metalColor;
-      targetSize = e.Size || sizeData;
-      if (targetMetalType) setMetalType(targetMetalType);
-      if (targetMetalColor) setMetalColor(targetMetalColor);
-      if (targetSize) {
-        setSizeData(targetSize);
-        size = targetSize;
-      }
-    } else {
-      if (type === "mt") {
-        targetMetalType = e.target.value;
-        setMetalType(e.target.value);
-      }
-      if (type === "mc") {
-        targetMetalColor = e.target.value;
-        setMetalColor(e.target.value);
-      }
-      if (type === "size") {
-        targetSize = e.target.value;
-        setSizeData(e.target.value);
-        size = e.target.value;
-      }
+    if (type === "mt") {
+      targetMetalType = e.target.value;
+      setMetalType(e.target.value);
+    }
+    if (type === "mc") {
+      targetMetalColor = e.target.value;
+      setMetalColor(e.target.value);
+    }
+    if (type === "size") {
+      targetSize = e.target.value;
+      setSizeData(e.target.value);
+      size = e.target.value;
     }
 
+    // Normalize targetSize: treat empty / dash as empty string
     const normalizedTargetSize =
       targetSize === "-" || targetSize === "" || !targetSize ? "" : targetSize;
 
+    // Find the matching article in rd1Data based on target customizations
     let matchedArticle = rd1Data?.find((r) => {
       const matchMetal =
         r.MetalType?.toUpperCase() === targetMetalType?.toUpperCase();
@@ -1586,6 +1732,7 @@ export function useProductDetail({ storeinit, searchParams, params }) {
       return matchMetal && matchColor && rSize === normalizedTargetSize;
     });
 
+    // Fallback 1: match metal and color only, grab first available size
     if (!matchedArticle) {
       matchedArticle = rd1Data?.find((r) => {
         const matchMetal =
@@ -1596,11 +1743,13 @@ export function useProductDetail({ storeinit, searchParams, params }) {
       });
     }
 
+    // Fallback 2: fallback to default / first article
     if (!matchedArticle) {
       matchedArticle =
         rd1Data?.find((r) => r.ArticleId === defaultArticleId) || rd1Data?.[0];
     }
 
+    // Resolve stones for the matched article from rd2Data
     let diaQcVal = "0,0";
     let diaQcLabel = null;
     let csQcVal = "0,0";
@@ -1622,6 +1771,7 @@ export function useProductDetail({ storeinit, searchParams, params }) {
       }
     }
 
+    // Update defaultArticleId state to matched article's ID
     if (matchedArticle?.ArticleId) {
       setDefaultArticleId(matchedArticle.ArticleId);
     }
@@ -1646,14 +1796,6 @@ export function useProductDetail({ storeinit, searchParams, params }) {
       singleProd?.ArticleNo ||
       "";
 
-    const currentPrice =
-      customizationDetail?.UnitCostWithmarkup ||
-      customizationDetail?.UnitCostWithMarkUp ||
-      customizationDetail?.TotalUnitCost ||
-      singleProd1?.UnitCostWithmarkup ||
-      singleProd1?.UnitCostWithMarkUp ||
-      singleProd?.UnitCostWithMarkUp;
-
     setCustomizationDetail({
       ...matchedArticle,
       ArticleId: matchedArticle?.ArticleId,
@@ -1667,13 +1809,10 @@ export function useProductDetail({ storeinit, searchParams, params }) {
       DiaQCLabel: diaQcLabel,
       CsQCid: csQcVal,
       Size: matchedArticle?.Size,
-      NetWeight: matchedArticle?.NetWeight || singleProd?.NetWeight || singleProd?.Nwt,
-      UnitCostWithmarkup: currentPrice,
-      UnitCostWithMarkUp: currentPrice,
-      TotalUnitCost: currentPrice,
+      NetWeight: matchedArticle?.NetWeight,
     });
 
-    let prodObj = {
+    let prod = {
       a: targetAutocode,
       b: targetDesignNo,
       ArticleNo: activeArticleNo,
@@ -1689,36 +1828,16 @@ export function useProductDetail({ storeinit, searchParams, params }) {
 
     setisPriceLoading(true);
     const res = await SingleArticleProdListAPI(
-      prodObj,
+      prod,
       size ?? sizeData,
       obj,
       cookie,
     );
-    if (res && res?.pdList?.[0]) {
-      const updatedProd = res.pdList[0];
-      const newPrice =
-        updatedProd.UnitCostWithmarkup ||
-        updatedProd.UnitCostWithMarkUp ||
-        updatedProd.TotalUnitCost ||
-        currentPrice;
-
-      const syncedProd = {
-        ...updatedProd,
-        UnitCostWithmarkup: newPrice,
-        UnitCostWithMarkUp: newPrice,
-        TotalUnitCost: newPrice,
-      };
-
-      setSingleProd1(syncedProd);
-      setSingleProd((prev) => ({ ...prev, ...syncedProd }));
-      setnetWTData(syncedProd);
-      setCustomizationDetail((prev) => ({
-        ...prev,
-        ...syncedProd,
-      }));
+    if (res) {
+      setSingleProd1(res?.pdList[0]);
     }
 
-    const chosenColor = matchedArticle?.MetalColor || matchedArticle?.metalcolorname || matchedArticle?.MetalColorName || targetMetalColor;
+    const chosenColor = matchedArticle?.MetalColor || matchedArticle?.metalcolorname || matchedArticle?.MetalColorName;
     if (chosenColor) {
       handleMetalWiseColorImg(chosenColor);
     }
@@ -1726,6 +1845,7 @@ export function useProductDetail({ storeinit, searchParams, params }) {
     if (res?.pdList?.length > 0) {
       setisPriceLoading(false);
     }
+    setnetWTData(res?.pdList[0]);
     setDiaList(res?.pdResp?.rd3);
     setCsList(res?.pdResp?.rd4);
     if (res?.pdResp?.rd1?.length) {
@@ -1757,155 +1877,325 @@ export function useProductDetail({ storeinit, searchParams, params }) {
     }
   };
 
+  const SizeSorting = (SizeArr) => {
+    let SizeSorted = SizeArr?.sort((a, b) => {
+      const nameA = parseInt(a?.sizename?.slice(0, -2), 10);
+      const nameB = parseInt(b?.sizename?.slice(0, -2), 10);
+
+      return nameA - nameB;
+    });
+
+    return SizeSorted;
+  };
+
+  // Default ArticleId passed from product listing page via URL param
+  const [defaultArticleId, setDefaultArticleId] = useState(() => {
+    const id = initialDecodeUrl?.ArticleId;
+    return id ? parseInt(id, 10) : null;
+  });
+
+  // Keep state sync if searchParams/url changes
+  useEffect(() => {
+    const id = initialDecodeUrl?.ArticleId;
+    if (id) {
+      setDefaultArticleId(parseInt(id, 10));
+    }
+  }, [initialDecodeUrl]);
+
+  // Handler called when user confirms selection in the customizer drawer
   const handleCustomizerConfirm = async (
     articleId,
     size,
     diaQcKey,
     metalCombo,
   ) => {
-    let targetArticleId = articleId;
-    let targetSize = size;
-    let targetDiaQcKey = diaQcKey;
-    let targetMetalCombo = metalCombo;
+    const mTypeLocal = getSession("metalTypeCombo") || [];
+    const diaQcLocal = getSession("diamondQualityColorCombo") || [];
+    const csQcLocal = getSession("ColorStoneQualityColorCombo") || [];
 
-    if (typeof articleId === "object" && articleId !== null) {
-      targetArticleId = articleId.ArticleId || articleId.id;
-      targetSize = articleId.Size || size;
-      targetDiaQcKey = articleId.DiaQCLabel || diaQcKey;
-      targetMetalCombo = articleId;
-    }
+    // Find metal by MetalType name (mapped from combo)
+    const metalArr = mTypeLocal.find(
+      (ele) => ele?.metaltype === metalCombo?.MetalType,
+    );
 
-    const selectedArticleObj =
-      rd1Data?.find((r) => r.ArticleId === targetArticleId) ||
-      rd1Data?.find(
-        (r) =>
-          r.MetalTypeId === targetMetalCombo?.MetalTypeId &&
-          r.MetalColorId === targetMetalCombo?.MetalColorId,
-      ) ||
-      rd1Data?.[0];
-
-    const mType = targetMetalCombo?.MetalType || selectedArticleObj?.MetalType;
-    const mColor = targetMetalCombo?.MetalColor || selectedArticleObj?.MetalColor;
-    const mSize = targetSize || selectedArticleObj?.Size || sizeData;
-
-    if (mType) setMetalType(mType);
-    if (mColor) setMetalColor(mColor);
-    if (mSize) setSizeData(mSize);
-    if (targetArticleId) setDefaultArticleId(targetArticleId);
-
-    const [dq, dc] = targetDiaQcKey ? targetDiaQcKey.split("-") : [null, null];
-    const diaArr = diaQcCombo?.find(
+    // Resolve current dia/cs or keep existing selection
+    const [dq, dc] = diaQcKey ? diaQcKey.split("-") : [null, null];
+    const diaArr = diaQcLocal.find(
       (ele) =>
         ele?.Quality?.toUpperCase() === dq?.toUpperCase() &&
         ele?.color?.toUpperCase() === dc?.toUpperCase(),
     );
 
-    const diaQcVal = diaArr ? `${diaArr.QualityId ?? 0},${diaArr.ColorId ?? 0}` : "0,0";
+    const csArr = csQcLocal.find(
+      (ele) =>
+        ele?.Quality === selectCsQC?.split(",")[0] &&
+        ele?.color === selectCsQC?.split(",")[1],
+    );
 
+    const newSize = size ?? sizeData;
+    if (metalCombo?.MetalType) setMetalType(metalCombo.MetalType);
+    if (size) setSizeData(size);
+
+    // Update the defaultArticleId state so main page info fields update
+    if (articleId) setDefaultArticleId(articleId);
+
+    // Find selected article object from rd1Data to pass correct ArticleNo
+    const selectedArticleObj =
+      rd1Data?.find((r) => r.ArticleId === articleId) || rd1Data?.[0];
+    const targetArticleNo =
+      selectedArticleObj?.ArticleNo || singleProd?.ArticleNo || "";
     const targetAutocode =
       selectedArticleObj?.autocode ||
       rd1Data?.[0]?.autocode ||
       singleProd?.autocode ||
-      singleProd1?.autocode ||
-      decodeUrl?.a ||
       "";
-    const targetDesignNo =
-      selectedArticleObj?.designno ||
-      rd1Data?.[0]?.designno ||
-      singleProd?.designno ||
-      singleProd1?.designno ||
-      decodeUrl?.b ||
-      "";
-    const activeArticleNo =
-      selectedArticleObj?.ArticleNo ||
-      decodeUrl?.ArticleNo ||
-      singleProd?.ArticleNo ||
-      "";
-
-    const articlePrice =
-      selectedArticleObj?.UnitCostWithmarkup ||
-      selectedArticleObj?.UnitCostWithMarkUp ||
-      selectedArticleObj?.TotalUnitCost ||
-      customizationDetail?.UnitCostWithmarkup ||
-      singleProd1?.UnitCostWithmarkup ||
-      singleProd?.UnitCostWithMarkUp;
 
     setCustomizationDetail({
       ...selectedArticleObj,
-      ArticleId: selectedArticleObj?.ArticleId || targetArticleId,
-      ArticleNo: activeArticleNo,
+      ArticleId: selectedArticleObj?.ArticleId,
+      ArticleNo: targetArticleNo,
       autocode: targetAutocode,
-      Metalid: selectedArticleObj?.MetalTypeId || targetMetalCombo?.MetalTypeId,
-      MetalColorId: selectedArticleObj?.MetalColorId || targetMetalCombo?.MetalColorId,
-      MetalType: mType,
-      MetalColor: mColor,
-      DiaQCid: diaQcVal,
-      DiaQCLabel: targetDiaQcKey,
-      Size: mSize,
-      NetWeight: selectedArticleObj?.NetWeight || singleProd?.NetWeight || singleProd?.Nwt,
-      UnitCostWithmarkup: articlePrice,
-      UnitCostWithMarkUp: articlePrice,
-      TotalUnitCost: articlePrice,
+      Metalid: selectedArticleObj?.MetalTypeId,
+      MetalColorId: selectedArticleObj?.MetalColorId,
+      MetalType: selectedArticleObj?.MetalType,
+      MetalColor: selectedArticleObj?.MetalColor,
+      DiaQCid: `${diaArr?.QualityId ?? 0},${diaArr?.ColorId ?? 0}`,
+      DiaQCLabel: diaArr ? `${diaArr.Quality}-${diaArr.color}` : null,
+      CsQCid: `${csArr?.QualityId ?? 0},${csArr?.ColorId ?? 0}`,
+      Size: selectedArticleObj?.Size,
+      NetWeight: selectedArticleObj?.NetWeight,
     });
 
-    let prodObj = {
-      a: targetAutocode,
-      b: targetDesignNo,
-      ArticleNo: activeArticleNo,
-    };
-
-    let obj = {
-      mt:
-        selectedArticleObj?.MetalTypeId ||
-        targetMetalCombo?.MetalTypeId ||
-        (loginUserDetail?.MetalId ?? storeinit?.MetalId),
-      diaQc: diaQcVal,
-      csQc: selectCsQC || "0,0",
-    };
-
-    setisPriceLoading(true);
-    const res = await SingleArticleProdListAPI(
-      prodObj,
-      mSize ?? sizeData,
-      obj,
-      cookie,
-    );
-    if (res && res?.pdList?.[0]) {
-      const updatedProd = res.pdList[0];
-      const newPrice =
-        updatedProd.UnitCostWithmarkup ||
-        updatedProd.UnitCostWithMarkUp ||
-        updatedProd.TotalUnitCost ||
-        articlePrice;
-
-      const syncedProd = {
-        ...updatedProd,
-        UnitCostWithmarkup: newPrice,
-        UnitCostWithMarkUp: newPrice,
-        TotalUnitCost: newPrice,
-      };
-
-      setSingleProd1(syncedProd);
-      setSingleProd((prev) => ({ ...prev, ...syncedProd }));
-      setnetWTData(syncedProd);
-      setCustomizationDetail((prev) => ({
-        ...prev,
-        ...syncedProd,
-      }));
-    }
-
-    const chosenColor = mColor || selectedArticleObj?.MetalColor || selectedArticleObj?.metalcolorname;
+    const chosenColor = selectedArticleObj?.MetalColor || metalCombo?.MetalColor || metalCombo?.MetalColorName || selectedArticleObj?.metalcolorname;
     if (chosenColor) {
       handleMetalWiseColorImg(chosenColor);
     }
 
-    setisPriceLoading(false);
+    // No API call on customizer confirm — just update UI state with the selected combination
   };
 
-  const activeArticle = customizationDetail || rd1Data?.[0] || null;
+  const compressAndEncode = (inputString) => {
+    try {
+      const uint8Array = new TextEncoder().encode(inputString);
 
-  const derivedIsMediaReady = mediaBuildDone || (pdThumbImg?.length > 0 && selectedThumbImg?.link?.imageUrl);
-  const derivedMediaBuildDone = mediaBuildDone || (pdThumbImg?.length > 0 && selectedThumbImg?.link?.imageUrl);
+      const compressed = Pako.deflate(uint8Array, { to: "string" });
+
+      return btoa(String.fromCharCode.apply(null, compressed));
+    } catch (error) {
+      console.error("Error compressing and encoding:", error);
+      return null;
+    }
+  };
+
+  const handleMoveToDetail = (productData, imageUrl) => {
+    let loginInfo = loginUserDetail;
+
+    let obj = {
+      a: productData?.autocode,
+      b: productData?.designno,
+      m: loginInfo?.MetalId,
+      d: loginInfo?.cmboDiaQCid,
+      c: loginInfo?.cmboCSQCid,
+      f: {},
+      g: decodeUrl?.g,
+      img:
+        imageUrl ??
+        `${storeinit?.CDNDesignImageFol}${productData?.designno}~1.${productData?.ImageExtension}`,
+      mediaDet: productData?.ImageVideoDetail ?? "",
+      metalColorId: productData?.MetalColorid ?? null,
+    };
+
+    let encodeObj = compressAndEncode(JSON.stringify(obj));
+
+    // Navigate(
+    //   `/d/${productData?.TitleLine?.replace(/\s+/g, `_`)}${productData?.TitleLine?.length > 0 ? "_" : ""
+    //   }${productData?.designno}?p=${encodeObj}`
+    // );
+    Navigate.push(
+      `/d/${formatRedirectTitleLine(productData?.TitleLine)}${productData?.designno}?p=${encodeObj}`,
+    );
+    // step 1
+    setSingleProd1({});
+    setSingleProd({});
+    setIsImageLoad(true);
+    setWishListFlag(null);
+  };
+
+  const handleCartandWish = (e, ele, type) => {
+    // console.log("event", e.target.checked, ele, type);
+    let loginInfo = loginUserDetail;
+
+    let prodObj = {
+      StockId: ele?.StockId,
+      // "autocode": ele?.autocode,
+      // "Metalid": ele?.MetalPurityid,
+      // "MetalColorId": ele?.MetalColorid,
+      // "DiaQCid": loginInfo?.cmboDiaQCid,
+      // "CsQCid": loginInfo?.cmboCSQCid,
+      // "Size": ele?.Size,
+      Unitcost: ele?.Amount,
+      // "UnitCostWithmarkup": ele?.Amount,
+      // "Remark": ""
+    };
+
+    if (e.target.checked == true) {
+      CartAndWishListAPI(type, prodObj, cookie)
+        .then((res) => {
+          let cartC = res?.Data?.rd[0]?.Cartlistcount;
+          let wishC = res?.Data?.rd[0]?.Wishlistcount;
+          setWishCountNum(wishC);
+          setCartCountNum(cartC);
+          if (type === "Cart") {
+            broadcast(
+              "UPDATE_CART_COUNT",
+              cartC,
+              prodObj?.autocode,
+              "cart",
+              true,
+            );
+          } else {
+            broadcast(
+              "UPDATE_WISH_COUNT",
+              wishC,
+              prodObj?.autocode,
+              "wish",
+              true,
+            );
+          }
+        })
+        .catch((err) => console.log("err", err));
+    } else {
+      RemoveCartAndWishAPI(type, ele?.StockId, cookie, true)
+        .then((res) => {
+          let cartC = res?.Data?.rd[0]?.Cartlistcount;
+          let wishC = res?.Data?.rd[0]?.Wishlistcount;
+          setWishCountNum(wishC);
+          setCartCountNum(cartC);
+          if (type === "Cart") {
+            broadcast(
+              "UPDATE_CART_COUNT",
+              cartC,
+              prodObj?.autocode,
+              "cart",
+              false,
+            );
+          } else {
+            broadcast(
+              "UPDATE_WISH_COUNT",
+              wishC,
+              prodObj?.autocode,
+              "wish",
+              false,
+            );
+          }
+        })
+        .catch((err) => console.log("err", err));
+    }
+
+    if (type === "Cart") {
+      setCartArr((prev) => ({
+        ...prev,
+        [ele?.StockId]: e.target.checked,
+      }));
+    }
+  };
+
+  const getCollectionId = singleProd?.Collectionid ?? singleProd1?.Collectionid;
+
+  const getCollName = filterData
+    ?.filter((item) => item?.Name === "Collection")
+    ?.map((item) => {
+      const options = JSON.parse(item?.options || "[]");
+      const matchedOption = options.find(
+        (option) => option.id === getCollectionId,
+      );
+      return matchedOption?.Name || null;
+    })[0];
+
+  const rawPassedImg = (decodeUrl?.img && !decodeUrl.img.includes("undefined") && !decodeUrl.img.startsWith("undefined"))
+    ? decodeUrl.img
+    : (initialDecodeUrl?.img && !initialDecodeUrl.img.includes("undefined") && !initialDecodeUrl.img.startsWith("undefined"))
+      ? initialDecodeUrl.img
+      : null;
+
+  const mtColorLocalForFallback = getSession("MetalColorCombo") || [];
+  const loginInfoForFallback = getSession("loginUserDetail");
+  const urlMetalColorId = initialDecodeUrl?.metalColorId || decodeUrl?.metalColorId || initialDecodeUrl?.m || decodeUrl?.m;
+  const fallbackColorId = singleProd?.MetalColorid || urlMetalColorId || loginUserDetail?.MetalColorId || loginInfoForFallback?.MetalColorId || mtColorLocalForFallback?.[0]?.id;
+  const fallbackColorObj = mtColorLocalForFallback.find(ele => Number(ele.id) === Number(fallbackColorId));
+  const activeColorCode = selectedMetalColor || fallbackColorObj?.colorcode;
+
+  let validPassedImg = rawPassedImg;
+
+  let resolvedImages = [];
+  if (pdThumbImg?.length > 0) {
+    resolvedImages = pdThumbImg.map((item) => {
+      if (!item?.thumbImageUrl) return null;
+      if (item.thumbImageUrl.includes("/Design_Thumb")) {
+        const firstHalf = item.thumbImageUrl.split("/Design_Thumb")[0];
+        const secondhalf = item.thumbImageUrl.split("/Design_Thumb")[1]?.split(".")[0];
+        if (firstHalf && secondhalf) {
+          return `${firstHalf}${secondhalf}.${item?.originalImageExtension || "webp"}`;
+        }
+      }
+      return item.thumbImageUrl.replace(/\.[^/.]+$/, `.${item?.originalImageExtension || "webp"}`);
+    }).filter(url => url && !url.includes("undefined") && !url.startsWith("undefined"));
+  }
+
+  if (resolvedImages.length === 0 && validPassedImg) {
+    resolvedImages = [validPassedImg];
+  }
+
+  const dNo = singleProd?.designno || initialDecodeUrl?.b || decodeUrl?.b;
+  const ext = singleProd?.ImageExtension || "webp";
+  const baseFol = storeInit?.CDNDesignImageFol || storeinit?.CDNDesignImageFol;
+  if (resolvedImages.length === 0 && dNo && baseFol) {
+    const colorSuffix = activeColorCode ? `~${activeColorCode}` : "";
+    resolvedImages = [`${baseFol}${dNo}~1${colorSuffix}.${ext}`];
+  }
+
+  const getImagesArr = resolvedImages;
+
+  const derivedMediaBuildDone = mediaBuildDone || (validPassedImg ? true : false) || (resolvedImages.length > 0);
+  const derivedIsMediaReady = isMediaReady || (validPassedImg ? true : false) || (resolvedImages.length > 0);
+
+  useEffect(() => {
+    if (!mediaBuildDone) return;
+    const essentialDataReady =
+      singleProd && Object.keys(singleProd).length > 0 && storeInit;
+
+    if (!essentialDataReady) return;
+    setIsMediaReady(true);
+  }, [mediaBuildDone, singleProd, storeInit]);
+
+  const HandleImageDialogOpen = (index) => {
+    setSelectedImageIndex(index);
+    setIsImageDialogOpen(true);
+  };
+
+  const HandleImageDialogClose = () => {
+    setSelectedImageIndex(null);
+    setIsImageDialogOpen(false);
+  };
+
+  useEffect(() => {
+    if (lastSyncData && lastSyncData.autocode) {
+      const { autocode, ArticleNo, type, status } = lastSyncData;
+      // Keep the global store maps in sync at variant level when ArticleNo is known
+      const preciseKey = ArticleNo ? getCartWishKey({ autocode, ArticleNo }) : null;
+      if (type === "cart") {
+        setAddToCartFlag(status);
+        if (preciseKey) {
+          setStoreCartArr?.((prev) => ({ ...prev, [preciseKey]: status }));
+        }
+      } else if (type === "wish") {
+        setWishListFlag(status);
+        if (preciseKey) {
+          setStoreWishArr?.((prev) => ({ ...prev, [preciseKey]: status }));
+        }
+      }
+    }
+  }, [lastSyncData]);
 
   return {
     initialDecodeUrl,
@@ -1919,8 +2209,9 @@ export function useProductDetail({ storeinit, searchParams, params }) {
     sizeData,
     setSizeData,
     singleProd,
+    setSingleProd,
     singleProd1,
-    product,
+    setSingleProd1,
     diaList,
     csList,
     netWTData,
@@ -1933,27 +2224,35 @@ export function useProductDetail({ storeinit, searchParams, params }) {
     selectDiaQc,
     setSelectDiaQc,
     showtDiaQc,
+    setShowDiaQc,
     diaQcCombo,
     csQcCombo,
     selectCsQC,
     setSelectCsQC,
     metalWiseColorImg,
+    setMetalWiseColorImg,
     metalColorCombo,
     isPriceloading,
     selectedThumbImg,
     setSelectedThumbImg,
     pdThumbImg,
+    setPdThumbImg,
     thumbImgIndex,
     setThumbImgIndex,
     pdVideoArr,
-    filteredVideos,
+    setPdVideoArr,
     addToCardFlag,
+    setAddToCartFlag,
     wishListFlag,
+    setWishListFlag,
+    isCartBtnLoading,
+    isWishBtnLoading,
     isDataFound,
     pdLoadImage,
-    saveLastView,
+    recentlyViewedArr,
     imageSrc,
     setImageSrc,
+    filterData,
     showPlaceholder,
     imageRefs,
     handleMouseMove,
@@ -1962,8 +2261,6 @@ export function useProductDetail({ storeinit, searchParams, params }) {
     setSelectedMetalColor,
     isMediaReady,
     mediaBuildDone,
-    derivedIsMediaReady,
-    derivedMediaBuildDone,
     rd1Data,
     rd2Data,
     customizationDetail,
@@ -1978,22 +2275,54 @@ export function useProductDetail({ storeinit, searchParams, params }) {
     stockItemArr,
     cartArr,
     setCartArr,
+    product,
     productSchema,
+    filteredVideos,
     isExpanded,
     toggleText,
     isClamped,
     descriptionRef,
-    defaultArticleId,
-    activeArticle,
-    handleCart,
-    handleWishList,
-    handleCustomChange,
-    handleCustomizerConfirm,
-    handleMetalWiseColorImg,
+    descriptionText,
+    fallbackImg,
+    handleError,
+    handleVideoError,
+    callAllApi,
+    checkImageAvailability,
     handleMetalWiseColorImgWithFlag,
     ProdCardImageFunc,
+    handleMetalWiseColorImg,
+    getDynamicVideo,
+    getDynamicImages,
+    decodeEntities,
+    handleCustomChange,
+    SizeSorting,
+    defaultArticleId,
+    setDefaultArticleId,
+    handleCustomizerConfirm,
+    compressAndEncode,
+    handleMoveToDetail,
+    handleCartandWish,
+    handleCart,
+    handleWishList,
+    getCollectionId,
+    getCollName,
+    rawPassedImg,
+    activeColorCode,
+    validPassedImg,
+    resolvedImages,
+    getImagesArr,
+    derivedMediaBuildDone,
+    derivedIsMediaReady,
+    HandleImageDialogOpen,
+    HandleImageDialogClose,
     cookie,
     Navigate,
+    location,
+    loginUserDetail,
+    storeCartArr,
+    storeWishArr,
+    imageNotFound,
+    noImageFound,
   };
 }
 

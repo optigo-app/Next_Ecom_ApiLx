@@ -13,7 +13,7 @@ export const themeMap = {
     // page: LocalSetup,
   },
   "procatalog.web": {
-    page: "fgstore.pro",
+    page: "procatalog.web",
     // page: LocalSetup,
   },
   // local dev
@@ -90,6 +90,6 @@ export const themeMap = {
     page: "beluxjewel.web",
   },
   "sonasons.procatalog.in": {
-    page: "fgstore.pro",
+    page: "procatalog.web",
   },
 };
