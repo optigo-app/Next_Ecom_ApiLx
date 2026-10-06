@@ -1,4 +1,5 @@
 import { resolveHomeTable } from "./getHomeProducts.js";
+import { ensureAlbumsTable } from "../schema/albums.js";
 
 /**
  * Retrieves customer-exclusive albums joined with their respective design products from SQLite.
@@ -14,6 +15,16 @@ import { resolveHomeTable } from "./getHomeProducts.js";
  * @returns {object} Standard response { Status: "200", Message: "...", Data: { rd: [...], storeConfig: {...} } }
  */
 export function getExclusiveAlbumsWithDesigns(db, options = {}) {
+  if (!db) {
+    return {
+      Status: "400",
+      Message: "Database connection unavailable.",
+      Data: { rd: [] },
+    };
+  }
+
+  ensureAlbumsTable(db);
+
   const startTime = performance.now();
   const customerId = options.customerId || options.CustomerId;
 

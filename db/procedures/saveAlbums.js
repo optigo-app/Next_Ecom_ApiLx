@@ -1,3 +1,5 @@
+import { ensureAlbumsTable } from "../schema/albums.js";
+
 /**
  * Saves album items into albums table (from GetAlbums API).
  * Strategy: DELETE all existing rows first, then INSERT fresh batch — atomic transaction.
@@ -5,16 +7,36 @@
  *
  * @param {import('better-sqlite3').Database} db
  * @param {Array<object>|object} rawPayload - array or response payload of album objects
- * @returns {{ totalReceived: number, savedCount: number, deletedCount: number, elapsedMs: number, success: boolean }}
+ * @returns {{ totalReceived: number, savedCount: number, deletedCount: number, elapsedMs: number, success: boolean, error?: string }}
  */
 export function saveAlbums(db, rawPayload = []) {
+    if (!db) {
+        return {
+            totalReceived: 0,
+            savedCount: 0,
+            deletedCount: 0,
+            elapsedMs: 0,
+            success: false,
+            error: "Database instance is required",
+        };
+    }
+
+    ensureAlbumsTable(db);
+
     const startTime = performance.now();
 
     let albumList = [];
     if (Array.isArray(rawPayload)) {
         albumList = rawPayload;
     } else if (rawPayload && typeof rawPayload === "object") {
-        albumList = rawPayload?.Data?.rd || rawPayload?.rd || [];
+        albumList =
+            rawPayload?.Data?.rd ||
+            rawPayload?.rd ||
+            rawPayload?.data?.rd ||
+            rawPayload?.albums ||
+            (Array.isArray(rawPayload?.Data) ? rawPayload.Data : null) ||
+            (Array.isArray(rawPayload?.data) ? rawPayload.data : null) ||
+            [];
     }
 
     if (!Array.isArray(albumList) || albumList.length === 0) {

@@ -1,5 +1,6 @@
 import { getTenantDb } from "../../../../db/tenantManager.js";
 import { saveAlbums } from "../../../../db/procedures/saveAlbums.js";
+import { ensureAlbumsTable } from "../../../../db/schema/albums.js";
 import { logger } from "../../../../db/logger.js";
 import { getDomainInfo } from "../getDomainInfo.js";
 
@@ -77,6 +78,19 @@ function buildErpEndpoint(storeInit) {
 export async function syncAlbums(options = {}) {
   const targetDomain = await resolveDomain(options.domain);
   const db = getTenantDb(targetDomain);
+
+  if (!db) {
+    logger.warn("ALBUMS_SYNC", `Database connection unavailable for domain '${targetDomain}'`);
+    return {
+      success: false,
+      domain: targetDomain,
+      totalReceived: 0,
+      savedCount: 0,
+      error: `Database connection unavailable or domain '${targetDomain}' not authorized.`,
+    };
+  }
+
+  ensureAlbumsTable(db);
   const storeInit = resolveStoreInit(db, options.storeInit);
 
   if (!storeInit) {

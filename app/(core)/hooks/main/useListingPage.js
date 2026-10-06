@@ -341,21 +341,32 @@ export function useListingPage({
         const decoded = JSON.parse(
           atob(decodeURIComponent(searchVar.split("=")[1]))
         );
-        flags.SearchKey = decoded?.b || decoded;
+        flags.SearchKey = decoded?.b || decoded?.SearchKey || decoded?.ArticleNo || (typeof decoded === "string" ? decoded : "");
+        if (decoded?.ArticleNo) flags.ArticleNo = decoded.ArticleNo;
+        if (decoded?.a) flags.autocode = decoded.a;
       } catch (_) {
         try {
           flags.SearchKey = atob(decodeURIComponent(searchVar.split("=")[1]));
         } catch (_) {}
       }
     }
+    const directSearch = searchParams?.SearchKey || searchParams?.searchKey || searchParams?.search || searchParams?.Search;
+    if (directSearch && !flags.SearchKey) {
+      flags.SearchKey = directSearch;
+    }
+    const directArt = searchParams?.ArticleNo || searchParams?.articleno;
+    if (directArt && !flags.ArticleNo) {
+      flags.ArticleNo = directArt;
+    }
     return flags;
-  }, [result]);
+  }, [result, searchParams]);
 
   const hasUrlMenuFlag = Boolean(
     menuFlags.isNewArrival ||
       menuFlags.isTrending ||
       menuFlags.isBestSeller ||
-      menuFlags.SearchKey
+      menuFlags.SearchKey ||
+      menuFlags.ArticleNo
   );
 
   // ----------------------------------------------------

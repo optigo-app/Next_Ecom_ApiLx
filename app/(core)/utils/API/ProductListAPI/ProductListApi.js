@@ -127,10 +127,11 @@ const ProductListApi = async (
 
   const data = {
     PackageId: loginInfo?.PackageId ?? storeinit?.PackageId ?? "",
-    autocode: "",
+    autocode: serachVar?.a ?? filterObj?.autocode ?? obj?.autocode ?? "",
     FrontEnd_RegNo: storeinit?.FrontEnd_RegNo ?? "",
     Customerid: customerId ?? 0,
     designno: dno ?? "",
+    ArticleNo: serachVar?.ArticleNo ?? filterObj?.ArticleNo ?? filterObj?.articleno ?? obj?.ArticleNo ?? "",
     Shape: Shape ?? "",
     FilterKey: MenuParams?.FilterKey ?? "",
     FilterVal: MenuParams?.FilterVal ?? "",
@@ -138,7 +139,7 @@ const ProductListApi = async (
     FilterVal1: MenuParams?.FilterVal1 ?? "",
     FilterKey2: MenuParams?.FilterKey2 ?? "",
     FilterVal2: MenuParams?.FilterVal2 ?? "",
-    SearchKey: serachVar?.b ?? "",
+    SearchKey: serachVar?.b ?? serachVar?.SearchKey ?? filterObj?.SearchKey ?? filterObj?.searchKey ?? filterObj?.search ?? obj?.SearchKey ?? obj?.b ?? "",
     PageNo: page ?? 1,
     PageSize: 1000000 ?? storeinit?.PageSize ?? "",
     Metalid: mtid ?? "",

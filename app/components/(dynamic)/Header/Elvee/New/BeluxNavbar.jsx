@@ -355,17 +355,18 @@ const BeluxNavbar = ({ storeInit: storeinit, logos, initialMenuData = [] }) => {
   };
 
   const searchDataFucn = (searchText) => {
-    if (searchText) {
+    if (searchText && typeof searchText === "string" && searchText.trim()) {
+      const cleanText = searchText.trim();
       let obj = {
         a: "",
-        b: searchText,
+        b: cleanText,
         m: loginUserDetail?.MetalId ?? storeinit?.MetalId,
         d: loginUserDetail?.cmboDiaQCid ?? storeinit?.cmboDiaQCid,
         c: loginUserDetail?.cmboCSQCid ?? storeinit?.cmboCSQCid,
         f: {},
       };
-      let encodeObj = btoa(JSON.stringify(obj));
-      navigate(`/p/${searchText}?S=${encodeObj}`);
+      let encodeObj = btoa(unescape(encodeURIComponent(JSON.stringify(obj))));
+      navigate(`/p/${encodeURIComponent(cleanText)}?S=${encodeObj}`);
       setSearchOpen(false);
       setDrawerSearchOpen(false);
       setMobileOpen(false);

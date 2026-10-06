@@ -13,7 +13,7 @@ import { COMPANY_INFO_TABLE_SQL } from "./companyInfo.js";
 import { MENUS_TABLE_SQL } from "./menus.js";
 import { PACKAGEMASTER_TABLE_SQL } from "./packagemaster.js";
 import { RECENTLY_VIEWED_TABLE_SQL } from "./recentlyViewed.js";
-import { ALBUMS_TABLE_SQL } from "./albums.js";
+import { ALBUMS_TABLE_SQL, ensureAlbumsTable } from "./albums.js";
 import { ensurePolicyCategoriesTable, POLICY_CATEGORIES_TABLE } from "./policyCategories.js";
 import {
     ARTICLE_INFO_PREFIX,
@@ -40,6 +40,7 @@ export {
     PACKAGEMASTER_TABLE_SQL,
     RECENTLY_VIEWED_TABLE_SQL,
     ALBUMS_TABLE_SQL,
+    ensureAlbumsTable,
     ARTICLE_INFO_PREFIX,
     ARTICLE_MATERIAL_PREFIX,
     ARTICLE_TABLE_PREFIX,
@@ -149,6 +150,7 @@ export function initSchema(db, domain, themeInfo = {}) {
 
     db.exec(SCHEMA_SQL);
     ensurePolicyCategoriesTable(db);
+    ensureAlbumsTable(db);
 }
 
 export default initSchema;
