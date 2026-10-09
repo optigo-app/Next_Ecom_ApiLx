@@ -58,14 +58,21 @@ export function getStoreInit(db, options = {}) {
         const cleanedStoreInit = cleanRow(storeInitRow);
         const cleanedCompanyInfo = cleanRow(companyInfoRow);
 
+        const rd = cleanedStoreInit ? [cleanedStoreInit] : [];
+        const rd1 = accountRows || [];
+        const rd2 = cleanedCompanyInfo ? [cleanedCompanyInfo] : [];
+
         return {
             Status: "200",
             Message: "Request processed successfully.",
             Data: {
-                rd: cleanedStoreInit ? [cleanedStoreInit] : [],
-                rd1: accountRows || [],
-                rd2: cleanedCompanyInfo ? [cleanedCompanyInfo] : []
-            }
+                rd,
+                rd1,
+                rd2
+            },
+            rd,
+            rd1,
+            rd2
         };
     } catch (err) {
         console.error("[getStoreInit] Error reading from SQLite:", err.message);

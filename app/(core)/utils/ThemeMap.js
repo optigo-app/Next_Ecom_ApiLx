@@ -92,4 +92,13 @@ export const themeMap = {
   "sonasons.procatalog.in": {
     page: "procatalog.web",
   },
+  localhost: {
+    page: LocalSetup || "beluxjewel.web",
+  },
+  "127.0.0.1": {
+    page: LocalSetup || "beluxjewel.web",
+  },
+  default: {
+    page: LocalSetup || "beluxjewel.web",
+  },
 };

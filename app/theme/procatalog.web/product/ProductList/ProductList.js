@@ -212,7 +212,53 @@ const ProductList = ({ storeinit, searchParams, params, initialData, initialFilt
     }
   };
 
+  useEffect(() => {
+    if (typeof window !== "undefined" && Array.isArray(productListData) && productListData.length > 0) {
+      try {
+        const lightweightList = productListData.map((item) => ({
+          autocode: item?.autocode,
+          designno: item?.designno,
+          TitleLine: item?.TitleLine,
+          ImageExtension: item?.ImageExtension,
+          ImageCount: item?.ImageCount,
+          UnitCostWithMarkUp: item?.UnitCostWithMarkUp,
+          Nwt: item?.Nwt,
+          ArticleNo: item?.ArticleNo,
+          ArticleId: item?.ArticleId,
+          MetalColorid: item?.MetalColorid,
+          MetalTypeId: item?.MetalTypeId || item?.MetalPurityid,
+          DiamondQualityId: item?.DiamondQualityId,
+          ColorStoneQualityId: item?.ColorStoneQualityId,
+          ImageVideoDetail: item?.ImageVideoDetail,
+        }));
+        sessionStorage.setItem("procatalog_design_list", JSON.stringify(lightweightList));
+      } catch (_) {}
+    }
+  }, [productListData]);
+
   const handleMoveToDetail = (productData, imageUrl) => {
+    if (typeof window !== "undefined" && Array.isArray(productListData) && productListData.length > 0) {
+      try {
+        const lightweightList = productListData.map((item) => ({
+          autocode: item?.autocode,
+          designno: item?.designno,
+          TitleLine: item?.TitleLine,
+          ImageExtension: item?.ImageExtension,
+          ImageCount: item?.ImageCount,
+          UnitCostWithMarkUp: item?.UnitCostWithMarkUp,
+          Nwt: item?.Nwt,
+          ArticleNo: item?.ArticleNo,
+          ArticleId: item?.ArticleId,
+          MetalColorid: item?.MetalColorid,
+          MetalTypeId: item?.MetalTypeId || item?.MetalPurityid,
+          DiamondQualityId: item?.DiamondQualityId,
+          ColorStoneQualityId: item?.ColorStoneQualityId,
+          ImageVideoDetail: item?.ImageVideoDetail,
+        }));
+        sessionStorage.setItem("procatalog_design_list", JSON.stringify(lightweightList));
+      } catch (_) {}
+    }
+
     handleMoveToDetailHelper({
       productData,
       imageUrl,

@@ -22,6 +22,7 @@
 import fs from "fs";
 import path from "path";
 import { fetchStoreInitData } from "@/app/(core)/utils/fetchStoreInit";
+import { NEXT_APP_WEB } from "@/app/(core)/utils/env";
 
 // ── Constants ────────────────────────────────────────────────────────────────
 const STORE_INIT_DIR = path.join(process.cwd(), "public", "storeInit");
@@ -35,9 +36,18 @@ const pendingMap = new Map(); // cacheKey → Promise  (dedup concurrent revalid
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 function sanitizeKey(host) {
-  return host
-    ? host.split(":")[0].replace(/[^a-zA-Z0-9._-]/g, "_")
-    : process.env.NEXT_APP_WEB || "localhost";
+  if (!host) return NEXT_APP_WEB || "localhost";
+  const clean = host.split(":")[0].trim().toLowerCase();
+  if (
+    clean === "localhost" ||
+    clean === "127.0.0.1" ||
+    clean.endsWith(".localhost") ||
+    clean.endsWith(".ngrok-free.app") ||
+    clean.endsWith(".ngrok.io")
+  ) {
+    return NEXT_APP_WEB || "localhost";
+  }
+  return clean.replace(/[^a-zA-Z0-9._-]/g, "_");
 }
 
 function diskPath(cacheKey) {
@@ -157,14 +167,29 @@ export async function getStoreInitData(host) {
   const filePath = diskPath(cacheKey);
 
   // ── 1. Memory hit ───────────────────────────────────────────────────────
-  const mem = memoryCache.get(cacheKey);
+  let mem = memoryCache.get(cacheKey);
   if (mem) {
-    const stale = Date.now() - mem.cachedAt >= TTL_MS;
-    if (stale) {
-      // Return stale data immediately, revalidate silently in background
-      triggerRevalidate(cacheKey, mem.data);
+    try {
+      // Fast cross-process invalidation: check if another worker updated the disk file
+      const { mtimeMs } = fs.statSync(filePath);
+      if (mtimeMs > mem.cachedAt) {
+        mem = null;
+        memoryCache.delete(cacheKey);
+      }
+    } catch {
+      // Disk file deleted or unavailable — invalidate memory
+      mem = null;
+      memoryCache.delete(cacheKey);
     }
-    return mem.data;
+
+    if (mem) {
+      const stale = Date.now() - mem.cachedAt >= TTL_MS;
+      if (stale) {
+        // Return stale data immediately, revalidate silently in background
+        triggerRevalidate(cacheKey, mem.data);
+      }
+      return mem.data;
+    }
   }
 
   // ── 2. Disk hit ─────────────────────────────────────────────────────────
@@ -250,10 +275,11 @@ export async function setStoreInitCache(host, data) {
   // Cancel any in-flight revalidation for this key so it doesn't overwrite us
   pendingMap.delete(cacheKey);
 
-  // Write to memory immediately (instant for next request)
-  memoryCache.set(cacheKey, { data, cachedAt: Date.now() });
-
   // Write to disk atomically (survives worker restarts)
   await writeDisk(filePath, data);
+
+  // Write to memory immediately (instant for next request).
+  // Placed after writeDisk so `cachedAt` > `mtimeMs` to avoid self-invalidation.
+  memoryCache.set(cacheKey, { data, cachedAt: Date.now() });
   console.log(`[StoreInit] Cache seeded directly for '${cacheKey}'`);
 }

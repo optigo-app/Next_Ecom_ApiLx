@@ -1,7 +1,7 @@
 
 "use client";
 
-import React from "react";
+import React, { useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useExclusiveAlbum } from "@/app/(core)/hooks/main/useExclusiveAlbum";
 import {
@@ -259,6 +259,18 @@ export default function ExclusiveAlbumOverlay({
     getProductImageUrl,
     formatPrice,
   } = useExclusiveAlbum({ initialDomain });
+
+  const handleMoveToDesignWithCache = useCallback(
+    (design) => {
+      if (typeof window !== "undefined" && Array.isArray(currentAlbumDesigns) && currentAlbumDesigns.length > 0) {
+        try {
+          sessionStorage.setItem("procatalog_design_list", JSON.stringify(currentAlbumDesigns));
+        } catch (_) { }
+      }
+      handleMoveToProductDetail(design);
+    },
+    [currentAlbumDesigns, handleMoveToProductDetail]
+  );
 
   if (!isOpen) return null;
 
@@ -1117,7 +1129,7 @@ export default function ExclusiveAlbumOverlay({
                       return (
                         <Box
                           key={`${design.id || design.autocode}-${design.designno}-${index}`}
-                          onClick={() => handleMoveToProductDetail(design)}
+                          onClick={() => handleMoveToDesignWithCache(design)}
                           sx={{
                             borderRadius: "20px",
                             backgroundColor: "#FFFFFF",
@@ -1259,7 +1271,7 @@ export default function ExclusiveAlbumOverlay({
                                 size="small"
                                 onClick={(e) => {
                                   e.stopPropagation();
-                                  handleMoveToProductDetail(design);
+                                  handleMoveToDesignWithCache(design);
                                 }}
                                 sx={{
                                   minWidth: "auto",
