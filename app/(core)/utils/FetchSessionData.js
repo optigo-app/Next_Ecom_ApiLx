@@ -6,6 +6,9 @@ import {
     POLICY_TABLE_COOKIE,
     POLICY_TABLE_ALIAS,
 } from "./product/pricingPolicy.js";
+import { logoutUser, removeCookieThoroughly } from "./authLogout.js";
+
+export { logoutUser, removeCookieThoroughly };
 
 // Safe check for browser
 const isBrowser = () => typeof window !== "undefined";
@@ -127,14 +130,7 @@ export const removeSession = (key) => {
 // ✅ Clear all (Logout)
 export const clearSession = () => {
     if (!isBrowser()) return;
-
-    sessionStorage.clear();
-    clearPolicyCookies(window.__STORE_INIT__);
-
-    // Clear Window Globals
-    window.__STORE_INIT__ = null;
-    window.__LOGIN_USER_DETAIL__ = null;
-    window.__LOGIN_USER__ = false;
+    logoutUser({ redirectUrl: null });
 };
 
 /**

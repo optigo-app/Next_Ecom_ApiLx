@@ -23,6 +23,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import Cookies from "js-cookie";
 import { useStore } from "@/app/(core)/contexts/StoreProvider";
 import { useNextRouterLikeRR } from "@/app/(core)/hooks/useLocationRd";
+import { logoutUser } from "@/app/(core)/utils/authLogout";
 import ReusableConfirmModal from "../../../ui/Modal";
 
 const ProCatNewHeader = ({ storeinit, logos }) => {
@@ -51,27 +52,12 @@ const ProCatNewHeader = ({ storeinit, logos }) => {
   };
 
   const handleLogout = () => {
-    setislogin(false);
-    Cookies.remove("userLoginCookie");
-    Cookies.remove("visitorId");
-    Cookies.remove("visiterId");
-    sessionStorage.setItem("LoginUser", "false");
-    sessionStorage.removeItem("loginUserDetail");
-    sessionStorage.removeItem("remarks");
-    sessionStorage.removeItem("selectedAddressId");
-    sessionStorage.removeItem("orderNumber");
-    sessionStorage.removeItem("registerEmail");
-    sessionStorage.removeItem("UploadLogicalPath");
-    sessionStorage.removeItem("registerMobile");
-    sessionStorage.removeItem("allproductlist");
-    sessionStorage.removeItem("AllFilter");
-    sessionStorage.removeItem("ColorStoneQualityColorCombo");
-    sessionStorage.removeItem("MetalColorCombo");
-    sessionStorage.removeItem("metalTypeCombo");
-    window.localStorage.removeItem("AuthToken");
-    window.sessionStorage.clear();
     setOpenLogoutModal(false);
-    window.location.href = "/";
+    logoutUser({
+      setislogin,
+      storeInit: storeinit,
+      redirectUrl: "/",
+    });
   };
 
   const navItemStyle = {

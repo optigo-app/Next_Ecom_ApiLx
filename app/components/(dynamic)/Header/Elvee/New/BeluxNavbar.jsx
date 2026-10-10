@@ -39,6 +39,7 @@ import {
   clearSession,
   getSession,
   setSession,
+  logoutUser,
 } from "@/app/(core)/utils/FetchSessionData";
 import { usePathname, useRouter } from "next/navigation";
 
@@ -331,27 +332,12 @@ const BeluxNavbar = ({ storeInit: storeinit, logos, initialMenuData = [] }) => {
   };
 
   const handleLogout = () => {
-    setislogin(false);
-    Cookies.remove("userLoginCookie", { path: "/" });
-    Cookies.remove("LoginUser", { path: "/" });
-    Cookies.remove("userPackageId", { path: "/" });
-    sessionStorage.setItem("LoginUser", false);
-    sessionStorage.removeItem("storeInit");
-    sessionStorage.removeItem("loginUserDetail");
-    sessionStorage.removeItem("remarks");
-    sessionStorage.removeItem("selectedAddressId");
-    sessionStorage.removeItem("orderNumber");
-    sessionStorage.removeItem("registerEmail");
-    sessionStorage.removeItem("UploadLogicalPath");
-    sessionStorage.removeItem("registerMobile");
-    sessionStorage.removeItem("allproductlist");
-
-    if (clearAllCacheData) {
-      clearAllCacheData();
-    }
-
-    clearSession();
-    window.location.replace("/");
+    logoutUser({
+      setislogin,
+      clearAllCacheData,
+      storeInit: storeinit,
+      redirectUrl: "/",
+    });
   };
 
   const searchDataFucn = (searchText) => {
@@ -1250,6 +1236,7 @@ const BeluxNavbar = ({ storeInit: storeinit, logos, initialMenuData = [] }) => {
           selectedProductType={null}
           handleTabChange={() => { }}
           showProductTypeTabs={false}
+          handleLogout={handleLogout}
         />
       </Drawer>
     </>

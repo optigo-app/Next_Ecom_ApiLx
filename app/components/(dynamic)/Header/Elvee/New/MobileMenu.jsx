@@ -61,7 +61,8 @@ const MobileMenu = ({
     DynamicMenu,
     selectedProductType,
     handleTabChange,
-    showProductTypeTabs = false
+    showProductTypeTabs = false,
+    handleLogout
 }) => {
 
     if (activeMenu) {
@@ -434,6 +435,26 @@ const MobileMenu = ({
                         <ListItemText
                             primary="Cart"
                             primaryTypographyProps={{ sx: { fontSize: "1rem", fontWeight: 500, letterSpacing: 0.4, color: "#3C3C3C" } }}
+                        />
+                    </ListItemButton>
+                </ListItem>
+            )}
+
+            {islogin && (
+                <ListItem disablePadding>
+                    <ListItemButton
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            if (handleLogout) handleLogout();
+                        }}
+                        sx={{
+                            py: 1.5, px: 3, borderBottom: "1px solid #f3f3f3",
+                            "&:hover": { bgcolor: alpha("#000", 0.04) },
+                        }}
+                    >
+                        <ListItemText
+                            primary="Log Out"
+                            primaryTypographyProps={{ sx: { fontSize: "1rem", fontWeight: 500, letterSpacing: 0.4, color: "#d32f2f" } }}
                         />
                     </ListItemButton>
                 </ListItem>

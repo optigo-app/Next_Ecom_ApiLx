@@ -15,6 +15,7 @@ import { useNextRouterLikeRR } from "@/app/(core)/hooks/useLocationRd";
 import { useRouter } from "next/navigation";
 import './Header.modul.scss'
 import ReusableConfirmModal from '../../../ui/Modal'
+import { logoutUser } from '@/app/(core)/utils/authLogout';
 
 
 const Header = ({ storeinit, logos }) => {
@@ -152,32 +153,12 @@ const Header = ({ storeinit, logos }) => {
 
 
   const handleLogout = () => {
-    setislogin(false);
-    Cookies.remove("userLoginCookie");
-    Cookies.remove("visitorId");
-    Cookies.remove("visiterId");
-    sessionStorage.setItem("LoginUser", false);
-    sessionStorage.removeItem("loginUserDetail");
-    sessionStorage.removeItem("remarks");
-    sessionStorage.removeItem("selectedAddressId");
-    sessionStorage.removeItem("orderNumber");
-    sessionStorage.removeItem("registerEmail");
-    sessionStorage.removeItem("UploadLogicalPath");
-    sessionStorage.removeItem("remarks");
-    sessionStorage.removeItem("registerMobile");
-    sessionStorage.removeItem("allproductlist");
-    sessionStorage.removeItem("AllFilter");
-    sessionStorage.removeItem("ColorStoneQualityColorCombo");
-    sessionStorage.removeItem("MetalColorCombo");
-    sessionStorage.removeItem("metalTypeCombo");
-    // sessionStorage.removeItem("myAccountFlags");
-    window.localStorage.removeItem("AuthToken");
-    Cookies.remove('visiterId');
-    sessionStorage.removeItem("previousUrl")
-    sessionStorage.removeItem("redirectURL")
-    sessionStorage.removeItem("SecurityKey")
-    window.sessionStorage.clear();
-    window.location.href = "/";
+    setOpenLogoutModal(false);
+    logoutUser({
+      setislogin,
+      storeInit: storeinit,
+      redirectUrl: "/",
+    });
   };
 
 
