@@ -32,6 +32,7 @@ import { useNextRouterLikeRR } from "@/app/(core)/hooks/useLocationRd";
 import { useStore } from "@/app/(core)/contexts/StoreProvider";
 import ReusableConfirmModal from "../../ui/Modal";
 import AccountFooterSections from "./AccountFooterSections";
+import { logoutUser } from "@/app/(core)/utils/authLogout";
 
 function CustomTabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -83,22 +84,12 @@ export default function Account({ Storeinit }) {
   useGlobalPreventSave();
 
   const handleLogout = () => {
-    setislogin(false);
-    Cookies.remove("userLoginCookie", { path: "/" });
-    Cookies.remove("LoginUser", { path: "/" });
-    Cookies.remove("userPackageId", { path: "/" });
-    sessionStorage.setItem("LoginUser", false);
-    sessionStorage.removeItem("storeInit");
-    sessionStorage.removeItem("loginUserDetail");
-    sessionStorage.removeItem("remarks");
-    sessionStorage.removeItem("selectedAddressId");
-    sessionStorage.removeItem("orderNumber");
-    sessionStorage.removeItem("registerEmail");
-    sessionStorage.removeItem("UploadLogicalPath");
-    sessionStorage.removeItem("registerMobile");
-    sessionStorage.removeItem("allproductlist");
-    sessionStorage.clear();
-    window.location.href = "/";
+    setopenLogoutModal(false);
+    logoutUser({
+      setislogin,
+      storeInit: Storeinit,
+      redirectUrl: "/",
+    });
   };
 
   const OpenLogoutModal = () => setopenLogoutModal(true);

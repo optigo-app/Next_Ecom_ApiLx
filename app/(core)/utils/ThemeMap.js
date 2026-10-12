@@ -87,10 +87,10 @@ export const themeMap = {
     page: "beluxjewel.web",
   },
   "nxt08.optigoapps.com": {
-    page: "beluxjewel.web",
+    page: "procatalog.web",
   },
   "sonasons.procatalog.in": {
-    page: "procatalog.web",
+    page: "beluxjewel.web",
   },
   localhost: {
     page: LocalSetup || "beluxjewel.web",
@@ -102,3 +102,6 @@ export const themeMap = {
     page: LocalSetup || "beluxjewel.web",
   },
 };
+
+
+
