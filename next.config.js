@@ -1,6 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: 'standalone',
+  // output: 'standalone',
   serverExternalPackages: ['better-sqlite3'],
   images: {
     formats: ['image/avif', 'image/webp'],
