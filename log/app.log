@@ -843,3 +843,106 @@
 [2026-10-14T08:59:34.476Z] [INFO] [procatalog.web] [HOME_NEWARRIVAL] [NEW ARRIVAL ACTION] Tenant 'procatalog.web' → 2 items from table 'design_Productlist_20_BEdiamond_BEcolorStone_11' | data: {"domain":"procatalog.web","table":"design_Productlist_20_BEdiamond_BEcolorStone_11","count":2}
 [2026-10-14T08:59:34.481Z] [INFO] [procatalog.web] [HOME_CATEGORY] [CATEGORY ACTION] Tenant 'procatalog.web' → 17 categories from table 'design_Productlist_20_BEdiamond_BEcolorStone_11' | data: {"domain":"procatalog.web","table":"design_Productlist_20_BEdiamond_BEcolorStone_11","count":17}
 [2026-10-14T08:59:34.478Z] [INFO] [procatalog.web] [HOME_TRENDING] [TRENDING ACTION] Tenant 'procatalog.web' → 17 items from table 'design_Productlist_20_BEdiamond_BEcolorStone_11' | data: {"domain":"procatalog.web","table":"design_Productlist_20_BEdiamond_BEcolorStone_11","count":17}
+[2026-10-15T08:33:42.033Z] [INFO] [procatalog.web] [STORE_INIT] Fetching StoreInit configuration for tenant: 'procatalog.web' | data: {"domain":"procatalog.web"}
+[2026-10-15T08:33:42.244Z] [INFO] [procatalog.web] [STORE_INIT] Successfully retrieved StoreInit for 'procatalog.web' | data: {"domain":"procatalog.web","rd":1,"rd1":27,"rd2":1}
+[2026-10-15T08:34:28.870Z] [INFO] [procatalog.web] [STORE_INIT] Fetching StoreInit configuration for tenant: 'procatalog.web' | data: {"domain":"procatalog.web"}
+[2026-10-15T08:34:28.875Z] [INFO] [procatalog.web] [STORE_INIT] Successfully retrieved StoreInit for 'procatalog.web' | data: {"domain":"procatalog.web","rd":1,"rd1":27,"rd2":1}
+[2026-10-15T08:34:29.083Z] [INFO] [procatalog.web] [HOME_CATEGORY] [CATEGORY ACTION] Tenant 'procatalog.web' → 17 categories from table 'design_Productlist_20_BEdiamond_BEcolorStone_11' | data: {"domain":"procatalog.web","table":"design_Productlist_20_BEdiamond_BEcolorStone_11","count":17}
+[2026-10-15T08:34:32.951Z] [INFO] [procatalog.web] [STORE_INIT] Fetching StoreInit configuration for tenant: 'procatalog.web' | data: {"domain":"procatalog.web"}
+[2026-10-15T08:34:32.954Z] [INFO] [procatalog.web] [STORE_INIT] Successfully retrieved StoreInit for 'procatalog.web' | data: {"domain":"procatalog.web","rd":1,"rd1":27,"rd2":1}
+[2026-10-15T08:38:12.628Z] [INFO] [procatalog.web] [STORE_INIT] Fetching StoreInit configuration for tenant: 'procatalog.web' | data: {"domain":"procatalog.web"}
+[2026-10-15T08:38:12.630Z] [INFO] [procatalog.web] [STORE_INIT] Successfully retrieved StoreInit for 'procatalog.web' | data: {"domain":"procatalog.web","rd":1,"rd1":27,"rd2":1}
+[2026-10-15T08:38:12.988Z] [INFO] [procatalog.web] [STORE_INIT] Fetching StoreInit configuration for tenant: 'procatalog.web' | data: {"domain":"procatalog.web"}
+[2026-10-15T08:38:12.990Z] [INFO] [procatalog.web] [STORE_INIT] Successfully retrieved StoreInit for 'procatalog.web' | data: {"domain":"procatalog.web","rd":1,"rd1":27,"rd2":1}
+[2026-10-15T08:38:13.005Z] [INFO] [procatalog.web] [HOME_CATEGORY] [CATEGORY ACTION] Tenant 'procatalog.web' → 17 categories from table 'design_Productlist_20_BEdiamond_BEcolorStone_11' | data: {"domain":"procatalog.web","table":"design_Productlist_20_BEdiamond_BEcolorStone_11","count":17}
+[2026-10-15T08:38:15.720Z] [INFO] [procatalog.web] [STORE_INIT] Fetching StoreInit configuration for tenant: 'procatalog.web' | data: {"domain":"procatalog.web"}
+[2026-10-15T08:38:15.726Z] [INFO] [procatalog.web] [STORE_INIT] Successfully retrieved StoreInit for 'procatalog.web' | data: {"domain":"procatalog.web","rd":1,"rd1":27,"rd2":1}
+[2026-10-15T08:38:16.046Z] [INFO] [SYSTEM] [API_EXCLUSIVE_ALBUMS] Reading exclusive albums for customer null on domain 'procatalog.web'
+[2026-10-15T08:38:16.476Z] [INFO] [SYSTEM] [API_EXCLUSIVE_ALBUMS] Reading exclusive albums for customer 2275 on domain 'procatalog.web'
+[2026-10-15T08:43:25.962Z] [INFO] [procatalog.web] [STORE_INIT] Fetching StoreInit configuration for tenant: 'procatalog.web' | data: {"domain":"procatalog.web"}
+[2026-10-15T08:43:25.968Z] [INFO] [procatalog.web] [STORE_INIT] Successfully retrieved StoreInit for 'procatalog.web' | data: {"domain":"procatalog.web","rd":1,"rd1":27,"rd2":1}
+[2026-10-15T08:43:26.294Z] [INFO] [procatalog.web] [STORE_INIT] Fetching StoreInit configuration for tenant: 'procatalog.web' | data: {"domain":"procatalog.web"}
+[2026-10-15T08:43:26.298Z] [INFO] [procatalog.web] [STORE_INIT] Successfully retrieved StoreInit for 'procatalog.web' | data: {"domain":"procatalog.web","rd":1,"rd1":27,"rd2":1}
+[2026-10-15T08:43:26.310Z] [INFO] [procatalog.web] [HOME_CATEGORY] [CATEGORY ACTION] Tenant 'procatalog.web' → 17 categories from table 'design_Productlist_20_BEdiamond_BEcolorStone_11' | data: {"domain":"procatalog.web","table":"design_Productlist_20_BEdiamond_BEcolorStone_11","count":17}
+[2026-10-15T08:43:27.707Z] [INFO] [procatalog.web] [STORE_INIT] Fetching StoreInit configuration for tenant: 'procatalog.web' | data: {"domain":"procatalog.web"}
+[2026-10-15T08:43:27.709Z] [INFO] [procatalog.web] [STORE_INIT] Successfully retrieved StoreInit for 'procatalog.web' | data: {"domain":"procatalog.web","rd":1,"rd1":27,"rd2":1}
+[2026-10-15T08:43:27.910Z] [INFO] [SYSTEM] [API_EXCLUSIVE_ALBUMS] Reading exclusive albums for customer null on domain 'procatalog.web'
+[2026-10-15T08:43:28.407Z] [INFO] [SYSTEM] [API_EXCLUSIVE_ALBUMS] Reading exclusive albums for customer 2275 on domain 'procatalog.web'
+[2026-10-15T08:48:57.999Z] [INFO] [procatalog.web] [STORE_INIT] Fetching StoreInit configuration for tenant: 'procatalog.web' | data: {"domain":"procatalog.web"}
+[2026-10-15T08:48:58.034Z] [INFO] [procatalog.web] [STORE_INIT] Successfully retrieved StoreInit for 'procatalog.web' | data: {"domain":"procatalog.web","rd":1,"rd1":27,"rd2":1}
+[2026-10-15T08:49:02.533Z] [INFO] [procatalog.web] [STORE_INIT] Fetching StoreInit configuration for tenant: 'procatalog.web' | data: {"domain":"procatalog.web"}
+[2026-10-15T08:49:02.535Z] [INFO] [procatalog.web] [STORE_INIT] Successfully retrieved StoreInit for 'procatalog.web' | data: {"domain":"procatalog.web","rd":1,"rd1":27,"rd2":1}
+[2026-10-15T08:49:02.576Z] [INFO] [procatalog.web] [HOME_CATEGORY] [CATEGORY ACTION] Tenant 'procatalog.web' → 17 categories from table 'design_Productlist_20_BEdiamond_BEcolorStone_11' | data: {"domain":"procatalog.web","table":"design_Productlist_20_BEdiamond_BEcolorStone_11","count":17}
+[2026-10-15T08:49:09.937Z] [INFO] [procatalog.web] [STORE_INIT] Fetching StoreInit configuration for tenant: 'procatalog.web' | data: {"domain":"procatalog.web"}
+[2026-10-15T08:49:09.941Z] [INFO] [procatalog.web] [STORE_INIT] Successfully retrieved StoreInit for 'procatalog.web' | data: {"domain":"procatalog.web","rd":1,"rd1":27,"rd2":1}
+[2026-10-15T08:49:09.952Z] [INFO] [SYSTEM] [API_EXCLUSIVE_ALBUMS] Reading exclusive albums for customer null on domain 'procatalog.web'
+[2026-10-15T08:49:10.748Z] [INFO] [SYSTEM] [API_EXCLUSIVE_ALBUMS] Reading exclusive albums for customer 2275 on domain 'procatalog.web'
+[2026-10-15T08:50:38.857Z] [INFO] [procatalog.web] [STORE_INIT] Fetching StoreInit configuration for tenant: 'procatalog.web' | data: {"domain":"procatalog.web"}
+[2026-10-15T08:50:38.862Z] [INFO] [procatalog.web] [STORE_INIT] Successfully retrieved StoreInit for 'procatalog.web' | data: {"domain":"procatalog.web","rd":1,"rd1":27,"rd2":1}
+[2026-10-15T08:50:39.806Z] [INFO] [procatalog.web] [STORE_INIT] Fetching StoreInit configuration for tenant: 'procatalog.web' | data: {"domain":"procatalog.web"}
+[2026-10-15T08:50:39.833Z] [INFO] [procatalog.web] [STORE_INIT] Successfully retrieved StoreInit for 'procatalog.web' | data: {"domain":"procatalog.web","rd":1,"rd1":27,"rd2":1}
+[2026-10-15T08:50:39.926Z] [INFO] [procatalog.web] [HOME_CATEGORY] [CATEGORY ACTION] Tenant 'procatalog.web' → 17 categories from table 'design_Productlist_20_BEdiamond_BEcolorStone_11' | data: {"domain":"procatalog.web","table":"design_Productlist_20_BEdiamond_BEcolorStone_11","count":17}
+[2026-10-15T08:50:53.044Z] [INFO] [SYSTEM] [API_EXCLUSIVE_ALBUMS] Reading exclusive albums for customer null on domain 'procatalog.web'
+[2026-10-15T08:50:55.735Z] [INFO] [SYSTEM] [API_EXCLUSIVE_ALBUMS] Reading exclusive albums for customer 2275 on domain 'procatalog.web'
+[2026-10-15T08:50:56.910Z] [INFO] [procatalog.web] [STORE_INIT] Fetching StoreInit configuration for tenant: 'procatalog.web' | data: {"domain":"procatalog.web"}
+[2026-10-15T08:50:56.940Z] [INFO] [procatalog.web] [STORE_INIT] Successfully retrieved StoreInit for 'procatalog.web' | data: {"domain":"procatalog.web","rd":1,"rd1":27,"rd2":1}
+[2026-10-15T08:50:57.661Z] [INFO] [SYSTEM] [API_EXCLUSIVE_ALBUMS] Reading exclusive albums for customer null on domain 'procatalog.web'
+[2026-10-15T08:50:58.488Z] [INFO] [SYSTEM] [API_EXCLUSIVE_ALBUMS] Reading exclusive albums for customer null on domain 'procatalog.web'
+[2026-10-15T08:51:06.414Z] [INFO] [procatalog.web] [STORE_INIT] Fetching StoreInit configuration for tenant: 'procatalog.web' | data: {"domain":"procatalog.web"}
+[2026-10-15T08:51:06.416Z] [INFO] [procatalog.web] [STORE_INIT] Successfully retrieved StoreInit for 'procatalog.web' | data: {"domain":"procatalog.web","rd":1,"rd1":27,"rd2":1}
+[2026-10-15T08:51:06.450Z] [INFO] [procatalog.web] [HOME_CATEGORY] [CATEGORY ACTION] Tenant 'procatalog.web' → 17 categories from table 'design_Productlist_20_BEdiamond_BEcolorStone_11' | data: {"domain":"procatalog.web","table":"design_Productlist_20_BEdiamond_BEcolorStone_11","count":17}
+[2026-10-15T08:51:12.318Z] [INFO] [SYSTEM] [API_EXCLUSIVE_ALBUMS] Reading exclusive albums for customer null on domain 'procatalog.web'
+[2026-10-15T08:51:12.868Z] [INFO] [procatalog.web] [STORE_INIT] Fetching StoreInit configuration for tenant: 'procatalog.web' | data: {"domain":"procatalog.web"}
+[2026-10-15T08:51:12.870Z] [INFO] [procatalog.web] [STORE_INIT] Successfully retrieved StoreInit for 'procatalog.web' | data: {"domain":"procatalog.web","rd":1,"rd1":27,"rd2":1}
+[2026-10-15T08:51:13.128Z] [INFO] [SYSTEM] [API_EXCLUSIVE_ALBUMS] Reading exclusive albums for customer 2275 on domain 'procatalog.web'
+[2026-10-15T08:53:08.637Z] [INFO] [SYSTEM] [API_EXCLUSIVE_ALBUMS] Reading exclusive albums for customer null on domain 'procatalog.web'
+[2026-10-15T08:53:09.116Z] [INFO] [SYSTEM] [API_EXCLUSIVE_ALBUMS] Reading exclusive albums for customer null on domain 'procatalog.web'
+[2026-10-15T08:53:15.444Z] [INFO] [SYSTEM] [API_EXCLUSIVE_ALBUMS] Reading exclusive albums for customer null on domain 'procatalog.web'
+[2026-10-15T08:53:27.313Z] [INFO] [procatalog.web] [STORE_INIT] Fetching StoreInit configuration for tenant: 'procatalog.web' | data: {"domain":"procatalog.web"}
+[2026-10-15T08:53:27.319Z] [INFO] [procatalog.web] [STORE_INIT] Successfully retrieved StoreInit for 'procatalog.web' | data: {"domain":"procatalog.web","rd":1,"rd1":27,"rd2":1}
+[2026-10-15T08:53:30.086Z] [INFO] [procatalog.web] [STORE_INIT] Fetching StoreInit configuration for tenant: 'procatalog.web' | data: {"domain":"procatalog.web"}
+[2026-10-15T08:53:30.089Z] [INFO] [procatalog.web] [STORE_INIT] Successfully retrieved StoreInit for 'procatalog.web' | data: {"domain":"procatalog.web","rd":1,"rd1":27,"rd2":1}
+[2026-10-15T08:53:30.109Z] [INFO] [procatalog.web] [HOME_CATEGORY] [CATEGORY ACTION] Tenant 'procatalog.web' → 17 categories from table 'design_Productlist_20_BEdiamond_BEcolorStone_11' | data: {"domain":"procatalog.web","table":"design_Productlist_20_BEdiamond_BEcolorStone_11","count":17}
+[2026-10-15T08:53:33.682Z] [INFO] [procatalog.web] [STORE_INIT] Fetching StoreInit configuration for tenant: 'procatalog.web' | data: {"domain":"procatalog.web"}
+[2026-10-15T08:53:33.686Z] [INFO] [procatalog.web] [STORE_INIT] Successfully retrieved StoreInit for 'procatalog.web' | data: {"domain":"procatalog.web","rd":1,"rd1":27,"rd2":1}
+[2026-10-15T08:53:33.857Z] [INFO] [SYSTEM] [API_EXCLUSIVE_ALBUMS] Reading exclusive albums for customer null on domain 'procatalog.web'
+[2026-10-15T08:54:18.119Z] [INFO] [SYSTEM] [API_EXCLUSIVE_ALBUMS] Reading exclusive albums for customer null on domain 'procatalog.web'
+[2026-10-15T09:00:48.080Z] [INFO] [SYSTEM] [API_EXCLUSIVE_ALBUMS] Reading exclusive albums for customer 2275 on domain 'procatalog.web'
+[2026-10-15T09:00:49.481Z] [INFO] [SYSTEM] [API_EXCLUSIVE_ALBUMS] Reading exclusive albums for customer 2275 on domain 'procatalog.web'
+[2026-10-15T09:00:50.783Z] [INFO] [SYSTEM] [API_EXCLUSIVE_ALBUMS] Reading exclusive albums for customer 2275 on domain 'procatalog.web'
+[2026-10-15T09:01:44.548Z] [INFO] [procatalog.web] [STORE_INIT] Fetching StoreInit configuration for tenant: 'procatalog.web' | data: {"domain":"procatalog.web"}
+[2026-10-15T09:01:44.552Z] [INFO] [procatalog.web] [STORE_INIT] Successfully retrieved StoreInit for 'procatalog.web' | data: {"domain":"procatalog.web","rd":1,"rd1":27,"rd2":1}
+[2026-10-15T09:01:47.173Z] [INFO] [procatalog.web] [STORE_INIT] Fetching StoreInit configuration for tenant: 'procatalog.web' | data: {"domain":"procatalog.web"}
+[2026-10-15T09:01:47.178Z] [INFO] [procatalog.web] [STORE_INIT] Successfully retrieved StoreInit for 'procatalog.web' | data: {"domain":"procatalog.web","rd":1,"rd1":27,"rd2":1}
+[2026-10-15T09:01:47.202Z] [INFO] [procatalog.web] [HOME_CATEGORY] [CATEGORY ACTION] Tenant 'procatalog.web' → 17 categories from table 'design_Productlist_20_BEdiamond_BEcolorStone_11' | data: {"domain":"procatalog.web","table":"design_Productlist_20_BEdiamond_BEcolorStone_11","count":17}
+[2026-10-15T09:01:49.524Z] [INFO] [procatalog.web] [STORE_INIT] Fetching StoreInit configuration for tenant: 'procatalog.web' | data: {"domain":"procatalog.web"}
+[2026-10-15T09:01:49.526Z] [INFO] [procatalog.web] [STORE_INIT] Successfully retrieved StoreInit for 'procatalog.web' | data: {"domain":"procatalog.web","rd":1,"rd1":27,"rd2":1}
+[2026-10-15T09:01:49.672Z] [INFO] [SYSTEM] [API_EXCLUSIVE_ALBUMS] Reading exclusive albums for customer null on domain 'procatalog.web'
+[2026-10-15T09:01:52.242Z] [INFO] [SYSTEM] [API_EXCLUSIVE_ALBUMS] Reading exclusive albums for customer 2156 on domain 'procatalog.web'
+[2026-10-15T09:02:01.832Z] [INFO] [procatalog.web] [HOME_CATEGORY] [CATEGORY ACTION] Tenant 'procatalog.web' → 17 categories from table 'design_Productlist_20_BEdiamond_BEcolorStone_11' | data: {"domain":"procatalog.web","table":"design_Productlist_20_BEdiamond_BEcolorStone_11","count":17}
+[2026-10-15T09:02:03.638Z] [INFO] [procatalog.web] [STORE_INIT] Fetching StoreInit configuration for tenant: 'procatalog.web' | data: {"domain":"procatalog.web"}
+[2026-10-15T09:02:03.643Z] [INFO] [procatalog.web] [STORE_INIT] Successfully retrieved StoreInit for 'procatalog.web' | data: {"domain":"procatalog.web","rd":1,"rd1":27,"rd2":1}
+[2026-10-15T09:02:03.797Z] [INFO] [SYSTEM] [API_EXCLUSIVE_ALBUMS] Reading exclusive albums for customer null on domain 'procatalog.web'
+[2026-10-15T09:02:09.794Z] [INFO] [SYSTEM] [API_EXCLUSIVE_ALBUMS] Reading exclusive albums for customer 57 on domain 'procatalog.web'
+[2026-10-15T09:02:50.546Z] [INFO] [SYSTEM] [API_EXCLUSIVE_ALBUMS] Reading exclusive albums for customer null on domain 'procatalog.web'
+[2026-10-15T09:02:51.012Z] [INFO] [SYSTEM] [API_EXCLUSIVE_ALBUMS] Reading exclusive albums for customer null on domain 'procatalog.web'
+[2026-10-15T09:02:56.953Z] [INFO] [SYSTEM] [API_EXCLUSIVE_ALBUMS] Reading exclusive albums for customer null on domain 'procatalog.web'
+[2026-10-15T09:02:57.375Z] [INFO] [SYSTEM] [API_EXCLUSIVE_ALBUMS] Reading exclusive albums for customer null on domain 'procatalog.web'
+[2026-10-15T09:03:20.832Z] [INFO] [SYSTEM] [API_EXCLUSIVE_ALBUMS] Reading exclusive albums for customer 57 on domain 'procatalog.web'
+[2026-10-15T09:05:08.834Z] [INFO] [procatalog.web] [STORE_INIT] Fetching StoreInit configuration for tenant: 'procatalog.web' | data: {"domain":"procatalog.web"}
+[2026-10-15T09:05:08.836Z] [INFO] [procatalog.web] [STORE_INIT] Successfully retrieved StoreInit for 'procatalog.web' | data: {"domain":"procatalog.web","rd":1,"rd1":27,"rd2":1}
+[2026-10-15T09:05:11.373Z] [INFO] [procatalog.web] [STORE_INIT] Fetching StoreInit configuration for tenant: 'procatalog.web' | data: {"domain":"procatalog.web"}
+[2026-10-15T09:05:11.375Z] [INFO] [procatalog.web] [STORE_INIT] Successfully retrieved StoreInit for 'procatalog.web' | data: {"domain":"procatalog.web","rd":1,"rd1":27,"rd2":1}
+[2026-10-15T09:05:11.398Z] [INFO] [procatalog.web] [HOME_CATEGORY] [CATEGORY ACTION] Tenant 'procatalog.web' → 17 categories from table 'design_Productlist_20_BEdiamond_BEcolorStone_11' | data: {"domain":"procatalog.web","table":"design_Productlist_20_BEdiamond_BEcolorStone_11","count":17}
+[2026-10-15T09:05:12.589Z] [INFO] [SYSTEM] [API_EXCLUSIVE_ALBUMS] Reading exclusive albums for customer null on domain 'procatalog.web'
+[2026-10-15T09:05:12.753Z] [INFO] [procatalog.web] [STORE_INIT] Fetching StoreInit configuration for tenant: 'procatalog.web' | data: {"domain":"procatalog.web"}
+[2026-10-15T09:05:12.755Z] [INFO] [procatalog.web] [STORE_INIT] Successfully retrieved StoreInit for 'procatalog.web' | data: {"domain":"procatalog.web","rd":1,"rd1":27,"rd2":1}
+[2026-10-15T09:05:17.538Z] [INFO] [procatalog.web] [HOME_CATEGORY] [CATEGORY ACTION] Tenant 'procatalog.web' → 17 categories from table 'design_Productlist_20_BEdiamond_BEcolorStone_11' | data: {"domain":"procatalog.web","table":"design_Productlist_20_BEdiamond_BEcolorStone_11","count":17}
+[2026-10-15T09:05:20.746Z] [INFO] [procatalog.web] [STORE_INIT] Fetching StoreInit configuration for tenant: 'procatalog.web' | data: {"domain":"procatalog.web"}
+[2026-10-15T09:05:20.748Z] [INFO] [procatalog.web] [STORE_INIT] Successfully retrieved StoreInit for 'procatalog.web' | data: {"domain":"procatalog.web","rd":1,"rd1":27,"rd2":1}
+[2026-10-15T09:05:20.914Z] [INFO] [SYSTEM] [API_EXCLUSIVE_ALBUMS] Reading exclusive albums for customer null on domain 'procatalog.web'
+[2026-10-15T09:05:22.802Z] [INFO] [procatalog.web] [HOME_CATEGORY] [CATEGORY ACTION] Tenant 'procatalog.web' → 17 categories from table 'design_Productlist_20_BEdiamond_BEcolorStone_11' | data: {"domain":"procatalog.web","table":"design_Productlist_20_BEdiamond_BEcolorStone_11","count":17}
+[2026-10-15T09:05:26.278Z] [INFO] [procatalog.web] [STORE_INIT] Fetching StoreInit configuration for tenant: 'procatalog.web' | data: {"domain":"procatalog.web"}
+[2026-10-15T09:05:26.286Z] [INFO] [procatalog.web] [STORE_INIT] Successfully retrieved StoreInit for 'procatalog.web' | data: {"domain":"procatalog.web","rd":1,"rd1":27,"rd2":1}
+[2026-10-15T09:05:26.512Z] [INFO] [SYSTEM] [API_EXCLUSIVE_ALBUMS] Reading exclusive albums for customer null on domain 'procatalog.web'
+[2026-10-15T09:05:35.755Z] [INFO] [procatalog.web] [HOME_CATEGORY] [CATEGORY ACTION] Tenant 'procatalog.web' → 17 categories from table 'design_Productlist_20_BEdiamond_BEcolorStone_11' | data: {"domain":"procatalog.web","table":"design_Productlist_20_BEdiamond_BEcolorStone_11","count":17}
