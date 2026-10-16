@@ -1,17 +1,13 @@
-// export const LocalSetup = "fgstore.mapp";
-// export const LocalSetup = "fgstore.web";
-// export const LocalSetup = "hoq.web";
-// export const LocalSetup = "elvee.web";
-// export const LocalSetup = "diamondtine.web";
-export const LocalSetup = "beluxjewel.web";
-// export const LocalSetup = "elvee.web";
-// export const LocalSetup = "julian.web";
-// export const LocalSetup = "julian4.web";
+import { ACTIVE_THEME } from "../config/theme.config.js";
 
-
-// export const activeBrand = "shreediamond"
-export const activeBrand = "SonasonsApp";
-// export const activeBrand = "beluxjewel";
-// export const activeBrand = "EliorApp"
-// export const activeBrand = "omjiyas"
-// export const activeBrand = "vimalgoldanddiamond";
+/**
+ * ==========================================================================================
+ * LOCAL ENVIRONMENT CONFIGURATION
+ * LocalSetup and activeBrand are automatically derived from the central config:
+ * config/theme.config.js.
+ * 
+ * To switch themes locally, change ACTIVE_THEME_KEY in config/theme.config.js.
+ * ==========================================================================================
+ */
+export const LocalSetup = ACTIVE_THEME?.page;
+export const activeBrand = ACTIVE_THEME?.brand;

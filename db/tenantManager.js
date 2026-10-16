@@ -21,26 +21,31 @@ export const TENANTS_ROOT = path.join(process.cwd(), "db", "tenants");
  */
 export function getActiveConfigDomain() {
     try {
+        // 1. Check primary centralized config: config/theme.config.js
+        const configPath = path.join(process.cwd(), "config", "theme.config.js");
+        if (fs.existsSync(configPath)) {
+            const content = fs.readFileSync(configPath, "utf-8");
+            const keyMatch = content.match(/ACTIVE_THEME_KEY\s*=\s*["']([^"']+)["']/);
+            if (keyMatch) {
+                const key = keyMatch[1];
+                const blockRegex = new RegExp(key + "\\s*:\\s*\\{([\\s\\S]*?)\\}");
+                const blockMatch = content.match(blockRegex);
+                if (blockMatch) {
+                    const domainMatch = blockMatch[1].match(/domain\s*:\s*["']([^"']+)["']/);
+                    if (domainMatch) return domainMatch[1];
+                }
+            }
+        }
+
+        // 2. Fallback: app/(core)/utils/env.js
         const envPath = path.join(process.cwd(), "app", "(core)", "utils", "env.js");
         if (fs.existsSync(envPath)) {
             const content = fs.readFileSync(envPath, "utf-8");
-            const webMatch = content.match(/NEXT_APP_WEB\s*=\s*([^;\n]+)/);
-            if (webMatch) {
-                let val = webMatch[1].trim();
-                if (val.includes("WEBSITE_DOMAINS.")) {
-                    const key = val.split(".")[1].trim();
-                    for (const line of content.split("\n")) {
-                        if (line.includes(key + ":")) {
-                            const q = line.match(/["']([^"']+)["']/);
-                            if (q) return q[1];
-                        }
-                    }
-                }
-                return val.replace(/["']/g, "");
-            }
+            const domainMatch = content.match(/NEXT_APP_WEB\s*=\s*(?:ACTIVE_THEME\?\.domain\s*\|\|\s*)?["']([^"']+)["']/);
+            if (domainMatch) return domainMatch[1];
         }
     } catch (_) {}
-    return "";
+    return "beluxjewel.web";
 }
 
 /**
