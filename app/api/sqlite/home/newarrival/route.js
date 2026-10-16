@@ -35,6 +35,8 @@ async function handleNewArrival(req) {
       targetDomain = domainInfo?.hostname || "default";
     }
 
+    logger.logApiRequest(req, { domain: targetDomain, category: "HOME_NEWARRIVAL", body: req.method === "POST" ? body : undefined });
+
     const db = getTenantDb(targetDomain);
 
     // 2. Resolve Active Policy Table

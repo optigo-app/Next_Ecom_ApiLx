@@ -14,6 +14,7 @@ import {
   ensureDynamicArticleMaterialTable,
 } from "@/db/schema/dynamicArticles";
 import { syncTableViaTemp } from "@/db/procedures/tempTableSync";
+import { logger } from "@/db/logger";
 
 /**
  * Detects whether an object represents a policy pricing configuration rather than an article.
@@ -109,6 +110,8 @@ export async function POST(req) {
       const domainInfo = await getDomainInfo().catch(() => ({}));
       targetDomain = domainInfo?.hostname || "default";
     }
+
+    logger.logApiRequest(req, { domain: targetDomain, category: "API_ARTICLES", body });
 
     // 1. Dynamic Policy-Based ERP Sync mode (when Config array or list of policies is provided)
     const policyConfigs = extractPolicyConfigList(body);
@@ -236,6 +239,8 @@ export async function GET(req) {
       const domainInfo = await getDomainInfo().catch(() => ({}));
       targetDomain = domainInfo?.hostname || "default";
     }
+
+    logger.logApiRequest(req, { domain: targetDomain, category: "API_ARTICLES" });
 
     const filters = {};
     for (const [k, v] of searchParams.entries()) {

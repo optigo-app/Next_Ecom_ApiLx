@@ -21,13 +21,13 @@ function extractDomain(req, body = {}) {
   } catch (_) { }
 
   // 2. Read from body (for POST requests)
-  if (body?.domain || body?.Domain) {
-    return String(body.domain || body.Domain).trim();
+  if (body?.domain || body?.Domain || body?.Websitedomain || body?.websitedomain) {
+    return String(body.domain || body.Domain || body.Websitedomain || body.websitedomain).trim();
   }
 
   const rd = body?.Data?.rd?.[0] || body?.rd?.[0];
-  if (rd?.domain) {
-    return String(rd.domain).trim();
+  if (rd?.domain || rd?.Websitedomain || rd?.websitedomain) {
+    return String(rd.domain || rd.Websitedomain || rd.websitedomain).trim();
   }
 
   return null;
@@ -61,6 +61,8 @@ export async function POST(req) {
     }
 
     const targetDomain = extractDomain(req, body);
+    logger.logApiRequest(req, { domain: targetDomain, category: "API_STORE_INIT", body });
+
     if (!targetDomain) {
       logger.warn("API_STORE_INIT", "POST /api/sqlite/store-init called without domain", { headers: Object.fromEntries(req.headers.entries()) });
       return NextResponse.json(
@@ -191,6 +193,7 @@ export async function POST(req) {
 export async function GET(req) {
   try {
     const targetDomain = extractDomain(req);
+    logger.logApiRequest(req, { domain: targetDomain, category: "API_STORE_INIT" });
 
     // Require domain explicitly
     if (!targetDomain) {

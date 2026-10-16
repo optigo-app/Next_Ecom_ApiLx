@@ -29,6 +29,8 @@ export async function GET(req) {
     }
     targetDomain = String(targetDomain).trim().split(":")[0];
 
+    logger.logApiRequest(req, { domain: targetDomain, category: "API_EXCLUSIVE_ALBUMS" });
+
     const customerId =
       searchParams.get("customerId") ||
       searchParams.get("customerid") ||

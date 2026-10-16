@@ -66,6 +66,7 @@ export async function POST(req) {
     }
 
     const { targetDomain, db } = await resolveDomainAndDb(req, body);
+    logger.logApiRequest(req, { domain: targetDomain, category: "API_RECENTLY_VIEWED", body });
     const customerId = await resolveCustomerId(req, body);
 
     // If saving a recently viewed design
@@ -92,7 +93,7 @@ export async function POST(req) {
     // Otherwise, fetch recently viewed designs
     return handleFetch(req, body, db, targetDomain, customerId);
   } catch (err) {
-    logger.error("[RecentlyViewed API] POST error:", err);
+    logger.error("API_RECENTLY_VIEWED", `POST error: ${err.message}`, { error: err.stack });
     return NextResponse.json(
       { stat: 0, message: err.message || "Internal server error" },
       { status: 500 }
@@ -103,10 +104,11 @@ export async function POST(req) {
 export async function GET(req) {
   try {
     const { targetDomain, db } = await resolveDomainAndDb(req);
+    logger.logApiRequest(req, { domain: targetDomain, category: "API_RECENTLY_VIEWED" });
     const customerId = await resolveCustomerId(req);
     return handleFetch(req, {}, db, targetDomain, customerId);
   } catch (err) {
-    logger.error("[RecentlyViewed API] GET error:", err);
+    logger.error("API_RECENTLY_VIEWED", `GET error: ${err.message}`, { error: err.stack });
     return NextResponse.json(
       { stat: 0, message: err.message || "Internal server error" },
       { status: 500 }

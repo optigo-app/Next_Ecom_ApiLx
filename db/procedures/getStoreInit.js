@@ -7,6 +7,8 @@
  * Emulates the exact API response contract with sub-millisecond read latency (< 0.2ms).
  */
 
+import { ensureStoreInitColumns } from "../schema/storeInit.js";
+
 /**
  * Strips internal SQLite-specific management fields
  * @param {object} row
@@ -34,6 +36,7 @@ function cleanRow(row, excludeFields = ["id", "created_at", "updated_at", "displ
 export function getStoreInit(db, options = {}) {
     if (!db) return null;
     try {
+        ensureStoreInitColumns(db);
         // 1. Fetch storeinit (rd[0])
         let storeInitRow;
         if (options.domain) {
