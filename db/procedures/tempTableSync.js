@@ -112,6 +112,19 @@ export function mergeTempIntoMain(db, mainTable, tempTable, { keyCols = [], dele
     return { insertedCount: total, updatedCount: 0, deletedCount: 0, totalInDatabase: total, success: true };
   }
 
+  // Self-healing schema sync: ensure main table has any columns present in temp table
+  try {
+    const tempCols = db.prepare(`PRAGMA table_info("${temp}")`).all();
+    const mainCols = db.prepare(`PRAGMA table_info("${main}")`).all().map((c) => c.name);
+    for (const col of tempCols) {
+      if (!mainCols.includes(col.name)) {
+        try {
+          db.exec(`ALTER TABLE "${main}" ADD COLUMN "${col.name}" ${col.type || "TEXT"};`);
+        } catch (_) {}
+      }
+    }
+  } catch (_) {}
+
   const { allCols, dataCols, hasCreatedAt, hasUpdatedAt } = getMergeColumns(db, main);
   const keys = keyCols.filter((k) => allCols.includes(k));
   if (keys.length === 0) {

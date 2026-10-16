@@ -1,4 +1,4 @@
-import { ensureDynamicDesignTable, sanitizeSqlIdentifier } from "../schema/dynamicDesigns.js";
+import { ensureDynamicDesignTable, ensureDesignTableColumns, sanitizeSqlIdentifier } from "../schema/dynamicDesigns.js";
 
 /**
  * Batch inserts or updates design records into SQLite.
@@ -40,10 +40,9 @@ export function batchInsertDesigns(db, rawPayload = [], menuIdentifier = "GLOBAL
         };
     }
 
-    // Ensure table and indexes exist if inserting into a dynamic table
-    if (targetTable !== "designs") {
-        ensureDynamicDesignTable(db, targetTable);
-    }
+    // Always ensure table exists and has all required columns (self-healing migration)
+    ensureDynamicDesignTable(db, targetTable);
+    ensureDesignTableColumns(db, targetTable);
 
     // If caller requested truncating/clearing before sync
     if (options?.truncate || options?.clearBeforeSync || options?.flush) {
