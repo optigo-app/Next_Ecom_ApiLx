@@ -1,9 +1,4 @@
-/**
- * Procedure to save/upsert storeInit data into SQLite tables:
- * 1. storeinit (rd[0])
- * 2. account (rd1)
- * 3. companyinfo (rd2[0])
- */
+import { ensureStoreInitColumns } from "../schema/storeInit.js";
 
 /**
  * Normalizes input value safely for SQLite binding
@@ -40,6 +35,8 @@ export function saveStoreInit(db, rawPayload = {}) {
     const rd1 = Array.isArray(dataContainer?.rd1) ? dataContainer.rd1 : [];
     const rd2 = Array.isArray(dataContainer?.rd2) ? dataContainer.rd2[0] || {} : dataContainer?.rd2 || {};
 
+    ensureStoreInitColumns(db);
+
     const transaction = db.transaction(() => {
         // ====================================================================
         // 1. Save storeinit (rd[0])
@@ -48,6 +45,7 @@ export function saveStoreInit(db, rawPayload = {}) {
             const storeInitStmt = db.prepare(`
                 INSERT INTO storeinit (
                     id, YearCode, version, ApiUrl, sv, FrontEnd_RegNo, ukey, domain, ufcc, token,
+                    domainid, WebsiteId,
                     UploadLogicalPath, WebSiteStaticImagePath, Socket_URL, Socket_Address, Socket_Path,
                     ProCatLogbanner, favicon, companyMlogo, companylogo, companyname,
                     companyorderemail, companysupportemail, newslatter, IsB2BWebsite, PolicyApplyOnId,
@@ -75,6 +73,7 @@ export function saveStoreInit(db, rawPayload = {}) {
                     IsRemarkOnProductDetail, IsCustomOrder, IsWhatsappNotification, updated_at
                 ) VALUES (
                     1, @YearCode, @version, @ApiUrl, @sv, @FrontEnd_RegNo, @ukey, @domain, @ufcc, @token,
+                    @domainid, @WebsiteId,
                     @UploadLogicalPath, @WebSiteStaticImagePath, @Socket_URL, @Socket_Address, @Socket_Path,
                     @ProCatLogbanner, @favicon, @companyMlogo, @companylogo, @companyname,
                     @companyorderemail, @companysupportemail, @newslatter, @IsB2BWebsite, @PolicyApplyOnId,
@@ -111,6 +110,8 @@ export function saveStoreInit(db, rawPayload = {}) {
                     domain = excluded.domain,
                     ufcc = excluded.ufcc,
                     token = excluded.token,
+                    domainid = excluded.domainid,
+                    WebsiteId = excluded.WebsiteId,
                     UploadLogicalPath = excluded.UploadLogicalPath,
                     WebSiteStaticImagePath = excluded.WebSiteStaticImagePath,
                     Socket_URL = excluded.Socket_URL,
@@ -237,6 +238,8 @@ export function saveStoreInit(db, rawPayload = {}) {
                 domain: toText(rd.domain),
                 ufcc: toText(rd.ufcc),
                 token: toText(rd.token),
+                domainid: toInt(rd.domainid ?? rd.WebsiteId),
+                WebsiteId: toInt(rd.WebsiteId ?? rd.domainid),
                 UploadLogicalPath: toText(rd.UploadLogicalPath),
                 WebSiteStaticImagePath: toText(rd.WebSiteStaticImagePath),
                 Socket_URL: toText(rd.Socket_URL),

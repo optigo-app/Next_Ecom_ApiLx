@@ -3,6 +3,7 @@ import { getStoreInit } from "@/app/(core)/utils/GlobalFunctions/GlobalFunctions
 import { syncAllCatalogProducts } from "@/app/(core)/utils/sqlite/syncAllProducts";
 import { syncMenusAndPackages } from "@/app/(core)/utils/sqlite/syncMenusAndPackages";
 import { getDomainInfo } from "@/app/(core)/utils/getDomainInfo";
+import { logger } from "@/db/logger";
 
 export const dynamic = "force-dynamic";
 
@@ -18,6 +19,8 @@ export async function POST(request) {
     const storeInit = await getStoreInit().catch(() => ({}));
     const targetDomain = body?.domain || searchParams.get("domain") || storeInit?.domain || domainInfo?.hostname || "default";
     const force = body?.force === true || searchParams.get("force") === "true";
+
+    logger.logApiRequest(request, { domain: targetDomain, category: "API_SYNC_ALL", body });
 
     const [productsResult, menuPkgResult] = await Promise.all([
       syncAllCatalogProducts(storeInit, targetDomain, force),

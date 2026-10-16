@@ -31,6 +31,9 @@ import { saveRecentlyViewed, getRecentlyViewed } from "@/db/procedures/recentlyV
 import { getArticlesByDesign } from "@/db/procedures/getArticlesByDesign.js";
 import { getProductArticle } from "@/db/procedures/getProductArticle.js";
 import { getHomeCategories } from "@/db/procedures/getHomeCategories.js";
+import { getWebsiteContent } from "@/db/procedures/getWebsiteContent.js";
+import { saveWebsiteContent } from "@/db/procedures/saveWebsiteContent.js";
+import { syncWebsiteContent } from "./syncWebsiteContent.js";
 
 function sanitizeDomain(domain, fallback = "") {
   if (!domain || typeof domain !== "string") return fallback;
@@ -1397,4 +1400,91 @@ export async function getSqliteProductArticle(options = {}, domain) {
     };
   }
 }
+
+/**
+ * Server Action to fetch website content (branding, banners, etc.) directly from SQLite.
+ *
+ * @param {object} [options={}]
+ * @param {string} [domain]
+ * @returns {Promise<{ Status: string, Message: string, Data: { rd: Array<object> } }>}
+ */
+export async function getSqliteWebsiteContent(options = {}, domain) {
+  try {
+    let targetDomain = domain || options.domain || options.Domain;
+    if (!targetDomain) {
+      const info = await getDomainInfo().catch(() => ({}));
+      targetDomain = info?.hostname || "default";
+    }
+    targetDomain = sanitizeDomain(targetDomain);
+    const db = getTenantDb(targetDomain);
+
+    if (!db) {
+      return {
+        Status: "404",
+        Message: `Tenant database not found for '${targetDomain}'.`,
+        Data: { rd: [] },
+      };
+    }
+
+    return getWebsiteContent(db, options);
+  } catch (err) {
+    logger.error("WEBSITE_CONTENT_ACTION", `getSqliteWebsiteContent error for '${domain}': ${err.message}`, {
+      domain,
+      error: err.message,
+    });
+    return {
+      Status: "500",
+      Message: err.message,
+      Data: { rd: [] },
+    };
+  }
+}
+
+/**
+ * Server Action to save/upsert website content directly into SQLite.
+ *
+ * @param {Array<object>|object} payload
+ * @param {string} [domain]
+ * @returns {Promise<{ success: boolean, totalReceived: number, savedCount: number, elapsedMs: number }>}
+ */
+export async function saveSqliteWebsiteContent(payload, domain) {
+  try {
+    let targetDomain = domain;
+    if (!targetDomain) {
+      const info = await getDomainInfo().catch(() => ({}));
+      targetDomain = info?.hostname || "default";
+    }
+    targetDomain = sanitizeDomain(targetDomain);
+    const db = getTenantDb(targetDomain);
+
+    if (!db) {
+      return {
+        success: false,
+        error: `Tenant database not found for '${targetDomain}'.`,
+      };
+    }
+
+    return saveWebsiteContent(db, payload, { domain: targetDomain });
+  } catch (err) {
+    logger.error("WEBSITE_CONTENT_ACTION", `saveSqliteWebsiteContent error for '${domain}': ${err.message}`, {
+      domain,
+      error: err.message,
+    });
+    return {
+      success: false,
+      error: err.message,
+    };
+  }
+}
+
+/**
+ * Server Action to sync website content from internal ERP into SQLite.
+ *
+ * @param {object} [options={}]
+ * @returns {Promise<{ success: boolean, domain: string, totalReceived: number, savedCount: number, elapsedMs?: number, error?: string, Data?: object }>}
+ */
+export async function syncSqliteWebsiteContent(options = {}) {
+  return syncWebsiteContent(options);
+}
+
 

@@ -14,6 +14,8 @@ CREATE TABLE IF NOT EXISTS storeinit (
     domain TEXT UNIQUE,
     ufcc TEXT,
     token TEXT,
+    domainid INTEGER DEFAULT 0,
+    WebsiteId INTEGER DEFAULT 0,
     UploadLogicalPath TEXT,
     WebSiteStaticImagePath TEXT,
     Socket_URL TEXT,
@@ -135,6 +137,30 @@ CREATE INDEX IF NOT EXISTS idx_storeinit_domain ON storeinit(domain);
 CREATE INDEX IF NOT EXISTS idx_storeinit_token ON storeinit(token);
 CREATE INDEX IF NOT EXISTS idx_storeinit_ukey ON storeinit(ukey);
 CREATE INDEX IF NOT EXISTS idx_storeinit_regno ON storeinit(FrontEnd_RegNo);
+CREATE INDEX IF NOT EXISTS idx_storeinit_domainid ON storeinit(domainid);
+CREATE INDEX IF NOT EXISTS idx_storeinit_websiteid ON storeinit(WebsiteId);
 `;
+
+/**
+ * Ensures domainid and WebsiteId columns exist in the storeinit table for existing tenant databases.
+ * @param {import('better-sqlite3').Database} db
+ */
+export function ensureStoreInitColumns(db) {
+    if (!db) return;
+    try {
+        const table = db.prepare("SELECT name FROM sqlite_master WHERE type='table' AND name='storeinit'").get();
+        if (!table) return;
+
+        const cols = db.prepare("PRAGMA table_info(storeinit)").all().map((c) => c.name);
+        if (!cols.includes("domainid")) {
+            db.exec("ALTER TABLE storeinit ADD COLUMN domainid INTEGER DEFAULT 0;");
+        }
+        if (!cols.includes("WebsiteId")) {
+            db.exec("ALTER TABLE storeinit ADD COLUMN WebsiteId INTEGER DEFAULT 0;");
+        }
+    } catch (err) {
+        console.warn("[ensureStoreInitColumns] Column check warning:", err.message);
+    }
+}
 
 export default STORE_INIT_TABLE_SQL;

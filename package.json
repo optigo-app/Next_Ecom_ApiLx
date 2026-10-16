@@ -4,12 +4,12 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "next dev -p 6010 --turbo",
+    "dev": "next dev -p 8012 --turbo",
     "build": "next build",
-    "start": "next start -p 6010",
+    "start": "next start -p 8012",
     "lint": "eslint",
     "ng": "next build && next start",
-    "dev:watch": "nodemon --watch \"app/(core)/utils/env.js\" --exec \"next dev -p 6010 --turbo\"",
+    "dev:watch": "nodemon --watch \"app/(core)/utils/env.js\" --exec \"next dev -p 8012 --turbo\"",
     "db:init": "node db/initAllDatabases.js --run",
     "db:query": "node db/runQuery.js --run",
     "analyze": "cross-env ANALYZE=true next build"
@@ -40,6 +40,7 @@
     "next": "^15.5.9",
     "node-fetch": "^2.7.0",
     "pako": "^2.1.0",
+    "picocolors": "^1.1.1",
     "react": "19.1.0",
     "react-bootstrap": "^2.10.10",
     "react-dom": "19.1.0",

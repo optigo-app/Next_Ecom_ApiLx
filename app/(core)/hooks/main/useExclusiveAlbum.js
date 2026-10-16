@@ -89,6 +89,8 @@ export function useExclusiveAlbum({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [albums, setAlbums] = useState([]);
+  const [resolvedCustomerId, setResolvedCustomerId] = useState("");
+  const [showAlbumList, setShowAlbumList] = useState(false);
   const [selectedAlbum, setSelectedAlbum] = useState(null); // null = Grid view; object = Detail view
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState("name"); // "name" | "count" | "date"
@@ -111,6 +113,7 @@ export function useExclusiveAlbum({
   const fetchAlbums = useCallback(async () => {
     const { hasExclusive, custId, randomNo } = checkUrlParams();
     setInitialRandomNo(randomNo || "");
+    setShowAlbumList(false);
 
     if (!hasExclusive) {
       setIsOpen(false);
@@ -125,64 +128,42 @@ export function useExclusiveAlbum({
     const targetDomain = initialDomain || "beluxjewel.web";
 
     try {
-      let activeCustId = custId;
       const baseApiUrl = `/api/sqlite/exclusive-albums?domain=${targetDomain}`;
-
-      // If randomNo is present without customerId, resolve customerId first
-      if (randomNo && !activeCustId) {
-        try {
-          const resolveRes = await fetch(
-            `${baseApiUrl}&RandomNo=${encodeURIComponent(randomNo)}`,
-            { signal: abortController.signal }
-          );
-          const resolveData = await resolveRes.json();
-          if (
-            resolveData?.Status === "200" &&
-            resolveData?.Data?.rd?.[0]?.CustomerId
-          ) {
-            activeCustId = resolveData.Data.rd[0].CustomerId;
-          }
-        } catch (resolveErr) {
-          if (resolveErr.name !== "AbortError") {
-            console.warn(
-              "[useExclusiveAlbum] Customer resolution from randomNo failed:",
-              resolveErr
-            );
-          }
-        }
-      }
-
-      // Fallback customer ID if unresolved
-      if (!activeCustId) {
-        activeCustId = defaultCustomerId;
-      }
-
-      // Fetch all albums for this customer
-      const res = await fetch(
-        `${baseApiUrl}&customerId=${encodeURIComponent(activeCustId)}`,
-        { signal: abortController.signal }
-      );
+      // A shared link identifies one album. Fetch it directly; its row also
+      // contains CustomerId, which is used only if the visitor goes back.
+      const query = randomNo
+        ? `&RandomNo=${encodeURIComponent(randomNo)}`
+        : `&customerId=${encodeURIComponent(custId || defaultCustomerId)}`;
+      const res = await fetch(`${baseApiUrl}${query}`, {
+        signal: abortController.signal,
+      });
       const data = await res.json();
 
       if (data?.Status === "200" && Array.isArray(data?.Data?.rd)) {
         const fetchedAlbums = data.Data.rd;
-        setAlbums(fetchedAlbums);
+        const albumCustomerId = fetchedAlbums[0]?.CustomerId || data?.Data?.customerId || custId;
+        setResolvedCustomerId(albumCustomerId ? String(albumCustomerId) : "");
+
+        if (randomNo && autoSelectRandomNo) {
+          const albumToSelect = fetchedAlbums.find(
+            (a) => String(a.RandomNo) === String(randomNo)
+          );
+          setSelectedAlbum(albumToSelect || null);
+          // Keep the initial shared-link view scoped to the requested album.
+          // The customer album grid is fetched only when Back is clicked.
+          setAlbums(albumToSelect ? [albumToSelect] : []);
+        } else {
+          setSelectedAlbum(null);
+          setAlbums(fetchedAlbums);
+        }
 
         if (data.Data.storeConfig) {
           setStoreConfig(data.Data.storeConfig);
         }
-
-        // Auto-select album matching randomNo if configured
-        if (randomNo && autoSelectRandomNo) {
-          const albumToSelect = fetchedAlbums.find(
-            (a) => a.RandomNo === randomNo || a.RandomNo == randomNo
-          );
-          if (albumToSelect) {
-            setSelectedAlbum(albumToSelect);
-          }
-        }
       } else {
         setAlbums([]);
+        setSelectedAlbum(null);
+        setResolvedCustomerId("");
       }
     } catch (err) {
       if (err.name !== "AbortError") {
@@ -379,7 +360,45 @@ export function useExclusiveAlbum({
     }
   }, []);
 
-  const handleBackToAlbums = useCallback(() => {
+  const handleBackToAlbums = useCallback(async () => {
+    if (initialRandomNo) {
+      const { custId } = checkUrlParams();
+      const customerId = resolvedCustomerId || custId;
+      if (!customerId) {
+        setSelectedAlbum(null);
+        setAlbums([]);
+        setShowAlbumList(true);
+        return;
+      }
+
+      setLoading(true);
+      setError(null);
+      try {
+        const targetDomain = initialDomain || "beluxjewel.web";
+        const response = await fetch(
+          `/api/sqlite/exclusive-albums?domain=${encodeURIComponent(targetDomain)}&customerId=${encodeURIComponent(customerId)}`
+        );
+        const data = await response.json();
+        if (data?.Status === "200" && Array.isArray(data?.Data?.rd)) {
+          setAlbums(data.Data.rd);
+          if (data.Data.storeConfig) setStoreConfig(data.Data.storeConfig);
+          setShowAlbumList(true);
+        } else {
+          setAlbums([]);
+          setError(new Error(data?.Message || "Could not load albums."));
+          setShowAlbumList(true);
+        }
+      } catch (err) {
+        console.error("[useExclusiveAlbum] Fetch customer albums on back failed:", err);
+        setAlbums([]);
+        setError(err);
+        setShowAlbumList(true);
+      } finally {
+        setLoading(false);
+      }
+    } else {
+      setShowAlbumList(true);
+    }
     setSelectedAlbum(null);
     setSearchQuery("");
     if (scrollContainerRef.current) {
@@ -389,7 +408,7 @@ export function useExclusiveAlbum({
         behavior: "smooth",
       });
     }
-  }, []);
+  }, [initialRandomNo, resolvedCustomerId, initialDomain, checkUrlParams]);
 
   const handleClose = useCallback(() => {
     setIsOpen(false);
@@ -476,6 +495,8 @@ export function useExclusiveAlbum({
     loading,
     error,
     albums,
+    resolvedCustomerId,
+    showAlbumList,
     selectedAlbum,
     setSelectedAlbum,
     displayedAlbums,

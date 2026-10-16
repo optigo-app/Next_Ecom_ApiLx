@@ -248,6 +248,7 @@ export default function ExclusiveAlbumOverlay({
     sortBy,
     setSortBy,
     initialRandomNo,
+    showAlbumList,
     scrollContainerRef,
     isHeaderVisible,
     isScrolled,
@@ -410,7 +411,7 @@ export default function ExclusiveAlbumOverlay({
                 <IconButton
                   size="small"
                   onClick={() => {
-                    if (selectedAlbum) setSelectedAlbum(null);
+                    if (selectedAlbum) handleBackToAlbums();
                   }}
                   disabled={!selectedAlbum}
                   sx={{
@@ -440,7 +441,7 @@ export default function ExclusiveAlbumOverlay({
                 {selectedAlbum && (
                   <Button
                     size="small"
-                    onClick={() => setSelectedAlbum(null)}
+                    onClick={handleBackToAlbums}
                     startIcon={<ArrowLeft size={15} />}
                     sx={{
                       borderRadius: "2px",
@@ -698,7 +699,65 @@ export default function ExclusiveAlbumOverlay({
             {/* ============================================================= */}
             {/* LEVEL 1: ALL ALBUMS GRID VIEW (Matches Attached Reference)     */}
             {/* ============================================================= */}
-            {!selectedAlbum && (!loading || !initialRandomNo) && (
+            {!selectedAlbum && !loading && initialRandomNo && !showAlbumList && (
+              <Box
+                sx={{
+                  minHeight: { xs: "55vh", md: "65vh" },
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  textAlign: "center",
+                  px: 2,
+                }}
+              >
+                <Box
+                  sx={{
+                    width: 64,
+                    height: 64,
+                    mb: 2.5,
+                    borderRadius: "50%",
+                    display: "grid",
+                    placeItems: "center",
+                    backgroundColor: "#F1F0ED",
+                    color: "#71717A",
+                    fontSize: 30,
+                  }}
+                  aria-hidden="true"
+                >
+                  ?
+                </Box>
+                <Typography
+                  sx={{
+                    fontFamily: "'Playfair Display', Georgia, serif",
+                    fontSize: { xs: "1.8rem", sm: "2.2rem" },
+                    color: "#27272A",
+                    mb: 1,
+                  }}
+                >
+                  No such album exists
+                </Typography>
+                <Typography sx={{ color: "#71717A", mb: 3 }}>
+                  This album link may be invalid or expired.
+                </Typography>
+                <Button
+                  variant="contained"
+                  onClick={handleBackToAlbums}
+                  sx={{
+                    borderRadius: "10px",
+                    px: 2.5,
+                    py: 1.1,
+                    textTransform: "none",
+                    backgroundColor: "#27272A",
+                    "&:hover": { backgroundColor: "#3F3F46" },
+                  }}
+                >
+                  Browse albums
+                </Button>
+              </Box>
+            )}
+
+            {!selectedAlbum && (!initialRandomNo || showAlbumList) && (
               <>
                 {/* Masthead Animated with Framer Motion */}
                 <motion.div
@@ -864,9 +923,18 @@ export default function ExclusiveAlbumOverlay({
                   </Box>
                 ) : displayedAlbums.length === 0 ? (
                   <Box sx={{ py: 8, textAlign: "center" }}>
-                    <Typography sx={{ fontSize: "1rem", color: "#64748B" }}>
-                      No albums found matching "{searchQuery}".
+                    <Typography sx={{ fontSize: "1rem", color: "#64748B", mb: 2 }}>
+                      {error
+                        ? "We couldn’t load the albums. Please try again."
+                        : searchQuery
+                          ? `No albums found matching "${searchQuery}".`
+                          : "No albums are available for this customer yet."}
                     </Typography>
+                    {error && (
+                      <Button onClick={handleBackToAlbums} sx={{ textTransform: "none" }}>
+                        Try again
+                      </Button>
+                    )}
                   </Box>
                 ) : (
                   /* Square Album Cards Grid (Exact Reference Image Style) */

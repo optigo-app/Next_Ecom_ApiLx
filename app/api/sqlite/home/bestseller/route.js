@@ -34,6 +34,8 @@ async function handleBestseller(req) {
       targetDomain = domainInfo?.hostname || "default";
     }
 
+    logger.logApiRequest(req, { domain: targetDomain, category: "HOME_BESTSELLER", body: req.method === "POST" ? body : undefined });
+
     const db = getTenantDb(targetDomain);
 
     // 2. Resolve Active Policy Table

@@ -4,6 +4,7 @@ import { extractDomain } from "@/app/api/sqlite/commonController";
 import { getDomainInfo } from "@/app/(core)/utils/getDomainInfo";
 import { getTenantDb } from "@/db/tenantManager";
 import { rebuildPolicyCategories } from "@/db/procedures/materializePolicyCategories";
+import { logger } from "@/db/logger";
 
 /**
  * SQLite Home Categories API Route
@@ -30,6 +31,8 @@ async function handleHomeCategory(req) {
       const domainInfo = await getDomainInfo().catch(() => ({}));
       domain = domainInfo?.hostname || "default";
     }
+
+    logger.logApiRequest(req, { domain, category: "API_HOME_CATEGORY", body: req.method === "POST" ? body : undefined });
 
     const isRebuildRequested =
       searchParams.get("rebuild") === "true" ||

@@ -37,6 +37,8 @@ async function handleHomeSection(req) {
       targetDomain = domainInfo?.hostname || "default";
     }
 
+    logger.logApiRequest(req, { domain: targetDomain, category: "API_HOME", body: req.method === "POST" ? body : undefined });
+
     const db = getTenantDb(targetDomain);
 
     // 2. Resolve Active Policy Table

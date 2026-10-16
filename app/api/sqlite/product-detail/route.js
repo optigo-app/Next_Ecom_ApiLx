@@ -3,6 +3,7 @@ import { getTenantDb } from "@/db/tenantManager";
 import { getProductArticle } from "@/db/procedures/getProductArticle";
 import { getDomainInfo } from "@/app/(core)/utils/getDomainInfo";
 import { extractDomain } from "../commonController";
+import { logger } from "@/db/logger";
 
 const NO_CACHE_HEADERS = {
   "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate",
@@ -25,6 +26,8 @@ export async function POST(req) {
       targetDomain = domainInfo?.hostname || "default";
     }
 
+    logger.logApiRequest(req, { domain: targetDomain, category: "API_PRODUCT_DETAIL", body });
+
     const db = getTenantDb(targetDomain);
     const result = getProductArticle(db, body);
 
@@ -33,7 +36,7 @@ export async function POST(req) {
       headers: NO_CACHE_HEADERS,
     });
   } catch (error) {
-    console.error("❌ SQLite Product Detail POST error:", error);
+    logger.error("API_PRODUCT_DETAIL", `POST error: ${error.message}`, { error: error.stack });
     return NextResponse.json(
       {
         Status: "500",
@@ -54,6 +57,8 @@ export async function GET(req) {
       const domainInfo = await getDomainInfo().catch(() => ({}));
       targetDomain = domainInfo?.hostname || "default";
     }
+
+    logger.logApiRequest(req, { domain: targetDomain, category: "API_PRODUCT_DETAIL" });
 
     const options = {};
     for (const [k, v] of searchParams.entries()) {

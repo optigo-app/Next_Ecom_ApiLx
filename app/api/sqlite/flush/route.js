@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getTenantDb } from "@/db/tenantManager";
 import { extractDomain } from "../commonController";
+import { logger } from "@/db/logger";
 
 export const dynamic = "force-dynamic";
 
@@ -16,6 +17,8 @@ async function handleFlush(req) {
     } catch (_) {}
 
     const targetDomain = extractDomain(req, body);
+    logger.logApiRequest(req, { domain: targetDomain, category: "API_FLUSH", body });
+
     if (!targetDomain) {
       return NextResponse.json(
         { success: false, error: "Domain is required. Pass ?domain=xyz.com or in header/body." },
