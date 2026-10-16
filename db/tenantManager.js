@@ -1,7 +1,8 @@
 import Database from "better-sqlite3";
 import fs from "fs";
 import path from "path";
-import { initSchema } from "./schema.js";
+import { initSchema, ensureDesignTableColumns } from "./schema.js";
+import { ensureStoreInitColumns } from "./schema/storeInit.js";
 
 // In-memory connection pool on globalThis to avoid reopening file descriptors across Next.js HMR reloads
 const globalForDb = globalThis;
@@ -159,6 +160,12 @@ export function getTenantDb(domain = "default", options = {}) {
         if (!exists) {
             // Initialize Schema, WAL mode and default metadata only for newly created databases
             initSchema(db, cleanDomain, themeInfo);
+        } else {
+            // Self-healing migration for existing databases: ensure storeinit and design columns
+            try {
+                ensureStoreInitColumns(db);
+                ensureDesignTableColumns(db, "designs");
+            } catch (_) {}
         }
 
         // Cache in pool

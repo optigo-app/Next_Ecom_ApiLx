@@ -72,7 +72,7 @@ export async function POST(req) {
         mainTable: targetTable,
         keyCols: ["ArticleNo"],
         deleteStale: true,
-        ensureMainTable: (d, t) => { if (t !== "designs") ensureDynamicDesignTable(d, t); },
+        ensureMainTable: (d, t) => ensureDynamicDesignTable(d, t),
         stage: (tmp) => batchInsertDesigns(db, rawProducts, body.menuIdentifier || "GLOBAL", { flush: false }, tmp),
       });
 

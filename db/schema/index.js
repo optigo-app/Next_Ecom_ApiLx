@@ -16,6 +16,7 @@ import { RECENTLY_VIEWED_TABLE_SQL } from "./recentlyViewed.js";
 import { ALBUMS_TABLE_SQL, ensureAlbumsTable } from "./albums.js";
 import { WEBSITE_CONTENT_TABLE_SQL, ensureWebsiteContentTable } from "./websiteContent.js";
 import { ensurePolicyCategoriesTable, POLICY_CATEGORIES_TABLE } from "./policyCategories.js";
+import { ensureDesignTableColumns } from "./dynamicDesigns.js";
 import {
     ARTICLE_INFO_PREFIX,
     ARTICLE_MATERIAL_PREFIX,
@@ -159,6 +160,17 @@ export function initSchema(db, domain, themeInfo = {}) {
     ensurePolicyCategoriesTable(db);
     ensureAlbumsTable(db);
     ensureWebsiteContentTable(db);
+    ensureDesignTableColumns(db, "designs");
+
+    try {
+        const allDesignTables = db
+            .prepare("SELECT name FROM sqlite_master WHERE type='table' AND name LIKE 'design%'")
+            .all();
+        for (const tbl of allDesignTables) {
+            ensureDesignTableColumns(db, tbl.name);
+        }
+    } catch (_) {}
 }
 
+export { ensureDesignTableColumns };
 export default initSchema;
