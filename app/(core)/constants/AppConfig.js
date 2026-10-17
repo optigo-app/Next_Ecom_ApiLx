@@ -25,8 +25,11 @@ const rawAppConfig = {
   },
   beluxjewel: {
     ico: "/optigo_favicon.ico",
-    web: "/WebSiteStaticImage/logoIcon/webLogo1.png",
-    mobile: "/WebSiteStaticImage/logoIcon/mobileLogo2.png",
+    web: "/WebSiteStaticImage/logoIcon/webLogo.png",
+    white_logo: "/WebSiteStaticImage/logoIcon/webLogo.png",
+    black_logo: "/WebSiteStaticImage/logoIcon/webLogo11.png",
+    blackLogo: "/WebSiteStaticImage/logoIcon/webLogo11.png",
+    mobile: "/WebSiteStaticImage/logoIcon/mobileLogo.png",
     transparent_mobile: "/WebSiteStaticImage/logoIcon/image.png",
     static_block: {
       block1: "",
@@ -70,8 +73,11 @@ const rawAppConfig = {
   },
   hoq: {
     ico: "/optigo_favicon.ico",
-    web: "/WebSiteStaticImage/logoIcon/webLogo1.png",
-    mobile: "/WebSiteStaticImage/logoIcon/mobileLogo2.png",
+    web: "/WebSiteStaticImage/logoIcon/webLogo.png",
+    white_logo: "/WebSiteStaticImage/logoIcon/webLogo.png",
+    black_logo: "/WebSiteStaticImage/logoIcon/webLogo11.png",
+    blackLogo: "/WebSiteStaticImage/logoIcon/webLogo11.png",
+    mobile: "/WebSiteStaticImage/logoIcon/mobileLogo.png",
     metaData: {
       description:
         "Discover timeless jewelry crafted with precision and elegance. Explore gold, diamond, and silver collections designed for everyday wear and special occasions, with trusted quality and exceptional craftsmanship.",

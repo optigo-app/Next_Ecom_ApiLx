@@ -9,7 +9,7 @@
     "start": "next start -p 8012",
     "lint": "eslint",
     "ng": "next build && next start",
-    "dev:watch": "nodemon --watch \"app/(core)/utils/env.js\" --exec \"next dev -p 8012 --turbo\"",
+    "dev:watch": "nodemon --watch \"config/theme.config.js\" --watch \"app/(core)/utils/env.js\" --exec \"next dev -p 8012 --turbo\"",
     "db:init": "node db/initAllDatabases.js --run",
     "db:query": "node db/runQuery.js --run",
     "analyze": "cross-env ANALYZE=true next build"
