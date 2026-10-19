@@ -43,10 +43,8 @@ export async function resolveHome(themePage) {
   switch (themePage) {
     case "beluxjewel.web":
       if (IsProcatalogDemo) {
-        console.log(IsProcatalogDemo, "IsProcatalogDemo", "");
         return (await import("@/app/theme/procatalog.web/home/page.jsx")).default;
       } else {
-        console.log(IsProcatalogDemo, "IsProcatalogDemo", "hellow");
         return (await import("@/app/theme/beluxjewel.web/home/page.jsx")).default;
       }
     case "julian.web":
