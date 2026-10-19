@@ -1464,7 +1464,10 @@ export async function saveSqliteWebsiteContent(payload, domain) {
       };
     }
 
-    return saveWebsiteContent(db, payload, { domain: targetDomain });
+    const saveResult = saveWebsiteContent(db, payload, { domain: targetDomain });
+    const { syncAndRefreshWebsiteContentCache } = await import("./websiteContentConfig.js");
+    await syncAndRefreshWebsiteContentCache(targetDomain);
+    return saveResult;
   } catch (err) {
     logger.error("WEBSITE_CONTENT_ACTION", `saveSqliteWebsiteContent error for '${domain}': ${err.message}`, {
       domain,
@@ -1484,7 +1487,33 @@ export async function saveSqliteWebsiteContent(payload, domain) {
  * @returns {Promise<{ success: boolean, domain: string, totalReceived: number, savedCount: number, elapsedMs?: number, error?: string, Data?: object }>}
  */
 export async function syncSqliteWebsiteContent(options = {}) {
-  return syncWebsiteContent(options);
+  const result = await syncWebsiteContent(options);
+  if (result.success) {
+    const { syncAndRefreshWebsiteContentCache } = await import("./websiteContentConfig.js");
+    await syncAndRefreshWebsiteContentCache(result.domain || options.domain);
+  }
+  return result;
+}
+
+/**
+ * Server Action to get website config grouped by ContentType with caching and banner mapping.
+ *
+ * @param {object} [options={}]
+ * @returns {Promise<{ success: boolean, domain: string, source: string, data: object }>}
+ */
+export async function getSqliteGroupedWebsiteConfig(options = {}) {
+  const { getGroupedWebsiteConfig } = await import("./websiteContentConfig.js");
+  return getGroupedWebsiteConfig(options);
+}
+
+/**
+ * Server Action to invalidate website content cache.
+ *
+ * @param {string} [domain]
+ */
+export async function invalidateSqliteWebsiteContentCache(domain) {
+  const { invalidateWebsiteContentCache } = await import("./websiteContentConfig.js");
+  return invalidateWebsiteContentCache(domain);
 }
 
 
