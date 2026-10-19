@@ -12,8 +12,8 @@ export const IsProcatalogDemo = false;
  */
 export { ACTIVE_THEME, THEMES as THEME_PRESETS };
 
-export const NEXT_APP_WEB = ACTIVE_THEME?.domain ;
-export const WEBSITE_NAME = ACTIVE_THEME?.websiteName ;
+export const NEXT_APP_WEB = ACTIVE_THEME?.domain;
+export const WEBSITE_NAME = ACTIVE_THEME?.websiteName;
 export const NEXT_PUBLIC_SITE_URL = NEXT_APP_WEB;
 
 /**
