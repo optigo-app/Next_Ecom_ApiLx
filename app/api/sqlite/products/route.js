@@ -9,6 +9,7 @@ import { syncDynamicPolicyProducts } from "@/app/(core)/utils/sqlite/syncDynamic
 import { syncTableViaTemp } from "@/db/procedures/tempTableSync";
 import { ensureDynamicDesignTable } from "@/db/schema/dynamicDesigns";
 import { rebuildPolicyCategories } from "@/db/procedures/materializePolicyCategories";
+import { logger } from "@/db/logger";
 
 export async function POST(req) {
   try {
@@ -25,6 +26,8 @@ export async function POST(req) {
       const domainInfo = await getDomainInfo().catch(() => ({}));
       targetDomain = domainInfo?.hostname || "default";
     }
+
+    logger.logApiRequest(req, { domain: targetDomain, category: "API_PRODUCTS", body });
 
     // 1. Dynamic Policy-Based Sync mode (when Config array is provided)
     if (body?.Config || body?.config) {
@@ -69,7 +72,7 @@ export async function POST(req) {
         mainTable: targetTable,
         keyCols: ["ArticleNo"],
         deleteStale: true,
-        ensureMainTable: (d, t) => { if (t !== "designs") ensureDynamicDesignTable(d, t); },
+        ensureMainTable: (d, t) => ensureDynamicDesignTable(d, t),
         stage: (tmp) => batchInsertDesigns(db, rawProducts, body.menuIdentifier || "GLOBAL", { flush: false }, tmp),
       });
 
@@ -128,6 +131,8 @@ export async function GET(req) {
       const domainInfo = await getDomainInfo().catch(() => ({}));
       targetDomain = domainInfo?.hostname || "default";
     }
+
+    logger.logApiRequest(req, { domain: targetDomain, category: "API_PRODUCTS" });
 
     const filters = {};
     for (const [k, v] of searchParams.entries()) {

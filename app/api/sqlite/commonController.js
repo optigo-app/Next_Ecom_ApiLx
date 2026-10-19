@@ -24,20 +24,28 @@ export function extractDomain(req, body = {}) {
   } catch (_) {}
 
   // 3. Read from body
-  if (body?.domain || body?.Domain) {
-    return String(body.domain || body.Domain).trim();
+  if (body?.domain || body?.Domain || body?.Websitedomain || body?.websitedomain) {
+    return String(body.domain || body.Domain || body.Websitedomain || body.websitedomain).trim();
   }
 
-  if (Array.isArray(body) && (body[0]?.domain || body[0]?.Domain)) {
-    return String(body[0].domain || body[0].Domain).trim();
+  if (Array.isArray(body) && (body[0]?.domain || body[0]?.Domain || body[0]?.Websitedomain || body[0]?.websitedomain)) {
+    return String(body[0].domain || body[0].Domain || body[0].Websitedomain || body[0].websitedomain).trim();
   }
 
   const rd0 = body?.Data?.rd?.[0] || body?.rd?.[0];
-  if (rd0?.domain) {
-    return String(rd0.domain).trim();
+  if (rd0?.domain || rd0?.Websitedomain || rd0?.websitedomain) {
+    return String(rd0.domain || rd0.Websitedomain || rd0.websitedomain).trim();
   }
 
   return null;
+}
+
+/**
+ * Standardized SQLite API request logging helper.
+ * Captures URL, method, all query parameters, every request header, and payload body.
+ */
+export function logSqliteRequest(req, options = {}) {
+  return logger.logApiRequest(req, options);
 }
 
 /**
@@ -87,6 +95,8 @@ export function createPushHandler({ entityName, saveFn, logCategory, validateFn 
       }
 
       const targetDomain = extractDomain(req, body);
+      logSqliteRequest(req, { domain: targetDomain, category, body });
+
       if (!targetDomain) {
         logger.warn(category, `POST /api/sqlite/${entityName.toLowerCase()} called without domain`);
         return NextResponse.json(
@@ -150,6 +160,7 @@ export function createGetHandler({ entityName, getFn, logCategory, parseParamsFn
   return async function GET(req) {
     try {
       const targetDomain = extractDomain(req);
+      logSqliteRequest(req, { domain: targetDomain, category });
 
       if (!targetDomain) {
         logger.warn(category, `GET /api/sqlite/${entityName.toLowerCase()} called without domain`);
@@ -235,6 +246,8 @@ export function createDeleteHandler({ entityName, deleteFn, logCategory }) {
       } catch (_) {}
 
       const targetDomain = extractDomain(req, body);
+      logSqliteRequest(req, { domain: targetDomain, category, body });
+
       if (!targetDomain) {
         return NextResponse.json(
           {

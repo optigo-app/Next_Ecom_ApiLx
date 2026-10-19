@@ -7,7 +7,6 @@ import {
   Typography,
   IconButton,
   Badge,
-  ButtonBase,
   Drawer,
   List,
   ListItem,
@@ -15,17 +14,20 @@ import {
   ListItemText,
   Divider,
   Container,
+  Tooltip,
 } from "@mui/material";
 import ShoppingCartOutlinedIcon from "@mui/icons-material/ShoppingCartOutlined";
+import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import MenuIcon from "@mui/icons-material/Menu";
 import CloseIcon from "@mui/icons-material/Close";
 import Cookies from "js-cookie";
 import { useStore } from "@/app/(core)/contexts/StoreProvider";
 import { useNextRouterLikeRR } from "@/app/(core)/hooks/useLocationRd";
+import { logoutUser } from "@/app/(core)/utils/authLogout";
 import ReusableConfirmModal from "../../../ui/Modal";
 
 const ProCatNewHeader = ({ storeinit, logos }) => {
-  const { islogin, setislogin, cartCountNum } = useStore();
+  const { islogin, setislogin, cartCountNum, wishCountNum } = useStore();
   const [isMounted, setIsMounted] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [openLogoutModal, setOpenLogoutModal] = useState(false);
@@ -33,11 +35,7 @@ const ProCatNewHeader = ({ storeinit, logos }) => {
   const location = useNextRouterLikeRR();
   const navigate = location.push;
 
-  const logoSrc =
-    storeinit?.companylogo ||
-    logos?.logo ||
-    storeinit?.companyMlogo ||
-    "/logo.png";
+  const logoSrc = storeinit?.companylogo || logos?.logo || storeinit?.companyMlogo || "/logo.png";
 
   useEffect(() => {
     try {
@@ -45,7 +43,7 @@ const ProCatNewHeader = ({ storeinit, logos }) => {
       if (typeof value === "boolean") {
         setislogin(value);
       }
-    } catch (_) {}
+    } catch (_) { }
     setIsMounted(true);
   }, [setislogin]);
 
@@ -54,27 +52,12 @@ const ProCatNewHeader = ({ storeinit, logos }) => {
   };
 
   const handleLogout = () => {
-    setislogin(false);
-    Cookies.remove("userLoginCookie");
-    Cookies.remove("visitorId");
-    Cookies.remove("visiterId");
-    sessionStorage.setItem("LoginUser", "false");
-    sessionStorage.removeItem("loginUserDetail");
-    sessionStorage.removeItem("remarks");
-    sessionStorage.removeItem("selectedAddressId");
-    sessionStorage.removeItem("orderNumber");
-    sessionStorage.removeItem("registerEmail");
-    sessionStorage.removeItem("UploadLogicalPath");
-    sessionStorage.removeItem("registerMobile");
-    sessionStorage.removeItem("allproductlist");
-    sessionStorage.removeItem("AllFilter");
-    sessionStorage.removeItem("ColorStoneQualityColorCombo");
-    sessionStorage.removeItem("MetalColorCombo");
-    sessionStorage.removeItem("metalTypeCombo");
-    window.localStorage.removeItem("AuthToken");
-    window.sessionStorage.clear();
     setOpenLogoutModal(false);
-    window.location.href = "/";
+    logoutUser({
+      setislogin,
+      storeInit: storeinit,
+      redirectUrl: "/",
+    });
   };
 
   const navItemStyle = {
@@ -132,12 +115,12 @@ const ProCatNewHeader = ({ storeinit, logos }) => {
           <Toolbar
             disableGutters
             sx={{
-              height: { xs: 65, sm: 75, md: 85 },
-              minHeight: { xs: 65, sm: 75, md: 85 },
+              height: { xs: 60, sm: 66, md: 70 },
+              minHeight: { xs: 60, sm: 66, md: 70 },
               display: "flex",
               alignItems: "center",
               justifyContent: "space-between",
-              px: { xs: 1, sm: 2, md: 3 },
+              px: { xs: 1.5, sm: 2.5, md: 3 },
             }}
           >
             {/* LEFT: LOGO */}
@@ -156,8 +139,8 @@ const ProCatNewHeader = ({ storeinit, logos }) => {
                 src={logoSrc}
                 alt={storeinit?.companyname || "PROCAT_LOGO"}
                 sx={{
-                  maxHeight: { xs: 45, sm: 55, md: 68 },
-                  maxWidth: { xs: 180, sm: 220, md: 280 },
+                  maxHeight: { xs: 38, sm: 46, md: 54 },
+                  maxWidth: { xs: 160, sm: 200, md: 250 },
                   objectFit: "contain",
                   display: "block",
                 }}
@@ -169,11 +152,17 @@ const ProCatNewHeader = ({ storeinit, logos }) => {
               sx={{
                 display: { xs: "none", md: "flex" },
                 alignItems: "center",
-                gap: { md: 3, lg: 4 },
+                gap: { md: 2.5, lg: 3.5 },
               }}
             >
               {isMounted && (
-                <>
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: { md: 2.5, lg: 3 },
+                  }}
+                >
                   {islogin && storeinit?.IsCustomOrder === 1 && (
                     <Typography
                       component="span"
@@ -211,49 +200,115 @@ const ProCatNewHeader = ({ storeinit, logos }) => {
                       Log In
                     </Typography>
                   )}
-                </>
+                </Box>
               )}
 
-              {/* CART ICON WITH BADGE */}
-              <IconButton
-                aria-label="cart"
-                onClick={() => navigate("/cartPage")}
+              {/* ACTION ICONS (WISHLIST + CART) */}
+              <Box
                 sx={{
-                  p: 1,
-                  color: "#1a1a1a",
-                  "&:hover": {
-                    backgroundColor: "rgba(0, 0, 0, 0.04)",
-                  },
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 1,
+                  ml: { md: 0.5, lg: 1 },
                 }}
               >
+                {/* WISHLIST ICON WITH BADGE */}
+                <Tooltip title="Wishlist">
+                  <IconButton
+                    aria-label="wishlist"
+                    onClick={() => navigate("/myWishList")}
+                    sx={{
+                      p: 0.8,
+                      color: "#1a1a1a",
+                      "&:hover": {
+                        backgroundColor: "rgba(0, 0, 0, 0.04)",
+                      },
+                    }}
+                  >
+                    <Badge
+                      badgeContent={isMounted ? wishCountNum : 0}
+                      max={999}
+                      sx={{
+                        "& .MuiBadge-badge": {
+                          backgroundColor: "#000000",
+                          color: "#ffffff",
+                          fontSize: "11px",
+                          fontWeight: 600,
+                          minWidth: "18px",
+                          height: "18px",
+                          padding: "0 4px",
+                        },
+                      }}
+                    >
+                      <FavoriteBorderIcon sx={{ fontSize: 24 }} />
+                    </Badge>
+                  </IconButton>
+                </Tooltip>
+
+                {/* CART ICON WITH BADGE */}
+                <Tooltip title="Cart">
+                  <IconButton
+                    aria-label="cart"
+                    onClick={() => navigate("/cartPage")}
+                    sx={{
+                      p: 0.8,
+                      color: "#1a1a1a",
+                      "&:hover": {
+                        backgroundColor: "rgba(0, 0, 0, 0.04)",
+                      },
+                    }}
+                  >
+                    <Badge
+                      badgeContent={isMounted ? cartCountNum : 0}
+                      max={999}
+                      sx={{
+                        "& .MuiBadge-badge": {
+                          backgroundColor: "#000000",
+                          color: "#ffffff",
+                          fontSize: "11px",
+                          fontWeight: 600,
+                          minWidth: "18px",
+                          height: "18px",
+                          padding: "0 4px",
+                        },
+                      }}
+                    >
+                      <ShoppingCartOutlinedIcon sx={{ fontSize: 24 }} />
+                    </Badge>
+                  </IconButton>
+                </Tooltip>
+              </Box>
+            </Box>
+
+            {/* RIGHT: MOBILE ACTIONS (WISHLIST + CART + HAMBURGER) */}
+            <Box
+              sx={{
+                display: { xs: "flex", md: "none" },
+                alignItems: "center",
+                gap: 0.5,
+              }}
+            >
+              <IconButton
+                aria-label="wishlist"
+                onClick={() => navigate("/myWishList")}
+                sx={{ color: "#1a1a1a" }}
+              >
                 <Badge
-                  badgeContent={isMounted ? cartCountNum : 0}
+                  badgeContent={isMounted ? wishCountNum : 0}
                   max={999}
                   sx={{
                     "& .MuiBadge-badge": {
                       backgroundColor: "#000000",
                       color: "#ffffff",
-                      fontSize: "11px",
+                      fontSize: "10px",
                       fontWeight: 600,
-                      minWidth: "18px",
-                      height: "18px",
-                      padding: "0 4px",
                     },
                   }}
                 >
-                  <ShoppingCartOutlinedIcon sx={{ fontSize: 26 }} />
+                  <FavoriteBorderIcon sx={{ fontSize: 24 }} />
                 </Badge>
               </IconButton>
-            </Box>
 
-            {/* RIGHT: MOBILE ACTIONS (CART + HAMBURGER) */}
-            <Box
-              sx={{
-                display: { xs: "flex", md: "none" },
-                alignItems: "center",
-                gap: 1,
-              }}
-            >
               <IconButton
                 aria-label="cart"
                 onClick={() => navigate("/cartPage")}
@@ -362,6 +417,20 @@ const ProCatNewHeader = ({ storeinit, logos }) => {
               </ListItemButton>
             </ListItem>
           )}
+
+          <ListItem disablePadding>
+            <ListItemButton
+              onClick={() => {
+                setMobileOpen(false);
+                navigate("/myWishList");
+              }}
+            >
+              <ListItemText
+                primary={`Wishlist (${wishCountNum || 0})`}
+                primaryTypographyProps={{ fontSize: 14, fontWeight: 500, textTransform: "uppercase" }}
+              />
+            </ListItemButton>
+          </ListItem>
 
           <ListItem disablePadding>
             <ListItemButton

@@ -3,7 +3,7 @@ import React, { useEffect, useMemo, useRef, useState, useCallback } from "react"
 import "./ProductList.modul.scss";
 import { styled } from "@mui/material/styles";
 import Typography from "@mui/material/Typography";
-import {  Button,  Divider,  Drawer,  IconButton,  PaginationItem,  Skeleton,  Stack,  useMediaQuery,  useTheme,  Accordion,  Box,  FormControlLabel,  Input,  Slider,} from "@mui/material";
+import { Button, Divider, Drawer, IconButton, PaginationItem, Skeleton, Stack, useMediaQuery, useTheme, Accordion, Box, FormControlLabel, Input, Slider, } from "@mui/material";
 import Cookies from "js-cookie";
 import { toast } from "react-toastify";
 import {
@@ -212,7 +212,53 @@ const ProductList = ({ storeinit, searchParams, params, initialData, initialFilt
     }
   };
 
+  useEffect(() => {
+    if (typeof window !== "undefined" && Array.isArray(productListData) && productListData.length > 0) {
+      try {
+        const lightweightList = productListData.map((item) => ({
+          autocode: item?.autocode,
+          designno: item?.designno,
+          TitleLine: item?.TitleLine,
+          ImageExtension: item?.ImageExtension,
+          ImageCount: item?.ImageCount,
+          UnitCostWithMarkUp: item?.UnitCostWithMarkUp,
+          Nwt: item?.Nwt,
+          ArticleNo: item?.ArticleNo,
+          ArticleId: item?.ArticleId,
+          MetalColorid: item?.MetalColorid,
+          MetalTypeId: item?.MetalTypeId || item?.MetalPurityid,
+          DiamondQualityId: item?.DiamondQualityId,
+          ColorStoneQualityId: item?.ColorStoneQualityId,
+          ImageVideoDetail: item?.ImageVideoDetail,
+        }));
+        sessionStorage.setItem("procatalog_design_list", JSON.stringify(lightweightList));
+      } catch (_) {}
+    }
+  }, [productListData]);
+
   const handleMoveToDetail = (productData, imageUrl) => {
+    if (typeof window !== "undefined" && Array.isArray(productListData) && productListData.length > 0) {
+      try {
+        const lightweightList = productListData.map((item) => ({
+          autocode: item?.autocode,
+          designno: item?.designno,
+          TitleLine: item?.TitleLine,
+          ImageExtension: item?.ImageExtension,
+          ImageCount: item?.ImageCount,
+          UnitCostWithMarkUp: item?.UnitCostWithMarkUp,
+          Nwt: item?.Nwt,
+          ArticleNo: item?.ArticleNo,
+          ArticleId: item?.ArticleId,
+          MetalColorid: item?.MetalColorid,
+          MetalTypeId: item?.MetalTypeId || item?.MetalPurityid,
+          DiamondQualityId: item?.DiamondQualityId,
+          ColorStoneQualityId: item?.ColorStoneQualityId,
+          ImageVideoDetail: item?.ImageVideoDetail,
+        }));
+        sessionStorage.setItem("procatalog_design_list", JSON.stringify(lightweightList));
+      } catch (_) {}
+    }
+
     handleMoveToDetailHelper({
       productData,
       imageUrl,
@@ -381,7 +427,6 @@ const ProductList = ({ storeinit, searchParams, params, initialData, initialFilt
               sx={{
                 width: "260px",
                 flexShrink: 0,
-                borderRight: "1px solid #e5e5e5",
                 height: "100vh",
                 position: "sticky",
                 top: 0,

@@ -25,4 +25,17 @@ CREATE INDEX IF NOT EXISTS idx_albums_randomno ON albums(RandomNo);
 CREATE INDEX IF NOT EXISTS idx_albums_expiry ON albums(ExpiryDate);
 `;
 
+/**
+ * Ensures the albums table and performance indexes exist in the tenant SQLite database.
+ * @param {import('better-sqlite3').Database} db
+ */
+export function ensureAlbumsTable(db) {
+    if (!db) return;
+    try {
+        db.exec(ALBUMS_TABLE_SQL);
+    } catch (err) {
+        console.warn("[ensureAlbumsTable] Warning ensuring albums table:", err.message);
+    }
+}
+
 export default ALBUMS_TABLE_SQL;

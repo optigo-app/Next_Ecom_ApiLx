@@ -5,23 +5,26 @@ import { getMenuFilters } from "@/db/procedures/getMenuFilters";
 import { deleteMenuFilters } from "@/db/procedures/deleteMenuFilters";
 import { getDomainInfo } from "@/app/(core)/utils/getDomainInfo";
 import { extractDomain } from "../commonController";
+import { logger } from "@/db/logger";
 
 export async function POST(req) {
   try {
     const body = await req.json();
     const { menuIdentifier, filters, domain: requestDomain } = body;
 
+    let targetDomain = requestDomain || extractDomain(req, body);
+    if (!targetDomain) {
+      const domainInfo = await getDomainInfo().catch(() => ({}));
+      targetDomain = domainInfo?.hostname || "default";
+    }
+
+    logger.logApiRequest(req, { domain: targetDomain, category: "API_FILTERS", body });
+
     if (!menuIdentifier || !Array.isArray(filters)) {
       return NextResponse.json(
         { error: "Missing required fields: menuIdentifier and filters array" },
         { status: 400 }
       );
-    }
-
-    let targetDomain = requestDomain;
-    if (!targetDomain) {
-      const domainInfo = await getDomainInfo().catch(() => ({}));
-      targetDomain = domainInfo?.hostname || "default";
     }
 
     const db = getTenantDb(targetDomain);
@@ -54,11 +57,13 @@ export async function GET(req) {
       );
     }
 
-    let targetDomain = searchParams.get("domain");
+    let targetDomain = searchParams.get("domain") || extractDomain(req);
     if (!targetDomain) {
       const domainInfo = await getDomainInfo().catch(() => ({}));
       targetDomain = domainInfo?.hostname || "default";
     }
+
+    logger.logApiRequest(req, { domain: targetDomain, category: "API_FILTERS" });
 
     const db = getTenantDb(targetDomain);
     const filters = getMenuFilters(db, menuIdentifier);

@@ -1,5 +1,6 @@
 import { getTenantDb } from "../../../../db/tenantManager.js";
 import { saveAlbums } from "../../../../db/procedures/saveAlbums.js";
+import { ensureAlbumsTable } from "../../../../db/schema/albums.js";
 import { logger } from "../../../../db/logger.js";
 import { getDomainInfo } from "../getDomainInfo.js";
 
@@ -65,18 +66,31 @@ function buildErpEndpoint(storeInit) {
 
 /**
  * Synchronizes Album definitions from ERP (GetAlbums) into SQLite albums table.
- * 
+ * Always performs a full replace (DELETE all + INSERT fresh) to guarantee no stale rows.
+ *
  * @param {object} [options={}]
  * @param {string} [options.domain] - Tenant domain
  * @param {object} [options.storeInit] - Preloaded storeInit record
  * @param {string} [options.appuserid] - Optional override for appuserid
  * @param {number} [options.packageId=0] - Optional package ID (default 0)
- * @param {boolean} [options.replace=false] - If true, clears old albums before saving
- * @returns {Promise<{ success: boolean, domain: string, totalReceived: number, savedCount: number, elapsedMs?: number, error?: string }>}
+ * @returns {Promise<{ success: boolean, domain: string, totalReceived: number, savedCount: number, deletedCount: number, elapsedMs?: number, error?: string }>}
  */
 export async function syncAlbums(options = {}) {
   const targetDomain = await resolveDomain(options.domain);
   const db = getTenantDb(targetDomain);
+
+  if (!db) {
+    logger.warn("ALBUMS_SYNC", `Database connection unavailable for domain '${targetDomain}'`);
+    return {
+      success: false,
+      domain: targetDomain,
+      totalReceived: 0,
+      savedCount: 0,
+      error: `Database connection unavailable or domain '${targetDomain}' not authorized.`,
+    };
+  }
+
+  ensureAlbumsTable(db);
   const storeInit = resolveStoreInit(db, options.storeInit);
 
   if (!storeInit) {
@@ -157,12 +171,13 @@ export async function syncAlbums(options = {}) {
       };
     }
 
-    const saveResult = saveAlbums(db, rows, { replace: options.replace });
+    const saveResult = saveAlbums(db, rows);
 
-    logger.info("ALBUMS_SYNC", `Synced ${saveResult.savedCount} albums for '${targetDomain}' in ${saveResult.elapsedMs}ms`, {
+    logger.info("ALBUMS_SYNC", `Synced ${saveResult.savedCount} albums (deleted ${saveResult.deletedCount} old) for '${targetDomain}' in ${saveResult.elapsedMs}ms`, {
       domain: targetDomain,
       totalReceived: saveResult.totalReceived,
       savedCount: saveResult.savedCount,
+      deletedCount: saveResult.deletedCount,
     });
 
     return {
@@ -170,6 +185,7 @@ export async function syncAlbums(options = {}) {
       domain: targetDomain,
       totalReceived: saveResult.totalReceived,
       savedCount: saveResult.savedCount,
+      deletedCount: saveResult.deletedCount,
       elapsedMs: saveResult.elapsedMs,
     };
   } catch (err) {

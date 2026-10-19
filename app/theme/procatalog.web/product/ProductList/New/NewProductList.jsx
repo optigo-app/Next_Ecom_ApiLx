@@ -647,6 +647,12 @@ const ProductCard = ({
               ChipBar(productData.MakeType, "bottom")}
           </Box>
         )}
+
+        <WishToggleButton
+          productData={productData}
+          wishArr={wishArr}
+          handleCartandWish={handleCartandWish}
+        />
       </Box>
 
       <CardContent

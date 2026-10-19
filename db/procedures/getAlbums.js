@@ -1,3 +1,5 @@
+import { ensureAlbumsTable } from "../schema/albums.js";
+
 /**
  * Retrieves album records from SQLite.
  * Formats matching the standard ERP response: { Status: "200", Message: "...", Data: { rd: [...] } }.
@@ -17,6 +19,12 @@
  * @returns {object|Array<object>}
  */
 export function getAlbums(db, options = {}) {
+    if (!db) {
+        return options.raw ? [] : { Status: "400", Message: "Database instance required", Data: { rd: [] } };
+    }
+
+    ensureAlbumsTable(db);
+
     let sql = `
         SELECT 
             id,

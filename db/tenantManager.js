@@ -1,7 +1,8 @@
 import Database from "better-sqlite3";
 import fs from "fs";
 import path from "path";
-import { initSchema } from "./schema.js";
+import { initSchema, ensureDesignTableColumns } from "./schema.js";
+import { ensureStoreInitColumns } from "./schema/storeInit.js";
 
 // In-memory connection pool on globalThis to avoid reopening file descriptors across Next.js HMR reloads
 const globalForDb = globalThis;
@@ -20,26 +21,31 @@ export const TENANTS_ROOT = path.join(process.cwd(), "db", "tenants");
  */
 export function getActiveConfigDomain() {
     try {
+        // 1. Check primary centralized config: config/theme.config.js
+        const configPath = path.join(process.cwd(), "config", "theme.config.js");
+        if (fs.existsSync(configPath)) {
+            const content = fs.readFileSync(configPath, "utf-8");
+            const keyMatch = content.match(/ACTIVE_THEME_KEY\s*=\s*["']([^"']+)["']/);
+            if (keyMatch) {
+                const key = keyMatch[1];
+                const blockRegex = new RegExp(key + "\\s*:\\s*\\{([\\s\\S]*?)\\}");
+                const blockMatch = content.match(blockRegex);
+                if (blockMatch) {
+                    const domainMatch = blockMatch[1].match(/domain\s*:\s*["']([^"']+)["']/);
+                    if (domainMatch) return domainMatch[1];
+                }
+            }
+        }
+
+        // 2. Fallback: app/(core)/utils/env.js
         const envPath = path.join(process.cwd(), "app", "(core)", "utils", "env.js");
         if (fs.existsSync(envPath)) {
             const content = fs.readFileSync(envPath, "utf-8");
-            const webMatch = content.match(/NEXT_APP_WEB\s*=\s*([^;\n]+)/);
-            if (webMatch) {
-                let val = webMatch[1].trim();
-                if (val.includes("WEBSITE_DOMAINS.")) {
-                    const key = val.split(".")[1].trim();
-                    for (const line of content.split("\n")) {
-                        if (line.includes(key + ":")) {
-                            const q = line.match(/["']([^"']+)["']/);
-                            if (q) return q[1];
-                        }
-                    }
-                }
-                return val.replace(/["']/g, "");
-            }
+            const domainMatch = content.match(/NEXT_APP_WEB\s*=\s*(?:ACTIVE_THEME\?\.domain\s*\|\|\s*)?["']([^"']+)["']/);
+            if (domainMatch) return domainMatch[1];
         }
     } catch (_) {}
-    return "";
+    return "beluxjewel.web";
 }
 
 /**
@@ -58,45 +64,122 @@ export function sanitizeDomainName(domain) {
     }
     return lower
         .replace(/^https?:\/\//, "")
+        .replace(/^www\./, "") // strip leading www.
         .replace(/:\d+$/, "") // remove port
         .replace(/[^a-zA-Z0-9._-]/g, "_");
 }
 
 
+let _allowedDomainsSet = null;
+
 /**
- * Gets or creates an active SQLite database connection for a specific domain
- * @param {string} domain
- * @param {object} [themeInfo]
- * @returns {import('better-sqlite3').Database}
+ * Returns a set of all valid domains defined in ThemeMap.js
+ * @returns {Set<string>}
  */
-export function getTenantDb(domain = "default", themeInfo = {}) {
+export function getAllowedDomains() {
+    if (_allowedDomainsSet) return _allowedDomainsSet;
+
+    try {
+        const themeMapPath = path.join(process.cwd(), "app", "(core)", "utils", "ThemeMap.js");
+        if (fs.existsSync(themeMapPath)) {
+            const content = fs.readFileSync(themeMapPath, "utf-8");
+            const set = new Set();
+            const keyRegex = /"([a-zA-Z0-9._-]+)"\s*:\s*\{/g;
+            let match;
+            while ((match = keyRegex.exec(content)) !== null) {
+                const d = match[1].toLowerCase().replace(/^www\./, "");
+                set.add(d);
+            }
+            const activeDomain = getActiveConfigDomain();
+            if (activeDomain) set.add(activeDomain.toLowerCase());
+
+            _allowedDomainsSet = set;
+            return _allowedDomainsSet;
+        }
+    } catch (_) {}
+
+    return new Set();
+}
+
+/**
+ * Checks if a domain is an authorized tenant defined in ThemeMap.js
+ * @param {string} domain
+ * @returns {boolean}
+ */
+export function isDomainAllowed(domain) {
+    if (!domain) return false;
+    const clean = sanitizeDomainName(domain);
+    const allowed = getAllowedDomains();
+    return allowed.has(clean.toLowerCase());
+}
+
+/**
+ * Gets an active SQLite database connection for a specific domain.
+ * Strictly prevents creating new database files/directories on disk unless explicitly authorized (createIfMissing: true).
+ * Strictly rejects any domain not present in ThemeMap.js.
+ * 
+ * @param {string} domain
+ * @param {object} [options]
+ * @param {boolean} [options.createIfMissing=false] - Whether to create database if not on disk
+ * @param {object} [options.themeInfo] - Theme metadata if creating
+ * @returns {import('better-sqlite3').Database|null}
+ */
+export function getTenantDb(domain = "default", options = {}) {
     const cleanDomain = sanitizeDomainName(domain);
+
+    // Strictly enforce ThemeMap: if domain is NOT in ThemeMap, reject immediately
+    if (!isDomainAllowed(cleanDomain)) {
+        return null;
+    }
 
     // Return pooled connection if already active
     if (dbPool.has(cleanDomain)) {
         return dbPool.get(cleanDomain);
     }
 
-    // Ensure tenant directory exists
     const tenantDir = path.join(TENANTS_ROOT, cleanDomain);
-    if (!fs.existsSync(tenantDir)) {
-        fs.mkdirSync(tenantDir, { recursive: true });
+    const dbPath = path.join(tenantDir, "database.db");
+    const exists = fs.existsSync(dbPath);
+
+    const createIfMissing = Boolean(options?.createIfMissing);
+    const themeInfo = options?.themeInfo || (options?.page ? options : {});
+
+    if (!exists) {
+        if (!createIfMissing) {
+            // Do NOT auto-create database files or directories for arbitrary/scanner domains!
+            return null;
+        }
+
+        // Only create folder if explicitly authorized (e.g. during npm run db:init)
+        if (!fs.existsSync(tenantDir)) {
+            fs.mkdirSync(tenantDir, { recursive: true });
+        }
     }
 
-    const dbPath = path.join(tenantDir, "database.db");
+    try {
+        // Open connection
+        const db = new Database(dbPath, {
+            fileMustExist: !createIfMissing,
+        });
 
-    // Open connection
-    const db = new Database(dbPath, {
-        fileMustExist: false,
-    });
+        if (!exists) {
+            // Initialize Schema, WAL mode and default metadata only for newly created databases
+            initSchema(db, cleanDomain, themeInfo);
+        } else {
+            // Self-healing migration for existing databases: ensure storeinit and design columns
+            try {
+                ensureStoreInitColumns(db);
+                ensureDesignTableColumns(db, "designs");
+            } catch (_) {}
+        }
 
-    // Initialize Schema, WAL mode and default metadata
-    initSchema(db, cleanDomain, themeInfo);
+        // Cache in pool
+        dbPool.set(cleanDomain, db);
 
-    // Cache in pool
-    dbPool.set(cleanDomain, db);
-
-    return db;
+        return db;
+    } catch (err) {
+        return null;
+    }
 }
 
 /**

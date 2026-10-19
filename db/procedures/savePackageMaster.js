@@ -1,12 +1,11 @@
 /**
- * Saves or updates package master items into packagemaster table.
- * Supports raw wrapped payload ({ Data: { rd: [...] } } or { rd: [...] }) or direct array.
- * Robustly matches both "PackageName" and "asPackageName" keys.
- * Enforces PRIMARY KEY (id) upsert.
- * 
+ * Saves package master items into packagemaster table.
+ * Strategy: DELETE all existing rows first, then INSERT fresh batch — atomic transaction.
+ * This guarantees stale rows from previous pushes (with different IDs) are fully replaced.
+ *
  * @param {import('better-sqlite3').Database} db
  * @param {Array<object>|object} rawPayload - array or response payload of package master objects
- * @returns {{ totalReceived: number, savedCount: number, elapsedMs: number, success: boolean }}
+ * @returns {{ totalReceived: number, savedCount: number, deletedCount: number, elapsedMs: number, success: boolean }}
  */
 export function savePackageMaster(db, rawPayload = []) {
     const startTime = performance.now();
@@ -22,12 +21,13 @@ export function savePackageMaster(db, rawPayload = []) {
         return {
             totalReceived: 0,
             savedCount: 0,
+            deletedCount: 0,
             elapsedMs: Math.round((performance.now() - startTime) * 100) / 100,
             success: true,
         };
     }
 
-    const upsertStmt = db.prepare(`
+    const insertStmt = db.prepare(`
         INSERT INTO packagemaster (
             id,
             asPackageName,
@@ -41,14 +41,15 @@ export function savePackageMaster(db, rawPayload = []) {
             @IncludePackagename,
             CURRENT_TIMESTAMP
         )
-        ON CONFLICT(id) DO UPDATE SET
-            asPackageName = excluded.asPackageName,
-            IncludePackageid = excluded.IncludePackageid,
-            IncludePackagename = excluded.IncludePackagename,
-            updated_at = CURRENT_TIMESTAMP
     `);
 
+    // ── Atomic: wipe + re-insert in one transaction ──────────────────────────
     const executeBatch = db.transaction((rows) => {
+        // 1. Delete all existing packages (exact sync — no stale rows left behind)
+        const deleteInfo = db.prepare("DELETE FROM packagemaster").run();
+        const deletedCount = deleteInfo.changes;
+
+        // 2. Insert fresh rows
         let count = 0;
         for (const row of rows) {
             if (row.id === undefined || row.id === null) continue;
@@ -57,7 +58,7 @@ export function savePackageMaster(db, rawPayload = []) {
             const includeIds = row.IncludePackageid ?? row.IncludePackageId ?? row.includePackageId ?? row.includepackageid ?? "";
             const includeNames = row.IncludePackagename ?? row.IncludePackageName ?? row.includePackageName ?? row.includepackagename ?? "";
 
-            upsertStmt.run({
+            insertStmt.run({
                 id: Number(row.id),
                 asPackageName: String(pkgName).trim(),
                 IncludePackageid: String(includeIds).trim(),
@@ -65,15 +66,17 @@ export function savePackageMaster(db, rawPayload = []) {
             });
             count++;
         }
-        return count;
+
+        return { savedCount: count, deletedCount };
     });
 
-    const savedCount = executeBatch(packageList);
+    const { savedCount, deletedCount } = executeBatch(packageList);
     const elapsedMs = Math.round((performance.now() - startTime) * 100) / 100;
 
     return {
         totalReceived: packageList.length,
         savedCount,
+        deletedCount,
         elapsedMs,
         success: true,
     };

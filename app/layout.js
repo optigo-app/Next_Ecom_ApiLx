@@ -67,7 +67,7 @@ export default async function RootLayout({ children }) {
     name: siteName,
     url: siteUrl,
   };
-  
+
 
   return (
     <html lang="en" data-brand={activeBrand}>

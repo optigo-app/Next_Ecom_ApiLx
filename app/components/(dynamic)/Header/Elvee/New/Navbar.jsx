@@ -1213,7 +1213,7 @@ const ElveePreNavbar = ({ storeInit: storeinit, logos }) => {
                 sx={{ color: "#000" }}
                 onClick={() => navigateToMenu("/myWishList")}
               >
-                <Badge badgeContent={wishCountNum || 10} color="error">
+                <Badge badgeContent={wishCountNum} color="error">
                   <FavoriteIcon
                     style={{ fontSize: "18px", color: "inherit" }}
                   />

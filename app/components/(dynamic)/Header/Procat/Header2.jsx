@@ -12,6 +12,7 @@ import './Header2.modul.scss';
 import { useStore } from "@/app/(core)/contexts/StoreProvider";
 import { useNextRouterLikeRR } from "@/app/(core)/hooks/useLocationRd";
 import { useRouter } from "next/navigation";
+import { logoutUser } from "@/app/(core)/utils/authLogout";
 
 
 const Header2 = ({ storeinit, logos }) => {
@@ -172,20 +173,11 @@ const Header2 = ({ storeinit, logos }) => {
 
 
     const handleLogout = () => {
-        setislogin(false);
-        sessionStorage.setItem('LoginUser', false);
-        sessionStorage.removeItem('storeInit');
-        sessionStorage.removeItem('loginUserDetail');
-        sessionStorage.removeItem('remarks');
-        sessionStorage.removeItem('selectedAddressId');
-        sessionStorage.removeItem('orderNumber');
-        sessionStorage.removeItem('registerEmail');
-        sessionStorage.removeItem('UploadLogicalPath');
-        sessionStorage.removeItem('remarks');
-        sessionStorage.removeItem('registerMobile');
-        sessionStorage.removeItem('allproductlist');
-        sessionStorage.clear();
-        window.location.href = "/";
+        logoutUser({
+            setislogin,
+            storeInit: storeinit,
+            redirectUrl: "/",
+        });
     }
 
 

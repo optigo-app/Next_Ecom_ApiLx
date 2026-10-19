@@ -1,52 +1,33 @@
-import { headers } from "next/headers";
-import { activeBrand } from "@/app/env";
-import { AppConfig } from "../constants/AppConfig";
+/**
+ * ====================================================================================================
+ * CENTRAL SEO MODULE (SINGLE SOURCE OF TRUTH FOR ALL SEO UTILITIES)
+ * ====================================================================================================
+ * Consolidated utilities for:
+ * 1. URL validation, canonical URLs, and data decompression
+ * 2. Structured Data / JSON-LD schemas (Product, Collection, Breadcrumb, WebSite)
+ * 3. Page Metadata generation (OpenGraph, Twitter, Robots, Favicons)
+ */
 
- 
-export const ActiveMeta = AppConfig[activeBrand];
+// 1. URL & Payload Utilities
+export {
+  getValidUrl,
+  getCanonicalUrl,
+  decodeAndDecompress,
+} from "./urlUtils.js";
 
-// export const ActiveDescription = AppConfig[activeBrand]?.metaData?.description;
+// 2. Structured Data / JSON-LD Schemas
+export {
+  generateCollectionJsonLd,
+  generateWebSiteJsonLd,
+  generateBreadcrumbJsonLd,
+  generateProductJsonLd,
+} from "./jsonLd.js";
 
-// export const ActiveKeywords = AppConfig[activeBrand]?.metaData?.keywords;
-
-export const isOmJiyansh = activeBrand === "omjiyas";
-
-export async function getSiteDetails(storeInit) {
-  const headersList = await headers();
-  const host = headersList.get("host") || "";
-  const subdomain = host.split(".")[0] || "";
-  const fallbackSiteName =
-    subdomain && subdomain !== "localhost" && subdomain !== "www"
-      ? subdomain.charAt(0).toUpperCase() + subdomain.slice(1)
-      : "Jewelry Store";
-
-  let siteName = fallbackSiteName;
-  if (storeInit) {
-    if (
-      storeInit.companyname &&
-      !storeInit.companyname.toLowerCase().includes("orail designs") &&
-      !storeInit.companyname.toLowerCase().includes("optigoapps")
-    ) {
-      siteName = storeInit.companyname;
-    } else if (
-      storeInit.BrowserTitle &&
-      !storeInit.BrowserTitle.toLowerCase().includes(
-        "online jewellery store",
-      ) &&
-      !storeInit.BrowserTitle.toLowerCase().includes("optigoapps")
-    ) {
-      siteName = storeInit.BrowserTitle;
-    } else if (storeInit.ufcc) {
-      siteName =
-        storeInit.ufcc.charAt(0).toUpperCase() + storeInit.ufcc.slice(1);
-    }
-  }
-
-  const siteUrl = storeInit?.domain
-    ? `https://${storeInit.domain}`
-    : host
-      ? `https://${host}`
-      : "https://elior.optigoapps.com";
-
-  return { siteName, siteUrl };
-}
+// 3. Metadata Generators & Constants
+export {
+  ActiveMeta,
+  isOmJiyansh,
+  getSiteDetails,
+  generatePageMetadata,
+  getDynamicMetadata,
+} from "./metadata.js";

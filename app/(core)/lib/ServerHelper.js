@@ -3,6 +3,7 @@ import { headers } from "next/headers";
 import { NEXT_APP_WEB } from "../utils/env";
 import { activeBrand } from "@/app/env";
 import { AppConfig } from "../constants/AppConfig";
+import { ACTIVE_THEME } from "../../../config/theme.config.js";
 
 /**
  * Safe host getter (server only).
@@ -56,12 +57,14 @@ const Theme = {
       "/WebSiteStaticImage/logoIcon/om/new/om-jiyansh-jewel pvt ltd final logo.png",
   },
   hoq: {
-    web: "/WebSiteStaticImage/logoIcon/webLogo1.png",
-    mobile: "/WebSiteStaticImage/logoIcon/mobileLogo2.png",
+    web: "/WebSiteStaticImage/logoIcon/webLogo.png",
+    mobile: "/WebSiteStaticImage/logoIcon/mobileLogo.png",
+    blackLogo: "/WebSiteStaticImage/logoIcon/webLogo11.png",
   },
   Elvee: {
     web: "/WebSiteStaticImage/logoIcon/webLogo.png",
     mobile: "/WebSiteStaticImage/logoIcon/mobileLogo.png",
+    blackLogo: "/WebSiteStaticImage/logoIcon/webLogo11.png",
   },
   vimalgoldanddiamond: {
     web: "/WebSiteStaticImage/logoIcon/vimal/webLogo.png",
@@ -70,20 +73,25 @@ const Theme = {
     meta: "/WebSiteStaticImage/logoIcon/vimal/MetaShareImage.jpg",
   },
   beluxjewel: {
-    web: "/WebSiteStaticImage/logoIcon/vimal/webLogo.png",
-    mobile: "/WebSiteStaticImage/logoIcon/vimal/mobileLogo.png",
-    blackLogo: "/WebSiteStaticImage/logoIcon/vimal/webLogo11.png",
+    web: "/WebSiteStaticImage/logoIcon/webLogo.png",
+    mobile: "/WebSiteStaticImage/logoIcon/mobileLogo.png",
+    blackLogo: "/WebSiteStaticImage/logoIcon/webLogo11.png",
   },
 };
 
 export function getLogos() {
+  if (ACTIVE_THEME?.logos?.web) {
+    return ACTIVE_THEME.logos;
+  }
   const config = AppConfig[activeBrand];
   if (config?.web && config?.mobile) {
     return {
       web: config.web,
+      white_logo: config.white_logo || config.web,
+      black_logo: config.black_logo || config.blackLogo || config.web,
+      blackLogo: config.blackLogo || config.black_logo || config.web,
       mobile: config.mobile,
       transparent_mobile: config.transparent_mobile,
-      ...(config.black_logo && { black_logo: config.black_logo }),
     };
   }
 

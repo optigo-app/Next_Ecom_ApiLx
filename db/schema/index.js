@@ -7,14 +7,16 @@ import { PRAGMAS_SQL } from "./pragmas.js";
 import { DESIGNS_TABLE_SQL } from "./designs.js";
 import { MENU_FILTERS_TABLE_SQL } from "./menuFilters.js";
 import { SYNC_LOGS_TABLE_SQL } from "./syncLogs.js";
-import { STORE_INIT_TABLE_SQL } from "./storeInit.js";
+import { STORE_INIT_TABLE_SQL, ensureStoreInitColumns } from "./storeInit.js";
 import { ACCOUNT_TABLE_SQL } from "./account.js";
 import { COMPANY_INFO_TABLE_SQL } from "./companyInfo.js";
 import { MENUS_TABLE_SQL } from "./menus.js";
 import { PACKAGEMASTER_TABLE_SQL } from "./packagemaster.js";
 import { RECENTLY_VIEWED_TABLE_SQL } from "./recentlyViewed.js";
-import { ALBUMS_TABLE_SQL } from "./albums.js";
+import { ALBUMS_TABLE_SQL, ensureAlbumsTable } from "./albums.js";
+import { WEBSITE_CONTENT_TABLE_SQL, ensureWebsiteContentTable } from "./websiteContent.js";
 import { ensurePolicyCategoriesTable, POLICY_CATEGORIES_TABLE } from "./policyCategories.js";
+import { ensureDesignTableColumns } from "./dynamicDesigns.js";
 import {
     ARTICLE_INFO_PREFIX,
     ARTICLE_MATERIAL_PREFIX,
@@ -34,12 +36,16 @@ export {
     MENU_FILTERS_TABLE_SQL,
     SYNC_LOGS_TABLE_SQL,
     STORE_INIT_TABLE_SQL,
+    ensureStoreInitColumns,
     ACCOUNT_TABLE_SQL,
     COMPANY_INFO_TABLE_SQL,
     MENUS_TABLE_SQL,
     PACKAGEMASTER_TABLE_SQL,
     RECENTLY_VIEWED_TABLE_SQL,
     ALBUMS_TABLE_SQL,
+    ensureAlbumsTable,
+    WEBSITE_CONTENT_TABLE_SQL,
+    ensureWebsiteContentTable,
     ARTICLE_INFO_PREFIX,
     ARTICLE_MATERIAL_PREFIX,
     ARTICLE_TABLE_PREFIX,
@@ -64,6 +70,7 @@ export const SCHEMA_SQL = [
     PACKAGEMASTER_TABLE_SQL,
     RECENTLY_VIEWED_TABLE_SQL,
     ALBUMS_TABLE_SQL,
+    WEBSITE_CONTENT_TABLE_SQL,
 ].join("\n\n");
 
 /**
@@ -82,7 +89,8 @@ export function truncateAllData(db) {
             DELETE FROM menus;
             DELETE FROM packagemaster;
             DELETE FROM albums;
-            DELETE FROM sqlite_sequence WHERE name IN ('menu_filters', 'sync_logs', 'storeinit', 'account', 'companyinfo', 'menus', 'packagemaster', 'albums');
+            DELETE FROM website_content;
+            DELETE FROM sqlite_sequence WHERE name IN ('menu_filters', 'sync_logs', 'storeinit', 'account', 'companyinfo', 'menus', 'packagemaster', 'albums', 'website_content');
         `);
         db.pragma("wal_checkpoint(TRUNCATE)");
         return true;
@@ -148,7 +156,21 @@ export function initSchema(db, domain, themeInfo = {}) {
     }
 
     db.exec(SCHEMA_SQL);
+    ensureStoreInitColumns(db);
     ensurePolicyCategoriesTable(db);
+    ensureAlbumsTable(db);
+    ensureWebsiteContentTable(db);
+    ensureDesignTableColumns(db, "designs");
+
+    try {
+        const allDesignTables = db
+            .prepare("SELECT name FROM sqlite_master WHERE type='table' AND name LIKE 'design%'")
+            .all();
+        for (const tbl of allDesignTables) {
+            ensureDesignTableColumns(db, tbl.name);
+        }
+    } catch (_) {}
 }
 
+export { ensureDesignTableColumns };
 export default initSchema;

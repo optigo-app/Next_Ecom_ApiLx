@@ -33,9 +33,9 @@ export default function LoginWithMobileCode({ params, searchParams }) {
 
   const search = searchParams?.LoginRedirect || searchParams?.loginRedirect || searchParams?.search || "";
   const securityKey = searchParams?.SK || searchParams?.SecurityKey || "";
-  const updatedSearch = search?.replace('?LoginRedirect=', '');
-  const redirectMobileUrl = search ? decodeURIComponent(updatedSearch) : "/";
-  const cancelRedireactUrl = `/LoginOption?LoginRedirect=${search}${securityKey ? `&SK=${encodeURIComponent(securityKey)}` : ""}`;
+  const cleanRedirect = search ? search.replace(/^\?LoginRedirect=/, '') : '';
+  const redirectMobileUrl = cleanRedirect ? (cleanRedirect.startsWith('/') ? cleanRedirect : decodeURIComponent(cleanRedirect)) : "/";
+  const cancelRedireactUrl = `/LoginOption${cleanRedirect ? `?LoginRedirect=${encodeURIComponent(cleanRedirect)}` : ""}${securityKey ? `${cleanRedirect ? '&' : '?'}SK=${encodeURIComponent(securityKey)}` : ""}`;
 
   useEffect(() => {
     const storedMobile = sessionStorage?.getItem('registerMobile') ?? '';
@@ -100,7 +100,8 @@ export default function LoginWithMobileCode({ params, searchParams }) {
   const handleResendCode = async () => {
     setResendTimer(120);
     setIsLoading(true);
-    ContimueWithMobileAPI(mobileNo).then((response) => {
+    const countryCode = sessionStorage?.getItem('Countrycodestate') || '';
+    ContimueWithMobileAPI(mobileNo, countryCode).then((response) => {
       setIsLoading(false);
       if (response?.Data?.rd[0]?.stat == 1) {
         toast.success('OTP sent successfully');

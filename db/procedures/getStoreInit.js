@@ -7,6 +7,8 @@
  * Emulates the exact API response contract with sub-millisecond read latency (< 0.2ms).
  */
 
+import { ensureStoreInitColumns } from "../schema/storeInit.js";
+
 /**
  * Strips internal SQLite-specific management fields
  * @param {object} row
@@ -32,7 +34,9 @@ function cleanRow(row, excludeFields = ["id", "created_at", "updated_at", "displ
  * @returns {{ Status: string, Message: string, Data: { rd: object[], rd1: object[], rd2: object[] } }}
  */
 export function getStoreInit(db, options = {}) {
+    if (!db) return null;
     try {
+        ensureStoreInitColumns(db);
         // 1. Fetch storeinit (rd[0])
         let storeInitRow;
         if (options.domain) {
@@ -57,14 +61,21 @@ export function getStoreInit(db, options = {}) {
         const cleanedStoreInit = cleanRow(storeInitRow);
         const cleanedCompanyInfo = cleanRow(companyInfoRow);
 
+        const rd = cleanedStoreInit ? [cleanedStoreInit] : [];
+        const rd1 = accountRows || [];
+        const rd2 = cleanedCompanyInfo ? [cleanedCompanyInfo] : [];
+
         return {
             Status: "200",
             Message: "Request processed successfully.",
             Data: {
-                rd: cleanedStoreInit ? [cleanedStoreInit] : [],
-                rd1: accountRows || [],
-                rd2: cleanedCompanyInfo ? [cleanedCompanyInfo] : []
-            }
+                rd,
+                rd1,
+                rd2
+            },
+            rd,
+            rd1,
+            rd2
         };
     } catch (err) {
         console.error("[getStoreInit] Error reading from SQLite:", err.message);

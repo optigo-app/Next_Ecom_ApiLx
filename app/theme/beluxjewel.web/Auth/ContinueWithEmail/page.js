@@ -36,10 +36,12 @@ export default function ContinueWithEmail({ params, searchParams, storeInit }) {
     paramsObj.search ||
     "";
   const securityKey = searchParams?.SK || searchParams?.SecurityKey || "";
+  const cleanRedirect = search ? search.replace(/^\?LoginRedirect=/, '') : '';
+  const queryParamStr = `${cleanRedirect ? `?LoginRedirect=${encodeURIComponent(cleanRedirect)}` : ""}${securityKey ? `${cleanRedirect ? '&' : '?'}SK=${encodeURIComponent(securityKey)}` : ""}`;
 
-  const redirectEmailUrl = `/LoginWithEmail?LoginRedirect=${search}${securityKey ? `&SK=${encodeURIComponent(securityKey)}` : ""}&email=${encodeURIComponent(email.trim())}`;
-  const redirectSignUpUrl = `/register?LoginRedirect=${search}${securityKey ? `&SK=${encodeURIComponent(securityKey)}` : ""}&email=${encodeURIComponent(email.trim())}`;
-  const cancelRedireactUrl = `/LoginOption?LoginRedirect=${search}${securityKey ? `&SK=${encodeURIComponent(securityKey)}` : ""}`;
+  const redirectEmailUrl = `/LoginWithEmail${queryParamStr}${queryParamStr ? '&' : '?'}email=${encodeURIComponent(email.trim())}`;
+  const redirectSignUpUrl = `/register${queryParamStr}${queryParamStr ? '&' : '?'}email=${encodeURIComponent(email.trim())}`;
+  const cancelRedireactUrl = `/LoginOption${queryParamStr}`;
 
   useEffect(() => {
     sessionStorage.removeItem("registerEmail");

@@ -23,7 +23,7 @@ function extractSsrFilters(slugArr = [], searchParams = {}) {
 
   // 1. Process searchParams using ParseAndDecodeSearchParams
   const decodedParams = ParseAndDecodeSearchParams(searchParams);
-  console.log(decodedParams , "decodedParams")
+  console.log(decodedParams, "decodedParams")
 
   for (const item of decodedParams) {
     if (!item || typeof item !== "string" || item.endsWith("=null")) continue;
@@ -45,15 +45,17 @@ function extractSsrFilters(slugArr = [], searchParams = {}) {
             }
           });
         }
-      } catch (_) {}
+      } catch (_) { }
     } else if (prefix === "S") {
       try {
         const decoded = JSON.parse(Buffer.from(rawVal, "base64").toString("utf-8"));
-        filters.SearchKey = decoded?.b || decoded;
+        filters.SearchKey = decoded?.b || decoded?.SearchKey || decoded?.ArticleNo || (typeof decoded === "string" ? decoded : "");
+        if (decoded?.ArticleNo) filters.ArticleNo = decoded.ArticleNo;
+        if (decoded?.a) filters.autocode = decoded.a;
       } catch (_) {
         try {
           filters.SearchKey = Buffer.from(rawVal, "base64").toString("utf-8");
-        } catch (_) {}
+        } catch (_) { }
       }
     } else if (prefix === "N") {
       filters.isNewArrival = true;
@@ -69,6 +71,11 @@ function extractSsrFilters(slugArr = [], searchParams = {}) {
     if (k !== "M" && k !== "S" && k !== "N" && k !== "T" && k !== "B" && v && typeof v === "string") {
       filters[k] = v;
     }
+  }
+  if (!filters.SearchKey) {
+    if (filters.search) filters.SearchKey = filters.search;
+    else if (filters.Search) filters.SearchKey = filters.Search;
+    else if (filters.searchKey) filters.SearchKey = filters.searchKey;
   }
 
   // 2. Parse slugArr if direct parameters are missing and no explicit query params exist
@@ -101,10 +108,10 @@ export async function generateMetadata({ params, searchParams }) {
       searchParams
     ]);
 
-    const meta = await getDynamicMetadata({ 
-      params: awaitedParams, 
-      searchParams: awaitedSearchParams, 
-      storeInit 
+    const meta = await getDynamicMetadata({
+      params: awaitedParams,
+      searchParams: awaitedSearchParams,
+      storeInit
     });
 
 
@@ -127,7 +134,7 @@ export async function generateMetadata({ params, searchParams }) {
       title: "Jewelry Products",
       description: "Browse our collection of jewelry products.",
     };
-  } 
+  }
 }
 
 export default async function Page({ params, searchParams }) {
@@ -138,7 +145,7 @@ export default async function Page({ params, searchParams }) {
     let Product;
     try {
       Product = await resolveProductList(themeData.page);
-      
+
     } catch (e) {
       console.error("Failed to load theme-specific product page:", e);
       return <div style={{ padding: "50px", textAlign: "center" }}>Unable to load product list. Please try again later.</div>;
@@ -182,10 +189,10 @@ export default async function Page({ params, searchParams }) {
       const loginCookie = cookieStore?.get("loginUserDetail")?.value;
       if (loginCookie) {
         let raw = loginCookie;
-        try { raw = decodeURIComponent(loginCookie); } catch (_) {}
+        try { raw = decodeURIComponent(loginCookie); } catch (_) { }
         serverLoginUser = JSON.parse(raw);
       }
-    } catch (_) {}
+    } catch (_) { }
 
     const policyParams = getPricingPolicyParams({
       storeinit: storeInit,

@@ -33,8 +33,9 @@ export default function LoginWithEmailCode({ params, searchParams }) {
 
   const search = searchParams?.LoginRedirect || searchParams?.loginRedirect || searchParams?.search || "";
   const securityKey = searchParams?.SK || searchParams?.SecurityKey || "";
-  const redirectEmailUrl = search ? (search.startsWith('/') ? search : decodeURIComponent(search)) : "/";
-  const cancelRedireactUrl = `/LoginOption?LoginRedirect=${search}${securityKey ? `&SK=${encodeURIComponent(securityKey)}` : ""}`;
+  const cleanRedirect = search ? search.replace(/^\?LoginRedirect=/, '') : '';
+  const redirectEmailUrl = cleanRedirect ? (cleanRedirect.startsWith('/') ? cleanRedirect : decodeURIComponent(cleanRedirect)) : "/";
+  const cancelRedireactUrl = `/LoginOption${cleanRedirect ? `?LoginRedirect=${encodeURIComponent(cleanRedirect)}` : ""}${securityKey ? `${cleanRedirect ? '&' : '?'}SK=${encodeURIComponent(securityKey)}` : ""}`;
 
   useEffect(() => {
     const fetchData = async () => {

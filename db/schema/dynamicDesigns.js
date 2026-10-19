@@ -54,6 +54,119 @@ export function getDynamicDesignTableName(config = {}, prefix = DESIGN_TABLE_PRE
 }
 
  
+export const REQUIRED_DESIGN_COLUMNS = [
+  { name: "id", type: "INTEGER" },
+  { name: "SrNo", type: "TEXT" },
+  { name: "DesignId", type: "INTEGER" },
+  { name: "ArticleNo", type: "TEXT" },
+  { name: "designno", type: "TEXT" },
+  { name: "autocode", type: "TEXT" },
+  { name: "TitleLine", type: "TEXT" },
+  { name: "description", type: "TEXT" },
+  { name: "DisplayOrder", type: "INTEGER DEFAULT 0" },
+  { name: "IsBestSeller", type: "INTEGER DEFAULT 0" },
+  { name: "IsTrending", type: "INTEGER DEFAULT 0" },
+  { name: "IsNewArrival", type: "INTEGER DEFAULT 0" },
+  { name: "IsInReadyStock", type: "INTEGER DEFAULT 0" },
+  { name: "IsMrpBase", type: "INTEGER DEFAULT 1" },
+  { name: "EntryDate", type: "DATETIME" },
+  { name: "FrontEnd1_newArrivalsto", type: "DATETIME" },
+  { name: "DiaQuaCol", type: "TEXT" },
+  { name: "CsQuaCol", type: "TEXT" },
+  { name: "SoldCnt", type: "INTEGER DEFAULT 0" },
+  { name: "Nwt", type: "DECIMAL(18,3)" },
+  { name: "Gwt", type: "DECIMAL(18,3)" },
+  { name: "Dwt", type: "DECIMAL(18,3)" },
+  { name: "Dpcs", type: "INTEGER DEFAULT 0" },
+  { name: "CSwt", type: "DECIMAL(18,3)" },
+  { name: "CSpcs", type: "INTEGER DEFAULT 0" },
+  { name: "UnitCost", type: "DECIMAL(18,2)" },
+  { name: "UnitCostWithMarkUp", type: "DECIMAL(18,2)" },
+  { name: "UnitCostWithMarkUpIncTax", type: "DECIMAL(18,2)" },
+  { name: "Metal_Cost", type: "DECIMAL(18,2)" },
+  { name: "Labour_Cost", type: "DECIMAL(18,2)" },
+  { name: "Diamond_Cost", type: "DECIMAL(18,2)" },
+  { name: "Diamond_SettingCost", type: "DECIMAL(18,2)" },
+  { name: "ColorStone_Cost", type: "DECIMAL(18,2)" },
+  { name: "ColorStone_SettingCost", type: "DECIMAL(18,2)" },
+  { name: "Misc_Cost", type: "DECIMAL(18,2)" },
+  { name: "Misc_SettingCost", type: "DECIMAL(18,2) DEFAULT 0" },
+  { name: "Other_Cost", type: "DECIMAL(18,2)" },
+  { name: "SolPrice", type: "DECIMAL(18,2) DEFAULT 0" },
+  { name: "MetalPurityid", type: "INTEGER" },
+  { name: "MetalColorid", type: "INTEGER" },
+  { name: "PackageIdList", type: "TEXT" },
+  { name: "ExclusiveCustomerId", type: "TEXT" },
+  { name: "MetalTypeid", type: "INTEGER" },
+  { name: "MetalTypePurity", type: "TEXT" },
+  { name: "CartId", type: "INTEGER" },
+  { name: "IsInWish", type: "INTEGER DEFAULT 0" },
+  { name: "IsInCart", type: "INTEGER DEFAULT 0" },
+  { name: "ImageCount", type: "INTEGER DEFAULT 0" },
+  { name: "ColorImageCount", type: "INTEGER DEFAULT 0" },
+  { name: "360ImageCount", type: "INTEGER DEFAULT 0" },
+  { name: "VideoCount", type: "INTEGER DEFAULT 0" },
+  { name: "ImageExtension", type: "TEXT DEFAULT 'png'" },
+  { name: "360ImageExtension", type: "TEXT" },
+  { name: "VideoExtension", type: "TEXT" },
+  { name: "IsImageNameWithRandNo", type: "INTEGER DEFAULT 0" },
+  { name: "ImageVideoDetail", type: "TEXT" },
+  { name: "product_typeid", type: "INTEGER" },
+  { name: "collectionid", type: "INTEGER" },
+  { name: "categoryid", type: "INTEGER" },
+  { name: "sub_categoryid", type: "INTEGER" },
+  { name: "brandid", type: "INTEGER" },
+  { name: "genderid", type: "INTEGER" },
+  { name: "occasionid", type: "INTEGER" },
+  { name: "Styleid", type: "INTEGER" },
+  { name: "make_typeid", type: "INTEGER" },
+  { name: "category", type: "TEXT" },
+  { name: "collection", type: "TEXT" },
+  { name: "sub_category", type: "TEXT" },
+  { name: "gender", type: "TEXT" },
+  { name: "brand", type: "TEXT" },
+  { name: "occasion", type: "TEXT" },
+  { name: "product_type", type: "TEXT" },
+  { name: "style", type: "TEXT" },
+  { name: "make_type", type: "TEXT" },
+  { name: "created_at", type: "DATETIME DEFAULT CURRENT_TIMESTAMP" },
+  { name: "updated_at", type: "DATETIME DEFAULT CURRENT_TIMESTAMP" },
+];
+
+/**
+ * Ensures all standard columns exist in any design table (main or dynamic).
+ * Safely runs ALTER TABLE ADD COLUMN for any column missing in an existing table.
+ * 
+ * @param {import('better-sqlite3').Database} db 
+ * @param {string} tableName 
+ */
+export function ensureDesignTableColumns(db, tableName) {
+  if (!db) return;
+  const cleanTable = sanitizeSqlIdentifier(tableName, "designs");
+
+  try {
+    const tableExists = db
+      .prepare("SELECT 1 FROM sqlite_master WHERE type='table' AND name = ?")
+      .get(cleanTable);
+    if (!tableExists) return;
+
+    const existingCols = db
+      .prepare(`PRAGMA table_info("${cleanTable}")`)
+      .all()
+      .map((c) => c.name);
+
+    for (const col of REQUIRED_DESIGN_COLUMNS) {
+      if (!existingCols.includes(col.name)) {
+        try {
+          db.exec(`ALTER TABLE "${cleanTable}" ADD COLUMN "${col.name}" ${col.type};`);
+        } catch (_) {}
+      }
+    }
+  } catch (err) {
+    console.warn(`[ensureDesignTableColumns] Warning verifying columns for ${cleanTable}:`, err.message);
+  }
+}
+
 /**
  * Ensures the dynamic table and all corresponding performance indexes exist in the tenant database.
  * Clones the full schema and indexes from the standard designs definition.
@@ -63,7 +176,10 @@ export function getDynamicDesignTableName(config = {}, prefix = DESIGN_TABLE_PRE
  */
 export function ensureDynamicDesignTable(db, tableName) {
   const cleanTable = sanitizeSqlIdentifier(tableName, "designs");
-  if (cleanTable === "designs") return;
+  if (cleanTable === "designs") {
+    ensureDesignTableColumns(db, "designs");
+    return;
+  }
 
   // 1. Create dynamic table matching designs schema
   const createTableSql = `
@@ -182,6 +298,7 @@ export function ensureDynamicDesignTable(db, tableName) {
   `;
 
   db.exec(createTableSql);
+  ensureDesignTableColumns(db, cleanTable);
   db.exec(indexSql);
 }
 

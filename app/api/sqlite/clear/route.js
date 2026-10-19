@@ -8,6 +8,7 @@ import { deleteStoreInit } from "@/db/procedures/deleteStoreInit";
 import { deletePackageMaster } from "@/db/procedures/deletePackageMaster";
 import { deleteAlbums } from "@/db/procedures/deleteAlbums";
 import { extractDomain } from "../commonController";
+import { logger } from "@/db/logger";
 
 export const dynamic = "force-dynamic";
 
@@ -26,6 +27,8 @@ async function handleClear(req) {
     } catch (_) {}
 
     const targetDomain = extractDomain(req, body);
+    logger.logApiRequest(req, { domain: targetDomain, category: "API_CLEAR", body });
+
     if (!targetDomain) {
       return NextResponse.json(
         { success: false, error: "Domain is required. Pass ?domain=xyz.com, header, or body." },

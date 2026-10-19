@@ -31,6 +31,7 @@ import { isItemInMap } from "@/app/(core)/utils/API/GetCount/GetCountAPI";
 
 const MotionButton = motion(Button);
 const MotionCheckbox = motion(Checkbox);
+import DesignNavChevrons from "./DesignNavChevrons";
 
 const RightSide = ({
   TitleLine,
@@ -256,18 +257,32 @@ const RightSide = ({
           >
             Collection: {collection}
           </Typography> */}
-          <Typography
-            variant="body2"
+          <Box
             sx={{
-              color: "#424242",
-              fontSize: "16px",
-              fontWeight: 600,
-              letterSpacing: "1.5px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
               mb: 0.5,
             }}
           >
-            {activeArticle?.ArticleNo || DesignNo}
-          </Typography>
+            <Typography
+              variant="body2"
+              sx={{
+                color: "#424242",
+                fontSize: "16px",
+                fontWeight: 600,
+                letterSpacing: "1.5px",
+              }}
+            >
+              {activeArticle?.ArticleNo || DesignNo}
+            </Typography>
+
+            <DesignNavChevrons
+              currentDesignNo={DesignNo}
+              currentAutocode={activeArticle?.autocode || singleProd?.autocode}
+              storeInit={storeInit}
+            />
+          </Box>
 
           {/* Title and Actions */}
           <Box

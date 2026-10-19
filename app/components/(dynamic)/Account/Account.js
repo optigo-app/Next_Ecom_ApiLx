@@ -38,6 +38,7 @@ import { useNextRouterLikeRR } from "@/app/(core)/hooks/useLocationRd";
 import { useStore } from "@/app/(core)/contexts/StoreProvider";
 import LogOutModal from "../../ui/LogOut";
 import { useSearchParams } from "next/navigation";
+import { logoutUser } from "@/app/(core)/utils/authLogout";
 import AccountLedger2 from "./AccountLeger2/AccountLedger";
 import AccountLedger3 from "./AccountLeger3/AccountLedger";
 import AccountLedgerX2 from "@/app/theme/fgstore.mapp/AccountLeger/AccountLedger";
@@ -143,22 +144,11 @@ export default function Account({ Storeinit }) {
   useGlobalPreventSave();
 
   const handleLogout = () => {
-    setislogin(false);
-    Cookies.remove("userLoginCookie", { path: "/" });
-    Cookies.remove("LoginUser", { path: "/" });
-    Cookies.remove("userPackageId", { path: "/" });
-    sessionStorage.setItem("LoginUser", false);
-    sessionStorage.removeItem("storeInit");
-    sessionStorage.removeItem("loginUserDetail");
-    sessionStorage.removeItem("remarks");
-    sessionStorage.removeItem("selectedAddressId");
-    sessionStorage.removeItem("orderNumber");
-    sessionStorage.removeItem("registerEmail");
-    sessionStorage.removeItem("UploadLogicalPath");
-    sessionStorage.removeItem("registerMobile");
-    sessionStorage.removeItem("allproductlist");
-    sessionStorage.clear();
-    window.location.href = "/";
+    setLogoutModal(false);
+    logoutUser({
+      setislogin,
+      redirectUrl: "/",
+    });
   };
 
   return (

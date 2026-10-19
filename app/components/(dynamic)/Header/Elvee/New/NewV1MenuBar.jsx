@@ -590,22 +590,22 @@ const PremiumNavbar = () => {
                                               cursor: "pointer",
                                               color:
                                                 activeSubMenu?.menuname ===
-                                                menuItem.menuname
+                                                  menuItem.menuname
                                                   ? "#000"
                                                   : "#666",
                                               fontWeight:
                                                 activeSubMenu?.menuname ===
-                                                menuItem.menuname
+                                                  menuItem.menuname
                                                   ? 700
                                                   : 400,
                                               bgcolor:
                                                 activeSubMenu?.menuname ===
-                                                menuItem.menuname
+                                                  menuItem.menuname
                                                   ? "#fff"
                                                   : "transparent",
                                               borderLeft:
                                                 activeSubMenu?.menuname ===
-                                                menuItem.menuname
+                                                  menuItem.menuname
                                                   ? "4px solid #000"
                                                   : "4px solid transparent",
                                               transition: "all 0.2s ease",
@@ -719,7 +719,7 @@ const PremiumNavbar = () => {
                                                       (p) =>
                                                         p?.param2dataname &&
                                                         p?.param2dataname.trim() !==
-                                                          "",
+                                                        "",
                                                     )
                                                     .map(
                                                       (param2Item, p2Index) => (
@@ -904,7 +904,7 @@ const PremiumNavbar = () => {
                 sx={{ color: "#000" }}
                 onClick={() => navigateToMenu("/myWishList")}
               >
-                <Badge badgeContent={wishCount || 10} color="error">
+                <Badge badgeContent={wishCount} color="error">
                   <FavoriteIcon
                     style={{ fontSize: "18px", color: "inherit" }}
                   />

@@ -27,6 +27,7 @@ import {
   Backdrop,
   IconButton,
   InputAdornment,
+  Divider,
 } from "@mui/material";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
@@ -44,8 +45,9 @@ export default function LoginWithEmail({ params, searchParams, storeInit }) {
 
   const search = searchParams?.LoginRedirect || searchParams?.loginRedirect || searchParams?.search || "";
   const securityKey = searchParams?.SK || searchParams?.SecurityKey || "";
-  const redirectEmailUrl = search ? decodeURIComponent(search) : "/";
-  const cancelRedireactUrl = `/LoginOption?LoginRedirect=${search}${securityKey ? `&SK=${encodeURIComponent(securityKey)}` : ""}`;
+  const cleanRedirect = search ? search.replace(/^\?LoginRedirect=/, '') : '';
+  const redirectEmailUrl = cleanRedirect ? (cleanRedirect.startsWith('/') ? cleanRedirect : decodeURIComponent(cleanRedirect)) : "/";
+  const cancelRedireactUrl = `/LoginOption${cleanRedirect ? `?LoginRedirect=${encodeURIComponent(cleanRedirect)}` : ""}${securityKey ? `${cleanRedirect ? '&' : '?'}SK=${encodeURIComponent(securityKey)}` : ""}`;
 
   useEffect(() => {
     const storedEmail = (() => {
@@ -170,6 +172,13 @@ export default function LoginWithEmail({ params, searchParams, storeInit }) {
 
   const handleTogglePasswordVisibility = () => {
     setShowConfirmPassword(!showConfirmPassword);
+  };
+
+  const handleNavigation = () => {
+    sessionStorage.setItem("LoginCodeEmail", "true");
+    sessionStorage.setItem("registerEmail", email);
+    sessionStorage.setItem("email", email);
+    navigation(`/LoginWithEmailCode${cleanRedirect ? `?LoginRedirect=${encodeURIComponent(cleanRedirect)}` : ""}${securityKey ? `${cleanRedirect ? '&' : '?'}SK=${encodeURIComponent(securityKey)}` : ""}`);
   };
 
   const handleForgotPassword = async () => {
@@ -479,6 +488,59 @@ export default function LoginWithEmail({ params, searchParams, storeInit }) {
                   >
                     Cancel
                   </Button>
+
+                  <Box sx={{ pt: 1, textAlign: "center" }}>
+                    <Divider sx={{ mb: 2, borderColor: "#e5e7eb" }}>
+                      <Typography
+                        variant="caption"
+                        sx={{
+                          px: 1,
+                          color: "#9ca3af",
+                          fontWeight: 600,
+                          textTransform: "uppercase",
+                          fontSize: "11px",
+                          letterSpacing: "0.05em",
+                        }}
+                      >
+                        or
+                      </Typography>
+                    </Divider>
+
+                    <Button
+                      type="button"
+                      fullWidth
+                      size="large"
+                      variant="outlined"
+                      onClick={handleNavigation}
+                      disabled={isLoading}
+                      sx={{
+                        borderColor: "#111827",
+                        color: "#111827",
+                        textTransform: "none",
+                        fontWeight: 600,
+                        fontSize: "0.92rem",
+                        py: 1.2,
+                        borderRadius: "4px",
+                        "&:hover": {
+                          borderColor: "#000",
+                          bgcolor: "rgba(0,0,0,0.04)",
+                        },
+                      }}
+                    >
+                      Login With a Code instead on email
+                    </Button>
+                    <Typography
+                      variant="caption"
+                      sx={{
+                        color: "#6b7280",
+                        fontSize: "12px",
+                        display: "block",
+                        mt: 0.75,
+                      }}
+                    >
+                      Go passwordless! We'll send you an email.
+                    </Typography>
+                  </Box>
                 </Stack>
               </Box>
 

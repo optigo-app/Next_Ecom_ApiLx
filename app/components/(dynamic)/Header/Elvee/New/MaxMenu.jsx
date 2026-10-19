@@ -749,9 +749,9 @@ const MaxNavbar = ({ storeinit, logos }) => {
                                               borderRadius: "10px",
                                             },
                                             "&::-webkit-scrollbar-thumb:hover":
-                                              {
-                                                backgroundColor: "#a6a6a6",
-                                              },
+                                            {
+                                              backgroundColor: "#a6a6a6",
+                                            },
                                             "&::-webkit-scrollbar-track": {
                                               background: "transparent",
                                             },
@@ -806,17 +806,17 @@ const MaxNavbar = ({ storeinit, logos }) => {
                                                           position: "relative",
                                                           color:
                                                             section?.menuname ==
-                                                            "Collection"
+                                                              "Collection"
                                                               ? "#535353"
                                                               : "#141414",
                                                           fontWeight:
                                                             section?.menuname ==
-                                                            "Collection"
+                                                              "Collection"
                                                               ? 400
                                                               : 700,
                                                           textDecoration:
                                                             section?.menuname ==
-                                                            "Collection"
+                                                              "Collection"
                                                               ? "none"
                                                               : "none",
                                                           display: "block",
@@ -825,7 +825,7 @@ const MaxNavbar = ({ storeinit, logos }) => {
                                                             "capitalize",
                                                           mb:
                                                             section?.menuname ==
-                                                            "Collection"
+                                                              "Collection"
                                                               ? 0
                                                               : 1,
                                                           wordWrap:
@@ -860,7 +860,7 @@ const MaxNavbar = ({ storeinit, logos }) => {
                                                             (param2Item) =>
                                                               param2Item?.param2dataname &&
                                                               param2Item?.param2dataname.trim() !==
-                                                                "",
+                                                              "",
                                                           )
                                                           .map(
                                                             (
@@ -1206,7 +1206,7 @@ const MaxNavbar = ({ storeinit, logos }) => {
                 }}
                 onClick={() => navigateToMenu("/myWishList")}
               >
-                <Badge badgeContent={wishCountNum || 0} color="error">
+                <Badge badgeContent={wishCountNum} color="error">
                   <FavoriteIcon
                     style={{ fontSize: "18px", color: "inherit" }}
                   />

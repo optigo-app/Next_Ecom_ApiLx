@@ -39,6 +39,7 @@ import {
   clearSession,
   getSession,
   setSession,
+  logoutUser,
 } from "@/app/(core)/utils/FetchSessionData";
 import { usePathname, useRouter } from "next/navigation";
 
@@ -304,7 +305,7 @@ const BeluxNavbar = ({ storeInit: storeinit, logos, initialMenuData = [] }) => {
     if (finalData) {
       sessionStorage.setItem("menuparams", JSON.stringify(finalData));
     }
-    console.log({url, finalData} , "url")
+    console.log({ url, finalData }, "url")
     router.push(url);
   };
 
@@ -331,41 +332,27 @@ const BeluxNavbar = ({ storeInit: storeinit, logos, initialMenuData = [] }) => {
   };
 
   const handleLogout = () => {
-    setislogin(false);
-    Cookies.remove("userLoginCookie", { path: "/" });
-    Cookies.remove("LoginUser", { path: "/" });
-    Cookies.remove("userPackageId", { path: "/" });
-    sessionStorage.setItem("LoginUser", false);
-    sessionStorage.removeItem("storeInit");
-    sessionStorage.removeItem("loginUserDetail");
-    sessionStorage.removeItem("remarks");
-    sessionStorage.removeItem("selectedAddressId");
-    sessionStorage.removeItem("orderNumber");
-    sessionStorage.removeItem("registerEmail");
-    sessionStorage.removeItem("UploadLogicalPath");
-    sessionStorage.removeItem("registerMobile");
-    sessionStorage.removeItem("allproductlist");
-
-    if (clearAllCacheData) {
-      clearAllCacheData();
-    }
-
-    clearSession();
-    window.location.replace("/");
+    logoutUser({
+      setislogin,
+      clearAllCacheData,
+      storeInit: storeinit,
+      redirectUrl: "/",
+    });
   };
 
   const searchDataFucn = (searchText) => {
-    if (searchText) {
+    if (searchText && typeof searchText === "string" && searchText.trim()) {
+      const cleanText = searchText.trim();
       let obj = {
         a: "",
-        b: searchText,
+        b: cleanText,
         m: loginUserDetail?.MetalId ?? storeinit?.MetalId,
         d: loginUserDetail?.cmboDiaQCid ?? storeinit?.cmboDiaQCid,
         c: loginUserDetail?.cmboCSQCid ?? storeinit?.cmboCSQCid,
         f: {},
       };
-      let encodeObj = btoa(JSON.stringify(obj));
-      navigate(`/p/${searchText}?S=${encodeObj}`);
+      let encodeObj = btoa(unescape(encodeURIComponent(JSON.stringify(obj))));
+      navigate(`/p/${encodeURIComponent(cleanText)}?S=${encodeObj}`);
       setSearchOpen(false);
       setDrawerSearchOpen(false);
       setMobileOpen(false);
@@ -852,12 +839,12 @@ const BeluxNavbar = ({ storeInit: storeinit, logos, initialMenuData = [] }) => {
                                                           position: "relative",
                                                           color:
                                                             section?.menuname ===
-                                                            "Collection"
+                                                              "Collection"
                                                               ? "#535353"
                                                               : "#141414",
                                                           fontWeight:
                                                             section?.menuname ===
-                                                            "Collection"
+                                                              "Collection"
                                                               ? 400
                                                               : 700,
                                                           display: "block",
@@ -866,7 +853,7 @@ const BeluxNavbar = ({ storeInit: storeinit, logos, initialMenuData = [] }) => {
                                                             "capitalize",
                                                           mb:
                                                             section?.menuname ===
-                                                            "Collection"
+                                                              "Collection"
                                                               ? 0
                                                               : 1,
                                                           wordWrap:
@@ -901,7 +888,7 @@ const BeluxNavbar = ({ storeInit: storeinit, logos, initialMenuData = [] }) => {
                                                             (p) =>
                                                               p?.param2dataname &&
                                                               p?.param2dataname.trim() !==
-                                                                "",
+                                                              "",
                                                           )
                                                           .map(
                                                             (
@@ -1223,7 +1210,7 @@ const BeluxNavbar = ({ storeInit: storeinit, logos, initialMenuData = [] }) => {
                 sx={{ color: "#000" }}
                 onClick={() => navigateToMenu("/myWishList")}
               >
-                <Badge badgeContent={wishCountNum || 10} color="error">
+                <Badge badgeContent={wishCountNum} color="error">
                   <FavoriteIcon
                     style={{ fontSize: "18px", color: "inherit" }}
                   />
@@ -1247,8 +1234,9 @@ const BeluxNavbar = ({ storeInit: storeinit, logos, initialMenuData = [] }) => {
           IsB2BWebsiteChek={IsB2BWebsiteChek}
           DynamicMenu={[]}
           selectedProductType={null}
-          handleTabChange={() => {}}
+          handleTabChange={() => { }}
           showProductTypeTabs={false}
+          handleLogout={handleLogout}
         />
       </Drawer>
     </>

@@ -22,6 +22,7 @@
 import fs from "fs";
 import path from "path";
 import { fetchStoreInitData } from "@/app/(core)/utils/fetchStoreInit";
+import { NEXT_APP_WEB } from "@/app/(core)/utils/env";
 
 // ── Constants ────────────────────────────────────────────────────────────────
 const STORE_INIT_DIR = path.join(process.cwd(), "public", "storeInit");
@@ -31,13 +32,22 @@ const DEFAULT_DATA = { rd: [{}], rd1: [], rd2: [{}] };
 
 // ── In-process memory layer (per Node.js worker, cleared on restart) ─────────
 const memoryCache = new Map(); // cacheKey → { data, cachedAt }
-const pendingMap  = new Map(); // cacheKey → Promise  (dedup concurrent revalidations)
+const pendingMap = new Map(); // cacheKey → Promise  (dedup concurrent revalidations)
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 function sanitizeKey(host) {
-  return host
-    ? host.split(":")[0].replace(/[^a-zA-Z0-9._-]/g, "_")
-    : process.env.NEXT_APP_WEB || "localhost";
+  if (!host) return NEXT_APP_WEB || "localhost";
+  const clean = host.split(":")[0].trim().toLowerCase();
+  if (
+    clean === "localhost" ||
+    clean === "127.0.0.1" ||
+    clean.endsWith(".localhost") ||
+    clean.endsWith(".ngrok-free.app") ||
+    clean.endsWith(".ngrok.io")
+  ) {
+    return NEXT_APP_WEB || "localhost";
+  }
+  return clean.replace(/[^a-zA-Z0-9._-]/g, "_");
 }
 
 function diskPath(cacheKey) {
@@ -58,7 +68,7 @@ async function writeDisk(filePath, data) {
   } catch (err) {
     console.error("[StoreInit] Disk write failed:", err.message);
     // Clean up orphaned tmp if rename failed
-    fs.promises.unlink(tmpPath).catch(() => {});
+    fs.promises.unlink(tmpPath).catch(() => { });
   }
 }
 
@@ -98,10 +108,10 @@ async function _doRevalidate(cacheKey, existingData) {
     }
 
     // Version check — skip write if data hasn't changed
-    const localVersion  = getVersion(existingData);
+    const localVersion = getVersion(existingData);
     const remoteVersion = getVersion(remote);
-    const sameVersion   = localVersion && remoteVersion && localVersion === remoteVersion;
-    const samePayload   = existingData && JSON.stringify(existingData) === JSON.stringify(remote);
+    const sameVersion = localVersion && remoteVersion && localVersion === remoteVersion;
+    const samePayload = existingData && JSON.stringify(existingData) === JSON.stringify(remote);
 
     if (sameVersion || samePayload) {
       // Refresh TTL in memory without touching disk
@@ -139,7 +149,7 @@ function triggerRevalidate(cacheKey, existingData, { awaitResult = false } = {})
   if (awaitResult) return p;
 
   // Fire-and-forget — never let it bubble up to the caller
-  p.catch(() => {});
+  p.catch(() => { });
   return null;
 }
 
@@ -157,14 +167,29 @@ export async function getStoreInitData(host) {
   const filePath = diskPath(cacheKey);
 
   // ── 1. Memory hit ───────────────────────────────────────────────────────
-  const mem = memoryCache.get(cacheKey);
+  let mem = memoryCache.get(cacheKey);
   if (mem) {
-    const stale = Date.now() - mem.cachedAt >= TTL_MS;
-    if (stale) {
-      // Return stale data immediately, revalidate silently in background
-      triggerRevalidate(cacheKey, mem.data);
+    try {
+      // Fast cross-process invalidation: check if another worker updated the disk file
+      const { mtimeMs } = fs.statSync(filePath);
+      if (mtimeMs > mem.cachedAt) {
+        mem = null;
+        memoryCache.delete(cacheKey);
+      }
+    } catch {
+      // Disk file deleted or unavailable — invalidate memory
+      mem = null;
+      memoryCache.delete(cacheKey);
     }
-    return mem.data;
+
+    if (mem) {
+      const stale = Date.now() - mem.cachedAt >= TTL_MS;
+      if (stale) {
+        // Return stale data immediately, revalidate silently in background
+        triggerRevalidate(cacheKey, mem.data);
+      }
+      return mem.data;
+    }
   }
 
   // ── 2. Disk hit ─────────────────────────────────────────────────────────
@@ -222,7 +247,7 @@ export async function clearStoreInitCache() {
       const files = await fs.promises.readdir(STORE_INIT_DIR);
       for (const file of files) {
         if (file.endsWith(".json") || file.endsWith(".tmp")) {
-          await fs.promises.unlink(path.join(STORE_INIT_DIR, file)).catch(() => {});
+          await fs.promises.unlink(path.join(STORE_INIT_DIR, file)).catch(() => { });
         }
       }
       console.log("[StoreInit] Cleared all storeInit disk and memory cache");
@@ -230,4 +255,31 @@ export async function clearStoreInitCache() {
       console.error("[StoreInit] Error clearing storeInit cache:", err);
     }
   }
+}
+
+/**
+ * setStoreInitCache(host, data)
+ * ─────────────────────────────
+ * Directly seed both memory and disk cache with the provided data.
+ * Intended for: POST /api/sqlite/store-init after saving to SQLite, so the
+ * website immediately serves fresh data without a cold-start round-trip.
+ *
+ * @param {string} host   - Domain / host key (e.g. "beluxjewel.com")
+ * @param {object} data   - Fresh storeInit payload { rd, rd1, rd2, ... }
+ */
+export async function setStoreInitCache(host, data) {
+  if (!data) return;
+  const cacheKey = sanitizeKey(host);
+  const filePath = diskPath(cacheKey);
+
+  // Cancel any in-flight revalidation for this key so it doesn't overwrite us
+  pendingMap.delete(cacheKey);
+
+  // Write to disk atomically (survives worker restarts)
+  await writeDisk(filePath, data);
+
+  // Write to memory immediately (instant for next request).
+  // Placed after writeDisk so `cachedAt` > `mtimeMs` to avoid self-invalidation.
+  memoryCache.set(cacheKey, { data, cachedAt: Date.now() });
+  console.log(`[StoreInit] Cache seeded directly for '${cacheKey}'`);
 }
