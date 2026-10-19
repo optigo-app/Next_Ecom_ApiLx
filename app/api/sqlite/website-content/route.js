@@ -5,6 +5,11 @@ import { saveWebsiteContent } from "@/db/procedures/saveWebsiteContent";
 import { getWebsiteContent } from "@/db/procedures/getWebsiteContent";
 import { syncWebsiteContent } from "@/app/(core)/utils/sqlite/syncWebsiteContent";
 import { getDomainInfo } from "@/app/(core)/utils/getDomainInfo";
+import { 
+  getGroupedWebsiteConfig, 
+  invalidateWebsiteContentCache, 
+  syncAndRefreshWebsiteContentCache 
+} from "@/app/(core)/utils/sqlite/websiteContentConfig";
 import { logger } from "@/db/logger";
 
 export const dynamic = "force-dynamic";
@@ -75,6 +80,9 @@ export async function POST(req) {
 
       const saveResult = saveWebsiteContent(db, rawList, { domain: targetDomain, replace: isReplace });
 
+      // Automatically update SQLite data and rebuild the disk JSON cache file
+      await syncAndRefreshWebsiteContentCache(targetDomain);
+
       logger.info("API_WEBSITE_CONTENT", `Direct push saved ${saveResult.savedCount} website content rows for '${targetDomain}' in ${saveResult.elapsedMs}ms`, {
         domain: targetDomain,
         totalReceived: saveResult.totalReceived,
@@ -117,6 +125,11 @@ export async function POST(req) {
       appuserid: explicitAppUserId,
       replace: isReplace,
     });
+
+    if (syncResult.success) {
+      // Automatically update SQLite data and rebuild the disk JSON cache file
+      await syncAndRefreshWebsiteContentCache(targetDomain);
+    }
 
     logger.info("API_WEBSITE_CONTENT", `ERP GetWebsiteContent sync completed for domain '${targetDomain}' (success: ${syncResult.success})`, {
       domain: targetDomain,
@@ -199,6 +212,24 @@ export async function GET(req) {
     }
 
     const { searchParams } = new URL(req.url);
+    const isGrouped = searchParams.get("grouped") === "true";
+    const bypassCache = searchParams.get("bypassCache") === "true" || searchParams.get("refresh") === "true";
+
+    if (isGrouped) {
+      const groupedResult = await getGroupedWebsiteConfig({
+        domain: targetDomain,
+        bypassCache,
+      });
+
+      return NextResponse.json({
+        Status: groupedResult.success ? "200" : "500",
+        Message: groupedResult.success ? "Grouped website config retrieved successfully." : groupedResult.error,
+        domain: targetDomain,
+        source: groupedResult.source,
+        Data: groupedResult.data,
+      }, { status: groupedResult.success ? 200 : 500 });
+    }
+
     const contentType = searchParams.get("contentType") || searchParams.get("ContentType") || searchParams.get("type");
     const pageKey = searchParams.get("pageKey") || searchParams.get("PageKey");
     const websiteId = searchParams.get("websiteId") || searchParams.get("WebsiteId");
