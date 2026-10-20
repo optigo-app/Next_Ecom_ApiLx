@@ -60,20 +60,21 @@ export async function getSiteDetails(storeInit) {
  * @param {boolean} [isOmJiyanshFlag]
  * @returns {object}
  */
-export function generatePageMetadata(pageData, isOmJiyanshFlag = isOmJiyansh) {
+export async function generatePageMetadata(pageData, isOmJiyanshFlag = isOmJiyansh,metaData = {}) {
   if (!pageData) return {};
 
+    
   const Title_Suffix = isOmJiyanshFlag ? pageData.websiteName : `${pageData.title} | ${pageData.websiteName}`;
   const resolvedSiteName = pageData.siteName || pageData.websiteName || "Jewelry Store";
   const resolvedSiteUrl = pageData.siteUrl || pageData.websiteName || "";
 
   return {
-    title: Title_Suffix,
-    description: pageData.description || "",
-    keywords: pageData.keywords || "",
-    authors: [{ name: pageData.ufcc }],
-    alternates: { canonical: getValidUrl(resolvedSiteUrl) },
-    metadataBase: getValidUrl(resolvedSiteUrl),
+    title: pageData.title || metaData?.meta?.metaTitle || Title_Suffix,
+    description: metaData?.meta?.metaDescription || pageData.description || "",
+    keywords: metaData?.meta?.keywords || pageData.keywords || "",
+    authors: metaData?.meta?.author || [{ name: pageData.ufcc }],
+    alternates:  metaData?.meta?.canonicalUrl || { canonical: getValidUrl(resolvedSiteUrl) },
+    metadataBase: metaData?.meta?.canonicalUrl || getValidUrl(resolvedSiteUrl),
     icons: {
       icon: pageData.icons?.icon || [
         { url: "/favicon.ico", sizes: "32x32", type: "image/png" },
@@ -98,26 +99,26 @@ export function generatePageMetadata(pageData, isOmJiyanshFlag = isOmJiyansh) {
       },
     },
     openGraph: {
-      title: `${pageData.title} | ${pageData.websiteName}`,
-      description: pageData.description || "",
+      title: metaData?.og?.ogTitle || `${pageData.title} `,
+      description: metaData?.og?.ogDescription || pageData.description || "",
       url: getValidUrl(resolvedSiteUrl),
-      siteName: resolvedSiteName,
-      type: "website",
+      siteName: metaData?.og?.ogSiteName || resolvedSiteName,
+      type: metaData?.og?.ogType || "website",
       locale: "en_IN",
       images: [
         {
-          url: pageData.ogImage || "/MetaShareImage.jpg",
+          url: metaData?.og?.ogImage || pageData.ogImage || "/MetaShareImage.jpg",
           width: 1200,
           height: 630,
-          alt: `${pageData.title} - ${pageData.websiteName}`,
+          alt: metaData?.og?.ogTitle || `${pageData.title} - ${pageData.websiteName}`,
         },
       ],
     },
     twitter: {
-      card: "summary_large_image",
-      title: `${pageData.title} | ${pageData.websiteName}`,
-      description: pageData.description || "",
-      images: [pageData.ogImage || "/MetaShareImage.jpg"],
+      card: metaData?.twitter?.cardType || "summary_large_image",
+      title: metaData?.twitter?.twitterTitle || `${pageData.title} | ${pageData.websiteName}`,
+      description: metaData?.twitter?.twitterDescription || pageData.description || "",
+      images: metaData?.twitter?.twitterImage || [pageData.ogImage || "/MetaShareImage.jpg"],
       creator: NEXT_APP_WEB,
     },
     additionalScripts: [],
