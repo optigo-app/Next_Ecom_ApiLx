@@ -43,6 +43,45 @@ import {
 } from "@/app/(core)/utils/FetchSessionData";
 import { usePathname, useRouter } from "next/navigation";
 
+
+const LogoImg = ({ src, alt, sx, textColor = "#000", ...rest }) => {
+  const [failed, setFailed] = useState(false);
+
+  // reset when the src changes (e.g. brand data loads)
+  useEffect(() => {
+    setFailed(false);
+  }, [src]);
+
+  if (!src || failed) {
+    return (
+      <Box
+        component="span"
+        sx={{
+          ...sx,
+          height: "auto",
+          color: textColor,
+          fontSize: "1.1rem",
+          fontWeight: 600,
+          whiteSpace: "nowrap",
+        }}
+      >
+        {alt}
+      </Box>
+    );
+  }
+
+  return (
+    <Box
+      component="img"
+      src={src}
+      alt={alt}
+      onError={() => setFailed(true)}
+      sx={sx}
+      {...rest}
+    />
+  );
+};
+
 const BeluxNavbar = ({ storeInit: storeinit, logos, initialMenuData = [] }) => {
   const {
     islogin,
@@ -79,6 +118,7 @@ const BeluxNavbar = ({ storeInit: storeinit, logos, initialMenuData = [] }) => {
   const [menuStack, setMenuStack] = useState([]);
   const [hoveredItem, setHoveredItem] = useState(null);
   const hoverTimeoutRef = useRef(null);
+  const [brandData, setBrandData] = useState(null);
 
   const handleMenuMouseEnter = (menuname) => {
     if (hoverTimeoutRef.current) {
@@ -137,6 +177,25 @@ const BeluxNavbar = ({ storeInit: storeinit, logos, initialMenuData = [] }) => {
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
+  useEffect(() => {
+    fetch("/api/sqlite/website-content?grouped=true")
+      .then((res) => res.json())
+
+      .then((res) => {
+        console.log("TCL: BeluxNavbar ->res ", res)
+        const brandJson = res?.Data?.branding?.[0]?.ContentJson;
+        if (brandJson) {
+          setBrandData(brandJson);
+        }
+      })
+      .catch(() => {
+        // Keeps DEFAULT_THEME_SETTING on error
+      });
+  }, []);
+
+
+
 
   useEffect(() => {
     controls.start({
@@ -212,9 +271,24 @@ const BeluxNavbar = ({ storeInit: storeinit, logos, initialMenuData = [] }) => {
     return menuItems;
   }, [menuItems]);
 
-  const whiteLogo = logos?.web || logos?.white_logo;
-  const blackLogo = logos?.black_logo || logos?.blackLogo || logos?.web;
-  const compnyLogoM = logos?.mobile;
+  // const whiteLogo = logos?.web || logos?.white_logo;
+  // const blackLogo = logos?.black_logo || logos?.blackLogo || logos?.web;
+  // const compnyLogoM = logos?.mobile;
+  // const activeLogo = isHovered || isScrolled ? blackLogo : whiteLogo;
+  const brandLogo = brandData?.logo || {};
+
+  // logo shown while navbar is transparent
+  const whiteLogo =
+    brandLogo.websiteLogoUrl || logos?.web || logos?.white_logo;
+  const darkLogoFromData =
+    brandLogo.useDarkLogo && brandLogo.darkLogoUrl
+      ? brandLogo.darkLogoUrl
+      : brandLogo.websiteLogoUrl;
+  const blackLogo =
+    darkLogoFromData || logos?.black_logo || logos?.blackLogo || logos?.web;
+  const compnyLogoM = brandLogo.mobileLogoUrl || logos?.mobile;
+  const logoAlt =
+    brandLogo.altText || storeinit?.companyname || "Store Logo";
   const activeLogo = isHovered || isScrolled ? blackLogo : whiteLogo;
 
   const getMenuUrl = (param, param1, param2, isFilterKey2Ignore) => {
@@ -499,13 +573,14 @@ const BeluxNavbar = ({ storeInit: storeinit, logos, initialMenuData = [] }) => {
                     width: IsSetupFor ? "150px" : "110px",
                   }}
                 >
-                  {/* White Logo (visible when navbar is transparent) */}
-                  <Box
-                    component="img"
+              
+                  <LogoImg
                     src={whiteLogo}
-                    alt={storeinit?.companyname || "Store Logo"}
+                    alt={logoAlt}
                     width="150"
                     height="40"
+                    textColor="#fff"
+                    className="el_without_headerLogo_side"
                     sx={{
                       width: "100%",
                       height: "auto",
@@ -514,15 +589,15 @@ const BeluxNavbar = ({ storeInit: storeinit, logos, initialMenuData = [] }) => {
                       transition: "opacity 0.4s ease-in-out",
                       display: "block",
                     }}
-                    className="el_without_headerLogo_side"
                   />
-                  {/* Black Logo (visible when navbar has background) */}
-                  <Box
-                    component="img"
+                  
+                  <LogoImg
                     src={blackLogo}
-                    alt={storeinit?.companyname || "Store Logo"}
+                    alt={logoAlt}
                     width="150"
                     height="40"
+                    textColor="#000"
+                    className="el_without_headerLogo_side"
                     sx={{
                       position: "absolute",
                       top: 0,
@@ -534,7 +609,6 @@ const BeluxNavbar = ({ storeInit: storeinit, logos, initialMenuData = [] }) => {
                       transition: "opacity 0.4s ease-in-out",
                       display: "block",
                     }}
-                    className="el_without_headerLogo_side"
                   />
                 </Box>
               </Box>
@@ -1186,14 +1260,14 @@ const BeluxNavbar = ({ storeInit: storeinit, logos, initialMenuData = [] }) => {
             borderBottom: `1px solid ${alpha("#fff", 0.1)}`,
           }}
         >
-          <Box
-            component="img"
-            src={compnyLogoM}
-            alt="logo"
-            sx={{
-              width: IsSetupFor ? "110px" : "auto",
-            }}
-          />
+         <LogoImg
+  src={compnyLogoM}
+  alt={logoAlt}
+  textColor="#000"
+  sx={{
+    width: IsSetupFor ? "110px" : "auto",
+  }}
+/>
           <Box sx={{ display: "flex", alignItems: "center", gap: 0.6 }}>
             {islogin && (
               <IconButton

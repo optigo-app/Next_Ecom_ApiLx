@@ -18,6 +18,7 @@ import { defaultFont, defaultFontVariable } from "./(core)/assets/FontSetup";
 import { BroadcasterProvider } from "@/app/(core)/contexts/BoardCastContext";
 import { isOmJiyansh, ActiveMeta, getSiteDetails } from "./(core)/seo";
 import { resolveLayout } from "./(core)/utils/ThemeRouteResolver";
+import { getGroupedWebsiteConfig } from "@/app/(core)/utils/sqlite/websiteContentConfig";
 
 export const viewport = {
   width: "device-width",
@@ -27,11 +28,17 @@ export const viewport = {
 export async function generateMetadata() {
   const storeInit = await getStoreInit();
   const { siteName, siteUrl } = await getSiteDetails(storeInit);
+  const configRes = await getGroupedWebsiteConfig();
+  const content = configRes?.data?.branding[0]?.ContentJson || {};
+  const metaData =configRes?.data?.seo[0]?.ContentJson || {};
+
 
   return generatePageMetadata(
     {
       metadataBase: new URL(siteUrl),
-      title: ActiveMeta?.metaData?.title || storeInit?.ufcc,
+      title: (content?.identity?.brandName && content?.identity?.brandTagline)
+      ? `${content.identity.brandName} | ${content.identity.brandTagline}`
+      : ActiveMeta?.metaData?.title || storeInit?.ufcc || '',
       description: ActiveMeta?.metaData?.description,
       keywords: ActiveMeta?.metaData?.keywords,
       ogImage: ActiveMeta?.metaData?.ogImage || storeInit?.ogImage,
@@ -40,12 +47,13 @@ export async function generateMetadata() {
       siteName: siteName,
       siteUrl: siteUrl,
       icons: {
-        icon: ActiveMeta.ico,
-        shortcut: ActiveMeta.ico,
-        apple: ActiveMeta.ico,
+        icon: content?.logo?.faviconUrl || ActiveMeta.ico,
+        shortcut: content?.logo?.faviconUrl || ActiveMeta.ico,
+        apple: content?.logo?.faviconUrl || ActiveMeta.ico,
       },
     },
     isOmJiyansh,
+    metaData,
   );
 }
 
