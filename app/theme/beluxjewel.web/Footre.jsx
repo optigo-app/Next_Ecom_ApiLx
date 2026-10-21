@@ -124,8 +124,8 @@ export default function Footer() {
           {/* Column 1: Logo & Office Details */}
           <Grid size={{ xs: 12, md: 3.5 }}>
             <Box mb={4}>
-              <LogoText variant="h6">sonasons.</LogoText>
-              <LogoSubtitle>LUXURY JEWELRY</LogoSubtitle>
+              <LogoText variant="h6">Belux Jewel</LogoText>
+              <LogoSubtitle>LUXURY JEWELLERY</LogoSubtitle>
             </Box>
 
             <Box sx={{ mt: 2 }}>

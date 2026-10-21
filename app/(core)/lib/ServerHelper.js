@@ -73,14 +73,14 @@ const Theme = {
     meta: "/WebSiteStaticImage/logoIcon/vimal/MetaShareImage.jpg",
   },
   beluxjewel: {
-    web: "/WebSiteStaticImage/logoIcon/webLogo.png",
-    mobile: "/WebSiteStaticImage/logoIcon/mobileLogo.png",
-    blackLogo: "/WebSiteStaticImage/logoIcon/webLogo11.png",
+    web: "",
+    mobile: "",
+    blackLogo: "",
   },
 };
 
 export function getLogos() {
-  if (ACTIVE_THEME?.logos?.web) {
+  if (ACTIVE_THEME?.logos) {
     return ACTIVE_THEME.logos;
   }
   const config = AppConfig[activeBrand];
