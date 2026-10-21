@@ -45,30 +45,30 @@ import {
 import { usePathname, useRouter } from "next/navigation";
 
 
-const LogoImg = ({ src, alt, sx, textColor = "#000", ...rest }) => {
+const LogoImg = ({ src, alt = "", sx, ...rest }) => {
   const [failed, setFailed] = useState(false);
 
-  // reset when the src changes (e.g. brand data loads)
   useEffect(() => {
     setFailed(false);
   }, [src]);
 
   if (!src || failed) {
-    return (
-      <Box
-        component="span"
-        sx={{
-          ...sx,
-          height: "auto",
-          color: textColor,
-          fontSize: "1.1rem",
-          fontWeight: 600,
-          whiteSpace: "nowrap",
-        }}
-      >
-        {alt}
-      </Box>
-    );
+    if (alt) {
+      return (
+        <Typography
+          component="span"
+          sx={{
+            fontWeight: 600,
+            fontSize: "1rem",
+            color: "inherit",
+            ...sx,
+          }}
+        >
+          {alt}
+        </Typography>
+      );
+    }
+    return null;
   }
 
   return (
@@ -83,7 +83,7 @@ const LogoImg = ({ src, alt, sx, textColor = "#000", ...rest }) => {
   );
 };
 
-const BeluxNavbar = ({ storeInit: storeinit, logos, initialMenuData = [] }) => {
+const BeluxNavbar = ({ storeInit: storeinit, logos, initialMenuData = [], initialWebContent = null }) => {
   const {
     islogin,
     setislogin,
@@ -119,7 +119,9 @@ const BeluxNavbar = ({ storeInit: storeinit, logos, initialMenuData = [] }) => {
   const [menuStack, setMenuStack] = useState([]);
   const [hoveredItem, setHoveredItem] = useState(null);
   const hoverTimeoutRef = useRef(null);
-  const { branding: brandData } = useWebContentManagement();
+  const { branding: brandData } = useWebContentManagement({
+    initialData: initialWebContent?.raw || initialWebContent,
+  });
 
   const handleMenuMouseEnter = (menuname) => {
     if (hoverTimeoutRef.current) {
@@ -213,7 +215,6 @@ const BeluxNavbar = ({ storeInit: storeinit, logos, initialMenuData = [] }) => {
           ? loginUserDetail.PackageId
           : storeinit?.PackageId;
 
-      // 1. Guard: if menu is already rendered with current package, skip extra fetch
       if (menuLoadedRef.current === currentPkgId && menuItems.length > 0) {
         if (isMounted) setMenuLoading(false);
         return;
@@ -259,18 +260,35 @@ const BeluxNavbar = ({ storeInit: storeinit, logos, initialMenuData = [] }) => {
   // const activeLogo = isHovered || isScrolled ? blackLogo : whiteLogo;
   const brandLogo = brandData?.logo || {};
 
-  // logo shown while navbar is transparent
-  const whiteLogo =
-    brandLogo.websiteLogoUrl || logos?.web || logos?.white_logo;
+  // Reject hardcoded Sonasons placeholder assets so they never bleed into Belux
+  const isSonasonsPlaceholder = (url) =>
+    !url ||
+    typeof url !== "string" ||
+    url.includes("logoIcon/webLogo.png") ||
+    url.includes("logoIcon/webLogo11.png") ||
+    url.toLowerCase().includes("sonasons");
+
+  const whiteLogo = !isSonasonsPlaceholder(brandLogo.websiteLogoUrl)
+    ? brandLogo.websiteLogoUrl
+    : (!isSonasonsPlaceholder(logos?.web) ? logos?.web : null);
+
   const darkLogoFromData =
     brandLogo.useDarkLogo && brandLogo.darkLogoUrl
       ? brandLogo.darkLogoUrl
       : brandLogo.websiteLogoUrl;
-  const blackLogo =
-    darkLogoFromData || logos?.black_logo || logos?.blackLogo || logos?.web;
-  const compnyLogoM = brandLogo.mobileLogoUrl || logos?.mobile;
-  const logoAlt =
-    brandLogo.altText || storeinit?.companyname || "Store Logo";
+
+  const blackLogo = !isSonasonsPlaceholder(darkLogoFromData)
+    ? darkLogoFromData
+    : (!isSonasonsPlaceholder(logos?.black_logo || logos?.blackLogo)
+      ? (logos?.black_logo || logos?.blackLogo)
+      : null);
+
+  const compnyLogoM = !isSonasonsPlaceholder(brandLogo.mobileLogoUrl)
+    ? brandLogo.mobileLogoUrl
+    : (!isSonasonsPlaceholder(logos?.mobile) ? logos?.mobile : null);
+
+  const brandDisplayName = brandData?.identity?.brandName || storeinit?.companyname || "";
+  const logoAlt = brandLogo.altText || brandDisplayName || "Store Logo";
   const activeLogo = isHovered || isScrolled ? blackLogo : whiteLogo;
 
   const getMenuUrl = (param, param1, param2, isFilterKey2Ignore) => {
@@ -555,16 +573,16 @@ const BeluxNavbar = ({ storeInit: storeinit, logos, initialMenuData = [] }) => {
                     width: IsSetupFor ? "150px" : "110px",
                   }}
                 >
-              
+
                   <LogoImg
                     src={whiteLogo}
                     alt={logoAlt}
                     width="150"
                     height="40"
-                    textColor="#fff"
                     className="el_without_headerLogo_side"
                     sx={{
-                      width: "100%",
+                      width: "auto",
+                      minWidth: "150px",
                       height: "auto",
                       cursor: "pointer",
                       opacity: isHovered || isScrolled ? 0 : 1,
@@ -572,19 +590,19 @@ const BeluxNavbar = ({ storeInit: storeinit, logos, initialMenuData = [] }) => {
                       display: "block",
                     }}
                   />
-                  
+
                   <LogoImg
                     src={blackLogo}
                     alt={logoAlt}
                     width="150"
                     height="40"
-                    textColor="#000"
                     className="el_without_headerLogo_side"
                     sx={{
                       position: "absolute",
                       top: 0,
                       left: 0,
-                      width: "100%",
+                      width: "auto",
+                      minWidth: "150px",
                       height: "auto",
                       cursor: "pointer",
                       opacity: isHovered || isScrolled ? 1 : 0,
@@ -1242,14 +1260,13 @@ const BeluxNavbar = ({ storeInit: storeinit, logos, initialMenuData = [] }) => {
             borderBottom: `1px solid ${alpha("#fff", 0.1)}`,
           }}
         >
-         <LogoImg
-  src={compnyLogoM}
-  alt={logoAlt}
-  textColor="#000"
-  sx={{
-    width: IsSetupFor ? "110px" : "auto",
-  }}
-/>
+          <LogoImg
+            src={compnyLogoM}
+            alt={logoAlt}
+            sx={{
+              width: IsSetupFor ? "110px" : "auto",
+            }}
+          />
           <Box sx={{ display: "flex", alignItems: "center", gap: 0.6 }}>
             {islogin && (
               <IconButton

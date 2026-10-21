@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { logger } from "@/db/logger";
-import { extractDomain } from "../../commonController";
+import { extractDomain } from "@/app/api/sqlite/commonController";
 
 export const dynamic = "force-dynamic";
 

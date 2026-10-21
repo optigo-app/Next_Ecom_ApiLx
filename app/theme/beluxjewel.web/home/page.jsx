@@ -21,9 +21,9 @@ import CraftsmanshipPage from "../craftsmanship/page";
 import MaxDesignLibrary from "./blocks/MaxDesignLibrary";
 import { getSqliteHomeBestseller, getSqliteHomeNewArrival, getSqliteHomeTrending } from "@/app/(core)/utils/sqlite/sqliteActions";
 
-export const metadata = generatePageMetadata(pages["/"], "Sonasons");
+export const metadata = generatePageMetadata(pages["/"], "Belux Jewel");
 
-const SonasonsHome = async () => {
+const BeluxJewelHome = async () => {
   const storeData = await getStoreInit();
 
   const [bestsellerRes, newArrivalRes, trendingRes] = await Promise.all([
@@ -60,4 +60,4 @@ const SonasonsHome = async () => {
   );
 };
 
-export default SonasonsHome;
+export default BeluxJewelHome;

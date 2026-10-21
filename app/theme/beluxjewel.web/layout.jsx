@@ -12,6 +12,7 @@ import AnnouncementBar from "./home/blocks/AnnouncementBar";
 import BeluxNavbar from "@/app/components/(dynamic)/Header/Elvee/New/BeluxNavbar";
 import { cookies } from "next/headers";
 import { getSqliteMenus } from "@/app/(core)/utils/sqlite/sqliteActions";
+import { getWebContentManagement } from "@/app/(core)/hooks/webContentManagement/webContentManagement.server";
 
 const layout = async ({ children }) => {
   const storeData = await getStoreInit();
@@ -32,6 +33,8 @@ const layout = async ({ children }) => {
     console.warn("[beluxjewel layout] SSR menu pre-fetch failed:", err.message);
   }
 
+  const webContentRes = await getWebContentManagement({ domain: storeData?.domain }).catch(() => null);
+
   return (
     <>
       <Box
@@ -49,6 +52,7 @@ const layout = async ({ children }) => {
           logos={logos}
           storeInit={storeData}
           initialMenuData={initialMenuData}
+          initialWebContent={webContentRes?.raw || null}
         />
         <Box component="main" id="main-content" sx={{ flex: 1, display: "flex", flexDirection: "column" }}>
             {children}
