@@ -34,6 +34,7 @@ import { useBroadcaster } from "@/app/(core)/contexts/BoardCastContext";
 import { useStore } from "@/app/(core)/contexts/StoreProvider";
 import { useSyncStore } from "@/app/(core)/hooks/useStore";
 import { useNextRouterLikeRR } from "@/app/(core)/hooks/useLocationRd";
+import { useWebContentManagement } from "@/app/(core)/hooks/webContentManagement/webContentManagement.client";
 import { useMaster } from "@/app/(core)/contexts/MasterProvider";
 import {
   clearSession,
@@ -118,7 +119,7 @@ const BeluxNavbar = ({ storeInit: storeinit, logos, initialMenuData = [] }) => {
   const [menuStack, setMenuStack] = useState([]);
   const [hoveredItem, setHoveredItem] = useState(null);
   const hoverTimeoutRef = useRef(null);
-  const [brandData, setBrandData] = useState(null);
+  const { branding: brandData } = useWebContentManagement();
 
   const handleMenuMouseEnter = (menuname) => {
     if (hoverTimeoutRef.current) {
@@ -177,25 +178,6 @@ const BeluxNavbar = ({ storeInit: storeinit, logos, initialMenuData = [] }) => {
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
-
-  useEffect(() => {
-    fetch("/api/sqlite/website-content?grouped=true")
-      .then((res) => res.json())
-
-      .then((res) => {
-        console.log("TCL: BeluxNavbar ->res ", res)
-        const brandJson = res?.Data?.branding?.[0]?.ContentJson;
-        if (brandJson) {
-          setBrandData(brandJson);
-        }
-      })
-      .catch(() => {
-        // Keeps DEFAULT_THEME_SETTING on error
-      });
-  }, []);
-
-
-
 
   useEffect(() => {
     controls.start({
