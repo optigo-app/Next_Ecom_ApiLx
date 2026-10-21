@@ -8,6 +8,7 @@ import "swiper/css";
 import "swiper/css/navigation";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useNextRouterLikeRR } from "@/app/(core)/hooks/useLocationRd";
+import { useWebContentManagement } from "@/app/(core)/hooks/webContentManagement/webContentManagement.client";
 import SpireBox from "./Svg";
 
 /* ---------- styled components (unchanged) ---------- */
@@ -100,32 +101,15 @@ const CategoryBlock = () => {
   const collectionPrevRef = useRef(null);
   const collectionNextRef = useRef(null);
 
-  const [loading, setLoading] = useState(true);
-  const [categoryConfig, setCategoryConfig] = useState(null);
-  const [collectionConfig, setCollectionConfig] = useState(null);
-
-  useEffect(() => {
-    let isMounted = true;
-
-    fetch("/api/sqlite/website-content?grouped=true")
-      .then((res) => res.json())
-      .then((res) => {
-        if (!isMounted) return;
-        setCategoryConfig(res?.Data?.categoryconfig?.[0]?.ContentJson || null);
-        setCollectionConfig(res?.Data?.collectionconfig?.[0]?.ContentJson || null);
-      })
-      .catch((err) => console.error("[CategoryBlock] fetch failed", err))
-      .finally(() => {
-        if (isMounted) setLoading(false);
-      });
-
-    return () => {
-      isMounted = false;
-    };
-  }, []);
-
-  const categories = useMemo(() => sortByOrder(categoryConfig?.categories), [categoryConfig]);
-  const collections = useMemo(() => sortByOrder(collectionConfig?.collections), [collectionConfig]);
+  const {
+    categoryConfig,
+    categories,
+    collectionConfig,
+    collections,
+    loading,
+    error,
+    isError,
+  } = useWebContentManagement();
 
   const handleNavigate = (name, type) => {
     const finalData = {
@@ -188,6 +172,16 @@ const CategoryBlock = () => {
       ))}
     </Box>
   );
+
+  if (isError) {
+    return (
+      <Box sx={{ p: 4, textAlign: "center" }}>
+        <Typography sx={{ color: "error.main", fontSize: "0.875rem" }}>
+          Unable to load category content: {error}
+        </Typography>
+      </Box>
+    );
+  }
 
   if (!loading && !categories.length && !collections.length) return null;
 

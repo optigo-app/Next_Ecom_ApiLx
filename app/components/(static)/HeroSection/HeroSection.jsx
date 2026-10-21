@@ -2,27 +2,20 @@ import { Box, Typography } from "@mui/material";
 import getHomeBannerImages from "@/app/(core)/utils/Glob_Functions/ThemesBanner/ThemesBanner";
 import { assetBase } from "@/app/(core)/lib/ServerHelper";
 import { BELUX_JEWEL } from "@/app/(core)/constants/ElveeFlag";
-import { getGroupedWebsiteConfig } from "@/app/(core)/utils/sqlite/websiteContentConfig";
+import { getWebContentManagement } from "@/app/(core)/hooks/webContentManagement/webContentManagement.server";
 import HomepageSlider from "./HomepageSlider";
 
-
-
 export default async function TopSection() {
-  
-const configRes = await getGroupedWebsiteConfig();
-const content = configRes?.data?.banner || {};
+  const { getBannersByType, isError, error } = await getWebContentManagement();
 
+  if (isError) {
+    console.error("[TopSection] Error loading banners:", error);
+  }
 
- 
-
-if (BELUX_JEWEL) {
-  // HomepageSlider banners from dynamic data
-  const sliderBanners = (
-    content?.byType?.HomepageSlider ||
-    (content?.banners || []).filter((b) => b.TypeKey === "HomepageSlider")
-  )
-    .filter((b) => b?.IsActive)
-    .sort((a, b) => (a.SortOrder ?? 0) - (b.SortOrder ?? 0));
+  if (BELUX_JEWEL) {
+    const sliderBanners = getBannersByType("HomepageSlider")
+      .filter((b) => b?.IsActive)
+      .sort((a, b) => (a.SortOrder ?? 0) - (b.SortOrder ?? 0));
     
 
   if (sliderBanners.length > 0) {

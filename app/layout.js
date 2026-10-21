@@ -18,7 +18,8 @@ import { defaultFont, defaultFontVariable } from "./(core)/assets/FontSetup";
 import { BroadcasterProvider } from "@/app/(core)/contexts/BoardCastContext";
 import { isOmJiyansh, ActiveMeta, getSiteDetails } from "./(core)/seo";
 import { resolveLayout } from "./(core)/utils/ThemeRouteResolver";
-import { getGroupedWebsiteConfig } from "@/app/(core)/utils/sqlite/websiteContentConfig";
+import { getWebContentManagement } from "@/app/(core)/hooks/webContentManagement/webContentManagement.server";
+import ClientErrorTracker from "@/app/(core)/utils/errorTracker/ClientErrorTracker.jsx";
 
 export const viewport = {
   width: "device-width",
@@ -28,9 +29,7 @@ export const viewport = {
 export async function generateMetadata() {
   const storeInit = await getStoreInit();
   const { siteName, siteUrl } = await getSiteDetails(storeInit);
-  const configRes = await getGroupedWebsiteConfig();
-  const content = configRes?.data?.branding[0]?.ContentJson || {};
-  const metaData =configRes?.data?.seo[0]?.ContentJson || {};
+  const { branding: content, seo: metaData } = await getWebContentManagement();
 
 
   return generatePageMetadata(
@@ -87,6 +86,7 @@ export default async function RootLayout({ children }) {
       </head>
       <EmotionRegistry>
         <body className={`${defaultFont.variable}`} style={{ '--font-default': `var(${defaultFontVariable})` }}>
+          <ClientErrorTracker />
           <MasterProvider
             getCompanyInfoData={companyInfo}
             getStoreInit={storeInit}
