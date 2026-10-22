@@ -7,7 +7,8 @@ import HomepageSlider from "./HomepageSlider";
 
 export default async function TopSection() {
   const { getBannersByType, isError, error } = await getWebContentManagement();
-
+  const data = await getWebContentManagement();
+console.log("TCL: templates -> ", data?.pageTemplates?.filter(item => item.PageKey === "about-us"))
   if (isError) {
     console.error("[TopSection] Error loading banners:", error);
   }
@@ -15,7 +16,9 @@ export default async function TopSection() {
   if (BELUX_JEWEL) {
     const sliderBanners = getBannersByType("HomepageSlider")
       .filter((b) => b?.IsActive)
-      .sort((a, b) => (a.SortOrder ?? 0) - (b.SortOrder ?? 0));
+      .sort((a, b) => (a.SortOrder ?? 0) - (b.SortOrder ?? 0))
+
+      
     
 
   if (sliderBanners.length > 0) {

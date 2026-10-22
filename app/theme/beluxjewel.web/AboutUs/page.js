@@ -1,33 +1,17 @@
-import "./index.scss";
-import { getAboutUsContent } from "@/app/(core)/utils/GlobalFunctions/GlobalFunctions";
-import { getVimalAboutContent } from "@/app/(core)/utils/GlobalFunctions/GlobalFunctions";
-import {   isVimalDiamond } from "@/app/(core)/constants/ElveeFlag";
-import Terms from "./VimalAbout";
-export default async function AboutUs() {
-  const aboutUsContent = await getAboutUsContent();
-  const vimalAboutContent = await getVimalAboutContent();
+import { getWebContentManagement } from "@/app/(core)/hooks/webContentManagement/webContentManagement.server";
+import AboutUs from "@/app/components/(static)/About/AboutUs"; 
 
+export default async function TopSection() {
+  const { pageTemplates, isError, error } = await getWebContentManagement();
 
-
-  if (isVimalDiamond){
-
-    return (
-   
-        <Terms />
-       
-    );
+  if (isError) {
+    console.error("[AboutUs] Error loading page templates:", error);
+    return <div className="au-error">Failed to load About Us content.</div>;
   }
-  else{
-    return (
-      <div className="fg_smr_about_mainDiv">
-        <div className="daimondsEveryAbout">
-          <div className="smr_daimondsEveryAbout_sub" style={{ paddingBottom: "80px", minHeight: "400px" }}>
-            <div dangerouslySetInnerHTML={{ __html: aboutUsContent }} />
-          </div>
-        </div>
-      </div>
-    );
 
-  }
- 
+  const aboutTemplates = (pageTemplates || []).filter(
+    (t) => t?.PageKey === "about-us"
+  );
+
+  return <AboutUs templates={aboutTemplates} />;
 }
