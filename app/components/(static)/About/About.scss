@@ -1,0 +1,666 @@
+/* ============================================================
+   AboutUs.css — plain CSS replacement for the Tailwind classes
+   used in aboutus.jsx. Organised by section / template.
+   Breakpoints match Tailwind defaults: sm 640px, md 768px, lg 1024px
+   ============================================================ */
+
+/* ---------------- generic / shared ---------------- */
+.au-loading,
+.au-error {
+  padding: 48px;
+  text-align: center;
+  font-size: 14px;
+}
+.au-loading {
+  color: #9ca3af; /* gray-400 */
+}
+.au-error {
+  color: #ef4444; /* red-500 */
+}
+
+.au-add-btn {
+  margin-top: 40px;
+  margin-bottom: 0;
+  margin-left: auto;
+  margin-right: auto;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  border: 2px dashed #d1d5db; /* gray-300 */
+  border-radius: 12px;
+  color: #9ca3af; /* gray-400 */
+  background: transparent;
+  transition: all 0.2s ease;
+}
+.au-add-btn:hover {
+  border-color: #818cf8; /* indigo-400 */
+  color: #6366f1; /* indigo-500 */
+}
+.au-add-btn--blue:hover {
+  border-color: #60a5fa; /* blue-400 */
+  color: #3b82f6; /* blue-500 */
+}
+.au-add-btn.au-a3-add {
+  margin-top: 40px;
+  margin-bottom: 40px;
+}
+
+/* ============================================================
+   About1 — letterhead style
+   ============================================================ */
+.au-a1-card {
+  background: #fff;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  padding: 20px;
+  font-family: Georgia, "Times New Roman", serif;
+  color: #000;
+  border-radius: 12px;
+  min-height: 100%;
+}
+
+.au-a1-header {
+  margin-bottom: 32px;
+}
+
+.au-a1-heading {
+  font-size: 30px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 24px;
+}
+
+.au-a1-image-wrap {
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.au-a1-image-wrap.is-selected {
+  outline: 4px solid #6366f1; /* indigo-500 */
+  outline-offset: 0;
+}
+
+.au-a1-image {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+  display: block;
+}
+
+.au-a1-section {
+  margin-bottom: 48px;
+}
+
+.au-a1-subheading {
+  font-size: 24px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+  margin-bottom: 8px;
+}
+
+.au-a1-text {
+  font-size: 14px;
+  font-style: italic;
+  line-height: 1.6;
+  opacity: 0.9;
+}
+.au-a1-text--spaced {
+  margin-bottom: 32px;
+}
+
+.au-a1-list {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.au-a1-list-item {
+  border-top: 1px solid rgba(0, 0, 0, 0.4);
+  padding-top: 16px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.au-a1-list-item.is-selected {
+  outline: 1px solid #a5b4fc; /* indigo-300 */
+  border-radius: 2px;
+}
+
+.au-a1-item-title {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 4px;
+  outline: none;
+}
+
+.au-a1-item-content {
+  font-size: 12px;
+  font-style: italic;
+  opacity: 0.8;
+  outline: none;
+}
+
+/* ============================================================
+   About2 — experience / advantage / vision / promise
+   ============================================================ */
+.au-a2-card {
+  background: #fff;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  padding: 24px;
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  color: #1f2937; /* gray-800 */
+  transition: all 0.5s ease;
+}
+@media (min-width: 768px) {
+  .au-a2-card {
+    padding: 28px;
+  }
+}
+
+.au-a2-inner {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.au-a2-main-heading {
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 48px;
+  line-height: 1.2;
+}
+
+.au-a2-section {
+  margin-bottom: 32px;
+}
+
+.au-a2-sub-heading {
+  font-weight: 700;
+  margin-bottom: 16px;
+}
+
+.au-a2-heading-underline {
+  font-weight: 700;
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 4px;
+  margin-bottom: 16px;
+}
+
+.au-a2-indent {
+  margin-left: 8px;
+}
+@media (min-width: 768px) {
+  .au-a2-indent {
+    margin-left: 16px;
+  }
+}
+
+.au-a2-text {
+  line-height: 1.6;
+}
+
+.au-a2-promise-section {
+  margin-bottom: 48px;
+}
+
+.au-a2-list {
+  list-style: disc;
+  padding-left: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+@media (min-width: 768px) {
+  .au-a2-list {
+    padding-left: 40px;
+  }
+}
+.au-a2-list:hover {
+  background: #f9fafb; /* gray-50 */
+}
+.au-a2-list.is-selected {
+  outline: 2px solid #6366f1; /* indigo-500 */
+  background: rgba(238, 242, 255, 0.3);
+}
+
+.au-a2-list-item {
+  outline: none;
+}
+
+/* ============================================================
+   About3 — dynamic heading + alternating sections
+   ============================================================ */
+.au-a3-page {
+  background: #fff;
+  min-height: 100vh;
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  color: #1f2937;
+  padding-bottom: 80px;
+  overflow-y: auto;
+}
+
+.au-a3-header-wrap {
+  padding: 48px 16px;
+  text-align: center;
+  margin-bottom: 16px;
+  position: relative;
+  cursor: pointer;
+}
+
+.au-a3-header-heading {
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  display: inline-block;
+  font-weight: 300;
+}
+
+.au-a3-divider {
+  width: 64px;
+  height: 1px;
+  background: #6366f1; /* indigo-500 */
+  margin: 16px auto;
+}
+
+.au-a3-content {
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 16px;
+  padding-right: 16px;
+  display: flex;
+  flex-direction: column;
+}
+@media (min-width: 640px) {
+  .au-a3-content {
+    padding-left: 24px;
+    padding-right: 24px;
+  }
+}
+@media (min-width: 1024px) {
+  .au-a3-content {
+    padding-left: 32px;
+    padding-right: 32px;
+  }
+}
+
+.au-a3-section {
+  position: relative;
+  border-bottom: 1px solid #f9fafb; /* gray-50 */
+  transition: all 0.2s ease;
+}
+.au-a3-section:last-child {
+  border-bottom: none;
+}
+.au-a3-section.is-selected {
+  background: rgba(238, 242, 255, 0.3);
+  outline: 1px solid #c7d2fe; /* indigo-200 */
+}
+
+.au-a3-row {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 64px 32px;
+  gap: 48px;
+}
+@media (min-width: 768px) {
+  .au-a3-row {
+    flex-direction: row;
+  }
+}
+
+.au-a3-text-col {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+@media (min-width: 768px) {
+  .au-a3-text-col {
+    width: 50%;
+  }
+}
+
+.au-a3-heading {
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 24px;
+}
+
+.au-a3-desc {
+  line-height: 1.6;
+  text-align: justify;
+  white-space: pre-line;
+}
+
+.au-a3-image-col {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+@media (min-width: 768px) {
+  .au-a3-image-col {
+    width: 50%;
+  }
+}
+
+.au-a3-image {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+.au-a3-image.is-selected {
+  outline: 4px solid #6366f1; /* indigo-500 */
+}
+
+/* ============================================================
+   About4 — heading + tabs beside shared image
+   ============================================================ */
+.au-a4-page {
+  background: #fff;
+  min-height: 100vh;
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  color: #1f2937;
+  padding-bottom: 80px;
+  overflow-y: auto;
+}
+
+.au-a4-header-wrap {
+  padding: 48px 16px;
+  text-align: center;
+  position: relative;
+  cursor: pointer;
+}
+
+.au-a4-header-heading {
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-weight: 700;
+}
+
+.au-a4-content {
+  max-width: 1280px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 32px;
+  padding-right: 32px;
+}
+
+.au-a4-row {
+  display: flex;
+  flex-direction: column;
+  gap: 48px;
+  align-items: flex-start;
+}
+@media (min-width: 1024px) {
+  .au-a4-row {
+    flex-direction: row;
+  }
+}
+
+.au-a4-col {
+  width: 100%;
+}
+@media (min-width: 1024px) {
+  .au-a4-col {
+    width: 50%;
+  }
+}
+
+.au-a4-tabs-nav {
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid #e5e7eb; /* gray-200 */
+  margin-bottom: 32px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.au-a4-tabs-nav::-webkit-scrollbar {
+  display: none;
+}
+
+.au-a4-tab-wrap {
+  position: relative;
+}
+
+.au-a4-tab-btn {
+  padding: 8px 24px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  transition: all 0.2s ease;
+  border: none;
+  border-bottom: 2px solid transparent;
+  background: transparent;
+  white-space: nowrap;
+  color: #9ca3af; /* gray-400 */
+  cursor: pointer;
+}
+.au-a4-tab-btn.is-active {
+  border-bottom-color: #1f2937; /* gray-800 */
+  color: #111827; /* gray-900 */
+}
+
+.au-a4-tab-delete {
+  position: absolute;
+  top: 8px;
+  right: -4px;
+  background: #ef4444; /* red-500 */
+  color: #fff;
+  border: none;
+  border-radius: 9999px;
+  padding: 2px;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  cursor: pointer;
+  display: flex;
+}
+.au-a4-tab-wrap:hover .au-a4-tab-delete {
+  opacity: 1;
+}
+
+.au-a4-tab-add {
+  margin-left: 16px;
+  padding: 8px;
+  color: #6366f1; /* indigo-500 */
+  border: none;
+  background: transparent;
+  border-radius: 9999px;
+  transition: background 0.2s ease;
+  cursor: pointer;
+  display: flex;
+}
+.au-a4-tab-add:hover {
+  background: #eef2ff; /* indigo-50 */
+}
+
+.au-a4-tab-content {
+  min-height: 300px;
+}
+
+.au-a4-tab-heading {
+  font-weight: 700;
+  margin-bottom: 16px;
+}
+
+.au-a4-tab-desc {
+  line-height: 1.6;
+  text-align: justify;
+  white-space: pre-line;
+}
+
+.au-a4-image-col {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+@media (min-width: 1024px) {
+  .au-a4-image-col {
+    width: 50%;
+  }
+}
+
+.au-a4-image {
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  transition: all 0.2s ease;
+  cursor: pointer;
+  width: 100%;
+  object-fit: cover;
+  aspect-ratio: 4 / 3;
+}
+.au-a4-image.is-selected {
+  outline: 4px solid #6366f1; /* indigo-500 */
+}
+
+/* ============================================================
+   About5 — main history + vision/mission card grid
+   ============================================================ */
+.au-a5-page {
+  background: #f4f4f4;
+  min-height: 100vh;
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+.au-a5-history {
+  background: #fff;
+  padding: 64px 24px;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+@media (min-width: 768px) {
+  .au-a5-history {
+    padding-left: 48px;
+    padding-right: 48px;
+  }
+}
+.au-a5-history.is-desktop-padded {
+  padding-left: 96px;
+  padding-right: 96px;
+}
+.au-a5-history.is-selected {
+  outline: 4px solid #3b82f6; /* blue-500 */
+  outline-offset: -4px;
+}
+
+.au-a5-history-inner {
+  max-width: 1280px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.au-a5-history-head {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.au-a5-icon {
+  width: 48px;
+  height: 48px;
+  margin-bottom: 16px;
+  object-fit: contain;
+  opacity: 0.7;
+}
+
+.au-a5-history-heading {
+  font-weight: 300;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  line-height: 1.3;
+  max-width: 768px;
+}
+
+.au-a5-history-content {
+  text-align: justify;
+  line-height: 1.6;
+}
+.au-a5-history-content.is-columns {
+  column-count: 2;
+  column-gap: 48px;
+}
+@media (max-width: 767px) {
+  .au-a5-history-content.is-columns {
+    column-count: 1;
+  }
+}
+
+.au-a5-grid-wrap {
+  max-width: 1280px;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 64px 24px;
+}
+@media (min-width: 768px) {
+  .au-a5-grid-wrap {
+    padding-left: 48px;
+    padding-right: 48px;
+  }
+}
+
+.au-a5-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 32px;
+  width: 100%;
+}
+@media (min-width: 768px) {
+  .au-a5-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 48px;
+  }
+}
+
+.au-a5-card {
+  display: flex;
+  flex-direction: column;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  position: relative;
+}
+.au-a5-card.is-selected {
+  outline: 4px solid #3b82f6; /* blue-500 */
+  padding: 8px;
+  border-radius: 8px;
+  background: #fff;
+}
+
+.au-a5-card-image-wrap {
+  overflow: hidden;
+  margin-bottom: 24px;
+  aspect-ratio: 16 / 9;
+  background: #e5e7eb; /* gray-200 */
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+.au-a5-card-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.7s ease;
+  display: block;
+}
+.au-a5-card:hover .au-a5-card-image {
+  transform: scale(1.05);
+}
+
+.au-a5-card-heading {
+  text-transform: uppercase;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  margin-bottom: 12px;
+}
+
+.au-a5-card-content {
+  line-height: 1.6;
+  color: #4b5563; /* gray-600 default, overridden inline when custom color set */
+}
