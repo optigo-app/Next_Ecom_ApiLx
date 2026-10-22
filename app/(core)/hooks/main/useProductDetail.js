@@ -549,6 +549,7 @@ export function useProductDetail({ storeinit, searchParams, params }) {
         customizationDetail?.autocode ||
         singleProd1?.autocode ||
         singleProd?.autocode,
+      StockBarcode: customizationDetail?.StockBarcode || singleProd1?.StockBarcode || singleProd?.StockBarcode || "",
       Metalid: customizationDetail?.MetalTypeId || metal?.Metalid,
       MetalColorId:
         customizationDetail?.MetalColorId ||
@@ -765,6 +766,7 @@ export function useProductDetail({ storeinit, searchParams, params }) {
         customizationDetail?.autocode ||
         singleProd1?.autocode ||
         singleProd?.autocode,
+      StockBarcode: customizationDetail?.StockBarcode || singleProd1?.StockBarcode || singleProd?.StockBarcode || "",
       Metalid:
         customizationDetail?.MetalTypeId ||
         (metal?.length
@@ -1908,6 +1910,7 @@ export function useProductDetail({ storeinit, searchParams, params }) {
     size,
     diaQcKey,
     metalCombo,
+    selectedArticle,
   ) => {
     const mTypeLocal = getSession("metalTypeCombo") || [];
     const diaQcLocal = getSession("diamondQualityColorCombo") || [];
@@ -1941,7 +1944,9 @@ export function useProductDetail({ storeinit, searchParams, params }) {
 
     // Find selected article object from rd1Data to pass correct ArticleNo
     const selectedArticleObj =
-      rd1Data?.find((r) => r.ArticleId === articleId) || rd1Data?.[0];
+      selectedArticle ||
+      rd1Data?.find((r) => r.ArticleId === articleId) ||
+      rd1Data?.[0];
     const targetArticleNo =
       selectedArticleObj?.ArticleNo || singleProd?.ArticleNo || "";
     const targetAutocode =

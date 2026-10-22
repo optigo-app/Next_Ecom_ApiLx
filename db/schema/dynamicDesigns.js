@@ -53,7 +53,7 @@ export function getDynamicDesignTableName(config = {}, prefix = DESIGN_TABLE_PRE
   return `${prefix}${labour}_${dia}_${cs}_${setting}`;
 }
 
- 
+
 export const REQUIRED_DESIGN_COLUMNS = [
   { name: "id", type: "INTEGER" },
   { name: "SrNo", type: "TEXT" },
@@ -97,6 +97,7 @@ export const REQUIRED_DESIGN_COLUMNS = [
   { name: "MetalColorid", type: "INTEGER" },
   { name: "PackageIdList", type: "TEXT" },
   { name: "ExclusiveCustomerId", type: "TEXT" },
+  { name: "StockBarcode", type: "TEXT" },
   { name: "MetalTypeid", type: "INTEGER" },
   { name: "MetalTypePurity", type: "TEXT" },
   { name: "CartId", type: "INTEGER" },
@@ -159,7 +160,7 @@ export function ensureDesignTableColumns(db, tableName) {
       if (!existingCols.includes(col.name)) {
         try {
           db.exec(`ALTER TABLE "${cleanTable}" ADD COLUMN "${col.name}" ${col.type};`);
-        } catch (_) {}
+        } catch (_) { }
       }
     }
   } catch (err) {
@@ -226,6 +227,7 @@ export function ensureDynamicDesignTable(db, tableName) {
       MetalColorid INTEGER,
       PackageIdList TEXT,
       ExclusiveCustomerId TEXT,
+      StockBarcode TEXT,
       MetalTypeid INTEGER,
       MetalTypePurity TEXT,
       CartId INTEGER,
@@ -269,6 +271,7 @@ export function ensureDynamicDesignTable(db, tableName) {
     CREATE INDEX IF NOT EXISTS idx_${cleanTable}_article ON "${cleanTable}"(ArticleNo);
     CREATE INDEX IF NOT EXISTS idx_${cleanTable}_designno ON "${cleanTable}"(designno);
     CREATE INDEX IF NOT EXISTS idx_${cleanTable}_autocode ON "${cleanTable}"(autocode);
+    CREATE INDEX IF NOT EXISTS idx_${cleanTable}_stock_barcode ON "${cleanTable}"(StockBarcode);
 
     CREATE INDEX IF NOT EXISTS idx_${cleanTable}_gender_nc ON "${cleanTable}"(gender COLLATE NOCASE);
     CREATE INDEX IF NOT EXISTS idx_${cleanTable}_category_nc ON "${cleanTable}"(category COLLATE NOCASE);

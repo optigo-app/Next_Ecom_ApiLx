@@ -113,12 +113,12 @@ const WeightBadge = ({ label, value }) => {
       sx={{
         display: "inline-flex",
         alignItems: "center",
-        height: 20,
+        height: 22,
         px: 0.7,
         bgcolor: "#F7F6F2",
         border: "1px solid #E2DFD7",
         borderRadius: "2px",
-        fontSize: { xs: "0.6rem", sm: "0.64rem" },
+        fontSize: { xs: "0.64rem", sm: "0.68rem" },
         lineHeight: 1,
         whiteSpace: "nowrap",
         userSelect: "none",
@@ -150,50 +150,43 @@ const WeightBadge = ({ label, value }) => {
   );
 };
 
-const ChipBar = (title, bgcolor, position) => {
+const CHIP_TONES = {
+  "In Stock": { bg: "#E8F5EC", color: "#1B6B3A", border: "#BFE3CA", dot: "#22A559" },
+  "On Memo": { bg: "#FFF3E0", color: "#9A5B00", border: "#F5D9A8", dot: "#F29900" },
+  "Best Seller": { bg: "#FBF1D9", color: "#7A5A00", border: "#EBD592", dot: "#D4A017" },
+  Trending: { bg: "#FDECEF", color: "#A3263F", border: "#F4C4CE", dot: "#E04462" },
+  New: { bg: "#163164", color: "#FFFFFF", border: "#163164" },
+};
+const DEFAULT_CHIP_TONE = { bg: "#F4F3EE", color: "#222222", border: "#E2E0D8" };
+
+const ChipBar = (title) => {
+  const tone = CHIP_TONES[title] || DEFAULT_CHIP_TONE;
   return (
-    <>
-      <Chip
-        label={title}
-        sx={{
-          bgcolor: "#F4F3EE",
-          color: "#222222",
-          border: "1px solid #E2E0D8",
-          fontWeight: 500,
-          fontSize: {
-            xs: "0.6rem",
-            sm: "0.65rem",
-            md: "0.68rem",
-            lg: "0.72rem",
-          },
-          letterSpacing: "0.02em",
-          height: {
-            xs: 20,
-            sm: 22,
-            md: 22,
-            lg: 24,
-          },
-          borderRadius: "2px",
-          px: {
-            xs: 0.5,
-            sm: 0.6,
-            md: 0.7,
-          },
-          py: 0,
-          textTransform: "capitalize",
-          boxShadow: "none",
-          "& .MuiChip-label": {
-            px: {
-              xs: 0.6,
-              sm: 0.7,
-              md: 0.8,
-            },
-            py: 0.1,
-            lineHeight: 1.1,
-          },
-        }}
-      />
-    </>
+    <Chip
+      label={title}
+      icon={
+        tone.dot ? (
+          <Box
+            component="span"
+            sx={{ width: 6, height: 6, borderRadius: "50%", bgcolor: tone.dot, ml: "6px !important", mr: "-2px !important" }}
+          />
+        ) : undefined
+      }
+      sx={{
+        bgcolor: tone.bg,
+        color: tone.color,
+        border: "1px solid",
+        borderColor: tone.border,
+        fontWeight: 600,
+        fontSize: { xs: "0.62rem", sm: "0.67rem", md: "0.7rem", lg: "0.74rem" },
+        letterSpacing: "0.03em",
+        height: { xs: 20, sm: 22, md: 22, lg: 24 },
+        borderRadius: "3px",
+        textTransform: "capitalize",
+        boxShadow: "0 1px 2px rgba(0,0,0,0.06)",
+        "& .MuiChip-label": { px: { xs: 0.7, md: 0.9 }, py: 0.1, lineHeight: 1.1 },
+      }}
+    />
   );
 };
 
@@ -400,6 +393,8 @@ const ProductCard = ({
   };
 
   const hasUpperTags =
+    productData?.isInStock ||
+    productData?.isInMemo ||
     productData?.IsInReadyStock == 1 ||
     productData?.IsBestSeller == 1 ||
     productData?.IsTrending == 1 ||
@@ -490,9 +485,12 @@ const ProductCard = ({
           onContextMenu={(e) => e.preventDefault()}
           className="product-image"
           sx={{
+            position: "absolute",
+            inset: 0,
             width: "100%",
             height: "100%",
-            objectFit: "contain",
+            maxWidth: "none",
+            objectFit: "cover !important",
             borderRadius: 0,
             transition: "0s ease-in-out",
             mixBlendMode: "multiply",
@@ -540,11 +538,13 @@ const ProductCard = ({
                   }}
                   onContextMenu={(e) => e.preventDefault()}
                   sx={{
-                    objectFit: "contain !important",
-                    borderRadius: 0,
-                    transition: "opacity 0.4s ease",
+                    position: "absolute",
+                    inset: 0,
                     width: "100%",
                     height: "100%",
+                    objectFit: "cover !important",
+                    borderRadius: 0,
+                    transition: "opacity 0.4s ease",
                   }}
                 />
               </Box>
@@ -584,9 +584,12 @@ const ProductCard = ({
                       handleMoveToDetail(productData, RollImageUrl);
                     }}
                     sx={{
+                      position: "absolute",
+                      inset: 0,
                       width: "100%",
                       height: "100%",
-                      objectFit: "contain",
+                      maxWidth: "none",
+                      objectFit: "cover !important",
                       borderRadius: 0,
                       transition: "opacity 0.4s ease",
                       mixBlendMode: "multiply",
@@ -620,7 +623,8 @@ const ProductCard = ({
             gap: 0.8,
           }}
         >
-          {productData?.IsInReadyStock == 1 && ChipBar("In Stock")}
+          {(productData?.isInStock || productData?.IsInReadyStock == 1) && ChipBar("In Stock")}
+          {productData?.isInMemo && ChipBar("On Memo")}
           {productData?.IsBestSeller == 1 && ChipBar("Best Seller")}
           {productData?.IsTrending == 1 && ChipBar("Trending")}
           {productData?.IsNewArrival == 1 && ChipBar("New", "#163164")}
@@ -671,33 +675,33 @@ const ProductCard = ({
           zIndex:9999
         }}
       >
-        {/* Metal Color Swatch & Quality / Category Line */}
-        {metalText ? (
-          <Box
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              gap: 0.8,
-              mt: 0.1,
-            }}
-          >
-            <Box
-              sx={{
-                width: 11,
-                height: 11,
-                backgroundColor: colorHex,
-                border: "1px solid rgba(0,0,0,0.3)",
-                borderRadius: "1px",
-                flexShrink: 0,
-              }}
-            />
+        {/* Line 1: Metal swatch + type (left) | Weights (right) */}
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: 1,
+          }}
+        >
+          <Box sx={{ display: "flex", alignItems: "center", gap: 0.8, minWidth: 0 }}>
+            {metalText && (
+              <Box
+                sx={{
+                  width: 12,
+                  height: 12,
+                  backgroundColor: colorHex,
+                  border: "1px solid rgba(0,0,0,0.3)",
+                  borderRadius: "1px",
+                  flexShrink: 0,
+                }}
+              />
+            )}
             <Typography
               variant="caption"
               sx={{
-                fontSize: { xs: "0.68rem", sm: "0.72rem", md: "0.76rem" },
-                fontWeight: 400,
+                fontSize: { xs: "0.74rem", sm: "0.78rem", md: "0.82rem" },
                 color: "#666666",
-                letterSpacing: "0.01em",
                 whiteSpace: "nowrap",
                 overflow: "hidden",
                 textOverflow: "ellipsis",
@@ -706,43 +710,70 @@ const ProductCard = ({
               {metalText}
             </Typography>
           </Box>
-        ) : null}
+          <Box sx={{ display: "flex", alignItems: "center", gap: 0.5, flexShrink: 0 }}>
+            {Number(productData?.Nwt) > 0 && (
+              <WeightBadge label="NWT" value={productData?.Nwt?.toFixed(3)} />
+            )}
+            {StoreInit?.IsDiamondWeight == 1 &&
+              Number(productData?.Dwt) !== 0 && (
+                <WeightBadge
+                  label="DWT"
+                  value={`${productData?.Dwt?.toFixed(3)}${
+                    StoreInit?.IsDiamondPcs === 1 ? `/${productData?.Dpcs}` : ""
+                  }`}
+                />
+              )}
+            {StoreInit?.IsGrossWeight == 1 && Number(productData?.Gwt) > 0 && (
+              <WeightBadge label="GWT" value={productData?.Gwt?.toFixed(3)} />
+            )}
+          </Box>
+        </Box>
 
-        {/* Title */}
-        <Typography
-          variant="body1"
-          sx={{
-            fontSize: {
-              xs: "0.82rem",
-              sm: "0.88rem",
-              md: "0.92rem",
-            },
-            fontWeight: 500,
-            lineHeight: 1.3,
-            color: "#1a1a1a",
-            textAlign: "left",
-            whiteSpace: "nowrap",
-            overflow: "hidden",
-            textOverflow: "ellipsis",
-            minHeight: "1.3em",
-            visibility: productData?.TitleLine ? "visible" : "hidden",
-          }}
-        >
-          {productData?.TitleLine
-            ? formatTitleLine(productData?.TitleLine)
-            : " "}
-        </Typography>
+        {/* Line 2: Title (left) | Article (right) */}
+        {(productData?.TitleLine || Article) && (
+          <Box sx={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: 1 }}>
+            <Typography
+              variant="body1"
+              sx={{
+                fontSize: { xs: "0.88rem", sm: "0.94rem", md: "1rem" },
+                fontWeight: 500,
+                lineHeight: 1.3,
+                color: "#1a1a1a",
+                whiteSpace: "nowrap",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                minWidth: 0,
+              }}
+            >
+              {productData?.TitleLine ? formatTitleLine(productData.TitleLine) : ""}
+            </Typography>
+            {Article && (
+              <Typography
+                variant="caption"
+                sx={{
+                  fontWeight: 600,
+                  fontSize: { xs: "0.74rem", sm: "0.78rem", md: "0.82rem" },
+                  color: "#666666",
+                  letterSpacing: "0.03em",
+                  whiteSpace: "nowrap",
+                  flexShrink: 0,
+                  ml: "auto",
+                }}
+              >
+                {Article}
+              </Typography>
+            )}
+          </Box>
+        )}
 
-        {/* Price (Single clean price, no discount price) */}
+        {/* Line 3: Price */}
         {StoreInit?.IsPriceShow == 1 && (
           <Typography
             variant="body1"
             sx={{
               fontWeight: 700,
-              fontSize: { xs: "0.85rem", sm: "0.92rem", md: "0.98rem" },
+              fontSize: { xs: "0.92rem", sm: "0.98rem", md: "1.04rem" },
               color: "#000000",
-              textAlign: "left",
-              mt: 0.1,
             }}
           >
             <span
@@ -756,57 +787,6 @@ const ProductCard = ({
             {formatter(productData?.UnitCostWithMarkUp)}
           </Typography>
         )}
-
-        {/* Meta Details — Article & Squared Weight Chips */}
-        <Box
-          sx={{
-            mt: 0.3,
-            display: "flex",
-            flexDirection: "column",
-            gap: 0.4,
-          }}
-        >
-          {Article && (
-            <Typography
-              sx={{
-                fontWeight: 600,
-                fontSize: { xs: "0.66rem", sm: "0.72rem" },
-                color: "#555555",
-                letterSpacing: "0.03em",
-                textTransform: "uppercase",
-              }}
-            >
-              {Article}
-            </Typography>
-          )}
-
-          <Box
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              flexWrap: "wrap",
-              gap: 0.5,
-            }}
-          >
-            {Number(productData?.Nwt) > 0 && (
-              <WeightBadge label="NWT" value={productData?.Nwt?.toFixed(3)} />
-            )}
-
-            {StoreInit?.IsDiamondWeight == 1 &&
-              Number(productData?.Dwt) !== 0 && (
-                <WeightBadge
-                  label="DWT"
-                  value={`${productData?.Dwt?.toFixed(3)}${
-                    StoreInit?.IsDiamondPcs === 1 ? `/${productData?.Dpcs}` : ""
-                  }`}
-                />
-              )}
-
-            {StoreInit?.IsGrossWeight == 1 && Number(productData?.Gwt) > 0 && (
-              <WeightBadge label="GWT" value={productData?.Gwt?.toFixed(3)} />
-            )}
-          </Box>
-        </Box>
 
         {isMobile && (
           <Box position="relative" sx={{ mt: 0.2 }}>

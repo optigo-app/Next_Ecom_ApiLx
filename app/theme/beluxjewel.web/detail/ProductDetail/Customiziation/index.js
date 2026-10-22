@@ -13,6 +13,8 @@ import CloseIcon from "@mui/icons-material/Close";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import DiamondIcon from "@mui/icons-material/Diamond";
 import { formatter } from "@/app/(core)/utils/Glob_Functions/GlobalFunction";
+import { useProductStock } from "@/app/(core)/hooks/useProductStock";
+import { getStockBarcodeForProduct, normalizeBarcode } from "@/app/(core)/utils/product/stockUtils";
 
 // ── Brand design tokens ─────────────────────────────────────────────────────
 const colors = {
@@ -62,6 +64,11 @@ const SectionLabel = ({ children }) => (
 const MetalCard = ({ combo, isSelected, onClick }) => {
   const swatch =
     METAL_SWATCH[combo.MetalColor] || "linear-gradient(135deg,#ccc,#999)";
+  const availabilityColor = combo.inStockLabel === "In Stock"
+    ? "#2e7d32"
+    : combo.inStockLabel === "In Memo"
+      ? "#ed6c02"
+      : colors.textMuted;
   return (
     <Box
       onClick={onClick}
@@ -70,11 +77,16 @@ const MetalCard = ({ combo, isSelected, onClick }) => {
         border: `2px solid ${isSelected ? colors.primary : colors.borderLight}`,
         backgroundColor: isSelected ? colors.accentLight : "#fff",
         borderRadius: "14px",
-        px: 2,
-        py: 1.5,
-        display: "flex",
-        alignItems: "center",
-        gap: 1.2,
+        px: 1.1,
+        py: 1,
+        minHeight: 88,
+        minWidth: 0,
+        display: "grid",
+        gridTemplateColumns: "14px minmax(0, 1fr)",
+        gridTemplateRows: "18px 15px minmax(20px, auto)",
+        alignContent: "center",
+        columnGap: 0.75,
+        rowGap: 0.25,
         position: "relative",
         transition: "all 0.22s cubic-bezier(0.4, 0, 0.2, 1)",
         boxShadow: isSelected
@@ -104,8 +116,8 @@ const MetalCard = ({ combo, isSelected, onClick }) => {
       {/* Metal swatch circle */}
       <Box
         sx={{
-          width: 16,
-          height: 16,
+          width: 14,
+          height: 14,
           borderRadius: "50%",
           background: swatch,
           border: "1.5px solid rgba(0,0,0,0.12)",
@@ -113,96 +125,156 @@ const MetalCard = ({ combo, isSelected, onClick }) => {
           boxShadow: "0 1px 3px rgba(0,0,0,0.15)",
         }}
       />
-      <Box>
+      <Typography
+        sx={{
+          fontWeight: 700,
+          fontSize: "10.5px",
+          color: isSelected ? colors.primary : colors.textDark,
+          textTransform: "uppercase",
+          letterSpacing: "0.025em",
+          lineHeight: 1.2,
+          overflow: "hidden",
+          textOverflow: "ellipsis",
+          whiteSpace: "nowrap",
+        }}
+      >
+        {combo.MetalType}
+      </Typography>
+      <Box
+        sx={{
+          gridColumn: "1 / -1",
+          minWidth: 0,
+          display: "flex",
+          flexDirection: "column",
+          pl: 2.6,
+        }}
+      >
         <Typography
           sx={{
-            fontWeight: 700,
-            fontSize: "12.5px",
-            color: isSelected ? colors.primary : colors.textDark,
-            textTransform: "uppercase",
-            letterSpacing: "0.04em",
-            lineHeight: 1.2,
-          }}
-        >
-          {combo.MetalType}
-        </Typography>
-        <Typography
-          sx={{
-            fontSize: "10px",
+            fontSize: "9px",
             color: colors.textMuted,
             fontWeight: 500,
-            lineHeight: 1.2,
+            lineHeight: 1.1,
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            whiteSpace: "nowrap",
           }}
         >
           {combo.MetalColor}
         </Typography>
+      </Box>
+      <Box
+        sx={{
+          gridColumn: "1 / -1",
+          minWidth: 0,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          gap: 0.35,
+          pl: 2.6,
+        }}
+      >
         <Typography
           sx={{
-            fontSize: "9.5px",
-            fontWeight: 600,
-            color:
-              combo.inStockLabel === "In Stock" ? "#2e7d32" : colors.textMuted,
-            lineHeight: 1.3,
-            mt: 0.2,
+            fontSize: "10px",
+            fontWeight: 700,
+            color: availabilityColor,
+            lineHeight: 1.1,
+            minWidth: 0,
+            maxWidth: 40,
+            display: "-webkit-box",
+            WebkitBoxOrient: "vertical",
+            WebkitLineClamp: 2,
+            overflow: "hidden",
           }}
         >
           {combo.inStockLabel || "Made to Order"}
         </Typography>
+        {combo.variantCount > 1 && (
+          <Box
+            sx={{
+              px: 0.4,
+              py: 0.4,
+              borderRadius: "999px",
+              bgcolor: isSelected ? "#dce7ff" : "#f1f4f8",
+              color: colors.primary,
+              fontSize: "12px",
+              fontWeight: 700,
+              lineHeight: 1,
+              whiteSpace: "nowrap",
+              flexShrink: 0,
+            }}
+          >
+            +{combo.variantCount - 1}
+          </Box>
+        )}
       </Box>
     </Box>
   );
 };
 
-const SizePill = ({ sizeObj, isSelected, onClick }) => (
-  <Box
-    onClick={onClick}
-    sx={{
-      cursor: "pointer",
-      minWidth: 60,
-      px: 2,
-      py: 1,
-      display: "flex",
-      flexDirection: "column",
-      alignItems: "center",
-      justifyContent: "center",
-      borderRadius: "10px",
-      border: `2px solid ${isSelected ? colors.primary : colors.borderLight}`,
-      backgroundColor: isSelected ? colors.accentLight : "#fff",
-      transition: "all 0.15s ease",
-      boxShadow: isSelected
-        ? "0 0 0 3px rgba(11,47,131,0.12)"
-        : "0 1px 4px rgba(0,0,0,0.05)",
-      "&:hover": { borderColor: colors.primary, transform: "translateY(-1px)" },
-    }}
-  >
-    <Typography
+const SizePill = ({ sizeObj, isSelected, onClick }) => {
+  const availabilityColor = sizeObj.inStockLabel === "In Stock"
+    ? "#2e7d32"
+    : sizeObj.inStockLabel === "In Memo"
+      ? "#ed6c02"
+      : colors.textMuted;
+
+  return (
+    <Box
+      onClick={onClick}
       sx={{
-        fontWeight: 700,
-        fontSize: "14px",
-        color: isSelected ? colors.primary : colors.textDark,
-        lineHeight: 1.2,
+        cursor: "pointer",
+        minWidth: 60,
+        px: 2,
+        py: 1,
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        borderRadius: "10px",
+        border: `2px solid ${isSelected ? colors.primary : colors.borderLight}`,
+        backgroundColor: isSelected ? colors.accentLight : "#fff",
+        transition: "all 0.15s ease",
+        boxShadow: isSelected
+          ? "0 0 0 3px rgba(11,47,131,0.12)"
+          : "0 1px 4px rgba(0,0,0,0.05)",
+        "&:hover": { borderColor: colors.primary, transform: "translateY(-1px)" },
       }}
     >
-      {sizeObj.size}
-    </Typography>
-    <Typography
-      sx={{
-        fontSize: "9.5px",
-        fontWeight: 600,
-        color:
-          sizeObj.inStockLabel === "In Stock" ? "#2e7d32" : colors.textMuted,
-        lineHeight: 1.3,
-        mt: 0.3,
-      }}
-    >
-      {sizeObj.inStockLabel || "Made to Order"}
-    </Typography>
-  </Box>
-);
+      <Typography
+        sx={{
+          fontWeight: 700,
+          fontSize: "14px",
+          color: isSelected ? colors.primary : colors.textDark,
+          lineHeight: 1.2,
+        }}
+      >
+        {sizeObj.size}
+      </Typography>
+      <Typography
+        sx={{
+          fontSize: "9.5px",
+          fontWeight: 600,
+          color: availabilityColor,
+          lineHeight: 1.3,
+          mt: 0.3,
+        }}
+      >
+        {sizeObj.inStockLabel || "Made to Order"}
+      </Typography>
+    </Box>
+  );
+};
 
 const QualityCard = ({ combo, isSelected, onClick }) => {
   const key = `${combo.Quality}-${combo.Color}`;
   const badgeColor = QUALITY_COLOR_MAP[combo.Quality] || colors.textMuted;
+  const availabilityColor = combo.inStockLabel === "In Stock"
+    ? "#2e7d32"
+    : combo.inStockLabel === "In Memo"
+      ? "#ed6c02"
+      : colors.textMuted;
   return (
     <Box
       onClick={onClick}
@@ -271,8 +343,7 @@ const QualityCard = ({ combo, isSelected, onClick }) => {
         sx={{
           fontSize: "9.5px",
           fontWeight: 600,
-          color:
-            combo.inStockLabel === "In Stock" ? "#2e7d32" : colors.textMuted,
+          color: availabilityColor,
           mt: 0.4,
         }}
       >
@@ -298,6 +369,44 @@ export default function CustomizerDrawer({
   const [selectedDiaQc, setSelectedDiaQc] = useState(null);
   const [selectedOrigin, setSelectedOrigin] = useState(null);
 
+  const { stockMap, isStockLoading } = useProductStock(rd1, {
+    storeinit: storeInit,
+    loginUserDetail: loginData,
+    autoFetch: open,
+  });
+
+  const articleStockById = useMemo(() => {
+    const statusById = new Map();
+
+    rd1.forEach((article) => {
+      const articleId = article?.ArticleId;
+      if (articleId == null) return;
+
+      const barcode = getStockBarcodeForProduct(article, stockMap);
+      const stockRecord = barcode ? stockMap.get(normalizeBarcode(barcode)) : null;
+      const hasStockData = stockMap.size > 0;
+      const inStock = stockRecord
+        ? stockRecord.InStock === 1
+        : hasStockData
+          ? false
+          : Number(article?.InStock ?? article?.instock ?? 0) === 1;
+      const inMemo = stockRecord
+        ? stockRecord.InMemo === 1
+        : hasStockData
+          ? false
+          : Number(article?.InMemo ?? article?.inmemo ?? 0) === 1;
+
+      statusById.set(articleId, {
+        StockBarcode: barcode || article?.StockBarcode || "",
+        InStock: inStock ? 1 : 0,
+        InMemo: inMemo ? 1 : 0,
+        inStockLabel: inStock ? "In Stock" : inMemo ? "In Memo" : isStockLoading ? "Checking Stock" : "Make to Order",
+      });
+    });
+
+    return statusById;
+  }, [rd1, stockMap, isStockLoading]);
+
   // ── 1. Unique metal combos (MetalTypeId + MetalColorId as key) sorted by Karat ──
   const metalCombos = useMemo(() => {
     const seen = new Set();
@@ -319,18 +428,32 @@ export default function CustomizerDrawer({
       })
       .map((combo) => {
         // Check if any article with this metal has InStock === 1
-        const hasStock = rd1.some(
+        const matchingArticles = rd1.filter(
           (r) =>
             r.MetalTypeId === combo.MetalTypeId &&
-            r.MetalColorId === combo.MetalColorId &&
-            r.InStock === 1,
+            r.MetalColorId === combo.MetalColorId,
+        );
+        const hasStock = matchingArticles.some(
+          (article) => articleStockById.get(article.ArticleId)?.InStock === 1,
+        );
+        const hasMemo = matchingArticles.some(
+          (article) => articleStockById.get(article.ArticleId)?.InMemo === 1,
         );
         return {
           ...combo,
-          inStockLabel: hasStock ? "In Stock" : "Make to Order",
+          variantCount: new Set(
+            matchingArticles.map((article) => article.ArticleNo ?? article.ArticleId),
+          ).size,
+          inStockLabel: hasStock
+            ? "In Stock"
+            : hasMemo
+              ? "In Memo"
+              : isStockLoading
+                ? "Checking Stock"
+                : "Make to Order",
         };
       });
-  }, [rd1]);
+  }, [rd1, articleStockById, isStockLoading]);
 
   // ── 1b. Enhance matchingArticles with their diamond's MaterialTypeName from rd2
   const matchingArticlesWithOrigin = useMemo(() => {
@@ -357,10 +480,11 @@ export default function CustomizerDrawer({
             : null;
       return {
         ...art,
+        ...articleStockById.get(art.ArticleId),
         MaterialTypeName: normalizedOrigin,
       };
     });
-  }, [rd1, selectedMetal, rd2]);
+  }, [rd1, selectedMetal, rd2, articleStockById]);
 
   // ── 1c. Unique Diamond Origin values for matching articles
   const availableOrigins = useMemo(() => {
@@ -418,18 +542,29 @@ export default function CustomizerDrawer({
     matchingOriginArticles.forEach((art) => {
       if (!art.Size) return;
       const rd1Article = rd1.find((a) => a.ArticleId === art.ArticleId);
-      const isInStock = rd1Article?.InStock === 1;
+      const articleStock = articleStockById.get(art.ArticleId) || rd1Article || {};
+      const isInStock = articleStock.InStock === 1;
+      const isInMemo = articleStock.InMemo === 1;
       if (!sizeMap.has(art.Size)) {
-        sizeMap.set(art.Size, isInStock);
-      } else if (isInStock) {
-        // If any article with this size is in stock, mark as in stock
-        sizeMap.set(art.Size, true);
+        sizeMap.set(art.Size, { isInStock, isInMemo });
+      } else if (isInStock || isInMemo) {
+        const current = sizeMap.get(art.Size);
+        sizeMap.set(art.Size, {
+          isInStock: current.isInStock || isInStock,
+          isInMemo: current.isInMemo || isInMemo,
+        });
       }
     });
     return Array.from(sizeMap.entries())
-      .map(([size, inStock]) => ({
+      .map(([size, status]) => ({
         size,
-        inStockLabel: inStock ? "In Stock" : "Made to Order",
+        inStockLabel: status.isInStock
+          ? "In Stock"
+          : status.isInMemo
+            ? "In Memo"
+            : isStockLoading
+              ? "Checking Stock"
+              : "Make to Order",
       }))
       .sort((a, b) => {
         const numA = parseFloat(a.size);
@@ -437,7 +572,7 @@ export default function CustomizerDrawer({
         if (!isNaN(numA) && !isNaN(numB)) return numA - numB;
         return String(a.size).localeCompare(String(b.size));
       });
-  }, [matchingArticlesWithOrigin, selectedOrigin, rd1]);
+  }, [matchingArticlesWithOrigin, selectedOrigin, rd1, articleStockById, isStockLoading]);
 
   // ── 5. Reset / set size when metal or origin changes ───────────────────────
   useEffect(() => {
@@ -498,18 +633,29 @@ export default function CustomizerDrawer({
               matchingIds.has(s.ArticleId),
           )
           .map((s) => s.ArticleId);
-        const hasStock = rd1.some(
-          (a) =>
-            articlesWithThisQuality.includes(a.ArticleId) && a.InStock === 1,
+        const articlesForQuality = rd1.filter((article) =>
+          articlesWithThisQuality.includes(article.ArticleId),
+        );
+        const hasStock = articlesForQuality.some(
+          (article) => articleStockById.get(article.ArticleId)?.InStock === 1,
+        );
+        const hasMemo = articlesForQuality.some(
+          (article) => articleStockById.get(article.ArticleId)?.InMemo === 1,
         );
         return {
           ...r,
           Quality: r.Quality?.toUpperCase(),
           Color: r.Color?.toUpperCase(),
-          inStockLabel: hasStock ? "In Stock" : "Made to Order",
+          inStockLabel: hasStock
+            ? "In Stock"
+            : hasMemo
+              ? "In Memo"
+              : isStockLoading
+                ? "Checking Stock"
+                : "Make to Order",
         };
       });
-  }, [rd2, rd1, matchingArticlesWithOrigin, selectedOrigin]);
+  }, [rd2, rd1, matchingArticlesWithOrigin, selectedOrigin, articleStockById, isStockLoading]);
 
   useEffect(() => {
     if (!stoneQualityCombos.length) {
@@ -546,6 +692,7 @@ export default function CustomizerDrawer({
       selectedSize,
       selectedDiaQc,
       selectedMetal,
+      activeArticle,
     );
     onClose();
   };
@@ -756,7 +903,17 @@ export default function CustomizerDrawer({
             {/* ── Section 1: Choice of Metal ────────────────────────────── */}
             <Box sx={{ mb: 4 }}>
               <SectionLabel>Choice of Metal</SectionLabel>
-              <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1.5 }}>
+              <Box
+                sx={{
+                  display: "grid",
+                  gridTemplateColumns: {
+                    xs: "repeat(2, minmax(0, 1fr))",
+                    md: "repeat(4, minmax(0, 1fr))",
+                  },
+                  gap: 1.25,
+                  alignItems: "stretch",
+                }}
+              >
                 {metalCombos.map((combo) => {
                   const isSelected =
                     selectedMetal?.MetalTypeId === combo.MetalTypeId &&

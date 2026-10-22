@@ -15,7 +15,6 @@ import { PACKAGEMASTER_TABLE_SQL } from "./packagemaster.js";
 import { RECENTLY_VIEWED_TABLE_SQL } from "./recentlyViewed.js";
 import { ALBUMS_TABLE_SQL, ensureAlbumsTable } from "./albums.js";
 import { WEBSITE_CONTENT_TABLE_SQL, ensureWebsiteContentTable } from "./websiteContent.js";
-import { ensurePolicyCategoriesTable, POLICY_CATEGORIES_TABLE } from "./policyCategories.js";
 import { ensureDesignTableColumns } from "./dynamicDesigns.js";
 import {
     ARTICLE_INFO_PREFIX,
@@ -28,6 +27,14 @@ import {
     resolveArticleTableName,
     resolveArticleMaterialTableName,
 } from "./dynamicArticles.js";
+import {
+    STOCK_LIST_PREFIX,
+    STOCK_LIST_BASE_TABLE_SQL,
+    getDynamicStockListTableName,
+    ensureDynamicStockListTable,
+} from "./dynamicStockList.js";
+
+
 
 // Export individual modular table schemas
 export {
@@ -55,6 +62,10 @@ export {
     ensureDynamicArticleMaterialTable,
     resolveArticleTableName,
     resolveArticleMaterialTableName,
+    STOCK_LIST_PREFIX,
+    STOCK_LIST_BASE_TABLE_SQL,
+    getDynamicStockListTableName,
+    ensureDynamicStockListTable,
 };
 
 // Unified DDL across all multi-tenant tables
@@ -71,6 +82,7 @@ export const SCHEMA_SQL = [
     RECENTLY_VIEWED_TABLE_SQL,
     ALBUMS_TABLE_SQL,
     WEBSITE_CONTENT_TABLE_SQL,
+    STOCK_LIST_BASE_TABLE_SQL,
 ].join("\n\n");
 
 /**
@@ -161,6 +173,7 @@ export function initSchema(db, domain, themeInfo = {}) {
     ensureAlbumsTable(db);
     ensureWebsiteContentTable(db);
     ensureDesignTableColumns(db, "designs");
+    ensureDynamicStockListTable(db, "stock_list");
 
     try {
         const allDesignTables = db

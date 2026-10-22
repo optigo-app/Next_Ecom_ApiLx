@@ -1516,4 +1516,43 @@ export async function invalidateSqliteWebsiteContentCache(domain) {
   return invalidateWebsiteContentCache(domain);
 }
 
+/**
+ * Server Action to fetch stock list directly from SQLite for a tenant.
+ *
+ * @param {object} [filters={}]
+ * @param {string} [domain]
+ * @returns {Promise<{ success: boolean, domain: string, rd: Array<object>, totalCount: number }>}
+ */
+export async function getSqliteStockList(filters = {}, domain) {
+  try {
+    let targetDomain = domain || filters?.domain;
+    if (!targetDomain) {
+      const domainInfo = await getDomainInfo().catch(() => ({}));
+      targetDomain = domainInfo?.hostname || "default";
+    }
+    targetDomain = sanitizeDomain(targetDomain);
+
+    const db = getTenantDb(targetDomain);
+    const { getStockList } = await import("@/db/procedures/getStockList.js");
+    const result = getStockList(db, filters);
+
+    return {
+      success: result.success !== false,
+      domain: targetDomain,
+      rd: result.rd || [],
+      totalCount: result.totalCount || 0,
+    };
+  } catch (error) {
+    logger.error("SQLITE_ACTION", `getSqliteStockList error: ${error.message}`);
+    return {
+      success: false,
+      domain: domain || "unknown",
+      rd: [],
+      totalCount: 0,
+      error: error.message,
+    };
+  }
+}
+
+
 
