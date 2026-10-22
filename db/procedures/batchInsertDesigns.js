@@ -95,6 +95,7 @@ export function batchInsertDesigns(db, rawPayload = [], menuIdentifier = "GLOBAL
             MetalColorid,
             PackageIdList,
             ExclusiveCustomerId,
+            StockBarcode,
             MetalTypeid,
             MetalTypePurity,
             CartId,
@@ -171,6 +172,7 @@ export function batchInsertDesigns(db, rawPayload = [], menuIdentifier = "GLOBAL
             @MetalColorid,
             @PackageIdList,
             @ExclusiveCustomerId,
+            @StockBarcode,
             @MetalTypeid,
             @MetalTypePurity,
             @CartId,
@@ -247,6 +249,7 @@ export function batchInsertDesigns(db, rawPayload = [], menuIdentifier = "GLOBAL
             MetalColorid = excluded.MetalColorid,
             PackageIdList = excluded.PackageIdList,
             ExclusiveCustomerId = excluded.ExclusiveCustomerId,
+            StockBarcode = excluded.StockBarcode,
             MetalTypeid = excluded.MetalTypeid,
             MetalTypePurity = excluded.MetalTypePurity,
             CartId = excluded.CartId,
@@ -355,6 +358,9 @@ export function batchInsertDesigns(db, rawPayload = [], menuIdentifier = "GLOBAL
                 MetalColorid: toNullableNum(getVal(row, "MetalColorid", "metalcolorid")),
                 PackageIdList: toStr(getVal(row, "PackageIdList", "packageidlist", "packageIdList", "Packageidlist")),
                 ExclusiveCustomerId: toStr(getVal(row, "ExclusiveCustomerId", "exclusivecustomerid", "exclusiveCustomerId")),
+                StockBarcode: getVal(row, "StockBarcode", "stockbarcode", "stockBarcode") != null
+                    ? toStr(getVal(row, "StockBarcode", "stockbarcode", "stockBarcode"))
+                    : null,
                 MetalTypeid: toNullableNum(getVal(row, "MetalTypeid", "metaltypeid")),
                 MetalTypePurity: toStr(getVal(row, "MetalTypePurity", "metaltypepurity")),
                 CartId: toInt(getVal(row, "CartId", "cartid")),

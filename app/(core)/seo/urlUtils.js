@@ -7,14 +7,14 @@ import pako from "pako";
  */
 export function getValidUrl(website) {
   if (!website) return undefined;
+  const value = String(website).trim();
+  if (!value) return undefined;
   try {
-    return new URL(website);
+    // A bare host can contain a port (localhost:8012), which `new URL()`
+    // otherwise mistakes for a custom URL scheme.
+    return new URL(/^https?:\/\//i.test(value) ? value : `https://${value.replace(/^\/\//, "")}`);
   } catch {
-    try {
-      return new URL(`https://${website}`);
-    } catch {
-      return undefined;
-    }
+    return undefined;
   }
 }
 
@@ -26,8 +26,18 @@ export function getValidUrl(website) {
  */
 export function getCanonicalUrl(baseUrl, pathname) {
   if (!baseUrl || !pathname) return null;
-  const cleanPath = pathname.split("?")[0].replace(/\/$/, "");
-  return `${baseUrl}${cleanPath}`;
+  try {
+    const base = getValidUrl(baseUrl);
+    if (!base) return null;
+
+    // Framework headers can contain either a path or an absolute request URL.
+    // Keep the canonical origin from baseUrl and discard query/hash data.
+    const requestUrl = new URL(String(pathname), base);
+    const cleanPath = requestUrl.pathname.replace(/\/$/, "");
+    return `${base.origin}${cleanPath}`;
+  } catch {
+    return null;
+  }
 }
 
 /**

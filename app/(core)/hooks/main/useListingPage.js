@@ -20,6 +20,8 @@ import { getSession, setSession } from "@/app/(core)/utils/FetchSessionData";
 import { getSqliteProducts, getSqliteFilters } from "@/app/(core)/utils/sqlite/sqliteActions";
 import { ParseAndDecodeSearchParams } from "@/app/(core)/utils/GlobalFunctions/Parser";
 import { getPricingPolicyParams, getDynamicDesignTableName } from "@/app/(core)/utils/product/pricingPolicy";
+import { useProductStock } from "@/app/(core)/hooks/useProductStock";
+import { getStockBarcodeForProduct } from "@/app/(core)/utils/product/stockUtils";
 
 import {
   compressAndEncode,
@@ -118,6 +120,19 @@ export function useListingPage({
   const [productListData, setProductListData] = useState(initialProducts);
   const [isProdLoading, setIsProdLoading] = useState(!hasInitialData);
   const [isOnlyProdLoading, setIsOnlyProdLoading] = useState(!hasInitialData);
+
+  const {
+    enrichedProducts,
+    checkStock,
+    stockMap,
+    inStockCount,
+    inMemoCount,
+    isStockLoading,
+  } = useProductStock(productListData, {
+    storeinit,
+    loginUserDetail,
+    islogin,
+  });
 
 
   // Helper to sanitize and filter out empty filter sections (e.g. empty collections, 0-ranges)
@@ -444,6 +459,8 @@ export function useListingPage({
 
       const prodObj = {
         autocode: ele?.autocode,
+        StockBarcode:
+          getStockBarcodeForProduct(ele, stockMap),
         Metalid: selectedMetalId ?? ele?.MetalPurityid ?? ele?.MetalId,
         MetalColorId: ele?.MetalColorid ?? ele?.MetalColorId,
         DiaQCid: selectedDiaId ?? loginUserDetail?.cmboDiaQCid ?? storeinit?.cmboDiaQCid,
@@ -579,6 +596,7 @@ export function useListingPage({
       setWishArr,
       broadcast,
       fetchGetCountData,
+      stockMap,
     ]
   );
 
@@ -1382,8 +1400,15 @@ export function useListingPage({
   }, [filterChecked, isClearAllClicked, priceRangeValue]);
 
   return {
-    // Products & Status
-    productListData,
+    // Products & Status (productListData is enriched with live isInStock/isInMemo flags)
+    productListData: enrichedProducts,
+    rawProductListData: productListData,
+    enrichedProducts,
+    checkStock,
+    stockMap,
+    inStockCount,
+    inMemoCount,
+    isStockLoading,
     setProductListData,
     isProdLoading,
     setIsProdLoading,

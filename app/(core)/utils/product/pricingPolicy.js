@@ -4,6 +4,7 @@ import Cookies from "js-cookie";
 
 export const DESIGN_TABLE_PREFIX = "design_Productlist_";
 export const ARTICLE_TABLE_PREFIX = "article_DesignInfo_Web_";
+export const STOCK_TABLE_PREFIX = "stock_list_";
 
 /**
  * Generates the standardized dynamic table name from policy configuration parameters.
@@ -21,6 +22,18 @@ export function getDynamicDesignTableName(config = {}, prefix = DESIGN_TABLE_PRE
  * Generates the standardized dynamic article table name from policy configuration parameters.
  */
 export function getDynamicArticleTableName(config = {}, prefix = ARTICLE_TABLE_PREFIX) {
+  const labour = String(config.Laboursetid ?? config.laboursetid ?? config.pricemanagement_laboursetid ?? "0").trim().replace(/[^a-zA-Z0-9_]/g, "_") || "0";
+  const dia = String(config.diamondpricelistName ?? config.diamondpricelistname ?? config.Diamondpricelistname ?? "default").trim().replace(/[^a-zA-Z0-9_]/g, "_") || "default";
+  const cs = String(config.colorstonepricelistName ?? config.colorstonepricelistname ?? config.Colorstonepricelistname ?? "default").trim().replace(/[^a-zA-Z0-9_]/g, "_") || "default";
+  const setting = String(config.SettingPriceUniqueNo ?? config.settingpriceuniqueno ?? "0").trim().replace(/[^a-zA-Z0-9_]/g, "_") || "0";
+
+  return `${prefix}${labour}_${dia}_${cs}_${setting}`;
+}
+
+/**
+ * Generates the standardized dynamic stock list table name from policy configuration parameters.
+ */
+export function getDynamicStockTableName(config = {}, prefix = STOCK_TABLE_PREFIX) {
   const labour = String(config.Laboursetid ?? config.laboursetid ?? config.pricemanagement_laboursetid ?? "0").trim().replace(/[^a-zA-Z0-9_]/g, "_") || "0";
   const dia = String(config.diamondpricelistName ?? config.diamondpricelistname ?? config.Diamondpricelistname ?? "default").trim().replace(/[^a-zA-Z0-9_]/g, "_") || "default";
   const cs = String(config.colorstonepricelistName ?? config.colorstonepricelistname ?? config.Colorstonepricelistname ?? "default").trim().replace(/[^a-zA-Z0-9_]/g, "_") || "default";
@@ -169,8 +182,18 @@ function getFirstVal(obj, ...keys) {
 export function getPricingPolicyParams({ storeinit, loginUserDetail, islogin } = {}) {
   const isClient = typeof window !== "undefined";
 
-  const activeStoreInit = storeinit || (isClient ? getSession("storeInit") : null) || {};
-  const activeLoginUser = loginUserDetail || (isClient ? getSession("loginUserDetail") : null) || {};
+  const unwrapObj = (obj) => {
+    if (!obj || typeof obj !== "object") return {};
+    if (Array.isArray(obj)) return obj[0] || {};
+    if (Array.isArray(obj.rd)) return obj.rd[0] || {};
+    if (obj.Data && Array.isArray(obj.Data.rd)) return obj.Data.rd[0] || {};
+    return obj;
+  };
+
+  const rawStoreInit = storeinit || (isClient ? getSession("storeInit") : null) || {};
+  const activeStoreInit = unwrapObj(rawStoreInit);
+  const rawLoginUser = loginUserDetail || (isClient ? getSession("loginUserDetail") : null) || {};
+  const activeLoginUser = unwrapObj(rawLoginUser);
 
   const sessionLogin = isClient ? (getSession("LoginUser") ?? false) : false;
   const userIsLoggedIn = Boolean(

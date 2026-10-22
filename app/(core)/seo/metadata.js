@@ -45,11 +45,14 @@ export async function getSiteDetails(storeInit) {
     }
   }
 
-  const siteUrl = storeInit?.domain
-    ? `https://${storeInit.domain}`
-    : host
-      ? `https://${host}`
-      : "https://elior.optigoapps.com";
+  // Store domains may be saved either as a bare host or as a complete URL.
+  // Avoid prefixing an existing scheme (for example, https://https://shop).
+  const configuredSiteUrl = storeInit?.domain
+    ? getValidUrl(storeInit.domain)
+    : undefined;
+  const requestSiteUrl = host ? getValidUrl(host) : undefined;
+  const siteUrl = (configuredSiteUrl || requestSiteUrl || getValidUrl("elior.optigoapps.com"))?.href
+    || "https://elior.optigoapps.com/";
 
   return { siteName, siteUrl };
 }
@@ -67,14 +70,24 @@ export async function generatePageMetadata(pageData, isOmJiyanshFlag = isOmJiyan
   const Title_Suffix = isOmJiyanshFlag ? pageData.websiteName : `${pageData.title} | ${pageData.websiteName}`;
   const resolvedSiteName = pageData.siteName || pageData.websiteName || "Jewelry Store";
   const resolvedSiteUrl = pageData.siteUrl || pageData.websiteName || "";
+  const metadataBase = getValidUrl(resolvedSiteUrl);
+  let canonicalUrl = metadataBase?.href;
+  const configuredCanonicalUrl = metaData?.meta?.canonicalUrl;
+  if (configuredCanonicalUrl && metadataBase) {
+    try {
+      canonicalUrl = new URL(String(configuredCanonicalUrl), metadataBase).href;
+    } catch {
+      // Ignore invalid CMS canonical values and retain the validated site URL.
+    }
+  }
 
   return {
     title: pageData.title || metaData?.meta?.metaTitle || Title_Suffix,
     description: metaData?.meta?.metaDescription || pageData.description || "",
     keywords: metaData?.meta?.keywords || pageData.keywords || "",
     authors: metaData?.meta?.author || [{ name: pageData.ufcc }],
-    alternates:  metaData?.meta?.canonicalUrl || { canonical: getValidUrl(resolvedSiteUrl) },
-    metadataBase: metaData?.meta?.canonicalUrl || getValidUrl(resolvedSiteUrl),
+    alternates: { canonical: canonicalUrl },
+    metadataBase,
     icons: {
       icon: pageData.icons?.icon || [
         { url: "/favicon.ico", sizes: "32x32", type: "image/png" },

@@ -225,7 +225,7 @@ export function batchInsertArticles(db, rawPayload = [], options = {}, tableName
       upsertStmt.run({
         autocode: art.autocode != null ? String(art.autocode) : null,
         designno: String(art.designno || "").trim(),
-        ArticleId: art.ArticleId != null ? Number(art.ArticleId) : null,
+        ArticleId: art.ArticleId != null ? (Array.isArray(art.ArticleId) ? Number(art.ArticleId[0]) : Number(art.ArticleId)) : null,
         ArticleNo: String(art.ArticleNo).trim(),
         MetalWeight: art.MetalWeight != null ? Number(art.MetalWeight) : null,
         FindingWeight: art.FindingWeight != null ? Number(art.FindingWeight) : null,
