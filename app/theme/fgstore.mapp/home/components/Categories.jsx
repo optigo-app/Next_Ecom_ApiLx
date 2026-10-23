@@ -10,7 +10,7 @@ const IMAGE_NOT_FOUND = "/image-not-found.jpg";
 const Categories = () => {
   const navigate = useNextRouterLikeRR().push;
 
-  // Data comes from the hook (same as your reference code)
+ 
   const { categories, loading, isError } = useWebContentManagement();
 
   const handleNavigate = (name) => {

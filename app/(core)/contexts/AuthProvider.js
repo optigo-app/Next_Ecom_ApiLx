@@ -26,7 +26,7 @@ const restrictedPaths = [
   "/forgotpassword",
   "/ForgotPassword",
   "/LoginWithEmail",
-  "/register"
+  "/register",
 ];
 
 const publicPages = [
@@ -46,6 +46,7 @@ const publicPages = [
   "/shipping-policy",
   "/terms-and-conditions",
   "/debug-internal-config-manager-v2",
+  "push",
   "/cache",
   "cache",
   "contactus",
@@ -71,10 +72,11 @@ const publicPages = [
   "/blogs/:id",
   "/customer-service",
   "/faq",
+  "/push", 
   ...restrictedPaths
 ];
 
-const protectedPages = ["/account", "/delivery", "/payment", "/confirmation", "/accountdwsr", "account", "delivery", "payment", "confirmation", "/asset-management", "asset-management"];
+const protectedPages = ["/account", "/delivery", "/payment", "/confirmation", "/accountdwsr", "account", "delivery", "payment", "confirmation", "/asset-management", "asset-management",];
 
 const AuthContext = createContext(null);
 export function AuthProvider({ children, storeInit, theme }) {

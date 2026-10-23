@@ -29,6 +29,7 @@ export default function Home({
             <ProductTypeBar storeinit={storeinit} />
             <PromotionCarousel />
             <Categories storeinit={storeinit} initialCategories={initialCategories} />
+            <Collection storeinit={storeinit} initialCategories={initialCategories} />
             <OrderBlock />
           </Box>
           {/* <AlbumSection /> */}
