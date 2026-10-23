@@ -251,7 +251,7 @@
   text-align: center;
   margin-bottom: 16px;
   position: relative;
-  cursor: pointer;
+  // cursor: pointer;
 }
 
 .au-a3-header-heading {
@@ -355,7 +355,7 @@
 .au-a3-image {
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
   transition: all 0.2s ease;
-  cursor: pointer;
+  // cursor: pointer;
 }
 .au-a3-image.is-selected {
   outline: 4px solid #6366f1; /* indigo-500 */
