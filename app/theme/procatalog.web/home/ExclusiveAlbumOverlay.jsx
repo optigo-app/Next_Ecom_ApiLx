@@ -22,6 +22,9 @@ import {
   FolderOpen,
   Calendar,
   Gem,
+  Heart,
+  ShoppingCart,
+  Check,
 } from "lucide-react";
 
 const imageNotFound = "/image-not-found.jpg";
@@ -257,6 +260,10 @@ export default function ExclusiveAlbumOverlay({
     handleBackToAlbums,
     handleClose,
     handleMoveToProductDetail,
+    handleToggleLike,
+    handleToggleCart,
+    likedDesigns,
+    cartDesigns,
     getProductImageUrl,
     formatPrice,
   } = useExclusiveAlbum({ initialDomain });
@@ -1193,6 +1200,9 @@ export default function ExclusiveAlbumOverlay({
                         formatPrice(design.UnitCost);
 
                       const imgUrl = getProductImageUrl(design);
+                      const designKey = design.designno || design.autocode;
+                      const isLiked = Boolean(likedDesigns?.[designKey]);
+                      const isInCart = Boolean(cartDesigns?.[designKey]);
 
                       return (
                         <Box
@@ -1235,6 +1245,41 @@ export default function ExclusiveAlbumOverlay({
                                 objectFit: "cover",
                               }}
                             />
+
+                            {/* Like Action Button */}
+                            <IconButton
+                              size="small"
+                              title={isLiked ? "Unlike" : "Like"}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleToggleLike(design, selectedAlbum);
+                              }}
+                              sx={{
+                                position: "absolute",
+                                top: 10,
+                                left: 10,
+                                backgroundColor: isLiked
+                                  ? "#FFF1F2"
+                                  : "rgba(255, 255, 255, 0.92)",
+                                backdropFilter: "blur(4px)",
+                                width: 34,
+                                height: 34,
+                                boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
+                                transition: "all 0.2s cubic-bezier(0.16, 1, 0.3, 1)",
+                                zIndex: 2,
+                                "&:hover": {
+                                  backgroundColor: "#FFFFFF",
+                                  transform: "scale(1.08)",
+                                },
+                              }}
+                            >
+                              <Heart
+                                size={17}
+                                color={isLiked ? "#E11D48" : "#52525B"}
+                                fill={isLiked ? "#E11D48" : "transparent"}
+                                strokeWidth={isLiked ? 0 : 2}
+                              />
+                            </IconButton>
 
                             {/* Design Badge */}
                             <Box
@@ -1305,7 +1350,7 @@ export default function ExclusiveAlbumOverlay({
                               ) : null}
                             </Box>
 
-                            {/* Price */}
+                            {/* Price & Action Buttons */}
                             <Box
                               sx={{
                                 mt: "auto",
@@ -1335,28 +1380,59 @@ export default function ExclusiveAlbumOverlay({
                                 </Typography>
                               )}
 
-                              <Button
-                                size="small"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  handleMoveToDesignWithCache(design);
-                                }}
-                                sx={{
-                                  minWidth: "auto",
-                                  p: "2px 8px",
-                                  fontSize: "0.72rem",
-                                  fontWeight: 700,
-                                  borderRadius: "2px",
-                                  color: "#0F172A",
-                                  border: "1px solid #E2E8F0",
-                                  "&:hover": {
-                                    backgroundColor: "#0F172A",
-                                    color: "#FFFFFF",
-                                  },
-                                }}
-                              >
-                                VIEW
-                              </Button>
+                              <Box sx={{ display: "flex", alignItems: "center", gap: 0.8 }}>
+                                <IconButton
+                                  size="small"
+                                  title={isInCart ? "Remove from cart" : "Add to cart"}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleToggleCart(design, selectedAlbum);
+                                  }}
+                                  sx={{
+                                    border: isInCart
+                                      ? "1px solid #16A34A"
+                                      : "1px solid #E2E8F0",
+                                    backgroundColor: isInCart ? "#DCFCE7" : "#FFFFFF",
+                                    color: isInCart ? "#16A34A" : "#0F172A",
+                                    p: "5px",
+                                    borderRadius: "4px",
+                                    transition: "all 0.2s ease",
+                                    "&:hover": {
+                                      backgroundColor: isInCart ? "#BBF7D0" : "#F4F4F5",
+                                      transform: "scale(1.06)",
+                                    },
+                                  }}
+                                >
+                                  {isInCart ? (
+                                    <Check size={15} strokeWidth={2.5} />
+                                  ) : (
+                                    <ShoppingCart size={15} strokeWidth={2} />
+                                  )}
+                                </IconButton>
+
+                                <Button
+                                  size="small"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleMoveToDesignWithCache(design);
+                                  }}
+                                  sx={{
+                                    minWidth: "auto",
+                                    p: "2px 8px",
+                                    fontSize: "0.72rem",
+                                    fontWeight: 700,
+                                    borderRadius: "2px",
+                                    color: "#0F172A",
+                                    border: "1px solid #E2E8F0",
+                                    "&:hover": {
+                                      backgroundColor: "#0F172A",
+                                      color: "#FFFFFF",
+                                    },
+                                  }}
+                                >
+                                  VIEW
+                                </Button>
+                              </Box>
                             </Box>
                           </Box>
                         </Box>
