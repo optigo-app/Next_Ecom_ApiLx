@@ -1,114 +1,17 @@
 "use client";
-import React, { useState, useEffect, useCallback, useRef } from "react";
+import React from "react";
 import Headers from "./composable/Headers";
 import { Avatar, Box, Skeleton, Typography } from "@mui/material";
-import { HomeCategoryApi } from "@/app/(core)/utils/API/Home/HomeCategoryApi/HomeCategoryApi";
-import { useStore } from "@/app/(core)/contexts/StoreProvider";
 import { useNextRouterLikeRR } from "@/app/(core)/hooks/useLocationRd";
-import Cookies from "js-cookie";
+import { useWebContentManagement } from "@/app/(core)/hooks/webContentManagement/webContentManagement.client";
 
 const IMAGE_NOT_FOUND = "/image-not-found.jpg";
 
-const resolveCategoryImage = (cat, storeInit) => {
-  const cdnFol =
-    storeInit?.CDNDesignImageFolThumb ||
-    storeInit?.CDNDesignImageFol ||
-    storeInit?.DesignImageFol ||
-    "";
-  const p = cat?.firstProduct;
-  if (!p?.designno || p?.ImageCount === 0 || !cdnFol) {
-    return IMAGE_NOT_FOUND;
-  }
-  return `${cdnFol}${p.designno}~1.jpg`;
-};
-
-/** Maps API category data with dynamic product image */
-const mapCategoryImages = (apiData, storeInit) => {
-  return (apiData || []).map((item) => {
-    const catName = item.CategoryName || item.categoryName || "";
-    return {
-      ...item,
-      CategoryName: catName,
-      img: resolveCategoryImage(item, storeInit),
-    };
-  });
-};
-
-const Categories = ({ storeinit, initialCategories = [] }) => {
-  const { loginUserDetail, islogin, finalId, storeInit: storeInitCtx } = useStore();
-  const currentStore = storeinit || storeInitCtx;
-
-  const [categories, setCategories] = useState(() => {
-    if (Array.isArray(initialCategories) && initialCategories.length > 0) {
-      return mapCategoryImages(initialCategories, currentStore);
-    }
-    return [];
-  });
-  const [loading, setLoading] = useState(
-    !initialCategories || initialCategories.length === 0,
-  );
+const Categories = () => {
   const navigate = useNextRouterLikeRR().push;
 
-  const isFetchingRef = useRef(false);
-  const lastUserRef = useRef(null);
-
-  const fetchAndSetCategories = useCallback(async () => {
-    if (isFetchingRef.current) return;
-    isFetchingRef.current = true;
-
-    try {
-      const response = await fetch("/api/sqlite/home-category", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          storeInit: storeinit,
-          loginUserDetail,
-        }),
-      });
-      const result = await response.json();
-      const apiData = result?.Data?.rd || result?.rd || [];
-
-      if (Array.isArray(apiData) && apiData.length > 0) {
-        setCategories(mapCategoryImages(apiData, currentStore));
-      } else {
-        const visitorId = finalId || Cookies.get("visiterId") || "";
-        const legacyRes = await HomeCategoryApi(visitorId).catch(() => null);
-        const legacyData = legacyRes?.Data?.rd || [];
-        setCategories(mapCategoryImages(legacyData, currentStore));
-      }
-      setLoading(false);
-    } catch (err) {
-      console.error("[Categories] Error in fetch:", err);
-      setLoading(false);
-    } finally {
-      isFetchingRef.current = false;
-    }
-  }, [currentStore, loginUserDetail, finalId]);
-
-  useEffect(() => {
-    const currentUserSig = `${Boolean(islogin)}_${loginUserDetail?.id || loginUserDetail?.userid || 0}_${loginUserDetail?.pricemanagement_laboursetid || 0}`;
-
-    // If initialCategories was provided on first mount and matches state, keep it
-    if (
-      lastUserRef.current === null &&
-      initialCategories &&
-      initialCategories.length > 0
-    ) {
-      lastUserRef.current = currentUserSig;
-      return;
-    }
-
-    if (lastUserRef.current !== currentUserSig || categories.length === 0) {
-      lastUserRef.current = currentUserSig;
-      fetchAndSetCategories();
-    }
-  }, [
-    islogin,
-    loginUserDetail,
-    initialCategories,
-    fetchAndSetCategories,
-    categories.length,
-  ]);
+  // Data comes from the hook (same as your reference code)
+  const { categories, loading, isError } = useWebContentManagement();
 
   const handleNavigate = (name) => {
     let finalData = {
@@ -147,7 +50,9 @@ const Categories = ({ storeinit, initialCategories = [] }) => {
     navigate(url);
   };
 
-  if (!loading && categories?.length === 0) {
+  if (isError) return null;
+
+  if (!loading && categories.length === 0) {
     return null;
   }
 
@@ -177,10 +82,10 @@ const Categories = ({ storeinit, initialCategories = [] }) => {
               </Box>
             ))
           : categories.map((cat, index) => {
-              const name = cat.CategoryName || cat.categoryName;
+              const name = cat?.name || "";
               return (
                 <Box
-                  key={cat.categoryId || cat.id || index}
+                  key={cat?.recordId || cat?.masterId || index}
                   onClick={() => handleNavigate(name)}
                   sx={{
                     display: "flex",
@@ -191,7 +96,7 @@ const Categories = ({ storeinit, initialCategories = [] }) => {
                   }}
                 >
                   <Avatar
-                    src={cat.img}
+                    src={cat?.imageUrl || IMAGE_NOT_FOUND}
                     alt={name}
                     imgProps={{
                       onError: (e) => {
@@ -225,7 +130,7 @@ const Categories = ({ storeinit, initialCategories = [] }) => {
                       textAlign: "center",
                     }}
                   >
-                    {name}
+                    {cat?.catLabel || name}
                   </Typography>
                 </Box>
               );

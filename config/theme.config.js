@@ -4,7 +4,7 @@
  * ====================================================================================================
  * To switch the local theme/brand/database, change ONLY this one line:
  */
-export const ACTIVE_THEME_KEY = "BELUXJEWEL";
+export const ACTIVE_THEME_KEY = "SONASONS_APP";
 
 
 /**
