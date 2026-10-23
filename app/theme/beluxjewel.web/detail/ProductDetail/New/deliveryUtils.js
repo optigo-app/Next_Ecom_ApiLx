@@ -2,7 +2,9 @@
 
 export function getDeliveryInfo(singleProd, singleProd1, stockItemArr) {
   const isInStock = Boolean(
-    singleProd?.IsInReadyStock === 1 ||
+    singleProd?.isInStock ||
+      singleProd1?.isInStock ||
+      singleProd?.IsInReadyStock === 1 ||
       singleProd1?.IsInReadyStock === 1 ||
       singleProd?.IsInStock === 1 ||
       singleProd1?.IsInStock === 1 ||

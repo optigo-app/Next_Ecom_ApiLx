@@ -1,7 +1,7 @@
 import Database from "better-sqlite3";
 import fs from "fs";
 import path from "path";
-import { initSchema, ensureDesignTableColumns } from "./schema.js";
+import { initSchema, ensureDesignTableColumns, ensureDynamicStockListTable } from "./schema.js";
 import { ensureStoreInitColumns } from "./schema/storeInit.js";
 
 // In-memory connection pool on globalThis to avoid reopening file descriptors across Next.js HMR reloads
@@ -170,6 +170,7 @@ export function getTenantDb(domain = "default", options = {}) {
             try {
                 ensureStoreInitColumns(db);
                 ensureDesignTableColumns(db, "designs");
+                ensureDynamicStockListTable(db, "stock_list");
             } catch (_) {}
         }
 

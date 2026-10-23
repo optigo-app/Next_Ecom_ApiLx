@@ -138,11 +138,22 @@ export function getExclusiveAlbumsWithDesigns(db, options = {}) {
       const placeholders = intNums.map(() => "?").join(",");
 
       try {
+        const colList = db.prepare(`PRAGMA table_info("${tableName}")`).all().map((c) => c.name);
+        const hasArticleNo = colList.includes("ArticleNo");
+        const hasArticleId = colList.includes("ArticleId");
+        const hasStockBarcode = colList.includes("StockBarcode");
+        const extraCols = [
+          hasArticleNo ? "ArticleNo" : "'' AS ArticleNo",
+          hasArticleId ? "ArticleId" : "NULL AS ArticleId",
+          hasStockBarcode ? "StockBarcode" : "'' AS StockBarcode",
+        ].join(", ");
+
         const designs = db.prepare(`
           SELECT 
             id,
             designno,
             autocode,
+            ${extraCols},
             TitleLine,
             description,
             UnitCost,
