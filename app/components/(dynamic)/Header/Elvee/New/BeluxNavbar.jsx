@@ -259,6 +259,7 @@ const BeluxNavbar = ({ storeInit: storeinit, logos, initialMenuData = [], initia
   // const compnyLogoM = logos?.mobile;
   // const activeLogo = isHovered || isScrolled ? blackLogo : whiteLogo;
   const brandLogo = brandData?.logo || {};
+  console.log("TCL: brandData", brandData)
 
   // Reject hardcoded Sonasons placeholder assets so they never bleed into Belux
   const isSonasonsPlaceholder = (url) =>
