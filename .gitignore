@@ -39,9 +39,6 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# app logs
-/log/
-
 # env files (can opt-in for committing if needed)
 .env*
 
@@ -89,5 +86,5 @@ ref/GsapList.mdx
 *.log
 log/
 
-# runtime-generated store init configs
-/public/storeInit/
+# store init
+public/storeInit/
