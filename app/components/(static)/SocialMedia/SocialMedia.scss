@@ -1,0 +1,878 @@
+
+.social-media-container {
+    width: 100%;
+    
+    background: #ffffff;
+    box-sizing: border-box;
+  }
+  
+  .sm-loading {
+    width: 100%;
+    
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    color: #6b7280;
+    font-size: 14px;
+  }
+  
+  .sm-loader {
+    width: 28px;
+    height: 28px;
+    border: 3px solid #e5e7eb;
+    border-top-color: #6366f1;
+    border-radius: 50%;
+    animation: sm-spin 0.8s linear infinite;
+  }
+  
+  @keyframes sm-spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  
+  .sm-error,
+  .sm-empty {
+    width: 100%;
+    min-height: 300px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #6b7280;
+    font-size: 14px;
+    text-align: center;
+  }
+  
+  .sm-error {
+    color: #dc2626;
+  }
+  
+  
+  /* =========================================================
+     SOCIAL MEDIA 1
+  ========================================================= */
+  
+  .sm1-page {
+    width: 100%;
+    /* min-height: 100vh; */
+    padding: 48px 40px;
+    background: #ffffff;
+    box-sizing: border-box;
+  }
+  
+  .sm1-top-heading {
+    width: 100%;
+    margin-bottom: 40px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid #f3f4f6;
+    
+  }
+  
+  .sm1-top-heading h3 {
+    font-size: 40px;
+    margin: 0;
+    
+    text-align: center;
+    font-weight: 500;
+  
+    text-transform: uppercase;
+  }
+  
+  .sm1-grid {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 24px;
+  }
+  
+  .sm1-post-card {
+    position: relative;
+    width: 100%;
+    cursor: pointer;
+    overflow: hidden;
+    transition:
+      transform 0.3s ease,
+      box-shadow 0.3s ease;
+  }
+  
+  .sm1-post-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
+  }
+  
+  .sm1-image-wrapper {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    background: #f3f4f6;
+  }
+  
+  .sm1-post-image {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+    transition: transform 0.7s ease;
+  }
+  
+  .sm1-post-card:hover .sm1-post-image {
+    transform: scale(1.08);
+  }
+  
+  .sm1-icon {
+    position: absolute;
+    left: 16px;
+    bottom: 16px;
+  
+    width: 40px;
+    height: 40px;
+  
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  
+    background: rgba(255, 255, 255, 0.92);
+    border-radius: 50%;
+  
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+  
+    backdrop-filter: blur(6px);
+  }
+  
+  
+  /* =========================================================
+     SOCIAL MEDIA 2
+  ========================================================= */
+  
+  .sm2-page {
+    width: 100%;
+    /* min-height: 100vh; */
+    padding: 48px 40px;
+    background: #ffffff;
+    box-sizing: border-box;
+  }
+  
+  .sm2-grid {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 24px;
+  }
+  
+  .sm2-header-card {
+    position: relative;
+  
+    grid-column: span 2;
+  
+    min-height: 320px;
+  
+    display: flex;
+    align-items: center;
+  
+    padding: 40px;
+  
+    background: #f3f4f6;
+  
+    cursor: pointer;
+  
+    transition:
+      transform 0.3s ease,
+      box-shadow 0.3s ease;
+  
+    box-sizing: border-box;
+  }
+  
+  .sm2-header-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+  }
+  
+  .sm2-header-content {
+    width: 100%;
+    max-width: 300px;
+  }
+  
+  .sm2-header-title {
+    margin: 0 0 28px;
+    
+    font-size: 32px;
+    line-height: 1.15;
+    font-weight: 700;
+  }
+  
+  .sm2-profile {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+  
+  .sm2-logo {
+    width: 48px;
+    height: 48px;
+  
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  
+    overflow: hidden;
+  
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 50%;
+  
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  
+    flex-shrink: 0;
+  }
+  
+  .sm2-logo img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+  }
+  
+  .sm2-logo span {
+    color: #9ca3af;
+    font-size: 8px;
+  }
+  
+  .sm2-profile-info {
+    min-width: 0;
+  }
+  
+  .sm2-username {
+    margin: 0;
+    color: #111827;
+    font-size: 14px;
+    font-weight: 700;
+  }
+  
+  .sm2-followers {
+    margin: 3px 0 0;
+    color: #6b7280;
+    font-size: 12px;
+    font-weight: 500;
+  }
+  
+  .sm2-follow-button {
+    width: fit-content;
+  
+    padding: 12px 32px;
+  
+    border: none;
+    border-radius: 6px;
+  
+    color: #ffffff;
+  
+    font-size: 13px;
+    font-weight: 700;
+  
+    cursor: pointer;
+  
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.12);
+  
+    transition:
+      opacity 0.2s ease,
+      transform 0.2s ease;
+  }
+  
+  .sm2-follow-button:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+  }
+  
+  
+  /* POST */
+  
+  .sm2-post-card {
+    position: relative;
+  
+    width: 100%;
+  
+    overflow: hidden;
+  
+    cursor: pointer;
+  
+    background: #f3f4f6;
+  
+    transition:
+      transform 0.3s ease,
+      box-shadow 0.3s ease;
+  }
+  
+  .sm2-post-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+  }
+  
+  .sm2-post-image-wrapper {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+  }
+  
+  .sm2-post-media {
+    width: 100%;
+    height: 100%;
+  
+    display: block;
+  
+    object-fit: cover;
+  
+    transition: transform 0.7s ease;
+  }
+  
+  .sm2-post-card:hover .sm2-post-media {
+    transform: scale(1.08);
+  }
+  
+  
+  /* VIDEO */
+  
+  .sm-video-wrapper {
+    width: 100%;
+    height: 100%;
+    position: relative;
+  }
+  
+  .sm-video-overlay {
+    position: absolute;
+    inset: 0;
+  
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  
+    pointer-events: none;
+  }
+  
+  .sm-video-play {
+    width: 56px;
+    height: 56px;
+  
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 50%;
+  
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+  
+    backdrop-filter: blur(5px);
+  }
+  
+  .sm-video-play span {
+    margin-left: 3px;
+    color: #111827;
+    font-size: 18px;
+  }
+  
+  .sm2-video-indicator {
+    position: absolute;
+    inset: 0;
+  
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  
+    pointer-events: none;
+  }
+  
+  .sm2-play-circle {
+    width: 56px;
+    height: 56px;
+  
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  
+    padding-left: 3px;
+  
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 50%;
+  
+    color: #111827;
+  
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.18);
+  
+    backdrop-filter: blur(5px);
+  }
+  
+  
+  /* SOCIAL ICON */
+  
+  .sm2-social-icon {
+    position: absolute;
+    left: 16px;
+    bottom: 16px;
+  
+    width: 40px;
+    height: 40px;
+  
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  
+    background: rgba(255, 255, 255, 0.92);
+    border-radius: 50%;
+  
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+  
+    backdrop-filter: blur(6px);
+  }
+  
+  
+  /* =========================================================
+     SOCIAL MEDIA 3
+  ========================================================= */
+  
+  .sm3-page {
+    width: 100%;
+    /* min-height: 100vh; */
+  
+    padding: 64px 0;
+  
+    background: #ffffff;
+  
+    box-sizing: border-box;
+  }
+  
+  
+  /* HEADER */
+  
+  .sm3-header {
+    width: calc(100% - 48px);
+    max-width: 1400px;
+  
+    margin: 0 auto 48px;
+  
+    padding: 0 24px;
+  
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+  
+    box-sizing: border-box;
+  }
+  
+  .sm3-header-title-wrapper {
+    min-width: 0;
+  }
+  
+  .sm3-title {
+    margin: 0;
+     
+    color: #111827;
+  
+    font-size: 56px;
+    line-height: 1;
+  
+    font-weight: 900;
+  
+    letter-spacing: -0.04em;
+  
+    text-transform: uppercase;
+  }
+  
+  .sm3-header-username {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+  }
+  
+  .sm3-header-username span {
+    padding-bottom: 4px;
+  
+    color: #111827;
+  
+    font-size: 18px;
+    font-weight: 700;
+  
+    border-bottom: 2px solid #111827;
+  }
+  
+  
+  /* POSTS */
+  
+  .sm3-posts-wrapper {
+    width: 100%;
+  }
+  
+  .sm3-posts-grid {
+    width: calc(100% - 48px);
+    max-width: 1400px;
+  
+    margin: 0 auto;
+  
+    padding: 0 24px;
+  
+    display: grid;
+  
+    grid-template-columns:
+      repeat(3, minmax(0, 1fr));
+  
+    gap: 32px;
+  
+    box-sizing: border-box;
+  }
+  
+  .sm3-post-card {
+    position: relative;
+  
+    overflow: hidden;
+  
+    background: #ffffff;
+  
+    border: 1px solid #f3f4f6;
+  
+    cursor: pointer;
+  
+    transition:
+      transform 0.3s ease,
+      box-shadow 0.3s ease;
+  }
+  
+  .sm3-post-card:hover {
+    transform: translateY(-5px);
+  
+    box-shadow:
+      0 20px 45px rgba(0, 0, 0, 0.12);
+  }
+  
+  .sm3-post-image-wrapper {
+    position: relative;
+  
+    width: 100%;
+  
+    overflow: hidden;
+  
+    background: #f3f4f6;
+  }
+  
+  .sm3-post-image {
+    width: 100%;
+    height: 100%;
+  
+    display: block;
+  
+    object-fit: cover;
+  
+    transition: transform 0.7s ease;
+  }
+  
+  .sm3-post-card:hover .sm3-post-image {
+    transform: scale(1.06);
+  }
+  
+  .sm3-image-overlay {
+    position: absolute;
+    inset: 0;
+  
+    background: linear-gradient(
+      to bottom,
+      transparent 70%,
+      rgba(0, 0, 0, 0.08)
+    );
+  
+    pointer-events: none;
+  }
+  
+  
+  /* POST FOOTER */
+  
+  .sm3-post-footer {
+    width: 100%;
+  
+    padding: 16px;
+  
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  
+    border-top: 1px solid #f9fafb;
+  
+    background: #ffffff;
+  
+    box-sizing: border-box;
+  }
+  
+  .sm3-user {
+    display: flex;
+    align-items: center;
+  
+    gap: 12px;
+  
+    min-width: 0;
+  }
+  
+  .sm3-user-avatar {
+    width: 32px;
+    height: 32px;
+  
+    flex-shrink: 0;
+  
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  
+    background: #111111;
+  
+    border-radius: 50%;
+  
+    color: #ffffff;
+  
+    font-size: 10px;
+    font-weight: 700;
+  }
+  
+  .sm3-post-username {
+    overflow: hidden;
+  
+    color: #111827;
+  
+    font-size: 14px;
+    font-weight: 700;
+  
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  
+  .sm3-social-icon {
+    width: 34px;
+    height: 34px;
+  
+    flex-shrink: 0;
+  
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  
+    background: #f9fafb;
+  
+    color: #374151;
+  
+    transition:
+      background 0.2s ease,
+      transform 0.2s ease;
+  }
+  
+  .sm3-social-icon:hover {
+    background: #f3f4f6;
+    transform: scale(1.05);
+  }
+  
+  .sm3-icon-circle {
+    border-radius: 50%;
+  }
+  
+  .sm3-icon-square {
+    border-radius: 6px;
+  }
+  
+  
+  /* =========================================================
+     TEMPLATE NOT FOUND
+  ========================================================= */
+  
+  .sm-template-not-found {
+    width: 100%;
+    min-height: 300px;
+  
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  
+    padding: 40px;
+  
+    text-align: center;
+  
+    box-sizing: border-box;
+  }
+  
+  .sm-template-not-found h3 {
+    margin: 0 0 8px;
+  
+    color: #111827;
+  
+    font-size: 18px;
+  }
+  
+  .sm-template-not-found p {
+    margin: 0;
+  
+    color: #6b7280;
+  
+    font-size: 14px;
+  }
+  
+  
+  /* =========================================================
+     RESPONSIVE - TABLET
+  ========================================================= */
+  
+  @media (max-width: 1024px) {
+  
+    /* Social 1 */
+  
+    .sm1-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  
+  
+    /* Social 2 */
+  
+    .sm2-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  
+    .sm2-header-card {
+      grid-column: span 2;
+    }
+  
+  
+    /* Social 3 */
+  
+    .sm3-posts-grid {
+      grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+    }
+  
+    .sm3-title {
+      font-size: 46px;
+    }
+  }
+  
+  
+  /* =========================================================
+     RESPONSIVE - MOBILE
+  ========================================================= */
+  
+  @media (max-width: 768px) {
+  
+    /* Social 1 */
+  
+    .sm1-page {
+      padding: 36px 20px;
+    }
+  
+    .sm1-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+  
+  
+    /* Social 2 */
+  
+    .sm2-page {
+      padding: 36px 20px;
+    }
+  
+    .sm2-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+  
+    .sm2-header-card {
+      grid-column: span 2;
+      min-height: 280px;
+      padding: 28px;
+    }
+  
+  
+    /* Social 3 */
+  
+    .sm3-page {
+      padding: 44px 0;
+    }
+  
+    .sm3-header {
+      width: 100%;
+      padding: 0 20px;
+  
+      flex-direction: column;
+      align-items: flex-start;
+  
+      gap: 20px;
+    }
+  
+    .sm3-header-username {
+      align-items: flex-start;
+    }
+  
+    .sm3-title {
+      font-size: 42px;
+    }
+  
+    .sm3-posts-grid {
+      width: 100%;
+      padding: 0 20px;
+  
+      grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+  
+      gap: 20px;
+    }
+  }
+  
+  
+  /* =========================================================
+     RESPONSIVE - SMALL MOBILE
+  ========================================================= */
+  
+  @media (max-width: 480px) {
+  
+    /* Social 1 */
+  
+    .sm1-page {
+      padding: 28px 14px;
+    }
+  
+    .sm1-grid {
+      grid-template-columns: 1fr;
+      gap: 20px;
+    }
+  
+  
+    /* Social 2 */
+  
+    .sm2-page {
+      padding: 28px 14px;
+    }
+  
+    .sm2-grid {
+      grid-template-columns: 1fr;
+    }
+  
+    .sm2-header-card {
+      grid-column: span 1;
+  
+      min-height: 260px;
+  
+      padding: 24px;
+    }
+  
+  
+    /* Social 3 */
+  
+    .sm3-header {
+      padding: 0 16px;
+    }
+  
+    .sm3-title {
+      font-size: 34px;
+    }
+  
+    .sm3-posts-grid {
+      padding: 0 16px;
+  
+      grid-template-columns: 1fr;
+  
+      gap: 24px;
+    }
+  }

@@ -27,11 +27,8 @@ const pickAboutTemplate = (templates = []) => {
   const data = parseContentJson(active.ContentJson);
   if (!data) return null;
 
-  const title = TEMPLATE_TITLES.includes(active.Title)
-    ? active.Title
-    : TEMPLATE_TITLES.includes(data.templateId)
-    ? data.templateId
-    : null;
+  // works for About1...AboutN automatically, based on the registry
+  const title = [active.Title, data.templateId].find(isAboutTemplate) || null;
 
   return title ? { title, data } : null;
 };
@@ -608,7 +605,17 @@ function About5({ data }) {
   );
 }
 
-const RENDERERS = { About1, About2, About3, About4, About5 };
+const ABOUT_TEMPLATES = {
+  About1,
+  About2,
+  About3,
+  About4,
+  About5,
+
+};
+
+const isAboutTemplate = (id) =>
+  Object.prototype.hasOwnProperty.call(ABOUT_TEMPLATES, id);
 
 export default function AboutUs({ templates = [] }) {
   const match = pickAboutTemplate(templates);
@@ -617,6 +624,6 @@ export default function AboutUs({ templates = [] }) {
     return <div className="au-error">No About Us template found.</div>;
   }
 
-  const Template = RENDERERS[match.title];
+  const Template = ABOUT_TEMPLATES[match.title];
   return <Template data={match.data} />;
 }

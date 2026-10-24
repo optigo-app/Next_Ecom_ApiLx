@@ -20,11 +20,15 @@ import SocialMediaVideoSection from "./blocks/SocialMedia";
 import CraftsmanshipPage from "../craftsmanship/page";
 import MaxDesignLibrary from "./blocks/MaxDesignLibrary";
 import { getSqliteHomeBestseller, getSqliteHomeNewArrival, getSqliteHomeTrending } from "@/app/(core)/utils/sqlite/sqliteActions";
+import { getWebContentManagement } from "@/app/(core)/hooks/webContentManagement/webContentManagement.server";
+import SocialMedia from "@/app/components/(static)/SocialMedia/SocialMedia"; 
 
 export const metadata = generatePageMetadata(pages["/"], "Belux Jewel");
 
 const BeluxJewelHome = async () => {
   const storeData = await getStoreInit();
+
+
 
   const [bestsellerRes, newArrivalRes, trendingRes] = await Promise.all([
     getSqliteHomeBestseller({}, storeData?.domain).catch(() => null),
@@ -35,6 +39,13 @@ const BeluxJewelHome = async () => {
   const initialBestSellers = bestsellerRes?.rd || [];
   const initialNewArrivals = newArrivalRes?.rd || [];
   const initialTrending = trendingRes?.rd || [];
+
+  const { pageTemplates, isError, error } = await getWebContentManagement();
+
+  const socialMediaTemplates = (pageTemplates || []).filter(
+    (t) => t?.PageKey === "social-media"
+  );
+
 
   return (
     <Box
@@ -55,7 +66,8 @@ const BeluxJewelHome = async () => {
       <MaxBrandMarquee assetBase={assetBase} />
       <CraftsmanshipPage assetBase={assetBase} />
       <MaxDesignLibrary />
-      <SocialMediaVideoSection />
+      {/* <SocialMediaVideoSection /> */}
+      <SocialMedia templates={socialMediaTemplates} />
     </Box>
   );
 };

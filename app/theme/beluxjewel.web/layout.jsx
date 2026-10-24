@@ -13,6 +13,7 @@ import BeluxNavbar from "@/app/components/(dynamic)/Header/Elvee/New/BeluxNavbar
 import { cookies } from "next/headers";
 import { getSqliteMenus } from "@/app/(core)/utils/sqlite/sqliteActions";
 import { getWebContentManagement } from "@/app/(core)/hooks/webContentManagement/webContentManagement.server";
+import Footer from "@/app/components/(static)/Footer/DynamicFooter/Footer"; 
 
 const layout = async ({ children }) => {
   const storeData = await getStoreInit();
@@ -34,6 +35,16 @@ const layout = async ({ children }) => {
   }
 
   const webContentRes = await getWebContentManagement({ domain: storeData?.domain }).catch(() => null);
+
+
+  const { pageTemplates, isError, error } = await getWebContentManagement();
+  const {social }= await getWebContentManagement();
+  const footerTemplates = (pageTemplates || []).filter(
+    (t) => t?.PageKey?.toLowerCase() === "footer"
+  );
+
+ 
+ console.log("TCL: layout ->footerTemplates ", footerTemplates)
 
   return (
     <>
@@ -57,12 +68,13 @@ const layout = async ({ children }) => {
         <Box component="main" id="main-content" sx={{ flex: 1, display: "flex", flexDirection: "column" }}>
             {children}
         </Box>
-        <FooterNew
+        {/* <FooterNew
           companyInfoData={companyInfoData}
           storeData={storeData}
           extraFlag={extraFlag}
           logos={logos}
-        />
+        /> */}
+        <Footer templates={footerTemplates} socialData={social?.ContentJson} />
 
         <ChatMenu />
       </Box>
