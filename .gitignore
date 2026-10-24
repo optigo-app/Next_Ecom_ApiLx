@@ -85,3 +85,6 @@ ref/GsapList.mdx
 # logs
 *.log
 log/
+
+# store init
+public/storeInit/
