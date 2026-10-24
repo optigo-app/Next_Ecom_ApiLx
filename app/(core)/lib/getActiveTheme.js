@@ -9,10 +9,11 @@ import { getStoreInitData } from "@/app/(core)/cache_utility/storeInitCache";
  *   NEVER falls back to local NEXT_APP_WEB for live requests.
  */
 export async function getActiveTheme() {
+  let cleanHost = "";
   try {
     const headersList = await headers();
     const host = headersList.get("host");
-    const cleanHost = host ? host.split(":")[0].trim().toLowerCase() : "";
+    cleanHost = host ? host.split(":")[0].trim().toLowerCase() : "";
 
     // 1. Explicit localhost / local dev check
     const isLocalhost =
