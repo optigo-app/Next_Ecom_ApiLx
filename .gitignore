@@ -82,3 +82,9 @@ ref/
 GsapList.mdx
 ref/GsapList.mdx
 
+log.*
+log
+.
+
+.log*
+.log
