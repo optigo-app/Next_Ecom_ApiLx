@@ -179,12 +179,14 @@ export function batchInsertArticleMaterials(db, rawPayload = [], options = {}, t
 
   const sanitizeNumber = (val, fallback = 0) => {
     if (val === null || val === undefined || val === "") return fallback;
+    if (Array.isArray(val)) val = val[0];
     const n = Number(val);
     return isNaN(n) ? fallback : n;
   };
 
   const sanitizeNullableNumber = (val) => {
     if (val === null || val === undefined || val === "") return null;
+    if (Array.isArray(val)) val = val[0];
     const n = Number(val);
     return isNaN(n) ? null : n;
   };

@@ -14,9 +14,10 @@ if (!globalForLogs.__logEmitter) {
 
 export const logEmitter = globalForLogs.__logEmitter;
 
-const LOG_DIR = path.join(process.cwd(), "log");
-const MAIN_LOG_FILE = path.join(LOG_DIR, "app.log");
-const ERROR_LOG_FILE = path.join(LOG_DIR, "error.log");
+const cwd = typeof process !== "undefined" && typeof process.cwd === "function" ? process.cwd() : ".";
+const LOG_DIR = path?.join ? path.join(cwd, "log") : "log";
+const MAIN_LOG_FILE = path?.join ? path.join(LOG_DIR, "app.log") : "log/app.log";
+const ERROR_LOG_FILE = path?.join ? path.join(LOG_DIR, "error.log") : "log/error.log";
 
 // Log retention configuration
 const MAX_LOG_LINES = 2000;         // Max lines kept in active log file
@@ -25,17 +26,17 @@ const MAX_FILE_SIZE_BYTES = 5 * 1024 * 1024; // 5 MB max file size
 const MAX_AGE_DAYS = 7;             // Retention period: 7 days
 
 // File log coloring flag (can be toggled via env LOG_FILE_COLOR or logger.setColorizeFileLogs)
-let colorizeFileLogs = process.env.LOG_FILE_COLOR === "true";
+let colorizeFileLogs = typeof process !== "undefined" && process.env?.LOG_FILE_COLOR === "true";
 
 let writeCounter = 0;
 
 // Ensure log directory exists
 try {
-  if (!fs.existsSync(LOG_DIR)) {
+  if (fs?.existsSync && !fs.existsSync(LOG_DIR)) {
     fs.mkdirSync(LOG_DIR, { recursive: true });
   }
 } catch (err) {
-  console.error("Failed to initialize log directory:", err.message);
+  console.error("Failed to initialize log directory:", err?.message || err);
 }
 
 /**

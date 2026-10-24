@@ -7,7 +7,7 @@ export default async function robots() {
     const storeInit = await getStoreInit();
     const details = await getSiteDetails(storeInit);
     if (details?.siteUrl) siteUrl = details.siteUrl;
-  } catch {}
+  } catch { }
 
   return {
     rules: {
@@ -21,6 +21,7 @@ export default async function robots() {
         "/payment/",
         "/confirmation/",
         "/delivery/",
+        "/push"
       ],
     },
     sitemap: `${siteUrl}/sitemap.xml`,

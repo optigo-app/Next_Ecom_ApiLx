@@ -46,6 +46,7 @@ CREATE TABLE IF NOT EXISTS designs (
     MetalColorid INTEGER,
     PackageIdList TEXT,
     ExclusiveCustomerId TEXT,
+    StockBarcode TEXT,
     MetalTypeid INTEGER,
     MetalTypePurity TEXT,
     CartId INTEGER,
@@ -87,6 +88,7 @@ CREATE TABLE IF NOT EXISTS designs (
 CREATE INDEX IF NOT EXISTS idx_designs_article ON designs(ArticleNo);
 CREATE INDEX IF NOT EXISTS idx_designs_designno ON designs(designno);
 CREATE INDEX IF NOT EXISTS idx_designs_autocode ON designs(autocode);
+CREATE INDEX IF NOT EXISTS idx_designs_stock_barcode ON designs(StockBarcode);
 
 -- NOCASE lookup indexes: PDP queries filter with "designno = ? COLLATE NOCASE" /
 -- "ArticleNo = ? COLLATE NOCASE", which the plain BINARY indexes above cannot serve

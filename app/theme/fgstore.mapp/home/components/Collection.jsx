@@ -1,59 +1,27 @@
 "use client";
-import React, { useEffect, useState, useMemo, useCallback, useRef } from "react";
-import { Box, Typography, Button, Skeleton } from "@mui/material";
+import React, { useMemo } from "react";
+import { Box, Skeleton } from "@mui/material";
 import Headers from "./composable/Headers";
-import { HomeCollectionApi } from "@/app/(core)/utils/API/Home/HomeCollectionApi/HomeCollectionApi";
-import { useStore } from "@/app/(core)/contexts/StoreProvider";
 import { useNextRouterLikeRR } from "@/app/(core)/hooks/useLocationRd";
-import { normalizeALC, buildAlbumCacheKey, getPricingContext } from "@/app/(core)/cache_utility/CacheBuilder";
-import { readCache, writeCache } from "@/app/(core)/cache_utility/cacheActions";
-import Cookies from "js-cookie";
+import { useWebContentManagement } from "@/app/(core)/hooks/webContentManagement/webContentManagement.client";
 
-const DummyCollections = [
-    {
-        title: "Duometrik",
-        image: "https://elvee.in/WebSiteStaticImage/images/Collection/Duometrik.jpg",
-    },
-    {
-        title: "Inner Glow",
-        image: "https://elvee.in/WebSiteStaticImage/images/Collection/Inner Glow.jpg",
-    },
-    {
-        title: "Kendall",
-        image: "https://elvee.in/WebSiteStaticImage/images/Collection/Kendall.jpg",
-    },
-    {
-        title: "Moodust",
-        image: "https://elvee.in/WebSiteStaticImage/images/Collection/Moodust.webp",
-    },
-    {
-        title: "Petalush",
-        image: "https://elvee.in/WebSiteStaticImage/images/Collection/Petalush.webp",
-    },
-    {
-        title: "Petalyn",
-        image: "https://elvee.in/WebSiteStaticImage/images/Collection/Petalyn.webp",
-    },
-    {
-        title: "Pristine",
-        image: "https://elvee.in/WebSiteStaticImage/images/Collection/Pristine.jpg",
-    },
-    {
-        title: "Velar",
-        image: "https://elvee.in/WebSiteStaticImage/images/Collection/Velar.webp",
-    },
-];
+/* ---------- helpers ---------- */
+
+const sortByOrder = (list) =>
+    [...(Array.isArray(list) ? list : [])].sort(
+        (a, b) => (a?.sortOrder ?? 0) - (b?.sortOrder ?? 0)
+    );
+
+/* ---------- component ---------- */
 
 function Collection({ storeinit }) {
-    const { loginUserDetail, islogin } = useStore();
-    const [CollectionData, setCollectionData] = useState([]);
     const { push } = useNextRouterLikeRR();
-    const [loading, setLoading] = useState(true);
 
-    const pricingContext = useMemo(() => getPricingContext(loginUserDetail, storeinit, islogin), [loginUserDetail, storeinit, islogin]);
+    const { collections, loading, isError } = useWebContentManagement();
 
-    const isFetchingRef = useRef(false);
-    const lastRequestKeyRef = useRef("");
+    
+
+    const CollectionData = useMemo(() => sortByOrder(collections), [collections]);
 
     const handleNavigate = (name) => {
         let finalData = {
@@ -82,82 +50,7 @@ function Collection({ storeinit }) {
         push(url);
     };
 
-    /** Maps API collection data with dummy images */
-    const mapCollectionImages = useCallback((apiData) => {
-        return apiData.map((item) => {
-            const matchedImage = DummyCollections?.find((img) => img?.title?.toLowerCase() === item?.CollectionName?.toLowerCase());
-            return {
-                ...item,
-                image: matchedImage ? encodeURI(matchedImage.image) : "/fallback.jpg",
-            };
-        });
-    }, []);
-
-    const fetchAndSetCollection = useCallback(
-        async (finalID, cacheKey) => {
-            if (!pricingContext || !pricingContext.PackageId || isFetchingRef.current) return;
-
-            isFetchingRef.current = true;
-            setLoading(true);
-
-            try {
-                const cacheRes = await readCache(cacheKey);
-
-                if (cacheRes?.cached && Array.isArray(cacheRes.data)) {
-                    console.log("[Collection] Serving from cache");
-                    const mappedData = mapCollectionImages(cacheRes.data);
-                    setCollectionData(mappedData);
-                    setLoading(false);
-                    isFetchingRef.current = false;
-                    return;
-                }
-
-                console.log("[Collection] Cache miss, calling API...");
-                const res = await HomeCollectionApi(storeinit, finalID);
-                const apiData = res?.Data?.rd || [];
-                console.log("[Collection] API response received, count:", apiData.length);
-
-                if (apiData.length > 0) {
-                    const mappedData = mapCollectionImages(apiData);
-                    setCollectionData(mappedData);
-
-                    writeCache(cacheKey, apiData).catch(console.error);
-                } else {
-                    setCollectionData([]);
-                }
-
-                setLoading(false);
-                isFetchingRef.current = false;
-            } catch (err) {
-                console.log("[Collection] Error in fetch:", err);
-                console.error(err);
-                setCollectionData([]);
-                isFetchingRef.current = false;
-                setLoading(false);
-            }
-        },
-        [pricingContext, storeinit, mapCollectionImages]
-    );
-
-    useEffect(() => {
-        if (!pricingContext || !storeinit) return;
-
-        const fetchData = async () => {
-            const visiterID = Cookies.get("visiterId");
-            const userId = loginUserDetail?.id;
-            const finalID = storeinit?.IsB2BWebsite === 0 ? (islogin ? userId || "" : visiterID) : userId || "";
-
-            const keyALC = normalizeALC("");
-            const { key } = buildAlbumCacheKey("home_collection", storeinit, pricingContext, finalID, keyALC);
-
-            if (isFetchingRef.current || lastRequestKeyRef.current === key) return;
-            lastRequestKeyRef.current = key;
-
-            await fetchAndSetCollection(finalID, key);
-        };
-
-        fetchData();
-    }, [islogin, pricingContext, storeinit, fetchAndSetCollection, loginUserDetail?.id]);
+    if (isError) return null;
 
     if (!loading && CollectionData?.length == 0) {
         return null;
@@ -193,8 +86,8 @@ function Collection({ storeinit }) {
                     ) : (
                         CollectionData?.map((item, index) => (
                             <Box
-                                key={item?.CollectionName}
-                                onClick={() => handleNavigate(item?.CollectionName)}
+                                key={item?.recordId || item?.masterId || item?.name}
+                                onClick={() => handleNavigate(item?.name)}
                                 sx={{
                                     minWidth: "320px",
                                     maxWidth: "320px",
@@ -207,7 +100,7 @@ function Collection({ storeinit }) {
                                     boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.08)",
                                     cursor: "pointer",
                                     transition: "transform 0.3s ease, box-shadow 0.3s ease",
-                                    backgroundImage: `url(${item?.image})`,
+                                    backgroundImage: `url(${item?.imageUrl ? encodeURI(item.imageUrl) : "/fallback.jpg"})`,
                                     backgroundSize: "cover",
                                     backgroundPosition: "center",
                                 }}

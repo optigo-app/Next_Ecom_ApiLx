@@ -13,7 +13,7 @@ export const ACTIVE_THEME_KEY = "BELUXJEWEL";
  * Complete configuration for all themes: Domain, Layout Folder, Brand Name, and Logos.
  * ====================================================================================================
  */
-export const THEMES = {
+export const THEMES = { 
   BELUXJEWEL: {
     domain: "beluxjewel.web",
     page: "beluxjewel.web",

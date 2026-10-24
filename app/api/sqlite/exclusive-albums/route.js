@@ -60,7 +60,28 @@ export async function GET(req) {
     logger.info("API_EXCLUSIVE_ALBUMS", `Reading exclusive albums for customer ${customerId} on domain '${targetDomain}'`);
 
     const db = getTenantDb(targetDomain);
-    const result = getExclusiveAlbumsWithDesigns(db, options);
+    let result = getExclusiveAlbumsWithDesigns(db, options);
+
+    // If querying by RandomNo or customerId and no albums found in targetDomain, check fallback domains
+    if ((!result?.Data?.rd || result.Data.rd.length === 0) && (options.RandomNo || customerId)) {
+      const fallbackDomains = ["beluxjewel.web", "demostore", "procatalog.web"].filter(
+        (d) => d.toLowerCase() !== targetDomain.toLowerCase()
+      );
+      for (const fallbackDomain of fallbackDomains) {
+        try {
+          const fallbackDb = getTenantDb(fallbackDomain);
+          const fallbackRes = getExclusiveAlbumsWithDesigns(fallbackDb, options);
+          if (fallbackRes?.Data?.rd && fallbackRes.Data.rd.length > 0) {
+            result = fallbackRes;
+            logger.info(
+              "API_EXCLUSIVE_ALBUMS",
+              `Found exclusive albums in fallback domain '${fallbackDomain}' for query: ${JSON.stringify(options)}`
+            );
+            break;
+          }
+        } catch (_) {}
+      }
+    }
 
     return NextResponse.json(result, { status: 200 });
   } catch (error) {
