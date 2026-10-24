@@ -166,7 +166,10 @@ export function useExclusiveAlbum({
 
       if (data?.Status === "200" && Array.isArray(data?.Data?.rd)) {
         const fetchedAlbums = data.Data.rd;
-        const albumCustomerId = fetchedAlbums[0]?.CustomerId || data?.Data?.customerId || custId;
+        const firstAlbum = fetchedAlbums[0];
+        const albumCustomerId =
+          firstAlbum?.CustomerId ?? firstAlbum?.Customerid ?? firstAlbum?.customerId ??
+          firstAlbum?.customerid ?? data?.Data?.customerId ?? data?.Data?.CustomerId ?? custId;
         setResolvedCustomerId(albumCustomerId ? String(albumCustomerId) : "");
 
         if (randomNo && autoSelectRandomNo) {

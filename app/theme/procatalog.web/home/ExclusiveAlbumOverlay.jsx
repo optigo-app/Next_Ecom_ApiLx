@@ -4,6 +4,7 @@
 import React, { useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useExclusiveAlbum } from "@/app/(core)/hooks/main/useExclusiveAlbum";
+import { useAlbumAuth } from "@/app/(core)/hooks/main/useAlbumAuth";
 import {
   Box,
   Typography,
@@ -240,6 +241,7 @@ export default function ExclusiveAlbumOverlay({
 }) {
   const {
     isOpen,
+    resolvedCustomerId,
     loading,
     albums,
     selectedAlbum,
@@ -267,6 +269,13 @@ export default function ExclusiveAlbumOverlay({
     getProductImageUrl,
     formatPrice,
   } = useExclusiveAlbum({ initialDomain });
+
+  console.log(selectedAlbum, "selectedAlbum")
+  const albumCustomerId =
+    selectedAlbum?.CustomerId ?? selectedAlbum?.Customerid ?? selectedAlbum?.customerId ??
+    selectedAlbum?.customerid ?? albums?.[0]?.CustomerId ?? albums?.[0]?.Customerid ??
+    albums?.[0]?.customerId ?? albums?.[0]?.customerid ?? resolvedCustomerId;
+  useAlbumAuth(albumCustomerId, isOpen);
 
   const handleMoveToDesignWithCache = useCallback(
     (design) => {
