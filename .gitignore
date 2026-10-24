@@ -88,3 +88,6 @@ ref/GsapList.mdx
 # logs
 *.log
 log/
+
+# runtime-generated store init configs
+/public/storeInit/
