@@ -131,7 +131,7 @@ function parseBanner(banner) {
   };
 }
 
-function Slide({ slide }) {
+function Slide({ slide, url = "" }) {
   const { container, image, data } = slide;
   const { title = {}, description = {}, button = {} } = data;
 
@@ -198,11 +198,11 @@ function Slide({ slide }) {
 
       {imgSrc &&
         (isVideo ? (
-          <video src={imgSrc} autoPlay muted loop playsInline style={mediaStyle} />
+          <video src={url+imgSrc} autoPlay muted loop playsInline style={mediaStyle} />
         ) : (
           <picture>
             {mobileSrc && <source media="(max-width:768px)" srcSet={mobileSrc} />}
-            <img src={imgSrc} alt={image.altText || ""} draggable={false} style={mediaStyle} />
+            <img src={url+imgSrc} alt={image.altText || ""} draggable={false} style={mediaStyle} />
           </picture>
         ))}
 
@@ -330,7 +330,7 @@ function Slide({ slide }) {
   );
 }
 
-export default function HomepageSlider({ banners = [] }) {
+export default function HomepageSlider({ banners = [], url = "" }) {
   const slides = banners
     .filter((b) => b && b.IsActive !== false)
     .sort((a, b) => (a.SortOrder ?? 0) - (b.SortOrder ?? 0))
@@ -347,13 +347,16 @@ export default function HomepageSlider({ banners = [] }) {
       <Swiper
         modules={[Autoplay]}
         slidesPerView={1}
-        loop={multiple}
+        // Loop mode duplicates slides in the DOM to create an infinite track.
+        // Rewind gives the same cycling behavior without rendering phantom banners.
+        loop={false}
+        rewind={multiple}
         autoplay={multiple ? { delay: 4000, disableOnInteraction: false } : false}
         // pagination={multiple ? { clickable: true } : false}
       >
         {slides.map((slide, i) => (
           <SwiperSlide key={slide.id ?? i}>
-            <Slide slide={slide} />
+            <Slide slide={slide} url={url} />
           </SwiperSlide>
         ))}
       </Swiper>

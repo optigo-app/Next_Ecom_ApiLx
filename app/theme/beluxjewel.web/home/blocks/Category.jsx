@@ -37,13 +37,17 @@ const StyledCard = styled(Card)(() => ({
 
 const CategoryImageWrapper = styled(Box)(() => ({
   width: "100%",
-  height: "100%",
-  aspectRatio: "3/3.5",
+  height: "auto",
+  aspectRatio: "3 / 3.5",
+  position: "relative",
+  display: "block",
+  flex: "none",
   borderRadius: "1px",
   overflow: "hidden",
 }));
 
 const CategoryImage = styled("img")({
+  display: "block",
   width: "100%",
   height: "100%",
   objectFit: "cover",
@@ -212,6 +216,7 @@ const CategoryBlock = () => {
 
               <Swiper
                 {...swiperConfig}
+                className="product-card-group-grid"
                 style={{ paddingBottom: "10px" }}
                 navigation={{
                   prevEl: categoryPrevRef.current,
@@ -223,7 +228,7 @@ const CategoryBlock = () => {
                 }}
               >
                 {categories.map((category) => (
-                  <SwiperSlide key={category.recordId || category.masterId}>
+                  <SwiperSlide key={category.recordId || category.masterId} style={{ height: "auto" }}>
                     <StyledCard onClick={() => handleNavigate(category?.name, "ct")}>
                       <CategoryImageWrapper>
                         {category?.imageUrl && (
@@ -272,6 +277,7 @@ const CategoryBlock = () => {
 
           <Swiper
             {...swiperConfig}
+            className="product-card-group-grid"
             navigation={{
               prevEl: collectionPrevRef.current,
               nextEl: collectionNextRef.current,
@@ -282,7 +288,7 @@ const CategoryBlock = () => {
             }}
           >
             {collections.map((collection) => (
-              <SwiperSlide key={collection.recordId || collection.masterId}>
+              <SwiperSlide key={collection.recordId || collection.masterId} style={{ height: "auto" }}>
                 <StyledCard onClick={() => handleNavigate(collection?.name, "c")}>
                   <CategoryImageWrapper>
                     {collection?.imageUrl && (

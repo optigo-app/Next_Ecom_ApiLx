@@ -3,22 +3,17 @@
 import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import { normalizeWebContent } from "./normalizeWebContent";
 
-// Module-level cache & in-flight request deduplication across client components
-let clientMemoryCache = null;
+// Deduplicate simultaneous reads only; never retain content past the request.
 let clientInFlightPromise = null;
 
 async function fetchGroupedContentFromApi(bypassCache = false) {
-  if (clientMemoryCache && !bypassCache) {
-    return clientMemoryCache;
-  }
-
   if (clientInFlightPromise && !bypassCache) {
     return clientInFlightPromise;
   }
 
   const url = `/api/sqlite/website-content?grouped=true${bypassCache ? "&bypassCache=true" : ""}`;
 
-  clientInFlightPromise = fetch(url)
+  clientInFlightPromise = fetch(url, { cache: "no-store" })
     .then(async (res) => {
       if (!res.ok) {
         const errorText = await res.text().catch(() => "");
@@ -31,7 +26,6 @@ async function fetchGroupedContentFromApi(bypassCache = false) {
         throw new Error(json?.Message || "Failed to retrieve website content from server API.");
       }
       const rawData = json?.Data || {};
-      clientMemoryCache = rawData;
       return rawData;
     })
     .finally(() => {
@@ -77,23 +71,18 @@ async function fetchGroupedContentFromApi(bypassCache = false) {
 export function useWebContentManagement(options = {}) {
   const { initialData = null, skip = false } = options;
 
-  // If initialData is provided, seed client memory cache
-  if (initialData && !clientMemoryCache) {
-    clientMemoryCache = initialData;
-  }
-
-  const [raw, setRaw] = useState(() => initialData || clientMemoryCache || {});
+  const [raw, setRaw] = useState(() => initialData || {});
   const [loading, setLoading] = useState(() => {
-    if (skip || initialData || clientMemoryCache) return false;
+    if (skip || initialData) return false;
     return true;
   });
   const [error, setError] = useState(null);
 
   const isMountedRef = useRef(true);
 
-  const executeFetch = useCallback(async (bypassCache = false) => {
+  const executeFetch = useCallback(async (bypassCache = false, showLoading = true) => {
     if (skip) return;
-    setLoading(true);
+    if (showLoading) setLoading(true);
     setError(null);
 
     try {
@@ -118,21 +107,24 @@ export function useWebContentManagement(options = {}) {
   useEffect(() => {
     isMountedRef.current = true;
 
-    // If we don't have initialData or cached data, execute fetch
-    if (!skip && !initialData && !clientMemoryCache) {
-      executeFetch(false);
-    }
+    // Keep server-rendered content for the first paint, then refresh from SQLite.
+    if (!skip) executeFetch(false, !initialData);
+
+    const refreshWhenVisible = () => {
+      if (document.visibilityState === "visible") executeFetch(false, false);
+    };
+    window.addEventListener("focus", refreshWhenVisible);
+    document.addEventListener("visibilitychange", refreshWhenVisible);
 
     return () => {
       isMountedRef.current = false;
+      window.removeEventListener("focus", refreshWhenVisible);
+      document.removeEventListener("visibilitychange", refreshWhenVisible);
     };
   }, [skip, initialData, executeFetch]);
 
   const refetch = useCallback(async (opts = {}) => {
     const bypass = opts?.bypassCache ?? true;
-    if (bypass) {
-      clientMemoryCache = null;
-    }
     await executeFetch(bypass);
   }, [executeFetch]);
 
