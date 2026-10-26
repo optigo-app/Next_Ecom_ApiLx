@@ -217,10 +217,17 @@ export async function syncWebsiteContent(options = {}) {
         sentAppUserId: appuserid,
         erpResponse: data || rawResponseText,
       });
+      const emptySyncSave = options.replace === false
+        ? null
+        : saveWebsiteContent(db, [], { domain: targetDomain, WebsiteId: websiteId, replace: true });
+
       return {
         success: true,
         domain: targetDomain,
         totalReceived: 0,
+        insertedCount: 0,
+        updatedCount: 0,
+        deletedCount: emptySyncSave?.deletedCount || 0,
         savedCount: 0,
         message: "ERP GetWebsiteContent returned 0 records.",
         sentParams: {
@@ -245,7 +252,7 @@ export async function syncWebsiteContent(options = {}) {
     const saveResult = saveWebsiteContent(db, rows, {
       domain: targetDomain,
       WebsiteId: websiteId,
-      replace: options.replace,
+      replace: options.replace !== false,
     });
 
     logger.info("WEBSITE_CONTENT_SYNC", `Successfully synced and persisted ${saveResult.savedCount} website content items for '${targetDomain}' in ${saveResult.elapsedMs}ms`, {

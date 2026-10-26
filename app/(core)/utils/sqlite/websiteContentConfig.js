@@ -7,8 +7,6 @@ import { getDomainInfo } from "../getDomainInfo.js";
 import { logger } from "../../../../db/logger.js";
 
 const CACHE_DIR = path.join(process.cwd(), ".next_cache", "website_content");
-const DEFAULT_TTL_MS = 60 * 60 * 1000; // 1 hour default TTL
-const memoryCache = new Map(); // tenantDomain -> { data, timestamp }
 
 // Fast lookup map for banner types
 const BANNER_TYPE_MAP = new Map(
@@ -115,27 +113,11 @@ export function groupWebsiteContent(rows = []) {
 }
 
 /**
- * Retrieves cached website config from disk.
- */
-async function readDiskCache(domain, ttlMs) {
-  const filePath = resolveCacheFilePath(domain);
-  try {
-    const content = await fs.promises.readFile(filePath, "utf8");
-    const payload = JSON.parse(content);
-    if (Date.now() - payload.timestamp < ttlMs) {
-      return payload.data;
-    }
-  } catch (_) {
-    // Cache miss or read error
-  }
-  return null;
-}
-
-/**
  * Writes website config to disk cache safely.
  */
 async function writeDiskCache(domain, data) {
   const filePath = resolveCacheFilePath(domain);
+  const tempPath = `${filePath}.${process.pid}.${Date.now()}.tmp`;
   try {
     const dir = path.dirname(filePath);
     if (!fs.existsSync(dir)) {
@@ -146,8 +128,10 @@ async function writeDiskCache(domain, data) {
       timestamp: Date.now(),
       data,
     };
-    await fs.promises.writeFile(filePath, JSON.stringify(payload), "utf8");
+    await fs.promises.writeFile(tempPath, JSON.stringify(payload), "utf8");
+    await fs.promises.rename(tempPath, filePath);
   } catch (err) {
+    await fs.promises.unlink(tempPath).catch(() => {});
     console.warn(`[WebsiteContentCache] Failed to write disk cache for ${domain}:`, err.message);
   }
 }
@@ -159,8 +143,6 @@ async function writeDiskCache(domain, data) {
  */
 export async function invalidateWebsiteContentCache(domain) {
   if (domain) {
-    const cleanKey = safeDomain(domain);
-    memoryCache.delete(cleanKey);
     const filePath = resolveCacheFilePath(domain);
     try {
       if (fs.existsSync(filePath)) {
@@ -168,7 +150,6 @@ export async function invalidateWebsiteContentCache(domain) {
       }
     } catch (_) {}
   } else {
-    memoryCache.clear();
     try {
       if (fs.existsSync(CACHE_DIR)) {
         await fs.promises.rm(CACHE_DIR, { recursive: true, force: true });
@@ -190,8 +171,6 @@ export async function syncAndRefreshWebsiteContentCache(domain) {
     const domainInfo = await getDomainInfo().catch(() => ({}));
     targetDomain = domainInfo?.hostname || "default";
   }
-  const cleanKey = safeDomain(targetDomain);
-
   const db = getTenantDb(targetDomain);
   if (!db) {
     logger.warn("WEBSITE_CONTENT_CONFIG", `Tenant database not found for '${targetDomain}' during cache refresh`);
@@ -207,8 +186,7 @@ export async function syncAndRefreshWebsiteContentCache(domain) {
   const rows = result?.Data?.rd || [];
   const groupedData = groupWebsiteContent(rows);
 
-  // Immediately write updated grouped config to memory and JSON file
-  memoryCache.set(cleanKey, { data: groupedData, timestamp: Date.now() });
+  // Refresh the diagnostic JSON snapshot from the database.
   await writeDiskCache(targetDomain, groupedData);
 
   logger.info("WEBSITE_CONTENT_CONFIG", `Updated SQLite content synced to JSON file cache for '${targetDomain}'`);
@@ -217,17 +195,13 @@ export async function syncAndRefreshWebsiteContentCache(domain) {
 
 
 /**
- * Main method: Fetches website content grouped by ContentType with caching.
- *
- * - Checks in-memory cache
- * - Checks disk JSON cache (.next_cache/website_content/<domain>.json)
- * - If cache miss: Reads from SQLite, parses JSON & banners, stores in cache, returns.
+ * Main method: Fetches the latest website content grouped by ContentType.
+ * SQLite is authoritative; the disk JSON snapshot is never used to serve requests.
  *
  * @param {object} [options={}]
  * @param {string} [options.domain] - Tenant domain
- * @param {boolean} [options.bypassCache=false] - If true, ignores cache and re-queries SQLite
- * @param {number} [options.ttlMs] - Cache expiration time in ms (default 1 hour)
- * @returns {Promise<{ success: boolean, domain: string, source: "memory"|"disk"|"sqlite", data: Record<string, any> }>}
+ * @param {boolean} [options.bypassCache] - Retained for API compatibility; SQLite is always queried.
+ * @returns {Promise<{ success: boolean, domain: string, source: "sqlite", data: Record<string, any> }>}
  */
 export async function getGroupedWebsiteConfig(options = {}) {
   let targetDomain = options.domain;
@@ -235,35 +209,9 @@ export async function getGroupedWebsiteConfig(options = {}) {
     const domainInfo = await getDomainInfo().catch(() => ({}));
     targetDomain = domainInfo?.hostname || "default";
   }
-  const cleanKey = safeDomain(targetDomain);
-  const ttlMs = options.ttlMs || DEFAULT_TTL_MS;
-
-  // 1. Memory Cache
-  if (!options.bypassCache) {
-    const mem = memoryCache.get(cleanKey);
-    if (mem && Date.now() - mem.timestamp < ttlMs) {
-      return {
-        success: true,
-        domain: targetDomain,
-        source: "memory",
-        data: mem.data,
-      };
-    }
-
-    // 2. Disk Cache
-    const disk = await readDiskCache(targetDomain, ttlMs);
-    if (disk) {
-      memoryCache.set(cleanKey, { data: disk, timestamp: Date.now() });
-      return {
-        success: true,
-        domain: targetDomain,
-        source: "disk",
-        data: disk,
-      };
-    }
-  }
-
-  // 3. Fallback to SQLite DB
+  // SQLite is authoritative. Memory/disk snapshots can be stale when a push is
+  // handled by another server process, so they are never used to serve requests.
+  // Keep writing the disk snapshot for diagnostics and offline inspection only.
   const db = getTenantDb(targetDomain);
   if (!db) {
     logger.warn("WEBSITE_CONTENT_CONFIG", `Tenant database not found for '${targetDomain}'`);
@@ -284,8 +232,7 @@ export async function getGroupedWebsiteConfig(options = {}) {
   const rows = result?.Data?.rd || [];
   const groupedData = groupWebsiteContent(rows);
 
-  // Update in-memory and disk cache
-  memoryCache.set(cleanKey, { data: groupedData, timestamp: Date.now() });
+  // Refresh the diagnostic JSON snapshot from the database.
   await writeDiskCache(targetDomain, groupedData);
 
   return {

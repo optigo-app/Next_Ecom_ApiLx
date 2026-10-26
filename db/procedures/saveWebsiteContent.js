@@ -31,7 +31,7 @@ function toBooleanInt(val, fallback = 1) {
 
 /**
  * Saves/upserts website content into website_content table.
- * Supports options.replace = true to wipe old content first.
+ * Replaces the stored snapshot by default. Pass options.replace = false for upsert-only behavior.
  * Accurately tracks insertedCount, updatedCount, deletedCount.
  *
  * @param {import('better-sqlite3').Database} db
@@ -64,7 +64,7 @@ export function saveWebsiteContent(db, rawPayload = [], options = {}) {
         contentList = rawPayload?.Data?.rd || rawPayload?.rd || (rawPayload.Id || rawPayload.id || rawPayload.ContentType ? [rawPayload] : []);
     }
 
-    const isReplace = Boolean(options.replace);
+    const isReplace = options.replace !== false;
     let deletedCount = 0;
     let insertedCount = 0;
     let updatedCount = 0;

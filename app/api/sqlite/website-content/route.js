@@ -6,19 +6,19 @@ import { getWebsiteContent } from "@/db/procedures/getWebsiteContent";
 import { syncWebsiteContent } from "@/app/(core)/utils/sqlite/syncWebsiteContent";
 import { getDomainInfo } from "@/app/(core)/utils/getDomainInfo";
 import { 
-  getGroupedWebsiteConfig, 
-  invalidateWebsiteContentCache, 
+  getGroupedWebsiteConfig,
   syncAndRefreshWebsiteContentCache 
 } from "@/app/(core)/utils/sqlite/websiteContentConfig";
 import { logger } from "@/db/logger";
 
 export const dynamic = "force-dynamic";
+const NO_STORE_HEADERS = { "Cache-Control": "no-store, no-cache, must-revalidate" };
 
 /**
  * POST /api/sqlite/website-content
  * 
  * Supports dual modes:
- * 1. Direct Push: Ingests and upserts website content payload into SQLite (when Data.rd or array or content object provided).
+ * 1. Direct Push: Replaces the tenant's website content with the submitted snapshot (when Data.rd or array or content object provided).
  * 2. Internal ERP Sync: Fetches GetWebsiteContent from ERP using storeinit credentials and WebsiteId/domainid from SQLite and saves to website_content table
  *    (when sync=true, empty body, or no content items in body).
  */
@@ -49,7 +49,12 @@ export async function POST(req) {
 
     const rawList = Array.isArray(body)
       ? body
-      : body?.Data?.rd || body?.rd || (body?.ContentType || body?.ContentJson || body?.Id ? [body] : null);
+      : Array.isArray(body?.Data?.rd)
+        ? body.Data.rd
+        : Array.isArray(body?.rd)
+          ? body.rd
+          : (body?.ContentType || body?.ContentJson || body?.Id ? [body] : null);
+    const hasDirectPayload = Array.isArray(body) || Array.isArray(body?.Data?.rd) || Array.isArray(body?.rd) || Boolean(body?.ContentType || body?.ContentJson || body?.Id);
 
     const explicitWebsiteId = searchParams.get("WebsiteId") || searchParams.get("websiteId") || body?.WebsiteId || body?.websiteId || null;
     const explicitAppUserId = searchParams.get("appuserid") || body?.appuserid || null;
@@ -65,10 +70,12 @@ export async function POST(req) {
       hasBody: Boolean(body && Object.keys(body).length > 0),
     });
 
-    const isReplace = body?.replace === true || searchParams.get("replace") === "true";
+    // Content pushes are complete snapshots by default. An explicit `replace: false`
+    // remains available for callers that intentionally need upsert-only behavior.
+    const isReplace = body?.replace !== false && searchParams.get("replace") !== "false";
 
     // Mode 1: Direct payload push
-    if (Array.isArray(rawList) && rawList.length > 0 && !isSyncTrigger) {
+    if (hasDirectPayload && !isSyncTrigger) {
       const db = getTenantDb(targetDomain);
       if (!db) {
         logger.warn("API_WEBSITE_CONTENT", `Tenant database not found for domain '${targetDomain}'`);
@@ -78,7 +85,7 @@ export async function POST(req) {
         );
       }
 
-      const saveResult = saveWebsiteContent(db, rawList, { domain: targetDomain, replace: isReplace });
+      const saveResult = saveWebsiteContent(db, rawList || [], { domain: targetDomain, replace: isReplace });
 
       // Automatically update SQLite data and rebuild the disk JSON cache file
       await syncAndRefreshWebsiteContentCache(targetDomain);
@@ -227,7 +234,7 @@ export async function GET(req) {
         domain: targetDomain,
         source: groupedResult.source,
         Data: groupedResult.data,
-      }, { status: groupedResult.success ? 200 : 500 });
+      }, { status: groupedResult.success ? 200 : 500, headers: NO_STORE_HEADERS });
     }
 
     const contentType = searchParams.get("contentType") || searchParams.get("ContentType") || searchParams.get("type");
@@ -251,7 +258,7 @@ export async function GET(req) {
       returnedCount: result?.Data?.rd?.length || 0,
     });
 
-    return NextResponse.json(result, { status: 200 });
+    return NextResponse.json(result, { status: 200, headers: NO_STORE_HEADERS });
   } catch (error) {
     logger.error("API_WEBSITE_CONTENT", `GET /api/sqlite/website-content error: ${error.message}`, {
       error: error.message,
