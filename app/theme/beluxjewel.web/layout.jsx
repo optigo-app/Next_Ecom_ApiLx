@@ -44,7 +44,7 @@ const layout = async ({ children }) => {
   );
 
  
- console.log("TCL: layout ->footerTemplates ", footerTemplates)
+ 
 
   return (
     <>

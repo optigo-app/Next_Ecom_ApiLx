@@ -10,7 +10,7 @@ import {
   Linkedin,
 } from "lucide-react";
 import "./SocialMedia.scss";
-
+import PlayArrowRoundedIcon from "@mui/icons-material/PlayArrowRounded";
 /* ---------------- helpers ---------------- */
 const parseContentJson = (raw) => {
   if (!raw) return null;
@@ -82,7 +82,7 @@ function PostMedia({ item }) {
         />
         <div className="sm-video-overlay">
           <div className="sm-video-play">
-            <span>▶</span>
+            <span><PlayArrowRoundedIcon fontSize="inherit" /></span>
           </div>
         </div>
       </div>
@@ -221,7 +221,7 @@ function SocialMedia2({ data }) {
 
               {props.isVideo && (
                 <div className="sm2-video-indicator">
-                  <div className="sm2-play-circle">▶</div>
+                  <div className="sm2-play-circle"><PlayArrowRoundedIcon fontSize="inherit" /></div>
                 </div>
               )}
 

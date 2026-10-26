@@ -4,11 +4,14 @@ import { assetBase } from "@/app/(core)/lib/ServerHelper";
 import { BELUX_JEWEL } from "@/app/(core)/constants/ElveeFlag";
 import { getWebContentManagement } from "@/app/(core)/hooks/webContentManagement/webContentManagement.server";
 import HomepageSlider from "./HomepageSlider";
+import { getStoreInit } from "@/app/(core)/utils/GlobalFunctions/GlobalFunctions";
 
 export default async function TopSection() {
   const { getBannersByType, isError, error } = await getWebContentManagement();
-  const data = await getWebContentManagement();
-console.log("TCL: templates -> ", data?.pageTemplates?.filter(item => item.PageKey === "about-us"))
+  const storeData = await getStoreInit();
+  const url=storeData?.ApiUrl+"/files/"+storeData?.ukey+"/" || "";
+ 
+ 
   if (isError) {
     console.error("[TopSection] Error loading banners:", error);
   }
@@ -18,6 +21,8 @@ console.log("TCL: templates -> ", data?.pageTemplates?.filter(item => item.PageK
       .filter((b) => b?.IsActive)
       .sort((a, b) => (a.SortOrder ?? 0) - (b.SortOrder ?? 0))
 
+      
+      console.log("TCL: TopSection -> sliderBanners", sliderBanners)
       
     
 
@@ -40,7 +45,7 @@ console.log("TCL: templates -> ", data?.pageTemplates?.filter(item => item.PageK
         >
           Exclusive Handcrafted Fine Jewelry Collections
         </Typography>
-        <HomepageSlider banners={sliderBanners} />
+        <HomepageSlider banners={sliderBanners} url={url} />
       </>
     );
   }
