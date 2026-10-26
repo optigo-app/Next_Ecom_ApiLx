@@ -347,7 +347,10 @@ export default function HomepageSlider({ banners = [] }) {
       <Swiper
         modules={[Autoplay]}
         slidesPerView={1}
-        loop={multiple}
+        // Loop mode duplicates slides in the DOM to create an infinite track.
+        // Rewind gives the same cycling behavior without rendering phantom banners.
+        loop={false}
+        rewind={multiple}
         autoplay={multiple ? { delay: 4000, disableOnInteraction: false } : false}
         // pagination={multiple ? { clickable: true } : false}
       >
