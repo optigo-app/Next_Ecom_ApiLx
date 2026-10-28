@@ -54,6 +54,11 @@ const FIXED_LINK_MAP = {
 
   privacypolicy: "/privacyPolicy",
   privacy: "/privacyPolicy",
+  faq: "/faq",
+  FAQ: "/faq",
+  Customize:"/customization",
+  "Book an Appointment":"/appointment",
+  "Customer Services":"/customer-service",
 };
 
 const normalizeLabel = (label = "") =>

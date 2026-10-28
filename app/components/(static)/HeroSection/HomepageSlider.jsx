@@ -427,7 +427,7 @@ export default function HomepageSlider({ banners = [], url = "" }) {
         // pagination={multiple ? { clickable: true } : false}
       >
         {slides.map((slide, i) => (
-          <SwiperSlide key={slide.id ?? i}>
+          <SwiperSlide key={slide.id+i ?? i}>
             <Slide slide={slide} url={url} />
           </SwiperSlide>
         ))}
