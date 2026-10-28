@@ -53,6 +53,15 @@ export function getDynamicArticleMaterialTableName(config = {}, prefix = ARTICLE
   return getDynamicArticleTableName(config, prefix);
 }
 
+function ensureArticleIdColumn(db, tableName) {
+  const cleanTable = sanitizeSqlIdentifier(tableName, "");
+  if (!cleanTable) throw new Error("Invalid article table name");
+  const columns = new Set(db.prepare(`PRAGMA table_info("${cleanTable}")`).all().map((column) => column.name.toLowerCase()));
+  if (!columns.has("articleid")) {
+    db.exec(`ALTER TABLE "${cleanTable}" ADD COLUMN ArticleId INTEGER`);
+  }
+}
+
 /**
  * Ensures the dynamic article table and corresponding performance indexes exist in the tenant SQLite database.
  * 
@@ -142,6 +151,9 @@ export function ensureDynamicArticleTable(db, tableName) {
   `;
 
   db.exec(createTableSql);
+  // Older tenant databases may have article tables created before ArticleId
+  // was part of the schema. Add it before creating indexes that use it.
+  ensureArticleIdColumn(db, cleanTable);
   db.exec(indexSql);
 }
 
@@ -218,6 +230,8 @@ export function ensureDynamicArticleMaterialTable(db, tableName) {
   `;
 
   db.exec(createTableSql);
+  // Keep legacy material tables compatible with ArticleId-based joins and indexes.
+  ensureArticleIdColumn(db, cleanTable);
   db.exec(indexSql);
 }
 
@@ -252,11 +266,15 @@ export function resolveArticleTableName(db, options = {}) {
 
   if (hasLabour && hasDia) {
     const candidateNew = getDynamicArticleTableName(options, ARTICLE_INFO_PREFIX);
-    if (db.prepare("SELECT name FROM sqlite_master WHERE type='table' AND name = ? COLLATE NOCASE").get(candidateNew)) {
+    const existingNew = db.prepare("SELECT name FROM sqlite_master WHERE type='table' AND name = ? COLLATE NOCASE").get(candidateNew);
+    if (existingNew) {
+      ensureArticleIdColumn(db, existingNew.name);
       return candidateNew;
     }
     const candidateOld = getDynamicArticleTableName(options, "article_DesignInfo_Web_");
-    if (db.prepare("SELECT name FROM sqlite_master WHERE type='table' AND name = ? COLLATE NOCASE").get(candidateOld)) {
+    const existingOld = db.prepare("SELECT name FROM sqlite_master WHERE type='table' AND name = ? COLLATE NOCASE").get(candidateOld);
+    if (existingOld) {
+      ensureArticleIdColumn(db, existingOld.name);
       return candidateOld;
     }
     ensureDynamicArticleTable(db, candidateNew);
@@ -272,7 +290,10 @@ export function resolveArticleTableName(db, options = {}) {
       const exists = db
         .prepare("SELECT name FROM sqlite_master WHERE type='table' AND name = ? COLLATE NOCASE")
         .get(storeInitCandidate);
-      if (exists) return exists.name;
+      if (exists) {
+        ensureArticleIdColumn(db, exists.name);
+        return exists.name;
+      }
     }
   } catch (_) {}
 
@@ -282,6 +303,7 @@ export function resolveArticleTableName(db, options = {}) {
       .prepare("SELECT name FROM sqlite_master WHERE type='table' AND name LIKE 'ArticleManagement_DesignInfo_Web_%' ORDER BY name DESC LIMIT 1")
       .get();
     if (modernCandidate?.name) {
+      ensureArticleIdColumn(db, modernCandidate.name);
       return modernCandidate.name;
     }
   } catch (_) {}
@@ -292,6 +314,7 @@ export function resolveArticleTableName(db, options = {}) {
       .prepare("SELECT name FROM sqlite_master WHERE type='table' AND name LIKE 'article_DesignInfo_Web_%' ORDER BY name DESC LIMIT 1")
       .get();
     if (legacyCandidate?.name) {
+      ensureArticleIdColumn(db, legacyCandidate.name);
       return legacyCandidate.name;
     }
   } catch (_) {}

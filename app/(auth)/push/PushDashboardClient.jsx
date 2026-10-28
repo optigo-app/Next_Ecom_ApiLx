@@ -79,18 +79,88 @@ export default function PushDashboardClient() {
         domain: "beluxjewel.web",
         Config: [
           {
-            Laboursetid: 20,
-            diamondpricelistName: "BEdiamond",
-            colorstonepricelistName: "BEcolorStone",
-            SettingPriceUniqueNo: 11,
-            FrontEnd_RegNo: "80kgizbiduw5e7gg",
+            "Laboursetid": 1,
+            "diamondpricelistName": "dhruv",
+            "colorstonepricelistName": "Retail",
+            "SettingPriceUniqueNo": 1,
+            "FrontEnd_RegNo": "80kgizbiduw5e7gg"
           },
           {
-            Laboursetid: 1,
-            diamondpricelistName: "dhruv",
-            colorstonepricelistName: "Retail",
-            SettingPriceUniqueNo: 1,
-            FrontEnd_RegNo: "80kgizbiduw5e7gg",
+            "Laboursetid": 2,
+            "diamondpricelistName": "kayraHKD",
+            "colorstonepricelistName": "kayracsHKD",
+            "SettingPriceUniqueNo": 4,
+            "FrontEnd_RegNo": "80kgizbiduw5e7gg"
+          },
+          {
+            "Laboursetid": 7,
+            "diamondpricelistName": "dhrdiamond",
+            "colorstonepricelistName": "dhrcolormisc",
+            "SettingPriceUniqueNo": 8,
+            "FrontEnd_RegNo": "80kgizbiduw5e7gg"
+          },
+          {
+            "Laboursetid": 14,
+            "diamondpricelistName": "dhrdiamond",
+            "colorstonepricelistName": "dhrcolormisc",
+            "SettingPriceUniqueNo": 8,
+            "FrontEnd_RegNo": "80kgizbiduw5e7gg"
+          },
+          {
+            "Laboursetid": 16,
+            "diamondpricelistName": "hir",
+            "colorstonepricelistName": "demo",
+            "SettingPriceUniqueNo": 8,
+            "FrontEnd_RegNo": "80kgizbiduw5e7gg"
+          },
+          {
+            "Laboursetid": 20,
+            "diamondpricelistName": "BEdiamond",
+            "colorstonepricelistName": "BEcolorStone",
+            "SettingPriceUniqueNo": 11,
+            "FrontEnd_RegNo": "80kgizbiduw5e7gg"
+          },
+          {
+            "Laboursetid": 20,
+            "diamondpricelistName": "BEdiamond1",
+            "colorstonepricelistName": "BEcolorStone1",
+            "SettingPriceUniqueNo": 11,
+            "FrontEnd_RegNo": "80kgizbiduw5e7gg"
+          },
+          {
+            "Laboursetid": 21,
+            "diamondpricelistName": "hir",
+            "colorstonepricelistName": "HIR",
+            "SettingPriceUniqueNo": 11,
+            "FrontEnd_RegNo": "80kgizbiduw5e7gg"
+          },
+          {
+            "Laboursetid": 22,
+            "diamondpricelistName": "hi2",
+            "colorstonepricelistName": "hir2",
+            "SettingPriceUniqueNo": 11,
+            "FrontEnd_RegNo": "80kgizbiduw5e7gg"
+          },
+          {
+            "Laboursetid": 23,
+            "diamondpricelistName": "hir3",
+            "colorstonepricelistName": "hir3",
+            "SettingPriceUniqueNo": 8,
+            "FrontEnd_RegNo": "80kgizbiduw5e7gg"
+          },
+          {
+            "Laboursetid": 24,
+            "diamondpricelistName": "testing",
+            "colorstonepricelistName": "testing",
+            "SettingPriceUniqueNo": 8,
+            "FrontEnd_RegNo": "80kgizbiduw5e7gg"
+          },
+          {
+            "Laboursetid": 25,
+            "diamondpricelistName": "testing",
+            "colorstonepricelistName": "new",
+            "SettingPriceUniqueNo": 12,
+            "FrontEnd_RegNo": "80kgizbiduw5e7gg"
           }
         ],
       },
