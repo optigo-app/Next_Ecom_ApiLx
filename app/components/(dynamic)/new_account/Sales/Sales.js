@@ -1,3 +1,4 @@
+import { isPriceHidden } from "@/app/(core)/utils/storeFlags";
 import React, { useEffect, useRef, useState } from 'react';
 import "./Sales.scss";
 import PropTypes from 'prop-types';
@@ -81,7 +82,7 @@ function EnhancedTableHead(props) {
             <TableRow>
                 {headCells.map((headCell) => {
                     const { IsPriceShow } = JSON?.parse(sessionStorage?.getItem('storeInit')) ?? {};
-                    if (IsPriceShow == 0 && headCell?.id == "Amount") {
+                    if (isPriceHidden(IsPriceShow) && headCell?.id == "Amount") {
                         return null;
                     }
                     return <TableCell
@@ -553,7 +554,7 @@ const Sales = () => {
                                         {filterData?.length > 0 ? visibleRows.map((row, index) => {
                                             const labelId = `enhanced-table-checkbox-${index}`;
                                             const { IsPriceShow } = JSON?.parse(sessionStorage?.getItem('storeInit')) ?? {};
-                                            if (IsPriceShow == 0 && row?.id == "Amount") {
+                                            if (isPriceHidden(IsPriceShow) && row?.id == "Amount") {
                                                 return null;
                                             }
                                             return (
@@ -577,7 +578,7 @@ const Sales = () => {
                                                     </TableCell>
                                                     <TableCell align="center">{row.Date}</TableCell>
                                                     <TableCell align="center">{row.StockDocumentNo}</TableCell>
-                                                    {IsPriceShow == 1 && <TableCell align="right"><span dangerouslySetInnerHTML={{ __html: row?.Currencycode }}></span>&nbsp;{formatAmount(row.Amount)}</TableCell>
+                                                    {!isPriceHidden(IsPriceShow) && <TableCell align="right"><span dangerouslySetInnerHTML={{ __html: row?.Currencycode }}></span>&nbsp;{formatAmount(row.Amount)}</TableCell>
                                                     }                                                    <TableCell align="center"> <div onClick={() => handlePrintUrl(row?.PrintUrl)}> <PrintIcon /> </div> </TableCell>
                                                 </TableRow>
                                             );

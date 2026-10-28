@@ -1,4 +1,5 @@
 "use client";
+import { isPriceHidden } from "@/app/(core)/utils/storeFlags";
 import React from "react";
 import "./ProductDetail.modul.scss";
 import { Box, Grid } from "@mui/material";
@@ -192,7 +193,7 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
                   storeInit={storeInit}
                   loginInfo={loginData}
                   cartArr={cartArr}
-                  check={storeInit?.IsPriceShow === 1}
+                  check={!isPriceHidden(storeInit)}
                   handleCartandWish={handleCartandWish}
                 />
               )}

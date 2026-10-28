@@ -1,3 +1,4 @@
+import { isPriceHidden } from "@/app/(core)/utils/storeFlags";
 import { formatTitleLine } from "@/app/(core)/utils/Glob_Functions/GlobalFunction";
 import { Box, Typography, Button, Skeleton, Stack } from "@mui/material";
 import React, { useState } from "react";
@@ -44,7 +45,7 @@ const InfoDetail = ({
             </Typography>
 
             {/* Price Section */}
-            {storeInit?.IsPriceShow === 1 && (
+            {!isPriceHidden(storeInit) && (
                 <Box sx={{ mb: 1.5 }}>
                     <Stack direction="row" alignItems="center" spacing={1}>
 
@@ -120,7 +121,7 @@ export default InfoDetail;
 //                             <span className="fgstore_mapp_single_prod_designno" style={{ marginTop: "5px", fontSize: "1.1rem" }}>
 //                                 {singleProd?.designno}
 //                             </span>
-//                             {storeInit?.IsPriceShow === 1 && (
+//                             {!isPriceHidden(storeInit) && (
 //                                 <div className="pricecharge">
 //                                     {
 //                                         <div className="fgstore_mapp_price_portion">

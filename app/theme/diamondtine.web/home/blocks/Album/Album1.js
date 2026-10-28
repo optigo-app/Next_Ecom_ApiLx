@@ -1,5 +1,6 @@
 "use client";
 
+import { isPriceHidden } from "@/app/(core)/utils/storeFlags";
 import React, { useCallback, useEffect, useRef, useState ,useMemo} from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { FreeMode, Navigation, Keyboard } from 'swiper/modules';
@@ -349,7 +350,7 @@ const Album1 = ({storeData}) => {
                                                     <p className='smr_album1price'>
                                                         {design?.designno}
                                                     </p>
-                                                    {storeData?.IsPriceShow == 1 && <p className='smr_album1price'>
+                                                    {!isPriceHidden(storeData) && <p className='smr_album1price'>
                                                         <span
                                                             className="smr_currencyFont"
                                                             dangerouslySetInnerHTML={{

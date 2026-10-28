@@ -1,5 +1,6 @@
 "use client";
 
+import { isStoreInitFlagEnabled } from "@/app/(core)/utils/storeFlags";
 import { useState, useEffect, useCallback } from "react";
 import Cookies from "js-cookie";
 import { toast } from "react-toastify";
@@ -642,7 +643,7 @@ export function useTestCheckout(initialStoreInit) {
       csQc = logindata?.cmboCSQCid || storeInitData?.cmboCSQCid || "0,0";
     }
 
-    if (storeinit?.IsMultiVariantCart === 1) {
+    if (isStoreInitFlagEnabled(storeinit, "multiVariantCart")) {
       const obj = {
         a: item?.autocode,
         b: item?.designno,

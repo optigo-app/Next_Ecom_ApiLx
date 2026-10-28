@@ -1,18 +1,8 @@
 'use client';
-import React, { useEffect, useState } from "react";
-import CryptoJS from "crypto-js";
-import { toast } from "react-toastify";
-import "./LoginWithEmail.modul.scss";
-import { LoginWithEmailAPI } from "@/app/(core)/utils/API/Auth/LoginWithEmailAPI";
-import { ForgotPasswordEmailAPI } from "@/app/(core)/utils/API/Auth/ForgotPasswordEmailAPI";
-import Cookies from "js-cookie";
-import { setSession } from "@/app/(core)/utils/FetchSessionData";
-import { CurrencyComboAPI } from "@/app/(core)/utils/API/Combo/CurrencyComboAPI";
-import { MetalColorCombo } from "@/app/(core)/utils/API/Combo/MetalColorCombo";
-import { MetalTypeComboAPI } from "@/app/(core)/utils/API/Combo/MetalTypeComboAPI";
-import { GetCountAPI } from "@/app/(core)/utils/API/GetCount/GetCountAPI";
-import { useStore } from "@/app/(core)/contexts/StoreProvider";
+import React from "react";
 import { useRouter } from "next/navigation";
+import "./LoginWithEmail.modul.scss";
+import { usePasswordLogin } from "@/app/(core)/hooks/Auth/usePasswordLogin";
 import Link from "next/link";
 
 import {
@@ -34,170 +24,24 @@ import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
 export default function LoginWithEmail({ params, searchParams, storeInit }) {
-  const { islogin, setislogin, setCartCountNum, setWishCountNum } = useStore();
-  const [email, setEmail] = useState("");
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [errors, setErrors] = useState({});
-  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const navigation = (path) => router.push(path);
-
-  const search = searchParams?.LoginRedirect || searchParams?.loginRedirect || searchParams?.search || "";
-  const securityKey = searchParams?.SK || searchParams?.SecurityKey || "";
-  const cleanRedirect = search ? search.replace(/^\?LoginRedirect=/, '') : '';
-  const redirectEmailUrl = cleanRedirect ? (cleanRedirect.startsWith('/') ? cleanRedirect : decodeURIComponent(cleanRedirect)) : "/";
-  const cancelRedireactUrl = `/LoginOption${cleanRedirect ? `?LoginRedirect=${encodeURIComponent(cleanRedirect)}` : ""}${securityKey ? `${cleanRedirect ? '&' : '?'}SK=${encodeURIComponent(securityKey)}` : ""}`;
-
-  useEffect(() => {
-    const storedEmail = (() => {
-      if (searchParams?.email) {
-        try {
-          const decoded = decodeURIComponent(searchParams.email);
-          sessionStorage.setItem("registerEmail", decoded);
-          return decoded;
-        } catch (e) {
-          console.error("Failed to decode email from searchParams", e);
-        }
-      }
-      const raw = sessionStorage.getItem("registerEmail");
-      if (!raw) return "";
-      try {
-        return raw.trim().startsWith("{") || raw.trim().startsWith("[") || raw.trim().startsWith('"')
-          ? JSON.parse(raw)
-          : raw;
-      } catch {
-        return raw;
-      }
-    })();
-    if (storedEmail) setEmail(storedEmail);
-  }, [searchParams?.email]);
-
-  const handleInputChange = (e, setter, fieldName) => {
-    const { value } = e.target;
-    setter(value);
-    if (fieldName === "confirmPassword") {
-      if (!value.trim()) {
-        setErrors((prevErrors) => ({ ...prevErrors, confirmPassword: "Password is required" }));
-      } else {
-        setErrors((prevErrors) => ({ ...prevErrors, confirmPassword: "" }));
-      }
-    }
-  };
-
   const handleMouseDownConfirmPassword = (event) => {
     event?.preventDefault();
   };
-
-  function hashPasswordSHA1(password) {
-    return CryptoJS.SHA1(password).toString(CryptoJS.enc.Hex);
-  }
-
-  const handleSubmit = async () => {
-    const visiterId = Cookies.get("visiterId");
-    if (!confirmPassword.trim()) {
-      setErrors((prev) => ({ ...prev, confirmPassword: "Password is required" }));
-      return;
-    }
-
-    const hashedPassword = hashPasswordSHA1(confirmPassword);
-    setIsLoading(true);
-
-    LoginWithEmailAPI(email, "", hashedPassword, "", "", visiterId)
-      .then((response) => {
-        setIsLoading(false);
-        if (response.Data.rd[0].stat === 1) {
-          const visiterID = Cookies.get("visiterId");
-          const userDetail = response?.Data?.rd[0];
-          const pkgId = userDetail?.PackageId ?? userDetail?.packageId ?? userDetail?.PackageID;
-
-          Cookies.set("userLoginCookie", userDetail?.Token, { path: "/", expires: 7 });
-          Cookies.set("LoginUser", "true", { path: "/", expires: 7 });
-          if (pkgId != null && pkgId !== "" && String(pkgId) !== "undefined" && String(pkgId) !== "null") {
-            Cookies.set("userPackageId", String(pkgId), { path: "/", expires: 7 });
-          }
-
-          sessionStorage.setItem("registerEmail", email);
-          setislogin(true);
-          setSession("LoginUser", true);
-          setSession("loginUserDetail", userDetail);
-
-          GetCountAPI(visiterID)
-            .then((res) => {
-              if (res) {
-                setCartCountNum(res?.cartcount);
-                setWishCountNum(res?.wishcount);
-              }
-            })
-            .catch((err) => console.log("getCountApiErr", err));
-
-          CurrencyComboAPI(response?.Data?.rd[0]?.id)
-            .then((res) => {
-              if (res?.Data?.rd) {
-                sessionStorage.setItem("CurrencyCombo", JSON.stringify(res?.Data?.rd));
-              }
-            })
-            .catch((err) => console.log(err));
-
-          MetalColorCombo(response?.Data?.rd[0]?.id)
-            .then((res) => {
-              if (res?.Data?.rd) {
-                sessionStorage.setItem("MetalColorCombo", JSON.stringify(res?.Data?.rd));
-              }
-            })
-            .catch((err) => console.log(err));
-
-          MetalTypeComboAPI(response?.Data?.rd[0]?.id)
-            .then((res) => {
-              if (res?.Data?.rd) {
-                sessionStorage.setItem("metalTypeCombo", JSON.stringify(res?.Data?.rd));
-              }
-            })
-            .catch((err) => console.log(err));
-
-          if (redirectEmailUrl) {
-            window.location.replace(redirectEmailUrl);
-          } else {
-            window.location.replace("/");
-          }
-        } else {
-          setErrors((prev) => ({ ...prev, confirmPassword: response.Data.rd[0].stat_msg || "Invalid credentials" }));
-        }
-      })
-      .catch((err) => {
-        console.log(err);
-        setIsLoading(false);
-      });
-  };
-
-  const handleTogglePasswordVisibility = () => {
-    setShowConfirmPassword(!showConfirmPassword);
-  };
-
-  const handleNavigation = () => {
-    sessionStorage.setItem("LoginCodeEmail", "true");
-    sessionStorage.setItem("registerEmail", email);
-    sessionStorage.setItem("email", email);
-    navigation(`/LoginWithEmailCode${cleanRedirect ? `?LoginRedirect=${encodeURIComponent(cleanRedirect)}` : ""}${securityKey ? `${cleanRedirect ? '&' : '?'}SK=${encodeURIComponent(securityKey)}` : ""}`);
-  };
-
-  const handleForgotPassword = async () => {
-    let Domain = window?.location?.origin || `https://nxt29.optigoapps.com`;
-    setIsLoading(true);
-    ForgotPasswordEmailAPI(Domain, email)
-      .then((response) => {
-        setIsLoading(false);
-        if (response.Data.rd[0].stat === 1) {
-          toast.success("Reset link sent to your email");
-        } else {
-          toast.error(response?.Data?.rd[0]?.stat_msg || "Error sending reset link");
-        }
-      })
-      .catch((err) => {
-        console.log(err);
-        setIsLoading(false);
-      });
-  };
+  const {
+    email,
+    confirmPassword,
+    showConfirmPassword,
+    errors,
+    isLoading,
+    cancelUrl: cancelRedireactUrl,
+    handleInputChange,
+    handleSubmit,
+    handleTogglePasswordVisibility,
+    handleNavigation,
+    handleForgotPassword,
+  } = usePasswordLogin({ searchParams });
 
   return (
     <Box
@@ -396,7 +240,7 @@ export default function LoginWithEmail({ params, searchParams, storeInit }) {
                     autoComplete="current-password"
                     variant="outlined"
                     value={confirmPassword}
-                    onChange={(e) => handleInputChange(e, setConfirmPassword, "confirmPassword")}
+                    onChange={handleInputChange}
                     error={!!errors.confirmPassword}
                     helperText={errors.confirmPassword}
                     disabled={isLoading}

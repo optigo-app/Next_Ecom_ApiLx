@@ -1,5 +1,6 @@
 "use client";
 
+import { isPriceHidden } from "@/app/(core)/utils/storeFlags";
 import { useEffect, useRef, useState, useMemo, useCallback } from "react";
 import { Get_Tren_BestS_NewAr_DesigSet_Album } from "@/app/(core)/utils/API/Home/Get_Tren_BestS_NewAr_DesigSet_Album/Get_Tren_BestS_NewAr_DesigSet_Album";
 import Cookies from "js-cookie";
@@ -193,7 +194,7 @@ const BestSellerSection = ({ storeData }) => {
                             )}
                             id={`product-${i}`}
                             ref={(el) => (productRefs.current[`product-${i}`] = el)}
-                            condition={storeData?.IsPriceShow === 1}
+                            condition={!isPriceHidden(storeData)}
                             designNo={data?.designno}
                             CurrCode={
                                 loginUserDetail?.CurrencyCode ?? storeData?.CurrencyCode

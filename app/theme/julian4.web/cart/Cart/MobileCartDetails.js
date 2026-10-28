@@ -1,3 +1,4 @@
+import { isPriceHidden } from "@/app/(core)/utils/storeFlags";
 import React, { useEffect, useState } from 'react';
 import { Modal, Divider, Skeleton, Button, Select, MenuItem, InputLabel, FormControl, CardMedia } from '@mui/material';
 import './elvMo_cartPage.modul.scss';
@@ -253,7 +254,7 @@ const MobileCartDetails = ({
               }
               {/* <div className='elvMo_cartQtyPricemainDev'>
                 <QuantitySelector selectedItem={selectedItem} handleIncrement={handleIncrement} handleDecrement={handleDecrement} qtyCount={qtyCount} />
-                {storeInitData?.IsPriceShow == 1 &&
+                {!isPriceHidden(storeInitData) &&
                   <div className="product-price">
                     {!ispriceloding ? (
                       <span>
@@ -268,7 +269,7 @@ const MobileCartDetails = ({
               </div> */}
               <div className='elv_cartQtyPricemainDev'>
                 <QuantitySelector selectedItem={selectedItem} handleIncrement={handleIncrement} handleDecrement={handleDecrement} qtyCount={qtyCount} />
-                {storeInitData?.IsPriceShow == 1 &&
+                {!isPriceHidden(storeInitData) &&
                   <div className="elv_product-price">
                     <span style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                       <span
@@ -338,7 +339,7 @@ const MobileCartDetails = ({
                   <span>{selectedItem?.Quantity}</span>
                 </div>
                 <div className=''>
-                  {storeInitData?.IsPriceShow == 1 &&
+                  {!isPriceHidden(storeInitData) &&
                     <div className="elvMo_Stockproduct-price">
                       {!ispriceloding ? (
                         <span>
@@ -354,7 +355,7 @@ const MobileCartDetails = ({
               </div> */}
               <div className='elv_cartQtyPricemainDev'>
                 <QuantitySelector selectedItem={selectedItem} handleIncrement={handleIncrement} handleDecrement={handleDecrement} qtyCount={qtyCount} />
-                {storeInitData?.IsPriceShow == 1 &&
+                {!isPriceHidden(storeInitData) &&
                   <div className="elv_product-price">
                     <span style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                       <span

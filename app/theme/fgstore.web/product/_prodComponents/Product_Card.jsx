@@ -1,3 +1,4 @@
+import { isPriceHidden } from "@/app/(core)/utils/storeFlags";
 import React, { useEffect, useState } from 'react'
 // Image from public folder
 import { findMetalColor, formatter, formatTitleLine, findMetalType, storImagePath } from "@/app/(core)/utils/Glob_Functions/GlobalFunction";
@@ -464,7 +465,7 @@ const Product_Card = ({
                                     return "";
                                 })()}
                             </span>
-                            {storeInit?.IsPriceShow == 1 && <>
+                            {!isPriceHidden(storeInit) && <>
                                 <span>/</span>
                                 <span className="smr_price">
                                     <span className="smr_currencyFont">

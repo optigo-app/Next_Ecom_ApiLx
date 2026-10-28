@@ -1,3 +1,4 @@
+import { isPriceHidden } from "@/app/(core)/utils/storeFlags";
 import React from "react";
 import { Box, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material";
 import { formatter } from "@/app/(core)/utils/Glob_Functions/GlobalFunction";
@@ -42,7 +43,7 @@ const PriceBreakup = ({
   ].filter(item => item.cost > 0);
 
   if (
-    storeInit?.IsPriceShow === 0 ||
+    isPriceHidden(storeInit) ||
     storeInit?.IsPriceBreakUp === 0 ||
     prod?.IsMrpBase === 1 ||
     priceBreakupItems.length === 0

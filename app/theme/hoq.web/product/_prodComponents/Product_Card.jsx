@@ -1,3 +1,4 @@
+import { isPriceHidden } from "@/app/(core)/utils/storeFlags";
 import React, { useEffect, useState } from 'react'
 // Image from public folder
 import { findMetalColor, formatTitleLine, findMetalType } from "@/app/(core)/utils/Glob_Functions/GlobalFunction";
@@ -273,7 +274,7 @@ const Product_Card = ({
                                     }
                                 </span>
                             }
-                            {storeInit?.IsPriceShow === 1 && (
+                            {!isPriceHidden(storeInit) && (
                                 <>
                                     <span> / </span>
                                     <span className="hoq_price">

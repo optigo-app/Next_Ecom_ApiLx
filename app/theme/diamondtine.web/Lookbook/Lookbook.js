@@ -1,4 +1,5 @@
 "use client";
+import { isPriceHidden } from "@/app/(core)/utils/storeFlags";
 import React from "react";
 import "./Lookbook.modul.scss";
 import { Accordion, AccordionDetails, AccordionSummary, Box, Checkbox, Drawer, FormControlLabel, Modal, styled, Tooltip, tooltipClasses } from "@mui/material";
@@ -226,7 +227,7 @@ const Lookbook = ({ storeInit }) => {
                       </AccordionDetails>
                     </Accordion>
                   )}
-                  {storeInit?.IsPriceShow == 1 && ele?.id?.includes("Price") && (
+                  {!isPriceHidden(storeInit) && ele?.id?.includes("Price") && (
                     <Accordion
                       elevation={0}
                       sx={{
@@ -552,7 +553,7 @@ const Lookbook = ({ storeInit }) => {
                             </AccordionDetails>
                           </Accordion>
                         )}
-                        {storeInit?.IsPriceShow == 1 && ele?.id?.includes("Price") && (
+                        {!isPriceHidden(storeInit) && ele?.id?.includes("Price") && (
                           <Accordion
                             elevation={0}
                             sx={{

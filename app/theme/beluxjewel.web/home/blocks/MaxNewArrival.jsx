@@ -16,6 +16,7 @@ import { useNextRouterLikeRR } from "@/app/(core)/hooks/useLocationRd";
 import { HeaderV2 } from "./Header";
 import SpireBox from "./Svg";
 import { saveRecentlyViewedDesign } from "@/app/(core)/utils/sqlite/recentlyViewedActions";
+import { isPriceHidden } from "@/app/(core)/utils/storeFlags";
 
 // ─── Styled Components (mirrors MaxBestSeller.jsx) ───────────────────────────
 
@@ -387,7 +388,7 @@ const ProductCard = ({ item, storeInit, loginUserDetail, onClick }) => (
       />
 
       {/* Price overlay */}
-      <Box
+      {!isPriceHidden(storeInit) && <Box
         className="info-overlay"
         sx={{
           position: "absolute",
@@ -424,7 +425,7 @@ const ProductCard = ({ item, storeInit, loginUserDetail, onClick }) => (
           {loginUserDetail?.CurrencyCode ?? storeInit?.CurrencyCode}&nbsp;
           {formatter(item?.UnitCostWithMarkUp)}
         </Typography>
-      </Box>
+      </Box>}
     </Box>
 
     {/* Design info below image */}

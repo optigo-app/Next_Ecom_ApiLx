@@ -1,3 +1,4 @@
+import { isPriceHidden } from "@/app/(core)/utils/storeFlags";
 import React from "react";
 import { Navigation, Pagination } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -175,7 +176,7 @@ const DesignSet = ({
                                 >
                                   {ele?.CategoryName}
                                 </Typography>
-                                {storeInit?.IsPriceShow === 1 && (
+                                {!isPriceHidden(storeInit) && (
                                   <Typography
                                     variant="body2"
                                     sx={{ color: "#111", fontWeight: 600 }}

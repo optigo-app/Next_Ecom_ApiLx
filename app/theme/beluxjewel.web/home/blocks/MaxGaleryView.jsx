@@ -1,6 +1,7 @@
 
 "use client";
 
+import { isPriceHidden } from "@/app/(core)/utils/storeFlags";
 import { useState, useEffect } from "react";
 import { Box, Typography } from "@mui/material";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -257,7 +258,7 @@ const MaxGalleryView = ({ banner,storeinit }) => {
                 </Typography>
 
                 {/* Price */}
-                {storeInit?.IsPriceShow == 1 && (
+                {!isPriceHidden(storeInit) && (
                   <Typography
                     sx={{
                       fontSize: "14px",

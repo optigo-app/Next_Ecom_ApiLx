@@ -1,5 +1,6 @@
 "use client";
 
+import { isPriceHidden } from "@/app/(core)/utils/storeFlags";
 import "../page.scss";
 import { Product } from "@/app/components/(static)/Constants/DynamicValue";
 import "slick-carousel/slick/slick.css";
@@ -1337,7 +1338,7 @@ const ProductPage = ({ params, searchParams, storeInit }) => {
                             <span className="hoq_single_prod_designno" style={{ marginTop: "5px", fontSize: "1.1rem" }}>
                                 {singleProd?.designno}
                             </span>
-                            {storeInit?.IsPriceShow === 1 && (
+                            {!isPriceHidden(storeInit) && (
                                 <div className="pricecharge">
                                     {
                                         <div className="hoq_price_portion">
@@ -1828,7 +1829,7 @@ const ProductPage = ({ params, searchParams, storeInit }) => {
                                 </Accordion>
                             )}
 
-                            {storeInit?.IsPriceShow === 1 && storeInit?.IsPriceBreakUp == 1 && (singleProd1 ?? singleProd)?.IsMrpBase !== 1 && (
+                            {!isPriceHidden(storeInit) && storeInit?.IsPriceBreakUp == 1 && (singleProd1 ?? singleProd)?.IsMrpBase !== 1 && (
                                 <Accordion
                                     className="accordian"
                                     key={3}
@@ -2070,9 +2071,9 @@ const ProductPage = ({ params, searchParams, storeInit }) => {
                         </div>
                     </div>
                 </main>
-                {stockItemArr?.length > 0 && storeInit?.IsStockWebsite === 1 && stockItemArr?.[0]?.stat_code != 1005 && <Stockitems stockItemArr={stockItemArr} storeInit={storeInit} loginInfo={loginInfo} cartArr={cartArr} handleCartandWish={handleCartandWish} check={storeInit?.IsPriceShow === 1} />}
-                {storeInit?.IsProductDetailSimilarDesign == 1 && SimilarBrandArr?.length > 0 && SimilarBrandArr?.[0]?.stat_code != 1005 && <RelatedProduct SimilarBrandArr={SimilarBrandArr} handleMoveToDetail={handleMoveToDetail} storeInit={storeInit} loginInfo={loginInfo} check={storeInit?.IsPriceShow === 1} />}
-                {storeInit?.IsProductDetailDesignSet === 1 && designSetList?.length > 0 && designSetList?.[0]?.stat_code != 1005 && <DesignSet designSetList={designSetList} handleMoveToDetail={handleMoveToDetail} imageNotFound={imageNotFound} loginInfo={loginInfo} storeInit={storeInit} check={storeInit?.IsPriceShow === 1} />}
+                {stockItemArr?.length > 0 && storeInit?.IsStockWebsite === 1 && stockItemArr?.[0]?.stat_code != 1005 && <Stockitems stockItemArr={stockItemArr} storeInit={storeInit} loginInfo={loginInfo} cartArr={cartArr} handleCartandWish={handleCartandWish} check={!isPriceHidden(storeInit)} />}
+                {storeInit?.IsProductDetailSimilarDesign == 1 && SimilarBrandArr?.length > 0 && SimilarBrandArr?.[0]?.stat_code != 1005 && <RelatedProduct SimilarBrandArr={SimilarBrandArr} handleMoveToDetail={handleMoveToDetail} storeInit={storeInit} loginInfo={loginInfo} check={!isPriceHidden(storeInit)} />}
+                {storeInit?.IsProductDetailDesignSet === 1 && designSetList?.length > 0 && designSetList?.[0]?.stat_code != 1005 && <DesignSet designSetList={designSetList} handleMoveToDetail={handleMoveToDetail} imageNotFound={imageNotFound} loginInfo={loginInfo} storeInit={storeInit} check={!isPriceHidden(storeInit)} />}
 
                 {/* <RecentlyViewd /> hold on */}
             </div>

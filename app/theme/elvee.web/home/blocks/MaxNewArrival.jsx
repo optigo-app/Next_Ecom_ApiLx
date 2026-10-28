@@ -2,6 +2,7 @@
 "use client";
 
 
+import { isPriceHidden } from "@/app/(core)/utils/storeFlags";
 import React, { useEffect, useRef, useState } from "react";
 import {
   Box,
@@ -303,7 +304,7 @@ const MaxNewArrivalsSection = ({storeInit}) => {
                 }
                 product={product}
                 price={
-                  storeInit?.IsPriceShow == 1
+                  !isPriceHidden(storeInit)
                     ? `${formatter(product?.UnitCostWithMarkUp)} ${islogin ? loginUserDetail?.CurrencyCode : storeInit?.CurrencyCode}`
                     : ""
                 }

@@ -2,6 +2,7 @@
 import React from "react";
 import "./LoginOption.modul.scss";
 import Link from "next/link";
+import { useLoginOption } from "@/app/(core)/hooks/Auth/useLoginOption";
 import {
   Box,
   Container,
@@ -17,37 +18,11 @@ import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 
 const LoginOption = ({ params, searchParams }) => {
   const {
-    LoginRedirect = "",
-    loginRedirect: loginRedirLow = "",
-    search = "",
-  } = searchParams || {};
-  const loginRedirect = LoginRedirect || loginRedirLow || search || "";
-
-  const getSecurityKeyFromUrl = () => {
-    if (searchParams?.SK) return searchParams.SK;
-    if (searchParams?.SecurityKey) return searchParams.SecurityKey;
-
-    if (loginRedirect) {
-      const urlText = decodeURIComponent(loginRedirect);
-      const kMatch = urlText.match(/\/K=([^/?&#]+)/);
-      if (kMatch) {
-        try {
-          return atob(kMatch[1]);
-        } catch (e) {}
-      }
-
-      const skMatch = urlText.match(/[?&](SK|SecurityKey)=([^&]+)/);
-      if (skMatch) return skMatch[2];
-    }
-    return "";
-  };
-
-  const securityKey = getSecurityKeyFromUrl();
-  const queryParamStr = `${loginRedirect ? `?LoginRedirect=${encodeURIComponent(loginRedirect)}${securityKey ? `&SK=${encodeURIComponent(securityKey)}` : ""}` : securityKey ? `?SK=${encodeURIComponent(securityKey)}` : ""}`;
-
-  const redirectEmailUrl = `/ContinueWithEmail${queryParamStr}`;
-  const redirectMobileUrl = `/ContinueWithMobile${queryParamStr}`;
-  const redirectRegisterUrl = `/register${queryParamStr}`;
+    showMobileLogin,
+    redirectEmailUrl,
+    redirectMobileUrl,
+    redirectRegisterUrl,
+  } = useLoginOption(searchParams);
 
   return (
     <Box
@@ -231,44 +206,48 @@ const LoginOption = ({ params, searchParams }) => {
                   </span>
                 </Button>
 
-                <Button
-                  component={Link}
-                  href={redirectMobileUrl}
-                  fullWidth
-                  size="large"
-                  className="loginMobile"
-                  startIcon={<SmartphoneOutlinedIcon sx={{ fontSize: { xs: "19px", sm: "21px" } }} />}
-                  endIcon={<ArrowForwardIcon sx={{ fontSize: { xs: "16px", sm: "18px" }, opacity: 0.7 }} />}
-                  sx={{
-                    "& .MuiButton-startIcon": {
-                      marginRight: "12px",
-                    },
-                  }}
-                >
-                  <span style={{ flex: 1, textAlign: "left" }}>
-                    Log in with Mobile Number
-                  </span>
-                </Button>
+                {showMobileLogin && (
+                  <Button
+                    component={Link}
+                    href={redirectMobileUrl}
+                    fullWidth
+                    size="large"
+                    className="loginMobile"
+                    startIcon={<SmartphoneOutlinedIcon sx={{ fontSize: { xs: "19px", sm: "21px" } }} />}
+                    endIcon={<ArrowForwardIcon sx={{ fontSize: { xs: "16px", sm: "18px" }, opacity: 0.7 }} />}
+                    sx={{
+                      "& .MuiButton-startIcon": {
+                        marginRight: "12px",
+                      },
+                    }}
+                  >
+                    <span style={{ flex: 1, textAlign: "left" }}>
+                      Log in with Mobile Number
+                    </span>
+                  </Button>
+                )}
               </Box>
 
               {/* Divider */}
-              <Box sx={{ display: "flex", alignItems: "center", my: 0.5 }}>
-                <Divider sx={{ flex: 1, borderColor: "#e5e7eb" }} />
-                <Typography
-                  variant="caption"
-                  sx={{
-                    px: 1.5,
-                    color: "#9ca3af",
-                    fontWeight: 600,
-                    textTransform: "uppercase",
-                    fontSize: "11px",
-                    letterSpacing: "0.08em",
-                  }}
-                >
-                  or
-                </Typography>
-                <Divider sx={{ flex: 1, borderColor: "#e5e7eb" }} />
-              </Box>
+              {showMobileLogin && (
+                <Box sx={{ display: "flex", alignItems: "center", my: 0.5 }}>
+                  <Divider sx={{ flex: 1, borderColor: "#e5e7eb" }} />
+                  <Typography
+                    variant="caption"
+                    sx={{
+                      px: 1.5,
+                      color: "#9ca3af",
+                      fontWeight: 600,
+                      textTransform: "uppercase",
+                      fontSize: "11px",
+                      letterSpacing: "0.08em",
+                    }}
+                  >
+                    or
+                  </Typography>
+                  <Divider sx={{ flex: 1, borderColor: "#e5e7eb" }} />
+                </Box>
+              )}
 
               {/* Sign up prompt */}
               <Box textAlign="center">

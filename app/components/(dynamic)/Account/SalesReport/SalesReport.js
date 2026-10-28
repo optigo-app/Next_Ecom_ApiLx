@@ -1,3 +1,4 @@
+import { isPriceHidden } from "@/app/(core)/utils/storeFlags";
 import React, { useEffect, useRef, useState } from "react";
 import "./SalesReport.scss";
 import {
@@ -216,7 +217,7 @@ function EnhancedTableHead(props) {
             'OtherAmount',
             'UnitCost'
           ];
-          if (IsPriceShow === 0 && headCellsLits.includes(headCell?.id)) {
+          if (isPriceHidden(IsPriceShow) && headCellsLits.includes(headCell?.id)) {
             return null;
           }
 
@@ -750,7 +751,7 @@ const SalesReport = () => {
           p: 1
         }}
       >
-        {IsPriceShow == 1 && <Box
+        {!isPriceHidden(IsPriceShow) && <Box
           sx={{
             display: "flex",
             alignItems: "center",
@@ -1257,7 +1258,7 @@ const SalesReport = () => {
                             </div>
                           </TableCell>
                           <TableCell align="center">{row.MetalType}</TableCell>
-                          {IsPriceShow == 1 && <>  <TableCell align="center"><span dangerouslySetInnerHTML={{ __html: row?.Currencycode }}></span>&nbsp;{formatAmount(row.MetalAmount)}</TableCell>
+                          {!isPriceHidden(IsPriceShow) && <>  <TableCell align="center"><span dangerouslySetInnerHTML={{ __html: row?.Currencycode }}></span>&nbsp;{formatAmount(row.MetalAmount)}</TableCell>
                             <TableCell align="center"><span dangerouslySetInnerHTML={{ __html: row?.Currencycode }}></span>&nbsp; {formatAmount(row.DiamondAmount)} </TableCell>
                             <TableCell align="center"><span dangerouslySetInnerHTML={{ __html: row?.Currencycode }}></span>&nbsp; {formatAmount(row.ColorStoneAmount)} </TableCell>
                             <TableCell align="center"><span dangerouslySetInnerHTML={{ __html: row?.Currencycode }}></span>&nbsp;{formatAmount(row.LabourAmount)}</TableCell>

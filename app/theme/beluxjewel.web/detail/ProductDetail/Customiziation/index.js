@@ -1,4 +1,5 @@
 "use client";
+import { isPriceHidden } from "@/app/(core)/utils/storeFlags";
 import React, { useState, useMemo, useEffect } from "react";
 import {
   Drawer,
@@ -752,7 +753,7 @@ export default function CustomizerDrawer({
             >
               Customize Your Piece
             </Typography>
-            {price > 0 && storeInit?.IsPriceShow == 1 && (
+            {price > 0 && !isPriceHidden(storeInit) && (
               <Box
                 sx={{
                   display: "flex",

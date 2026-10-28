@@ -1,4 +1,5 @@
 "use client";
+import { isPriceHidden } from "@/app/(core)/utils/storeFlags";
 import { useMemo, useState, useEffect } from "react";
 import {
   Box,
@@ -767,7 +768,7 @@ const ProductCard = ({
         )}
 
         {/* Line 3: Price */}
-        {StoreInit?.IsPriceShow == 1 && (
+        {!isPriceHidden(StoreInit) && (
           <Typography
             variant="body1"
             sx={{

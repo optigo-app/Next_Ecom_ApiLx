@@ -1,4 +1,5 @@
 'use client'
+import { isPriceHidden } from "@/app/(core)/utils/storeFlags";
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 import './ProductDetail.modul.scss'
 import Cookies from 'js-cookie'
@@ -1417,7 +1418,7 @@ const ProductDetail = ({ storeinit,
                 storeInit={storeInit}
                 loginInfo={loginData}
                 cartArr={cartArr}
-                check={storeInit?.IsPriceShow === 1}
+                check={!isPriceHidden(storeInit)}
                 handleCartandWish={handleCartandWish}
               />
             )}

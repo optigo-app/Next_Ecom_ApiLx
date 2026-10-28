@@ -1,3 +1,4 @@
+import { isPriceHidden } from "@/app/(core)/utils/storeFlags";
 import { useState } from "react";
 import {
   Box,
@@ -219,6 +220,13 @@ const RightSide = ({
           ),
     },
   ].filter((item) => isLoading || item.cost !== 0);
+  const showPriceBreakup =
+    !isPriceHidden(storeInit) &&
+    storeInit?.IsPriceBreakUp == 1 &&
+    (activeArticle
+      ? activeArticle?.IsMrpBase != 1
+      : (singleProd ?? singleProd1)?.IsMrpBase != 1) &&
+    priceBreakupItems.length > 0;
 
   return (
     <>
@@ -330,7 +338,7 @@ const RightSide = ({
           </Typography>
 
           {/* Price */}
-          {storeInit?.IsPriceShow == 1 && (
+          {!isPriceHidden(storeInit) && (
             <Typography
               variant="h5"
               sx={{
@@ -1165,7 +1173,9 @@ const RightSide = ({
                 <Box
                   sx={{
                     display: "grid",
-                    gridTemplateColumns: "repeat(3, 1fr)",
+                    gridTemplateColumns: showPriceBreakup
+                      ? "repeat(3, 1fr)"
+                      : "repeat(2, 1fr)",
                     borderBottom: "1px solid #E5E5E5",
                     backgroundColor: "#F5F5F5",
                   }}
@@ -1216,35 +1226,37 @@ const RightSide = ({
                   >
                     PRODUCT CARE
                   </Button>
-                  <Button
-                    disableRipple
-                    onClick={() => setActiveTab("pricebreakup")}
-                    sx={{
-                      py: 1.2,
-                      px: 1,
-                      borderRadius: 0,
-                      fontSize: "12px",
-                      fontWeight: 700,
-                      letterSpacing: "0.5px",
-                      textTransform: "uppercase",
-                      backgroundColor:
-                        activeTab === "pricebreakup" || activeTab === "shipping"
-                          ? "#000000"
-                          : "transparent",
-                      color:
-                        activeTab === "pricebreakup" || activeTab === "shipping"
-                          ? "#ffffff"
-                          : "#000000",
-                      "&:hover": {
-                        backgroundColor:
-                          activeTab === "pricebreakup" || activeTab === "shipping"
-                            ? "#000000"
-                            : "#e0e0e0",
-                      },
-                    }}
-                  >
-                    PRICE BREAKUP
-                  </Button>
+                  {showPriceBreakup && (
+                      <Button
+                        disableRipple
+                        onClick={() => setActiveTab("pricebreakup")}
+                        sx={{
+                          py: 1.2,
+                          px: 1,
+                          borderRadius: 0,
+                          fontSize: "12px",
+                          fontWeight: 700,
+                          letterSpacing: "0.5px",
+                          textTransform: "uppercase",
+                          backgroundColor:
+                            activeTab === "pricebreakup" || activeTab === "shipping"
+                              ? "#000000"
+                              : "transparent",
+                          color:
+                            activeTab === "pricebreakup" || activeTab === "shipping"
+                              ? "#ffffff"
+                              : "#000000",
+                          "&:hover": {
+                            backgroundColor:
+                              activeTab === "pricebreakup" || activeTab === "shipping"
+                                ? "#000000"
+                                : "#e0e0e0",
+                          },
+                        }}
+                      >
+                        PRICE BREAKUP
+                      </Button>
+                    )}
                 </Box>
 
                 {/* Tab Content Box */}
@@ -1576,14 +1588,10 @@ const RightSide = ({
                     </Box>
                   )}
 
-                  {(activeTab === "shipping" || activeTab === "pricebreakup") && (
+                  {((activeTab === "shipping") ||
+                    (activeTab === "pricebreakup" && showPriceBreakup)) && (
                     <Box>
-                      {storeInit?.IsPriceShow == 1 &&
-                        storeInit?.IsPriceBreakUp == 1 &&
-                        (activeArticle
-                          ? activeArticle?.IsMrpBase != 1
-                          : (singleProd ?? singleProd1)?.IsMrpBase != 1) &&
-                        priceBreakupItems.length > 0 && (
+                      {activeTab === "pricebreakup" && showPriceBreakup && (
                           <TableContainer
                             sx={{
                               border: "1px solid #E5E5E5",
@@ -1938,7 +1946,7 @@ export default RightSide;
 //           </Typography>
 
 //           {/* Price */}
-//           {storeInit?.IsPriceShow == 1 && (
+//           {!isPriceHidden(storeInit) && (
 //             <Typography
 //               variant="h5"
 //               sx={{
@@ -2572,7 +2580,7 @@ export default RightSide;
 //             </Box>
 //           )}
 //           <Divider sx={{ mb: 2, mt: 2 }} />
-//           {storeInit?.IsPriceShow == 1 &&
+//           {!isPriceHidden(storeInit) &&
 //             storeInit?.IsPriceBreakUp == 1 &&
 //             (singleProd ?? singleProd1)?.IsMrpBase != 1 &&
 //             (isLoading ||

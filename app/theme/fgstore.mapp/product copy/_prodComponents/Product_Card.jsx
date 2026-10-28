@@ -1,3 +1,4 @@
+import { isPriceHidden } from "@/app/(core)/utils/storeFlags";
 import React, { useEffect, useState } from "react";
 // Image from public folder
 import { findMetalColor, formatter, formatTitleLine, findMetalType, storImagePath } from "@/app/(core)/utils/Glob_Functions/GlobalFunction";
@@ -310,7 +311,7 @@ const Product_Card = ({ productData, isshowDots, menuParams, handleCartandWish, 
               <span className="smr_prod_metal_col">
                 {findMetalColor(productData?.MetalColorid)?.[0]?.metalcolorname.toUpperCase()}-{findMetalType(productData?.IsMrpBase == 1 ? productData?.MetalPurityid : (selectedMetalId ?? productData?.MetalPurityid))[0]?.metaltype}
               </span>
-              {storeInit?.IsPriceShow == 1 && (
+              {!isPriceHidden(storeInit) && (
                 <>
                   <span>/</span>
                   <span className="smr_price">

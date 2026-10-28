@@ -1,5 +1,6 @@
 "use client";
 
+import { isPriceHidden } from "@/app/(core)/utils/storeFlags";
 import React, { useEffect, useState } from 'react';
 import { Box, Typography, Link } from '@mui/material';
 
@@ -126,7 +127,7 @@ export default function TrendingMarquee({ storeInit }) {
           {TRACK_ITEMS.map((item, index) => {
             const title = formatTitleLine(item?.TitleLine) || item?.designno || '';
             const price =
-              storeInit?.IsPriceShow == 1
+              !isPriceHidden(storeInit)
                 ? `${formatter(item?.UnitCostWithMarkUp)} ${islogin ? loginUserDetail?.CurrencyCode : storeInit?.CurrencyCode}`
                 : '';
 

@@ -19,4 +19,4 @@ export {
   enrichProductsWithStock,
   fetchTenantStockList,
 } from "@/app/(core)/utils/product/stockUtils";
-
+import { getStorePageSize } from "@/app/(core)/utils/storeFlags";

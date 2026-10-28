@@ -14,6 +14,7 @@ import { cookies } from "next/headers";
 import { getSqliteMenus } from "@/app/(core)/utils/sqlite/sqliteActions";
 import { getWebContentManagement } from "@/app/(core)/hooks/webContentManagement/webContentManagement.server";
 import Footer from "@/app/components/(static)/Footer/DynamicFooter/Footer"; 
+import { isB2BWebsite } from "@/app/(core)/utils/isB2B";
 
 const layout = async ({ children }) => {
   const storeData = await getStoreInit();
@@ -22,16 +23,20 @@ const layout = async ({ children }) => {
   let extraFlag = await getExtraFlag();
 
   const cookieStore = await cookies();
+  const isB2B = isB2BWebsite(storeData);
+  const hasLoginCookie = Boolean(cookieStore.get("userLoginCookie")?.value);
   const userPkgIdCookie = cookieStore.get("userPackageId")?.value;
   console.log(userPkgIdCookie, "userPkgIdCookie")
   const activePackageId = userPkgIdCookie ? Number(userPkgIdCookie) : storeData?.PackageId;
 
   let initialMenuData = [];
-  try {
-    const menuRes = await getSqliteMenus({ packageId: activePackageId });
-    initialMenuData = menuRes?.Data?.rd || [];
-  } catch (err) {
-    console.warn("[beluxjewel layout] SSR menu pre-fetch failed:", err.message);
+  if (!isB2B || hasLoginCookie) {
+    try {
+      const menuRes = await getSqliteMenus({ packageId: activePackageId });
+      initialMenuData = menuRes?.Data?.rd || [];
+    } catch (err) {
+      console.warn("[beluxjewel layout] SSR menu pre-fetch failed:", err.message);
+    }
   }
 
   const webContentRes = await getWebContentManagement({ domain: storeData?.domain }).catch(() => null);

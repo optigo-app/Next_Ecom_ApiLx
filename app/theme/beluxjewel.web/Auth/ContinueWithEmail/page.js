@@ -1,11 +1,11 @@
 'use client';
-import React, { useEffect, useState } from "react";
+import { isStoreInitFlagEnabled } from "@/app/(core)/utils/storeFlags";
+import React from "react";
 import "./ContinueWithEmail.modul.scss";
-import { toast } from "react-toastify";
-import { ContinueWithEmailAPI } from "@/app/(core)/utils/API/Auth/ContinueWithEmailAPI";
 import OTPContainer from "@/app/(core)/utils/Glob_Functions/Otpflow/App";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { useContinueWithEmail } from "@/app/(core)/hooks/Auth/useContinueWithEmail";
 
 import {
   Box,
@@ -21,103 +21,20 @@ import {
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
 export default function ContinueWithEmail({ params, searchParams, storeInit }) {
-  const [email, setEmail] = useState("");
-  const [emailError, setEmailError] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  const [isOpen, setIsOpen] = useState(false);
   const Router = useRouter();
   const navigation = (path) => {
     Router.push(path);
   };
-  const paramsObj = searchParams || {};
-  const search =
-    paramsObj.LoginRedirect ||
-    paramsObj.loginRedirect ||
-    paramsObj.search ||
-    "";
-  const securityKey = searchParams?.SK || searchParams?.SecurityKey || "";
-  const cleanRedirect = search ? search.replace(/^\?LoginRedirect=/, '') : '';
-  const queryParamStr = `${cleanRedirect ? `?LoginRedirect=${encodeURIComponent(cleanRedirect)}` : ""}${securityKey ? `${cleanRedirect ? '&' : '?'}SK=${encodeURIComponent(securityKey)}` : ""}`;
-
-  const redirectEmailUrl = `/LoginWithEmail${queryParamStr}${queryParamStr ? '&' : '?'}email=${encodeURIComponent(email.trim())}`;
-  const redirectSignUpUrl = `/register${queryParamStr}${queryParamStr ? '&' : '?'}email=${encodeURIComponent(email.trim())}`;
-  const cancelRedireactUrl = `/LoginOption${queryParamStr}`;
-
-  useEffect(() => {
-    sessionStorage.removeItem("registerEmail");
-    sessionStorage.removeItem("registerMobile");
-    sessionStorage.removeItem("Countrycodestate");
-  }, []);
-
-  const validateEmail = (email) => {
-    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return regex.test(email);
-  };
-
-  const handleEmailChange = (event) => {
-    const { value } = event.target;
-    const trimmedValue = value.trim();
-    setEmail(trimmedValue);
-    if (!trimmedValue) {
-      setEmailError("Email is required.");
-    } else if (!validateEmail(trimmedValue)) {
-      setEmailError("Please enter a valid email");
-    } else {
-      setEmailError("");
-    }
-  };
-
-  const handleSubmit = async () => {
-    const trimmedEmail = email.trim();
-    if (!trimmedEmail) {
-      setEmailError("Email is required.");
-      return;
-    }
-    if (!validateEmail(trimmedEmail)) {
-      setEmailError("Please enter a valid email.");
-      return;
-    }
-
-    setIsLoading(true);
-    ContinueWithEmailAPI(trimmedEmail)
-      .then((response) => {
-        setIsLoading(false);
-        if (response.Data.rd[0].stat == 1 && response.Data.rd[0].islead == 1) {
-          toast.error("You are not a customer, contact to admin");
-        } else if (
-          response.Data.rd[0].stat == 1 &&
-          response.Data.rd[0].islead == 0
-        ) {
-          navigation(redirectEmailUrl);
-          if (trimmedEmail) {
-            sessionStorage.setItem("registerEmail", trimmedEmail);
-            sessionStorage.setItem("email", trimmedEmail);
-            sessionStorage.removeItem("registerMobile");
-          }
-        } else {
-          if (storeInit?.IsEcomOtpVerification != 0 && storeInit?.IsEcomOtpVerification == 1) {
-            if (process.env.NODE_ENV === "development") {
-              const otp = Number(response.Data.rd[0].OTP)
-                ? response.Data.rd[0].OTP
-                : 123456;
-              alert(otp);
-            }
-            setIsOpen(true);
-          } else {
-            navigation(redirectSignUpUrl);
-            if (trimmedEmail) {
-              sessionStorage.setItem("registerEmail", trimmedEmail);
-              sessionStorage.setItem("email", trimmedEmail);
-              sessionStorage.removeItem("registerMobile");
-            }
-          }
-        }
-      })
-      .catch((err) => {
-        console.log(err);
-        setIsLoading(false);
-      });
-  };
+  const {
+    email,
+    emailError,
+    isLoading,
+    isOpen,
+    setIsOpen,
+    cancelUrl: cancelRedireactUrl,
+    handleEmailChange,
+    handleSubmit,
+  } = useContinueWithEmail({ searchParams, storeInit });
 
   return (
     <Box
@@ -146,8 +63,7 @@ export default function ContinueWithEmail({ params, searchParams, storeInit }) {
       </Backdrop>
 
       {/* OTP Modal Container */}
-      {storeInit?.IsEcomOtpVerification &&
-      storeInit?.IsEcomOtpVerification === 1 ? (
+      {isStoreInitFlagEnabled(storeInit, "ecomOtpVerification") ? (
         <OTPContainer
           emailId={email.trim()}
           isOpen={isOpen}

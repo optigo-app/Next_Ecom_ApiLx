@@ -1,3 +1,4 @@
+import { isPriceHidden } from "@/app/(core)/utils/storeFlags";
 import React from "react";
 import {
     Drawer,
@@ -300,7 +301,7 @@ const FilterSidebar = ({
                     }
 
                     // 💰 Price filter
-                    if (storeInit?.IsPriceShow == 1 && item?.id?.includes("Price")) {
+                    if (!isPriceHidden(storeInit) && item?.id?.includes("Price")) {
                         return (
                             <Accordion key={index} disableGutters elevation={0} sx={{ borderBottom: "1px solid #eee" }}>
                                 <AccordionSummary

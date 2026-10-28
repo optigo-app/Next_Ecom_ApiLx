@@ -1,3 +1,4 @@
+import { isPriceHidden } from "@/app/(core)/utils/storeFlags";
 import React, { useEffect, useRef, useState } from "react";
 import Box from "@mui/material/Box";
 import { formatter } from "@/app/(core)/utils/Glob_Functions/GlobalFunction";
@@ -343,9 +344,9 @@ const CartItem = ({
               {item?.StockNo != "" && (
                 <span className="hoq_DesignNoTExt">{item?.StockNo}</span>
               )}
-              {storeInitData?.IsPriceShow == 1 && <Box className="hoq_PriceBox">
+              {!isPriceHidden(storeInitData) && <Box className="hoq_PriceBox">
                 <>
-                  {storeInitData?.IsPriceShow == 1 && (
+                  {!isPriceHidden(storeInitData) && (
                     <span className="hoq_currencyFontPrice">
                       <span
                         className="hoq_currencyFont"

@@ -1,4 +1,5 @@
 "use client";
+import { isPriceHidden } from "@/app/(core)/utils/storeFlags";
 import React, { useEffect, useMemo, useRef, useState, useCallback } from "react";
 import { Box, Typography, styled, IconButton, Button } from "@mui/material";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -267,7 +268,7 @@ const MaxDesignSet = ({ data, storeInit }) => {
                                     <Typography sx={{ fontWeight: 500, fontSize: "0.9rem", color: "#1a1a1a", mb: 0.5, letterSpacing: "0.5px" }}>
                                         {item?.TitleLine || "Exquisite Piece"}
                                     </Typography>
-                                    {storeInit?.IsPriceShow == 1 && (
+                                    {!isPriceHidden(storeInit) && (
                                         <Typography sx={{ fontWeight: 600, fontSize: "1.1rem", color: "#000" }}>
                                             {islogin ? loginUserDetail?.CurrencyCode : storeInit?.CurrencyCode} {formatter(item?.UnitCostWithMarkUp)}
                                         </Typography>

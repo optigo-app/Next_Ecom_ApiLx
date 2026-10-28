@@ -1,3 +1,4 @@
+import { isPriceHidden } from "@/app/(core)/utils/storeFlags";
 import React, { useEffect, useState } from 'react';
 import Drawer from '@mui/material/Drawer';
 import './smr_cartPageB2c.scss';
@@ -117,7 +118,7 @@ const Cart = ({
           {items?.length != 0 &&
             <div className='smr_B2cCheckoutBtnDiv'>
               <button className='smr_B2cCheckoutBtn' onClick={handlePlaceOrder}>
-                {storeInitData?.IsPriceShow == 1 &&
+                {!isPriceHidden(storeInitData) &&
                   <span>
                     {loginInfo?.CurrencyCode ?? storeInitData?.CurrencyCode}
                     {" "}{totalPrice}
