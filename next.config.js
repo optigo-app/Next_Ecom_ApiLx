@@ -1,5 +1,14 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // Emotion's SSR cache depends on Stylis. Turbopack otherwise follows Stylis'
+  // package export to its source barrel, which can leave the Tokenizer `char`
+  // binding unresolved in the generated SSR chunk. Use Stylis' published ESM
+  // bundle, where those parser helpers are bundled together.
+  turbopack: {
+    resolveAlias: {
+      stylis: "./node_modules/stylis/dist/stylis.mjs",
+    },
+  },
   // output: 'standalone',
   serverExternalPackages: ['better-sqlite3'],
   images: {
