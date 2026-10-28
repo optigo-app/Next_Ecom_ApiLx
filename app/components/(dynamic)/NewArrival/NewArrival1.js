@@ -1,4 +1,5 @@
 "use client";
+import { isPriceHidden } from "@/app/(core)/utils/storeFlags";
 import React, { useEffect, useMemo, useRef, useState, useCallback } from "react";
 import "./NewArrival1.scss";
 import { Grid, Typography, Card, CardContent, CardMedia } from "@mui/material";
@@ -282,7 +283,7 @@ const NewArrival = ({ data, storeInit }) => {
                         </>
                       )}
                     </Typography>
-                    {storeInit?.IsPriceShow == 1 && (
+                    {!isPriceHidden(storeInit) && (
                       <p className="smr_newArrPrice">
                         <span
                           className="smr_currencyFont"

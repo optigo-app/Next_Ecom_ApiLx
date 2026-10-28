@@ -1,3 +1,4 @@
+import { isPriceHidden } from "@/app/(core)/utils/storeFlags";
 import React, { useEffect, useRef, useState } from 'react';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
@@ -221,7 +222,7 @@ const CartItem = ({
               </div>
               <Box className="smr_PriceBox">
                 <>
-                  {storeInitData?.IsPriceShow == 1 &&
+                  {!isPriceHidden(storeInitData) &&
                     <span className='smr_currencyFontPrice'>
                       <span className="smr_currencyFont">{loginInfo?.CurrencyCode ?? storeInitData?.CurrencyCode}</span>&nbsp;
                       {/* <span

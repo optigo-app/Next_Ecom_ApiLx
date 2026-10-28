@@ -1,4 +1,5 @@
 "use client";
+import { isPriceHidden } from "@/app/(core)/utils/storeFlags";
 import React, { useEffect, useState } from "react";
 import "./Account.scss";
 import {  Box,  Tab,  Tabs,  Typography,  Paper,  Container,  Avatar,  Divider,  useTheme,  useMediaQuery} from "@mui/material";
@@ -391,7 +392,7 @@ export default function Account({ Storeinit }) {
                         scrollButtons="auto"
                       >
                         {accountInner?.map((e, i) => {
-                          if (Storeinit?.IsPriceShow == 0 && e.tabComp === "AccountLedger") {
+                          if (isPriceHidden(Storeinit) && e.tabComp === "AccountLedger") {
                             return <Tab key={i} sx={{ display: "none" }} />;
                           }
                           return <Tab label={e?.tabLabel} {...a11yProps(i)} key={i} />;
@@ -431,7 +432,7 @@ export default function Account({ Storeinit }) {
                             <DesignWiseSalesReport />
                           </CustomTabPanel>
                         )}
-                        {Storeinit?.IsPriceShow == 1 && e?.id === 1159 && (
+                        {!isPriceHidden(Storeinit) && e?.id === 1159 && (
                           <CustomTabPanel value={value1} index={i}>
                             <AccountLedger />
                           </CustomTabPanel>

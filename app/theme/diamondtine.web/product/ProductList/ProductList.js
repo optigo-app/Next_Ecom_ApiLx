@@ -1,4 +1,5 @@
 'use client';
+import { isPriceHidden } from "@/app/(core)/utils/storeFlags";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import "./ProductList.modul.scss";
 import {
@@ -937,7 +938,7 @@ const ProductList = ({ storeinit, searchParams, params }) => {
                 )}
 
                 {/* price */}
-                {storeinit?.IsPriceShow == 1 && ele?.id?.includes("Price") && (
+                {!isPriceHidden(storeinit) && ele?.id?.includes("Price") && (
                   <Accordion
                     elevation={0}
                     sx={{
@@ -1120,7 +1121,7 @@ const ProductList = ({ storeinit, searchParams, params }) => {
                   </Accordion>
                 )}
 
-                {storeinit?.IsPriceShow == 1 && ele?.id?.includes("Price") && (
+                {!isPriceHidden(storeinit) && ele?.id?.includes("Price") && (
                   <Accordion
                     elevation={0}
                     sx={{
@@ -1661,7 +1662,7 @@ const Product_Card = ({
         )}
 
         {/* price */}
-        {storeinit?.IsPriceShow == 1 && (
+        {!isPriceHidden(storeinit) && (
           <div style={{ margin: "0px", fontSize: "15px", display: "flex", justifyContent: "center", width: "100%", gap: "5px" }}>
             <div className="currencyFont" style={{ fontSize: "16px", color: "#8d8d8d" }}>
               {loginUserDetail?.CurrencyCode ?? storeinit?.CurrencyCode}

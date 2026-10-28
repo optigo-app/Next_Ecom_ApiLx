@@ -1,3 +1,4 @@
+import { isPriceHidden } from "@/app/(core)/utils/storeFlags";
 import React from "react";
 import {
     Accordion,
@@ -177,7 +178,7 @@ const ProductCustomization = ({
                 )}
             </div>
 
-            {storeInit?.IsPriceShow === 1 &&
+            {!isPriceHidden(storeInit) &&
                 storeInit?.IsPriceBreakUp == 1 &&
                 singleProd1?.IsMrpBase !== 1 &&
                 singleProd?.IsMrpBase !== 1 && (

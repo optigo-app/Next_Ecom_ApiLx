@@ -1,4 +1,5 @@
 'use client';
+import { isStoreInitFlagEnabled } from "@/app/(core)/utils/storeFlags";
 import React, { useEffect, useState } from 'react';
 import B2CRegister from './B2CRegister';
 import B2BRegister from './B2bRegister';
@@ -18,7 +19,7 @@ const Page = ({ searchParams, storeInit: propStoreInit, params }) => {
     }
   }, [storeInit]);
 
-  const isB2B = storeInit?.IsSignUpWithCompanyInfo === 1;
+  const isB2B = isStoreInitFlagEnabled(storeInit, "signUpWithCompanyInfo");
 
   return isB2B ? (
     <B2BRegister searchParams={searchParams} params={params} storeInit={storeInit} />

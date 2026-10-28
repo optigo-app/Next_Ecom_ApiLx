@@ -1,5 +1,6 @@
 "use client";
 
+import { isPriceHidden } from "@/app/(core)/utils/storeFlags";
 import React, { useRef } from "react";
 import {
   Box,
@@ -248,7 +249,7 @@ export default function RecentlyViewed({
             </Typography>
           </Box>
 
-          {storeInit?.IsPriceShow === 1 && item?.UnitCostWithMarkUp != null && (
+          {!isPriceHidden(storeInit) && item?.UnitCostWithMarkUp != null && (
             <Typography
               sx={{
                 mt: 1,

@@ -1,3 +1,4 @@
+import { isPriceHidden } from "@/app/(core)/utils/storeFlags";
 import React from "react";
 import { Checkbox } from "@mui/material";
 import LocalMallOutlinedIcon from "@mui/icons-material/LocalMallOutlined";
@@ -173,7 +174,7 @@ const ProductSections = ({
                                             Gross Wt / Net Wt / Dia Wt / CS Wt
                                         </th>
                                         <th className="Smr_stockItem_table_td">Metal Color-Purity</th>
-                                        {Boolean(storeInit?.IsPriceShow) && (
+                                        {!isPriceHidden(storeInit) && (
                                             <th className="Smr_stockItem_table_td">Price</th>
                                         )}
                                         <th className="Smr_stockItem_table_td">Add To Cart</th>
@@ -272,7 +273,7 @@ const ProductSections = ({
                                                     {ele?.metalPurity}
                                                 </span>
                                             </td>
-                                            {storeInit?.IsPriceShow == 1 && (
+                                            {!isPriceHidden(storeInit) && (
                                                 <td className="Smr_stockItem_table_td">
                                                     <span>
                                                         <span className="smr_currencyFont">
@@ -382,7 +383,7 @@ const ProductSections = ({
                                                 {ele?.designno}
                                             </span>
 
-                                            {storeInit?.IsPriceShow == 1 ? (
+                                            {!isPriceHidden(storeInit) ? (
                                                 <div
                                                     style={{
                                                         display: "flex",
@@ -517,7 +518,7 @@ const ProductSections = ({
                                                                     <p>
                                                                         {ele?.designno} - {ele?.CategoryName}
                                                                         <br />
-                                                                        {storeInit?.IsPriceShow == 1 && (
+                                                                        {!isPriceHidden(storeInit) && (
                                                                             <>
                                                                                 <span className="smr_currencyFont">
                                                                                     {loginInfo?.CurrencyCode ??

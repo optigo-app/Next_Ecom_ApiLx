@@ -1,3 +1,4 @@
+import { isPriceHidden } from "@/app/(core)/utils/storeFlags";
 import React, { useEffect, useState } from 'react';
 import { Modal, Divider, Skeleton, Button, CardMedia } from '@mui/material';
 import './smrMo_cartPage.scss';
@@ -253,7 +254,7 @@ const MobileCartDetails = ({
               }
               <div className='smrMo_cartQtyPricemainDev'>
                 <QuantitySelector selectedItem={selectedItem} handleIncrement={handleIncrement} handleDecrement={handleDecrement} qtyCount={qtyCount} />
-                {storeInitData?.IsPriceShow == 1 &&
+                {!isPriceHidden(storeInitData) &&
                   <div className="product-price">
                     {!ispriceloding ? (
                       <span>
@@ -322,7 +323,7 @@ const MobileCartDetails = ({
                   </div>
                 }
                 <div className=''>
-                  {storeInitData?.IsPriceShow == 1 &&
+                  {!isPriceHidden(storeInitData) &&
                     <div className="smrMo_Stockproduct-price">
                       {!ispriceloding ? (
                         <span>

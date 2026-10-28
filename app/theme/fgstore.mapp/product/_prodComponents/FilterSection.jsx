@@ -1,5 +1,6 @@
 "use client";
 
+import { isPriceHidden } from "@/app/(core)/utils/storeFlags";
 import React, { memo, useState } from "react";
 import {
     Accordion,
@@ -154,7 +155,7 @@ const FilterSection = memo(({
                                 </AccordionDetails>
                             </Accordion>
                         )}
-                    {storeInit?.IsPriceShow == 1 && ele?.id?.includes("Price") && (
+                    {!isPriceHidden(storeInit) && ele?.id?.includes("Price") && (
                         <Accordion
                             elevation={0}
                             sx={{

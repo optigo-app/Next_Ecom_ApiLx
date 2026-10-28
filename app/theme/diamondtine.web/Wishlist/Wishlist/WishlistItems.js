@@ -1,3 +1,4 @@
+import { isPriceHidden } from "@/app/(core)/utils/storeFlags";
 import React, { useEffect, useState } from 'react';
 import "./dt_wishPageB2c.scss"
  
@@ -112,7 +113,7 @@ const WishItem = ({
                 </div>
             </td>
             <td className="price">
-                {storeInitData?.IsPriceShow == 1 &&
+                {!isPriceHidden(storeInitData) &&
                     <span>
                         <span
                             className="smr_currencyFont"

@@ -1,4 +1,5 @@
 "use client";
+import { isStoreInitFlagEnabled } from "@/app/(core)/utils/storeFlags";
 import React, { useEffect, useState } from "react";
 import {
   AppBar,
@@ -163,7 +164,7 @@ const ProCatNewHeader = ({ storeinit, logos }) => {
                     gap: { md: 2.5, lg: 3 },
                   }}
                 >
-                  {islogin && storeinit?.IsCustomOrder === 1 && (
+                  {islogin && isStoreInitFlagEnabled(storeinit, "customOrder") && (
                     <Typography
                       component="span"
                       sx={navItemStyle}
@@ -386,7 +387,7 @@ const ProCatNewHeader = ({ storeinit, logos }) => {
             </ListItemButton>
           </ListItem>
 
-          {isMounted && islogin && storeinit?.IsCustomOrder === 1 && (
+          {isMounted && islogin && isStoreInitFlagEnabled(storeinit, "customOrder") && (
             <ListItem disablePadding>
               <ListItemButton
                 onClick={() => {

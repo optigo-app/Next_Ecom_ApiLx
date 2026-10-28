@@ -1,4 +1,5 @@
 'use client';
+import { isStoreInitFlagEnabled } from "@/app/(core)/utils/storeFlags";
 import React, { useEffect, useState } from "react";
 import "./ContinueWithEmail.modul.scss";
 import { toast } from "react-toastify";
@@ -93,7 +94,7 @@ export default function ContinueWithEmail({ params, searchParams, storeInit }) {
             sessionStorage.removeItem("registerMobile");
           }
         } else {
-          if (storeInit?.IsEcomOtpVerification != 0 && storeInit?.IsEcomOtpVerification == 1) {
+          if (isStoreInitFlagEnabled(storeInit, "ecomOtpVerification")) {
             if (process.env.NODE_ENV === "development") {
               const otp = Number(response.Data.rd[0].OTP)
                 ? response.Data.rd[0].OTP
@@ -144,8 +145,7 @@ export default function ContinueWithEmail({ params, searchParams, storeInit }) {
       </Backdrop>
 
       {/* OTP Modal Container */}
-      {storeInit?.IsEcomOtpVerification &&
-      storeInit?.IsEcomOtpVerification === 1 ? (
+      {isStoreInitFlagEnabled(storeInit, "ecomOtpVerification") ? (
         <OTPContainer
           emailId={email.trim()}
           isOpen={isOpen}

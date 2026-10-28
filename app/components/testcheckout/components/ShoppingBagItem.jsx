@@ -1,5 +1,6 @@
 "use client";
 
+import { isPriceHidden } from "@/app/(core)/utils/storeFlags";
 import React, { useState } from "react";
 import { Box, Typography, IconButton, Button } from "@mui/material";
 import { useRouter } from "next/navigation";
@@ -233,7 +234,7 @@ export default function ShoppingBagItem({
         </Box>
 
         {/* Price */}
-        {storeinit?.IsPriceShow == 1 && (
+        {!isPriceHidden(storeinit) && (
           <Typography
             sx={{
               fontWeight: 700,

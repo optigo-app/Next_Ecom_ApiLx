@@ -1,3 +1,4 @@
+import { isPriceHidden } from "@/app/(core)/utils/storeFlags";
 import React, { useEffect, useState } from "react";
 import "./Wishlist.modul.scss";
 import Cookies from "js-cookie";
@@ -317,7 +318,7 @@ const WishlistItems = ({
                     <Box
                       sx={{ display: "flex", alignItems: "center", gap: 0.5 }}
                     >
-                      {storeInit?.IsPriceShow == 1 ? (
+                      {!isPriceHidden(storeInit) ? (
                         <Typography
                           variant="body2"
                           sx={{

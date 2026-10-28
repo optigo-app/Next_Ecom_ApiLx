@@ -1,4 +1,5 @@
 "use client"
+import { isPriceHidden } from "@/app/(core)/utils/storeFlags";
 import React, { useEffect, useState } from "react";
 import "./smr_wishlist.scss";
 import Card from "@mui/material/Card";
@@ -223,7 +224,7 @@ const WishlistItems = ({
                       </>
                     )}
                     {/* <span className="smr_currencyFont" dangerouslySetInnerHTML={{ __html: decodeEntities(currency) }} /> */}
-                    {storeInit?.IsPriceShow == 1 && (
+                    {!isPriceHidden(storeInit) && (
                       <>
                         <span className="smr_currencyFont">
                           {loginInfo?.CurrencyCode ?? storeInit?.CurrencyCode}

@@ -1,3 +1,4 @@
+import { isPriceHidden } from "@/app/(core)/utils/storeFlags";
 import { formatTitleLine, formatter } from "@/app/(core)/utils/Glob_Functions/GlobalFunction";
 import { Box, Typography, Skeleton, Stack } from "@mui/material";
 import React, { useState } from "react";
@@ -66,7 +67,7 @@ const InfoDetail = ({
             )}
 
             {/* Price Section */}
-            {storeInit?.IsPriceShow === 1 && (
+            {!isPriceHidden(storeInit) && (
                 <Box sx={{ mb: 1.5 }}>
                     <Stack direction="row" alignItems="center" spacing={0.5}>
                         {isPriceloading ? (

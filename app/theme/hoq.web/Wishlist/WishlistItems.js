@@ -12,6 +12,7 @@ import { toast } from "react-toastify";
 import { Skeleton } from "@mui/material";
 import { formatTitleLine } from "@/app/(core)/utils/Glob_Functions/GlobalFunction";
 import { useStore } from "@/app/(core)/contexts/StoreProvider";
+import { isPriceHidden } from "@/app/(core)/utils/storeFlags";
 
 const WishlistItems = ({
   item,
@@ -209,7 +210,7 @@ const WishlistItems = ({
                 {item?.metaltypename !== "" && (
                   <span>{item?.metaltypename}</span>
                 )}
-                {StoreInit?.IsPriceShow && <>
+                {!isPriceHidden(StoreInit) && <>
                   {" / "}
                   <span
                     className="hoq_currencyFont"

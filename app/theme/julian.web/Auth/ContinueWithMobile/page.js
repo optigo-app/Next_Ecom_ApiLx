@@ -1,4 +1,5 @@
 'use client';
+import { isStoreInitFlagEnabled } from "@/app/(core)/utils/storeFlags";
 import React, { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import { ContimueWithMobileAPI } from '@/app/(core)/utils/API/Auth/ContimueWithMobileAPI';
@@ -105,7 +106,7 @@ export default function ContinueWithMobile({ params, searchParams, storeInit }) 
           sessionStorage.setItem('Countrycodestate', Countrycodestate);
           sessionStorage.setItem('registerMobile', mobileNo);
           sessionStorage.removeItem("registerEmail");
-        } else if (Countrycodestate == "91" && storeInit?.IsEcomOtpVerification == 0) {
+        } else if (Countrycodestate == "91" && !isStoreInitFlagEnabled(storeInit, "ecomOtpVerification")) {
           navigation(redirectSignUpUrl);
           sessionStorage.setItem('Countrycodestate', Countrycodestate);
           sessionStorage.setItem('registerMobile', mobileNo);
@@ -152,7 +153,7 @@ export default function ContinueWithMobile({ params, searchParams, storeInit }) 
       </Backdrop>
 
       {/* OTP Modal Container */}
-      {Boolean(storeInit?.IsEcomOtpVerification === 1 && Countrycodestate == "91") && (
+      {Boolean(isStoreInitFlagEnabled(storeInit, "ecomOtpVerification") && Countrycodestate == "91") && (
         <OTPContainer
           mobileNo={mobileNo?.trim()}
           isOpen={isOpen}

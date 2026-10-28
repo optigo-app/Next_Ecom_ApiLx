@@ -1,3 +1,4 @@
+import { isPriceHidden } from "@/app/(core)/utils/storeFlags";
 import React, { useEffect, useState } from 'react'
 import { findMetalColor, formatter, formatTitleLine, findMetalType, storImagePath } from "@/app/(core)/utils/Glob_Functions/GlobalFunction";
 import {
@@ -412,7 +413,7 @@ const ProductCard = ({
                 }}
             >
                 {/* Price */}
-                {storeInit?.IsPriceShow == 1 && <Typography
+                {!isPriceHidden(storeInit) && <Typography
                     sx={{
                         fontWeight: 700,
                         fontSize: 15,
@@ -814,7 +815,7 @@ const ProductCard = ({
                                     )[0]?.metaltype
                                 }
                             </span>
-                            {storeInit?.IsPriceShow == 1 && <>
+                            {!isPriceHidden(storeInit) && <>
                                 <span>/</span>
                                 <span className="smr_price">
                                     <span className="smr_currencyFont">

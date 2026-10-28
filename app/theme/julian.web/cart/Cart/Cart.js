@@ -1,4 +1,5 @@
 'use client'
+import { isPriceHidden } from "@/app/(core)/utils/storeFlags";
 import React, { useEffect, useState } from "react";
 import "./elv_cartPage.scss";
 import useCart from "@/app/(core)/utils/Glob_Functions/Cart_Wishlist/Cart";
@@ -352,7 +353,7 @@ const ElveeCartPage = ({ storeinit, visiterId }) => {
           width: "100%",
         }}
       >
-        {hasItems && <CartHeader count={finalCartData.length} AddOrderRemark={handleOrderRemarkFun} handleRemoveAll={handleConfirmRemoveAll} totalPrice={getTotalPrice[0]?.total} CurrencyCode={loginUserDetail?.CurrencyCode ?? CurrencyData?.CurrencyCode} IsPriceShow={storeinit?.IsPriceShow == 1} handleMoveToOrder={handleDiscountModalOpen} handleOpen1={handleOpen1} handleClose1={handleClose1} orderRemark={orderRemark} OrderMessage={orderRemark ? "View & Edit Order Remark" : "Add Order Remark"} openClearAllModal={handleOpen} closeClearAllModal={handleClose} summary={summary} />}
+        {hasItems && <CartHeader count={finalCartData.length} AddOrderRemark={handleOrderRemarkFun} handleRemoveAll={handleConfirmRemoveAll} totalPrice={getTotalPrice[0]?.total} CurrencyCode={loginUserDetail?.CurrencyCode ?? CurrencyData?.CurrencyCode} IsPriceShow={!isPriceHidden(storeinit)} handleMoveToOrder={handleDiscountModalOpen} handleOpen1={handleOpen1} handleClose1={handleClose1} orderRemark={orderRemark} OrderMessage={orderRemark ? "View & Edit Order Remark" : "Add Order Remark"} openClearAllModal={handleOpen} closeClearAllModal={handleClose} summary={summary} />}
 
         <div className="fg_elv_Productlists_Main_div">
           <div className="elv_Productlists_lists_div">

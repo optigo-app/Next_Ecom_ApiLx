@@ -1,3 +1,4 @@
+import { isPriceHidden } from "@/app/(core)/utils/storeFlags";
 import React, { useEffect, useState } from "react";
 import "./hoq_cartPage.scss";
 import { Divider, Skeleton } from "@mui/material";
@@ -239,7 +240,7 @@ const Customization = ({
               handleDecrement={handleDecrement}
               qtyCount={qtyCount}
             />
-            {storeinit?.IsPriceShow == 1 && (
+            {!isPriceHidden(storeinit) && (
               <div className="product-price">
                 {!ispriceloding ? (
                   <span>
@@ -332,7 +333,7 @@ const Customization = ({
               </div>
             }
             <div className="">
-              {storeinit?.IsPriceShow == 1 && (
+              {!isPriceHidden(storeinit) && (
                 <div className="hoq_Stockproduct-price">
                   {!ispriceloding ? (
                     <span>

@@ -1,4 +1,5 @@
 "use client";
+import { isPriceHidden } from "@/app/(core)/utils/storeFlags";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import "./ProductDetail.modul.scss";
 import Cookies from "js-cookie";
@@ -1710,7 +1711,7 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
                       : ""}
                   </p>
 
-                  {storeInit?.IsPriceShow === 1 &&
+                  {!isPriceHidden(storeInit) &&
                     (isPriceloading ? (
                       <Skeleton variant="rounded" width={240} height={30} />
                     ) : (
@@ -2097,7 +2098,7 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
                     </div>
                   </div>
 
-                  {storeInit?.IsPriceShow == 1 &&
+                  {!isPriceHidden(storeInit) &&
                     storeInit?.IsPriceBreakUp == 1 &&
                     singleProd1?.IsMrpBase !== 1 &&
                     singleProd?.IsMrpBase !== 1 && (
@@ -2456,7 +2457,7 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
                   <p className="smilingProdutDetltTitle">
                     {singleProd?.designno}
                   </p>
-                  {/* {storeInit?.IsPriceShow === 1 &&
+                  {/* {!isPriceHidden(storeInit) &&
                     (isPriceloading ? (
                       <Skeleton variant="rounded" width={240} height={30} sx={{ marginTop: '5px' }} />
                     ) : (
@@ -2816,7 +2817,7 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
                     <th className="dt_stockItem_table_td">
                       Metal Color-Purity
                     </th>
-                    {storeInit?.IsPriceShow == 1 && (
+                    {!isPriceHidden(storeInit) && (
                       <th className="dt_stockItem_table_td">Price</th>
                     )}
                     <th className="dt_stockItem_table_td">Add To Cart</th>
@@ -2931,7 +2932,7 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
                         </span>
                         {/* </div> */}
                       </td>
-                      {storeInit?.IsPriceShow == 1 && (
+                      {!isPriceHidden(storeInit) && (
                         <td className="dt_stockItem_table_td">
                           <span className="dt_table_Price">
                             <span className="smr_currencyFont">
@@ -3045,7 +3046,7 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
                             {ele?.designno}
                           </span>
 
-                          {storeInit?.IsPriceShow == 1 && (
+                          {!isPriceHidden(storeInit) && (
                             <div
                               style={{
                                 display: "flex",
@@ -3201,14 +3202,14 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
                                     <p>
                                       {ele?.designno} - {ele?.CategoryName}
                                       <br />
-                                      {storeInit?.IsPriceShow == 1 && (
+                                      {!isPriceHidden(storeInit) && (
                                         <span className="dt_currencyFont">
                                           {loginInfo?.CurrencyCode ??
                                             storeInit?.CurrencyCode}
                                         </span>
                                       )}
                                       &nbsp;
-                                      {storeInit?.IsPriceShow == 1 &&
+                                      {!isPriceHidden(storeInit) &&
                                         formatter.format(
                                           ele?.UnitCostWithMarkUp,
                                         )}

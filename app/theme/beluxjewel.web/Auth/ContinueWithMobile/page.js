@@ -1,12 +1,12 @@
 'use client';
-import React, { useEffect, useState } from 'react';
-import { toast } from 'react-toastify';
-import { ContimueWithMobileAPI } from '@/app/(core)/utils/API/Auth/ContimueWithMobileAPI';
+import { isStoreInitFlagEnabled } from "@/app/(core)/utils/storeFlags";
+import React from 'react';
 import './ContimueWithMobile.modul.scss';
 import OTPContainer from '@/app/(core)/utils/Glob_Functions/Otpflow/App';
 import ContinueMobile from '@/app/(core)/utils/Glob_Functions/CountryDropDown/ContinueMobile';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { useContinueWithMobile } from '@/app/(core)/hooks/Auth/useContinueWithMobile';
 
 import {
   Box,
@@ -22,110 +22,23 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
 export default function ContinueWithMobile({ params, searchParams, storeInit }) {
   const router = useRouter();
-  const [mobileNo, setMobileNo] = useState('');
-  const [errors, setErrors] = useState({});
-  const [isLoading, setIsLoading] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const navigation = (path) => router.push(path);
-  const [isOpen, setIsOpen] = useState(false);
-  const [Countrycodestate, setCountrycodestate] = useState();
-
-  const search = searchParams?.LoginRedirect || searchParams?.loginRedirect || searchParams?.search || "";
-  const securityKey = searchParams?.SK || searchParams?.SecurityKey || "";
-
-  const cleanRedirect = search ? search.replace(/^\?LoginRedirect=/, '') : '';
-  const queryParamStr = `${cleanRedirect ? `?LoginRedirect=${encodeURIComponent(cleanRedirect)}` : ""}${securityKey ? `${cleanRedirect ? '&' : '?'}SK=${encodeURIComponent(securityKey)}` : ""}`;
-
-  const redirectMobileUrl = `/LoginWithMobileCode${queryParamStr}`;
-  const redirectSignUpUrl = `/register${queryParamStr}`;
-  const cancelRedireactUrl = `/LoginOption${queryParamStr}`;
-
-  useEffect(() => {
-    sessionStorage.removeItem("registerEmail");
-    sessionStorage.removeItem("registerMobile");
-    sessionStorage.removeItem("Countrycodestate");
-  }, []);
-
-  const handleInputChange = (e, setter, fieldName) => {
-    const { value } = e.target;
-    const trimmedValue = value.trim();
-    const formattedValue = trimmedValue.replace(/\s/g, '');
-    setter(formattedValue);
-  };
-
-  const handleSubmit = async () => {
-    if (isSubmitting) {
-      return;
-    }
-
-    if (!mobileNo.trim()) {
-      setErrors({ mobileNo: 'Mobile No. is required' });
-      return;
-    }
-    const { AllCode } = (() => {
-      try {
-        const countryList = sessionStorage.getItem("CountryCodeListApi");
-        return {
-          AllCode: countryList ? JSON.parse(countryList) : []
-        };
-      } catch {
-        return { AllCode: [] };
-      }
-    })();
-
-    const phonecode = AllCode?.find((val) => (val?.mobileprefix == Countrycodestate || val?.MobilePrefix == Countrycodestate));
-    const requiredLength = phonecode?.PhoneLength || phonecode?.phonelength || 10;
-    const isValid = new RegExp(`^\\d{${requiredLength}}$`).test(mobileNo.trim());
-    if (!isValid) {
-      setErrors({ mobileNo: `Mobile number must be ${requiredLength} digits.` });
-      setIsSubmitting(false);
-      setIsLoading(false);
-      return;
-    }
-    setIsSubmitting(true);
-    setIsLoading(true);
-    ContimueWithMobileAPI(mobileNo, Countrycodestate).then((response) => {
-      setIsLoading(false);
-      if (response?.Status == 400) {
-        toast.error(response?.Message);
-        setIsSubmitting(false);
-        return;
-      }
-      if (response?.Data?.rd[0]?.stat === 1 && response?.Data?.rd[0]?.islead === 1) {
-        toast.error('You are not a customer, contact to admin');
-        setIsSubmitting(false);
-      } else if (response?.Data?.rd[0]?.stat === 1 && response?.Data?.rd[0]?.islead === 0) {
-        toast.success('OTP send Successfully');
-        navigation(redirectMobileUrl);
-        sessionStorage.setItem('registerMobile', mobileNo);
-        sessionStorage.setItem('Countrycodestate', Countrycodestate);
-        sessionStorage.removeItem("registerEmail");
-        setIsSubmitting(false);
-      } else {
-        if (Countrycodestate != "91") {
-          navigation(redirectSignUpUrl);
-          sessionStorage.setItem('Countrycodestate', Countrycodestate);
-          sessionStorage.setItem('registerMobile', mobileNo);
-          sessionStorage.removeItem("registerEmail");
-        } else if (Countrycodestate == "91" && storeInit?.IsEcomOtpVerification == 0) {
-          navigation(redirectSignUpUrl);
-          sessionStorage.setItem('Countrycodestate', Countrycodestate);
-          sessionStorage.setItem('registerMobile', mobileNo);
-          sessionStorage.removeItem("registerEmail");
-        } else {
-          sessionStorage.setItem('Countrycodestate', Countrycodestate);
-          sessionStorage.setItem('registerMobile', mobileNo);
-          sessionStorage.removeItem("registerEmail");
-          setIsOpen(true);
-          setIsSubmitting(false);
-        }
-      }
-    }).catch((err) => {
-      console.log(err);
-      setIsSubmitting(false);
-      setIsLoading(false);
-    });
-  };
+  const {
+    mobileNo,
+    setMobileNo,
+    errors,
+    setErrors,
+    isLoading,
+    isSubmitting,
+    isOpen,
+    setIsOpen,
+    Countrycodestate,
+    setCountrycodestate,
+    search,
+    cancelUrl: cancelRedireactUrl,
+    handleInputChange,
+    handleSubmit,
+  } = useContinueWithMobile({ searchParams, storeInit });
 
   return (
     <Box
@@ -154,7 +67,7 @@ export default function ContinueWithMobile({ params, searchParams, storeInit }) 
       </Backdrop>
 
       {/* OTP Modal Container */}
-      {Boolean(storeInit?.IsEcomOtpVerification === 1 && Countrycodestate == "91") && (
+      {Boolean(isStoreInitFlagEnabled(storeInit, "ecomOtpVerification") && Countrycodestate == "91") && (
         <OTPContainer
           mobileNo={mobileNo?.trim()}
           isOpen={isOpen}

@@ -1,3 +1,4 @@
+import { isPriceHidden } from "@/app/(core)/utils/storeFlags";
 import React, { useEffect, useState } from 'react';
 import CardMedia from '@mui/material/CardMedia';
 import { RadioGroup, Skeleton, useMediaQuery } from '@mui/material';
@@ -284,14 +285,14 @@ const CartItem = ({
             </div>
             {/* <span className="Hoq3_change-size">CHANGE SIZE</span> */}
           </div>
-          {storeInitData?.IsPriceShow == 1 &&
+          {!isPriceHidden(storeInitData) &&
             <div className="Hoq3_cart-item__price">
               <p>{loginInfo?.CurrencyCode ?? storeInitData?.CurrencyCode}&nbsp;{formatter(item?.UnitCostWithMarkUp)}</p>
               <span className="Hoq3_price-excl-vat">(Excl. VAT)</span>
             </div>
           }
           <>
-            {storeInitData?.IsPriceShow == 1 &&
+            {!isPriceHidden(storeInitData) &&
               <div className="Hoq3_cart-item__total-price">
                 <p>{loginInfo?.CurrencyCode ?? storeInitData?.CurrencyCode}&nbsp;{formatter(item?.FinalCost)}</p>
                 <span className="Hoq3_price-excl-vat">(Excl. VAT)</span>

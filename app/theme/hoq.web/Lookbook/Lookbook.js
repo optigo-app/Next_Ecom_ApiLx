@@ -1,5 +1,6 @@
 "use client";
 
+import { isPriceHidden } from "@/app/(core)/utils/storeFlags";
 import React, { useEffect, useRef, useState } from "react";
 import "./Lookbook.modul.scss";
 import gradientColors from "./color.json";
@@ -1327,7 +1328,7 @@ const Lookbook = ({ storeInit }) => {
                                 className="hoq_lookBookImgDeatilSub"
                                 style={{ display: "flex", alignItems: "center" }}
                               >
-                                {storeInit?.IsPriceShow == 1 && (
+                                {!isPriceHidden(storeInit) && (
                                   <>
                                     <p
                                       style={{
@@ -2045,8 +2046,7 @@ const Lookbook = ({ storeInit }) => {
                                                 ),
                                               }}
                                             /> */}
-                                                    {storeInit?.IsPriceShow ==
-                                                      1 && (
+                                                    {!isPriceHidden(storeInit) && (
                                                         <>
                                                           <span className="hoq_currencyFont">
                                                             {loginUserDetail?.CurrencyCode ??

@@ -1,5 +1,6 @@
 "use client";
 
+import { isPriceHidden } from "@/app/(core)/utils/storeFlags";
 import React, { useEffect, useRef, useState } from 'react'
 import './BestSellerSection1.scss';
 import { formatRedirectTitleLine, formatter, formatTitleLine, storImagePath } from "@/app/(core)/utils/Glob_Functions/GlobalFunction";
@@ -177,7 +178,7 @@ const BestSellerSection1 = ({ data, storeData }) => {
                                     <div className="dt_bestSaller_product_info_Web">
                                         <h3>{formatTitleLine(data?.TitleLine) && data?.TitleLine}</h3>
                                       
-                                        {storeInit?.IsPriceShow == 1 && <p>
+                                        {!isPriceHidden(storeInit) && <p>
                                             <span
                                                 className="smr_currencyFont"
                                                 dangerouslySetInnerHTML={{

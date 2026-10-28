@@ -1,5 +1,6 @@
 "use client";
 
+import { isPriceHidden } from "@/app/(core)/utils/storeFlags";
 import React from 'react';
 import {
     Box,
@@ -200,7 +201,7 @@ export default function PaymentComponent({ bgcolor, textColor, top, storeinit })
 
                         <Grid item size={{ xs: 12, md: 6 }}>
                             <Stack spacing={2}>
-                                {IsPriceShow == 1 && <Card>
+                                {!isPriceHidden(IsPriceShow) && <Card>
                                     <CardContent>
                                         <Typography variant="h6" gutterBottom>
                                             Order Summary

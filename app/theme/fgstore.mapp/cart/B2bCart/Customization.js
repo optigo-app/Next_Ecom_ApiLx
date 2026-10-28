@@ -1,3 +1,4 @@
+import { isPriceHidden } from "@/app/(core)/utils/storeFlags";
 import React, { useEffect, useState } from 'react';
 import './smr_cartPage.scss';
 import { Divider, Skeleton } from '@mui/material';
@@ -168,7 +169,7 @@ const Customization = ({
           } */}
           <div className='smr_cartQtyPricemainDev'>
             <QuantitySelector selectedItem={selectedItem} handleIncrement={handleIncrement} handleDecrement={handleDecrement} qtyCount={qtyCount} />
-            {storeInitData?.IsPriceShow == 1 &&
+            {!isPriceHidden(storeInitData) &&
               <div className="product-price">
                 {!ispriceloding ? (
                   <span>
@@ -245,7 +246,7 @@ const Customization = ({
               </div>
             }
             <div className=''>
-              {storeInitData?.IsPriceShow == 1 &&
+              {!isPriceHidden(storeInitData) &&
                 <div className="smr_Stockproduct-price">
                   {!ispriceloding ? (
                     <span>

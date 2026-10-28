@@ -1,3 +1,4 @@
+import { isPriceHidden } from "@/app/(core)/utils/storeFlags";
 import React, { useEffect, useState } from "react";
 import "./neworderhistory.scss";
 import CircleIcon from "@mui/icons-material/Circle";
@@ -93,7 +94,7 @@ const NewOrderHistory = () => {
     let storeinit = JSON.parse(sessionStorage.getItem("storeInit"));
     let loginInfo = JSON.parse(sessionStorage.getItem("loginUserDetail"));
     const UserEmail = sessionStorage.getItem("registerEmail");
-    setUkey(storeinit?.ukey);   
+    setUkey(storeinit?.ukey);
      setstoreInit(storeinit);
     // setImagePath(storeinit?.UploadLogicalPath)
     // setImagePath(storeinit?.DesignImageFolBackEnd);
@@ -275,7 +276,7 @@ if (response?.Status === "200" || response?.Status === 200 || response?.Status =
 };
 
   const [images, setImages] = useState([]);
-  
+
   useEffect(() => {
     const fetchImages = async () => {
       const updatedImages = await Promise.all(orderDetails?.map(async (el) => {
@@ -287,7 +288,7 @@ if (response?.Status === "200" || response?.Status === 200 || response?.Status =
         }
         else {
           const checkDefaultImage = `${image_path}Design_Thumb/${el?.designno}~1.jpg`;
-          const checkImage = await checkImageAvailability(checkDefaultImage); 
+          const checkImage = await checkImageAvailability(checkDefaultImage);
           if(checkImage){
             finalImage = checkImage;
           }
@@ -299,17 +300,17 @@ if (response?.Status === "200" || response?.Status === 200 || response?.Status =
 
         return {
           ...el,
-          finalImage, 
+          finalImage,
         };
       }));
       setImages(updatedImages);
     };
 
     if (orderDetails?.length > 0) {
-      fetchImages(); 
+      fetchImages();
     }
-  }, [orderDetails]); 
-  
+  }, [orderDetails]);
+
   return (
     <div className="orderHistory_Account_SMR">
       <div className=" orderHistory_acc">
@@ -333,14 +334,14 @@ if (response?.Status === "200" || response?.Status === 200 || response?.Status =
                 ? orderHistoryData?.map((e, i) => {
                     return (
                       <Card variant="outlined" sx={{ boxShadow: "none", width: "100%", margin: "20px 0px", border: "1px solid #cacaca", }} key={i} >
-               
+
                         <Box sx={{display:'flex', justifyContent:'space-between', alignItems:'center', padding:'3px'}}>
                           <div style={{display:'flex'}}>
                             <div className="pd_s_noh_acc fs_head_acc start_noh_acc  mx_4_noh_acc">{e?.orderEntryDate}</div>
                             <div className="fs_head_acc start_noh_acc  mx_4_noh_acc" style={{fontWeight:'bold', color:'brown'}}>{e?.OrderPrefix}{e?.orderno}</div>
                             <div className="fs_head_acc start_noh_acc  mx_4_noh_acc">Item : <span style={{color:'brown', fontWeight:'bold'}}>{e?.TotalQuantity}</span></div>
                           </div>
-                          {storeInit?.IsPriceShow == 1 && 
+                          {!isPriceHidden(storeInit) &&
                           <div>
                             {<span className="fs_head_acc start_noh_acc  mx_4_noh_acc" style={{color:'black'}}><span className="fs_head_acc " style={{color:'black', fontWeight:'bold',paddingRight:'2px'}}>Total Amount : </span> <span className="fs_head_acc " style={{fontWeight:'bold', paddingRight:'5px'}} dangerouslySetInnerHTML={{__html: e?.Country_CurrencyCode}}></span> <span className="fs_head_acc " style={{fontWeight:'bold'}}>{formatAmount2(e?.orderAmountwithvat)}</span></span>}
                             <div className="fs_head_acc_tax start_noh_acc  lh_head_acc mx_4_noh_acc" style={{color:'grey', display:'flex', justifyContent:'flex-end', alignItems:'center'}}>(<span className="fs_head_acc_tax " style={{color:'grey', paddingRight:'2px'}}>+ Estimated Tax : </span> <span className="fs_head_acc_tax" style={{paddingRight:'5px'}} dangerouslySetInnerHTML={{__html: e?.Country_CurrencyCode}}></span> <span className="fs_head_acc_tax ">{formatAmount2(e?.totaltaxAmount)}</span>)</div>
@@ -349,14 +350,14 @@ if (response?.Status === "200" || response?.Status === 200 || response?.Status =
                 }
                         </Box>
                         <CardContent sx={{ boxShadow: "none", paddingTop: "5px", paddingBottom: "10px", padding:'0px', padding:'0px 15px' }} className="fs_head_acc " >
-                          { !max400px && <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", }} className="fs_head_acc minH_box_acc" >                           
+                          { !max400px && <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", }} className="fs_head_acc minH_box_acc" >
                             <Box sx={{  display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", }} className="fs_head_acc w_20_noh_acc" >
                                <Typography style={{display:'flex', alignItems:'center', justifyContent:'flex-start', width:'100%'}}  className={` ${getStatusColor( e?.b2c_MasterManagement_ProgressStatusId )} fs_head_acc start_noh_acc`}>
                                 <CircleIcon sx={{ fontSize:'7px !important', marginRight: "5px" }} />
                                 {e?.b2c_MasterManagement_ProgressStatusName?.toUpperCase()}
                               </Typography>
                             </Box>
-                           { <Box sx={{  display: "flex", flexDirection:'column', justifyContent: "center", alignItems: "flex-end", }} className="fs_head_acc w_80_noh_acc" > 
+                           { <Box sx={{  display: "flex", flexDirection:'column', justifyContent: "center", alignItems: "flex-end", }} className="fs_head_acc w_80_noh_acc" >
                             <>
                               {e?.IsPLW === 1 ? ( <>
                                 <div className="" style={{display:'flex', alignItems:'center'}}>
@@ -395,7 +396,7 @@ if (response?.Status === "200" || response?.Status === 200 || response?.Status =
                                     </>
                                     : ''
                                   }
-                                  { showPrint ? <div className="center_noh" style={{ fontSize:'7px', lineHeight:'7px'}}>{clickedPrintId === e?.id && 'Coming Soon...'}</div> : <div></div>}  
+                                  { showPrint ? <div className="center_noh" style={{ fontSize:'7px', lineHeight:'7px'}}>{clickedPrintId === e?.id && 'Coming Soon...'}</div> : <div></div>}
 
                                 </div>
                               </>
@@ -406,14 +407,14 @@ if (response?.Status === "200" || response?.Status === 200 || response?.Status =
                             </>
                             </Box>}
                           </Box>}
-                          { max400px && <Box className="fs_head_acc minH_box_acc" >                           
+                          { max400px && <Box className="fs_head_acc minH_box_acc" >
                             <Box sx={{  display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", padding:'5px 0px' }} className="fs_head_acc w_100_noh_acc" >
                                <Typography style={{display:'flex', alignItems:'center', justifyContent:'flex-start', width:'100%'}}  className={` ${getStatusColor( e?.b2c_MasterManagement_ProgressStatusId )} fs_head_acc start_noh_acc`}>
                                 <CircleIcon sx={{ fontSize:'7px !important', marginRight: "5px" }} />
                                 {e?.b2c_MasterManagement_ProgressStatusName?.toUpperCase()}
                               </Typography>
                             </Box>
-                           { <Box sx={{  display: "flex", flexDirection:'column', justifyContent: "center", alignItems: "flex-start", paddingBottom:'10px' }} className="fs_head_acc w_100_noh_acc" > 
+                           { <Box sx={{  display: "flex", flexDirection:'column', justifyContent: "center", alignItems: "flex-start", paddingBottom:'10px' }} className="fs_head_acc w_100_noh_acc" >
                             <>
                               {e?.IsPLW === 1 ? ( <>
                                 <div className="w_100_noh_acc" style={{display:'flex', alignItems:'center', justifyContent:'space-between'}}>
@@ -505,21 +506,21 @@ if (response?.Status === "200" || response?.Status === 200 || response?.Status =
                                       xl={orderDetails?.length === 1 ? 3 : 3}
                                     >
                                       <Card sx={{display:'flex', alignItems:'center'}} >
-                                      <img 
-                                          src={el.finalImage} 
-                                          onError={handleOrderImageError} 
-                                          alt="designimage" 
-                                          style={{ maxHeight: '90px', maxWidth: '90px', marginRight: '10px' }} 
-                                          onClick={() => handleMoveToDetail(el ,index)} 
+                                      <img
+                                          src={el.finalImage}
+                                          onError={handleOrderImageError}
+                                          alt="designimage"
+                                          style={{ maxHeight: '90px', maxWidth: '90px', marginRight: '10px' }}
+                                          onClick={() => handleMoveToDetail(el ,index)}
                                           draggable={true}
                                           onContextMenu={(e) => e.preventDefault()}
                                       />
                                           {/* <img src={`${image_path}Design_Thumb/${el?.designno}~${1}${el?.metalcolorname ? `~${el.metalcolorname}` : ''}.jpg`} onError={handleOrderImageError} alt="#designimage" style={{maxHeight:'90px', maxWidth:'90px', marginRight:'10px'}} onClick={() => handleMoveToDetail(el)} /> */}
                                           {/* <img src={`${image_path}${el?.imgrandomno}${btoa(el?.autocode)}/Red_Thumb/${el?.DefaultImageName}`} onError={handleOrderImageError} alt="#designimage" style={{maxHeight:'90px', maxWidth:'90px', marginRight:'10px'}} onClick={() => handleMoveToDetail(el)} /> */}
                                           <div>
-                                          <div>{el?.designno} - {`Quantity ${el?.quantity}`}</div>  
+                                          <div>{el?.designno} - {`Quantity ${el?.quantity}`}</div>
                                             <div>{el?.metaltypename?.toUpperCase()?.split(" ")[1]} {el?.metalcolorname?.toUpperCase()} {el?.metaltypename?.toUpperCase()?.split(" ")[0]}</div>
-                                            {storeInit?.IsPriceShow == 1 &&  <div style={{fontWeight:'bold'}}><span style={{paddingRight:'5px'}} dangerouslySetInnerHTML={{ __html: e?.Country_CurrencyCode }}></span> 
+                                            {!isPriceHidden(storeInit) &&  <div style={{fontWeight:'bold'}}><span style={{paddingRight:'5px'}} dangerouslySetInnerHTML={{ __html: e?.Country_CurrencyCode }}></span>
                                             {formatAmount2(el?.TotalUnitCostWithDiscount)}</div>
                 }
                                           </div>
@@ -593,13 +594,13 @@ export default NewOrderHistory;
             //                   <Paper size="small" sx={{ position: "absolute", right: "10px", top: "25px", }} className="fs_head_acc" >
             //                     <MenuList>
             //                       <MenuItem className="fs_head_acc" sx={{ padding: "0px 5px", width: "100%", minWidth: "160px", }} size="small" > <span style={{ width: "50%", fontSize: "12px" }} className="fs_head_acc">
-            //                          Sub Total : </span>{" "} <span className="d_end_oh fs_head_acc" style={{ width: "50%", fontSize: "12px" }} > {formatAmount(e?.orderAmount)} </span> 
+            //                          Sub Total : </span>{" "} <span className="d_end_oh fs_head_acc" style={{ width: "50%", fontSize: "12px" }} > {formatAmount(e?.orderAmount)} </span>
             //                       </MenuItem>
             //                       <MenuItem className="fs_head_acc" sx={{ padding: "0px 5px", width: "100%", minWidth: "160px", }} size="small" > <span style={{ width: "50%", fontSize: "12px" }} className="fs_head_acc">
-            //                          Estimated Tax : </span>{" "} <span className="d_end_oh fs_head_acc" style={{ width: "50%", fontSize: "12px" }} > {formatAmount(e?.totaltaxAmount)} </span> 
+            //                          Estimated Tax : </span>{" "} <span className="d_end_oh fs_head_acc" style={{ width: "50%", fontSize: "12px" }} > {formatAmount(e?.totaltaxAmount)} </span>
             //                       </MenuItem>
-            //                       <MenuItem className="fs_head_acc" sx={{ padding: "0px 5px", width: "100%", minWidth: "160px", }} size="small" > <span style={{ width: "50%", fontSize: "12px" }} className="fs_head_acc"> 
-            //                          Grand Total : </span>{" "} <span className="d_end_oh fs_head_acc" style={{ width: "50%", fontSize: "12px" }} > {" "} {formatAmount(e?.orderAmountwithvat)} </span> 
+            //                       <MenuItem className="fs_head_acc" sx={{ padding: "0px 5px", width: "100%", minWidth: "160px", }} size="small" > <span style={{ width: "50%", fontSize: "12px" }} className="fs_head_acc">
+            //                          Grand Total : </span>{" "} <span className="d_end_oh fs_head_acc" style={{ width: "50%", fontSize: "12px" }} > {" "} {formatAmount(e?.orderAmountwithvat)} </span>
             //                       </MenuItem>
             //                     </MenuList>
             //                   </Paper>
@@ -624,8 +625,8 @@ export default NewOrderHistory;
             //                   />
             //                 </Box>}
             //                 <Box sx={{ width: "33.33%", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", }} className="fs_head_acc w_50_noh w_100_noh_acc" >
-           
-                           
+
+
             //                   { smallDevice2 && <Typography style={{display:'flex', alignItems:'center'}}  className={` ${getStatusColor( e?.b2c_MasterManagement_ProgressStatusId )} fs_head_acc start_noh_acc w_100_noh_acc`}>
             //                     <CircleIcon sx={{ fontSize:'7px !important', marginRight: "5px" }} />
             //                     {e?.b2c_MasterManagement_ProgressStatusName?.toUpperCase()}
@@ -642,7 +643,7 @@ export default NewOrderHistory;
             //                     Item : <span style={{color:'brown', fontWeight:'bold'}}>{e?.TotalQuantity}</span>
             //                   </Typography>
             //                 </Box>
-            //                {  <Box sx={{ width: "33.33%", display: "flex", flexDirection:'column', justifyContent: "center", alignItems: "flex-end", }} className="fs_head_acc w_50_noh" > 
+            //                {  <Box sx={{ width: "33.33%", display: "flex", flexDirection:'column', justifyContent: "center", alignItems: "flex-end", }} className="fs_head_acc w_50_noh" >
             //                 <>
             //                   {e?.IsPLW === 1 ? ( <>
             //                     <div className="minh_noh" style={{display:'flex', alignItems:'center'}}>
@@ -651,7 +652,7 @@ export default NewOrderHistory;
 
             //                         {(showActions === e?.id) && (
             //                           <>
-                                          
+
 
             //                               <Chip size="small" label="Approve" color="success" className="fs_head_acc2" sx={{margin:'0px 5px'}} onClick={() => handleApproveReject(e, 'approve')} />
             //                               <Chip
@@ -670,7 +671,7 @@ export default NewOrderHistory;
             //                                   className="fs_head_acc2"
             //                               onClick={() => handleApproveReject(e, 'reject')}
             //                             />
-                                    
+
             //                           </>
             //                         )}
             //                         { e?.IsPLW === 0 && <Chip size="small"  className={`${getStatusColor2(e?.OrderStatusName)} fw-normal fs_head_acc2`} label={e?.OrderStatusName} />}
@@ -685,10 +686,10 @@ export default NewOrderHistory;
             //                         </>
             //                         : ''
             //                       }
-            //                       { showPrint ? <div className="center_noh" style={{ fontSize:'7px', lineHeight:'7px'}}>{clickedPrintId === e?.id && 'Coming Soon...'}</div> : <div></div>}  
+            //                       { showPrint ? <div className="center_noh" style={{ fontSize:'7px', lineHeight:'7px'}}>{clickedPrintId === e?.id && 'Coming Soon...'}</div> : <div></div>}
 
             //                     </div>
-                              
+
             //                   </>
             //                   )
             //                    : (
@@ -707,19 +708,19 @@ export default NewOrderHistory;
             //                   <Paper size="small" sx={{ position: "absolute", right: "10px", top: "25px", }} className="fs_head_acc" >
             //                     <MenuList>
             //                       <MenuItem className="fs_head_acc" sx={{ padding: "0px 5px", width: "100%", minWidth: "160px", }} size="small" > <span style={{ width: "50%", fontSize: "12px" }} className="fs_head_acc">
-            //                          Sub Total : </span>{" "} <span className="d_end_oh fs_head_acc" style={{ width: "50%", fontSize: "12px" }} > {formatAmount(e?.orderAmount)} </span> 
+            //                          Sub Total : </span>{" "} <span className="d_end_oh fs_head_acc" style={{ width: "50%", fontSize: "12px" }} > {formatAmount(e?.orderAmount)} </span>
             //                       </MenuItem>
             //                       <MenuItem className="fs_head_acc" sx={{ padding: "0px 5px", width: "100%", minWidth: "160px", }} size="small" > <span style={{ width: "50%", fontSize: "12px" }} className="fs_head_acc">
-            //                          Estimated Tax : </span>{" "} <span className="d_end_oh fs_head_acc" style={{ width: "50%", fontSize: "12px" }} > {formatAmount(e?.totaltaxAmount)} </span> 
+            //                          Estimated Tax : </span>{" "} <span className="d_end_oh fs_head_acc" style={{ width: "50%", fontSize: "12px" }} > {formatAmount(e?.totaltaxAmount)} </span>
             //                       </MenuItem>
-            //                       <MenuItem className="fs_head_acc" sx={{ padding: "0px 5px", width: "100%", minWidth: "160px", }} size="small" > <span style={{ width: "50%", fontSize: "12px" }} className="fs_head_acc"> 
-            //                          Grand Total : </span>{" "} <span className="d_end_oh fs_head_acc" style={{ width: "50%", fontSize: "12px" }} > {" "} {formatAmount(e?.orderAmountwithvat)} </span> 
+            //                       <MenuItem className="fs_head_acc" sx={{ padding: "0px 5px", width: "100%", minWidth: "160px", }} size="small" > <span style={{ width: "50%", fontSize: "12px" }} className="fs_head_acc">
+            //                          Grand Total : </span>{" "} <span className="d_end_oh fs_head_acc" style={{ width: "50%", fontSize: "12px" }} > {" "} {formatAmount(e?.orderAmountwithvat)} </span>
             //                       </MenuItem>
             //                     </MenuList>
             //                   </Paper>
             //                 )} */}
             //                   </Typography>}
-                         
+
             //             </CardContent>
             //             <Accordion
             //               className="fs_head_acc"
@@ -774,7 +775,7 @@ export default NewOrderHistory;
             //                               <div>
             //                                 <div>{el?.designno}</div>
             //                                 <div>{el?.metaltypename} {el?.metalcolorname}</div>
-            //                                 <div style={{fontWeight:'bold'}}><span style={{paddingRight:'5px'}} dangerouslySetInnerHTML={{ __html: e?.Country_CurrencyCode }}></span> 
+            //                                 <div style={{fontWeight:'bold'}}><span style={{paddingRight:'5px'}} dangerouslySetInnerHTML={{ __html: e?.Country_CurrencyCode }}></span>
             //                                 {formatAmount(el?.TotalUnitCostWithDiscount)}</div>
             //                               </div>
             //                           </Card>
