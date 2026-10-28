@@ -1,8 +1,9 @@
 "use client";
 
+import { useRef } from "react";
 import { Box } from "@mui/material";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Autoplay, Pagination } from "swiper/modules";
+import { Autoplay } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/pagination";
 
@@ -106,6 +107,15 @@ function isVideoSrc(src, mediaType) {
   return VIDEO_EXTENSIONS.some((ext) => c.endsWith(ext));
 }
 
+function resolveMediaUrl(baseUrl, source) {
+  if (!source) return "";
+  const src = String(source).trim();
+  if (/^(?:https?:|data:|blob:)/i.test(src)) return src;
+  const base = String(baseUrl || "").replace(/\/+$/, "");
+  const path = src.replace(/^\/+/, "");
+  return base ? `${base}/${path}` : `/${path}`;
+}
+
 const shadowFor = (v, soft, hard) => (v === "soft" ? soft : v === "hard" ? hard : "none");
 
 /* ContentJson may be an object, a JSON string, or null */
@@ -138,6 +148,8 @@ function Slide({ slide, url = "" }) {
   const imgSrc = image.imageUrl;
   const mobileSrc = image.mobileImageUrl;
   const isVideo = isVideoSrc(imgSrc, slide.mediaType || image.mediaType);
+  const resolvedImageSrc = resolveMediaUrl(url, imgSrc);
+  const resolvedMobileSrc = resolveMediaUrl(url, mobileSrc);
 
   /* desktop / mobile position, width & text alignment */
   const posDesktopKey = data.position || "bottom-left";
@@ -198,11 +210,11 @@ function Slide({ slide, url = "" }) {
 
       {imgSrc &&
         (isVideo ? (
-          <video src={url+imgSrc} autoPlay muted loop playsInline style={mediaStyle} />
+          <video src={resolvedImageSrc} autoPlay muted loop playsInline style={mediaStyle} />
         ) : (
           <picture>
-            {mobileSrc && <source media="(max-width:768px)" srcSet={mobileSrc} />}
-            <img src={url+imgSrc} alt={image.altText || ""} draggable={false} style={mediaStyle} />
+            {mobileSrc && <source media="(max-width:768px)" srcSet={resolvedMobileSrc} />}
+            <img src={resolvedImageSrc} alt={image.altText || ""} draggable={false} style={mediaStyle} />
           </picture>
         ))}
 
@@ -331,6 +343,9 @@ function Slide({ slide, url = "" }) {
 }
 
 export default function HomepageSlider({ banners = [], url = "" }) {
+  const swiperRef = useRef(null);
+  const dragRef = useRef(null);
+  const suppressClickRef = useRef(false);
   const slides = banners
     .filter((b) => b && b.IsActive !== false)
     .sort((a, b) => (a.SortOrder ?? 0) - (b.SortOrder ?? 0))
@@ -341,12 +356,69 @@ export default function HomepageSlider({ banners = [], url = "" }) {
 
   const multiple = slides.length > 1;
 
+  const handlePointerDown = (event) => {
+    if (event.pointerType !== "mouse" || event.button !== 0) return;
+    const wrapper = swiperRef.current?.wrapperEl;
+    if (!wrapper) return;
+    dragRef.current = {
+      pointerId: event.pointerId,
+      startX: event.clientX,
+      startScrollLeft: wrapper.scrollLeft,
+      moved: false,
+    };
+    event.currentTarget.setPointerCapture(event.pointerId);
+  };
+
+  const handlePointerMove = (event) => {
+    const drag = dragRef.current;
+    const wrapper = swiperRef.current?.wrapperEl;
+    if (!drag || !wrapper || drag.pointerId !== event.pointerId) return;
+    const delta = event.clientX - drag.startX;
+    if (Math.abs(delta) > 4) drag.moved = true;
+    if (drag.moved) {
+      event.preventDefault();
+      wrapper.scrollLeft = drag.startScrollLeft - delta;
+    }
+  };
+
+  const handlePointerEnd = (event) => {
+    const drag = dragRef.current;
+    if (!drag || drag.pointerId !== event.pointerId) return;
+    suppressClickRef.current = drag.moved;
+    dragRef.current = null;
+  };
+
   return (
-    <Box component="section" sx={{ width: "100%" }}>
+    <Box
+      component="section"
+      onPointerDown={handlePointerDown}
+      onPointerMove={handlePointerMove}
+      onPointerUp={handlePointerEnd}
+      onPointerCancel={handlePointerEnd}
+      onClickCapture={(event) => {
+        if (!suppressClickRef.current) return;
+        suppressClickRef.current = false;
+        event.preventDefault();
+        event.stopPropagation();
+      }}
+      sx={{
+        width: "100%",
+        overflow: "hidden",
+        touchAction: "pan-y",
+        userSelect: "none",
+        cursor: "grab",
+        "&:active": { cursor: "grabbing" },
+      }}
+    >
       <style>{ANIM_KEYFRAMES}</style>
       <Swiper
         modules={[Autoplay]}
         slidesPerView={1}
+        // Use native scroll snapping for touch/drag. This avoids Swiper's
+        // transform touch handler that is throwing in the current client build.
+        cssMode
+        allowTouchMove
+        onSwiper={(swiper) => { swiperRef.current = swiper; }}
         // Loop mode duplicates slides in the DOM to create an infinite track.
         // Rewind gives the same cycling behavior without rendering phantom banners.
         loop={false}

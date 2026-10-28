@@ -9,7 +9,10 @@ import { getStoreInit } from "@/app/(core)/utils/GlobalFunctions/GlobalFunctions
 export default async function TopSection() {
   const { getBannersByType, isError, error } = await getWebContentManagement();
   const storeData = await getStoreInit();
-  const url=storeData?.ApiUrl+"/files/"+storeData?.ukey+"/" || "";
+  const apiBase = String(storeData?.ApiUrl || "").replace(/\/+$/, "");
+  const fileBase = apiBase && storeData?.ukey
+    ? `${apiBase}/files/${encodeURIComponent(String(storeData.ukey))}/`
+    : "";
  
  
   if (isError) {
@@ -22,10 +25,6 @@ export default async function TopSection() {
       .sort((a, b) => (a.SortOrder ?? 0) - (b.SortOrder ?? 0))
 
       
-      console.log("TCL: TopSection -> sliderBanners", sliderBanners)
-      
-    
-
   if (sliderBanners.length > 0) {
     return (
       <>
@@ -45,7 +44,7 @@ export default async function TopSection() {
         >
           Exclusive Handcrafted Fine Jewelry Collections
         </Typography>
-        <HomepageSlider banners={sliderBanners} url={url} />
+        <HomepageSlider banners={sliderBanners} url={fileBase} />
       </>
     );
   }

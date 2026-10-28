@@ -125,8 +125,18 @@ export function mergeTempIntoMain(db, mainTable, tempTable, { keyCols = [], dele
     }
   } catch (_) {}
 
-  const { allCols, dataCols, hasCreatedAt, hasUpdatedAt } = getMergeColumns(db, main);
-  const keys = keyCols.filter((k) => allCols.includes(k));
+  const { allCols, dataCols: mainDataCols, hasCreatedAt, hasUpdatedAt } = getMergeColumns(db, main);
+  const tempCols = new Set(db.prepare(`PRAGMA table_info("${temp}")`).all().map((c) => c.name.toLowerCase()));
+  const mainCols = new Set(allCols.map((name) => name.toLowerCase()));
+  // Existing tenant databases can have a different schema from the staging
+  // table (for example, ArticleId exists in the live table but not in a legacy
+  // staging table). Only reference columns that are present on both sides.
+  const dataCols = mainDataCols.filter((name) => tempCols.has(name.toLowerCase()));
+  const keys = keyCols.filter((k) => mainCols.has(k.toLowerCase()) && tempCols.has(k.toLowerCase()));
+  if (keys.length !== keyCols.length) {
+    const missingKeys = keyCols.filter((key) => !keys.some((validKey) => validKey.toLowerCase() === key.toLowerCase()));
+    throw new Error(`mergeTempIntoMain: required key column(s) missing from live or staging table "${main}": ${missingKeys.join(", ")}`);
+  }
   if (keys.length === 0) {
     throw new Error(`mergeTempIntoMain: no valid key columns for "${main}" (got: ${keyCols.join(", ")})`);
   }
