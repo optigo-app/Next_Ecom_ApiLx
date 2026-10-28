@@ -85,6 +85,13 @@ export default function PushDashboardClient() {
             SettingPriceUniqueNo: 11,
             FrontEnd_RegNo: "80kgizbiduw5e7gg",
           },
+          {
+            Laboursetid: 1,
+            diamondpricelistName: "dhruv",
+            colorstonepricelistName: "Retail",
+            SettingPriceUniqueNo: 1,
+            FrontEnd_RegNo: "80kgizbiduw5e7gg",
+          }
         ],
       },
       null,
@@ -120,13 +127,13 @@ export default function PushDashboardClient() {
       const storeObj = JSON.parse(storeInitPayloadStr);
       storeObj.domain = newDomain;
       setStoreInitPayloadStr(JSON.stringify(storeObj, null, 2));
-    } catch (_) {}
+    } catch (_) { }
 
     try {
       const policyObj = JSON.parse(policyPayloadStr);
       policyObj.domain = newDomain;
       setPolicyPayloadStr(JSON.stringify(policyObj, null, 2));
-    } catch (_) {}
+    } catch (_) { }
   };
 
   // Helper to run any SQLite API endpoint
@@ -910,9 +917,8 @@ export default function PushDashboardClient() {
                     sx={{
                       p: 2,
                       backgroundColor: "#131C2E",
-                      borderLeft: `4px solid ${
-                        isSuccess ? "#10B981" : isError ? "#EF4444" : isStart ? "#38BDF8" : "#818CF8"
-                      }`,
+                      borderLeft: `4px solid ${isSuccess ? "#10B981" : isError ? "#EF4444" : isStart ? "#38BDF8" : "#818CF8"
+                        }`,
                       borderRadius: "6px",
                     }}
                   >
