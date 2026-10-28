@@ -342,6 +342,7 @@ const ShopHeader = ({
         }}
       >
         <Typography
+          component="div"
           sx={{
             display: "flex",
             alignItems: "center",
