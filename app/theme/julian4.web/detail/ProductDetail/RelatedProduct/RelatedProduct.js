@@ -1,3 +1,4 @@
+import { isPriceHidden } from "@/app/(core)/utils/storeFlags";
 import React from "react";
 import {
   Box,
@@ -70,7 +71,7 @@ export default function RelatedProduct({
             {elv.designno}
           </Typography>
 
-          {storeInit?.IsPriceShow === 1 && (
+          {!isPriceHidden(storeInit) && (
             <Typography
               variant="body2"
               sx={{ mt: 0.6, fontSize: "14px", color: "#555" }}
@@ -229,7 +230,7 @@ export default function RelatedProduct({
 //                     </div>
 //                     <div className="tab_hover_Details">
 //                       <h3>{elv?.designno}</h3>
-//                       {storeInit?.IsPriceShow == 1 && <small>
+//                       {!isPriceHidden(storeInit) && <small>
 //                         {loginInfo?.CurrencyCode ?? storeInit?.CurrencyCode} &nbsp;
 //                         {formatter.format(elv?.UnitCostWithMarkUp)}
 //                       </small>}

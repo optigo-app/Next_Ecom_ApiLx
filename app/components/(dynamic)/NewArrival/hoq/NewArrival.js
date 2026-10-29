@@ -1,5 +1,6 @@
 "use client"
 
+import { isPriceHidden } from "@/app/(core)/utils/storeFlags";
 import React, { useEffect, useRef, useState, useMemo, useCallback } from "react";
 import Cookies from "js-cookie";
 import "./NewArrival.scss";
@@ -197,7 +198,7 @@ const TabSection = ({ storeData }) => {
                         </div>
                         <div className="tab_hover_Details">
                             <h3 style={{ fontSize: "20px" }}>{val?.designno}</h3>
-                            {storeData?.IsPriceShow === 1 && (
+                            {!isPriceHidden(storeData) && (
                                 <small>
                                     {loginUserDetail?.CurrencyCode ?? storeData?.CurrencyCode}{" "}
                                     &nbsp;

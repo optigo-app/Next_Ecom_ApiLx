@@ -14,8 +14,10 @@ import Cookies from "js-cookie";
 import { GetCountAPI, buildCartAndWishMaps } from "../utils/API/GetCount/GetCountAPI";
 import { LocalSetup } from "@/app/env";
 import { getOrCreateVisitorId } from "../utils/VisitorId";
+import { isB2BWebsite } from "../utils/isB2B";
 
 const StoreContext = createContext({
+  isB2B: false,
   finalId: "",
   cartArr: {},
   wishArr: {},
@@ -35,7 +37,8 @@ const toastStyle = {
   borderLeft: `8px solid teal`,
   fontSize: "18px",
 };
-export function StoreProvider({ children, storeInit }) {
+export function StoreProvider({ children, storeInit, initialIsLoggedIn = false }) {
+  const isB2B = isB2BWebsite(storeInit);
   const [user, setUser] = useState(null);
   const [cartCountNum, setCartCountNum] = useState(0);
   const [wishCountNum, setWishCountNum] = useState(0);
@@ -43,12 +46,13 @@ export function StoreProvider({ children, storeInit }) {
   const [cartArr, setCartArr] = useState({});
   const [wishArr, setWishArr] = useState({});
 
-  // Lazy initializers read from session/window-globals synchronously on the client.
-  // On the server, getSession() returns null (isBrowser() guard), so SSR stays safe.
-  // This eliminates the false→true transition on mount that caused every home component
-  // to recompute its pricingContext cache key and flash loading skeletons.
+  // Keep the user detail available immediately on the client when it was already
+  // persisted. The separate login flag uses a server-provided initial value below
+  // so authentication-gated markup remains identical during hydration.
   const [loginUserDetail, setLoginUserDetail] = useState(() => getSession("loginUserDetail") || null);
-  const [islogin, setislogin] = useState(() => !!getSession("loginUserDetail"));
+  // Keep the first client render aligned with the server-rendered auth state.
+  // Legacy session data is synchronized by the effect below after hydration.
+  const [islogin, setislogin] = useState(Boolean(initialIsLoggedIn));
   const [cartOpenStateB2C, setCartOpenStateB2C] = useState(false);
   const [SoketData, setSoketData] = useState([]);
 
@@ -131,6 +135,7 @@ export function StoreProvider({ children, storeInit }) {
     setSoketData,
     finalId,
     storeInit,
+    isB2B,
     cartAndWishListRd1,
     setCartAndWishListRd1,
     cartArr,

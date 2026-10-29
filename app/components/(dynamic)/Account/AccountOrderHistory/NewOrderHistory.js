@@ -1,3 +1,4 @@
+import { isPriceHidden } from "@/app/(core)/utils/storeFlags";
 import React, { useEffect, useState } from "react";
 import "./neworderhistory.scss";
 import CircleIcon from "@mui/icons-material/Circle";
@@ -387,7 +388,7 @@ const NewOrderHistory = () => {
                             </span>
                           </div>
                         </div>
-                        {storeInit?.IsPriceShow == 1 && (
+                        {!isPriceHidden(storeInit) && (
                           <div>
                             {
                               <span
@@ -887,7 +888,7 @@ const NewOrderHistory = () => {
                                                     ?.split(" ")[0]
                                                 }
                                               </div>
-                                              {storeInit?.IsPriceShow == 1 && (
+                                              {!isPriceHidden(storeInit) && (
                                                 <div
                                                   style={{ fontWeight: "bold" }}
                                                 >

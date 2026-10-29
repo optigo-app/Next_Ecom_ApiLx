@@ -1,3 +1,4 @@
+import { isPriceHidden } from "@/app/(core)/utils/storeFlags";
 import "./QuotationQuote.scss";
 import React, { useEffect, useRef, useState } from 'react'
 import PropTypes from 'prop-types';
@@ -92,7 +93,7 @@ function EnhancedTableHead(props) {
             <TableRow>
                 {headCells.map((headCell) => {
                     const { IsPriceShow } = storeInit;
-                    if (IsPriceShow == 0 && headCell?.label == 'Total Amount') {
+                    if (isPriceHidden(IsPriceShow) && headCell?.label == 'Total Amount') {
                         return null;
                     }
                     return <>
@@ -617,7 +618,7 @@ const QuotationQuote = () => {
                                                     <TableCell align="center">{row.Date}</TableCell>
                                                     <TableCell align="center">{row.SKUNo}</TableCell>
                                                     <TableCell align="center">{row.TotalDesign}</TableCell>
-                                                    {IsPriceShow == 1 && <TableCell align="right"><span dangerouslySetInnerHTML={{ __html: row?.Currencycode }}></span>&nbsp;{formatAmount(row.Amount)}</TableCell>}
+                                                    {!isPriceHidden(IsPriceShow) && <TableCell align="right"><span dangerouslySetInnerHTML={{ __html: row?.Currencycode }}></span>&nbsp;{formatAmount(row.Amount)}</TableCell>}
                                                     <TableCell align="center">
                                                         <div onClick={() => handlePrintUrl(row?.PrintUrl)}>
                                                             <PrintIcon />

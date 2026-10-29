@@ -1,4 +1,5 @@
 "use client";
+import { isPriceHidden } from "@/app/(core)/utils/storeFlags";
 import React, { useEffect, useState } from "react";
 import "./Account.scss";
 import { Box, Tab, Tabs, Typography, AppBar, Toolbar } from "@mui/material";
@@ -228,7 +229,7 @@ export default function Account({ Storeinit }) {
               <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
                 <Tabs value={value1} className="accountTabSection" variant="scrollable" onChange={handleChangeSub} aria-label="basic tabs example" sx={{ background: "#7d7f8529", ...tabIndicator }} scrollButtons="auto">
                   {accountInner?.map((e, i) => {
-                    if (Storeinit?.IsPriceShow == 0 && e.tabComp === "AccountLedger") {
+                    if (isPriceHidden(Storeinit) && e.tabComp === "AccountLedger") {
                       return (
                         <Tab
                           sx={{
@@ -274,7 +275,7 @@ export default function Account({ Storeinit }) {
                         <DesignWiseSalesReport />
                       </CustomTabPanel>
                     )}
-                    {Storeinit?.IsPriceShow == 1 && e?.id === 1159 && (
+                    {!isPriceHidden(Storeinit) && e?.id === 1159 && (
                       <CustomTabPanel value={value1} index={i}>
                         {/* <AccountLedger /> */}
                         {/* <AccountLedger2 /> */}

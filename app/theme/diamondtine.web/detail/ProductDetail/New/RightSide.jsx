@@ -1,3 +1,4 @@
+import { isPriceHidden } from "@/app/(core)/utils/storeFlags";
 import { useState } from "react";
 import {
     Box,
@@ -164,7 +165,7 @@ const RightSide = ({ TitleLine, DesignNo, collection, description,
                     </Typography>
 
                     {/* Price */}
-                    {storeInit?.IsPriceShow == 1 && (
+                    {!isPriceHidden(storeInit) && (
                         <Typography
                             variant="h5"
                             sx={{
@@ -669,7 +670,7 @@ const RightSide = ({ TitleLine, DesignNo, collection, description,
                     }
                     <Divider sx={{ mb: 2, mt: 2 }} />
                     {
-                        (storeInit?.IsPriceShow == 1 && storeInit?.IsPriceBreakUp == 1) && (singleProd ?? singleProd1)?.IsMrpBase != 1 && <Box>
+                        (!isPriceHidden(storeInit) && storeInit?.IsPriceBreakUp == 1) && (singleProd ?? singleProd1)?.IsMrpBase != 1 && <Box>
                             <Typography sx={{ fontSize: "14px", color: "#666", mb: 1 }}>
                                 Price Breakup :
                             </Typography>

@@ -21,26 +21,49 @@ import CraftsmanshipPage from "../craftsmanship/page";
 import MaxDesignLibrary from "./blocks/MaxDesignLibrary";
 import { getSqliteHomeBestseller, getSqliteHomeNewArrival, getSqliteHomeTrending } from "@/app/(core)/utils/sqlite/sqliteActions";
 import { getWebContentManagement } from "@/app/(core)/hooks/webContentManagement/webContentManagement.server";
-import SocialMedia from "@/app/components/(static)/SocialMedia/SocialMedia"; 
+import SocialMedia from "@/app/components/(static)/SocialMedia/SocialMedia";
+import B2BContent from "@/app/components/(dynamic)/B2BContent";
+import { cookies } from "next/headers";
+import { isB2BWebsite } from "@/app/(core)/utils/isB2B";
+import { isHomeSectionEnabled } from "@/app/(core)/utils/storeFlags";
 
 export const metadata = generatePageMetadata(pages["/"], "Belux Jewel");
 
 const BeluxJewelHome = async () => {
   const storeData = await getStoreInit();
+  const cookieStore = await cookies();
+  const showBestSeller = isHomeSectionEnabled(storeData, "bestSeller");
+  const showNewArrival = isHomeSectionEnabled(storeData, "newArrival");
+  const showTrending = isHomeSectionEnabled(storeData, "trending");
+  const canViewB2BContent =
+    !isB2BWebsite(storeData) || Boolean(cookieStore.get("userLoginCookie")?.value);
 
-
-
-  const [bestsellerRes, newArrivalRes, trendingRes] = await Promise.all([
-    getSqliteHomeBestseller({}, storeData?.domain).catch(() => null),
-    getSqliteHomeNewArrival({}, storeData?.domain).catch(() => null),
-    getSqliteHomeTrending({}, storeData?.domain).catch(() => null),
-  ]);
+  const [bestsellerRes, newArrivalRes, trendingRes, webContentRes] =
+    await Promise.all([
+      canViewB2BContent && showBestSeller
+        ? getSqliteHomeBestseller({}, storeData?.domain).catch(() => null)
+        : null,
+      canViewB2BContent && showNewArrival
+        ? getSqliteHomeNewArrival({}, storeData?.domain).catch(() => null)
+        : null,
+      canViewB2BContent && showTrending
+        ? getSqliteHomeTrending({}, storeData?.domain).catch(() => null)
+        : null,
+      getWebContentManagement({ domain: storeData?.domain }),
+    ]);
 
   const initialBestSellers = bestsellerRes?.rd || [];
   const initialNewArrivals = newArrivalRes?.rd || [];
   const initialTrending = trendingRes?.rd || [];
 
-  const { pageTemplates, isError, error } = await getWebContentManagement();
+  const {
+    pageTemplates,
+    raw: initialWebsiteContent,
+    categoryConfig: initialCategoryConfig,
+    categories: initialCategories,
+    collectionConfig: initialCollectionConfig,
+    collections: initialCollections,
+  } = webContentRes;
 
   const socialMediaTemplates = (pageTemplates || []).filter(
     (t) => t?.PageKey === "social-media"
@@ -58,11 +81,27 @@ const BeluxJewelHome = async () => {
     >
       <TopSection />
       <BrandInfoMarquee assetBase={assetBase} />
-      <CategoryBlock assetBase={assetBase} storeInit={storeData} />
-      <MaxBestSeller storeInit={storeData} initialData={initialBestSellers} />
-      <MaxNewArrival storeInit={storeData} initialData={initialNewArrivals} />
+      <B2BContent>
+        <CategoryBlock
+          assetBase={assetBase}
+          storeInit={storeData}
+          initialData={initialWebsiteContent}
+          initialCategoryConfig={initialCategoryConfig}
+          initialCategories={initialCategories}
+          initialCollectionConfig={initialCollectionConfig}
+          initialCollections={initialCollections}
+        />
+        {showBestSeller && (
+          <MaxBestSeller storeInit={storeData} initialData={initialBestSellers} />
+        )}
+        {showNewArrival && (
+          <MaxNewArrival storeInit={storeData} initialData={initialNewArrivals} />
+        )}
+        {showTrending && (
+          <MaxTrendingView storeInit={storeData} initialData={initialTrending} />
+        )}
+      </B2BContent>
       <MaxPhysicalStore />
-      <MaxTrendingView storeInit={storeData} initialData={initialTrending} />
       <MaxBrandMarquee assetBase={assetBase} />
       <CraftsmanshipPage assetBase={assetBase} />
       <MaxDesignLibrary />

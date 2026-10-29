@@ -1,3 +1,4 @@
+import { isPriceHidden } from "@/app/(core)/utils/storeFlags";
 import { useStore } from "@/app/(core)/contexts/StoreProvider";
 import { getSession } from "@/app/(core)/utils/FetchSessionData";
 import "./elv_cartPage.scss";
@@ -163,7 +164,7 @@ const Customization = ({ ispriceloding, selectedItem, qtyCount, handleIncrement,
 
           <div className="elv_cartQtyPricemainDev">
             <QuantitySelector selectedItem={selectedItem} handleIncrement={handleIncrement} handleDecrement={handleDecrement} qtyCount={qtyCount} />
-            {storeInit?.IsPriceShow == 1 && (
+            {!isPriceHidden(storeInit) && (
               <div className="elv_product-price">
                 <span style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
                   <span
@@ -354,7 +355,7 @@ const Customization = ({ ispriceloding, selectedItem, qtyCount, handleIncrement,
                 </Grid>
 
                 {/* Price */}
-                {storeInit?.IsPriceShow === 1 && (
+                {!isPriceHidden(storeInit) && (
                   <Grid item xs={6} sm={4} sx={{ display: "flex", justifyContent: "flex-end" }}>
                     <Box sx={{ display: "flex", alignItems: "center" }}>
                       <span
@@ -628,7 +629,7 @@ export default Customization;
 //                   </div>
 //                 }
 //                 <div className="elv_cartQtyPricemainDev_1">
-//                   {storeInitData?.IsPriceShow == 1 &&
+//                   {!isPriceHidden(storeInitData) &&
 //                     <div className="elv_product-price_1">
 //                       <span style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
 //                         <span
@@ -707,7 +708,7 @@ export default Customization;
 //                   </div>
 //                 }
 //                 <div className="elv_cartQtyPricemainDev_1">
-//                   {storeInitData?.IsPriceShow == 1 &&
+//                   {!isPriceHidden(storeInitData) &&
 //                     <div className="elv_product-price_1">
 //                       <span style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
 //                         <span

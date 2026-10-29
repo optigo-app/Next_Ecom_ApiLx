@@ -1,5 +1,6 @@
 "use client"
 
+import { isPriceHidden } from "@/app/(core)/utils/storeFlags";
 import React, { useEffect, useRef, useState, useMemo, useCallback } from "react";
 import { Box, Typography, Link } from '@mui/material';
 import Cookies from "js-cookie";
@@ -333,7 +334,7 @@ const TabSection = ({ storeData }) => {
                                         {/* {product.TitleLine} */}
                                     </Typography>
                                         {/* --- PRICE ROW: current price / struck-through original / discount % --- */}
-                                            {storeData?.IsPriceShow == 1 && (
+                                            {!isPriceHidden(storeData) && (
                                               <Box sx={{ display: "flex", alignItems: "center", gap: 0.8, flexWrap: "wrap" }}>
                                                 <Typography
                                                   sx={{

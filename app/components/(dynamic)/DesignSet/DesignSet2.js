@@ -1,4 +1,5 @@
 "use client";
+import { isPriceHidden } from "@/app/(core)/utils/storeFlags";
 import React, { useEffect, useMemo, useRef, useState, useCallback } from "react";
 import "./DesignSet2.scss";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -381,7 +382,7 @@ const DesignSet2 = ({ data, storeInit }) => {
                                   {detail?.TitleLine && " - "}{" "}
                                   {detail?.TitleLine != "" && detail?.TitleLine}
                                 </div>
-                                {storeInit?.IsPriceShow == 1 && <div className="fs2 centerall">
+                                {!isPriceHidden(storeInit) && <div className="fs2 centerall">
                                   <p>
                                     <span
                                       className="smr_currencyFont"

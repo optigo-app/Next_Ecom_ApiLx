@@ -1,5 +1,6 @@
 "use client";
 
+import { isPriceHidden } from "@/app/(core)/utils/storeFlags";
 import React, { useEffect, useRef, useState } from 'react';
 import { Box, Typography, IconButton, Button } from '@mui/material';
 import { ChevronLeft, ChevronRight } from '@mui/icons-material';
@@ -171,7 +172,7 @@ export default function ProductSlider({ storeInit }) {
               ? decodeEntities(formatTitleLine(product?.TitleLine))
               : product?.designno || '';
             const price =
-              storeInit?.IsPriceShow == 1
+              !isPriceHidden(storeInit)
                 ? `${formatter(product?.UnitCostWithMarkUp)} ${islogin ? loginUserDetail?.CurrencyCode : storeInit?.CurrencyCode}`
                 : '';
 

@@ -1,5 +1,6 @@
 "use client";
 
+import { isPriceHidden } from "@/app/(core)/utils/storeFlags";
 import "../page.scss";
 import { Product } from "@/app/components/(static)/Constants/DynamicValue";
 import "slick-carousel/slick/slick.css";
@@ -1634,13 +1635,13 @@ const ProductPage = ({ params, searchParams, storeInit }) => {
                         storeInit={storeInit}
                         loginInfo={loginInfo}
                         cartArr={cartArr}
-                        check={storeInit?.IsPriceShow === 1}
+                        check={!isPriceHidden(storeInit)}
                         handleCartandWish={handleCartandWish}
                     />
                 )}
-                {/* {stockItemArr?.length > 0 && storeInit?.IsStockWebsite === 1 && stockItemArr?.[0]?.stat_code != 1005 && <Stockitems stockItemArr={stockItemArr} storeInit={storeInit} loginInfo={loginInfo} cartArr={cartArr} handleCartandWish={handleCartandWish} check={storeInit?.IsPriceShow === 1} />} */}
-                {storeInit?.IsProductDetailSimilarDesign == 1 && SimilarBrandArr?.length > 0 && SimilarBrandArr?.[0]?.stat_code != 1005 && <RelatedProduct SimilarBrandArr={SimilarBrandArr} handleMoveToDetail={handleMoveToDetail} storeInit={storeInit} loginInfo={loginInfo} check={storeInit?.IsPriceShow === 1} />}
-                {storeInit?.IsProductDetailDesignSet === 1 && designSetList?.length > 0 && designSetList?.[0]?.stat_code != 1005 && <DesignSet designSetList={designSetList} handleMoveToDetail={handleMoveToDetail} loginInfo={loginInfo} storeInit={storeInit} check={storeInit?.IsPriceShow === 1} />}
+                {/* {stockItemArr?.length > 0 && storeInit?.IsStockWebsite === 1 && stockItemArr?.[0]?.stat_code != 1005 && <Stockitems stockItemArr={stockItemArr} storeInit={storeInit} loginInfo={loginInfo} cartArr={cartArr} handleCartandWish={handleCartandWish} check={!isPriceHidden(storeInit)} />} */}
+                {storeInit?.IsProductDetailSimilarDesign == 1 && SimilarBrandArr?.length > 0 && SimilarBrandArr?.[0]?.stat_code != 1005 && <RelatedProduct SimilarBrandArr={SimilarBrandArr} handleMoveToDetail={handleMoveToDetail} storeInit={storeInit} loginInfo={loginInfo} check={!isPriceHidden(storeInit)} />}
+                {storeInit?.IsProductDetailDesignSet === 1 && designSetList?.length > 0 && designSetList?.[0]?.stat_code != 1005 && <DesignSet designSetList={designSetList} handleMoveToDetail={handleMoveToDetail} loginInfo={loginInfo} storeInit={storeInit} check={!isPriceHidden(storeInit)} />}
 
                 {/* Mobile Customizer Drawer */}
                 <MobileCustomizerDrawer

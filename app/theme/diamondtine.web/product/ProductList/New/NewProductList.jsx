@@ -1,4 +1,5 @@
 'use client'
+import { isPriceHidden } from "@/app/(core)/utils/storeFlags";
 import { useMemo, useState, useEffect } from "react";
 import { Box, Grid, Card, CardMedia, CardContent, Typography, IconButton, Chip, useMediaQuery, Button } from "@mui/material";
 import { motion } from "framer-motion";
@@ -462,7 +463,7 @@ const ProductCard = ({ product, index, productData, StoreInit, calcVal, videoUrl
                   gap: 0.5,
                 }}
               >
-                {StoreInit?.IsPriceShow == 1 ? (
+                {!isPriceHidden(StoreInit) ? (
                   <Typography
                     variant="body2"
                     sx={{

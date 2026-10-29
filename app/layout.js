@@ -93,7 +93,10 @@ export default async function RootLayout({ children }) {
             getMyAccountFlags={myAccountFlags}
             theme={themeData?.page}
           >
-            <StoreProvider storeInit={storeInit}>
+            <StoreProvider
+              storeInit={storeInit}
+              initialIsLoggedIn={Boolean(UserLoginCookie)}
+            >
               <BroadcasterProvider>
                 <AuthProvider theme={themeData?.page} storeInit={storeInit}>
                   <Layout>{children}</Layout>

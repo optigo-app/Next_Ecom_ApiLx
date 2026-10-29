@@ -1,4 +1,5 @@
 "use client";
+import { isPriceHidden } from "@/app/(core)/utils/storeFlags";
 import React, { useEffect, useMemo, useRef, useState, useCallback } from "react";
 import { Box, Typography, Grid, Button, styled, Card, CardMedia } from "@mui/material";
 import { formatter, formatTitleLine, formatRedirectTitleLine } from "@/app/(core)/utils/Glob_Functions/GlobalFunction";
@@ -253,7 +254,7 @@ const MaxTrending = ({ data, storeInit }) => {
                                             {item?.TitleLine || "Exquisite Piece"}
                                         </Typography>
 
-                                        {storeInit?.IsPriceShow == 1 && (
+                                        {!isPriceHidden(storeInit) && (
                                             <Typography sx={{ fontWeight: 600, fontSize: "0.85rem", color: "#333" }}>
                                                 {islogin ? loginUserDetail?.CurrencyCode : storeInit?.CurrencyCode} {formatter(item?.UnitCostWithMarkUp)}
                                             </Typography>

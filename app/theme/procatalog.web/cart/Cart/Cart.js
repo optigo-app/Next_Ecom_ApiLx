@@ -1,4 +1,5 @@
 "use client";
+import { isPriceHidden } from "@/app/(core)/utils/storeFlags";
 import React, { useEffect, useState } from "react";
 import "./elv_cartPage.scss";
 import useCart from "@/app/(core)/utils/Glob_Functions/Cart_Wishlist/Cart";
@@ -433,7 +434,7 @@ const ElveeCartPage = ({ storeinit, visiterId }) => {
             CurrencyCode={
               loginUserDetail?.CurrencyCode ?? CurrencyData?.CurrencyCode
             }
-            IsPriceShow={storeinit?.IsPriceShow == 1}
+            IsPriceShow={!isPriceHidden(storeinit)}
             handleMoveToOrder={handleDiscountModalOpen}
             handleOpen1={handleOpen1}
             handleClose1={handleClose1}

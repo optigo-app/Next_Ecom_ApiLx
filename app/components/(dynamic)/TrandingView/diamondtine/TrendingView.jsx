@@ -1,5 +1,6 @@
 "use client";
 
+import { isPriceHidden } from "@/app/(core)/utils/storeFlags";
 import React, { useEffect, useRef, useState } from 'react'
 import './TrendingView1.scss';
  
@@ -200,7 +201,7 @@ const TrendingView1 = ({ data ,storeData}) => {
                                     <div className="trending_ifno_web_product_info">
                                         <h3>{formatTitleLine(data?.TitleLine) && data?.TitleLine}</h3>
                                         
-                                        {storeInit?.IsPriceShow == 1 && <p>
+                                        {!isPriceHidden(storeInit) && <p>
                                             <span
                                                 className="smr_currencyFont"
                                                 dangerouslySetInnerHTML={{
@@ -215,7 +216,7 @@ const TrendingView1 = ({ data ,storeData}) => {
                                     <div className="trending_ifno_mobile_product_info">
                                         <h3>{data?.designno}</h3>
                                          
-                                        {storeInit?.IsPriceShow == 1 && <p>
+                                        {!isPriceHidden(storeInit) && <p>
                                             <span
                                                 className="smr_currencyFont"
                                                 dangerouslySetInnerHTML={{

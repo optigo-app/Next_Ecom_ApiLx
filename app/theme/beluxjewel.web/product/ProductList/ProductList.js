@@ -33,6 +33,7 @@ import BreadCrumbBar from "./New/BreadCrumb";
 import NewPagination from "./New/NewPagination";
 import NoProductFound from "./New/NoProductFound";
 import { generateBreadcrumbJsonLd } from "@/app/(core)/utils/seo/seo-utils";
+import { getStorePageSize } from "@/app/(core)/utils/storeFlags";
 import { useStore } from "@/app/(core)/contexts/StoreProvider";
 import { usePathname, useSearchParams } from "next/navigation";
 import { useNextRouterLikeRR } from "@/app/(core)/hooks/useLocationRd";
@@ -213,7 +214,8 @@ const ProductList = ({ storeinit, searchParams, params, initialData, initialFilt
   };
 
   const IsBreadCumShow = productListData?.length > 0;
-  const totalPages = Math.ceil((afterFilterCount || 0) / (storeinit?.PageSize || 1));
+  const pageSize = getStorePageSize(storeinit);
+  const totalPages = Math.ceil((afterFilterCount || 0) / pageSize);
 
   const handlePageInputChange = (event) => {
     if (event.key === "Enter") {
@@ -407,11 +409,11 @@ const ProductList = ({ storeinit, searchParams, params, initialData, initialFilt
         />
 
         {storeinit?.IsProductListPagination == 1 &&
-          Math.ceil(afterFilterCount / storeinit.PageSize) > 1 && (
+          Math.ceil(afterFilterCount / pageSize) > 1 && (
             <NewPagination
               currentPage={currPage}
               totalItems={afterFilterCount}
-              itemsPerPage={storeinit.PageSize}
+              itemsPerPage={pageSize}
               onPageChange={handelPageChange}
               inputPage={inputPage}
               setInputPage={setInputPage}

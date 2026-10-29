@@ -1,3 +1,4 @@
+import { isPriceHidden } from "@/app/(core)/utils/storeFlags";
 import React from "react";
 import { Box, Typography, Divider, Paper, Stack } from "@mui/material";
 
@@ -46,7 +47,7 @@ const PriceBreakup = ({
     (prod?.Misc_SettingCost || 0);
 
   if (
-    !(storeInit?.IsPriceShow === 1 &&
+    !(!isPriceHidden(storeInit) &&
       storeInit?.IsPriceBreakUp == 1 &&
       prod?.IsMrpBase !== 1)
   ) return null;
@@ -132,7 +133,7 @@ const PriceBreakup = ({
 
 export default PriceBreakup;
 
-//    {storeInit?.IsPriceShow === 1 && storeInit?.IsPriceBreakUp == 1 && (singleProd1 ?? singleProd)?.IsMrpBase !== 1 && (
+//    {!isPriceHidden(storeInit) && storeInit?.IsPriceBreakUp == 1 && (singleProd1 ?? singleProd)?.IsMrpBase !== 1 && (
                         //         <Accordion
                         //             className="accordian"
                         //             key={3}

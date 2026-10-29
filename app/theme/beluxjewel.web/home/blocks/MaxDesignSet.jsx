@@ -1,6 +1,7 @@
 
 "use client";
 
+import { isPriceHidden } from "@/app/(core)/utils/storeFlags";
 import React, { useEffect, useRef, useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
@@ -475,7 +476,7 @@ const MaxDesignSet = ({ data }) => {
                                     </Typography>
                                   )}
 
-                                  {storeInit?.IsPriceShow == 1 && (
+                                  {!isPriceHidden(storeInit) && (
                                     <Typography
                                       variant="body1"
                                       sx={{

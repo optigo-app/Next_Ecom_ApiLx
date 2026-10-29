@@ -1,4 +1,5 @@
 "use client";
+import { isPriceHidden } from "@/app/(core)/utils/storeFlags";
 import React, { useEffect, useState } from "react";
 import "./Account.scss";
 import {
@@ -287,7 +288,7 @@ export default function Account({ Storeinit }) {
                     >
                       {accountInner?.map((e, i) => {
                         if (
-                          Storeinit?.IsPriceShow == 0 &&
+                          isPriceHidden(Storeinit) &&
                           e.tabComp === "AccountLedger"
                         ) {
                           return (
@@ -362,7 +363,7 @@ export default function Account({ Storeinit }) {
                             <DesignWiseSalesReport />
                           </CustomTabPanel>
                         )}
-                        {Storeinit?.IsPriceShow == 1 && e?.id === 1159 && (
+                        {!isPriceHidden(Storeinit) && e?.id === 1159 && (
                           <CustomTabPanel value={value1} index={i}>
                             {/* <AccountLedger /> */}
                             {/* <AccountLedger2 /> */}

@@ -97,7 +97,13 @@ const sortByOrder = (list) =>
 
 /* ---------- component ---------- */
 
-const CategoryBlock = () => {
+const CategoryBlock = ({
+  initialData = null,
+  initialCategoryConfig,
+  initialCategories,
+  initialCollectionConfig,
+  initialCollections,
+}) => {
   const navigate = useNextRouterLikeRR();
 
   const categoryPrevRef = useRef(null);
@@ -105,15 +111,16 @@ const CategoryBlock = () => {
   const collectionPrevRef = useRef(null);
   const collectionNextRef = useRef(null);
 
-  const {
-    categoryConfig,
-    categories,
-    collectionConfig,
-    collections,
-    loading,
-    error,
-    isError,
-  } = useWebContentManagement();
+  const websiteContent = useWebContentManagement({ initialData });
+  const hasServerContent =
+    Array.isArray(initialCategories) && Array.isArray(initialCollections);
+  const categoryConfig = initialCategoryConfig ?? websiteContent.categoryConfig;
+  const categories = initialCategories ?? websiteContent.categories;
+  const collectionConfig = initialCollectionConfig ?? websiteContent.collectionConfig;
+  const collections = initialCollections ?? websiteContent.collections;
+  const loading = websiteContent.loading && !hasServerContent;
+  const error = websiteContent.error;
+  const isError = websiteContent.isError && !hasServerContent;
 
   const handleNavigate = (name, type) => {
     const finalData = {
@@ -196,7 +203,7 @@ const CategoryBlock = () => {
         <Box sx={{ px: { xs: 2, sm: 3, md: 4 }, mt: 5, position: "relative" }}>
           {categoryConfig?.sectionTitle && (
             <SectionHeader>
-              <SectionTitle sx={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+              <SectionTitle component="h2" sx={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
                 <SpireBox />
                 {categoryConfig.sectionTitle}
               </SectionTitle>
@@ -261,7 +268,7 @@ const CategoryBlock = () => {
         >
           {collectionConfig?.sectionTitle && (
             <SectionHeader>
-              <SectionTitle sx={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+              <SectionTitle component="h2" sx={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
                 <SpireBox />
                 {collectionConfig.sectionTitle}
               </SectionTitle>

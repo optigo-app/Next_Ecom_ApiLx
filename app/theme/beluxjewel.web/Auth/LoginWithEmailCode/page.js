@@ -1,14 +1,10 @@
 'use client';
-import React, { useEffect, useState, useRef } from 'react';
-import { toast } from 'react-toastify';
-import { LoginWithEmailCodeAPI } from '@/app/(core)/utils/API/Auth/LoginWithEmailCodeAPI';
-import { LoginWithEmailAPI } from '@/app/(core)/utils/API/Auth/LoginWithEmailAPI';
-import Cookies from 'js-cookie';
-import { setSession } from '@/app/(core)/utils/FetchSessionData';
+import React from 'react';
 import OTP from './OTP';
 import './LoginWithEmailCode.modul.scss';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { useOtpLogin } from '@/app/(core)/hooks/Auth/useOtpLogin';
 
 import {
   Box,
@@ -25,105 +21,17 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 export default function LoginWithEmailCode({ params, searchParams }) {
   const router = useRouter();
   const navigation = (path) => router.push(path);
-  const [email, setEmail] = useState('');
-  const [otp, setOtp] = useState('');
-  const [errors, setErrors] = useState({});
-  const [isLoading, setIsLoading] = useState(false);
-  const [resendTimer, setResendTimer] = useState(120);
-
-  const search = searchParams?.LoginRedirect || searchParams?.loginRedirect || searchParams?.search || "";
-  const securityKey = searchParams?.SK || searchParams?.SecurityKey || "";
-  const cleanRedirect = search ? search.replace(/^\?LoginRedirect=/, '') : '';
-  const redirectEmailUrl = cleanRedirect ? (cleanRedirect.startsWith('/') ? cleanRedirect : decodeURIComponent(cleanRedirect)) : "/";
-  const cancelRedireactUrl = `/LoginOption${cleanRedirect ? `?LoginRedirect=${encodeURIComponent(cleanRedirect)}` : ""}${securityKey ? `${cleanRedirect ? '&' : '?'}SK=${encodeURIComponent(securityKey)}` : ""}`;
-
-  useEffect(() => {
-    const fetchData = async () => {
-      const storedEmail = sessionStorage.getItem('registerEmail');
-      if (storedEmail) {
-        setEmail(storedEmail);
-        const value = sessionStorage.getItem('LoginCodeEmail');
-        if (value === 'true') {
-          sessionStorage.setItem('LoginCodeEmail', 'false');
-          LoginWithEmailCodeAPI(storedEmail).then((response) => {
-            if (response.Data.rd[0].stat == 1) {
-              toast.success('OTP sent successfully');
-            } else {
-              toast.error('OTP send error');
-            }
-          }).catch((err) => console.log(err));
-        }
-      }
-    };
-    fetchData();
-  }, []);
-
-  useEffect(() => {
-    if (resendTimer > 0) {
-      const interval = setInterval(() => {
-        setResendTimer(prevTimer => {
-          if (prevTimer === 0) {
-            clearInterval(interval);
-            return 0;
-          }
-          return prevTimer - 1;
-        });
-      }, 1000);
-      return () => clearInterval(interval);
-    }
-  }, [resendTimer]);
-
-  const handleSubmit = async () => {
-    const visiterId = Cookies.get('visiterId');
-    if (otp.length < 5) {
-      setErrors({ otp: 'Please complete the code.' });
-      return;
-    }
-
-    setIsLoading(true);
-    LoginWithEmailAPI(email, '', otp, 'otp_email_login', '', visiterId).then((response) => {
-      setIsLoading(false);
-      if (response?.Data?.rd[0]?.stat === 1) {
-        const userDetail = response?.Data?.rd[0];
-        const pkgId = userDetail?.PackageId ?? userDetail?.packageId ?? userDetail?.PackageID;
-
-        if (userDetail?.Token) {
-          Cookies.set('userLoginCookie', userDetail.Token, { path: '/', expires: 7 });
-        }
-        Cookies.set('LoginUser', 'true', { path: '/', expires: 7 });
-        if (pkgId != null && pkgId !== '' && String(pkgId) !== 'undefined' && String(pkgId) !== 'null') {
-          Cookies.set('userPackageId', String(pkgId), { path: '/', expires: 7 });
-        }
-
-        setSession('LoginUser', true);
-        setSession('loginUserDetail', userDetail);
-
-        if (redirectEmailUrl) {
-          window.location.href = redirectEmailUrl;
-        } else {
-          window.location.href = '/';
-        }
-      } else {
-        setErrors({ otp: 'The code you entered is invalid.' });
-      }
-    }).catch((err) => {
-      setIsLoading(false);
-      console.log(err);
-      setErrors({ otp: 'An error occurred while logging in. Please try again.' });
-    });
-  };
-
-  const handleResendCode = async () => {
-    setResendTimer(120);
-    LoginWithEmailCodeAPI(email).then((response) => {
-      if (response.Data.rd[0].stat == 1) {
-        sessionStorage.setItem('LoginCodeEmail', 'false');
-        toast.success('OTP sent successfully');
-      } else {
-        toast.error('OTP send error');
-      }
-    }).catch((err) => console.log(err));
-  };
+  const {
+    email,
+    otp,
+    setOtp,
+    errors,
+    isLoading,
+    resendTimer,
+    cancelUrl: cancelRedireactUrl,
+    handleSubmit,
+    handleResendCode,
+  } = useOtpLogin({ method: 'email', searchParams });
 
   return (
     <Box

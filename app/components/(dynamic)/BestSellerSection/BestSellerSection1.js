@@ -1,4 +1,5 @@
 "use client";
+import { isPriceHidden } from "@/app/(core)/utils/storeFlags";
 import React, { useEffect, useMemo, useRef, useState, useCallback } from "react";
 import "./BestSellerSection1.scss";
 import { formatRedirectTitleLine, formatter, formatTitleLine, storImagePath } from "@/app/(core)/utils/Glob_Functions/GlobalFunction";
@@ -292,7 +293,7 @@ const BestSellerSection1 = ({ data, storeData }) => {
                           )}
                         </>
                       )}
-                      {storeData?.IsPriceShow == 1 && (
+                      {!isPriceHidden(storeData) && (
                         <p>
                           <span className="smr_currencyFont">{islogin ? loginUserDetail?.CurrencyCode : storeData?.CurrencyCode}</span>&nbsp;
                           <span>{formatter(data?.UnitCostWithMarkUp)}</span>

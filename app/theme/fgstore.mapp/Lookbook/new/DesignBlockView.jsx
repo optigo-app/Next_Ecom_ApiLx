@@ -1,3 +1,4 @@
+import { isPriceHidden } from "@/app/(core)/utils/storeFlags";
 import React from "react";
 import { IconButton } from "@mui/material";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -106,7 +107,7 @@ const DesignBlockView = ({
                                             DWT: {calculateTotalUnitCostWithMarkUpDwt(JSON?.parse(slide.Designdetail)).toFixed(3)} | GWT: {calculateTotalUnitCostWithMarkUpGWt(JSON?.parse(slide.Designdetail)).toFixed(3)} | NWT: {calculateTotalUnitCostWithMarkUpNwt(JSON?.parse(slide.Designdetail)).toFixed(3)}{" "}
                                         </p>
                                         <div className="smr_lookBookImgDeatilSub" style={{ display: "flex", alignItems: "center" }}>
-                                            {storeInit?.IsPriceShow == 1 && (
+                                            {!isPriceHidden(storeInit) && (
                                                 <p
                                                     style={{
                                                         margin: "0px 10px 0px 0px",
@@ -265,7 +266,7 @@ const DesignBlockView = ({
                                                         DWT: {calculateTotalUnitCostWithMarkUpDwt(JSON?.parse(slide.Designdetail)).toFixed(3)} | GWT: {calculateTotalUnitCostWithMarkUpGWt(JSON?.parse(slide.Designdetail)).toFixed(3)} | NWT: {calculateTotalUnitCostWithMarkUpNwt(JSON?.parse(slide.Designdetail)).toFixed(3)}{" "}
                                                     </p>
                                                     <div className="smr_lookBookImgDeatilSub" style={{ display: "flex", alignItems: "center" }}>
-                                                        {storeInit?.IsPriceShow == 1 && (
+                                                        {!isPriceHidden(storeInit) && (
                                                             <p
                                                                 style={{
                                                                     margin: "0px 10px 0px 0px",
@@ -560,7 +561,7 @@ const DesignBlockView = ({
                                                                                             </>
                                                                                         )}
                                                                                         <br />
-                                                                                        {storeInit?.IsPriceShow == 1 && (
+                                                                                        {!isPriceHidden(storeInit) && (
                                                                                             <>
                                                                                                 <span className="smr_currencyFont">{loginUserDetail?.CurrencyCode ?? storeInit?.CurrencyCode}</span>
                                                                                                 &nbsp;
@@ -594,7 +595,7 @@ const DesignBlockView = ({
                                                                 ))}
                                                             </div>
                                                             <div className="smr_lb3TotalBtnGroups">
-                                                                {storeInit?.IsPriceShow == 1 && (
+                                                                {!isPriceHidden(storeInit) && (
                                                                     <div className="smr_lb3TotalPrice">
                                                                         <span>
                                                                             <span className="smr_currencyFont">{loginUserDetail?.CurrencyCode ?? storeInit?.CurrencyCode}</span>

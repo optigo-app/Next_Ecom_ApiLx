@@ -1,5 +1,6 @@
 "use client";
 
+import { isPriceHidden } from "@/app/(core)/utils/storeFlags";
 import React, { useEffect, useState } from 'react';
 import QuantitySelector from './QuantitySelector';
 import { GetCountAPI } from '@/app/(core)/utils/API/GetCount/GetCountAPI';
@@ -184,7 +185,7 @@ const ExampleComponent = ({
                         </div>
                         <td className="Hoq_B2cCartshippingDayMobile" title="Shipping Info">Ships in {dayOfMonth} days</td>
                         <td className="Hoq_B2cCartPriceDayMobile" title="Price">
-                            {storeInitData?.IsPriceShow == 1 &&
+                            {!isPriceHidden(storeInitData) &&
                                 <span>
                                     <span
                                         className="Hoq_currencyFont"
@@ -206,7 +207,7 @@ const ExampleComponent = ({
                     </td>
                     <td className="Hoq_B2C-text-right Hoq_B2cCartshippingDay" title="Shipping Info">Ships in {dayOfMonth} days</td>
                     <td className="Hoq_B2C-text-right Hoq_B2cCartPrice" title="Total">
-                        {storeInitData?.IsPriceShow == 1 &&
+                        {!isPriceHidden(storeInitData) &&
                             <span>
                                 {/* <span
                                     className="Hoq_currencyFont"

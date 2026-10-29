@@ -1,3 +1,4 @@
+import { isPriceHidden } from "@/app/(core)/utils/storeFlags";
 import React, { useRef, useEffect } from "react";
 import { Skeleton, Checkbox } from "@mui/material";
 import StarBorderIcon from "@mui/icons-material/StarBorder";
@@ -163,7 +164,7 @@ const ProductInfo = ({
                 isPriceloading={isPriceloading}
             />
 
-            {storeInit?.IsPriceShow === 1 && (
+            {!isPriceHidden(storeInit) && (
                 <div className="smr_price_portion">
                     {isPriceloading ? (
                         ""

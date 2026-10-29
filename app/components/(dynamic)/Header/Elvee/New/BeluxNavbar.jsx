@@ -94,6 +94,7 @@ const BeluxNavbar = ({ storeInit: storeinit, logos, initialMenuData = [], initia
     setCartOpenStateB2C,
     loginUserDetail,
     finalId,
+    isB2B,
   } = useStore();
 
   const { clearAllCacheData } = useMaster();
@@ -162,6 +163,7 @@ const BeluxNavbar = ({ storeInit: storeinit, logos, initialMenuData = [], initia
 
   const controls = useAnimation();
   const IsB2BWebsiteChek = storeinit?.IsB2BWebsite;
+  const shouldShowMenu = !isB2B || islogin;
 
   useEffect(() => {
     if (location === "/") {
@@ -210,6 +212,13 @@ const BeluxNavbar = ({ storeInit: storeinit, logos, initialMenuData = [], initia
     let isMounted = true;
 
     const loadMenu = async () => {
+      if (isB2B && !islogin) {
+        setMenuItems([]);
+        menuLoadedRef.current = null;
+        setMenuLoading(false);
+        return;
+      }
+
       const currentPkgId =
         islogin && loginUserDetail?.PackageId != null
           ? loginUserDetail.PackageId
@@ -248,7 +257,7 @@ const BeluxNavbar = ({ storeInit: storeinit, logos, initialMenuData = [], initia
     return () => {
       isMounted = false;
     };
-  }, [islogin, loginUserDetail?.PackageId, storeinit?.PackageId]);
+  }, [isB2B, islogin, loginUserDetail?.PackageId, storeinit?.PackageId]);
 
   const currentMenuItems = useMemo(() => {
     return menuItems;
@@ -510,7 +519,7 @@ const BeluxNavbar = ({ storeInit: storeinit, logos, initialMenuData = [], initia
                 />
               )}
 
-              {!isMobile && is1400px && (
+              {shouldShowMenu && !isMobile && is1400px && (
                 <IconButton
                   aria-label="Open navigation menu"
                   disableRipple
@@ -543,7 +552,7 @@ const BeluxNavbar = ({ storeInit: storeinit, logos, initialMenuData = [], initia
                     !isMobile && is1400px ? "center" : "flex-start",
                 }}
               >
-                {isMobile && (
+                {shouldShowMenu && isMobile && (
                   <IconButton
                     aria-label="Open navigation menu"
                     disableRipple
@@ -614,7 +623,7 @@ const BeluxNavbar = ({ storeInit: storeinit, logos, initialMenuData = [], initia
                 </Box>
               </Box>
 
-              {/* {islogin && ( */}
+              {shouldShowMenu && (
               <Box>
                 <Box>
                   {!isMobile && !is1400px && (
@@ -1214,7 +1223,7 @@ const BeluxNavbar = ({ storeInit: storeinit, logos, initialMenuData = [], initia
                   )}
                 </Box>
               </Box>
-              {/* )} */}
+              )}
 
               <RightSideMenu
                 setSearchOpen={setSearchOpen}
@@ -1235,7 +1244,7 @@ const BeluxNavbar = ({ storeInit: storeinit, logos, initialMenuData = [], initia
         </AppBar>
       </motion.div>
 
-      <Drawer
+      {shouldShowMenu && <Drawer
         anchor="left"
         open={mobileOpen}
         onClose={handleDrawerToggle}
@@ -1312,7 +1321,7 @@ const BeluxNavbar = ({ storeInit: storeinit, logos, initialMenuData = [], initia
           showProductTypeTabs={false}
           handleLogout={handleLogout}
         />
-      </Drawer>
+      </Drawer>}
     </>
   );
 };

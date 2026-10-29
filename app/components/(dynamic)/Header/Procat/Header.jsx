@@ -1,4 +1,5 @@
 "use client"
+import { isStoreInitFlagEnabled } from "@/app/(core)/utils/storeFlags";
 import React, { useEffect, useState } from 'react'
 import { RiArrowDropDownLine } from "react-icons/ri";
 import { Badge, ButtonBase, List, ListItem, ListItemText, Tooltip } from '@mui/material';
@@ -531,7 +532,7 @@ const Header = ({ storeinit, logos }) => {
 
               {isMounted && !!islogin == true &&
                 <>
-                  {storeinit?.IsCustomOrder == 1 &&
+                  {isStoreInitFlagEnabled(storeinit, "customOrder") &&
                     <div>
                       <p className='smr_menuStaicMobilePageLink' onClick={() => { setDrawerShowOverlay(false); navigation('/custom-orders') }}>Custom Order</p>
                     </div>
@@ -610,7 +611,7 @@ const Header = ({ storeinit, logos }) => {
                 {
                   !!islogin == true &&
                   <>
-                    {storeinit?.IsCustomOrder == 1 &&
+                    {isStoreInitFlagEnabled(storeinit, "customOrder") &&
                       <li
                         className="nav_li_smining nav_li_smining_Mobile color_jeweliita "
                         style={{ cursor: "pointer" }}
@@ -789,7 +790,7 @@ const Header = ({ storeinit, logos }) => {
                   {
                     !!islogin &&
                     <>
-                      {storeinit?.IsCustomOrder == 1 &&
+                      {isStoreInitFlagEnabled(storeinit, "customOrder") &&
                         <li
                           className="nav_li_smining_Fixed nav_li_smining_Mobile color_jeweliita"
                           style={{ cursor: "pointer" }}

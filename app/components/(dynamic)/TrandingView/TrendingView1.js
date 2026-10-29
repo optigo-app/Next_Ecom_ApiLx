@@ -1,4 +1,5 @@
 "use client";
+import { isPriceHidden } from "@/app/(core)/utils/storeFlags";
 import React, { useEffect, useMemo, useRef, useState, useCallback } from "react";
 import "./TrendingView1.scss";
 import { formatRedirectTitleLine, formatter, formatTitleLine, storImagePath } from "@/app/(core)/utils/Glob_Functions/GlobalFunction";
@@ -308,7 +309,7 @@ const TrendingView1 = ({ data, storeInit }) => {
                                                 )}
                                             </>
                                         )}
-                                        {storeInit?.IsPriceShow == 1 && (
+                                        {!isPriceHidden(storeInit) && (
                                             <p>
                                                 <span className="smr_currencyFont">{islogin ? loginUserDetail?.CurrencyCode : storeInit?.CurrencyCode}</span>&nbsp;
                                                 <span>{formatter(data?.UnitCostWithMarkUp)}</span>

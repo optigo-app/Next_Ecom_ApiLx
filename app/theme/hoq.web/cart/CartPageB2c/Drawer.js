@@ -1,3 +1,4 @@
+import { isPriceHidden } from "@/app/(core)/utils/storeFlags";
 import React, { useEffect, useState } from 'react';
 import Drawer from '@mui/material/Drawer';
 import useMediaQuery from '@mui/material/useMediaQuery';
@@ -145,7 +146,7 @@ const Cart = ({
           {items?.length != 0 &&
             <div className='Hoq_B2cCheckoutBtnDiv'>
               <button className='Hoq_B2cCheckoutBtn' onClick={handlePlaceOrder}>
-                {storeInitData?.IsPriceShow == 1 &&
+                {!isPriceHidden(storeInitData) &&
                   <span>
                     {/* <span
                       className="Hoq_currencyFont"

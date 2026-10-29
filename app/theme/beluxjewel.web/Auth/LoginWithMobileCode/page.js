@@ -1,14 +1,10 @@
 'use client';
-import React, { useEffect, useState } from 'react';
-import { toast } from 'react-toastify';
-import { ContimueWithMobileAPI } from '@/app/(core)/utils/API/Auth/ContimueWithMobileAPI';
-import { LoginWithEmailAPI } from '@/app/(core)/utils/API/Auth/LoginWithEmailAPI';
-import Cookies from 'js-cookie';
-import { setSession } from '@/app/(core)/utils/FetchSessionData';
+import React from 'react';
 import OTP from './OTP';
 import './LoginWithMobileCode.modul.scss';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { useOtpLogin } from '@/app/(core)/hooks/Auth/useOtpLogin';
 
 import {
   Box,
@@ -25,94 +21,17 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 export default function LoginWithMobileCode({ params, searchParams }) {
   const router = useRouter();
   const navigation = (path) => router.push(path);
-  const [errors, setErrors] = useState({});
-  const [isLoading, setIsLoading] = useState(false);
-  const [mobileNo, setMobileNo] = useState('');
-  const [enterOTP, setEnterOTP] = useState('');
-  const [resendTimer, setResendTimer] = useState(120);
-
-  const search = searchParams?.LoginRedirect || searchParams?.loginRedirect || searchParams?.search || "";
-  const securityKey = searchParams?.SK || searchParams?.SecurityKey || "";
-  const cleanRedirect = search ? search.replace(/^\?LoginRedirect=/, '') : '';
-  const redirectMobileUrl = cleanRedirect ? (cleanRedirect.startsWith('/') ? cleanRedirect : decodeURIComponent(cleanRedirect)) : "/";
-  const cancelRedireactUrl = `/LoginOption${cleanRedirect ? `?LoginRedirect=${encodeURIComponent(cleanRedirect)}` : ""}${securityKey ? `${cleanRedirect ? '&' : '?'}SK=${encodeURIComponent(securityKey)}` : ""}`;
-
-  useEffect(() => {
-    const storedMobile = sessionStorage?.getItem('registerMobile') ?? '';
-    if (storedMobile) setMobileNo(storedMobile);
-  }, []);
-
-  useEffect(() => {
-    if (resendTimer > 0) {
-      const interval = setInterval(() => {
-        setResendTimer(prevTimer => {
-          if (prevTimer === 0) {
-            clearInterval(interval);
-            return 0;
-          }
-          return prevTimer - 1;
-        });
-      }, 1000);
-      return () => clearInterval(interval);
-    }
-  }, [resendTimer]);
-
-  const handleSubmit = async () => {
-    const visiterId = Cookies.get('visiterId');
-    if (!enterOTP.trim()) {
-      setErrors({ otp: 'Code is required' });
-      return;
-    }
-    setIsLoading(true);
-    LoginWithEmailAPI('', mobileNo, enterOTP, 'otp_mobile_login', '', visiterId).then((response) => {
-      setIsLoading(false);
-      if (response?.Data?.rd[0]?.stat == 1) {
-        const userDetail = response?.Data?.rd[0];
-        const pkgId = userDetail?.PackageId ?? userDetail?.packageId ?? userDetail?.PackageID;
-
-        if (userDetail?.Token) {
-          Cookies.set('userLoginCookie', userDetail.Token, { path: '/', expires: 7 });
-        }
-        Cookies.set('LoginUser', 'true', { path: '/', expires: 7 });
-        if (pkgId != null && pkgId !== '' && String(pkgId) !== 'undefined' && String(pkgId) !== 'null') {
-          Cookies.set('userPackageId', String(pkgId), { path: '/', expires: 7 });
-        }
-
-        sessionStorage.setItem('registerMobile', mobileNo);
-        setSession('LoginUser', true);
-        setSession('loginUserDetail', userDetail);
-
-        if (redirectMobileUrl) {
-          window.location.href = redirectMobileUrl;
-        } else {
-          window.location.href = '/';
-        }
-      } else {
-        setErrors({ otp: response?.Data?.rd[0]?.stat_msg || 'Invalid verification code' });
-      }
-    }).catch((err) => {
-      setIsLoading(false);
-      console.log(err);
-      setErrors({ otp: 'An error occurred. Please try again.' });
-    });
-  };
-
-  const handleResendCode = async () => {
-    setResendTimer(120);
-    setIsLoading(true);
-    const countryCode = sessionStorage?.getItem('Countrycodestate') || '';
-    ContimueWithMobileAPI(mobileNo, countryCode).then((response) => {
-      setIsLoading(false);
-      if (response?.Data?.rd[0]?.stat == 1) {
-        toast.success('OTP sent successfully');
-      } else {
-        toast.error('Error sending OTP');
-      }
-    }).catch((err) => {
-      setIsLoading(false);
-      console.log(err);
-    });
-  };
+  const {
+    mobileNo,
+    otp: enterOTP,
+    setOtp: setEnterOTP,
+    errors,
+    isLoading,
+    resendTimer,
+    cancelUrl: cancelRedireactUrl,
+    handleSubmit,
+    handleResendCode,
+  } = useOtpLogin({ method: 'mobile', searchParams });
 
   return (
     <Box

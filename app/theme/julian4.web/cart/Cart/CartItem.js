@@ -1,3 +1,4 @@
+import { isPriceHidden } from "@/app/(core)/utils/storeFlags";
 import React, { useEffect, useState, useRef } from "react";
 import "./elv_cartPage.scss";
 import Card from "@mui/material/Card";
@@ -288,7 +289,7 @@ const CartItem = ({ item, index, CartCardImageFunc, onSelect, CurrencyData, show
             xs: 6
           }}>
             <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
-              {storeInit?.IsPriceShow == 1 ? (
+              {!isPriceHidden(storeInit) ? (
                 <Typography
                   variant="body2"
                   sx={{

@@ -1,3 +1,4 @@
+import { isPriceHidden } from "@/app/(core)/utils/storeFlags";
 import React, { useEffect, useState } from "react";
 import {
   Modal,
@@ -389,7 +390,7 @@ const MobileCartDetails = ({
                   handleDecrement={handleDecrement}
                   qtyCount={qtyCount}
                 />
-                {storeInitData?.IsPriceShow == 1 && (
+                {!isPriceHidden(storeInitData) && (
                   <div className="product-price">
                     {!ispriceloding ? (
                       <span>
@@ -485,7 +486,7 @@ const MobileCartDetails = ({
                   </div>
                 }
                 <div className="">
-                  {storeInitData?.IsPriceShow == 1 && (
+                  {!isPriceHidden(storeInitData) && (
                     <div className="hoq_Stockproduct-price">
                       {!ispriceloding ? (
                         <span>

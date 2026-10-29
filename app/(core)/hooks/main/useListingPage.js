@@ -22,6 +22,7 @@ import { ParseAndDecodeSearchParams } from "@/app/(core)/utils/GlobalFunctions/P
 import { getPricingPolicyParams, getDynamicDesignTableName } from "@/app/(core)/utils/product/pricingPolicy";
 import { useProductStock } from "@/app/(core)/hooks/useProductStock";
 import { getStockBarcodeForProduct } from "@/app/(core)/utils/product/stockUtils";
+import { getStorePageSize } from "@/app/(core)/utils/storeFlags";
 
 import {
   compressAndEncode,
@@ -841,8 +842,8 @@ export function useListingPage({
         // Pagination — always last so nothing overwrites these
         page: targetPage,
         PageNo: targetPage,
-        pageSize: storeinit?.PageSize || 10,
-        PageSize: storeinit?.PageSize || 10,
+        pageSize: getStorePageSize(storeinit),
+        PageSize: getStorePageSize(storeinit),
       };
 
       if (Array.isArray(targetQuery) && targetQuery.length >= 2) {
@@ -1262,7 +1263,7 @@ export function useListingPage({
           ...menuFlags,
           sortBy: effectiveSortBy,
           page: initialPage,
-          pageSize: storeinit?.PageSize || 10,
+          pageSize: getStorePageSize(storeinit),
         };
 
         if (Array.isArray(targetQuery) && targetQuery.length >= 2) {

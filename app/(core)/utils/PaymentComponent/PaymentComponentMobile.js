@@ -1,4 +1,5 @@
 "use client";
+import { isPriceHidden } from "@/app/(core)/utils/storeFlags";
 import React from 'react';
 import {
     Box,
@@ -248,7 +249,7 @@ export default function PaymentComponent({ bgcolor, textColor, top, storeinit })
                         </Paper>
 
                         {/* 4. ORDER SUMMARY */}
-                        {IsPriceShow == 1 && (
+                        {!isPriceHidden(IsPriceShow) && (
                             <Paper {...cardStyle} sx={{ ...cardStyle.sx, mb: 2 }}>
                                 <CardContent sx={{ p: 2.5, '&:last-child': { pb: 2.5 } }}>
                                     <Typography variant="subtitle1" fontWeight="700" gutterBottom>
@@ -303,7 +304,7 @@ export default function PaymentComponent({ bgcolor, textColor, top, storeinit })
                 >
                     <Container maxWidth="sm" disableGutters>
                         <Grid container spacing={2} alignItems="center">
-                            {IsPriceShow == 1 && (
+                            {!isPriceHidden(IsPriceShow) && (
                                 <Grid item size={{
                                     xs : 6
                                 }}>
@@ -564,7 +565,7 @@ export default function PaymentComponent({ bgcolor, textColor, top, storeinit })
 
 //                         <Grid item size={{ xs: 12, md: 6 }}>
 //                             <Stack spacing={2}>
-//                                 {IsPriceShow == 1 && <Card>
+//                                 {!isPriceHidden(IsPriceShow) && <Card>
 //                                     <CardContent>
 //                                         <Typography variant="h6" gutterBottom>
 //                                             Order Summary

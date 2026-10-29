@@ -1,10 +1,7 @@
 'use client';
-import React, { useEffect, useState } from "react";
+import React from "react";
 import "./ForgotPass.modul.scss";
-import { toast } from "react-toastify";
-import CryptoJS from "crypto-js";
-import { ResetPasswordAPI } from "@/app/(core)/utils/API/Auth/ResetPasswordAPI";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useForgotPassword } from "@/app/(core)/hooks/Auth/useForgotPassword";
 import Link from "next/link";
 
 import {
@@ -25,110 +22,21 @@ import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
 export default function ForgotPassword({ params, storeInit }) {
-  const router = useRouter();
-  const navigation = (path) => router.push(path);
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [email, setEmail] = useState("");
-  const [errors, setErrors] = useState({});
-  const [passwordError, setPasswordError] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  const searchParams = useSearchParams();
-  const [userId, setUserId] = useState(null);
-
-  useEffect(() => {
-    const idFromUrl = searchParams.get("userid");
-    if (!idFromUrl) {
-      navigation("/");
-      return;
-    }
-    setUserId(idFromUrl);
-
-    const storedEmail = sessionStorage.getItem("userEmailForPdList");
-    if (storedEmail) {
-      setEmail(storedEmail);
-    }
-  }, []);
-
-  const handleInputChange = (e, setter, fieldName) => {
-    const { value } = e.target;
-    setter(value);
-    if (fieldName === "confirmPassword") {
-      if (!value.trim()) {
-        setErrors((prevErrors) => ({ ...prevErrors, confirmPassword: "Password is required" }));
-      } else {
-        setErrors((prevErrors) => ({ ...prevErrors, confirmPassword: "" }));
-      }
-    }
-  };
-
-  const handlePasswordChange = (event) => {
-    const { value } = event.target;
-    setPassword(value);
-    if (!validatePassword(value)) {
-      setPasswordError("Password must contain at least 8 characters, including one uppercase letter, one lowercase letter, and one number.");
-    } else {
-      setPasswordError("");
-    }
-  };
-
-  const handleTogglePasswordVisibility = (fieldName) => {
-    if (fieldName === "password") {
-      setShowPassword(!showPassword);
-    } else if (fieldName === "confirmPassword") {
-      setShowConfirmPassword(!showConfirmPassword);
-    }
-  };
-
-  function hashPasswordSHA1(password) {
-    return CryptoJS.SHA1(password).toString(CryptoJS.enc.Hex);
-  }
-
-  const validatePassword = (value) => {
-    const passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/;
-    return passwordRegex.test(value);
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const errs = {};
-
-    if (!password.trim()) {
-      setPasswordError("Password is required");
-      errs.password = "Password is required";
-    }
-    if (!confirmPassword.trim()) {
-      errs.confirmPassword = "Confirm Password is required";
-    } else if (confirmPassword.trim() !== password.trim()) {
-      errs.confirmPassword = "Passwords do not match";
-    }
-
-    if (Object.keys(errs).length > 0 || passwordError) {
-      setErrors(errs);
-      return;
-    }
-
-    const hashedPassword = hashPasswordSHA1(password);
-    setIsLoading(true);
-
-    ResetPasswordAPI(email, hashedPassword, userId)
-      .then((response) => {
-        setIsLoading(false);
-        if (response.Data.rd[0].stat === 1) {
-          toast.success("Password reset successfully! Please login with your new password.");
-          navigation("/LoginOption");
-        } else {
-          toast.error(response.Data.rd[0].stat_msg || "Error resetting password");
-        }
-      })
-      .catch((err) => {
-        setIsLoading(false);
-        console.log(err);
-        toast.error("An error occurred. Please try again.");
-      });
-  };
+  const {
+    password,
+    confirmPassword,
+    setConfirmPassword,
+    showPassword,
+    showConfirmPassword,
+    errors,
+    passwordError,
+    isLoading,
+    navigation,
+    handleInputChange,
+    handlePasswordChange,
+    handleTogglePasswordVisibility,
+    handleSubmit,
+  } = useForgotPassword();
 
   return (
     <Box

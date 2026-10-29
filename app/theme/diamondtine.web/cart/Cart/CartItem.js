@@ -1,3 +1,4 @@
+import { isPriceHidden } from "@/app/(core)/utils/storeFlags";
 import React, { useEffect, useState, useRef } from "react";
 import "./elv_cartPage.scss";
 import Card from "@mui/material/Card";
@@ -278,7 +279,7 @@ const CartItem = ({ item, index, CartCardImageFunc, onSelect, CurrencyData, show
           textAlign: isStacked ? "left" : "center",
         }}
       >
-        {storeInit?.IsPriceShow == 1 ? (
+        {!isPriceHidden(storeInit) ? (
           <>
             <Typography sx={{ fontWeight: 700, fontSize: isCompact ? "0.78rem" : "1.3rem", color: "black", whiteSpace: "nowrap" }}>
               <span dangerouslySetInnerHTML={{ __html: currencySymbol }} />
@@ -300,7 +301,7 @@ const CartItem = ({ item, index, CartCardImageFunc, onSelect, CurrencyData, show
           textAlign: isStacked ? "left" : "center",
         }}
       >
-        {storeInit?.IsPriceShow == 1 ? (
+        {!isPriceHidden(storeInit) ? (
           <>
             <Typography sx={{ fontWeight: 700, fontSize: isCompact ? "0.78rem" : "1.3rem", color: "black", whiteSpace: "nowrap" }}>
               <span dangerouslySetInnerHTML={{ __html: currencySymbol }} />
