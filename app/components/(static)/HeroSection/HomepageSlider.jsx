@@ -201,12 +201,14 @@ function Slide({ slide, url = "" }) {
       sx={clean(wrapperSx)}
     >
       {container.clickLink && (
-        <a
-          href={container.clickLink}
-          aria-label="Banner link"
-          style={{ position: "absolute", inset: 0, zIndex: 3 }}
-        />
-      )}
+  <a
+    href={container.clickLink}
+    aria-label="Banner link"
+    draggable={false}
+    onDragStart={(e) => e.preventDefault()}
+    style={{ position: "absolute", inset: 0, zIndex: 3 }}
+  />
+)}
 
       {imgSrc &&
         (isVideo ? (
@@ -343,91 +345,49 @@ function Slide({ slide, url = "" }) {
 }
 
 export default function HomepageSlider({ banners = [], url = "" }) {
-  const swiperRef = useRef(null);
-  const dragRef = useRef(null);
-  const suppressClickRef = useRef(false);
   const slides = banners
     .filter((b) => b && b.IsActive !== false)
     .sort((a, b) => (a.SortOrder ?? 0) - (b.SortOrder ?? 0))
     .map(parseBanner)
-    .filter((s) => s.image.imageUrl); // drop slides with no image
+    .filter((s) => s.image.imageUrl);
 
   if (!slides.length) return null;
 
   const multiple = slides.length > 1;
 
-  const handlePointerDown = (event) => {
-    if (event.pointerType !== "mouse" || event.button !== 0) return;
-    const wrapper = swiperRef.current?.wrapperEl;
-    if (!wrapper) return;
-    dragRef.current = {
-      pointerId: event.pointerId,
-      startX: event.clientX,
-      startScrollLeft: wrapper.scrollLeft,
-      moved: false,
-    };
-    event.currentTarget.setPointerCapture(event.pointerId);
-  };
-
-  const handlePointerMove = (event) => {
-    const drag = dragRef.current;
-    const wrapper = swiperRef.current?.wrapperEl;
-    if (!drag || !wrapper || drag.pointerId !== event.pointerId) return;
-    const delta = event.clientX - drag.startX;
-    if (Math.abs(delta) > 4) drag.moved = true;
-    if (drag.moved) {
-      event.preventDefault();
-      wrapper.scrollLeft = drag.startScrollLeft - delta;
-    }
-  };
-
-  const handlePointerEnd = (event) => {
-    const drag = dragRef.current;
-    if (!drag || drag.pointerId !== event.pointerId) return;
-    suppressClickRef.current = drag.moved;
-    dragRef.current = null;
-  };
-
   return (
     <Box
       component="section"
-      onPointerDown={handlePointerDown}
-      onPointerMove={handlePointerMove}
-      onPointerUp={handlePointerEnd}
-      onPointerCancel={handlePointerEnd}
-      onClickCapture={(event) => {
-        if (!suppressClickRef.current) return;
-        suppressClickRef.current = false;
-        event.preventDefault();
-        event.stopPropagation();
-      }}
       sx={{
         width: "100%",
         overflow: "hidden",
-        touchAction: "pan-y",
         userSelect: "none",
-        cursor: "grab",
-        "&:active": { cursor: "grabbing" },
+        "& .swiper": { cursor: multiple ? "grab" : "default" },
+        "& .swiper:active": { cursor: multiple ? "grabbing" : "default" },
       }}
     >
       <style>{ANIM_KEYFRAMES}</style>
       <Swiper
         modules={[Autoplay]}
         slidesPerView={1}
-        // Use native scroll snapping for touch/drag. This avoids Swiper's
-        // transform touch handler that is throwing in the current client build.
-        cssMode
-        allowTouchMove
-        onSwiper={(swiper) => { swiperRef.current = swiper; }}
-        // Loop mode duplicates slides in the DOM to create an infinite track.
-        // Rewind gives the same cycling behavior without rendering phantom banners.
-        loop={false}
+        spaceBetween={0}
+        allowTouchMove={multiple}
+        simulateTouch
+        grabCursor={multiple}
+        threshold={5}
+        touchStartPreventDefault={false}
+        preventClicks
+        preventClicksPropagation
+        loop={true}
         rewind={multiple}
-        autoplay={multiple ? { delay: 4000, disableOnInteraction: false } : false}
-        // pagination={multiple ? { clickable: true } : false}
+        autoplay={
+          multiple
+            ? { delay: 4000, disableOnInteraction: false, pauseOnMouseEnter: true }
+            : false
+        }
       >
         {slides.map((slide, i) => (
-          <SwiperSlide key={slide.id+i ?? i}>
+          <SwiperSlide key={`${slide.id ?? "slide"}-${i}`}>
             <Slide slide={slide} url={url} />
           </SwiperSlide>
         ))}
