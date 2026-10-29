@@ -54,6 +54,15 @@ const FIXED_LINK_MAP = {
 
   privacypolicy: "/privacyPolicy",
   privacy: "/privacyPolicy",
+  faq: "/faq",
+  customize: "/customization", // also fixed capital C inconsistency
+
+  // Updated keys (removed spaces to match normalization)
+  bookanappointment: "/appointment",
+  customerservices: "/customer-service",
+  
+  // Optional: Keep hyphenated/spaced versions if your normalizer preserves them
+  "customer-services": "/customer-service",
 };
 
 const normalizeLabel = (label = "") =>

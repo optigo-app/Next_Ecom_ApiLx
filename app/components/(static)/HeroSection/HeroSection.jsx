@@ -1,6 +1,5 @@
-import { Box, Typography } from "@mui/material";
-import getHomeBannerImages from "@/app/(core)/utils/Glob_Functions/ThemesBanner/ThemesBanner";
-import { assetBase } from "@/app/(core)/lib/ServerHelper";
+
+import { Typography } from "@mui/material";
 import { BELUX_JEWEL } from "@/app/(core)/constants/ElveeFlag";
 import { getWebContentManagement } from "@/app/(core)/hooks/webContentManagement/webContentManagement.server";
 import HomepageSlider from "./HomepageSlider";
@@ -23,6 +22,8 @@ export default async function TopSection() {
     const sliderBanners = getBannersByType("HomepageSlider")
       .filter((b) => b?.IsActive)
       .sort((a, b) => (a.SortOrder ?? 0) - (b.SortOrder ?? 0))
+      
+      console.log("TCL: TopSection ->sliderBanners ",sliderBanners )
 
       
   if (sliderBanners.length > 0) {
