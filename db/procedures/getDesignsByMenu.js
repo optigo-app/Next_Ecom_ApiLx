@@ -586,12 +586,13 @@ ResolvedPackages(package_id) AS (
   // 10. Sorting
   let orderClause = "DisplayOrder ASC, id ASC";
   const sort = String(filters.SortBy ?? filters.sortBy ?? filters.sortby ?? "").toLowerCase().trim();
-
-  // The listing sort menu also exposes stock status selections.
+  // Stock availability is a sort preference: bring matching items to the top
+  // while keeping the rest of the product list visible.
+  let stockPriorityClause = "";
   if (sort.includes("on memo") || sort.includes("in memo")) {
-    conditions.push("IsInReadyStock = 2");
+    stockPriorityClause = "CASE WHEN IsInReadyStock = 2 THEN 0 ELSE 1 END ASC";
   } else if (sort.includes("in stock")) {
-    conditions.push("IsInReadyStock = 1");
+    stockPriorityClause = "CASE WHEN IsInReadyStock = 1 THEN 0 ELSE 1 END ASC";
   }
 
   if (sort.includes("low_to_high") || sort.includes("price_asc") || sort === "1" || sort.includes("price low") || sort.includes("low to high")) {
@@ -600,6 +601,9 @@ ResolvedPackages(package_id) AS (
     orderClause = "COALESCE(UnitCostWithMarkUpIncTax, UnitCostWithMarkUp, UnitCost, 0) DESC, DisplayOrder ASC";
   } else if (sort.includes("new") || sort.includes("latest") || sort === "3") {
     orderClause = "EntryDate DESC, id DESC";
+  }
+  if (stockPriorityClause) {
+    orderClause = `${stockPriorityClause}, ${orderClause}`;
   }
 
   const whereClause = conditions.length > 0 ? conditions.join(" AND ") : "1=1";
