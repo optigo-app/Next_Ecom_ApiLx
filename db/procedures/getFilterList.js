@@ -547,22 +547,14 @@ ResolvedPackages(package_id) AS (
       `;
       const rows = db.prepare(sql).all(...queryParams);
       if (rows.length === 0) {
-        return [
-          { id: 14, Name: "White Gold" },
-          { id: 15, Name: "Yellow Gold" },
-          { id: 23, Name: "Rose Gold" },
-        ];
+        return [];
       }
       return rows.map((r) => ({
         id: r.id,
         Name: METAL_COLOR_NAMES[r.id] || `Color ${r.id}`,
       }));
     } catch (_) {
-      return [
-        { id: 14, Name: "White Gold" },
-        { id: 15, Name: "Yellow Gold" },
-        { id: 23, Name: "Rose Gold" },
-      ];
+      return [];
     }
   };
 
@@ -687,7 +679,7 @@ ResolvedPackages(package_id) AS (
 
   for (const def of filterDefinitions) {
     const opts = def.fetch();
-    if (!opts || !Array.isArray(opts) || opts.length === 0) continue;
+    if (!opts || !Array.isArray(opts)) continue;
 
     // For range filters, only include if there is a valid non-zero range
     if (def.id && def.id.includes("Range")) {
@@ -696,6 +688,10 @@ ResolvedPackages(package_id) AS (
         continue;
       }
     }
+
+    // Keep configured facet headings even when the current query has no choices.
+    // The UI uses these rows to show the available filter sections without
+    // displaying stale options from a different product set.
 
     result.push({
       id: def.id,

@@ -238,9 +238,7 @@ const FilterSidebar = ({
                         try {
                             parsedOpts = JSON.parse(item?.options) ?? [];
                         } catch (_) {}
-                        if (!Array.isArray(parsedOpts) || parsedOpts.length === 0) {
-                            return null;
-                        }
+                        if (!Array.isArray(parsedOpts)) parsedOpts = [];
 
                         return (
                             <Accordion key={index} disableGutters elevation={0} sx={{ borderBottom: "1px solid #eee" }}>

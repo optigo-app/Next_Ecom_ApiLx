@@ -35,6 +35,8 @@ export const FilterListAPI = async (mainData, visiterId) => {
         MenuParams[keyName] = ele?.replace(/%20/g, " ") || "";
       });
     }
+  } else if (mainData && typeof mainData === "object") {
+    MenuParams = mainData;
   } else if (mainData) {
     if (mainData?.split("=")[0] == "S") {
       serachVar = JSON.parse(atob(mainData.split("=")[1]));
@@ -84,6 +86,7 @@ export const FilterListAPI = async (mainData, visiterId) => {
       : (loginInfo?.SettingPriceUniqueNo ??
         storeinit?.SettingPriceUniqueNo ??
         ""),
+    ...MenuParams,
   };
   let body = {
     con: `{\"id\":\"\",\"mode\":\"GETFILTERLIST\",\"appuserid\":\"${customerEmail ?? ""}\"}`,
