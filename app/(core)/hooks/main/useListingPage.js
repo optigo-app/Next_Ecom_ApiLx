@@ -147,10 +147,10 @@ export function useListingPage({
       } catch (_) {
         parsed = [];
       }
-      if (!Array.isArray(parsed) || parsed.length === 0) return false;
+      if (!Array.isArray(parsed)) parsed = [];
       if (item?.id?.includes("Range") || item?.Name?.includes("Range")) {
         const r = parsed[0];
-        if (!r || (Number(r.Min || 0) === 0 && Number(r.Max || 0) === 0)) return false;
+        if (parsed.length === 0 || !r || (Number(r.Min || 0) === 0 && Number(r.Max || 0) === 0)) return false;
       }
       return true;
     });
@@ -1303,25 +1303,18 @@ export function useListingPage({
         // 2. Fetch Filter Sidebar Options (ensure full filters from SQLite)
         if (!filterData || filterData.length <= 2) {
           try {
-            const cachedFilters = getSession("AllFilter");
-            if (Array.isArray(cachedFilters) && cachedFilters.length > 2) {
-              const cleanFilters = sanitizeFilterList(cachedFilters);
+            const sqliteFilterRes = await getSqliteFilters(queryPayload, {}, undefined);
+            if (sqliteFilterRes?.success && Array.isArray(sqliteFilterRes.rd) && sqliteFilterRes.rd.length > 0) {
+              const cleanFilters = sanitizeFilterList(sqliteFilterRes.rd);
               setFilterData(cleanFilters);
               updateSlidersFromFilterData(cleanFilters);
+              setSession("AllFilter", sqliteFilterRes.rd);
             } else {
-              const sqliteFilterRes = await getSqliteFilters(queryPayload, {}, undefined);
-              if (sqliteFilterRes?.success && Array.isArray(sqliteFilterRes.rd) && sqliteFilterRes.rd.length > 0) {
-                const cleanFilters = sanitizeFilterList(sqliteFilterRes.rd);
+              const resFilters = await FilterListAPI(queryPayload, cookie);
+              if (Array.isArray(resFilters) && resFilters.length > 0) {
+                const cleanFilters = sanitizeFilterList(resFilters);
                 setFilterData(cleanFilters);
                 updateSlidersFromFilterData(cleanFilters);
-                setSession("AllFilter", sqliteFilterRes.rd);
-              } else {
-                const resFilters = await FilterListAPI(productlisttype || searchParams, cookie);
-                if (Array.isArray(resFilters) && resFilters.length > 0) {
-                  const cleanFilters = sanitizeFilterList(resFilters);
-                  setFilterData(cleanFilters);
-                  updateSlidersFromFilterData(cleanFilters);
-                }
               }
             }
           } catch (filterErr) {

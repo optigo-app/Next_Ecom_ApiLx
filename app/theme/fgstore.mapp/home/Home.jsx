@@ -12,6 +12,7 @@ import Trendings from "./components/Trendings";
 import ShowCaseBlock from "./components/ShowCaseBlock";
 import OrderBlock from "./CustomOrder/OrderBlock";
 import TokenWrapper from "./TokenWrapper";
+import { isStoreInitFlagEnabled } from "@/app/(core)/utils/storeFlags";
 
 export default function Home({
   storeinit,
@@ -30,7 +31,7 @@ export default function Home({
             <PromotionCarousel />
             <Categories storeinit={storeinit} initialCategories={initialCategories} />
             <Collection storeinit={storeinit} initialCategories={initialCategories} />
-            <OrderBlock />
+            {isStoreInitFlagEnabled(storeinit, "customOrder") && <OrderBlock />}
           </Box>
           {/* <AlbumSection /> */}
           {/* <GiftBlock storeinit={storeinit} /> */}

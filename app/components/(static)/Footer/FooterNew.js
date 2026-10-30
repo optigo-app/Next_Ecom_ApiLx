@@ -29,6 +29,7 @@ import Link from "next/link";
 import { IoMdMail } from "react-icons/io";
 import { useNextRouterLikeRR } from "@/app/(core)/hooks/useLocationRd";
 import { useStore } from "@/app/(core)/contexts/StoreProvider";
+import { isStoreInitFlagEnabled } from "@/app/(core)/utils/storeFlags";
 import "./Footer.scss";
 
 const PremiumFooter = ({
@@ -422,7 +423,13 @@ const PremiumFooter = ({
                   md: 1.5,
                 }}
               >
-                {section.links.map((link) => (
+                {section.links
+                  .filter(
+                    (link) =>
+                      link.href !== "/custom-orders" ||
+                      isStoreInitFlagEnabled(storeInit, "customOrder"),
+                  )
+                  .map((link) => (
                   <Box
                     key={link.label}
                     component={Link}
