@@ -126,6 +126,7 @@ CREATE TABLE IF NOT EXISTS storeinit (
     IsStaticMenu INTEGER DEFAULT 0,
     Website_Email TEXT,
     IsMultiVariantCart INTEGER DEFAULT 0,
+    IsArticleBasedCartCustomization INTEGER DEFAULT 1,
     IsRemarkOnProductDetail INTEGER DEFAULT 0,
     IsCustomOrder INTEGER DEFAULT 0,
     IsWhatsappNotification INTEGER DEFAULT 0,
@@ -142,7 +143,7 @@ CREATE INDEX IF NOT EXISTS idx_storeinit_websiteid ON storeinit(WebsiteId);
 `;
 
 /**
- * Ensures domainid and WebsiteId columns exist in the storeinit table for existing tenant databases.
+ * Ensures newer configuration columns exist in existing tenant databases.
  * @param {import('better-sqlite3').Database} db
  */
 export function ensureStoreInitColumns(db) {
@@ -157,6 +158,9 @@ export function ensureStoreInitColumns(db) {
         }
         if (!cols.includes("WebsiteId")) {
             db.exec("ALTER TABLE storeinit ADD COLUMN WebsiteId INTEGER DEFAULT 0;");
+        }
+        if (!cols.includes("IsArticleBasedCartCustomization")) {
+            db.exec("ALTER TABLE storeinit ADD COLUMN IsArticleBasedCartCustomization INTEGER DEFAULT 1;");
         }
     } catch (err) {
         console.warn("[ensureStoreInitColumns] Column check warning:", err.message);

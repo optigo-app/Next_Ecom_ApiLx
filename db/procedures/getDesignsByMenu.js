@@ -587,6 +587,13 @@ ResolvedPackages(package_id) AS (
   let orderClause = "DisplayOrder ASC, id ASC";
   const sort = String(filters.SortBy ?? filters.sortBy ?? filters.sortby ?? "").toLowerCase().trim();
 
+  // The listing sort menu also exposes stock status selections.
+  if (sort.includes("on memo") || sort.includes("in memo")) {
+    conditions.push("IsInReadyStock = 2");
+  } else if (sort.includes("in stock")) {
+    conditions.push("IsInReadyStock = 1");
+  }
+
   if (sort.includes("low_to_high") || sort.includes("price_asc") || sort === "1" || sort.includes("price low") || sort.includes("low to high")) {
     orderClause = "COALESCE(UnitCostWithMarkUpIncTax, UnitCostWithMarkUp, UnitCost, 0) ASC, DisplayOrder ASC";
   } else if (sort.includes("high_to_low") || sort.includes("price_desc") || sort === "2" || sort.includes("price high") || sort.includes("high to low")) {

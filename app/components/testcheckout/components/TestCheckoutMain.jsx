@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import {
   Container,
   Grid,
@@ -25,12 +25,15 @@ import OrderProcessingBackdrop from "@/app/components/testcheckout/components/Or
 import "../styles/testCheckout.scss";
 import { useStore } from "@/app/(core)/contexts/StoreProvider";
 import { CheckoutThemeProvider } from "@/app/components/testcheckout/theme/checkoutTheme";
+import { isStoreInitFlagEnabled } from "@/app/(core)/utils/storeFlags";
+import ArticleBasedCustomizationDrawer from "@/app/components/testcheckout/articlebasedcustomization/ArticleBasedCustomizationDrawer";
 
 export default function TestCheckoutMain({ theme: customTheme }) {
   const router = useRouter();
-  const { storeInit } = useStore();
+  const { storeInit, loginUserDetail } = useStore();
   const checkout = useTestCheckout(storeInit);
   const [isClearAllDialogOpen, setIsClearAllDialogOpen] = useState(false);
+  const [articleCustomizationItem, setArticleCustomizationItem] = useState(null);
 
   const {
     cartItems,
@@ -58,6 +61,7 @@ export default function TestCheckoutMain({ theme: customTheme }) {
     handleCustomizationChange,
     handleEditQtyChange,
     handleApplyCustomization,
+    handleApplyArticleCustomization,
 
     // Cart Actions
     handleRemoveItem,
@@ -88,6 +92,24 @@ export default function TestCheckoutMain({ theme: customTheme }) {
 
   const theme = useTheme();
   const isMobileOrTablet = useMediaQuery(theme.breakpoints.down("lg"));
+  const articleFlagValue = storeInit?.IsArticleBasedCartCustomization;
+  const isArticleBasedCartCustomization =
+    (articleFlagValue == null || articleFlagValue === ""
+      ? process.env.NODE_ENV === "development"
+      : isStoreInitFlagEnabled(storeInit, "articleBasedCartCustomization")) &&
+    Number(storeInit?.IsProductWebCustomization) === 1;
+  const closeArticleCustomization = useCallback(
+    () => setArticleCustomizationItem(null),
+    [],
+  );
+  const handleCartItemEdit = useCallback((item) => {
+    if (isArticleBasedCartCustomization) {
+      if (item?.IsMrpBase === 1) return;
+      setArticleCustomizationItem(item);
+      return;
+    }
+    handleStartEdit(item);
+  }, [handleStartEdit, isArticleBasedCartCustomization]);
 
   const isEmptyCart = !isLoadingCart && (!cartItems || cartItems.length === 0);
 
@@ -331,8 +353,9 @@ export default function TestCheckoutMain({ theme: customTheme }) {
                     storeinit={storeInit}
                     currencyCode={currencyCode}
                     formatter={formatter}
-                    editingItem={editingItem}
-                    onStartEdit={handleStartEdit}
+                    editingItem={articleCustomizationItem || editingItem}
+                    articleCustomizationEnabled={isArticleBasedCartCustomization}
+                    onStartEdit={handleCartItemEdit}
                     onRemoveItem={handleRemoveItem}
                     onSaveProductRemark={handleSaveProductRemark}
                     handleMoveToDetail={handleMoveToDetail}
@@ -426,6 +449,15 @@ export default function TestCheckoutMain({ theme: customTheme }) {
               onApply={handleApplyCustomization}
               onCancel={handleCancelEdit}
               handleMoveToDetail={handleMoveToDetail}
+            />
+          )}
+          {isArticleBasedCartCustomization && (
+            <ArticleBasedCustomizationDrawer
+              item={articleCustomizationItem}
+              storeInit={storeInit}
+              loginData={loginUserDetail}
+              onClose={closeArticleCustomization}
+              onApply={handleApplyArticleCustomization}
             />
           )}
           {/* Full-Screen Order Processing & Success Backdrop Overlay */}
