@@ -623,6 +623,9 @@ const FilterSidebar = ({
                                     {storeInit?.IsStockWebsite === 1 && (
                                         <MenuItem value="In Stock">In Stock</MenuItem>
                                     )}
+                                    {storeInit?.IsStockWebsite === 1 && (
+                                        <MenuItem value="In Memo">In Memo</MenuItem>
+                                    )}
                                     <MenuItem value="PRICE LOW TO HIGH">Price Low to High</MenuItem>
                                     <MenuItem value="PRICE HIGH TO LOW">Price High to Low</MenuItem>
                                 </Select>

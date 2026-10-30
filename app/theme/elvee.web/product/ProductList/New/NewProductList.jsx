@@ -158,7 +158,8 @@ const ProductCard = ({ product, index, productData, StoreInit, calcVal, videoUrl
     },
   };
 
-  const hasUpperTags = productData?.IsInReadyStock == 1 || productData?.IsBestSeller == 1 || productData?.IsTrending == 1 || productData?.IsNewArrival == 1;
+  const isInMemo = Number(productData?.IsInReadyStock) === 2;
+  const hasUpperTags = isInMemo || productData?.IsInReadyStock == 1 || productData?.IsBestSeller == 1 || productData?.IsTrending == 1 || productData?.IsNewArrival == 1;
 
   return (
     <MotionCard
@@ -331,7 +332,8 @@ const ProductCard = ({ product, index, productData, StoreInit, calcVal, videoUrl
             gap: 0.8,
           }}
         >
-          {productData?.IsInReadyStock == 1 && ChipBar("In Stock")}
+          {isInMemo && ChipBar("In Memo")}
+          {!isInMemo && productData?.IsInReadyStock == 1 && ChipBar("In Stock")}
           {productData?.IsBestSeller == 1 && ChipBar("Best Seller")}
           {productData?.IsTrending == 1 && ChipBar("Trending")}
           {productData?.IsNewArrival == 1 && ChipBar("New", "#163164")}

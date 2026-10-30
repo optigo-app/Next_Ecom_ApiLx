@@ -1,5 +1,5 @@
 import { isPriceHidden } from "@/app/(core)/utils/storeFlags";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import {
   Box,
   Typography,
@@ -29,6 +29,8 @@ import CustomizerDrawer from "../Customiziation";
 import ProductDetailsSection from "./ProductDetailsSection";
 import { getDeliveryInfo } from "./deliveryUtils";
 import { isItemInMap } from "@/app/(core)/utils/API/GetCount/GetCountAPI";
+import { useProductStock } from "@/app/(core)/hooks/useProductStock";
+import { getStockBarcodeForProduct, normalizeBarcode } from "@/app/(core)/utils/product/stockUtils";
 
 const MotionButton = motion(Button);
 const MotionCheckbox = motion(Checkbox);
@@ -152,6 +154,27 @@ const RightSide = ({
   const isCartWishReady = Boolean(storeCartArr?.__hydrated);
 
   const CurrencyCode = loginData?.loginData ?? storeInit?.CurrencyCode;
+  const stockLookupProducts = useMemo(
+    () => [activeArticle, singleProd1, singleProd].filter(Boolean),
+    [activeArticle, singleProd1, singleProd],
+  );
+  const { stockMap } = useProductStock(stockLookupProducts, {
+    storeinit: storeInit,
+    loginUserDetail: loginData,
+    autoFetch: Boolean(singleProd || activeArticle),
+  });
+  const stockLookupArticle = activeArticle || singleProd1 || singleProd;
+  const resolvedStockBarcode = getStockBarcodeForProduct(stockLookupArticle, stockMap);
+  const resolvedStockRecord = resolvedStockBarcode
+    ? stockMap.get(normalizeBarcode(resolvedStockBarcode))
+    : null;
+  const productStockInfo = resolvedStockRecord
+    ? {
+        ...getDeliveryInfo(singleProd, singleProd1, stockItemArr),
+        isInMemo: resolvedStockRecord.InMemo === 1,
+        isInStock: resolvedStockRecord.InMemo !== 1 && resolvedStockRecord.InStock === 1,
+      }
+    : getDeliveryInfo(singleProd, singleProd1, stockItemArr);
 
   const priceBreakupItems = [
     {
@@ -265,18 +288,48 @@ const RightSide = ({
           >
             Collection: {collection}
           </Typography> */}
-          <Typography
-            variant="body2"
+          <Box
             sx={{
-              color: "#424242",
-              fontSize: "16px",
-              fontWeight: 600,
-              letterSpacing: "1.5px",
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              gap: 2,
               mb: 0.5,
             }}
           >
-            {activeArticle?.ArticleNo || DesignNo}
-          </Typography>
+            <Typography
+              variant="body2"
+              sx={{
+                color: "#424242",
+                fontSize: "16px",
+                fontWeight: 600,
+                letterSpacing: "1.5px",
+              }}
+            >
+              {activeArticle?.ArticleNo || DesignNo}
+            </Typography>
+            {productStockInfo.isInStock || productStockInfo.isInMemo ? (
+            <Box
+              component="span"
+              sx={{
+                display: "inline-flex",
+                alignItems: "center",
+                flexShrink: 0,
+                px: 1.25,
+                py: 0.5,
+                borderRadius: "4px",
+                fontSize: "12px",
+                fontWeight: 600,
+                letterSpacing: "0.3px",
+                color: productStockInfo.isInMemo ? "#9A5A00" : "#216E3A",
+                backgroundColor: productStockInfo.isInMemo ? "#FFF4DF" : "#E8F5EC",
+                border: `1px solid ${productStockInfo.isInMemo ? "#F2D39A" : "#BFE3CA"}`,
+              }}
+            >
+              {productStockInfo.isInMemo ? "In Memo" : "In Stock"}
+            </Box>
+            ) : null}
+          </Box>
 
           {/* Title and Actions */}
           <Box
@@ -1004,11 +1057,7 @@ const RightSide = ({
 
               {/* Stock & Delivery Info Notice Box */}
               {(() => {
-                const deliveryInfo = getDeliveryInfo(
-                  singleProd,
-                  singleProd1,
-                  stockItemArr
-                );
+                const deliveryInfo = productStockInfo;
                 return (
                   <Box
                     sx={{
@@ -1026,7 +1075,9 @@ const RightSide = ({
                         lineHeight: 1.65,
                       }}
                     >
-                      {deliveryInfo.isInStock ? (
+                      {deliveryInfo.isInMemo ? (
+                        <>This piece is currently available on memo. Please contact us for availability and delivery details.</>
+                      ) : deliveryInfo.isInStock ? (
                         <>
                           This piece is in stock and will be delivered between{" "}
                           <strong style={{ color: "#111111", fontWeight: 700 }}>

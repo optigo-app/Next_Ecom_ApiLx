@@ -293,6 +293,7 @@ export default function CustomizerDrawer({
   onConfirm,
   storeInit,
   loginData,
+  showArticleId = true,
 }) {
   const [selectedMetal, setSelectedMetal] = useState(null);
   const [selectedSize, setSelectedSize] = useState(null);
@@ -716,18 +717,20 @@ export default function CustomizerDrawer({
                   }}
                 />
               )}
-              <Chip
-                label={`Art# ${activeArticle.ArticleId}`}
-                size="small"
-                sx={{
-                  bgcolor: colors.primary,
-                  color: "#fff",
-                  fontSize: "11px",
-                  fontWeight: 700,
-                  borderRadius: "6px",
-                  height: "24px",
-                }}
-              />
+              {showArticleId && (
+                <Chip
+                  label={`Art# ${activeArticle.ArticleId}`}
+                  size="small"
+                  sx={{
+                    bgcolor: colors.primary,
+                    color: "#fff",
+                    fontSize: "11px",
+                    fontWeight: 700,
+                    borderRadius: "6px",
+                    height: "24px",
+                  }}
+                />
+              )}
             </Box>
           </Box>
         )}

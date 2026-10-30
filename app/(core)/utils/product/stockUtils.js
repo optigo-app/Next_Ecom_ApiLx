@@ -99,11 +99,9 @@ export function checkProductStock(productOrBarcode, stockMap) {
   if (stockMap instanceof Map && barcode) {
     const stockItem = stockMap.get(barcode);
     if (stockItem) {
-      const isInStock = stockItem.InStock === 1;
       const isInMemo = stockItem.InMemo === 1;
-      let stockStatus = "MADE_TO_ORDER";
-      if (isInStock) stockStatus = "IN_STOCK";
-      else if (isInMemo) stockStatus = "IN_MEMO";
+      const isInStock = !isInMemo && stockItem.InStock === 1;
+      const stockStatus = isInMemo ? "IN_MEMO" : isInStock ? "IN_STOCK" : "MADE_TO_ORDER";
 
       return {
         isInStock,
@@ -117,14 +115,17 @@ export function checkProductStock(productOrBarcode, stockMap) {
 
   // 2. Direct property fallback if InStock/InMemo were directly embedded in product object
   if (productOrBarcode && typeof productOrBarcode === "object") {
-    const inStock = Number(productOrBarcode.InStock ?? productOrBarcode.instock ?? 0) === 1;
-    const inMemo = Number(productOrBarcode.InMemo ?? productOrBarcode.inmemo ?? 0) === 1;
+    const readyStockStatus = Number(productOrBarcode.IsInReadyStock ?? productOrBarcode.isInReadyStock);
+    const inMemo = readyStockStatus === 2 || Number(productOrBarcode.InMemo ?? productOrBarcode.inmemo ?? 0) === 1;
+    const inStock = !inMemo && (
+      readyStockStatus === 1 || Number(productOrBarcode.InStock ?? productOrBarcode.instock ?? 0) === 1
+    );
 
     if (inStock || inMemo) {
       return {
         isInStock: inStock,
         isInMemo: inMemo,
-        stockStatus: inStock ? "IN_STOCK" : "IN_MEMO",
+        stockStatus: inMemo ? "IN_MEMO" : "IN_STOCK",
         barcode,
         stockRecord: null,
       };

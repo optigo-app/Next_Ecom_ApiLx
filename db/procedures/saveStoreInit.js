@@ -70,7 +70,7 @@ export function saveStoreInit(db, rawPayload = {}) {
                     IsTaxIncludePrice, FileCreateDate, CacheRebuildDate, RollOverNo,
                     IsWebMobileLoginOff, IsEcomOtpVerification, IsSolitaireWebsite, IsZeroPriceProductShow,
                     IsSignUpWithCompanyInfo, IsStaticMenu, Website_Email, IsMultiVariantCart,
-                    IsRemarkOnProductDetail, IsCustomOrder, IsWhatsappNotification, updated_at
+                    IsArticleBasedCartCustomization, IsRemarkOnProductDetail, IsCustomOrder, IsWhatsappNotification, updated_at
                 ) VALUES (
                     1, @YearCode, @version, @ApiUrl, @sv, @FrontEnd_RegNo, @ukey, @domain, @ufcc, @token,
                     @domainid, @WebsiteId,
@@ -98,7 +98,7 @@ export function saveStoreInit(db, rawPayload = {}) {
                     @IsTaxIncludePrice, @FileCreateDate, @CacheRebuildDate, @RollOverNo,
                     @IsWebMobileLoginOff, @IsEcomOtpVerification, @IsSolitaireWebsite, @IsZeroPriceProductShow,
                     @IsSignUpWithCompanyInfo, @IsStaticMenu, @Website_Email, @IsMultiVariantCart,
-                    @IsRemarkOnProductDetail, @IsCustomOrder, @IsWhatsappNotification, CURRENT_TIMESTAMP
+                    @IsArticleBasedCartCustomization, @IsRemarkOnProductDetail, @IsCustomOrder, @IsWhatsappNotification, CURRENT_TIMESTAMP
                 )
                 ON CONFLICT(id) DO UPDATE SET
                     YearCode = excluded.YearCode,
@@ -222,6 +222,7 @@ export function saveStoreInit(db, rawPayload = {}) {
                     IsStaticMenu = excluded.IsStaticMenu,
                     Website_Email = excluded.Website_Email,
                     IsMultiVariantCart = excluded.IsMultiVariantCart,
+                    IsArticleBasedCartCustomization = excluded.IsArticleBasedCartCustomization,
                     IsRemarkOnProductDetail = excluded.IsRemarkOnProductDetail,
                     IsCustomOrder = excluded.IsCustomOrder,
                     IsWhatsappNotification = excluded.IsWhatsappNotification,
@@ -350,6 +351,7 @@ export function saveStoreInit(db, rawPayload = {}) {
                 IsStaticMenu: toInt(rd.IsStaticMenu),
                 Website_Email: toText(rd.Website_Email),
                 IsMultiVariantCart: toInt(rd.IsMultiVariantCart),
+                IsArticleBasedCartCustomization: toInt(rd.IsArticleBasedCartCustomization, 1),
                 IsRemarkOnProductDetail: toInt(rd.IsRemarkOnProductDetail),
                 IsCustomOrder: toInt(rd.IsCustomOrder),
                 IsWhatsappNotification: toInt(rd.IsWhatsappNotification)

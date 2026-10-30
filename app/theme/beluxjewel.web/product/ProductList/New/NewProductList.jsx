@@ -153,7 +153,7 @@ const WeightBadge = ({ label, value }) => {
 
 const CHIP_TONES = {
   "In Stock": { bg: "#E8F5EC", color: "#1B6B3A", border: "#BFE3CA", dot: "#22A559" },
-  "On Memo": { bg: "#FFF3E0", color: "#9A5B00", border: "#F5D9A8", dot: "#F29900" },
+  "In Memo": { bg: "#FFF3E0", color: "#9A5B00", border: "#F5D9A8", dot: "#F29900" },
   "Best Seller": { bg: "#FBF1D9", color: "#7A5A00", border: "#EBD592", dot: "#D4A017" },
   Trending: { bg: "#FDECEF", color: "#A3263F", border: "#F4C4CE", dot: "#E04462" },
   New: { bg: "#163164", color: "#FFFFFF", border: "#163164" },
@@ -214,11 +214,11 @@ const JewelryProductGrid = ({
   loginUserDetail,
   productListData,
   isFiltering,
-  handleMoveToDetail = () => {},
+  handleMoveToDetail = () => { },
   showFilter,
   filter,
   filterData,
-  handleCartandWish = () => {},
+  handleCartandWish = () => { },
   cartArr,
   wishArr,
 }) => {
@@ -396,6 +396,7 @@ const ProductCard = ({
   const hasUpperTags =
     productData?.isInStock ||
     productData?.isInMemo ||
+    Number(productData?.IsInReadyStock) === 2 ||
     productData?.IsInReadyStock == 1 ||
     productData?.IsBestSeller == 1 ||
     productData?.IsTrending == 1 ||
@@ -624,8 +625,8 @@ const ProductCard = ({
             gap: 0.8,
           }}
         >
-          {(productData?.isInStock || productData?.IsInReadyStock == 1) && ChipBar("In Stock")}
-          {productData?.isInMemo && ChipBar("On Memo")}
+          {(productData?.isInStock || productData?.IsInReadyStock == 1) && Number(productData?.IsInReadyStock) !== 2 && ChipBar("In Stock")}
+          {(productData?.isInMemo || Number(productData?.IsInReadyStock) === 2) && ChipBar("In Memo")}
           {productData?.IsBestSeller == 1 && ChipBar("Best Seller")}
           {productData?.IsTrending == 1 && ChipBar("Trending")}
           {productData?.IsNewArrival == 1 && ChipBar("New", "#163164")}
@@ -673,7 +674,7 @@ const ProductCard = ({
           flexDirection: "column",
           gap: 0.3,
           backgroundColor: "#ffffff",
-          zIndex:9999
+          zIndex: 9999
         }}
       >
         {/* Line 1: Metal swatch + type (left) | Weights (right) */}
@@ -719,9 +720,8 @@ const ProductCard = ({
               Number(productData?.Dwt) !== 0 && (
                 <WeightBadge
                   label="DWT"
-                  value={`${productData?.Dwt?.toFixed(3)}${
-                    StoreInit?.IsDiamondPcs === 1 ? `/${productData?.Dpcs}` : ""
-                  }`}
+                  value={`${productData?.Dwt?.toFixed(3)}${StoreInit?.IsDiamondPcs === 1 ? `/${productData?.Dpcs}` : ""
+                    }`}
                 />
               )}
             {StoreInit?.IsGrossWeight == 1 && Number(productData?.Gwt) > 0 && (

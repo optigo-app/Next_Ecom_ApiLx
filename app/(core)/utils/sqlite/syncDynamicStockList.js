@@ -7,6 +7,7 @@ import {
 } from "../../../../db/schema/dynamicStockList.js";
 import { syncTableViaTemp } from "../../../../db/procedures/tempTableSync.js";
 import { logger } from "../../../../db/logger.js";
+import { syncReadyStockFlags } from "../../../../db/procedures/syncReadyStockFlags.js";
 
 /**
  * Synchronizes stock memo list from remote ERP API (GETStockMemoLIST) into dynamic
@@ -232,6 +233,7 @@ export async function syncDynamicStockList(options = {}) {
         ensureMainTable: (d, t) => ensureDynamicStockListTable(d, t),
         stage: (tmpTable) => batchInsertStockList(db, rawStockList, { flush: false, slotSize: options?.slotSize || 1000 }, tmpTable),
       });
+      const readyStockSync = syncReadyStockFlags(db, tableName);
 
       syncedTables.push({
         table: tableName,
@@ -241,6 +243,7 @@ export async function syncDynamicStockList(options = {}) {
         updatedCount: syncResult.updatedCount,
         deletedCount: syncResult.deletedCount,
         totalInDatabase: syncResult.totalInDatabase,
+        readyStockSync,
       });
     }
 
