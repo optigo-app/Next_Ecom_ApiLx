@@ -9,6 +9,7 @@ import { MetalTypeComboAPI } from "@/app/(core)/utils/API/Combo/MetalTypeComboAP
 import { DiamondQualityColorComboAPI } from "@/app/(core)/utils/API/Combo/DiamondQualityColorComboAPI";
 import { MetalColorCombo } from "@/app/(core)/utils/API/Combo/MetalColorCombo";
 import { ColorStoneQualityColorComboAPI } from "@/app/(core)/utils/API/Combo/ColorStoneQualityColorComboAPI";
+import { trackAlbumAction } from "@/app/(core)/utils/API/Album/albumTracker";
 import { CartAndWishListAPI } from "@/app/(core)/utils/API/CartAndWishList/CartAndWishListAPI";
 import { RemoveCartAndWishAPI } from "@/app/(core)/utils/API/RemoveCartandWishAPI/RemoveCartAndWishAPI";
 import { getCartWishKey } from "@/app/(core)/utils/API/GetCount/GetCountAPI";
@@ -516,6 +517,18 @@ export function useProductDetail({ storeinit, searchParams, params }) {
     setWishListFlag(null);
   }, [customizationDetail?.ArticleId]);
 
+  // Album view count: log each distinct article viewed on detail (deduped inside the tracker)
+  useEffect(() => {
+    const articleNo = customizationDetail?.ArticleNo || singleProd?.ArticleNo;
+    const autocode = customizationDetail?.autocode || singleProd?.autocode;
+    if (!articleNo || !autocode) return;
+    trackAlbumAction(
+      "view",
+      { autocode, designno: singleProd?.designno, ArticleNo: articleNo, StockBarcode: customizationDetail?.StockBarcode || singleProd?.StockBarcode },
+      { loginInfo: loginUserDetail },
+    );
+  }, [customizationDetail?.ArticleNo, customizationDetail?.autocode, singleProd?.ArticleNo, singleProd?.autocode, singleProd?.designno, loginUserDetail?.isalbumlogin]);
+
   const handleCart = async (cartFlag) => {
     setIsCartBtnLoading(true);
     const metal =
@@ -637,6 +650,7 @@ export function useProductDetail({ storeinit, searchParams, params }) {
         console.log("addtocartErr", err);
       }
       if (res) {
+        trackAlbumAction("cart", { ...prodObj, designno: singleProd?.designno }, { loginInfo: loginUserDetail });
         try {
           let cartC = res?.Data?.rd[0]?.Cartlistcount;
           let wishC = res?.Data?.rd[0]?.Wishlistcount;
@@ -692,6 +706,7 @@ export function useProductDetail({ storeinit, searchParams, params }) {
         console.log("removecartErr", err);
       }
       if (res1) {
+        trackAlbumAction("removeCart", { ...prodObj, designno: singleProd?.designno }, { loginInfo: loginUserDetail });
         try {
           let cartC = res1?.Data?.rd[0]?.Cartlistcount;
           let wishC = res1?.Data?.rd[0]?.Wishlistcount;
@@ -866,6 +881,7 @@ export function useProductDetail({ storeinit, searchParams, params }) {
         console.log("addtowishErr", err);
       }
       if (res) {
+        trackAlbumAction("like", { ...prodObj, designno: singleProd?.designno }, { loginInfo: loginUserDetail });
         try {
           let cartC = res?.Data?.rd[0]?.Cartlistcount;
           let wishC = res?.Data?.rd[0]?.Wishlistcount;
@@ -913,6 +929,7 @@ export function useProductDetail({ storeinit, searchParams, params }) {
         console.log("removewishErr", err);
       }
       if (res1) {
+        trackAlbumAction("dislike", { ...prodObj, designno: singleProd?.designno }, { loginInfo: loginUserDetail });
         try {
           let cartC = res1?.Data?.rd[0]?.Cartlistcount;
           let wishC = res1?.Data?.rd[0]?.Wishlistcount;

@@ -9,7 +9,7 @@ import { syncUserDetailToCookies } from "../../utils/product/pricingPolicy";
 
 /** Logs the visitor into the customer associated with a shared ProCatalog album. */
 export function useAlbumAuth(customerId, enabled = true) {
-  const { setislogin, setLoginUserDetail } = useStore();
+  const { setislogin, setLoginUserDetail, fetchGetCountData } = useStore();
   const attemptedCustomerId = useRef("");
 
   useEffect(() => {
@@ -30,9 +30,10 @@ export function useAlbumAuth(customerId, enabled = true) {
         setSession("loginUserDetail", userDetail);
         setislogin(true);
         setLoginUserDetail(userDetail);
+        fetchGetCountData?.(String(userDetail?.id ?? ""));
       })
       .catch((error) => {
         console.error("Album customer login error:", error);
       });
-  }, [customerId, enabled, setislogin, setLoginUserDetail]);
+  }, [customerId, enabled, setislogin, setLoginUserDetail, fetchGetCountData]);
 }
