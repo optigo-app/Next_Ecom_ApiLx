@@ -15,7 +15,7 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import DiamondIcon from "@mui/icons-material/Diamond";
 import { formatter } from "@/app/(core)/utils/Glob_Functions/GlobalFunction";
 import { useProductStock } from "@/app/(core)/hooks/useProductStock";
-import { getStockBarcodeForProduct, normalizeBarcode } from "@/app/(core)/utils/product/stockUtils";
+import { resolveProductStockStatus } from "@/app/(core)/utils/product/stockUtils";
 
 // ── Brand design tokens ─────────────────────────────────────────────────────
 const colors = {
@@ -383,24 +383,14 @@ export default function CustomizerDrawer({
       const articleId = article?.ArticleId;
       if (articleId == null) return;
 
-      const barcode = getStockBarcodeForProduct(article, stockMap);
-      const stockRecord = barcode ? stockMap.get(normalizeBarcode(barcode)) : null;
-      const hasStockData = stockMap.size > 0;
-      const inStock = stockRecord
-        ? stockRecord.InStock === 1
-        : hasStockData
-          ? false
-          : Number(article?.InStock ?? article?.instock ?? 0) === 1;
-      const inMemo = stockRecord
-        ? stockRecord.InMemo === 1
-        : hasStockData
-          ? false
-          : Number(article?.InMemo ?? article?.inmemo ?? 0) === 1;
+      const stockStatus = resolveProductStockStatus(article, stockMap);
+      const inMemo = stockStatus.isInMemo;
+      const inStock = stockStatus.isInStock;
 
       statusById.set(articleId, {
-        StockBarcode: barcode || article?.StockBarcode || "",
-        InStock: inStock ? 1 : 0,
-        InMemo: inMemo ? 1 : 0,
+        StockBarcode: stockStatus.barcode || article?.StockBarcode || "",
+        InStock: stockStatus.InStock,
+        InMemo: stockStatus.InMemo,
         inStockLabel: inStock ? "In Stock" : inMemo ? "In Memo" : isStockLoading ? "Checking Stock" : "Make to Order",
       });
     });

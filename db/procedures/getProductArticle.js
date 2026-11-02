@@ -103,6 +103,7 @@ export function getProductArticle(db, options = {}) {
           COALESCE(ColorImageCount, 0) AS ColorImageCount,
           COALESCE("360ImageCount", 0) AS "360ImageCount",
           COALESCE(VideoCount, 0) AS VideoCount,
+          COALESCE(IsInReadyStock, 0) AS IsInReadyStock,
           COALESCE(ImageExtension, 'jpg') AS ImageExtension,
           COALESCE("360ImageExtension", '') AS "360ImageExtension",
           COALESCE(VideoExtension, 'mp4') AS VideoExtension,
