@@ -8,6 +8,7 @@ import { MetalTypeComboAPI } from "@/app/(core)/utils/API/Combo/MetalTypeComboAP
 import { DiamondQualityColorComboAPI } from "@/app/(core)/utils/API/Combo/DiamondQualityColorComboAPI";
 import { ColorStoneQualityColorComboAPI } from "@/app/(core)/utils/API/Combo/ColorStoneQualityColorComboAPI";
 import { MetalColorCombo } from "@/app/(core)/utils/API/Combo/MetalColorCombo";
+import { trackAlbumAction } from "@/app/(core)/utils/API/Album/albumTracker";
 import { CartAndWishListAPI } from "@/app/(core)/utils/API/CartAndWishList/CartAndWishListAPI";
 import { RemoveCartAndWishAPI } from "@/app/(core)/utils/API/RemoveCartandWishAPI/RemoveCartAndWishAPI";
 import { GetCountAPI, buildCartAndWishMaps, getCartWishKey, isItemInMap } from "@/app/(core)/utils/API/GetCount/GetCountAPI";
@@ -513,6 +514,7 @@ export function useListingPage({
         CartAndWishListAPI(type, prodObj, activeCookie)
           .then((res) => {
             if (res) {
+              trackAlbumAction(type === "Cart" ? "cart" : "like", ele, { loginInfo: loginUserDetail });
               const cartC =
                 res?.Data?.rd[0]?.Cartlistcount ??
                 res?.Data?.rd[0]?.Cartcount ??
@@ -552,6 +554,7 @@ export function useListingPage({
         )
           .then((res1) => {
             if (res1) {
+              trackAlbumAction(type === "Cart" ? "removeCart" : "dislike", ele, { loginInfo: loginUserDetail });
               const cartC =
                 res1?.Data?.rd[0]?.Cartlistcount ??
                 res1?.Data?.rd[0]?.Cartcount ??

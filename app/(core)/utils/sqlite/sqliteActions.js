@@ -34,6 +34,9 @@ import { getHomeCategories } from "@/db/procedures/getHomeCategories.js";
 import { getWebsiteContent } from "@/db/procedures/getWebsiteContent.js";
 import { saveWebsiteContent } from "@/db/procedures/saveWebsiteContent.js";
 import { syncWebsiteContent } from "./syncWebsiteContent.js";
+import { getWebsiteColor } from "@/db/procedures/getWebsiteColor.js";
+import { saveWebsiteColor } from "@/db/procedures/saveWebsiteColor.js";
+import { syncWebsiteColor } from "./syncWebsiteColor.js";
 
 function sanitizeDomain(domain, fallback = "") {
   if (!domain || typeof domain !== "string") return fallback;
@@ -1554,5 +1557,59 @@ export async function getSqliteStockList(filters = {}, domain) {
   }
 }
 
+/**
+ * Server Action to sync website color/theme configuration from internal ERP into SQLite.
+ *
+ * @param {object} [options={}]
+ * @returns {Promise<{ success: boolean, domain: string, totalReceived: number, savedCount: number, elapsedMs?: number, error?: string, Data?: object }>}
+ */
+export async function syncSqliteWebsiteColor(options = {}) {
+  return syncWebsiteColor(options);
+}
 
+/**
+ * Server Action to get website color/theme configuration from SQLite.
+ *
+ * @param {object} [options={}]
+ * @returns {Promise<{ success: boolean, domain: string, data: Array<object>, error?: string }>}
+ */
+export async function getSqliteWebsiteColor(options = {}) {
+  try {
+    const targetDomain = sanitizeDomain(options.domain, "default");
+    const db = getTenantDb(targetDomain);
+    if (!db) {
+      return {
+        success: false,
+        domain: targetDomain,
+        data: [],
+        error: `Database not found for domain ${targetDomain}`,
+      };
+    }
+    const result = getWebsiteColor(db, options);
+    return {
+      success: result.Status === "200",
+      domain: targetDomain,
+      data: result.Data?.rd || [],
+    };
+  } catch (error) {
+    logger.error("SQLITE_ACTION", `getSqliteWebsiteColor error: ${error.message}`);
+    return {
+      success: false,
+      domain: options.domain || "unknown",
+      data: [],
+      error: error.message,
+    };
+  }
+}
+
+/**
+ * Server Action to get website color config with disk JSON maintenance.
+ *
+ * @param {object} [options={}]
+ * @returns {Promise<{ success: boolean, domain: string, source: string, data: object|null, error?: string }>}
+ */
+export async function getSqliteWebsiteColorConfig(options = {}) {
+  const { getWebsiteColorConfig } = await import("./websiteColorConfig.js");
+  return getWebsiteColorConfig(options);
+}
 
