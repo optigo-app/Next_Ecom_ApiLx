@@ -371,6 +371,7 @@ ResolvedPackages(package_id) AS (
       `collection LIKE ?`,
       `brand LIKE ?`,
     ];
+    
     params.push(sParam, sParam, sParam, sParam, sParam, sParam, sParam, sParam);
 
     if (normalized && normalized !== cleanSearch) {
