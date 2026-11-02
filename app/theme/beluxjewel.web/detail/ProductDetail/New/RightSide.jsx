@@ -30,7 +30,11 @@ import ProductDetailsSection from "./ProductDetailsSection";
 import { getDeliveryInfo } from "./deliveryUtils";
 import { isItemInMap } from "@/app/(core)/utils/API/GetCount/GetCountAPI";
 import { useProductStock } from "@/app/(core)/hooks/useProductStock";
-import { getStockBarcodeForProduct, normalizeBarcode } from "@/app/(core)/utils/product/stockUtils";
+import {
+  getStockBarcodeForProduct,
+  normalizeBarcode,
+  resolveProductStockStatus,
+} from "@/app/(core)/utils/product/stockUtils";
 
 const MotionButton = motion(Button);
 const MotionCheckbox = motion(Checkbox);
@@ -175,6 +179,18 @@ const RightSide = ({
         isInStock: resolvedStockRecord.InMemo !== 1 && resolvedStockRecord.InStock === 1,
       }
     : getDeliveryInfo(singleProd, singleProd1, stockItemArr);
+  const hasAnyInStockArticle = rd1.some((article) => {
+    return resolveProductStockStatus(article, stockMap).isInStock;
+  });
+  const designReadyStockStatus = Number(
+    singleProd?.IsInReadyStock ?? singleProd1?.IsInReadyStock,
+  );
+  const productReadyStockStatus =
+    hasAnyInStockArticle || productStockInfo.isInStock || designReadyStockStatus === 1
+      ? 1
+      : productStockInfo.isInMemo || designReadyStockStatus === 2
+        ? 2
+        : 0;
 
   const priceBreakupItems = [
     {
@@ -308,7 +324,7 @@ const RightSide = ({
             >
               {activeArticle?.ArticleNo || DesignNo}
             </Typography>
-            {productStockInfo.isInStock || productStockInfo.isInMemo ? (
+            {productReadyStockStatus === 1 || productReadyStockStatus === 2 ? (
             <Box
               component="span"
               sx={{
@@ -321,12 +337,12 @@ const RightSide = ({
                 fontSize: "12px",
                 fontWeight: 600,
                 letterSpacing: "0.3px",
-                color: productStockInfo.isInMemo ? "#9A5A00" : "#216E3A",
-                backgroundColor: productStockInfo.isInMemo ? "#FFF4DF" : "#E8F5EC",
-                border: `1px solid ${productStockInfo.isInMemo ? "#F2D39A" : "#BFE3CA"}`,
+                color: productReadyStockStatus === 2 ? "#9A5A00" : "#216E3A",
+                backgroundColor: productReadyStockStatus === 2 ? "#FFF4DF" : "#E8F5EC",
+                border: `1px solid ${productReadyStockStatus === 2 ? "#F2D39A" : "#BFE3CA"}`,
               }}
             >
-              {productStockInfo.isInMemo ? "In Memo" : "In Stock"}
+              {productReadyStockStatus === 2 ? "In Memo" : "In Stock"}
             </Box>
             ) : null}
           </Box>

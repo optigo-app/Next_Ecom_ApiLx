@@ -4,6 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "predev": "node db/initAllDatabases.js --run",
     "dev": "next dev -p 8012 --turbo",
     "build": "next build",
     "start": "next start -p 8012",
