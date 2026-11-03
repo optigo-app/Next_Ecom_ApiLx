@@ -37,17 +37,17 @@ export const callAlbumActionAPI = async (mode, payload = {}, visiterId = "") => 
     designno: String(payload.designno ?? payload.designNo ?? ""),
     ArticleMasterCode: String(
       payload.ArticleMasterCode ??
-        payload.articleMasterCode ??
-        payload.ArticleNo ??
-        payload.articleno ??
-        ""
+      payload.articleMasterCode ??
+      payload.ArticleNo ??
+      payload.articleno ??
+      ""
     ),
     Source: String(payload.Source ?? payload.source ?? "article"),
     StockBarcode: String(
       payload.StockBarcode ??
-        payload.stockBarcode ??
-        payload.stockbarcode ??
-        ""
+      payload.stockBarcode ??
+      payload.stockbarcode ??
+      ""
     ),
   };
 

@@ -8,6 +8,7 @@ import { MetalTypeComboAPI } from "@/app/(core)/utils/API/Combo/MetalTypeComboAP
 import { DiamondQualityColorComboAPI } from "@/app/(core)/utils/API/Combo/DiamondQualityColorComboAPI";
 import { ColorStoneQualityColorComboAPI } from "@/app/(core)/utils/API/Combo/ColorStoneQualityColorComboAPI";
 import { MetalColorCombo } from "@/app/(core)/utils/API/Combo/MetalColorCombo";
+import { trackAlbumAction } from "@/app/(core)/utils/API/Album/albumTracker";
 import { CartAndWishListAPI } from "@/app/(core)/utils/API/CartAndWishList/CartAndWishListAPI";
 import { RemoveCartAndWishAPI } from "@/app/(core)/utils/API/RemoveCartandWishAPI/RemoveCartAndWishAPI";
 import { GetCountAPI, buildCartAndWishMaps, getCartWishKey, isItemInMap } from "@/app/(core)/utils/API/GetCount/GetCountAPI";
@@ -147,10 +148,10 @@ export function useListingPage({
       } catch (_) {
         parsed = [];
       }
-      if (!Array.isArray(parsed) || parsed.length === 0) return false;
+      if (!Array.isArray(parsed)) parsed = [];
       if (item?.id?.includes("Range") || item?.Name?.includes("Range")) {
         const r = parsed[0];
-        if (!r || (Number(r.Min || 0) === 0 && Number(r.Max || 0) === 0)) return false;
+        if (parsed.length === 0 || !r || (Number(r.Min || 0) === 0 && Number(r.Max || 0) === 0)) return false;
       }
       return true;
     });
@@ -513,6 +514,7 @@ export function useListingPage({
         CartAndWishListAPI(type, prodObj, activeCookie)
           .then((res) => {
             if (res) {
+              trackAlbumAction(type === "Cart" ? "cart" : "like", ele, { loginInfo: loginUserDetail });
               const cartC =
                 res?.Data?.rd[0]?.Cartlistcount ??
                 res?.Data?.rd[0]?.Cartcount ??
@@ -552,6 +554,7 @@ export function useListingPage({
         )
           .then((res1) => {
             if (res1) {
+              trackAlbumAction(type === "Cart" ? "removeCart" : "dislike", ele, { loginInfo: loginUserDetail });
               const cartC =
                 res1?.Data?.rd[0]?.Cartlistcount ??
                 res1?.Data?.rd[0]?.Cartcount ??
@@ -1303,25 +1306,18 @@ export function useListingPage({
         // 2. Fetch Filter Sidebar Options (ensure full filters from SQLite)
         if (!filterData || filterData.length <= 2) {
           try {
-            const cachedFilters = getSession("AllFilter");
-            if (Array.isArray(cachedFilters) && cachedFilters.length > 2) {
-              const cleanFilters = sanitizeFilterList(cachedFilters);
+            const sqliteFilterRes = await getSqliteFilters(queryPayload, {}, undefined);
+            if (sqliteFilterRes?.success && Array.isArray(sqliteFilterRes.rd) && sqliteFilterRes.rd.length > 0) {
+              const cleanFilters = sanitizeFilterList(sqliteFilterRes.rd);
               setFilterData(cleanFilters);
               updateSlidersFromFilterData(cleanFilters);
+              setSession("AllFilter", sqliteFilterRes.rd);
             } else {
-              const sqliteFilterRes = await getSqliteFilters(queryPayload, {}, undefined);
-              if (sqliteFilterRes?.success && Array.isArray(sqliteFilterRes.rd) && sqliteFilterRes.rd.length > 0) {
-                const cleanFilters = sanitizeFilterList(sqliteFilterRes.rd);
+              const resFilters = await FilterListAPI(queryPayload, cookie);
+              if (Array.isArray(resFilters) && resFilters.length > 0) {
+                const cleanFilters = sanitizeFilterList(resFilters);
                 setFilterData(cleanFilters);
                 updateSlidersFromFilterData(cleanFilters);
-                setSession("AllFilter", sqliteFilterRes.rd);
-              } else {
-                const resFilters = await FilterListAPI(productlisttype || searchParams, cookie);
-                if (Array.isArray(resFilters) && resFilters.length > 0) {
-                  const cleanFilters = sanitizeFilterList(resFilters);
-                  setFilterData(cleanFilters);
-                  updateSlidersFromFilterData(cleanFilters);
-                }
               }
             }
           } catch (filterErr) {

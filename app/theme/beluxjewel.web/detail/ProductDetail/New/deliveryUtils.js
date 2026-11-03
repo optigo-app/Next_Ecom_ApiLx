@@ -1,13 +1,18 @@
 // Helper to calculate delivery dates dynamically based on stock status
 
 export function getDeliveryInfo(singleProd, singleProd1, stockItemArr) {
-  const isInStock = Boolean(
-    singleProd?.isInStock ||
-      singleProd1?.isInStock ||
-      singleProd?.IsInReadyStock === 1 ||
-      singleProd1?.IsInReadyStock === 1 ||
-      singleProd?.IsInStock === 1 ||
-      singleProd1?.IsInStock === 1 ||
+  const productRows = [singleProd, singleProd1].filter(Boolean);
+  const isInMemo = productRows.some((product) =>
+    Number(product?.IsInReadyStock ?? product?.isInReadyStock) === 2 ||
+    Number(product?.InMemo ?? product?.inmemo) === 1
+  ) || (Array.isArray(stockItemArr) && stockItemArr.some((item) => Number(item?.InMemo ?? item?.inmemo) === 1));
+  const isInStock = !isInMemo && Boolean(
+    productRows.some((product) =>
+      product?.isInStock ||
+      Number(product?.IsInReadyStock ?? product?.isInReadyStock) === 1 ||
+      Number(product?.IsInStock ?? product?.isInStock) === 1 ||
+      Number(product?.InStock ?? product?.instock) === 1
+    ) ||
       (Array.isArray(stockItemArr) &&
         stockItemArr.length > 0 &&
         stockItemArr[0]?.stat_code !== 1005)
@@ -78,6 +83,7 @@ export function getDeliveryInfo(singleProd, singleProd1, stockItemArr) {
 
     return {
       isInStock: true,
+      isInMemo: false,
       dateRangeStr: rangeStr,
       shipByStr: shipByStr,
     };
@@ -95,6 +101,7 @@ export function getDeliveryInfo(singleProd, singleProd1, stockItemArr) {
 
     return {
       isInStock: false,
+      isInMemo,
       dateRangeStr: dateOrdinalStr,
       shipByStr: shipByStr,
     };

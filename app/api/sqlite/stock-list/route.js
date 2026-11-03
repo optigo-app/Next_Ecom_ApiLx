@@ -11,6 +11,7 @@ import {
   getDynamicStockListTableName,
 } from "@/db/schema/dynamicStockList";
 import { logger } from "@/db/logger";
+import { syncReadyStockFlags } from "@/db/procedures/syncReadyStockFlags";
 
 /**
  * Detects whether an item is a policy pricing configuration.
@@ -104,12 +105,14 @@ export async function POST(req) {
         ensureMainTable: (d, t) => ensureDynamicStockListTable(d, t),
         stage: (tmp) => batchInsertStockList(db, rawStockList, { flush: false, slotSize }, tmp),
       });
+      const readyStockSync = syncReadyStockFlags(db, targetTable);
 
       return NextResponse.json({
         success: true,
         domain: targetDomain,
         table: targetTable,
         ...result,
+        readyStockSync,
         message: `Processed ${result.totalReceived} stock items for ${targetTable} (Inserted: ${result.insertedCount}, Updated: ${result.updatedCount}, Deleted: ${result.deletedCount || 0}).`,
       });
     }

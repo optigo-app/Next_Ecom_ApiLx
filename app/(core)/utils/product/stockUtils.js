@@ -77,6 +77,51 @@ export function getStockBarcodeForProduct(product, stockMap) {
 }
 
 /**
+ * Resolves one article's availability from its exact live stock record, falling
+ * back to the article's ERP flags only when no matching stock record exists.
+ */
+export function resolveProductStockStatus(product, stockMap) {
+  const directBarcode = normalizeBarcode(
+    product?.StockBarcode || product?.stockbarcode || product?.stockBarcode || product?.barcode,
+  );
+  const articleNo = normalizeBarcode(product?.ArticleNo ?? product?.articleno).toLowerCase();
+
+  let barcode = directBarcode;
+  let stockRecord =
+    stockMap instanceof Map && directBarcode
+      ? stockMap.get(directBarcode) || null
+      : null;
+
+  // A design/autocode can contain several articles. When ArticleNo is known,
+  // never assign another article's lone barcode to this variant by inference.
+  if (!directBarcode && articleNo && stockMap instanceof Map) {
+    stockRecord = [...stockMap.values()].find(
+      (record) => record.ArticleNo && String(record.ArticleNo).toLowerCase() === articleNo,
+    ) || null;
+    barcode = stockRecord?.StockBarcode || "";
+  } else if (!directBarcode && !articleNo) {
+    barcode = getStockBarcodeForProduct(product, stockMap);
+    stockRecord =
+      stockMap instanceof Map && barcode
+        ? stockMap.get(normalizeBarcode(barcode)) || null
+        : null;
+  }
+
+  const source = stockRecord || product || {};
+  const isInMemo = Number(source.InMemo ?? source.inmemo ?? 0) === 1;
+  const isInStock = !isInMemo && Number(source.InStock ?? source.instock ?? 0) === 1;
+
+  return {
+    barcode,
+    stockRecord,
+    isInStock,
+    isInMemo,
+    InStock: isInStock ? 1 : 0,
+    InMemo: isInMemo ? 1 : 0,
+  };
+}
+
+/**
  * Determines the live stock status of any single product or variant using StockBarcode.
  * 
  * @param {object|string} productOrBarcode - Product object or barcode string
@@ -99,11 +144,9 @@ export function checkProductStock(productOrBarcode, stockMap) {
   if (stockMap instanceof Map && barcode) {
     const stockItem = stockMap.get(barcode);
     if (stockItem) {
-      const isInStock = stockItem.InStock === 1;
       const isInMemo = stockItem.InMemo === 1;
-      let stockStatus = "MADE_TO_ORDER";
-      if (isInStock) stockStatus = "IN_STOCK";
-      else if (isInMemo) stockStatus = "IN_MEMO";
+      const isInStock = !isInMemo && stockItem.InStock === 1;
+      const stockStatus = isInMemo ? "IN_MEMO" : isInStock ? "IN_STOCK" : "MADE_TO_ORDER";
 
       return {
         isInStock,
@@ -117,14 +160,17 @@ export function checkProductStock(productOrBarcode, stockMap) {
 
   // 2. Direct property fallback if InStock/InMemo were directly embedded in product object
   if (productOrBarcode && typeof productOrBarcode === "object") {
-    const inStock = Number(productOrBarcode.InStock ?? productOrBarcode.instock ?? 0) === 1;
-    const inMemo = Number(productOrBarcode.InMemo ?? productOrBarcode.inmemo ?? 0) === 1;
+    const readyStockStatus = Number(productOrBarcode.IsInReadyStock ?? productOrBarcode.isInReadyStock);
+    const inMemo = readyStockStatus === 2 || Number(productOrBarcode.InMemo ?? productOrBarcode.inmemo ?? 0) === 1;
+    const inStock = !inMemo && (
+      readyStockStatus === 1 || Number(productOrBarcode.InStock ?? productOrBarcode.instock ?? 0) === 1
+    );
 
     if (inStock || inMemo) {
       return {
         isInStock: inStock,
         isInMemo: inMemo,
-        stockStatus: inStock ? "IN_STOCK" : "IN_MEMO",
+        stockStatus: inMemo ? "IN_MEMO" : "IN_STOCK",
         barcode,
         stockRecord: null,
       };

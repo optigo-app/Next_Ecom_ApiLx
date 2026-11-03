@@ -9,14 +9,15 @@ import { formatRedirectTitleLine } from "@/app/(core)/utils/Glob_Functions/Globa
 import { compressAndEncode } from "@/app/(core)/utils/Encoder&Decoder";
 import { getSession } from "@/app/(core)/utils/FetchSessionData";
 import { useStore } from "@/app/(core)/contexts/StoreProvider";
+import { useBroadcaster } from "@/app/(core)/contexts/BoardCastContext";
+import { getCartWishKey, isItemInMap } from "@/app/(core)/utils/API/GetCount/GetCountAPI";
 import { CartAndWishListAPI } from "@/app/(core)/utils/API/CartAndWishList/CartAndWishListAPI";
 import { RemoveCartAndWishAPI } from "@/app/(core)/utils/API/RemoveCartandWishAPI/RemoveCartAndWishAPI";
 import {
-  ArticleAlbumDesignViewCountAPI,
-  ArticleAlbumDesignLikeAPI,
-  ArticleAlbumDesignCartAPI,
-  ArticleAlbumDesignRemoveCartAPI,
-} from "@/app/(core)/utils/API/Album/AlbumApi";
+  trackAlbumAction,
+  setAlbumContext,
+  clearAlbumContext,
+} from "@/app/(core)/utils/API/Album/albumTracker";
 
 const imageNotFound = "/image-not-found.jpg";
 
@@ -63,6 +64,18 @@ export function useExclusiveAlbum({
     storeCtx = useStore();
   } catch (_) {}
   const setCartCountNum = storeCtx?.setCartCountNum;
+  const setWishCountNum = storeCtx?.setWishCountNum;
+  const loginUserDetail = storeCtx?.loginUserDetail;
+  const storeCartArr = storeCtx?.cartArr;
+  const storeWishArr = storeCtx?.wishArr;
+  const setStoreCartArr = storeCtx?.setCartArr;
+  const setStoreWishArr = storeCtx?.setWishArr;
+  const storeFetchGetCountData = storeCtx?.fetchGetCountData;
+  const storeRd1 = storeCtx?.cartAndWishListRd1;
+  let broadcast = null;
+  try {
+    broadcast = useBroadcaster()?.broadcast;
+  } catch (_) {}
 
   // 1. URL Parameter Detection (with window fallback for resilient client hydration)
   const checkUrlParams = useCallback(() => {
@@ -122,8 +135,9 @@ export function useExclusiveAlbum({
   );
 
   // 2.1 Interaction & Unique Tracker State
-  const [likedDesigns, setLikedDesigns] = useState({});
-  const [cartDesigns, setCartDesigns] = useState({});
+  const [likedOverrides, setLikedOverrides] = useState({});
+  const [cartOverrides, setCartOverrides] = useState({});
+  const inFlightRef = useRef(new Set());
   const viewedAlbumsRef = useRef(new Set());
   const viewedDesignsRef = useRef(new Set());
 
@@ -214,6 +228,16 @@ export function useExclusiveAlbum({
       if (typeof cleanup === "function") cleanup();
     };
   }, [fetchAlbums]);
+
+  // 4.1 Persist album context so listing/detail pages can track against this album (isalbumlogin == 1)
+  useEffect(() => {
+    if (selectedAlbum) setAlbumContext(selectedAlbum, resolvedCustomerId);
+  }, [selectedAlbum, resolvedCustomerId]);
+
+  // 4.2 Landing on the homepage outside an album invalidates the album context (no view/like/cart tracking)
+  useEffect(() => {
+    if (!isOpen && pathname === "/") clearAlbumContext();
+  }, [isOpen, pathname]);
 
   // 5. Scroll-to-top on selectedAlbum change
   useEffect(() => {
@@ -439,6 +463,7 @@ export function useExclusiveAlbum({
   }, [initialRandomNo, resolvedCustomerId, initialDomain, checkUrlParams]);
 
   const handleClose = useCallback(() => {
+    clearAlbumContext();
     setIsOpen(false);
     setSelectedAlbum(null);
     try {
@@ -457,251 +482,196 @@ export function useExclusiveAlbum({
     } catch (_) {}
   }, [searchParams, pathname, router]);
 
-  // 11.1 ProCatalog Action Payload Builder
-  const createAlbumActionPayload = useCallback(
-    (design = null, album = selectedAlbum) => {
-      const { custId } = checkUrlParams();
-      const currentAlbum = album || selectedAlbum;
-      const activeCustId = resolvedCustomerId || custId || currentAlbum?.CustomerId || "";
-
+  // 11.1 Shared store cart/wishlist payload builder
+  const buildStoreProdObj = useCallback(
+    (design) => {
+      const loginInfo = getSession("loginUserDetail") || loginUserDetail;
       return {
-        Customerid: activeCustId || undefined,
-        AlbumId: String(currentAlbum?.id || currentAlbum?.AlbumId || ""),
-        AlbumCode: String(
-          currentAlbum?.albumcode || currentAlbum?.AlbumCode || ""
-        ),
-        autocode: String(design?.autocode || ""),
-        designno: String(design?.designno || ""),
-        ArticleMasterCode: String(
-          design?.ArticleMasterCode ||
-            design?.ArticleNo ||
-            design?.articleno ||
-            ""
-        ),
-        StockBarcode: "",
-        Source: "procatalog website",
+        autocode: design?.autocode,
+        StockBarcode: design?.StockBarcode || "",
+        Metalid:
+          design?.MetalPurityid || design?.MetalTypeId || loginInfo?.MetalId || "",
+        MetalColorId: design?.MetalColorid || "",
+        DiaQCid: design?.DiamondQualityId || loginInfo?.cmboDiaQCid || "",
+        CsQCid: design?.ColorStoneQualityId || loginInfo?.cmboCSQCid || "",
+        Size: design?.DefaultSize || "",
+        Unitcost: design?.UnitCost || 0,
+        markup: design?.DesignMarkUp || 0,
+        UnitCostWithmarkup:
+          design?.UnitCostWithMarkUpIncTax ||
+          design?.UnitCostWithMarkUp ||
+          design?.UnitCost ||
+          0,
+        Remark: "",
+        ArticleNo: design?.ArticleNo || "",
       };
     },
-    [selectedAlbum, resolvedCustomerId, checkUrlParams]
+    [loginUserDetail]
+  );
+
+  const getVisiterId = () =>
+    typeof window !== "undefined" ? Cookies.get("visiterId") || "" : "";
+
+  // Album CallLog tracker; no-op unless the visitor logged in via album (isalbumlogin == 1)
+  const track = useCallback(
+    (kind, design, album = selectedAlbum) =>
+      trackAlbumAction(kind, design, {
+        album,
+        loginInfo: loginUserDetail,
+        customerId: resolvedCustomerId,
+      }),
+    [selectedAlbum, loginUserDetail, resolvedCustomerId]
   );
 
   // 11.2 No-op legacy album view tracker (View count is strictly on product detail click)
   const logAlbumView = useCallback(() => {}, []);
 
-  // 11.3 Unique Product Detail View Tracker
-  // View count only triggers when user clicks on a product to navigate to its detail page.
-  // It does NOT run on album overlay open or inside album overlay preview.
+  // 11.3 Product detail view tracker (deduped per album/design/article)
   const logDesignView = useCallback(
     async (design, album = selectedAlbum) => {
-      if (!design) return;
-      const currentAlbum = album || selectedAlbum;
-      const albumId = currentAlbum?.id || currentAlbum?.AlbumId || "";
-      const designKey = design?.designno || design?.autocode || "";
-      const { custId } = checkUrlParams();
-      const activeCustId = resolvedCustomerId || custId || currentAlbum?.CustomerId || "";
-      const vId =
-        typeof window !== "undefined" ? Cookies.get("visiterId") || "" : "";
-      const custKey = activeCustId || vId || "guest";
-
-      const sessionKey = `procatalog_detail_view_${albumId}_${designKey}_${custKey}`;
-      if (
-        viewedDesignsRef.current.has(sessionKey) ||
-        (typeof window !== "undefined" && sessionStorage.getItem(sessionKey))
-      ) {
-        return;
-      }
-
-      viewedDesignsRef.current.add(sessionKey);
-      if (typeof window !== "undefined") {
-        try {
-          sessionStorage.setItem(sessionKey, "1");
-        } catch (_) {}
-      }
-
-      const payload = createAlbumActionPayload(design, currentAlbum);
-
-      try {
-        await ArticleAlbumDesignViewCountAPI(payload, vId);
-      } catch (err) {
-        console.warn("[useExclusiveAlbum] Log product detail view failed:", err);
-      }
+      if (design) await track("view", design, album);
     },
-    [createAlbumActionPayload, selectedAlbum, resolvedCustomerId, checkUrlParams]
+    [track, selectedAlbum]
   );
 
-  // 11.4 Like Toggle (Dislike tracker omitted per requirement)
-  const handleToggleLike = useCallback(
-    async (design, album = selectedAlbum) => {
-      if (!design) return;
-      const designKey = design.designno || design.autocode;
-      const isCurrentlyLiked = Boolean(likedDesigns[designKey]);
-      const nextLiked = !isCurrentlyLiked;
-
-      // Optimistic update
-      setLikedDesigns((prev) => ({
-        ...prev,
-        [designKey]: nextLiked,
-      }));
-
-      // Fire like API only when liking (dislike omitted per requirement)
-      if (nextLiked) {
-        const vId =
-          typeof window !== "undefined" ? Cookies.get("visiterId") || "" : "";
-        const payload = createAlbumActionPayload(design, album);
-
-        try {
-          await ArticleAlbumDesignLikeAPI(payload, vId);
-          toast.success("Saved to album favorites");
-        } catch (err) {
-          console.error("[useExclusiveAlbum] handleToggleLike error:", err);
-          // Rollback on error
-          setLikedDesigns((prev) => ({
-            ...prev,
-            [designKey]: isCurrentlyLiked,
-          }));
-        }
-      }
+  // 11.4 Wishlist/cart state: store maps (hydrated from GetCount) + in-flight optimistic overrides
+  const albumDesigns = selectedAlbum?.designs;
+  // The album shows the default article of a design, but the user may hold that article (or another article
+  // of the same design) in cart/wishlist. Match by design (autocode) from the GetCount rows so the buttons
+  // always reflect reality and never create a duplicate line.
+  const normCode = (v) => {
+    const t = String(v ?? "").trim();
+    return t !== "" && !isNaN(t) ? String(Number(t)) : t;
+  };
+  const getStoreEntries = useCallback(
+    (type, design) => {
+      const want = type === "Cart" ? 0 : 1;
+      const code = normCode(design?.autocode);
+      if (!code || !Array.isArray(storeRd1)) return [];
+      return storeRd1.filter((r) => Number(r?.IsWishList) === want && normCode(r?.autocode) === code);
     },
-    [likedDesigns, selectedAlbum, createAlbumActionPayload]
+    [storeRd1]
   );
 
-  // 11.5 Add to Cart (Dispatches Album Tracker + Store Cart API + Count Sync)
-  const handleAddToCart = useCallback(
-    async (design, album = selectedAlbum) => {
+  const likedDesigns = useMemo(() => {
+    const out = {};
+    (albumDesigns || []).forEach((d) => {
+      out[d.designno || d.autocode] =
+        getStoreEntries("Wish", d).length > 0 || isItemInMap(storeWishArr, d, false);
+    });
+    return { ...out, ...likedOverrides };
+  }, [albumDesigns, storeWishArr, likedOverrides, getStoreEntries]);
+  const cartDesigns = useMemo(() => {
+    const out = {};
+    (albumDesigns || []).forEach((d) => {
+      out[d.designno || d.autocode] =
+        getStoreEntries("Cart", d).length > 0 || isItemInMap(storeCartArr, d, false);
+    });
+    return { ...out, ...cartOverrides };
+  }, [albumDesigns, storeCartArr, cartOverrides, getStoreEntries]);
+
+  // Same flow as the listing page: store API -> counts -> store maps -> broadcast -> refetch -> album tracker.
+  // Wishlist add/remove maps to Like/Dislike, cart add/remove maps to Cart/RemoveCart.
+  const toggleStoreItem = useCallback(
+    async (type, design, add, album = selectedAlbum) => {
       if (!design) return;
+      const isCart = type === "Cart";
       const designKey = design.designno || design.autocode;
+      const setOverrides = isCart ? setCartOverrides : setLikedOverrides;
+      const clearOverride = () =>
+        setOverrides((prev) => {
+          const next = { ...prev };
+          delete next[designKey];
+          return next;
+        });
 
-      // Optimistic update
-      setCartDesigns((prev) => ({
-        ...prev,
-        [designKey]: true,
-      }));
+      const flightKey = type + designKey;
+      if (inFlightRef.current.has(flightKey)) return;
+      const existing = getStoreEntries(type, design);
+      const alreadyIn = existing.length > 0 || isItemInMap(isCart ? storeCartArr : storeWishArr, design, false);
+      if (add && alreadyIn) return;
+      inFlightRef.current.add(flightKey);
 
-      const vId =
-        typeof window !== "undefined" ? Cookies.get("visiterId") || "" : "";
-      const payload = createAlbumActionPayload(design, album);
+      setOverrides((prev) => ({ ...prev, [designKey]: add }));
 
       try {
-        // 1. ProCatalog Album CallLog Tracker
-        const trackerPromise = ArticleAlbumDesignCartAPI(payload, vId);
-
-        // 2. Ecommerce Store Cart API
-        const loginInfo = getSession("loginUserDetail");
-        const prodObj = {
-          autocode: design?.autocode,
-          Metalid:
-            design?.MetalPurityid ||
-            design?.MetalTypeId ||
-            loginInfo?.MetalId ||
-            "",
-          MetalColorId: design?.MetalColorid || "",
-          DiaQCid:
-            design?.DiamondQualityId || loginInfo?.cmboDiaQCid || "",
-          CsQCid:
-            design?.ColorStoneQualityId || loginInfo?.cmboCSQCid || "",
-          Size: design?.DefaultSize || "",
-          Unitcost: design?.UnitCost || 0,
-          markup: design?.DesignMarkUp || 0,
-          UnitCostWithmarkup:
-            design?.UnitCostWithMarkUpIncTax ||
-            design?.UnitCostWithMarkUp ||
-            design?.UnitCost ||
-            0,
-          Remark: "",
-        };
-
-        const storeCartPromise = CartAndWishListAPI("Cart", prodObj, vId);
-
-        const [, storeCartRes] = await Promise.allSettled([
-          trackerPromise,
-          storeCartPromise,
-        ]);
-
-        if (storeCartRes?.status === "fulfilled" && storeCartRes?.value) {
-          const cartCount = storeCartRes.value?.Data?.rd?.[0]?.Cartlistcount;
-          if (cartCount !== undefined && typeof setCartCountNum === "function") {
-            setCartCountNum(cartCount);
+        const vId = getVisiterId();
+        let res;
+        if (add) {
+          res = await CartAndWishListAPI(type, buildStoreProdObj(design), vId);
+        } else {
+          // Remove every article of this design the user holds (default article first)
+          const articles = [...new Set([design?.ArticleNo, ...existing.map((r) => r?.ArticleNo)].filter(Boolean))];
+          for (const articleNo of articles.length ? articles : [""]) {
+            res = await RemoveCartAndWishAPI(type, design?.autocode || "", vId, false, "", articleNo);
+            if (!res) break;
           }
         }
+        if (!res) throw new Error(`${type} ${add ? "add" : "remove"} failed`);
 
-        toast.success("Item added to cart");
-      } catch (err) {
-        console.error("[useExclusiveAlbum] handleAddToCart error:", err);
-        setCartDesigns((prev) => ({
-          ...prev,
-          [designKey]: false,
-        }));
-      }
-    },
-    [selectedAlbum, createAlbumActionPayload, setCartCountNum]
-  );
+        const row = res?.Data?.rd?.[0];
+        const cartC = row?.Cartlistcount ?? row?.Cartcount ?? row?.cartcount;
+        const wishC = row?.Wishlistcount ?? row?.Wishcount ?? row?.wishcount;
+        if (cartC !== undefined) setCartCountNum?.(cartC);
+        if (wishC !== undefined) setWishCountNum?.(wishC);
 
-  // 11.6 Remove from Cart (Dispatches Album Tracker + Store Remove Cart API + Count Sync)
-  const handleRemoveFromCart = useCallback(
-    async (design, album = selectedAlbum) => {
-      if (!design) return;
-      const designKey = design.designno || design.autocode;
+        const key = getCartWishKey(design);
+        if (key) (isCart ? setStoreCartArr : setStoreWishArr)?.((prev) => ({ ...prev, [key]: add }));
 
-      setCartDesigns((prev) => ({
-        ...prev,
-        [designKey]: false,
-      }));
-
-      const vId =
-        typeof window !== "undefined" ? Cookies.get("visiterId") || "" : "";
-      const payload = createAlbumActionPayload(design, album);
-
-      try {
-        // 1. ProCatalog Album Tracker
-        const trackerPromise = ArticleAlbumDesignRemoveCartAPI(payload, vId);
-
-        // 2. Store Remove Cart API
-        const removePromise = RemoveCartAndWishAPI(
-          "Cart",
+        broadcast?.(
+          isCart ? "UPDATE_CART_COUNT" : "UPDATE_WISH_COUNT",
+          isCart ? cartC : wishC,
           design?.autocode,
-          vId,
-          false,
-          "",
+          isCart ? "cart" : "wish",
+          add,
           design?.ArticleNo
         );
+        await storeFetchGetCountData?.();
+        clearOverride();
+        track(isCart ? (add ? "cart" : "removeCart") : add ? "like" : "dislike", design, album);
 
-        const [, removeRes] = await Promise.allSettled([
-          trackerPromise,
-          removePromise,
-        ]);
-
-        if (removeRes?.status === "fulfilled" && removeRes?.value) {
-          const cartCount = removeRes.value?.Data?.rd?.[0]?.Cartlistcount;
-          if (cartCount !== undefined && typeof setCartCountNum === "function") {
-            setCartCountNum(cartCount);
-          }
-        }
-
-        toast.info("Item removed from cart");
+        if (add) toast.success(isCart ? "Item added to cart" : "Saved to wishlist");
+        else toast.info(isCart ? "Item removed from cart" : "Removed from wishlist");
       } catch (err) {
-        console.error("[useExclusiveAlbum] handleRemoveFromCart error:", err);
-        setCartDesigns((prev) => ({
-          ...prev,
-          [designKey]: true,
-        }));
+        console.error(`[useExclusiveAlbum] ${type} toggle error:`, err);
+        clearOverride();
+      } finally {
+        inFlightRef.current.delete(flightKey);
       }
     },
-    [selectedAlbum, createAlbumActionPayload, setCartCountNum]
+    [
+      selectedAlbum,
+      getStoreEntries,
+      storeCartArr,
+      storeWishArr,
+      buildStoreProdObj,
+      track,
+      broadcast,
+      setCartCountNum,
+      setWishCountNum,
+      setStoreCartArr,
+      setStoreWishArr,
+      storeFetchGetCountData,
+    ]
   );
 
-  // 11.7 Toggle Cart
+  const handleToggleLike = useCallback(
+    (design, album = selectedAlbum) =>
+      toggleStoreItem("Wish", design, !likedDesigns[design?.designno || design?.autocode], album),
+    [toggleStoreItem, likedDesigns, selectedAlbum]
+  );
+  const handleAddToCart = useCallback(
+    (design, album = selectedAlbum) => toggleStoreItem("Cart", design, true, album),
+    [toggleStoreItem, selectedAlbum]
+  );
+  const handleRemoveFromCart = useCallback(
+    (design, album = selectedAlbum) => toggleStoreItem("Cart", design, false, album),
+    [toggleStoreItem, selectedAlbum]
+  );
   const handleToggleCart = useCallback(
-    async (design, album = selectedAlbum) => {
-      if (!design) return;
-      const designKey = design.designno || design.autocode;
-      const isInCart = Boolean(cartDesigns[designKey]);
-      if (isInCart) {
-        return handleRemoveFromCart(design, album);
-      } else {
-        return handleAddToCart(design, album);
-      }
-    },
-    [cartDesigns, handleAddToCart, handleRemoveFromCart, selectedAlbum]
+    (design, album = selectedAlbum) =>
+      toggleStoreItem("Cart", design, !cartDesigns[design?.designno || design?.autocode], album),
+    [toggleStoreItem, cartDesigns, selectedAlbum]
   );
 
   const handleMoveToProductDetail = useCallback(
@@ -795,9 +765,9 @@ export function useExclusiveAlbum({
 
     // Like & Cart States
     likedDesigns,
-    setLikedDesigns,
+    setLikedDesigns: setLikedOverrides,
     cartDesigns,
-    setCartDesigns,
+    setCartDesigns: setCartOverrides,
 
     // Scroll & Header Animation State
     scrollContainerRef,

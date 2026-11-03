@@ -564,6 +564,65 @@ export function useTestCheckout(initialStoreInit) {
     }
   };
 
+  // Article based drawer apply: persist the selected SQLite article against
+  // the existing live cart row. The design based handler above stays unchanged.
+  const handleApplyArticleCustomization = async ({ cartItem, article, size, diamond, colorStone }) => {
+    if (!cartItem || !article?.ArticleId || !article?.ArticleNo) {
+      toast.error("The selected article is missing its cart identity");
+      return;
+    }
+
+    const unitCost = Number(
+      article?.UnitCostWithmarkup ?? article?.TotalUnitCost ?? cartItem?.UnitCostWithMarkUp ?? 0,
+    );
+    const quantity = Number(cartItem?.Quantity) || 1;
+    const updatedItem = {
+      ...cartItem,
+      ArticleId: article.ArticleId,
+      ArticleNo: article.ArticleNo,
+      metaltypeid: article.MetalTypeId,
+      metaltypename: article.MetalType,
+      metalcolorid: article.MetalColorId,
+      metalcolorname: article.MetalColor,
+      diamondqualityid: diamond?.QualityId ?? 0,
+      diamondcolorid: diamond?.ColorId ?? 0,
+      diamondquality: diamond?.Quality ?? "",
+      diamondcolor: diamond?.Color ?? "",
+      colorstonequalityid: colorStone?.QualityId ?? 0,
+      colorstonecolorid: colorStone?.ColorId ?? 0,
+      colorstonequality: colorStone?.Quality ?? "",
+      colorstonecolor: colorStone?.Color ?? "",
+      Size: size || article?.Size || "",
+      SizeMarkUp: article?.MarkUp ?? 0,
+      UnitCostWithMarkUp: unitCost,
+      FinalCost: unitCost * quantity,
+    };
+
+    try {
+      setIsPriceLoading(true);
+      await updateCartAPI(
+        updatedItem,
+        article.MetalTypeId,
+        article.MetalColorId,
+        `${diamond?.QualityId ?? 0},${diamond?.ColorId ?? 0}`,
+        `${colorStone?.QualityId ?? 0},${colorStone?.ColorId ?? 0}`,
+        updatedItem.Size,
+        updatedItem.SizeMarkUp,
+        updatedItem.FinalCost,
+        unitCost,
+        undefined,
+        { ArticleId: article.ArticleId, ArticleNo: article.ArticleNo },
+      );
+      toast.success("Cart updated successfully");
+      await loadCartData(true);
+    } catch (err) {
+      console.error("Failed to apply article customization:", err);
+      toast.error("Failed to update cart");
+    } finally {
+      setIsPriceLoading(false);
+    }
+  };
+
   // 10. Save Product Remark
   const handleSaveProductRemark = async (item, remarkText) => {
     try {
@@ -874,6 +933,7 @@ export function useTestCheckout(initialStoreInit) {
     handleCustomizationChange,
     handleEditQtyChange,
     handleApplyCustomization,
+    handleApplyArticleCustomization,
 
     // Cart actions
     handleRemoveItem,

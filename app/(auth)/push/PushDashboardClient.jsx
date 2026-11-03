@@ -38,6 +38,8 @@ import {
   Terminal,
   ExternalLink,
   ShieldAlert,
+  Palette,
+  Globe,
 } from "lucide-react";
 
 const KNOWN_DOMAINS = [
@@ -340,6 +342,18 @@ export default function PushDashboardClient() {
     setRunningStep(null);
   };
 
+  // ── Step 7b: Sync Website Color / Theme ────────────────────────────────────
+  const handleSyncColor = async () => {
+    setRunningStep("color");
+    addLog("start", `Initiating Website Color / Theme ERP sync for '${activeDomain}'...`);
+    await executeApiCall(
+      `/api/sqlite/website-color?domain=${encodeURIComponent(activeDomain)}&sync=true`,
+      { method: "POST" },
+      "Website Color"
+    );
+    setRunningStep(null);
+  };
+
   // ── Step 8: Sync Stock List (Policy-Based matching Product Listing) ─────────
   const handleSyncStock = async () => {
     setRunningStep("stock");
@@ -396,6 +410,7 @@ export default function PushDashboardClient() {
       { name: "Menus", fn: handleSyncMenus },
       { name: "Exclusive Albums", fn: handleSyncAlbums },
       { name: "Website Content", fn: handleSyncContent },
+      { name: "Website Color", fn: handleSyncColor },
       { name: "Stock List", fn: handleSyncStock },
       { name: "Flush WAL", fn: handleFlushWal },
     ];
@@ -614,7 +629,7 @@ export default function PushDashboardClient() {
               </Typography>
             </Box>
             <Typography variant="body2" sx={{ color: "#CBD5E1" }}>
-              Sequentially triggers StoreInit → Products Policy → Articles Policy → Packages → Menus → Albums → Content → Stock → Flush WAL.
+              Sequentially triggers StoreInit → Products Policy → Articles Policy → Packages → Menus → Albums → Content → Color → Stock → Flush WAL.
             </Typography>
           </Box>
 
@@ -635,7 +650,7 @@ export default function PushDashboardClient() {
               "&:hover": { backgroundColor: "#1D4ED8" },
             }}
           >
-            {isRunningAll ? `Running Pipeline (${activeStepIndex}/9)...` : "Run Full Pipeline Now"}
+            {isRunningAll ? `Running Pipeline (${activeStepIndex}/10)...` : "Run Full Pipeline Now"}
           </Button>
         </Paper>
 
@@ -830,7 +845,7 @@ export default function PushDashboardClient() {
           </Typography>
 
           <Grid container spacing={2}>
-            <Grid item xs={6} sm={4} md={2.4}>
+            <Grid item xs={6} sm={4} md={3}>
               <Button
                 fullWidth
                 variant="outlined"
@@ -850,7 +865,7 @@ export default function PushDashboardClient() {
               </Button>
             </Grid>
 
-            <Grid item xs={6} sm={4} md={2.4}>
+            <Grid item xs={6} sm={4} md={3}>
               <Button
                 fullWidth
                 variant="outlined"
@@ -870,7 +885,7 @@ export default function PushDashboardClient() {
               </Button>
             </Grid>
 
-            <Grid item xs={6} sm={4} md={2.4}>
+            <Grid item xs={6} sm={4} md={3}>
               <Button
                 fullWidth
                 variant="outlined"
@@ -890,7 +905,47 @@ export default function PushDashboardClient() {
               </Button>
             </Grid>
 
-            <Grid item xs={6} sm={4} md={2.4}>
+            <Grid item xs={6} sm={4} md={3}>
+              <Button
+                fullWidth
+                variant="outlined"
+                disabled={Boolean(runningStep)}
+                onClick={handleSyncContent}
+                startIcon={<Globe size={16} />}
+                sx={{
+                  borderColor: "rgba(255, 255, 255, 0.15)",
+                  color: "#E2E8F0",
+                  textTransform: "none",
+                  py: 1.25,
+                  fontSize: "0.85rem",
+                  "&:hover": { borderColor: "#8B5CF6", backgroundColor: "rgba(139, 92, 246, 0.08)" },
+                }}
+              >
+                Website Content
+              </Button>
+            </Grid>
+
+            <Grid item xs={6} sm={4} md={3}>
+              <Button
+                fullWidth
+                variant="outlined"
+                disabled={Boolean(runningStep)}
+                onClick={handleSyncColor}
+                startIcon={<Palette size={16} />}
+                sx={{
+                  borderColor: "rgba(255, 255, 255, 0.15)",
+                  color: "#E2E8F0",
+                  textTransform: "none",
+                  py: 1.25,
+                  fontSize: "0.85rem",
+                  "&:hover": { borderColor: "#F43F5E", backgroundColor: "rgba(244, 63, 94, 0.08)" },
+                }}
+              >
+                Website Color
+              </Button>
+            </Grid>
+
+            <Grid item xs={6} sm={4} md={3}>
               <Button
                 fullWidth
                 variant="outlined"
@@ -910,7 +965,7 @@ export default function PushDashboardClient() {
               </Button>
             </Grid>
 
-            <Grid item xs={6} sm={4} md={2.4}>
+            <Grid item xs={6} sm={4} md={3}>
               <Button
                 fullWidth
                 variant="outlined"

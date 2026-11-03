@@ -193,6 +193,9 @@ const ShopHeader = ({
                   {storeinit?.IsStockWebsite === 1 && (
                     <MenuItem value="In Stock">In Stock</MenuItem>
                   )}
+                  {storeinit?.IsStockWebsite === 1 && (
+                    <MenuItem value="In Memo">In Memo</MenuItem>
+                  )}
                   <MenuItem value="PRICE LOW TO HIGH">
                     Price Low to High
                   </MenuItem>

@@ -28,6 +28,9 @@ const MAX_AGE_DAYS = 7;             // Retention period: 7 days
 // File log coloring flag (can be toggled via env LOG_FILE_COLOR or logger.setColorizeFileLogs)
 let colorizeFileLogs = typeof process !== "undefined" && process.env?.LOG_FILE_COLOR === "true";
 
+// Short console logs flag: defaults to true to keep terminal uncluttered
+let shortConsoleLogs = typeof process !== "undefined" ? process.env?.VERBOSE_CONSOLE !== "true" : true;
+
 let writeCounter = 0;
 
 // Ensure log directory exists
@@ -47,7 +50,7 @@ function stripAnsi(str) {
 }
 
 /**
- * Formats console log lines with rich colors and badges using picocolors
+ * Formats console log lines with clean, concise output (keeps terminal uncluttered)
  */
 function formatConsole(entry) {
   const time = pc.gray(entry.timestamp.split("T")[1]?.replace("Z", "") || entry.timestamp);
@@ -72,31 +75,85 @@ function formatConsole(entry) {
     msgColor = pc.gray;
   }
 
-  let line = `${icon}  ${time} ${badge} ${domain} ${category} ${msgColor(entry.message)}`;
+  // If shortConsoleLogs is disabled (verbose mode requested)
+  if (!shortConsoleLogs) {
+    let line = `${icon}  ${time} ${badge} ${domain} ${category} ${msgColor(entry.message)}`;
+    if (entry.meta) {
+      const { queryParams, headers, body, ...otherMeta } = entry.meta;
+      const hasRequestParts = queryParams !== undefined || headers !== undefined || body !== undefined;
+      if (hasRequestParts) {
+        if (queryParams && Object.keys(queryParams).length > 0) {
+          line += `\n  ${pc.yellow("Query:")} ${pc.dim(JSON.stringify(queryParams))}`;
+        }
+        if (headers && Object.keys(headers).length > 0) {
+          line += `\n  ${pc.cyan("Headers:")} ${pc.dim(JSON.stringify(headers))}`;
+        }
+        if (body !== undefined && body !== null) {
+          let bodyStr = typeof body === "string" ? body : JSON.stringify(body);
+          if (bodyStr.length > 2000) {
+            bodyStr = `${bodyStr.substring(0, 2000)}... [truncated ${bodyStr.length} chars in console, full in app.log]`;
+          }
+          line += `\n  ${pc.green("Body:")} ${pc.dim(bodyStr)}`;
+        }
+        if (Object.keys(otherMeta).length > 0) {
+          line += `\n  ${pc.magenta("Meta:")} ${pc.dim(JSON.stringify(otherMeta))}`;
+        }
+      } else {
+        line += pc.dim(` | data: ${JSON.stringify(entry.meta)}`);
+      }
+    }
+    return line;
+  }
 
-  if (entry.meta) {
-    const { queryParams, headers, body, ...otherMeta } = entry.meta;
+  // --- SHORT CONCISE MODE (Clean Terminal Output) ---
+  let displayMessage = entry.message;
+
+  // Append query params directly to request message if not already present
+  if (entry.meta?.queryParams && Object.keys(entry.meta.queryParams).length > 0) {
+    if (!displayMessage.includes("?")) {
+      try {
+        const qs = new URLSearchParams(entry.meta.queryParams).toString();
+        if (qs) {
+          displayMessage += pc.dim(`?${qs.length > 80 ? `${qs.substring(0, 77)}...` : qs}`);
+        }
+      } catch (_) {}
+    }
+  }
+
+  let line = `${icon}  ${time} ${badge} ${domain} ${category} ${msgColor(displayMessage)}`;
+
+  // Show compact summary for errors or non-request meta
+  if (entry.level === "ERROR") {
+    const errMsg = entry.meta?.error || entry.meta?.message;
+    if (errMsg && errMsg !== entry.message) {
+      line += `\n  ${pc.red("Error:")} ${errMsg}`;
+    }
+    if (entry.meta?.stack) {
+      const firstStack = entry.meta.stack.split("\n")[1]?.trim();
+      if (firstStack) line += ` ${pc.dim(firstStack)}`;
+    }
+  } else if (entry.meta) {
+    const { queryParams, headers, body, domain: _d, method: _m, pathname: _p, ...extraMeta } = entry.meta;
     const hasRequestParts = queryParams !== undefined || headers !== undefined || body !== undefined;
 
-    if (hasRequestParts) {
-      if (queryParams && Object.keys(queryParams).length > 0) {
-        line += `\n  ${pc.yellow("Query:")} ${pc.dim(JSON.stringify(queryParams))}`;
-      }
-      if (headers && Object.keys(headers).length > 0) {
-        line += `\n  ${pc.cyan("Headers:")} ${pc.dim(JSON.stringify(headers))}`;
-      }
-      if (body !== undefined && body !== null) {
-        let bodyStr = typeof body === "string" ? body : JSON.stringify(body);
-        if (bodyStr.length > 2000) {
-          bodyStr = `${bodyStr.substring(0, 2000)}... [truncated ${bodyStr.length} chars in console, full in app.log]`;
+    if (!hasRequestParts) {
+      // Clean non-request data summary (exclude huge payloads or arrays)
+      const cleanSummary = {};
+      for (const [k, v] of Object.entries(entry.meta)) {
+        if (["sampleRow", "rawList", "rd", "Data", "body", "headers"].includes(k)) continue;
+        if (v !== undefined && v !== null && typeof v !== "object") {
+          cleanSummary[k] = v;
+        } else if (typeof v === "object" && !Array.isArray(v) && Object.keys(v || {}).length <= 3) {
+          cleanSummary[k] = v;
         }
-        line += `\n  ${pc.green("Body:")} ${pc.dim(bodyStr)}`;
       }
-      if (Object.keys(otherMeta).length > 0) {
-        line += `\n  ${pc.magenta("Meta:")} ${pc.dim(JSON.stringify(otherMeta))}`;
+      if (Object.keys(cleanSummary).length > 0) {
+        const summaryStr = JSON.stringify(cleanSummary);
+        line += ` ${pc.dim(`| ${summaryStr.length > 80 ? `${summaryStr.substring(0, 77)}...` : summaryStr}`)}`;
       }
-    } else {
-      line += pc.dim(` | data: ${JSON.stringify(entry.meta)}`);
+    } else if (body && typeof body === "object" && entry.level !== "INFO") {
+      const bodyLen = Array.isArray(body) ? `${body.length} items` : `${JSON.stringify(body).length}B`;
+      line += ` ${pc.dim(`[body: ${bodyLen}]`)}`;
     }
   }
 
@@ -224,6 +281,15 @@ export const logger = {
 
   getColorizeFileLogs() {
     return colorizeFileLogs;
+  },
+
+  setShortConsoleLogs(enable = true) {
+    shortConsoleLogs = Boolean(enable);
+    return shortConsoleLogs;
+  },
+
+  getShortConsoleLogs() {
+    return shortConsoleLogs;
   },
 
   /**

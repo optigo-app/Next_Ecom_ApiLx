@@ -13,6 +13,7 @@ export default function ShoppingBagList({
   currencyCode,
   formatter,
   editingItem,
+  articleCustomizationEnabled = false,
   onStartEdit,
   onRemoveItem,
   onSaveProductRemark,
@@ -106,6 +107,7 @@ export default function ShoppingBagList({
           currencyCode={currencyCode}
           formatter={formatter}
           isEditing={editingItem?.id === item.id}
+          articleCustomizationEnabled={articleCustomizationEnabled}
           onStartEdit={onStartEdit}
           onRemoveItem={onRemoveItem}
           onSaveProductRemark={onSaveProductRemark}

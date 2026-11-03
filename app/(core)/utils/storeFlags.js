@@ -5,6 +5,7 @@ export const STORE_INIT_FLAGS = Object.freeze({
   signUpWithCompanyInfo: "IsSignUpWithCompanyInfo",
   staticMenu: "IsStaticMenu",
   multiVariantCart: "IsMultiVariantCart",
+  articleBasedCartCustomization: "IsArticleBasedCartCustomization",
   remarkOnProductDetail: "IsRemarkOnProductDetail",
   customOrder: "IsCustomOrder",
   priceShow: "IsPriceShow",

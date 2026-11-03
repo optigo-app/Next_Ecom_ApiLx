@@ -238,9 +238,7 @@ const FilterSidebar = ({
                         try {
                             parsedOpts = JSON.parse(item?.options) ?? [];
                         } catch (_) {}
-                        if (!Array.isArray(parsedOpts) || parsedOpts.length === 0) {
-                            return null;
-                        }
+                        if (!Array.isArray(parsedOpts)) parsedOpts = [];
 
                         return (
                             <Accordion key={index} disableGutters elevation={0} sx={{ borderBottom: "1px solid #eee" }}>
@@ -624,6 +622,9 @@ const FilterSidebar = ({
                                     <MenuItem value="Bestseller">Bestseller</MenuItem>
                                     {storeInit?.IsStockWebsite === 1 && (
                                         <MenuItem value="In Stock">In Stock</MenuItem>
+                                    )}
+                                    {storeInit?.IsStockWebsite === 1 && (
+                                        <MenuItem value="In Memo">In Memo</MenuItem>
                                     )}
                                     <MenuItem value="PRICE LOW TO HIGH">Price Low to High</MenuItem>
                                     <MenuItem value="PRICE HIGH TO LOW">Price High to Low</MenuItem>

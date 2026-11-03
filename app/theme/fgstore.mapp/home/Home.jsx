@@ -14,6 +14,7 @@ import OrderBlock from "./CustomOrder/OrderBlock";
 import TokenWrapper from "./TokenWrapper";
 import SocialMedia from "@/app/components/(static)/SocialMedia/SocialMedia";
 import { getWebContentManagement } from "@/app/(core)/hooks/webContentManagement/webContentManagement.server";
+import { isStoreInitFlagEnabled } from "@/app/(core)/utils/storeFlags";
 
 export default async function Home({
   storeinit,
@@ -49,7 +50,7 @@ export default async function Home({
             <PromotionCarousel />
             <Categories storeinit={storeinit} initialCategories={initialCategories} />
             <Collection storeinit={storeinit} initialCategories={initialCategories} />
-            <OrderBlock />
+            {isStoreInitFlagEnabled(storeinit, "customOrder") && <OrderBlock />}
           </Box>
           {/* <AlbumSection /> */}
           {/* <GiftBlock storeinit={storeinit} /> */}

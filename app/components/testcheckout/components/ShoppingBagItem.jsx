@@ -1,6 +1,9 @@
 "use client";
 
-import { isPriceHidden } from "@/app/(core)/utils/storeFlags";
+import {
+  isPriceHidden,
+  isStoreInitFlagEnabled,
+} from "@/app/(core)/utils/storeFlags";
 import React, { useState } from "react";
 import { Box, Typography, IconButton, Button } from "@mui/material";
 import { useRouter } from "next/navigation";
@@ -19,11 +22,19 @@ export default function ShoppingBagItem({
   currencyCode,
   formatter,
   isEditing,
+  articleCustomizationEnabled = false,
   onStartEdit,
   onRemoveItem,
   onSaveProductRemark,
   handleMoveToDetail,
 }) {
+  const articleFlagValue = storeinit?.IsArticleBasedCartCustomization;
+  const isArticleCustomizationEnabled = articleCustomizationEnabled || (
+    (articleFlagValue == null || articleFlagValue === ""
+      ? process.env.NODE_ENV === "development"
+      : isStoreInitFlagEnabled(storeinit, "articleBasedCartCustomization")) &&
+    Number(storeinit?.IsProductWebCustomization) === 1
+  );
   const router = useRouter();
   const { islogin } = useStore();
   const [isRemarkOpen, setIsRemarkOpen] = useState(false);
@@ -289,7 +300,7 @@ export default function ShoppingBagItem({
                 },
               }}
             >
-              Edit
+              {isArticleCustomizationEnabled ? "Edit Customization" : "Edit"}
             </Button>
           )}
 

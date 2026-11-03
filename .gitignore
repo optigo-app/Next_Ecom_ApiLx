@@ -82,9 +82,15 @@ ref/
 GsapList.mdx
 ref/GsapList.mdx
 
+
+/db/sample
+sample/
+sample/*
+
 # logs
 *.log
 log/
 
 # store init
 public/storeInit/
+public/storeInit/*
