@@ -12,14 +12,33 @@ import Trendings from "./components/Trendings";
 import ShowCaseBlock from "./components/ShowCaseBlock";
 import OrderBlock from "./CustomOrder/OrderBlock";
 import TokenWrapper from "./TokenWrapper";
+import SocialMedia from "@/app/components/(static)/SocialMedia/SocialMedia";
+import { getWebContentManagement } from "@/app/(core)/hooks/webContentManagement/webContentManagement.server";
 
-export default function Home({
+export default async function Home({
   storeinit,
   initialBestSellers = [],
   initialNewArrivals = [],
   initialTrending = [],
   initialCategories = [],
 }) {
+
+
+
+  const [  webContentRes] =
+      await Promise.all([
+        getWebContentManagement({ domain: storeinit?.domain }),
+      ]);
+
+  const {
+    pageTemplates,
+ 
+  } = webContentRes;
+
+  const socialMediaTemplates = (pageTemplates || []).filter(
+    (t) => t?.PageKey === "social-media"
+  );
+
   return (
     <>
       <TokenWrapper>
@@ -42,6 +61,7 @@ export default function Home({
           {/* storeinit?.IsHomeTrending === 0 && */}
           {/* <Collection storeinit={storeinit} /> */}
           <NewArrival storeinit={storeinit} initialData={initialNewArrivals} />
+             <SocialMedia templates={socialMediaTemplates} />
           {/* storeinit?.IsHomeNewArrival === 0 && */}
         </Box>
       </TokenWrapper>
