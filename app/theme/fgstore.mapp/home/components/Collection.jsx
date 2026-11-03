@@ -77,9 +77,9 @@ function Collection({ storeinit }) {
                             <Box key={index} sx={{ minWidth: "320px", width: "100%" }}>
                                 <Skeleton
                                     variant="rectangular"
-                                    width="320px"
-                                    height="420px"
-                                    sx={{ borderRadius: 3, bgcolor: "rgba(0,0,0,0.06)" }}
+                                   
+                                   
+                                    sx={{ height: { xs: "296px", sm: "420px" },maxWidth: { xs: "292px", sm: "320px" }, minWidth: { xs: "244px", sm: "320px" },borderRadius: 3, bgcolor: "rgba(0,0,0,0.06)" }}
                                 />
                             </Box>
                         ))
@@ -89,11 +89,12 @@ function Collection({ storeinit }) {
                                 key={item?.recordId || item?.masterId || item?.name}
                                 onClick={() => handleNavigate(item?.name)}
                                 sx={{
-                                    minWidth: "320px",
-                                    maxWidth: "320px",
+                                    minWidth: { xs: "244px", sm: "320px" },
+                                    maxWidth: { xs: "292px", sm: "320px" },
+                                    height: { xs: "296px", sm: "420px" },
                                     flexShrink: 0,
                                     scrollSnapAlign: "start",
-                                    height: "420px",
+                                     
                                     position: "relative",
                                     borderRadius: "12px",
                                     overflow: "hidden",
