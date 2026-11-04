@@ -1,3 +1,4 @@
+import { toShortDomainName } from "../shortDomainName.js";
 import { getTenantDb } from "@/db/tenantManager.js";
 import { batchInsertDesigns } from "@/db/procedures/batchInsertDesigns.js";
 import { rebuildPolicyCategories } from "@/db/procedures/materializePolicyCategories.js";
@@ -101,6 +102,7 @@ export async function syncAllCatalogProducts(initData, domain, force = false) {
       IsFromDesDet: "",
       IsPLW: storeInit?.IsPLW ?? 0,
       DomainForNo: storeInit?.DomainForNo ?? 0,
+      domainname: toShortDomainName(targetDomain),
       AlbumName: "",
       TaxId: 0,
       WebDiscount: 0,

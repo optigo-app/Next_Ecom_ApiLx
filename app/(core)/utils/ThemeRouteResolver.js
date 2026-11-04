@@ -25,6 +25,8 @@ export async function resolveLayout(themePage) {
     case "procatalog.web":
     case "fgstore.pro":
       return (await import("@/app/theme/procatalog.web/layout.jsx")).default;
+    case "procatalog2.web":
+      return (await import("@/app/theme/procatalog2.web/layout.jsx")).default;
     case "fgstore.mapp":
       return (await import("@/app/theme/fgstore.mapp/layout.jsx")).default;
     case "hoq.web":
@@ -61,6 +63,8 @@ export async function resolveHome(themePage) {
     case "procatalog.web":
     case "fgstore.pro":
       return (await import("@/app/theme/procatalog.web/home/page.jsx")).default;
+    case "procatalog2.web":
+      return (await import("@/app/theme/procatalog2.web/home/page.jsx")).default;
     case "fgstore.mapp":
       return (await import("@/app/theme/fgstore.mapp/home/page.jsx")).default;
     case "hoq.web":
@@ -96,6 +100,8 @@ export async function resolveProductList(themePage) {
     case "procatalog.web":
     case "fgstore.pro":
       return (await import("@/app/theme/procatalog.web/product/page.jsx")).default;
+    case "procatalog2.web":
+      return (await import("@/app/theme/procatalog2.web/product/page.jsx")).default;
     case "fgstore.mapp":
       return (await import("@/app/theme/fgstore.mapp/product/page.jsx")).default;
     case "hoq.web":
@@ -131,6 +137,8 @@ export async function resolveProductDetail(themePage) {
     case "procatalog.web":
     case "fgstore.pro":
       return (await import("@/app/theme/procatalog.web/detail/page.jsx")).default;
+    case "procatalog2.web":
+      return (await import("@/app/theme/procatalog2.web/detail/page.jsx")).default;
     case "fgstore.mapp":
       return (await import("@/app/theme/fgstore.mapp/detail/page.jsx")).default;
     case "hoq.web":
@@ -166,6 +174,8 @@ export async function resolveCart(themePage) {
     case "procatalog.web":
     case "fgstore.pro":
       return (await import("@/app/theme/procatalog.web/cart/page.jsx")).default;
+    case "procatalog2.web":
+      return (await import("@/app/theme/procatalog2.web/cart/page.jsx")).default;
     case "fgstore.mapp":
       return (await import("@/app/theme/fgstore.mapp/cart/page.jsx")).default;
     case "hoq.web":
@@ -201,6 +211,8 @@ export async function resolveWishlist(themePage) {
     case "procatalog.web":
     case "fgstore.pro":
       return (await import("@/app/theme/procatalog.web/Wishlist/page.js")).default;
+    case "procatalog2.web":
+      return (await import("@/app/theme/procatalog2.web/Wishlist/page.js")).default;
     case "fgstore.mapp":
       return (await import("@/app/theme/fgstore.mapp/Wishlist/page.js")).default;
     case "hoq.web":
@@ -246,6 +258,10 @@ export async function resolveLoginWithEmail(themePage) {
       return (
         await import("@/app/theme/procatalog.web/Auth/LoginWithEmail/page.js")
       ).default;
+    case "procatalog2.web":
+      return (
+        await import("@/app/theme/procatalog2.web/Auth/LoginWithEmail/page.js")
+      ).default;
     case "fgstore.mapp":
       return (
         await import("@/app/theme/fgstore.mapp/Auth/LoginWithEmail/page.js")
@@ -287,6 +303,8 @@ export async function resolveRegister(themePage) {
     case "procatalog.web":
     case "fgstore.pro":
       return (await import("@/app/theme/procatalog.web/Auth/Register/page.js")).default;
+    case "procatalog2.web":
+      return (await import("@/app/theme/procatalog2.web/Auth/Register/page.js")).default;
     case "fgstore.mapp":
       return (await import("@/app/theme/fgstore.mapp/Auth/Register/page.js")).default;
     case "hoq.web":
@@ -328,6 +346,8 @@ export async function resolveLoginOption(themePage) {
     case "procatalog.web":
     case "fgstore.pro":
       return (await import("@/app/theme/procatalog.web/Auth/LoginOption/page.js")).default;
+    case "procatalog2.web":
+      return (await import("@/app/theme/procatalog2.web/Auth/LoginOption/page.js")).default;
     case "fgstore.mapp":
       return (await import("@/app/theme/fgstore.mapp/Auth/LoginOption/page.js")).default;
     case "hoq.web":
@@ -378,6 +398,10 @@ export async function resolveLoginWithMobileCode(themePage) {
     case "fgstore.pro":
       return (
         await import("@/app/theme/procatalog.web/Auth/LoginWithMobileCode/page.js")
+      ).default;
+    case "procatalog2.web":
+      return (
+        await import("@/app/theme/procatalog2.web/Auth/LoginWithMobileCode/page.js")
       ).default;
     case "fgstore.mapp":
       return (
@@ -434,6 +458,10 @@ export async function resolveLoginWithEmailCode(themePage) {
       return (
         await import("@/app/theme/procatalog.web/Auth/LoginWithEmailCode/page.js")
       ).default;
+    case "procatalog2.web":
+      return (
+        await import("@/app/theme/procatalog2.web/Auth/LoginWithEmailCode/page.js")
+      ).default;
     case "fgstore.mapp":
       return (
         await import("@/app/theme/fgstore.mapp/Auth/LoginWithEmailCode/page.js")
@@ -487,6 +515,10 @@ export async function resolveForgotPassword(themePage) {
       return (
         await import("@/app/theme/procatalog.web/Auth/ForgotPassword/page.js")
       ).default;
+    case "procatalog2.web":
+      return (
+        await import("@/app/theme/procatalog2.web/Auth/ForgotPassword/page.js")
+      ).default;
     case "fgstore.mapp":
       return (
         await import("@/app/theme/fgstore.mapp/Auth/ForgotPassword/page.js")
@@ -539,6 +571,10 @@ export async function resolveContinueWithEmail(themePage) {
     case "fgstore.pro":
       return (
         await import("@/app/theme/procatalog.web/Auth/ContinueWithEmail/page.js")
+      ).default;
+    case "procatalog2.web":
+      return (
+        await import("@/app/theme/procatalog2.web/Auth/ContinueWithEmail/page.js")
       ).default;
     case "fgstore.mapp":
       return (
@@ -595,6 +631,10 @@ export async function resolveContinueWithMobile(themePage) {
       return (
         await import("@/app/theme/procatalog.web/Auth/ContinueWithMobile/page.js")
       ).default;
+    case "procatalog2.web":
+      return (
+        await import("@/app/theme/procatalog2.web/Auth/ContinueWithMobile/page.js")
+      ).default;
     case "fgstore.mapp":
       return (
         await import("@/app/theme/fgstore.mapp/Auth/ContinueWithMobile/page.js")
@@ -638,6 +678,8 @@ export async function resolveConfirmation(themePage) {
     case "procatalog.web":
     case "fgstore.pro":
       return (await import("@/app/theme/procatalog.web/confirmation/page.jsx")).default;
+    case "procatalog2.web":
+      return (await import("@/app/theme/procatalog2.web/confirmation/page.jsx")).default;
     case "fgstore.mapp":
       return (await import("@/app/theme/fgstore.mapp/confirmation/page.jsx")).default;
     case "hoq.web":
@@ -672,6 +714,8 @@ export async function resolveLookbook(themePage) {
     case "procatalog.web":
     case "fgstore.pro":
       return (await import("@/app/theme/procatalog.web/Lookbook/page.js")).default;
+    case "procatalog2.web":
+      return (await import("@/app/theme/procatalog2.web/Lookbook/page.js")).default;
     case "fgstore.mapp":
       return (await import("@/app/theme/fgstore.mapp/Lookbook/page.js")).default;
     case "hoq.web":
@@ -707,6 +751,8 @@ export async function resolvePayment(themePage) {
     case "procatalog.web":
     case "fgstore.pro":
       return (await import("@/app/theme/procatalog.web/payment/page.jsx")).default;
+    case "procatalog2.web":
+      return (await import("@/app/theme/procatalog2.web/payment/page.jsx")).default;
     case "fgstore.mapp":
       return (await import("@/app/theme/fgstore.mapp/payment/page.jsx")).default;
     case "hoq.web":
@@ -742,6 +788,8 @@ export async function resolveDelivery(themePage) {
     case "procatalog.web":
     case "fgstore.pro":
       return (await import("@/app/theme/procatalog.web/delivery/page.jsx")).default;
+    case "procatalog2.web":
+      return (await import("@/app/theme/procatalog2.web/delivery/page.jsx")).default;
     case "fgstore.mapp":
       return (await import("@/app/theme/fgstore.mapp/delivery/page.jsx")).default;
     case "hoq.web":
@@ -786,6 +834,8 @@ export async function resolveCustomOrders(themePage) {
     case "procatalog.web":
     case "fgstore.pro":
       return (await import("@/app/theme/procatalog.web/CustomOrder")).default;
+    case "procatalog2.web":
+      return (await import("@/app/theme/procatalog2.web/CustomOrder")).default;
     case "fgstore.mapp":
       return (await import("@/app/theme/fgstore.mapp/home/CustomOrder")).default;
     default:

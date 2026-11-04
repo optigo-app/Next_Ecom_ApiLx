@@ -126,7 +126,7 @@ export async function GET(req) {
   try {
     const { searchParams } = new URL(req.url);
 
-    let targetDomain = searchParams.get("domain");
+    let targetDomain = extractDomain(req);
     if (!targetDomain) {
       const domainInfo = await getDomainInfo().catch(() => ({}));
       targetDomain = domainInfo?.hostname || "default";

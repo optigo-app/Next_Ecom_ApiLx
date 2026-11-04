@@ -45,6 +45,7 @@ import {
 const KNOWN_DOMAINS = [
   "beluxjewel.web",
   "procatalog.web",
+  "procatalog2.web",
   "demostore",
   "sonasons.procatalog.in",
   "omjiyanshjewels.com",

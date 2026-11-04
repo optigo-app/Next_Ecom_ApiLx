@@ -31,4 +31,5 @@ export const WEBSITE_DOMAINS = {
   JULIAN4WEB: "nxtjulian4.web",
   BELUXJEWELWEB: "beluxjewel.web",
   PROCATALOG: "procatalog.web",
+  PROCATALOG2: "procatalog2.web",
 };

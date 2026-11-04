@@ -1,0 +1,83 @@
+.product-container {
+  position: relative;
+  cursor: pointer;
+  backface-visibility: hidden;
+  will-change: transform, opacity;
+  transition: transform 0.5s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+
+.product-button-cart-elee {
+  visibility: visible;
+  opacity: 1;
+  transition: opacity .3s ease, visibility .3s ease;
+
+  @media screen and (max-width: 768px) {
+   visibility: visible;
+   opacity: 1;
+  }
+}
+
+.product-button-cart-elee[data-is-in-cart="in-cart"] {
+  visibility: visible;
+  opacity: 1;
+}
+
+.product-container:hover 
+  .product-button-cart-elee[data-is-in-cart="not-in-cart"] {
+  visibility: visible;
+  opacity: 1;
+}
+
+
+
+/* Gentle lift effect */
+.product-container:hover {
+  transform: translateY(-3px);
+}
+
+/* MAIN IMAGE */
+.product-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+  opacity: 1;
+  transform: scale(1);
+  transition:
+    opacity 0.9s cubic-bezier(0.22, 0.61, 0.36, 1),
+    transform 1.2s cubic-bezier(0.19, 1, 0.22, 1);
+  will-change: opacity, transform;
+}
+
+/* HOVER IMAGE */
+.product-hover-image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  opacity: 0;
+  transform: scale(1.05);
+  transition:
+    opacity 0.9s cubic-bezier(0.22, 0.61, 0.36, 1),
+    transform 1.2s cubic-bezier(0.19, 1, 0.22, 1);
+  will-change: opacity, transform;
+  backface-visibility: hidden;
+}
+
+/* ON HOVER */
+.product-container:hover .product-hover-image {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.product-container:hover .product-button-cart-elee{
+    visibility: visible;
+    opacity: 1;
+}
+
+// .product-container:hover .product-image {
+//   opacity: 0;
+//   transform: scale(1.03);
+// }
