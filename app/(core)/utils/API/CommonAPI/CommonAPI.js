@@ -3,6 +3,7 @@ import { getSession } from "../../FetchSessionData";
 import { getDomainInfo } from "../../getDomainInfo";
 import { fetchStoreInitData } from "../../fetchStoreInit";
 import axios from "axios";
+import { toShortDomainName } from "../../shortDomainName";
 
 let APIURL = "";
 let apiUrlPromise = null;
@@ -12,6 +13,8 @@ let SV_Token = null;
 let SV_version = null;
 let storeInitCache = null;
 let initPromise = null;
+
+export { toShortDomainName };
 
 const applyStoreInitData = (data) => {
   storeInitCache = data;
@@ -181,6 +184,32 @@ export const CommonAPI = async (body) => {
         }
       }
       if ("ipaddress" in body) delete body.ipaddress;
+    }
+
+    try {
+      let host = "";
+      try {
+        host = (await getDomainInfo())?.hostname || "";
+      } catch (e) {}
+      const domainname = toShortDomainName(host);
+      if (typeof FormData !== "undefined" && body instanceof FormData) {
+        if (body.has("p")) {
+          const pObj = JSON.parse(body.get("p"));
+          if (pObj && typeof pObj === "object" && !Array.isArray(pObj)) {
+            pObj.domainname = domainname;
+            body.set("p", JSON.stringify(pObj));
+          }
+        }
+      } else if (body && typeof body === "object" && body.p != null) {
+        const isStr = typeof body.p === "string";
+        const pObj = isStr ? JSON.parse(body.p) : body.p;
+        if (pObj && typeof pObj === "object" && !Array.isArray(pObj)) {
+          pObj.domainname = domainname;
+          body.p = isStr ? JSON.stringify(pObj) : pObj;
+        }
+      }
+    } catch (e) {
+      console.warn("CommonAPI: could not inject domainname:", e?.message);
     }
 
     const YearCode =

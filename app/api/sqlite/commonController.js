@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getTenantDb } from "@/db/tenantManager";
+import { getTenantDb, getAllowedDomains } from "@/db/tenantManager";
 import { logger } from "@/db/logger";
 
 /**
@@ -9,21 +9,44 @@ import { logger } from "@/db/logger";
  * @param {object} [body={}]
  * @returns {string|null}
  */
+function resolveShortDomain(name) {
+  const d = String(name || "").trim().toLowerCase();
+  if (!d || d.includes(".")) return d;
+  try {
+    for (const full of getAllowedDomains()) {
+      if (full.replace(/\.(web|com|in|mapp|pro)$/, "") === d) return full;
+    }
+  } catch (_) {}
+  return d;
+}
+
 export function extractDomain(req, body = {}) {
+  const found = extractRawDomain(req, body);
+  return found ? resolveShortDomain(found) : found;
+}
+
+function extractRawDomain(req, body = {}) {
   // 1. Read from query param: ?domain=...
   try {
     const { searchParams } = new URL(req.url);
-    const qDomain = searchParams.get("domain") || searchParams.get("Domain");
+    const qDomain = searchParams.get("domain") || searchParams.get("Domain") || searchParams.get("domainname");
     if (qDomain && qDomain.trim()) return qDomain.trim();
   } catch (_) {}
 
   // 2. Read from headers
   try {
-    const headerDomain = req.headers.get("x-domain") || req.headers.get("domain");
+    const headerDomain = req.headers.get("x-domain") || req.headers.get("domain") || req.headers.get("domainname");
     if (headerDomain && headerDomain.trim()) return headerDomain.trim();
   } catch (_) {}
 
   // 3. Read from body
+  if (body?.domainname) return String(body.domainname).trim();
+  if (typeof body?.p === "string") {
+    try {
+      const pd = JSON.parse(body.p)?.domainname;
+      if (pd) return String(pd).trim();
+    } catch (_) {}
+  }
   if (body?.domain || body?.Domain || body?.Websitedomain || body?.websitedomain) {
     return String(body.domain || body.Domain || body.Websitedomain || body.websitedomain).trim();
   }

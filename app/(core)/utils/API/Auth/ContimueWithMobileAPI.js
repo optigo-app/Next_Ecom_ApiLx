@@ -21,8 +21,6 @@ export const ContimueWithMobileAPI = async (mobileNo, code) => {
             // p: encodedCombinedValue,
             // "dp": combinedValue,
             "p": combinedValue
-
-
         };
 
         response = await CommonAPI(body);

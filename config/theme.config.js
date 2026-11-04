@@ -78,6 +78,22 @@ export const THEMES = {
     },
   },
 
+  PROCATALOG2: {
+    domain: "procatalog2.web",
+    page: "procatalog2.web",
+    brand: "Sonasons",
+    websiteName: "Procatalog2",
+    logos: {
+      web: "/WebSiteStaticImage/logoIcon/webLogo.png",
+      white_logo: "/WebSiteStaticImage/logoIcon/webLogo.png",
+      black_logo: "/WebSiteStaticImage/logoIcon/webLogo11.png",
+      blackLogo: "/WebSiteStaticImage/logoIcon/webLogo11.png",
+      mobile: "/WebSiteStaticImage/logoIcon/mobileLogo.png",
+      transparent_mobile: "/WebSiteStaticImage/logoIcon/image.png",
+      favicon: "/optigo_favicon.ico",
+    },
+  },
+
   ELVEE: {
     domain: "nxtelvee.web",
     page: "elvee.web",
