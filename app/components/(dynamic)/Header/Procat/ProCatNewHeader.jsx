@@ -21,17 +21,21 @@ import ShoppingCartOutlinedIcon from "@mui/icons-material/ShoppingCartOutlined";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import MenuIcon from "@mui/icons-material/Menu";
 import CloseIcon from "@mui/icons-material/Close";
+import SearchIcon from "@mui/icons-material/Search";
 import Cookies from "js-cookie";
 import { useStore } from "@/app/(core)/contexts/StoreProvider";
 import { useNextRouterLikeRR } from "@/app/(core)/hooks/useLocationRd";
 import { logoutUser } from "@/app/(core)/utils/authLogout";
 import ReusableConfirmModal from "../../../ui/Modal";
+import SearchBarToggle from "../Elvee/New/SearchBarToggle";
+import DrawerSearchBar from "../Elvee/New/DrawerSearchbar";
 
 const ProCatNewHeader = ({ storeinit, logos }) => {
-  const { islogin, setislogin, cartCountNum, wishCountNum } = useStore();
+  const { islogin, setislogin, cartCountNum, wishCountNum, loginUserDetail } = useStore();
   const [isMounted, setIsMounted] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [openLogoutModal, setOpenLogoutModal] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
 
   const location = useNextRouterLikeRR();
   const navigate = location.push;
@@ -47,6 +51,23 @@ const ProCatNewHeader = ({ storeinit, logos }) => {
     } catch (_) { }
     setIsMounted(true);
   }, [setislogin]);
+
+  const searchDataFucn = (searchText) => {
+    const cleanText = typeof searchText === "string" ? searchText.trim() : "";
+    if (!cleanText) return;
+    const obj = {
+      a: "",
+      b: cleanText,
+      m: loginUserDetail?.MetalId ?? storeinit?.MetalId,
+      d: loginUserDetail?.cmboDiaQCid ?? storeinit?.cmboDiaQCid,
+      c: loginUserDetail?.cmboCSQCid ?? storeinit?.cmboCSQCid,
+      f: {},
+    };
+    const encodeObj = btoa(unescape(encodeURIComponent(JSON.stringify(obj))));
+    navigate(`/p/${encodeURIComponent(cleanText)}?S=${encodeObj}`);
+    setSearchOpen(false);
+    setMobileOpen(false);
+  };
 
   const handleDrawerToggle = () => {
     setMobileOpen((prev) => !prev);
@@ -122,8 +143,16 @@ const ProCatNewHeader = ({ storeinit, logos }) => {
               alignItems: "center",
               justifyContent: "space-between",
               px: { xs: 1.5, sm: 2.5, md: 3 },
+              position: "relative",
             }}
           >
+            {searchOpen && (
+              <SearchBarToggle
+                searchOpen={searchOpen}
+                setSearchOpen={setSearchOpen}
+                searchDataFucn={searchDataFucn}
+              />
+            )}
             {/* LEFT: LOGO */}
             <Box
               component="a"
@@ -213,6 +242,17 @@ const ProCatNewHeader = ({ storeinit, logos }) => {
                   ml: { md: 0.5, lg: 1 },
                 }}
               >
+                {/* SEARCH ICON */}
+                <Tooltip title="Search">
+                  <IconButton
+                    aria-label="search"
+                    onClick={() => setSearchOpen((prev) => !prev)}
+                    sx={{ p: 0.8, color: "#1a1a1a", "&:hover": { backgroundColor: "rgba(0, 0, 0, 0.04)" } }}
+                  >
+                    <SearchIcon sx={{ fontSize: 24 }} />
+                  </IconButton>
+                </Tooltip>
+
                 {/* WISHLIST ICON WITH BADGE */}
                 <Tooltip title="Wishlist">
                   <IconButton
@@ -289,6 +329,14 @@ const ProCatNewHeader = ({ storeinit, logos }) => {
                 gap: 0.5,
               }}
             >
+              <IconButton
+                aria-label="search"
+                onClick={() => setSearchOpen((prev) => !prev)}
+                sx={{ color: "#1a1a1a" }}
+              >
+                <SearchIcon sx={{ fontSize: 24 }} />
+              </IconButton>
+
               <IconButton
                 aria-label="wishlist"
                 onClick={() => navigate("/myWishList")}
@@ -371,6 +419,8 @@ const ProCatNewHeader = ({ storeinit, logos }) => {
           </IconButton>
         </Box>
         <Divider />
+
+        <DrawerSearchBar setSearchOpen={() => {}} searchDataFucn={searchDataFucn} />
 
         <List sx={{ pt: 1 }}>
           <ListItem disablePadding>

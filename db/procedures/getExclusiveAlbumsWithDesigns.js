@@ -1,5 +1,5 @@
 import { resolveHomeTable } from "./getHomeProducts.js";
-import { ensureAlbumsTable } from "../schema/albums.js";
+import { ensureAlbumsTable, isAlbumUsable } from "../schema/albums.js";
 
 /**
  * Retrieves customer-exclusive albums joined with their respective design products from SQLite.
@@ -60,12 +60,13 @@ export function getExclusiveAlbumsWithDesigns(db, options = {}) {
       albumName,
       AutocodeList,
       ExpiryDate,
+      IsDeactive,
       albumcode,
       CustomerId,
       RandomNo,
       EntryDate
     FROM albums
-    WHERE 1=1
+    WHERE (IsDeactive IS NULL OR IsDeactive = 0)
   `;
   const params = {};
 
@@ -89,7 +90,7 @@ export function getExclusiveAlbumsWithDesigns(db, options = {}) {
 
   sql += " ORDER BY id ASC, EntryDate DESC";
 
-  const albums = db.prepare(sql).all(params);
+  const albums = db.prepare(sql).all(params).filter(isAlbumUsable);
 
   if (!albums || albums.length === 0) {
     return {

@@ -1,4 +1,4 @@
-import { toShortDomainName } from "../shortDomainName.js";
+import { toDomainName } from "../domainName.js";
 import { getTenantDb } from "../../../../db/tenantManager.js";
 import { batchInsertDesigns } from "../../../../db/procedures/batchInsertDesigns.js";
 import {
@@ -155,7 +155,7 @@ export async function syncDynamicPolicyProducts({ domain, Config, storeInit: inp
         colorstonepricelistname: resolvedConfig.colorstonepricelistName,
         SettingPriceUniqueNo: resolvedConfig.SettingPriceUniqueNo,
         DomainForNo: resolvedConfig.DomainForNo,
-        domainname: toShortDomainName(targetDomain),
+        domainname: toDomainName(targetDomain),
       };
 
       const requestBody = {

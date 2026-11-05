@@ -1,5 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  output: 'standalone',
   // Emotion's SSR cache depends on Stylis. Turbopack otherwise follows Stylis'
   // package export to its source barrel, which can leave the Tokenizer `char`
   // binding unresolved in the generated SSR chunk. Use Stylis' published ESM

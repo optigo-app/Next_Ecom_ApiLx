@@ -1,4 +1,4 @@
-import { toShortDomainName } from "../shortDomainName.js";
+import { toDomainName } from "../domainName.js";
 import { getTenantDb } from "@/db/tenantManager.js";
 import { saveWebsiteContent } from "@/db/procedures/saveWebsiteContent.js";
 import { ensureWebsiteContentTable } from "@/db/schema/websiteContent.js";
@@ -131,7 +131,7 @@ export async function syncWebsiteContent(options = {}) {
   };
   const parsedP = {
     WebsiteId: Number(websiteId),
-    domainname: toShortDomainName(targetDomain),
+    domainname: toDomainName(targetDomain),
   };
 
   const requestBody = {

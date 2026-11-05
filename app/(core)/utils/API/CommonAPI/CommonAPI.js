@@ -3,7 +3,7 @@ import { getSession } from "../../FetchSessionData";
 import { getDomainInfo } from "../../getDomainInfo";
 import { fetchStoreInitData } from "../../fetchStoreInit";
 import axios from "axios";
-import { toShortDomainName } from "../../shortDomainName";
+import { toDomainName } from "../../domainName";
 
 let APIURL = "";
 let apiUrlPromise = null;
@@ -14,7 +14,7 @@ let SV_version = null;
 let storeInitCache = null;
 let initPromise = null;
 
-export { toShortDomainName };
+export { toDomainName };
 
 const applyStoreInitData = (data) => {
   storeInitCache = data;
@@ -191,7 +191,7 @@ export const CommonAPI = async (body) => {
       try {
         host = (await getDomainInfo())?.hostname || "";
       } catch (e) {}
-      const domainname = toShortDomainName(host);
+      const domainname = toDomainName(host);
       if (typeof FormData !== "undefined" && body instanceof FormData) {
         if (body.has("p")) {
           const pObj = JSON.parse(body.get("p"));
