@@ -1,4 +1,4 @@
-import { toShortDomainName } from "../shortDomainName.js";
+import { toDomainName } from "../domainName.js";
 import { getTenantDb } from "@/db/tenantManager.js";
 import { saveWebsiteColor } from "@/db/procedures/saveWebsiteColor.js";
 import { ensureWebsiteColorTable } from "@/db/schema/websiteColor.js";
@@ -132,7 +132,7 @@ export async function syncWebsiteColor(options = {}) {
   };
   const parsedP = {
     WebsiteId: Number(websiteId),
-    domainname: toShortDomainName(targetDomain),
+    domainname: toDomainName(targetDomain),
   };
 
   const requestBody = {

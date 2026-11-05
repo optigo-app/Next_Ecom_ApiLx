@@ -1,4 +1,4 @@
-import { toShortDomainName } from "../shortDomainName.js";
+import { toDomainName } from "../domainName.js";
 import { getTenantDb } from "../../../../db/tenantManager.js";
 import { batchInsertArticles, repairArticleMetalFields } from "../../../../db/procedures/batchInsertArticles.js";
 import { batchInsertArticleMaterials } from "../../../../db/procedures/batchInsertArticleMaterials.js";
@@ -407,7 +407,7 @@ export async function syncDynamicPolicyArticles({ domain, Config, storeInit: inp
           colorstonepricelistname: resolvedConfig.colorstonepricelistName,
           SettingPriceUniqueNo: String(resolvedConfig.SettingPriceUniqueNo),
           DomainForNo: String(resolvedConfig.DomainForNo),
-          domainname: toShortDomainName(targetDomain),
+          domainname: toDomainName(targetDomain),
         }),
       };
 

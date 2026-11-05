@@ -1,3 +1,4 @@
+import { isPackageFilterDisabled } from "../packageScope.js";
 import { sanitizeSqlIdentifier } from "../schema/dynamicDesigns.js";
 import { ensurePolicyCategoriesTable, POLICY_CATEGORIES_TABLE } from "../schema/policyCategories.js";
 
@@ -75,7 +76,7 @@ export function rebuildPolicyCategories(db, targetTable, options = {}) {
         FROM "${cleanTable}"
         WHERE category IS NOT NULL AND TRIM(category) != ''
           AND (
-            NOT EXISTS (SELECT 1 FROM ResolvedPackages)
+            ${isPackageFilterDisabled(db) ? "1=1 OR " : ""}NOT EXISTS (SELECT 1 FROM ResolvedPackages)
             OR PackageIdList IS NULL 
             OR TRIM(PackageIdList) = ''
             OR EXISTS (

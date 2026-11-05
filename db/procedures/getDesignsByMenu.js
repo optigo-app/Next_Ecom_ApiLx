@@ -1,3 +1,4 @@
+import { isPackageFilterDisabled } from "../packageScope.js";
 import { getDynamicDesignTableName, sanitizeSqlIdentifier } from "../schema/dynamicDesigns.js";
 import { resolveArticleTableName } from "../schema/dynamicArticles.js";
 
@@ -288,8 +289,8 @@ ResolvedPackages(package_id) AS (
 )
 `;
 
-  // Package condition
-  conditions.push(`(
+  // Package condition (skipped for procatalog page tenants)
+  if (!isPackageFilterDisabled(db)) conditions.push(`(
         NOT EXISTS (SELECT 1 FROM ResolvedPackages)
         OR PackageIdList IS NULL 
         OR TRIM(PackageIdList) = ''

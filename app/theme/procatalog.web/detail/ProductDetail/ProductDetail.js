@@ -12,11 +12,17 @@ import PreviewDialog from "./New/PreviewDialog";
 import ExtraProductSections from "./New/ExtraProductSections";
 import DetailPageSkeleton from "../DetailPageSkeleton";
 import DetailBreadcrumb from "./New/DetailBreadcrumb";
+import useDesignNavigation from "./New/useDesignNavigation";
 import { formatTitleLine } from "@/app/(core)/utils/Glob_Functions/GlobalFunction";
 import { useProductDetail } from "@/app/(core)/hooks/useProductDetail";
 
 const ProductDetail = ({ storeinit, searchParams, params }) => {
   const pd = useProductDetail({ storeinit, searchParams, params });
+  const designNav = useDesignNavigation({
+    currentDesignNo: pd?.singleProd?.designno,
+    currentAutocode: pd?.singleProd?.autocode,
+    storeInit: pd?.storeInit,
+  });
 
   const {
     decodeUrl,
@@ -125,6 +131,8 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
                 isMediaReady={derivedIsMediaReady}
                 mediaBuildDone={derivedMediaBuildDone}
                 HandleImageDialogOpen={HandleImageDialogOpen}
+                onSwipeNextDesign={designNav.handleNext}
+                onSwipePrevDesign={designNav.handlePrev}
               />
               <RightSide
                 TitleLine={

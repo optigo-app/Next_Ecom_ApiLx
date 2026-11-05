@@ -1,4 +1,4 @@
-import { toShortDomainName } from "../shortDomainName.js";
+import { toDomainName } from "../domainName.js";
 import { getTenantDb } from "../../../../db/tenantManager.js";
 import { batchInsertStockList } from "../../../../db/procedures/batchInsertStockList.js";
 import {
@@ -165,7 +165,7 @@ export async function syncDynamicStockList(options = {}) {
         diamondpricelistname: resolvedConfig.diamondpricelistname,
         colorstonepricelistname: resolvedConfig.colorstonepricelistname,
         SettingPriceUniqueNo: resolvedConfig.SettingPriceUniqueNo,
-        domainname: toShortDomainName(targetDomain),
+        domainname: toDomainName(targetDomain),
       };
 
       const requestBody = {

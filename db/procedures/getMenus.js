@@ -1,3 +1,4 @@
+import { isPackageFilterDisabled } from "../packageScope.js";
 /**
  * Retrieves header navigation menus from SQLite with Package & Subpackage hierarchy filtering.
  * 
@@ -125,7 +126,7 @@ ORDER BY
 export function getMenus(db, options = {}) {
     const rawPkgId = options.packageId ?? options.PackageId ?? null;
     const rawPkgName = options.packageName ?? options.PackageName ?? null;
-    const strictPackage = options.strictPackage === true;
+    const strictPackage = options.strictPackage === true && !isPackageFilterDisabled(db);
 
     let rows = [];
     if (strictPackage && (rawPkgId != null || rawPkgName != null)) {

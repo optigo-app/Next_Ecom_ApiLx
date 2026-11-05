@@ -8,8 +8,7 @@ const clean = (host) => {
       .replace(/^https?:\/\//, "")
       .replace(/^www\./, "")
       .split("/")[0]
-      .replace(/:\d+$/, "")
-      .replace(/\.(web|com|in|mapp|pro)$/, "");
+      .replace(/:\d+$/, "");
   } catch (_) {
     return "";
   }
@@ -17,7 +16,7 @@ const clean = (host) => {
 
 const INVALID = new Set(["", "default", "localhost", "127.0.0.1", "undefined", "null"]);
 
-export const toShortDomainName = (host) => {
+export const toDomainName = (host) => {
   const short = typeof host === "string" ? clean(host) : "";
   return INVALID.has(short) ? clean(NEXT_APP_WEB) : short;
 };

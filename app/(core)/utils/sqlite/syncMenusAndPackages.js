@@ -1,4 +1,4 @@
-import { toShortDomainName } from "../shortDomainName.js";
+import { toDomainName } from "../domainName.js";
 import { getTenantDb } from "../../../../db/tenantManager.js";
 import { saveMenus } from "../../../../db/procedures/saveMenus.js";
 import { savePackageMaster } from "../../../../db/procedures/savePackageMaster.js";
@@ -114,7 +114,7 @@ export async function syncPackageMaster(options = {}) {
     f: "onlogin (PackageMst)",
     p: JSON.stringify({
       PackageId: 0,
-      domainname: toShortDomainName(targetDomain),
+      domainname: toDomainName(targetDomain),
     }),
   };
 
@@ -247,7 +247,7 @@ export async function syncMenus(options = {}) {
     p: JSON.stringify({
       FrontEnd_RegNo: storeInit.FrontEnd_RegNo || "",
       Customerid: customerId,
-      domainname: toShortDomainName(targetDomain),
+      domainname: toDomainName(targetDomain),
     }),
   };
 

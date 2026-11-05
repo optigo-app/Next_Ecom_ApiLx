@@ -11,6 +11,8 @@ const LeftSide = ({
   media,
   isMediaReady,
   mediaBuildDone,
+  onSwipeNextDesign,
+  onSwipePrevDesign,
 }) => {
   const videoRefs = useRef([]);
   const Ismobile = useMediaQuery("(max-width: 768px)");
@@ -95,6 +97,8 @@ const LeftSide = ({
             <JewelryCarousel
               carouselItems={media}
               HandleImageDialogOpen={HandleImageDialogOpen}
+              onSwipeNextDesign={onSwipeNextDesign}
+              onSwipePrevDesign={onSwipePrevDesign}
             />
           </Box>
         </Grid>

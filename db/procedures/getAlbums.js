@@ -1,4 +1,4 @@
-import { ensureAlbumsTable } from "../schema/albums.js";
+import { ensureAlbumsTable, isAlbumUsable } from "../schema/albums.js";
 
 /**
  * Retrieves album records from SQLite.
@@ -31,6 +31,7 @@ export function getAlbums(db, options = {}) {
             albumName,
             AutocodeList,
             ExpiryDate,
+            IsDeactive,
             albumcode,
             CustomerId,
             RandomNo,
@@ -76,8 +77,8 @@ export function getAlbums(db, options = {}) {
         params.searchPattern = `%${String(options.search).trim().toLowerCase()}%`;
     }
 
-    if (options.validOnly) {
-        conditions.push("(ExpiryDate IS NULL OR ExpiryDate = '' OR datetime(ExpiryDate) >= datetime('now'))");
+    if (!options.includeInactive) {
+        conditions.push("(IsDeactive IS NULL OR IsDeactive = 0)");
     }
 
     if (conditions.length > 0) {
@@ -86,14 +87,14 @@ export function getAlbums(db, options = {}) {
 
     sql += " ORDER BY id ASC, EntryDate DESC";
 
-    if (options.limit && Number(options.limit) > 0) {
-        sql += ` LIMIT ${Number(options.limit)}`;
-        if (options.offset && Number(options.offset) > 0) {
-            sql += ` OFFSET ${Number(options.offset)}`;
-        }
+    let rows = db.prepare(sql).all(params);
+    if (!options.includeInactive) {
+        rows = rows.filter(isAlbumUsable);
     }
-
-    const rows = db.prepare(sql).all(params);
+    if (options.limit && Number(options.limit) > 0) {
+        const off = Number(options.offset) > 0 ? Number(options.offset) : 0;
+        rows = rows.slice(off, off + Number(options.limit));
+    }
 
     if (options.raw) {
         return rows;

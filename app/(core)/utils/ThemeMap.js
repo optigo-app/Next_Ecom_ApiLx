@@ -28,11 +28,12 @@ export const themeMap = {
   // Optigo Subdomain Mappings
   "nxt04.optigoapps.com": { page: "hoq.web" },
   "nxt08.optigoapps.com": { page: "procatalog.web" },
-  "nxt09.optigoapps.com": { page: "fgstore.mapp" },
+  "nxt09.optigoapps.com": { page: "procatalog.web" },
   "nxt10.optigoapps.com": { page: "beluxjewel.web" },
   "nxt11.optigoapps.com": { page: "beluxjewel.web" },
   "nxt14.optigoapps.com": { page: "fgstore.mapp" },
   "nxt29.optigoapps.com": { page: "fgstore.web" },
+  "nxt26.optigoapps.com": { page: "procatalog.web" },
   "sonasons.optigoapps.com": { page: "beluxjewel.web" },
   "appsonasons.optigoapps.com": { page: "fgstore.mapp" },
   "1sonasons.optigoapps.com": { page: "hoq.web" },
