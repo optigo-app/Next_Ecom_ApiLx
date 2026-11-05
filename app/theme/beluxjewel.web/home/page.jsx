@@ -4,6 +4,8 @@ import { generatePageMetadata } from "@/app/(core)/utils/HeadMeta";
 import { pages } from "@/app/(core)/utils/pages";
 import { Box } from "@mui/material";
 import TopSection from "@/app/components/(static)/HeroSection/HeroSection";
+
+
 // import useHomeBannerImages from "@/app/(core)/utils/Glob_Functions/ThemesBanner/ThemesBanner";
 import { assetBase } from "@/app/(core)/lib/ServerHelper";
 import BrandInfoMarquee from "./blocks/Marquee";
@@ -17,7 +19,6 @@ import MaxBrandMarquee from "./blocks/MaxBrandMarquee";
 import MaxPhysicalStore from "./blocks/MaxPhysicalStore";
 // import MaxNewsletter from "./blocks/MaxNewsletter";
 import SocialMediaVideoSection from "./blocks/SocialMedia";
-import CraftsmanshipPage from "../craftsmanship/page";
 import MaxDesignLibrary from "./blocks/MaxDesignLibrary";
 import { getSqliteHomeBestseller, getSqliteHomeNewArrival, getSqliteHomeTrending } from "@/app/(core)/utils/sqlite/sqliteActions";
 import { getWebContentManagement } from "@/app/(core)/hooks/webContentManagement/webContentManagement.server";
@@ -26,6 +27,12 @@ import B2BContent from "@/app/components/(dynamic)/B2BContent";
 import { cookies } from "next/headers";
 import { isB2BWebsite } from "@/app/(core)/utils/isB2B";
 import { isHomeSectionEnabled } from "@/app/(core)/utils/storeFlags";
+import PhysicalStore from "@/app/components/(static)/PhysicalStore/PhysicalStore";
+import ExhibitionConfig from "@/app/components/(static)/ExhibitionConfig/ExhibitionConfig";
+import CraftsmanshipPage from "@/app/components/(static)/CraftsmanshipPage/CraftsmanshipPage";
+import DesignLibrary from "@/app/components/(static)/DesignLibrary/DesignLibrary";
+
+
 
 export const metadata = generatePageMetadata(pages["/"], "Belux Jewel");
 
@@ -101,10 +108,10 @@ const BeluxJewelHome = async () => {
           <MaxTrendingView storeInit={storeData} initialData={initialTrending} />
         )}
       </B2BContent>
-      <MaxPhysicalStore />
-      <MaxBrandMarquee assetBase={assetBase} />
-      <CraftsmanshipPage assetBase={assetBase} />
-      <MaxDesignLibrary />
+      <PhysicalStore />
+      <ExhibitionConfig   />
+      <CraftsmanshipPage />
+      <DesignLibrary />
       {/* <SocialMediaVideoSection /> */}
       <SocialMedia templates={socialMediaTemplates} />
     </Box>

@@ -15,6 +15,9 @@ import { getSqliteMenus } from "@/app/(core)/utils/sqlite/sqliteActions";
 import { getWebContentManagement } from "@/app/(core)/hooks/webContentManagement/webContentManagement.server";
 import Footer from "@/app/components/(static)/Footer/DynamicFooter/Footer"; 
 import { isB2BWebsite } from "@/app/(core)/utils/isB2B";
+import Announcement from "@/app/components/(static)/Announcement/Announcement";
+
+
 
 const layout = async ({ children }) => {
   const storeData = await getStoreInit();
@@ -62,7 +65,8 @@ const layout = async ({ children }) => {
           boxSizing: "border-box",
         }}
       >
-        <AnnouncementBar />
+        {/* <AnnouncementBar /> */}
+        <Announcement />
         <BeluxNavbar
           hidden={false}
           logos={logos}
