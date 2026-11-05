@@ -25,6 +25,11 @@ import { normalizeWebContent } from "./normalizeWebContent";
  *   collections: Array,
  *   branding: object|null,
  *   seo: object|null,
+ *   announcement: object|null,
+ *   showroom: object|null,
+ *   craftsmanship: object|null,
+ *   exhibitionconfig: object|null,
+ *   designlibrary: object|null,
  *   banners: Array,
  *   bannersByType: object,
  *   bannerConfig: object|null,
@@ -36,7 +41,9 @@ import { normalizeWebContent } from "./normalizeWebContent";
 export async function getWebContentManagement(options = {}) {
   try {
     const result = await getGroupedWebsiteConfig(options);
+    
 
+console.log("TCL: getWebContentManagement -> result", result)
     if (!result || !result.success) {
       const errorMessage = result?.error || "Failed to retrieve website content management configuration.";
       const emptyNormalized = normalizeWebContent({});
