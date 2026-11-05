@@ -61,6 +61,7 @@ export const domainHtmlMap = {
     "localhost:3000": DEFAULT_FOOTER_LINKS,
     "localhost:4000": DEFAULT_FOOTER_LINKS,
     'procatalog.web': DEFAULT_FOOTER_LINKS,
+    'procatalog2.web': DEFAULT_FOOTER_LINKS,
     'beta.procatalog.web': DEFAULT_FOOTER_LINKS,
     'jeweliita.procatalog.in': DEFAULT_FOOTER_LINKS,
     "localhost:8012": DEFAULT_FOOTER_LINKS,

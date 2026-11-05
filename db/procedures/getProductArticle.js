@@ -80,16 +80,26 @@ export function getProductArticle(db, options = {}) {
   // ── 2. DESIGN HEADER (rd) ──────────────────────────────────────────────────
   let rd = [];
   try {
-    const hasDesignTable = db
-      .prepare("SELECT name FROM sqlite_master WHERE type='table' AND name = ? COLLATE NOCASE")
-      .get(designTable);
+    // Candidate design tables, in priority order. The policy table derived from client options can be
+    // wrong/empty (e.g. storeInit not hydrated yet in the browser), so fall back to the DB's own
+    // storeinit policy table, then any policy table, then the generic 'designs' table.
+    const tableExists = db.prepare("SELECT name FROM sqlite_master WHERE type='table' AND name = ? COLLATE NOCASE");
+    const candidates = [designTable];
+    try {
+      const sInit = db.prepare("SELECT * FROM storeinit LIMIT 1").get();
+      if (sInit) candidates.push(getDynamicDesignTableName(sInit));
+    } catch (_) {}
+    try {
+      db.prepare("SELECT name FROM sqlite_master WHERE type='table' AND name LIKE 'design_Productlist_%' ORDER BY name")
+        .all()
+        .forEach((t) => candidates.push(t.name));
+    } catch (_) {}
+    candidates.push("designs");
 
-    const targetDesignTable = hasDesignTable ? designTable : "designs";
-    const hasAnyDesignTable = db
-      .prepare("SELECT name FROM sqlite_master WHERE type='table' AND name = ? COLLATE NOCASE")
-      .get(targetDesignTable);
-
-    if (hasAnyDesignTable) {
+    for (const candidate of [...new Set(candidates)]) {
+      const hasAnyDesignTable = tableExists.get(candidate);
+      if (!hasAnyDesignTable) continue;
+      const targetDesignTable = hasAnyDesignTable.name;
       // Single targeted WHERE — uses (designno COLLATE NOCASE) or (autocode) index directly
       const designSql = `
         SELECT
@@ -113,8 +123,16 @@ export function getProductArticle(db, options = {}) {
         WHERE ${condition.whereClause}
         LIMIT 1
       `;
-      const dRow = db.prepare(designSql).get(...condition.params);
-      if (dRow) rd = [dRow];
+      let dRow = null;
+      try {
+        dRow = db.prepare(designSql).get(...condition.params);
+      } catch (_) {
+        continue;
+      }
+      if (dRow) {
+        rd = [dRow];
+        break;
+      }
     }
   } catch (dErr) {
     console.warn("[getProductArticle] Design header query warning:", dErr.message);

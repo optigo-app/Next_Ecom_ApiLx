@@ -80,7 +80,7 @@ export const THEMES = {
 
   PROCATALOG2: {
     domain: "procatalog2.web",
-    page: "procatalog2.web",
+    page: "procatalog.web",
     brand: "Sonasons",
     websiteName: "Procatalog2",
     logos: {

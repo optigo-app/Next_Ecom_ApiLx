@@ -64,7 +64,7 @@ export async function GET(req) {
 
     // If querying by RandomNo or customerId and no albums found in targetDomain, check fallback domains
     if ((!result?.Data?.rd || result.Data.rd.length === 0) && (options.RandomNo || customerId)) {
-      const fallbackDomains = ["beluxjewel.web", "demostore", "procatalog.web"].filter(
+      const fallbackDomains = ["beluxjewel.web", "demostore", "procatalog.web", "procatalog2.web"].filter(
         (d) => d.toLowerCase() !== targetDomain.toLowerCase()
       );
       for (const fallbackDomain of fallbackDomains) {

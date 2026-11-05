@@ -13,7 +13,7 @@ export const themeMap = {
   "nxtsonasons.web": { page: "fgstore.web" },
   "nxtmobileapp.web": { page: "fgstore.mapp" },
   "procatalog.web": { page: "procatalog.web" },
-  "procatalog2.web": { page: "procatalog2.web" },
+  "procatalog2.web": { page: "procatalog.web" },
   "nxtelvee.web": { page: "elvee.web" },
   "nxthoq.web": { page: "hoq.web" },
   "nxtdiamondtine.web": { page: "diamondtine.web" },

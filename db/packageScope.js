@@ -1,7 +1,7 @@
 import fs from "fs";
 import path from "path";
 
-const NO_PACKAGE_PAGES = new Set(["procatalog.web", "procatalog2.web"]);
+const NO_PACKAGE_PAGES = new Set(["procatalog.web"]);
 
 let _pageByDomain = null;
 
@@ -21,7 +21,7 @@ function loadPageByDomain() {
 
 /**
  * Check point: package-wise filtering is skipped when storeinit.DomainForNo === 2 (main condition).
- * Fallback: tenants whose ThemeMap page is "procatalog.web" (or "procatalog2.web"). The tenant is derived from the open DB file path
+ * Fallback: tenants whose ThemeMap page is "procatalog.web". The tenant is derived from the open DB file path
  * (db/tenants/<domain>/database.db), so no caller needs to pass anything.
  * @param {import('better-sqlite3').Database} db
  * @returns {boolean}
