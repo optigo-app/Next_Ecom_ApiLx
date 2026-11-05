@@ -1,3 +1,4 @@
+import { toShortDomainName } from "../shortDomainName.js";
 import { getTenantDb } from "../../../../db/tenantManager.js";
 import { saveAlbums } from "../../../../db/procedures/saveAlbums.js";
 import { ensureAlbumsTable } from "../../../../db/schema/albums.js";
@@ -129,6 +130,7 @@ export async function syncAlbums(options = {}) {
     f: "onlogin (GetAlbums)",
     p: JSON.stringify({
       PackageId: packageId,
+      domainname: toShortDomainName(targetDomain),
     }),
   };
 
