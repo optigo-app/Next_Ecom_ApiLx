@@ -3,39 +3,39 @@
 
 
 import React from 'react';
-import { 
-  Box, 
-  Container, 
-  Typography, 
-  TextField, 
-  InputAdornment, 
-  Grid, 
-  Card, 
-  CardMedia, 
-  CardContent, 
-  IconButton 
+import {
+  Box,
+  Container,
+  Typography,
+  TextField,
+  InputAdornment,
+  Grid,
+  Card,
+  CardMedia,
+  CardContent,
+  IconButton
 } from '@mui/material';
- 
+
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import blogData from './BlogData';
- 
- import { useNextRouterLikeRR } from "@/app/(core)/hooks/useLocationRd";
+
+import { useNextRouterLikeRR } from "@/app/(core)/hooks/useLocationRd";
 
 export default function BlogListPage() {
 
-    const navigate = useNextRouterLikeRR();
+  const navigate = useNextRouterLikeRR();
 
-     const handleMoveToDetail = (id) => {
+  const handleMoveToDetail = (id) => {
 
-        const url = `/blogs/${id}`;
-    
-        // window.open(url, "_blank");
-        navigate.push(url);
-      };
+    const url = `/blogs/${id}`;
+
+    // window.open(url, "_blank");
+    navigate.push(url);
+  };
   return (
     <Box sx={{ bgcolor: '#ffffff', minHeight: '100vh', pb: 8 }}>
-      
-     
+
+
       <Box
         sx={{
           position: 'relative',
@@ -63,7 +63,7 @@ export default function BlogListPage() {
         >
           Jewellery Knowledge Center
         </Typography>
-        
+
         <Typography
           variant="subtitle1"
           sx={{
@@ -75,7 +75,7 @@ export default function BlogListPage() {
           Expert jewellery guides and buying advice
         </Typography>
 
-        
+
       </Box>
 
       {/* 2. Main Content Section */}
@@ -95,10 +95,10 @@ export default function BlogListPage() {
         {/* Articles Grid */}
         <Grid container spacing={4}>
           {blogData.map((article) => (
-            <Grid item size={{ xs: 12, sm: 6, md: 4 }} key={article.id}>
-              <Card 
-                elevation={0} 
-                sx={{ 
+            <Grid size={{ xs: 12, sm: 6, md: 4 }} key={article.id}>
+              <Card
+                elevation={0}
+                sx={{
                   bgcolor: 'transparent',
                   height: '100%',
                   display: 'flex',
@@ -113,12 +113,12 @@ export default function BlogListPage() {
                   height="240"
                   image={article.img}
                   alt={article.title}
-                  sx={{ 
-                    borderRadius: '16px', 
-                    objectFit: 'cover' 
+                  sx={{
+                    borderRadius: '16px',
+                    objectFit: 'cover'
                   }}
                 />
-                
+
                 <CardContent sx={{ px: 0, pt: 2, pb: 0, flexGrow: 1 }}>
                   {/* Article Title */}
                   <Typography
@@ -148,7 +148,7 @@ export default function BlogListPage() {
                     {article.category}
                   </Typography>
 
-                  
+
                 </CardContent>
               </Card>
             </Grid>

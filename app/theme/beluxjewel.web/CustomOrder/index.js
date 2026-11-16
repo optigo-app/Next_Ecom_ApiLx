@@ -283,15 +283,15 @@ const OrderForm = () => {
               <Stack spacing={4}>
                 {/* Section 1: Basic Info */}
                 <Grid container spacing={3}>
-                  <Grid item size={{ xs: 12 }} >
+                  <Grid size={{ xs: 12 }} >
                     <TextField label="Your Name" name="name" value={formData.name} onChange={handleInputChange} error={!!errors.name} helperText={errors.name} required fullWidth InputLabelProps={{ shrink: true }} placeholder="Enter your full name" />
                   </Grid>
-                  <Grid item size={{
+                  <Grid size={{
                     xs: 12, sm: 6
                   }}>
                     <TextField label="Email" name="email" value={formData.email} onChange={handleInputChange} error={!!errors.email} helperText={errors.email} required fullWidth InputLabelProps={{ shrink: true }} placeholder="Enter your Email" />
                   </Grid>
-                  <Grid item size={{
+                  <Grid size={{
                     xs: 12, sm: 6
                   }}>
                     <TextField label="Mobile" name="mobile" value={formData.mobile} onChange={handleInputChange} error={!!errors.mobile} helperText={errors.mobile} required fullWidth InputLabelProps={{ shrink: true }} placeholder="Enter your Mobile" />
@@ -340,22 +340,22 @@ const OrderForm = () => {
                 </Box>
 
                 <Grid container spacing={3}>
-                  <Grid item size={{
+                  <Grid size={{
                     xs: 12, sm: 6
                   }}>
                     <TextField label="Design Number" name="designNumber" value={formData.designNumber} onChange={handleInputChange} error={!!errors.designNumber} helperText={errors.designNumber} required fullWidth InputLabelProps={{ shrink: true }} />
                   </Grid>
-                  <Grid item size={{
+                  <Grid size={{
                     xs: 12, sm: 6
                   }}>
                     <TextField label="Product Size" name="productSize" value={formData.productSize} onChange={handleInputChange} error={!!errors.productSize} helperText={errors.productSize} required fullWidth InputLabelProps={{ shrink: true }} />
                   </Grid>
-                  <Grid item size={{
+                  <Grid size={{
                     xs: 12
                   }}>
                     <FormHelperText sx={{ mt: -2, mb: 2 }}>Note : Specify Ring Size, Bracelet Size or Chain length here</FormHelperText>
                   </Grid>
-                  <Grid item size={{
+                  <Grid size={{
                     xs: 12, sm: 6
                   }}>
                     <TextField select label="Color of Product" name="color" value={formData.color} onChange={handleInputChange} error={!!errors.color} helperText={errors.color} required fullWidth InputLabelProps={{ shrink: true }}>
@@ -364,7 +364,7 @@ const OrderForm = () => {
                       ))}
                     </TextField>
                   </Grid>
-                  <Grid item size={{
+                  <Grid size={{
                     xs: 12, sm: 6
                   }}>
                     <TextField select label="Karats of Product" name="karats" value={formData.karats} onChange={handleInputChange} error={!!errors.karats} helperText={errors.karats} required fullWidth InputLabelProps={{ shrink: true }}>
@@ -380,13 +380,13 @@ const OrderForm = () => {
                 </Divider>
 
                 <Grid container spacing={4}>
-                  <Grid item xs={12} md={6}>
+                  <Grid xs={12} md={6}>
                     <FormControl required error={!!errors.rhodium} fullWidth>
                       <FormLabel sx={{ fontWeight: 600, mb: 1, color: COLORS.black }}>Rhodium Preference</FormLabel>
                       <RadioGroup name="rhodium" value={formData.rhodium} onChange={handleInputChange}>
                         <Grid container>
                           {OPTIONS.rhodium.map((opt) => (
-                            <Grid item xs={6} key={opt}>
+                            <Grid xs={6} key={opt}>
                               <FormControlLabel value={opt} control={<Radio color="primary" />} label={opt} />
                             </Grid>
                           ))}
@@ -396,13 +396,13 @@ const OrderForm = () => {
                     </FormControl>
                   </Grid>
 
-                  <Grid item xs={12} md={6}>
+                  <Grid xs={12} md={6}>
                     <FormControl required error={!!errors.stamping} fullWidth>
                       <FormLabel sx={{ fontWeight: 600, mb: 1, color: COLORS.black }}>Stamping Preference</FormLabel>
                       <RadioGroup name="stamping" value={formData.stamping} onChange={handleInputChange}>
                         <Grid container>
                           {OPTIONS.stamping.map((opt) => (
-                            <Grid item xs={6} key={opt}>
+                            <Grid xs={6} key={opt}>
                               <FormControlLabel value={opt} control={<Radio color="primary" />} label={opt} />
                             </Grid>
                           ))}
@@ -429,12 +429,12 @@ const OrderForm = () => {
                 </Box>
 
                 <Grid container spacing={3}>
-                  <Grid item size={{
+                  <Grid size={{
                     xs: 12, sm: 6
                   }}>
                     <DatePicker label="Preferred Delivery Date" value={formData.deliveryDate} onChange={(val) => handleDateChange("deliveryDate", val)} slotProps={{ textField: { fullWidth: true } }} />
                   </Grid>
-                  <Grid item size={{
+                  <Grid size={{
                     xs: 12, sm: 6
                   }}>
                     <TimePicker label="Preferred Delivery Time" value={formData.deliveryTime} onChange={(val) => handleDateChange("deliveryTime", val)} slotProps={{ textField: { fullWidth: true } }} />

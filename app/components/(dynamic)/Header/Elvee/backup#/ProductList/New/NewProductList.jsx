@@ -97,11 +97,11 @@ const JewelryProductGrid = ({
   loginUserDetail,
   productListData,
   isFiltering,
-  handleMoveToDetail = () => {},
+  handleMoveToDetail = () => { },
   showFilter,
   filter,
   filterData,
-  handleCartandWish = () => {},
+  handleCartandWish = () => { },
   cartArr,
   wishArr,
 }) => {
@@ -507,7 +507,7 @@ const ProductCard = ({
         <Box sx={{ mt: 1 }}>
           <Grid container spacing={0.8}>
             {/* DESIGN NO — LEFT CELL (ALWAYS VISIBLE) */}
-            <Grid item size={{ xs: 6 }}>
+            <Grid size={{ xs: 6 }}>
               <Box sx={{ display: "flex", alignItems: "center" }}>
                 <Typography
                   variant="body2"
@@ -525,7 +525,7 @@ const ProductCard = ({
             </Grid>
 
             {/* DWT — RIGHT CELL */}
-            <Grid item size={{ xs: 6 }}>
+            <Grid size={{ xs: 6 }}>
               <Box
                 sx={{
                   display: "flex",
@@ -535,7 +535,7 @@ const ProductCard = ({
                 }}
               >
                 {StoreInit?.IsDiamondWeight == 1 &&
-                Number(productData?.Dwt) !== 0 ? (
+                  Number(productData?.Dwt) !== 0 ? (
                   <>
                     <Typography
                       variant="body2"
@@ -578,7 +578,7 @@ const ProductCard = ({
             </Grid>
 
             {/* PRICE — LEFT CELL */}
-            <Grid item size={{ xs: 6 }}>
+            <Grid size={{ xs: 6 }}>
               <Box
                 sx={{
                   display: "flex",
@@ -599,7 +599,7 @@ const ProductCard = ({
                       dangerouslySetInnerHTML={{
                         __html: decodeEntities(
                           loginCurrency?.CurrencyCode ??
-                            StoreInit?.CurrencyCode,
+                          StoreInit?.CurrencyCode,
                         ),
                       }}
                       style={{ paddingRight: "0.4rem" }}
@@ -613,7 +613,7 @@ const ProductCard = ({
             </Grid>
 
             {/* GWT — RIGHT CELL */}
-            <Grid item size={{ xs: 6 }}>
+            <Grid size={{ xs: 6 }}>
               <Box
                 sx={{
                   display: "flex",
@@ -654,7 +654,7 @@ const ProductCard = ({
             </Grid>
 
             {isMobile && (
-              <Grid item size={{ xs: 12, sm: 12 }} position={"relative"}>
+              <Grid size={{ xs: 12, sm: 12 }} position={"relative"}>
                 <MobileCartToggleButton
                   productData={productData}
                   cartArr={cartArr}

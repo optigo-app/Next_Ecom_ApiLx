@@ -50,20 +50,20 @@ const MaterialCustomization = ({
   loadingdata,
   onOpenCustomizer,
 }) => {
-  const selectedMetalTypeVal = 
-    selectMtType || 
-    singleProd?.MetalTypePurity || 
-    metalTypeCombo?.find((ele) => ele?.Metalid == singleProd?.MetalPurityid || ele?.Metalid == singleProd?.MetalTypeid)?.metaltype || 
-    singleProd?.MetalType || 
-    singleProd?.metalpurityname || 
+  const selectedMetalTypeVal =
+    selectMtType ||
+    singleProd?.MetalTypePurity ||
+    metalTypeCombo?.find((ele) => ele?.Metalid == singleProd?.MetalPurityid || ele?.Metalid == singleProd?.MetalTypeid)?.metaltype ||
+    singleProd?.MetalType ||
+    singleProd?.metalpurityname ||
     '';
 
-  const selectedMetalColorVal = 
-    selectMtColor || 
-    singleProd?.MetalColor || 
-    metalColorCombo?.find((ele) => ele?.id == singleProd?.MetalColorid || ele?.id == singleProd?.metalcolorid)?.metalcolorname || 
-    singleProd?.metalcolorname || 
-    singleProd?.colorname || 
+  const selectedMetalColorVal =
+    selectMtColor ||
+    singleProd?.MetalColor ||
+    metalColorCombo?.find((ele) => ele?.id == singleProd?.MetalColorid || ele?.id == singleProd?.metalcolorid)?.metalcolorname ||
+    singleProd?.metalcolorname ||
+    singleProd?.colorname ||
     '';
 
   // Format Diamond quality value (prevents raw "7,14" numbers from flashing)
@@ -91,7 +91,7 @@ const MaterialCustomization = ({
     <Box sx={{ width: '100%', mt: 2 }}>
       <Grid container spacing={1}>
         {/* --- METAL TYPE --- */}
-        <Grid item size={{ xs: 6, sm: 6 }}>
+        <Grid size={{ xs: 6, sm: 6 }}>
           <Box sx={containerStyle}>
             <label style={labelStyle}>METAL TYPE:</label>
             {selectedMetalTypeVal ? (
@@ -103,7 +103,7 @@ const MaterialCustomization = ({
         </Grid>
 
         {/* --- METAL COLOR --- */}
-        <Grid item size={{ xs: 6, sm: 6 }}>
+        <Grid size={{ xs: 6, sm: 6 }}>
           <Box sx={containerStyle}>
             <label style={labelStyle}>METAL COLOR:</label>
             {selectedMetalColorVal ? (
@@ -115,7 +115,7 @@ const MaterialCustomization = ({
         </Grid>
 
         {/* --- DIAMOND --- */}
-        <Grid item size={{ xs: 6, sm: 6 }}>
+        <Grid size={{ xs: 6, sm: 6 }}>
           <Box sx={containerStyle}>
             <label style={labelStyle}>DIAMOND:</label>
             {formattedDiaVal ? (
@@ -128,7 +128,7 @@ const MaterialCustomization = ({
 
         {/* --- SIZE --- */}
         {selectedSizeVal && (
-          <Grid item size={{ xs: 6, sm: 6 }}>
+          <Grid size={{ xs: 6, sm: 6 }}>
             <Box sx={containerStyle}>
               <label style={labelStyle}>SIZE:</label>
               <span style={textSpanStyle}>{selectedSizeVal}</span>

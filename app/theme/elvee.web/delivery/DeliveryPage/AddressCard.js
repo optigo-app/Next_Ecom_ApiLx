@@ -8,7 +8,7 @@ const AddressCard = ({ address, index, handleOpen, handleDeleteClick, handleDefa
   const [showButtons, setShowButtons] = useState(false);
 
   return (
-    <Grid item xs={12} sm={6} md={4} lg={3}>
+    <Grid xs={12} sm={6} md={4} lg={3}>
       <Card
         onMouseEnter={() => setShowButtons(true)}
         onMouseLeave={() => setShowButtons(false)}
@@ -158,7 +158,7 @@ export default AddressCard;
 
 //     return (
 //         <>
-//             <Grid item xs={12} sm={6} md={4} lg={3} style={{ marginBottom: '20px', minHeight: '19rem' }}>
+//             <Grid  xs={12} sm={6} md={4} lg={3} style={{ marginBottom: '20px', minHeight: '19rem' }}>
 //                 <Card
 //                     onMouseEnter={handleMouseEnter}
 //                     onMouseLeave={handleMouseLeave}

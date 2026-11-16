@@ -209,7 +209,7 @@ const PremiumFooter = ({
       <Box>
         <Grid container spacing={{ xs: 4, md: 6, lg: 8 }}>
           {/* Brand Section */}
-          <Grid item size={{ xs: 12, lg: 2 }}>
+          <Grid  size={{ xs: 12, lg: 2 }}>
             <Box
               sx={{
                 pr: { lg: 4 },
@@ -299,7 +299,7 @@ const PremiumFooter = ({
             </Box>
           </Grid>
 
-          <Grid item size={{ xs: 12, sm: 4, lg: 2 }}>
+          <Grid size={{ xs: 12, sm: 4, lg: 2 }}>
             <Box
               sx={{
                 pr: { lg: 4 },
@@ -403,7 +403,7 @@ const PremiumFooter = ({
 
           {/* Footer Links Sections */}
           {footerSections.map((section) => (
-            <Grid item size={{ xs: 12, sm: 4, lg: 2 }} key={section.title}>
+            <Grid size={{ xs: 12, sm: 4, lg: 2 }} key={section.title}>
               <Typography
                 variant="overline"
                 sx={{
@@ -455,7 +455,7 @@ const PremiumFooter = ({
           ))}
 
           {/* Newsletter Section */}
-          <Grid item size={{ xs: 12, lg: 3 }}>
+          <Grid size={{ xs: 12, lg: 3 }}>
             <Typography
               variant="overline"
               sx={{

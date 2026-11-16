@@ -1,3 +1,4 @@
+
 import { toDomainName } from "../domainName.js";
 import { getTenantDb } from "../../../../db/tenantManager.js";
 import { batchInsertArticles, repairArticleMetalFields } from "../../../../db/procedures/batchInsertArticles.js";

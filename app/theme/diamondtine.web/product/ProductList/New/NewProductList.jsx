@@ -122,7 +122,7 @@ const JewelryProductGrid = ({
       <Box sx={{ position: "relative", zIndex: 1 }}>
         <Grid container spacing={{ xs: 1, sm: 1, md: 1 }}>
           {(isFiltering ? Array.from(new Array(12)) : productListData).map((item, index) => (
-            <Grid item key={item?.id || index} size={{
+            <Grid key={item?.id || index} size={{
               xs: 6,
               sm: 6,
               md: isMedium ? 6 : 3
@@ -395,7 +395,7 @@ const ProductCard = ({ product, index, productData, StoreInit, calcVal, videoUrl
         <Box sx={{ mt: 1 }}>
           <Grid container spacing={0.8}>
             {/* DESIGN NO — LEFT CELL (ALWAYS VISIBLE) */}
-            <Grid item size={{ xs: 6 }}>
+            <Grid size={{ xs: 6 }}>
               <Box sx={{ display: "flex", alignItems: "center" }}>
                 <Typography
                   variant="body2"
@@ -413,7 +413,7 @@ const ProductCard = ({ product, index, productData, StoreInit, calcVal, videoUrl
             </Grid>
 
             {/* DWT — RIGHT CELL */}
-            <Grid item size={{ xs: 6 }}>
+            <Grid size={{ xs: 6 }}>
               <Box
                 sx={{
                   display: "flex",
@@ -455,7 +455,7 @@ const ProductCard = ({ product, index, productData, StoreInit, calcVal, videoUrl
             </Grid>
 
             {/* PRICE — LEFT CELL */}
-            <Grid item size={{ xs: 6 }}>
+            <Grid size={{ xs: 6 }}>
               <Box
                 sx={{
                   display: "flex",
@@ -487,7 +487,7 @@ const ProductCard = ({ product, index, productData, StoreInit, calcVal, videoUrl
             </Grid>
 
             {/* GWT — RIGHT CELL */}
-            <Grid item size={{ xs: 6 }}>
+            <Grid size={{ xs: 6 }}>
               <Box
                 sx={{
                   display: "flex",
@@ -528,7 +528,7 @@ const ProductCard = ({ product, index, productData, StoreInit, calcVal, videoUrl
             </Grid>
 
             {isMobile && (
-              <Grid item size={{ xs: 12, sm: 12 }} position={"relative"}>
+              <Grid size={{ xs: 12, sm: 12 }} position={"relative"}>
                 <MobileCartToggleButton productData={productData} cartArr={cartArr} handleCartandWish={handleCartandWish} />
               </Grid>
             )}

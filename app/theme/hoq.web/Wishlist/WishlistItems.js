@@ -269,7 +269,7 @@ const CustomGrid = ({ itemsLength, children }) => {
   };
 
   return (
-    <Grid item size={sizes} sx={{ borderRadius: 0 }}>
+    <Grid size={sizes} sx={{ borderRadius: 0 }}>
       {children}
     </Grid>
   );

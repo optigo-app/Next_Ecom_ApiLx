@@ -534,7 +534,7 @@ export default function Header({ storeinit, logos }) {
                               })}
 
                               {/* Product image cards (fallback visuals, same as reference) */}
-                              <Grid item xs={3}>
+                              <Grid  xs={3}>
                                 <Box sx={{ width: '100%', backgroundColor: '#f9f6f4', pt: '110%', position: 'relative', overflow: 'hidden' }}>
                                   <img
                                     src={activeImages[0]?.src}
@@ -549,7 +549,7 @@ export default function Header({ storeinit, logos }) {
                                   {activeImages[0]?.price}
                                 </Typography>
                               </Grid>
-                              <Grid item xs={3}>
+                              <Grid  xs={3}>
                                 <Box sx={{ width: '100%', backgroundColor: '#f9f6f4', pt: '110%', position: 'relative', overflow: 'hidden' }}>
                                   <img
                                     src={activeImages[1]?.src}

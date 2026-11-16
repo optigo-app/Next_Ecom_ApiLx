@@ -234,7 +234,7 @@ const WishlistItems = ({
                 <Grid container spacing={0.8}>
 
                   {/* --- DESIGN NO (left) --- */}
-                  <Grid item xs={6}>
+                  <Grid xs={6}>
                     <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
                       <Typography
                         variant="body2"
@@ -251,7 +251,7 @@ const WishlistItems = ({
                   </Grid>
 
                   {/* --- DWT (right) --- */}
-                  <Grid item xs={6}>
+                  <Grid xs={6}>
                     <Box sx={{ display: "flex", alignItems: "center", gap: 0.5, justifyContent: "flex-end" }}>
                       <Typography
                         variant="body2"
@@ -281,7 +281,7 @@ const WishlistItems = ({
                   </Grid>
 
                   {/* --- PRICE (left) --- */}
-                  <Grid item xs={6}>
+                  <Grid xs={6}>
                     <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
                       {!isPriceHidden(storeInit) ? (
                         <Typography
@@ -318,7 +318,7 @@ const WishlistItems = ({
                   </Grid>
 
                   {/* --- GWT (right) --- */}
-                  <Grid item xs={6}>
+                  <Grid xs={6}>
                     <Box sx={{ display: "flex", alignItems: "center", gap: 0.5, justifyContent: "flex-end" }}>
                       <Typography
                         variant="body2"

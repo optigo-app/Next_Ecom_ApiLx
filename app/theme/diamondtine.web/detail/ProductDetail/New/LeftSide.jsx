@@ -50,7 +50,7 @@ const LeftSide = ({ HandleImageDialogOpen = () => { }, loading = false, media, i
   if (media !== null && isMediaReady && mediaBuildDone && media.length === 0) {
     return (
       <>
-        <Grid item size={{
+        <Grid size={{
           xs: 12,
           sm: 12,
           md: 6
@@ -87,7 +87,7 @@ const LeftSide = ({ HandleImageDialogOpen = () => { }, loading = false, media, i
 
   if (Ismobile) {
     return <>
-      <Grid item size={{ xs: 12, sm: 12 }}>
+      <Grid size={{ xs: 12, sm: 12 }}>
         <Box>
           <JewelryCarousel carouselItems={media} HandleImageDialogOpen={HandleImageDialogOpen} />
         </Box>
@@ -101,7 +101,7 @@ const LeftSide = ({ HandleImageDialogOpen = () => { }, loading = false, media, i
       <Box>
         <Grid container spacing={1.5}>
           {media?.map((item, index) => (
-            <Grid item size={{
+            <Grid size={{
               xs: 6
             }} key={index}>
               <Box

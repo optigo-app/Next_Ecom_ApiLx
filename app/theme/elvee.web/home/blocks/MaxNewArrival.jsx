@@ -29,7 +29,7 @@ import { useNextRouterLikeRR } from "@/app/(core)/hooks/useLocationRd";
 import "swiper/css";
 import "swiper/css/navigation";
 import { styled } from "@mui/material/styles";
-import { formatRedirectTitleLine, formatter,  formatTitleLine, } from "@/app/(core)/utils/Glob_Functions/GlobalFunction";
+import { formatRedirectTitleLine, formatter, formatTitleLine, } from "@/app/(core)/utils/Glob_Functions/GlobalFunction";
 import { Get_Tren_BestS_NewAr_DesigSet_Album } from "@/app/(core)/utils/API/Home/Get_Tren_BestS_NewAr_DesigSet_Album/Get_Tren_BestS_NewAr_DesigSet_Album";
 import { useStore } from "@/app/(core)/contexts/StoreProvider";
 import Pako from "pako";
@@ -37,7 +37,7 @@ import Pako from "pako";
 import ElveeTooltip from "./PremiumTooltip";
 import MaxHeader from "./Header";
 
-const imageNotFound ="/image-not-found.jpg"
+const imageNotFound = "/image-not-found.jpg"
 
 const SectionHeader = styled(Box)(({ theme }) => ({
   paddingBlock: theme.spacing(2),
@@ -51,13 +51,13 @@ const SectionTitle = styled(Typography)(({ theme }) => ({
   color: "#2E2E2E",
 }));
 
-const MaxNewArrivalsSection = ({storeInit}) => {
+const MaxNewArrivalsSection = ({ storeInit }) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const isTablet = useMediaQuery(theme.breakpoints.down("md"));
   const swiperRef = useRef(null);
   const { finalId, loginUserDetail, islogin } = useStore();
- 
+
   const [imageUrl, setImageUrl] = useState();
   const [newArrivalData, setNewArrivalData] = useState([]);
   const [validatedData, setValidatedData] = useState([]);
@@ -66,10 +66,10 @@ const MaxNewArrivalsSection = ({storeInit}) => {
   const callAPI = () => {
     // const loginUserDetail =  loginUserDetail || {}
     // const storeInit = storeInit || {}
-    let finalID =finalId;
-    
- 
- 
+    let finalID = finalId;
+
+
+
 
     let data = storeInit || {};
     setImageUrl(data?.CDNDesignImageFolThumb);
@@ -649,7 +649,7 @@ const ProductCard = ({
             }}
           >
             {/* --- NWT --- */}
-            <Grid item>
+            <Grid >
               <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
                 <Typography
                   variant="body2"
@@ -687,7 +687,7 @@ const ProductCard = ({
 
             {/* --- DWT --- */}
             {Dwt && (
-              <Grid item>
+              <Grid >
                 <Box
                   sx={{
                     display: "flex",
@@ -727,4 +727,3 @@ const ProductCard = ({
     </Card>
   );
 };
- 

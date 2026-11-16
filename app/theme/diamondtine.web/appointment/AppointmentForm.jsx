@@ -168,7 +168,7 @@ const AppointmentForm = ({ selectedItem, setSelectedItem }) => {
 
             <form onSubmit={(e) => handleSubmit(e, formData?.RequestId)}>
                 <Grid container spacing={3}>
-                    <Grid item size={{ xs: 12, sm: 6 }}>
+                    <Grid size={{ xs: 12, sm: 6 }}>
                         <TextField
                             fullWidth
                             label="First Name*"
@@ -180,7 +180,7 @@ const AppointmentForm = ({ selectedItem, setSelectedItem }) => {
                             variant="outlined"
                         />
                     </Grid>
-                    <Grid item size={{ xs: 12, sm: 6 }}>
+                    <Grid size={{ xs: 12, sm: 6 }}>
                         <TextField
                             fullWidth
                             label="Last Name*"
@@ -192,7 +192,7 @@ const AppointmentForm = ({ selectedItem, setSelectedItem }) => {
                             variant="outlined"
                         />
                     </Grid>
-                    <Grid item size={{ xs: 12, sm: 6 }}>
+                    <Grid size={{ xs: 12, sm: 6 }}>
                         <TextField
                             fullWidth
                             label="Email*"
@@ -205,7 +205,7 @@ const AppointmentForm = ({ selectedItem, setSelectedItem }) => {
                             variant="outlined"
                         />
                     </Grid>
-                    <Grid item size={{ xs: 12, sm: 6 }}>
+                    <Grid size={{ xs: 12, sm: 6 }}>
                         <TextField
                             fullWidth
                             label="Phone*"
@@ -218,7 +218,7 @@ const AppointmentForm = ({ selectedItem, setSelectedItem }) => {
                             variant="outlined"
                         />
                     </Grid>
-                    <Grid item size={{ xs: 12 }}>
+                    <Grid size={{ xs: 12 }}>
                         <TextField
                             fullWidth
                             label="Message (Optional)"
@@ -230,7 +230,7 @@ const AppointmentForm = ({ selectedItem, setSelectedItem }) => {
                             variant="outlined"
                         />
                     </Grid>
-                    <Grid item size={{ xs: 12 }}>
+                    <Grid size={{ xs: 12 }}>
                         <TextField
                             fullWidth
                             label="Select a Date & Time*"
@@ -245,7 +245,7 @@ const AppointmentForm = ({ selectedItem, setSelectedItem }) => {
                             variant="outlined"
                         />
                     </Grid>
-                    <Grid item size={{ xs: 12 }}>
+                    <Grid size={{ xs: 12 }}>
                         <Box sx={{ display: 'flex', gap: 2, mt: 2, flexWrap: 'wrap' }}>
                             <Button
                                 type="submit"

@@ -7,7 +7,7 @@ import { useEffect, useState } from "react";
 
 const StoreLocator = () => {
     // Ensure this path function is working as expected in your project
-    const Storeimage =  "/Singlestore.png";
+    const Storeimage = "/Singlestore.png";
     const [companyInfoData, setCompanuInfoData] = useState();
     useEffect(() => {
         let interval;
@@ -42,7 +42,7 @@ const StoreLocator = () => {
             <Container maxWidth="xl" sx={{ mt: 4 }}>
                 <Grid container spacing={4} alignItems="center">
                     {/* Image Section */}
-                    <Grid item size={{ xs: 12, md: 7 }}>
+                    <Grid size={{ xs: 12, md: 7 }}>
                         <Box
                             component="img"
                             src={Storeimage}
@@ -62,7 +62,7 @@ const StoreLocator = () => {
                     </Grid>
 
                     {/* Address Card Section */}
-                    <Grid item size={{ xs: 12, md: 5 }}>
+                    <Grid size={{ xs: 12, md: 5 }}>
                         <Box
                             sx={{
                                 backgroundColor: "#FFF6F0", // Matches the peach/cream background
@@ -170,7 +170,7 @@ const StoreLocator = () => {
             <Container maxWidth="xl" sx={{ mt: 4 }}>
                 <Grid container spacing={4} alignItems="center">
                     {/* Image Section */}
-                    <Grid item xs={12} md={7}>
+                    <Grid xs={12} md={7}>
                         <Box
                             component="img"
                             src={Storeimage}
@@ -190,7 +190,7 @@ const StoreLocator = () => {
                     </Grid>
 
                     {/* Address Card Section */}
-                    <Grid item xs={12} md={5}>
+                    <Grid xs={12} md={5}>
                         <Box
                             sx={{
                                 backgroundColor: "#FFF6F0", // Matches the peach/cream background

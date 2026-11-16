@@ -100,7 +100,7 @@ const InquiryModal = ({
             </Typography>
             <Grid container spacing={2}>
               {jewelryItems.map((item) => (
-                <Grid item size={{
+                <Grid size={{
                   xs: 6, sm: 6
                 }} key={item.id}>
                   <ButtonBase
@@ -146,7 +146,7 @@ const InquiryModal = ({
               Interested in: <strong>{formData.JewelleryType}</strong>
             </Typography>
             <Grid container spacing={2}>
-              <Grid item size={{ xs: 6 }}>
+              <Grid size={{ xs: 6 }}>
                 <TextField
                   fullWidth
                   label="First Name*"
@@ -157,7 +157,7 @@ const InquiryModal = ({
                   helperText={errors.firstname}
                 />
               </Grid>
-              <Grid item size={{ xs: 6 }}>
+              <Grid size={{ xs: 6 }}>
                 <TextField
                   fullWidth
                   label="Last Name*"
@@ -168,7 +168,7 @@ const InquiryModal = ({
                   helperText={errors.lastname}
                 />
               </Grid>
-              <Grid item size={{ xs: 12 }}>
+              <Grid size={{ xs: 12 }}>
                 <TextField
                   fullWidth
                   label="Email*"
@@ -179,7 +179,7 @@ const InquiryModal = ({
                   helperText={errors.EmailId}
                 />
               </Grid>
-              <Grid item size={{ xs: 12 }}>
+              <Grid size={{ xs: 12 }}>
                 <TextField
                   fullWidth
                   label="Phone*"
@@ -190,7 +190,7 @@ const InquiryModal = ({
                   helperText={errors.mobileno}
                 />
               </Grid>
-              <Grid item size={{ xs: 12 }}>
+              <Grid size={{ xs: 12 }}>
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <DateTimePicker
                     label="Appointment Date & Time*"
@@ -219,7 +219,7 @@ const InquiryModal = ({
                   />
                 </LocalizationProvider>
               </Grid>
-              <Grid item size={{ xs: 12 }}>
+              <Grid size={{ xs: 12 }}>
                 <TextField
                   fullWidth
                   multiline
@@ -230,7 +230,7 @@ const InquiryModal = ({
                   onChange={handleChange}
                 />
               </Grid>
-              <Grid item size={{ sx: 12 }} sx={{ mt: 2 }}>
+              <Grid size={{ sx: 12 }} sx={{ mt: 2 }}>
                 <Button
                   fullWidth
                   variant="contained"

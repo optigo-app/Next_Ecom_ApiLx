@@ -166,7 +166,7 @@ const CollectionPage = () => {
           const hasImage = item?.imgsrc && item?.imgsrc.length > 0;
           const bgColor = FALLBACK_COLORS[index % FALLBACK_COLORS.length];
           return (
-            <Grid item xs={12} md={gridSize} key={index}>
+            <Grid xs={12} md={gridSize} key={index}>
               <Box
                 onClick={(e) => handelMenu({ menuname: "Collection", key: "Auto", value: "" }, { key: "collection", value: item.CollectionName }, {}, e, 0)}
                 sx={{

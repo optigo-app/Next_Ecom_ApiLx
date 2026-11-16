@@ -31,7 +31,7 @@ const CartPageSkeleton = () => {
       </Grid>
 
       {/* RIGHT SIDE */}
-      <Grid item size={{ xs: 12, md: 3 }}>
+      <Grid size={{ xs: 12, md: 3 }}>
         <div className='smr_cartskeltonRightSide'>
           <Skeleton
             className='smr_CartSkelton'

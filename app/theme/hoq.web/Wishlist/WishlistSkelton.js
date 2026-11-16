@@ -13,7 +13,7 @@ const SkeletonLoader = () => {
   return (
     <Grid container spacing={1} className="hoq_addwishlistSkeltonMainBox" marginBottom={"2rem"}>
       {skeletonArray.map((_, index) => (
-        <Grid item key={index} {...sizes}>
+        <Grid key={index} {...sizes}>
           <Card className='hoq_addwishlistSkelton'>
             <Skeleton
               className='hoq_addwishlistSkelton'

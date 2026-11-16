@@ -4,7 +4,7 @@
  * ====================================================================================================
  * To switch the local theme/brand/database, change ONLY this one line:
  */
-export const ACTIVE_THEME_KEY = "PROCATALOG";
+export const ACTIVE_THEME_KEY = "BELUXJEWEL";
 
 
 /**

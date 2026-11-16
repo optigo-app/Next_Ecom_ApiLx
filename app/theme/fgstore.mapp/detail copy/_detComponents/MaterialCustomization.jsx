@@ -74,7 +74,7 @@ const MaterialCustomization = ({
       <Box sx={{ width:'100%',  mt: 4 }}>
         <Grid container spacing={1}>
           {[...Array(4)].map((_, index) => (
-            <Grid item size={{xs:6, sm:6}} key={index}>
+            <Grid  size={{xs:6, sm:6}} key={index}>
               <Skeleton variant="rounded" width="100%" height={56} sx={{ borderRadius: '4px' }} />
             </Grid>
           ))}
@@ -92,7 +92,7 @@ const MaterialCustomization = ({
             <Grid container spacing={1}>
               
               {/* --- METAL TYPE --- */}
-              <Grid item size={{xs:6 ,  sm : 6}}
+              <Grid  size={{xs:6 ,  sm : 6}}
               
               >
                 <Box sx={containerStyle}>
@@ -133,7 +133,7 @@ const MaterialCustomization = ({
 
               {/* --- METAL COLOR --- */}
               {metalColorCombo?.length > 0 && storeInit?.IsMetalTypeWithColor === 1 && (
-                <Grid item size={{xs:6 ,  sm : 6}}>
+                <Grid  size={{xs:6 ,  sm : 6}}>
                   <Box sx={containerStyle}>
                     <label style={labelStyle} htmlFor="metal_c_select">
                       METAL COLOR:
@@ -173,7 +173,7 @@ const MaterialCustomization = ({
 
               {/* --- DIAMOND --- */}
               {storeInit?.IsDiamondCustomization === 1 && diaQcCombo?.length > 0 && diaList?.length > 0 && (
-                <Grid item size={{xs:6 ,  sm : 6}}>
+                <Grid  size={{xs:6 ,  sm : 6}}>
                   <Box sx={containerStyle}>
                     <label style={labelStyle}>
                       DIAMOND:
@@ -204,7 +204,7 @@ const MaterialCustomization = ({
 
               {/* --- COLOR STONE --- */}
               {storeInit?.IsCsCustomization === 1 && selectCsQc?.length > 0 && csList?.filter((ele) => ele?.D !== "MISC")?.length > 0 && (
-                <Grid item size={{xs:6 ,  sm : 6}}>
+                <Grid  size={{xs:6 ,  sm : 6}}>
                   <Box sx={containerStyle}>
                     <label style={labelStyle}>
                       COLOR STONE:
@@ -234,7 +234,7 @@ const MaterialCustomization = ({
 
               {/* --- SIZE --- */}
               {SizeSorting(SizeCombo?.rd)?.length > 0 && singleProd?.DefaultSize !== "" && (
-                <Grid item size={{xs:6 ,  sm : 6}}>
+                <Grid  size={{xs:6 ,  sm : 6}}>
                   <Box sx={containerStyle}>
                     <label style={labelStyle}>
                       SIZE:
@@ -379,7 +379,7 @@ export default MaterialCustomization;
 //             <Grid container spacing={1}>
               
 //               {/* --- METAL TYPE --- */}
-//               <Grid item size={{xs:6 ,  sm : 6}}
+//               <Grid  size={{xs:6 ,  sm : 6}}
               
 //               >
 //                 <Box sx={containerStyle}>
@@ -408,7 +408,7 @@ export default MaterialCustomization;
 
 //               {/* --- METAL COLOR --- */}
 //               {metalColorCombo?.length > 0 && storeInit?.IsMetalTypeWithColor === 1 && (
-//                 <Grid item size={{xs:6 ,  sm : 6}}>
+//                 <Grid  size={{xs:6 ,  sm : 6}}>
 //                   <Box sx={containerStyle}>
 //                     <label style={labelStyle} htmlFor="metal_c_select">
 //                       METAL COLOR:
@@ -437,7 +437,7 @@ export default MaterialCustomization;
 
 //               {/* --- DIAMOND --- */}
 //               {storeInit?.IsDiamondCustomization === 1 && diaQcCombo?.length > 0 && diaList?.length > 0 && (
-//                 <Grid item size={{xs:6 ,  sm : 6}}>
+//                 <Grid  size={{xs:6 ,  sm : 6}}>
 //                   <Box sx={containerStyle}>
 //                     <label style={labelStyle}>
 //                       DIAMOND:
@@ -459,7 +459,7 @@ export default MaterialCustomization;
 
 //               {/* --- COLOR STONE --- */}
 //               {storeInit?.IsCsCustomization === 1 && selectCsQc?.length > 0 && csList?.filter((ele) => ele?.D !== "MISC")?.length > 0 && (
-//                 <Grid item size={{xs:6 ,  sm : 6}}>
+//                 <Grid  size={{xs:6 ,  sm : 6}}>
 //                   <Box sx={containerStyle}>
 //                     <label style={labelStyle}>
 //                       COLOR STONE:
@@ -481,7 +481,7 @@ export default MaterialCustomization;
 
 //               {/* --- SIZE --- */}
 //               {SizeSorting(SizeCombo?.rd)?.length > 0 && singleProd?.DefaultSize !== "" && (
-//                 <Grid item size={{xs:6 ,  sm : 6}}>
+//                 <Grid  size={{xs:6 ,  sm : 6}}>
 //                   <Box sx={containerStyle}>
 //                     <label style={labelStyle}>
 //                       SIZE:
@@ -549,7 +549,7 @@ export default MaterialCustomization;
 //                         <Grid container spacing={1} className="fgstore_mapp_single_prod_customize_main">
 
 //                             {/* --- METAL TYPE --- */}
-//                             <Grid item size={{ xs: 6, sm: 6 }} sx={{ display: 'flex', flexDirection: 'column' }}>
+//                             <Grid  size={{ xs: 6, sm: 6 }} sx={{ display: 'flex', flexDirection: 'column' }}>
 //                                 <div className="fgstore_mapp_single_prod_customize" style={{ width: '100%', display: 'flex', flexDirection: 'column' }}>
 //                                     <label className="fgstore_mappmenuItemTimeEleveDeatil" style={{ marginBottom: '4px' }}>
 //                                         METAL TYPE:
@@ -584,7 +584,7 @@ export default MaterialCustomization;
 
 //                             {/* --- METAL COLOR --- */}
 //                             {metalColorCombo?.length > 0 && storeInit?.IsMetalTypeWithColor === 1 && (
-//                                 <Grid item size={{ xs: 6, sm: 6 }} sx={{ display: 'flex', flexDirection: 'column' }}>
+//                                 <Grid  size={{ xs: 6, sm: 6 }} sx={{ display: 'flex', flexDirection: 'column' }}>
 //                                     <div className="fgstore_mapp_single_prod_customize" style={{ width: '100%', display: 'flex', flexDirection: 'column' }}>
 //                                         <label
 //                                             className="fgstore_mappmenuItemTimeEleveDeatil"
@@ -625,7 +625,7 @@ export default MaterialCustomization;
 
 //                             {/* --- DIAMOND --- */}
 //                             {storeInit?.IsDiamondCustomization === 1 && diaQcCombo?.length > 0 && diaList?.length > 0 && (
-//                                 <Grid item size={{ xs: 6, sm: 6 }} sx={{ display: 'flex', flexDirection: 'column' }}>
+//                                 <Grid  size={{ xs: 6, sm: 6 }} sx={{ display: 'flex', flexDirection: 'column' }}>
 //                                     <div className="fgstore_mapp_single_prod_customize" style={{ width: '100%', display: 'flex', flexDirection: 'column' }}>
 //                                         <label className="fgstore_mappmenuItemTimeEleveDeatil" style={{ marginBottom: '4px' }}>
 //                                             DIAMOND:
@@ -648,7 +648,7 @@ export default MaterialCustomization;
 
 //                             {/* --- COLOR STONE --- */}
 //                             {storeInit?.IsCsCustomization === 1 && selectCsQc?.length > 0 && csList?.filter((ele) => ele?.D !== "MISC")?.length > 0 && (
-//                                 <Grid item size={{ xs: 6, sm: 6 }} sx={{ display: 'flex', flexDirection: 'column' }}>
+//                                 <Grid  size={{ xs: 6, sm: 6 }} sx={{ display: 'flex', flexDirection: 'column' }}>
 //                                     <div className="fgstore_mapp_single_prod_customize" style={{ width: '100%', display: 'flex', flexDirection: 'column' }}>
 //                                         <label className="fgstore_mappmenuItemTimeEleveDeatil" style={{ marginBottom: '4px' }}>
 //                                             COLOR STONE:
@@ -671,7 +671,7 @@ export default MaterialCustomization;
 
 //                             {/* --- SIZE --- */}
 //                             {SizeSorting(SizeCombo?.rd)?.length > 0 && singleProd?.DefaultSize !== "" && (
-//                                 <Grid item size={{ xs: 6, sm: 6 }} sx={{ display: 'flex', flexDirection: 'column' }}>
+//                                 <Grid  size={{ xs: 6, sm: 6 }} sx={{ display: 'flex', flexDirection: 'column' }}>
 //                                     <div className="fgstore_mapp_single_prod_customize" style={{ width: '100%', display: 'flex', flexDirection: 'column' }}>
 //                                         <label className="fgstore_mappmenuItemTimeEleveDeatil" style={{ marginBottom: '4px' }}>
 //                                             SIZE:
@@ -1249,7 +1249,7 @@ export default MaterialCustomization;
 //                         <Grid container spacing={1} className="fgstore_mapp_single_prod_customize_main">
 
 //                             {/* --- METAL TYPE --- */}
-//                             <Grid item size={{ xs: 6, sm: 6 }} sx={{ display: 'flex', flexDirection: 'column' }}>
+//                             <Grid  size={{ xs: 6, sm: 6 }} sx={{ display: 'flex', flexDirection: 'column' }}>
 //                                 <div className="fgstore_mapp_single_prod_customize" style={{ width: '100%', display: 'flex', flexDirection: 'column' }}>
 //                                     <label className="fgstore_mappmenuItemTimeEleveDeatil" style={{ marginBottom: '4px' }}>
 //                                         METAL TYPE:
@@ -1284,7 +1284,7 @@ export default MaterialCustomization;
 
 //                             {/* --- METAL COLOR --- */}
 //                             {metalColorCombo?.length > 0 && storeInit?.IsMetalTypeWithColor === 1 && (
-//                                 <Grid item size={{ xs: 6, sm: 6 }} sx={{ display: 'flex', flexDirection: 'column' }}>
+//                                 <Grid  size={{ xs: 6, sm: 6 }} sx={{ display: 'flex', flexDirection: 'column' }}>
 //                                     <div className="fgstore_mapp_single_prod_customize" style={{ width: '100%', display: 'flex', flexDirection: 'column' }}>
 //                                         <label
 //                                             className="fgstore_mappmenuItemTimeEleveDeatil"
@@ -1325,7 +1325,7 @@ export default MaterialCustomization;
 
 //                             {/* --- DIAMOND --- */}
 //                             {storeInit?.IsDiamondCustomization === 1 && diaQcCombo?.length > 0 && diaList?.length > 0 && (
-//                                 <Grid item size={{ xs: 6, sm: 6 }} sx={{ display: 'flex', flexDirection: 'column' }}>
+//                                 <Grid  size={{ xs: 6, sm: 6 }} sx={{ display: 'flex', flexDirection: 'column' }}>
 //                                     <div className="fgstore_mapp_single_prod_customize" style={{ width: '100%', display: 'flex', flexDirection: 'column' }}>
 //                                         <label className="fgstore_mappmenuItemTimeEleveDeatil" style={{ marginBottom: '4px' }}>
 //                                             DIAMOND:
@@ -1348,7 +1348,7 @@ export default MaterialCustomization;
 
 //                             {/* --- COLOR STONE --- */}
 //                             {storeInit?.IsCsCustomization === 1 && selectCsQc?.length > 0 && csList?.filter((ele) => ele?.D !== "MISC")?.length > 0 && (
-//                                 <Grid item size={{ xs: 6, sm: 6 }} sx={{ display: 'flex', flexDirection: 'column' }}>
+//                                 <Grid  size={{ xs: 6, sm: 6 }} sx={{ display: 'flex', flexDirection: 'column' }}>
 //                                     <div className="fgstore_mapp_single_prod_customize" style={{ width: '100%', display: 'flex', flexDirection: 'column' }}>
 //                                         <label className="fgstore_mappmenuItemTimeEleveDeatil" style={{ marginBottom: '4px' }}>
 //                                             COLOR STONE:
@@ -1371,7 +1371,7 @@ export default MaterialCustomization;
 
 //                             {/* --- SIZE --- */}
 //                             {SizeSorting(SizeCombo?.rd)?.length > 0 && singleProd?.DefaultSize !== "" && (
-//                                 <Grid item size={{ xs: 6, sm: 6 }} sx={{ display: 'flex', flexDirection: 'column' }}>
+//                                 <Grid  size={{ xs: 6, sm: 6 }} sx={{ display: 'flex', flexDirection: 'column' }}>
 //                                     <div className="fgstore_mapp_single_prod_customize" style={{ width: '100%', display: 'flex', flexDirection: 'column' }}>
 //                                         <label className="fgstore_mappmenuItemTimeEleveDeatil" style={{ marginBottom: '4px' }}>
 //                                             SIZE:

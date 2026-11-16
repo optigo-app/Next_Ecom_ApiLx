@@ -83,7 +83,7 @@ const AddressCard = ({
                   borderRadius: "1px",
                   px: 1,
                 }}
-        className="stickyPill"
+                className="stickyPill"
 
               />
             )}
@@ -133,7 +133,7 @@ const AddressCard = ({
               transition: "all .25s ease",
               borderRadius: "30px",
             }}
-        className="stickyPill"
+            className="stickyPill"
           >
             Edit
           </Button>
@@ -153,9 +153,9 @@ const AddressCard = ({
                 py: 0.8,
                 borderRadius: "30px",
                 transition: "all .25s ease",
-             
+
               }}
-        className="stickyPill"
+              className="stickyPill"
             >
               Delete
             </Button>
@@ -198,7 +198,7 @@ export default AddressCard;
 
 //     return (
 //         <>
-//             <Grid item xs={12} sm={6} md={4} lg={3} style={{ marginBottom: '20px', minHeight: '19rem' }}>
+//             <Grid  xs={12} sm={6} md={4} lg={3} style={{ marginBottom: '20px', minHeight: '19rem' }}>
 //                 <Card
 //                     onMouseEnter={handleMouseEnter}
 //                     onMouseLeave={handleMouseLeave}

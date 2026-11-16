@@ -207,7 +207,7 @@ export default function DetailPageSkeleton({ imageUrl, title, price, CurrencyCod
 
         {/* 4. Attribute Grid Cards */}
         <Grid container spacing={1} sx={{ mt: 1 }}>
-          <Grid item size={{ xs: 6, sm: 6 }}>
+          <Grid size={{ xs: 6, sm: 6 }}>
             <Box sx={{ border: "1px solid #e0e0e0", borderRadius: "4px", p: "8px 12px", backgroundColor: "#fff" }}>
               <Typography sx={{ fontSize: "0.65rem", color: "#9e9e9e", textTransform: "uppercase", letterSpacing: "0.5px" }}>
                 METAL TYPE:
@@ -221,7 +221,7 @@ export default function DetailPageSkeleton({ imageUrl, title, price, CurrencyCod
               )}
             </Box>
           </Grid>
-          <Grid item size={{ xs: 6, sm: 6 }}>
+          <Grid size={{ xs: 6, sm: 6 }}>
             <Box sx={{ border: "1px solid #e0e0e0", borderRadius: "4px", p: "8px 12px", backgroundColor: "#fff" }}>
               <Typography sx={{ fontSize: "0.65rem", color: "#9e9e9e", textTransform: "uppercase", letterSpacing: "0.5px" }}>
                 METAL COLOR:
@@ -235,7 +235,7 @@ export default function DetailPageSkeleton({ imageUrl, title, price, CurrencyCod
               )}
             </Box>
           </Grid>
-          <Grid item size={{ xs: 6, sm: 6 }}>
+          <Grid size={{ xs: 6, sm: 6 }}>
             <Box sx={{ border: "1px solid #e0e0e0", borderRadius: "4px", p: "8px 12px", backgroundColor: "#fff" }}>
               <Typography sx={{ fontSize: "0.65rem", color: "#9e9e9e", textTransform: "uppercase", letterSpacing: "0.5px" }}>
                 DIAMOND:

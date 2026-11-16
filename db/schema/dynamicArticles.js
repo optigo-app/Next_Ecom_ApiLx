@@ -60,6 +60,9 @@ function ensureArticleIdColumn(db, tableName) {
   if (!columns.has("articleid")) {
     db.exec(`ALTER TABLE "${cleanTable}" ADD COLUMN ArticleId INTEGER`);
   }
+  if (!columns.has("isdesignbaseweb")) {
+    db.exec(`ALTER TABLE "${cleanTable}" ADD COLUMN IsDesignBaseWeb INTEGER DEFAULT 0`);
+  }
 }
 
 /**
@@ -130,6 +133,7 @@ export function ensureDynamicArticleTable(db, tableName) {
       Remarks TEXT,
       InStock INTEGER DEFAULT 0,
       StockBarcode TEXT,
+      IsDesignBaseWeb INTEGER DEFAULT 0,
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
       updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
       CONSTRAINT uq_${cleanTable}_article UNIQUE (ArticleNo)

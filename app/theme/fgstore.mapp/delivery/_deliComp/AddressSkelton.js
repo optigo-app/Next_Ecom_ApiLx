@@ -8,7 +8,7 @@ const SkeletonLoader = () => {
     <Box sx={{ width: "100%", mt: 2 }}>
       <Grid container spacing={2}>
         {skeletonArray.map((_, index) => (
-          <Grid item size={{ sm: 12, xs: 12 }} key={index}>
+          <Grid size={{ sm: 12, xs: 12 }} key={index}>
             <Card
               sx={{
                 borderRadius: 3,

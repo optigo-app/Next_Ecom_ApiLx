@@ -231,7 +231,8 @@ export function getProductArticle(db, options = {}) {
             COALESCE(a.CartQuantity, 0) AS CartQuantity,
             COALESCE(a.Remarks, '') AS Remarks,
             COALESCE(a.InStock, 0) AS InStock,
-            COALESCE(a.StockBarcode, '') AS StockBarcode
+            COALESCE(a.StockBarcode, '') AS StockBarcode,
+            COALESCE(a.IsDesignBaseWeb, 0) AS IsDesignBaseWeb
           FROM "${articleTable}" a
           INNER JOIN MetalCTE m ON a.ArticleNo = m.ArticleNo COLLATE NOCASE AND m.rn = 1
           WHERE a.${condition.whereClause}
@@ -297,7 +298,8 @@ export function getProductArticle(db, options = {}) {
             COALESCE(CartQuantity, 0) AS CartQuantity,
             COALESCE(Remarks, '') AS Remarks,
             COALESCE(InStock, 0) AS InStock,
-            COALESCE(StockBarcode, '') AS StockBarcode
+            COALESCE(StockBarcode, '') AS StockBarcode,
+            COALESCE(IsDesignBaseWeb, 0) AS IsDesignBaseWeb
           FROM "${articleTable}"
           WHERE ${condition.whereClause}
           ORDER BY ArticleId ASC, id ASC

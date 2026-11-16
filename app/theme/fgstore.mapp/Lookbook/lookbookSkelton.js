@@ -16,7 +16,7 @@ const LookbookSkeleton = ({ param }) => {
                 //     }}
                 // >
                 //     <Grid container spacing={2}>
-                //         <Grid item xs={12} md={6} >
+                //         <Grid  xs={12} md={6} >
                 //             <Skeleton variant="rectangular" width="100%" height={600} animation="wave" sx={{ bgcolor: 'var(--skeleton-bg-color)' }} />
                 //             <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
                 //                 {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((_, index) => (
@@ -33,7 +33,7 @@ const LookbookSkeleton = ({ param }) => {
                 //         </Grid>
 
                 //         {/* Product Details Section */}
-                //         <Grid item xs={12} md={6}>
+                //         <Grid  xs={12} md={6}>
                 //             <Box sx={{ p: 2 }}>
                 //                 <Skeleton width={200} height={40} animation="wave" sx={{ bgcolor: 'var(--skeleton-bg-color)' }} />
                 //                 <Divider sx={{ my: 2 }} />
@@ -69,7 +69,7 @@ const LookbookSkeleton = ({ param }) => {
 
                     <Grid container spacing={4}>
                         {/* Left Side - Image and Thumbnails */}
-                        <Grid item size={{xs:12, md:7}}>
+                        <Grid size={{ xs: 12, md: 7 }}>
                             <Skeleton variant="rectangular" width="100%" height={isMobile ? 300 : 500} />
 
                             {/* Thumbnails */}
@@ -81,7 +81,7 @@ const LookbookSkeleton = ({ param }) => {
                         </Grid>
 
                         {/* Right Side - Product Details */}
-                        <Grid item size={{xs:12, md:5}}>
+                        <Grid size={{ xs: 12, md: 5 }}>
                             <Skeleton variant="text" width="60%" height={40} />
 
                             {/* Product List */}
@@ -116,7 +116,7 @@ const LookbookSkeleton = ({ param }) => {
                 >
                     <Grid container spacing={2}>
                         {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((_, index) => (
-                            <Grid item size={{xs:12, md:6 ,sm:6}} key={index}>
+                            <Grid size={{ xs: 12, md: 6, sm: 6 }} key={index}>
                                 <Box
                                     sx={{
                                         borderRadius: '8px',
@@ -148,7 +148,7 @@ const LookbookSkeleton = ({ param }) => {
                 >
                     <Grid container spacing={2}>
                         {[1, 2, 3, 4].map((_, index) => (
-                            <Grid item size={{xs:12, md:12 ,sm:12}} key={index}>
+                            <Grid size={{ xs: 12, md: 12, sm: 12 }} key={index}>
                                 <Box
                                     sx={{
                                         borderRadius: '8px',

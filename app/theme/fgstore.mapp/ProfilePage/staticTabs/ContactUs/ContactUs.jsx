@@ -176,7 +176,7 @@ const ContactUs = ({ open, onClose }) => {
               Get in Touch
             </Typography>
             <Grid container spacing={2}>
-              <Grid item size={{ xs: 12 }} sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+              <Grid size={{ xs: 12 }} sx={{ display: "flex", alignItems: "center", gap: 2 }}>
                 <Box sx={{ bgcolor: "rgba(0,0,0,0.05)", p: 1, borderRadius: "50%", display: "flex" }}>
                   <LocationOnIcon fontSize="small" sx={{
                     color: COLORS.primary
@@ -186,7 +186,7 @@ const ContactUs = ({ open, onClose }) => {
                   {ActiveAddress.address}
                 </Typography>
               </Grid>
-              <Grid item size={{ xs: 12 }} sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+              <Grid size={{ xs: 12 }} sx={{ display: "flex", alignItems: "center", gap: 2 }}>
                 <Box sx={{ bgcolor: "rgba(0,0,0,0.05)", p: 1, borderRadius: "50%", display: "flex" }}>
                   <PhoneIcon fontSize="small" sx={{
                     color: COLORS.primary
@@ -196,7 +196,7 @@ const ContactUs = ({ open, onClose }) => {
                   {ActiveAddress.phone}
                 </Typography>
               </Grid>
-              <Grid item size={{ xs: 12 }} sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+              <Grid size={{ xs: 12 }} sx={{ display: "flex", alignItems: "center", gap: 2 }}>
                 <Box sx={{ bgcolor: "rgba(0,0,0,0.05)", p: 1, borderRadius: "50%", display: "flex" }}>
                   <EmailIcon fontSize="small" sx={{
                     color: COLORS.primary
@@ -217,7 +217,7 @@ const ContactUs = ({ open, onClose }) => {
               Send us a Message
             </Typography>
             <Grid container spacing={2}>
-              <Grid item size={{ xs: 12 }}>
+              <Grid size={{ xs: 12 }}>
                 <TextField
                   fullWidth
                   label="Full Name"
@@ -230,7 +230,7 @@ const ContactUs = ({ open, onClose }) => {
                   size="small"
                 />
               </Grid>
-              <Grid item size={{ xs: 12 }}>
+              <Grid size={{ xs: 12 }}>
                 <TextField
                   fullWidth
                   label="Company Name"
@@ -243,7 +243,7 @@ const ContactUs = ({ open, onClose }) => {
                   size="small"
                 />
               </Grid>
-              <Grid item size={{ xs: 12 }}>
+              <Grid size={{ xs: 12 }}>
                 <TextField
                   fullWidth
                   label="Email Address"
@@ -256,7 +256,7 @@ const ContactUs = ({ open, onClose }) => {
                   size="small"
                 />
               </Grid>
-              <Grid item size={{ xs: 12 }}>
+              <Grid size={{ xs: 12 }}>
                 <TextField
                   fullWidth
                   label="Phone Number"
@@ -273,7 +273,7 @@ const ContactUs = ({ open, onClose }) => {
                   size="small"
                 />
               </Grid>
-              <Grid item size={{ xs: 12 }}>
+              <Grid size={{ xs: 12 }}>
                 <TextField
                   fullWidth
                   label="Subject"
@@ -286,7 +286,7 @@ const ContactUs = ({ open, onClose }) => {
                   size="small"
                 />
               </Grid>
-              <Grid item size={{ xs: 12 }}>
+              <Grid size={{ xs: 12 }}>
                 <TextField
                   fullWidth
                   label="Message"
@@ -300,7 +300,7 @@ const ContactUs = ({ open, onClose }) => {
                   inputProps={{ style: { fontSize: "16px" } }}
                 />
               </Grid>
-              <Grid item size={{ xs: 12 }} sx={{ mt: 2 }}>
+              <Grid size={{ xs: 12 }} sx={{ mt: 2 }}>
                 <Button
                   fullWidth
                   variant="contained"

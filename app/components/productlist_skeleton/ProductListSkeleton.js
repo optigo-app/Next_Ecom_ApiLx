@@ -10,7 +10,7 @@ const ProductListSkeleton = ({ fromPage }) => {
     return (
         <div className={fromPage === "Prodlist" ? "skeltonMainDiv_prodlistPage" : 'skeltonMainDiv'}>
             <Grid container spacing={2} width={"100% !important"}>
-                {fromPage !== "Prodlist" && <Grid  size={{ xs: 12 }}>
+                {fromPage !== "Prodlist" && <Grid size={{ xs: 12 }}>
                     <Card className='skeltoncards' style={{ width: '100%' }}>
                         <CardContent style={{ display: 'flex', alignItems: 'center' }}>
                             <div style={{ flex: 1 }} className='topSkeletonMain'>
@@ -42,7 +42,7 @@ const ProductListSkeleton = ({ fromPage }) => {
                         </CardContent>
                     </Card>
                 </Grid>}
-                <Grid item size={{ xs: isDesktop ? 12 : (fromPage === "Prodlist" ? 12 : 9) }} container spacing={2}>
+                <Grid size={{ xs: isDesktop ? 12 : (fromPage === "Prodlist" ? 12 : 9) }} container spacing={2}>
                     {cardsArray.map((item) => (
                         <Grid size={{ xs: isMobile ? 6 : 4 }} key={item}>
                             <Card className={fromPage === "Prodlist" ? "skeltoncards_listpage" : 'skeltoncards'}>

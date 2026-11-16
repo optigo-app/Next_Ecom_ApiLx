@@ -99,11 +99,11 @@ const JewelryProductGrid = ({
   loginUserDetail,
   productListData,
   isFiltering,
-  handleMoveToDetail = () => {},
+  handleMoveToDetail = () => { },
   showFilter,
   filter,
   filterData,
-  handleCartandWish = () => {},
+  handleCartandWish = () => { },
   cartArr,
   wishArr,
 }) => {
@@ -526,7 +526,7 @@ const ProductCard = ({
         {/* ARTICLE NO (LEFT) AND NWT (RIGHT) ROW */}
         <Box sx={{ mt: 1 }}>
           <Grid container spacing={0.8}>
-            <Grid item size={{ xs: 6 }}>
+            <Grid size={{ xs: 6 }}>
               <Box sx={{ display: "flex", alignItems: "center" }}>
                 <Typography
                   variant="body2"
@@ -543,7 +543,7 @@ const ProductCard = ({
               </Box>
             </Grid>
 
-            <Grid item size={{ xs: 6 }}>
+            <Grid size={{ xs: 6 }}>
               <Box
                 sx={{
                   display: "flex",
@@ -577,7 +577,7 @@ const ProductCard = ({
             </Grid>
 
             {isMobile && (
-              <Grid item size={{ xs: 12, sm: 12 }} position={"relative"}>
+              <Grid size={{ xs: 12, sm: 12 }} position={"relative"}>
                 <MobileCartToggleButton
                   productData={productData}
                   cartArr={cartArr}

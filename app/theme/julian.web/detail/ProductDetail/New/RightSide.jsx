@@ -179,35 +179,35 @@ const RightSide = ({
       label: "Other",
       cost: activeArticle
         ? getCost(activeArticle?.TotalOtherCost) +
-          getCost(activeArticle?.TotalSettingCost) +
-          getCost(activeArticle?.TotalDiamondhandlingCost) +
-          getCost(activeArticle?.TotalCSSettingCost) +
-          getCost(activeArticle?.TotalDiaSettingCost)
+        getCost(activeArticle?.TotalSettingCost) +
+        getCost(activeArticle?.TotalDiamondhandlingCost) +
+        getCost(activeArticle?.TotalCSSettingCost) +
+        getCost(activeArticle?.TotalDiaSettingCost)
         : getCost(singleProd1?.Other_Cost ?? singleProd?.Other_Cost) +
-          getCost(singleProd1?.Size_MarkUp ?? singleProd?.Size_MarkUp) +
-          getCost(
-            singleProd1?.DesignMarkUpAmount ?? singleProd?.DesignMarkUpAmount,
-          ) +
-          getCost(
-            singleProd1?.ColorStone_SettingCost ??
-              singleProd?.ColorStone_SettingCost,
-          ) +
-          getCost(
-            singleProd1?.Diamond_SettingCost ??
-              singleProd?.Diamond_SettingCost,
-          ) +
-          getCost(
-            singleProd1?.Misc_SettingCost ?? singleProd?.Misc_SettingCost,
-          ),
+        getCost(singleProd1?.Size_MarkUp ?? singleProd?.Size_MarkUp) +
+        getCost(
+          singleProd1?.DesignMarkUpAmount ?? singleProd?.DesignMarkUpAmount,
+        ) +
+        getCost(
+          singleProd1?.ColorStone_SettingCost ??
+          singleProd?.ColorStone_SettingCost,
+        ) +
+        getCost(
+          singleProd1?.Diamond_SettingCost ??
+          singleProd?.Diamond_SettingCost,
+        ) +
+        getCost(
+          singleProd1?.Misc_SettingCost ?? singleProd?.Misc_SettingCost,
+        ),
     },
   ].filter((item) => isLoading || item.cost !== 0);
 
-  console.log(activeArticle ,
+  console.log(activeArticle,
     activeArticle?.UnitCostWithmarkup ??
-                      activeArticle?.TotalUnitCost ??
-                      singleProd?.UnitCostWithmarkup ??
-                      singleProd?.UnitCostWithMarkUp ??
-                      0
+    activeArticle?.TotalUnitCost ??
+    singleProd?.UnitCostWithmarkup ??
+    singleProd?.UnitCostWithMarkUp ??
+    0
   )
 
   return (
@@ -350,10 +350,10 @@ const RightSide = ({
                 <span>
                   {formatter(
                     activeArticle?.UnitCostWithmarkup ??
-                      activeArticle?.TotalUnitCost ??
-                      singleProd?.UnitCostWithmarkup ??
-                      singleProd?.UnitCostWithMarkUp ??
-                      0,
+                    activeArticle?.TotalUnitCost ??
+                    singleProd?.UnitCostWithmarkup ??
+                    singleProd?.UnitCostWithMarkUp ??
+                    0,
                   )}
                 </span>
               )}
@@ -788,7 +788,7 @@ const RightSide = ({
 
           {/* ===================== SIZE =====================
                                 {SizeSorting?.length > 0 && (
-                                    <Grid item size={{
+                                    <Grid  size={{
                                     xs={12} sm={6}}>
                                         <Typography sx={{ fontSize: "14px", color: "#666", mb: 0.5 }}>
                                             Size :
@@ -2378,7 +2378,7 @@ export default RightSide;
 
 //           {/* ===================== SIZE =====================
 //                                 {SizeSorting?.length > 0 && (
-//                                     <Grid item size={{
+//                                     <Grid  size={{
 //                                     xs={12} sm={6}}>
 //                                         <Typography sx={{ fontSize: "14px", color: "#666", mb: 0.5 }}>
 //                                             Size :

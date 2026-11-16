@@ -217,7 +217,7 @@ export default function DetailPageSkeleton({ imageUrl, title, price, CurrencyCod
             ))}
 
             {shouldRenderPlaceholder && (
-              <Grid item size={{ xs: 6 }}>
+              <Grid size={{ xs: 6 }}>
                 <Box
                   sx={{
                     position: "relative",
@@ -331,70 +331,70 @@ export default function DetailPageSkeleton({ imageUrl, title, price, CurrencyCod
                   pb: 2,
                 }}
               >
-              {/* Metal Purity */}
-              <Grid item size={{ xs: 6 }}>
-                <Typography sx={{ fontSize: "14px", color: "#666" }}>
-                  Metal Purity
-                </Typography>
-                <Typography
-                  sx={{
-                    fontSize: "15px",
-                    fontWeight: 600,
-                    textTransform: "uppercase",
-                    minHeight: "22px",
-                  }}
-                >
-                  <Skeleton variant="text" width={60} />
-                </Typography>
-              </Grid>
+                {/* Metal Purity */}
+                <Grid size={{ xs: 6 }}>
+                  <Typography sx={{ fontSize: "14px", color: "#666" }}>
+                    Metal Purity
+                  </Typography>
+                  <Typography
+                    sx={{
+                      fontSize: "15px",
+                      fontWeight: 600,
+                      textTransform: "uppercase",
+                      minHeight: "22px",
+                    }}
+                  >
+                    <Skeleton variant="text" width={60} />
+                  </Typography>
+                </Grid>
 
-              {/* Metal Color */}
-              <Grid item size={{ xs: 6 }}>
-                <Typography sx={{ fontSize: "14px", color: "#666" }}>
-                  Metal Color
-                </Typography>
-                <Typography sx={{ fontSize: "15px", fontWeight: 600, minHeight: "22px" }}>
-                  <Skeleton variant="text" width={60} />
-                </Typography>
-              </Grid>
+                {/* Metal Color */}
+                <Grid size={{ xs: 6 }}>
+                  <Typography sx={{ fontSize: "14px", color: "#666" }}>
+                    Metal Color
+                  </Typography>
+                  <Typography sx={{ fontSize: "15px", fontWeight: 600, minHeight: "22px" }}>
+                    <Skeleton variant="text" width={60} />
+                  </Typography>
+                </Grid>
 
-              {/* Diamond Quality */}
-              <Grid item size={{ xs: 6 }}>
-                <Typography sx={{ fontSize: "14px", color: "#666" }}>
-                  Diamond Quality
-                </Typography>
-                <Typography sx={{ fontSize: "15px", fontWeight: 600, minHeight: "22px" }}>
-                  <Skeleton variant="text" width={80} />
-                </Typography>
-              </Grid>
+                {/* Diamond Quality */}
+                <Grid size={{ xs: 6 }}>
+                  <Typography sx={{ fontSize: "14px", color: "#666" }}>
+                    Diamond Quality
+                  </Typography>
+                  <Typography sx={{ fontSize: "15px", fontWeight: 600, minHeight: "22px" }}>
+                    <Skeleton variant="text" width={80} />
+                  </Typography>
+                </Grid>
 
-              {/* Diamond Origin */}
-              <Grid item size={{ xs: 6 }}>
-                <Typography sx={{ fontSize: "14px", color: "#666" }}>
-                  Diamond Origin
-                </Typography>
-                <Typography sx={{ fontSize: "15px", fontWeight: 600, minHeight: "22px" }}>
-                  <Skeleton variant="text" width={80} />
-                </Typography>
-              </Grid>
+                {/* Diamond Origin */}
+                <Grid size={{ xs: 6 }}>
+                  <Typography sx={{ fontSize: "14px", color: "#666" }}>
+                    Diamond Origin
+                  </Typography>
+                  <Typography sx={{ fontSize: "15px", fontWeight: 600, minHeight: "22px" }}>
+                    <Skeleton variant="text" width={80} />
+                  </Typography>
+                </Grid>
 
-              {/* Net Wt */}
-              <Grid item size={{ xs: 6 }}>
-                <Typography sx={{ fontSize: "14px", color: "#666" }}>
-                  Net Wt
-                </Typography>
-                <Typography sx={{ fontSize: "15px", fontWeight: 600, minHeight: "22px" }}>
-                  {nwt ? (
-                    Number(nwt).toFixed(3)
-                  ) : (
-                    <Skeleton variant="text" width={50} />
-                  )}
-                </Typography>
+                {/* Net Wt */}
+                <Grid size={{ xs: 6 }}>
+                  <Typography sx={{ fontSize: "14px", color: "#666" }}>
+                    Net Wt
+                  </Typography>
+                  <Typography sx={{ fontSize: "15px", fontWeight: 600, minHeight: "22px" }}>
+                    {nwt ? (
+                      Number(nwt).toFixed(3)
+                    ) : (
+                      <Skeleton variant="text" width={50} />
+                    )}
+                  </Typography>
+                </Grid>
               </Grid>
-            </Grid>
-          </Box>
+            </Box>
 
-          {/* Customize Design Button */}
+            {/* Customize Design Button */}
             <Button
               fullWidth
               variant="outlined"

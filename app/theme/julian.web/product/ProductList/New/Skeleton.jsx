@@ -75,7 +75,7 @@ export const DetailSkeleton = () => {
             {Array(4)
                 .fill(null)
                 .map((img, index) => (
-                    <Grid item key={index}
+                    <Grid key={index}
                         size={{
                             xs: 6,
                             sm: 6,

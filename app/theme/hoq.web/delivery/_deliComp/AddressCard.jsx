@@ -32,7 +32,7 @@ const AddressCard = ({ address, index, handleOpen, handleDeleteClick, handleDefa
     };
 
     return (
-        <Grid item size={{ xs: 12, sm: 6, md: 4, lg: 3 }}>
+        <Grid size={{ xs: 12, sm: 6, md: 4, lg: 3 }}>
             <Card
                 onMouseEnter={handleMouseEnter}
                 onMouseLeave={handleMouseLeave}

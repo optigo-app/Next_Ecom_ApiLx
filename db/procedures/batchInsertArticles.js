@@ -99,6 +99,7 @@ export function batchInsertArticles(db, rawPayload = [], options = {}, tableName
       Remarks,
       InStock,
       StockBarcode,
+      IsDesignBaseWeb,
       updated_at
     ) VALUES (
       @autocode,
@@ -156,6 +157,7 @@ export function batchInsertArticles(db, rawPayload = [], options = {}, tableName
       @Remarks,
       @InStock,
       @StockBarcode,
+      @IsDesignBaseWeb,
       CURRENT_TIMESTAMP
     )
     ON CONFLICT(ArticleNo) DO UPDATE SET
@@ -213,6 +215,7 @@ export function batchInsertArticles(db, rawPayload = [], options = {}, tableName
       Remarks = excluded.Remarks,
       InStock = excluded.InStock,
       StockBarcode = excluded.StockBarcode,
+      IsDesignBaseWeb = excluded.IsDesignBaseWeb,
       updated_at = CURRENT_TIMESTAMP
   `);
 
@@ -278,6 +281,7 @@ export function batchInsertArticles(db, rawPayload = [], options = {}, tableName
         Remarks: art.Remarks != null ? String(art.Remarks) : "",
         InStock: art.InStock != null ? Number(art.InStock) : 0,
         StockBarcode: art.StockBarcode != null ? String(art.StockBarcode) : "",
+        IsDesignBaseWeb: Number(art.IsDesignBaseWeb ?? art.isDesignBaseWeb ?? 0) === 1 ? 1 : 0,
       });
     }
   });

@@ -16,7 +16,8 @@ import { getCartWishKey } from "@/app/(core)/utils/API/GetCount/GetCountAPI";
 import { formatRedirectTitleLine, formatTitleLine } from "@/app/(core)/utils/Glob_Functions/GlobalFunction";
 import { StockItemApi } from "@/app/(core)/utils/API/StockItemAPI/StockItemApi";
 import { DesignSetListAPI } from "@/app/(core)/utils/API/DesignSetListAPI/DesignSetListAPI";
-import { saveRecentlyViewedDesign, fetchRecentlyViewedDesigns } from "@/app/(core)/utils/sqlite/recentlyViewedActions";
+import { SaveWebsiteAnalytics } from "@/app/(core)/utils/API/SaveWebsiteAnalytics/SaveWebsiteAnalytics";
+import { saveRecentlyViewedDesign, fetchRecentlyViewedDesigns, resolveCurrentCustomerId } from "@/app/(core)/utils/sqlite/recentlyViewedActions";
 import useGlobalPreventSave from "@/app/(core)/utils/Glob_Functions/useGlobalPreventSave";
 import { useBroadcaster } from "@/app/(core)/contexts/BoardCastContext";
 import { useSyncDataStore } from "@/app/(core)/hooks/useStore";
@@ -171,31 +172,41 @@ export function useProductDetail({ storeinit, searchParams, params }) {
   }, []);
 
   // ── Customer-Wise SQLite Recently Viewed Designs ─────────────────────────
+  const lastRecentlyViewedKeyRef = useRef(null);
+  const analyticsSentKeyRef = useRef(null);
+
   useEffect(() => {
     const activeDesignNo = singleProd?.designno || initialDecodeUrl?.b || initialMockProd?.designno;
     const activeAutoCode = singleProd?.autocode || initialDecodeUrl?.a || initialMockProd?.autocode;
+    const customerId = resolveCurrentCustomerId(loginUserDetail);
 
-    if (activeDesignNo) {
-      saveRecentlyViewedDesign({
-        designno: activeDesignNo,
-        autocode: activeAutoCode,
-        loginUserDetail,
+    if (!activeDesignNo || !customerId) return;
+
+    const viewKey = `${customerId}:${activeDesignNo}`;
+    if (lastRecentlyViewedKeyRef.current === viewKey) return;
+    lastRecentlyViewedKeyRef.current = viewKey;
+
+    saveRecentlyViewedDesign({
+      customerId,
+      designno: activeDesignNo,
+      autocode: activeAutoCode,
+      loginUserDetail,
+    })
+      .then(() => {
+        return fetchRecentlyViewedDesigns({
+          customerId,
+          currentDesignno: activeDesignNo,
+          loginUserDetail,
+          storeInit: storeinit || storeInit,
+        });
       })
-        .then(() => {
-          return fetchRecentlyViewedDesigns({
-            currentDesignno: activeDesignNo,
-            loginUserDetail,
-            storeInit,
-          });
-        })
-        .then((recentList) => {
-          if (Array.isArray(recentList)) {
-            setRecentlyViewedArr(recentList);
-          }
-        })
-        .catch((err) => console.warn("[RecentlyViewed] SQLite error:", err));
-    }
-  }, [singleProd?.designno, initialDecodeUrl?.b, initialMockProd?.designno, loginUserDetail, storeInit]);
+      .then((recentList) => {
+        if (Array.isArray(recentList)) {
+          setRecentlyViewedArr(recentList);
+        }
+      })
+      .catch((err) => console.warn("[RecentlyViewed] SQLite error:", err));
+  }, [singleProd?.designno, initialDecodeUrl?.b, initialMockProd?.designno, loginUserDetail]);
 
   useEffect(() => {
     if (initialDecodeUrl && Object.keys(initialDecodeUrl).length > 0) {
@@ -529,8 +540,14 @@ export function useProductDetail({ storeinit, searchParams, params }) {
     );
   }, [customizationDetail?.ArticleNo, customizationDetail?.autocode, singleProd?.ArticleNo, singleProd?.autocode, singleProd?.designno, loginUserDetail?.isalbumlogin]);
 
+  const isDesignBaseWeb =
+    rd1Data?.length > 0 &&
+    Number((customizationDetail ?? rd1Data[0])?.IsDesignBaseWeb) === 1;
+
   const handleCart = async (cartFlag) => {
     setIsCartBtnLoading(true);
+    // Design-based products ignore the article variant; the selected dropdown values are sent instead.
+    const cartCustomization = isDesignBaseWeb ? null : customizationDetail;
     const metal =
       metalTypeCombo?.find((ele) => {
         return ele?.metaltype == metalType;
@@ -559,86 +576,86 @@ export function useProductDetail({ storeinit, searchParams, params }) {
 
     const prodObj = {
       autocode:
-        customizationDetail?.autocode ||
+        cartCustomization?.autocode ||
         singleProd1?.autocode ||
         singleProd?.autocode,
-      StockBarcode: customizationDetail?.StockBarcode || singleProd1?.StockBarcode || singleProd?.StockBarcode || "",
-      Metalid: customizationDetail?.MetalTypeId || metal?.Metalid,
+      StockBarcode: cartCustomization?.StockBarcode || singleProd1?.StockBarcode || singleProd?.StockBarcode || "",
+      Metalid: cartCustomization?.MetalTypeId || metal?.Metalid,
       MetalColorId:
-        customizationDetail?.MetalColorId ||
+        cartCustomization?.MetalColorId ||
         mcArr?.id ||
         singleProd?.MetalColorid,
       DiaQCid:
-        customizationDetail?.DiaQCid ||
+        cartCustomization?.DiaQCid ||
         `${dia?.QualityId ?? 0},${dia?.ColorId ?? 0}`,
       CsQCid:
-        customizationDetail?.CsQCid ||
+        cartCustomization?.CsQCid ||
         `${cs?.QualityId ?? 0},${cs?.ColorId ?? 0}`,
-      Size: sizeData ?? customizationDetail?.Size ?? singleProd?.DefaultSize,
+      Size: sizeData ?? cartCustomization?.Size ?? singleProd?.DefaultSize,
       Unitcost:
-        customizationDetail?.TotalUnitCost ||
+        cartCustomization?.TotalUnitCost ||
         singleProd1?.UnitCost ||
         singleProd?.UnitCost,
       markup:
-        customizationDetail?.MarkUp ||
+        cartCustomization?.MarkUp ||
         singleProd1?.DesignMarkUp ||
         singleProd?.DesignMarkUp,
       UnitCostWithmarkup:
-        customizationDetail?.UnitCostWithmarkup ||
-        customizationDetail?.TotalUnitCost ||
+        cartCustomization?.UnitCostWithmarkup ||
+        cartCustomization?.TotalUnitCost ||
         singleProd1?.UnitCostWithMarkUp ||
         singleProd?.UnitCostWithMarkUp,
       Remark: "",
       Metal_Cost:
-        customizationDetail?.TotalMetalCost ||
+        cartCustomization?.TotalMetalCost ||
         singleProd?.Metal_Cost ||
         singleProd1?.Metal_Cost,
       Labour_Cost:
-        customizationDetail?.TotalMakingCost ||
+        cartCustomization?.TotalMakingCost ||
         singleProd?.Labour_Cost ||
         singleProd1?.Labour_Cost,
       Diamond_Cost:
-        customizationDetail?.TotalDiamondCost ||
+        cartCustomization?.TotalDiamondCost ||
         singleProd?.Diamond_Cost ||
         singleProd1?.Diamond_Cost,
       Diamond_SettingCost:
-        customizationDetail?.TotalDiaSettingCost ||
+        cartCustomization?.TotalDiaSettingCost ||
         singleProd?.Diamond_SettingCost ||
         singleProd1?.Diamond_SettingCost,
       ColorStone_Cost:
-        customizationDetail?.TotalColorStoneCost ||
+        cartCustomization?.TotalColorStoneCost ||
         singleProd?.ColorStone_Cost ||
         singleProd1?.ColorStone_Cost,
       ColorStone_SettingCost:
-        customizationDetail?.TotalCSSettingCost ||
+        cartCustomization?.TotalCSSettingCost ||
         singleProd?.ColorStone_SettingCost ||
         singleProd1?.ColorStone_SettingCost,
       Misc_Cost:
-        customizationDetail?.TotalMiscCost ||
+        cartCustomization?.TotalMiscCost ||
         singleProd?.Misc_Cost ||
         singleProd1?.Misc_Cost,
       Misc_SettingCost:
-        customizationDetail?.TotalSettingCost ||
+        cartCustomization?.TotalSettingCost ||
         singleProd?.Misc_SettingCost ||
         singleProd1?.Misc_SettingCost,
       Other_Cost:
-        customizationDetail?.TotalOtherCost ||
+        cartCustomization?.TotalOtherCost ||
         singleProd?.Other_Cost ||
         singleProd1?.Other_Cost,
       SolPrice:
-        customizationDetail?.SolPrice ||
+        cartCustomization?.SolPrice ||
         singleProd?.SolPric ||
         singleProd1?.SolPrice,
-      ArticleNo: customizationDetail?.ArticleNo || singleProd?.ArticleNo || "",
+      ArticleNo: cartCustomization?.ArticleNo || singleProd?.ArticleNo || "",
       ArticleId:
-        customizationDetail?.ArticleId ||
+        cartCustomization?.ArticleId ||
         singleProd1?.ArticleId ||
         singleProd?.ArticleId ||
         0,
     };
 
     const activeArticleId =
-      customizationDetail?.ArticleId ||
+      cartCustomization?.ArticleId ||
       singleProd1?.ArticleId ||
       singleProd?.ArticleId;
 
@@ -695,11 +712,11 @@ export function useProductDetail({ storeinit, searchParams, params }) {
       try {
         res1 = await RemoveCartAndWishAPI(
           "Cart",
-          customizationDetail?.autocode || singleProd?.autocode,
+          cartCustomization?.autocode || singleProd?.autocode,
           cookie,
           false,
           "",
-          customizationDetail?.ArticleNo || singleProd?.ArticleNo || "",
+          cartCustomization?.ArticleNo || singleProd?.ArticleNo || "",
           cartIdToRemove,
         );
       } catch (err) {
@@ -746,6 +763,7 @@ export function useProductDetail({ storeinit, searchParams, params }) {
   };
 
   const handleWishList = async (e, elv) => {
+    const cartCustomization = isDesignBaseWeb ? null : customizationDetail;
     setWishListFlag(e?.target?.checked);
     setIsWishBtnLoading(true);
 
@@ -778,98 +796,98 @@ export function useProductDetail({ storeinit, searchParams, params }) {
 
     let prodObj = {
       autocode:
-        customizationDetail?.autocode ||
+        cartCustomization?.autocode ||
         singleProd1?.autocode ||
         singleProd?.autocode,
-      StockBarcode: customizationDetail?.StockBarcode || singleProd1?.StockBarcode || singleProd?.StockBarcode || "",
+      StockBarcode: cartCustomization?.StockBarcode || singleProd1?.StockBarcode || singleProd?.StockBarcode || "",
       Metalid:
-        customizationDetail?.MetalTypeId ||
+        cartCustomization?.MetalTypeId ||
         (metal?.length
           ? metal[0]?.Metalid
           : (logininfoInside?.MetalId ?? storeinitInside?.MetalId)),
       MetalColorId:
-        customizationDetail?.MetalColorId ||
+        cartCustomization?.MetalColorId ||
         mcArr?.id ||
         singleProd?.MetalColorid,
       DiaQCid:
-        customizationDetail?.DiaQCid ||
+        cartCustomization?.DiaQCid ||
         (dia?.length
           ? `${dia[0]?.QualityId},${dia[0]?.ColorId}`
           : (logininfoInside?.cmboDiaQCid ?? storeinitInside?.cmboDiaQCid)),
       CsQCid:
-        customizationDetail?.CsQCid ||
+        cartCustomization?.CsQCid ||
         (cs?.length
           ? `${cs[0]?.QualityId},${cs[0]?.ColorId}`
           : (logininfoInside?.cmboCSQCid ?? storeinitInside?.cmboCSQCid)),
       Size:
         sizeData ??
-        customizationDetail?.Size ??
+        cartCustomization?.Size ??
         singleProd1?.DefaultSize ??
         singleProd?.DefaultSize,
       Unitcost:
-        customizationDetail?.TotalUnitCost ||
+        cartCustomization?.TotalUnitCost ||
         singleProd1?.UnitCost ||
         singleProd?.UnitCost,
       markup:
-        customizationDetail?.MarkUp ||
+        cartCustomization?.MarkUp ||
         singleProd1?.DesignMarkUp ||
         singleProd?.DesignMarkUp,
       UnitCostWithmarkup:
-        customizationDetail?.UnitCostWithmarkup ||
-        customizationDetail?.TotalUnitCost ||
+        cartCustomization?.UnitCostWithmarkup ||
+        cartCustomization?.TotalUnitCost ||
         singleProd1?.UnitCostWithMarkUp ||
         singleProd?.UnitCostWithMarkUp,
       Remark: "",
       Metal_Cost:
-        customizationDetail?.TotalMetalCost ||
+        cartCustomization?.TotalMetalCost ||
         singleProd?.Metal_Cost ||
         singleProd1?.Metal_Cost,
       Labour_Cost:
-        customizationDetail?.TotalMakingCost ||
+        cartCustomization?.TotalMakingCost ||
         singleProd?.Labour_Cost ||
         singleProd1?.Labour_Cost,
       Diamond_Cost:
-        customizationDetail?.TotalDiamondCost ||
+        cartCustomization?.TotalDiamondCost ||
         singleProd?.Diamond_Cost ||
         singleProd1?.Diamond_Cost,
       Diamond_SettingCost:
-        customizationDetail?.TotalDiaSettingCost ||
+        cartCustomization?.TotalDiaSettingCost ||
         singleProd?.Diamond_SettingCost ||
         singleProd1?.Diamond_SettingCost,
       ColorStone_Cost:
-        customizationDetail?.TotalColorStoneCost ||
+        cartCustomization?.TotalColorStoneCost ||
         singleProd?.ColorStone_Cost ||
         singleProd1?.ColorStone_Cost,
       ColorStone_SettingCost:
-        customizationDetail?.TotalCSSettingCost ||
+        cartCustomization?.TotalCSSettingCost ||
         singleProd?.ColorStone_SettingCost ||
         singleProd1?.ColorStone_SettingCost,
       Misc_Cost:
-        customizationDetail?.TotalMiscCost ||
+        cartCustomization?.TotalMiscCost ||
         singleProd?.Misc_Cost ||
         singleProd1?.Misc_Cost,
       Misc_SettingCost:
-        customizationDetail?.TotalSettingCost ||
+        cartCustomization?.TotalSettingCost ||
         singleProd?.Misc_SettingCost ||
         singleProd1?.Misc_SettingCost,
       Other_Cost:
-        customizationDetail?.TotalOtherCost ||
+        cartCustomization?.TotalOtherCost ||
         singleProd?.Other_Cost ||
         singleProd1?.Other_Cost,
       SolPrice:
-        customizationDetail?.SolPrice ||
+        cartCustomization?.SolPrice ||
         singleProd?.SolPric ||
         singleProd1?.SolPrice,
-      ArticleNo: customizationDetail?.ArticleNo || singleProd?.ArticleNo || "",
+      ArticleNo: cartCustomization?.ArticleNo || singleProd?.ArticleNo || "",
       ArticleId:
-        customizationDetail?.ArticleId ||
+        cartCustomization?.ArticleId ||
         singleProd1?.ArticleId ||
         singleProd?.ArticleId ||
         0,
     };
 
     const activeArticleId =
-      customizationDetail?.ArticleId ||
+      cartCustomization?.ArticleId ||
       singleProd1?.ArticleId ||
       singleProd?.ArticleId;
 
@@ -919,11 +937,11 @@ export function useProductDetail({ storeinit, searchParams, params }) {
       try {
         res1 = await RemoveCartAndWishAPI(
           "Wish",
-          customizationDetail?.autocode || singleProd?.autocode,
+          cartCustomization?.autocode || singleProd?.autocode,
           cookie,
           false,
           "",
-          customizationDetail?.ArticleNo || singleProd?.ArticleNo || "",
+          cartCustomization?.ArticleNo || singleProd?.ArticleNo || "",
         );
       } catch (err) {
         console.log("removewishErr", err);
@@ -1199,6 +1217,13 @@ export function useProductDetail({ storeinit, searchParams, params }) {
             setisPriceLoading(false);
             setloadingdata(false);
             setIsDataFound(false);
+
+            // Website analytics: once per detail page view, only after the product detail API succeeded.
+            const analyticsKey = `${prod?.autocode ?? ""}:${prod?.designno ?? ""}`;
+            if (analyticsSentKeyRef.current !== analyticsKey) {
+              analyticsSentKeyRef.current = analyticsKey;
+              SaveWebsiteAnalytics(cookie, prod?.autocode, prod?.designno);
+            }
           } else {
             setisPriceLoading(false);
             setloadingdata(false);
@@ -1360,28 +1385,6 @@ export function useProductDetail({ storeinit, searchParams, params }) {
             //     .then((res) => setDesignSetList(res?.Data?.rd))
             //     .catch((err) => console.log("designsetErr", err));
             // }
-
-            // 5. Save Recently Viewed Design (SQLite customer-wise, 0 external API calls)
-            if (prod?.designno) {
-              saveRecentlyViewedDesign({
-                designno: prod.designno,
-                autocode: prod.autocode,
-                loginUserDetail,
-              })
-                .then(() => {
-                  return fetchRecentlyViewedDesigns({
-                    currentDesignno: prod.designno,
-                    loginUserDetail,
-                    storeInit: storeinitInside || storeInit,
-                  });
-                })
-                .then((recentList) => {
-                  if (Array.isArray(recentList)) {
-                    setRecentlyViewedArr(recentList);
-                  }
-                })
-                .catch((err) => console.log("[RecentlyViewed] SQLite error:", err));
-            }
           }
         }
       } catch (err) {
@@ -1714,6 +1717,16 @@ export function useProductDetail({ storeinit, searchParams, params }) {
     var txt = document.createElement("textarea");
     txt.innerHTML = html;
     return txt.value;
+  };
+
+  // Design-based customization (IsDesignBaseWeb = 1): dropdown changes only store the selected value.
+  // The values are passed to the API later, when the item is added to cart / wishlist.
+  const handleDesignCustomChange = (e, type) => {
+    const value = e?.target?.value;
+    if (type === "mt") setMetalType(value);
+    if (type === "dt") setSelectDiaQc(value);
+    if (type === "cs") setSelectCsQC(value);
+    if (type === "size") setSizeData(value);
   };
 
   const handleCustomChange = async (e, type) => {
@@ -2317,6 +2330,7 @@ export function useProductDetail({ storeinit, searchParams, params }) {
     getDynamicImages,
     decodeEntities,
     handleCustomChange,
+    handleDesignCustomChange,
     SizeSorting,
     defaultArticleId,
     setDefaultArticleId,

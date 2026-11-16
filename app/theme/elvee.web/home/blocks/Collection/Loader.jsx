@@ -17,7 +17,7 @@ const CollectionSkeleton = () => {
           const height = size === 12 ? 500 : 400;
 
           return (
-            <Grid item xs={12} md={size} key={index}>
+            <Grid xs={12} md={size} key={index}>
               <Box
                 sx={{
                   width: "100%",
@@ -33,8 +33,8 @@ const CollectionSkeleton = () => {
                   height={height}
                   animation="wave"
                   sx={{
-                    bgcolor: "#f4f4f4", 
-                    transform: "scale(1, 1)", 
+                    bgcolor: "#f4f4f4",
+                    transform: "scale(1, 1)",
                     borderRadius: 8,
                   }}
                 />

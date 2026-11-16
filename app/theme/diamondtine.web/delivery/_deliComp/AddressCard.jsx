@@ -30,7 +30,7 @@ const AddressCard = ({ address, index, handleOpen, handleDeleteClick, handleDefa
     };
 
     return (
-        <Grid item size={{ xs: 12, sm: 6, md: 4, lg: 3 }} style={{ marginBottom: '20px' }}>
+        <Grid size={{ xs: 12, sm: 6, md: 4, lg: 3 }} style={{ marginBottom: '20px' }}>
             <Card
                 onMouseEnter={handleMouseEnter}
                 onMouseLeave={handleMouseLeave}

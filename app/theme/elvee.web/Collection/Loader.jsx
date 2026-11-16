@@ -17,7 +17,7 @@ const CollectionSkeleton = () => {
           const height = size === 12 ? 500 : 400;
 
           return (
-            <Grid item size={{
+            <Grid size={{
               xs: 12, md: size
             }} key={index}>
               <Box
