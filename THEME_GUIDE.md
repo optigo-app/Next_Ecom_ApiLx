@@ -55,6 +55,7 @@ app/theme/mybrand.web/
 ├── layout.jsx
 ├── home/
 │   └── page.jsx
+│   └──── page.jsx
 └── ...
 ```
 

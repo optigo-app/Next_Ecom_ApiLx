@@ -1,5 +1,7 @@
 "use client";
-
+import { useState, useEffect } from "react";
+import { Swiper, SwiperSlide } from "swiper/react";
+import "swiper/css";
 import React from "react";
 import {
   Instagram,
@@ -98,9 +100,62 @@ function PostMedia({ item }) {
   );
 }
 
+function useIsMobile(breakpoint = 768) {
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const mq = window.matchMedia(`(max-width: ${breakpoint}px)`);
+    const update = () => setIsMobile(mq.matches);
+    update();
+    mq.addEventListener("change", update);
+    return () => mq.removeEventListener("change", update);
+  }, [breakpoint]);
+
+  return isMobile;
+}
+
 /* ================= SocialMedia1 — linked image grid with icon ================= */
 function SocialMedia1({ data }) {
   const components = data?.components || [];
+  const isMobile = useIsMobile(768);
+
+  const renderCard = (item) => {
+    const props = item?.props || {};
+    const link = item?.socialUrl || props.socialUrl;
+
+    return (
+      <a
+        href={link || "#"}
+        target={link ? "_blank" : "_self"}
+        rel="noopener noreferrer"
+        className="sm1-post-card"
+        style={{
+          borderRadius: `${props.borderRadius || 0}px`,
+          textDecoration: "none",
+          color: "inherit",
+          display: "block",
+        }}
+      >
+        <div
+          className="sm1-image-wrapper"
+          style={{
+            aspectRatio: props.aspectRatio || "4/5",
+            borderRadius: `${props.borderRadius || 0}px`,
+          }}
+        >
+          <img
+            src={props.image}
+            className="sm1-post-image"
+            alt="Social Media Post"
+          />
+        </div>
+
+        <div className="sm1-icon">
+          <SocialIcon props={props} />
+        </div>
+      </a>
+    );
+  };
 
   return (
     <div className="sm1-page">
@@ -108,46 +163,24 @@ function SocialMedia1({ data }) {
         <h3>SOCIAL MEDIA</h3>
       </div>
 
-      <div className="sm1-grid">
-        {components.map((item) => {
-          const props = item?.props || {};
-          const link = item?.socialUrl || props.socialUrl;
-
-          return (
-            <a
-              key={item?.id}
-              href={link || "#"}
-              target={link ? "_blank" : "_self"}
-              rel="noopener noreferrer"
-              className="sm1-post-card"
-              style={{
-                borderRadius: `${props.borderRadius || 0}px`,
-                textDecoration: "none",
-                color: "inherit",
-                display: "block",
-              }}
-            >
-              <div
-                className="sm1-image-wrapper"
-                style={{
-                  aspectRatio: props.aspectRatio || "4/5",
-                  borderRadius: `${props.borderRadius || 0}px`,
-                }}
-              >
-                <img
-                  src={props.image}
-                  className="sm1-post-image"
-                  alt="Social Media Post"
-                />
-              </div>
-
-              <div className="sm1-icon">
-                <SocialIcon props={props} />
-              </div>
-            </a>
-          );
-        })}
-      </div>
+      {isMobile ? (
+        <Swiper
+          className="sm1-swiper"
+          slidesPerView={2}
+          spaceBetween={12}
+          grabCursor
+        >
+          {components.map((item) => (
+            <SwiperSlide key={item?.id}>{renderCard(item)}</SwiperSlide>
+          ))}
+        </Swiper>
+      ) : (
+        <div className="sm1-grid">
+          {components.map((item) => (
+            <div key={item?.id}>{renderCard(item)}</div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
@@ -324,10 +357,10 @@ const isSocialTemplate = (id) =>
 export default function SocialMedia({ templates = [] }) {
   const match = pickSocialTemplate(templates);
 
-  if (!match) {
-    return <div className="sm-empty">No social media template found.</div>;
-  }
-
+  // if (!match) {
+  //   return <div className="sm-empty">No social media template found.</div>;
+  // }
+  if (!match) return null;
   const Template = SOCIAL_TEMPLATES[match.title];
   return (
     <div className="social-media-container">

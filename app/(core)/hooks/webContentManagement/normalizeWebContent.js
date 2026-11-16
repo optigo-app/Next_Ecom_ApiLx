@@ -32,6 +32,25 @@ export function normalizeWebContent(rawGroupedData = {}) {
   const seoItem = data?.seo?.[0] || null;
   const seo = seoItem?.ContentJson || null;
 
+
+  const  announcementItem = data?.announcement?.[0] || null;
+  const announcement = announcementItem?.ContentJson || null;
+
+
+  const  showroomData = data?.showroom?.[0] || null;
+  const showroom = showroomData?.ContentJson || null;
+
+
+  const  craftsmanshipItem = data?.craftsmanship?.[0] || null;
+  const craftsmanship = craftsmanshipItem?.ContentJson || null;
+
+  const  exhibitionItem = data?.exhibitionconfig?.[0] || null;
+  const exhibitionconfig = exhibitionItem?.ContentJson || null;
+
+  const  designlibraryItem = data?.designlibrary?.[0] || null;
+  const designlibrary = designlibraryItem?.ContentJson || null;
+
+
   // Banner Configuration & Grouped Banners
   const bannerGroup = data?.banner || {
     config: null,
@@ -63,6 +82,11 @@ export function normalizeWebContent(rawGroupedData = {}) {
     collections,
     branding,
     seo,
+    announcement,
+    showroom,
+    craftsmanship,
+    exhibitionconfig,
+    designlibrary,
     banners,
     bannersByType,
     bannerConfig,
