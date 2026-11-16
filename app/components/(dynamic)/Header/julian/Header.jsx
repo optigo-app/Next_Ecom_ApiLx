@@ -153,7 +153,7 @@ function MegaMenu({ item, images, onColumnClick, onLinkClick }) {
           );
 
           return (
-            <Grid item xs={12} sm={3} key={col.param1dataid ?? ci}>
+            <Grid xs={12} sm={3} key={col.param1dataid ?? ci}>
               <Typography
                 onClick={(e) => onColumnClick(item, col, e)}
                 className='megaMenuText'

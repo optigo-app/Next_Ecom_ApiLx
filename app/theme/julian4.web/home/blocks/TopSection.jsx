@@ -12,7 +12,7 @@ import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 
 const handleShopNowClick = () => {
-    push("/p");
+  push("/p");
 }
 
 
@@ -117,7 +117,7 @@ export default function HeroBanner() {
             <Grid container sx={{ height: '100%', minHeight: { xs: '550px', md: '100%' } }}>
 
               {/* Left Column: Text Content */}
-              <Grid item xs={12} md={6} sx={{
+              <Grid xs={12} md={6} sx={{
                 backgroundColor: slide.bgColor,
                 display: 'flex',
                 flexDirection: 'column',
@@ -189,7 +189,7 @@ export default function HeroBanner() {
               </Grid>
 
               {/* Right Column: Image Frame */}
-              <Grid item xs={12} md={6} sx={{
+              <Grid xs={12} md={6} sx={{
                 height: { xs: '300px', sm: '400px', md: '100%' }, // Responsive height presets for mobile viewports
                 position: 'relative',
                 overflow: 'hidden'

@@ -182,8 +182,8 @@ const MyModal = ({ open, onClose, selectedItems, onRemove, onUpdateCart, onCance
                     label="Diamond"
                   >
                     {diamondQualityColorCombo?.map(option => (
-                      <MenuItem key={option?.ColorId + ',' + option?.QualityId} value={option?.Quality+'#'+ option?.color}>
-                        {option?.Quality+'#'+ option?.color}
+                      <MenuItem key={option?.ColorId + ',' + option?.QualityId} value={option?.Quality + '#' + option?.color}>
+                        {option?.Quality + '#' + option?.color}
                       </MenuItem>
                     ))}
                   </Select>
@@ -210,16 +210,16 @@ const MyModal = ({ open, onClose, selectedItems, onRemove, onUpdateCart, onCance
             <Divider />
           </div>
           <Grid container spacing={2}>
-            <Grid item xs={6} md={3}>
+            <Grid xs={6} md={3}>
               <div className='smr3_Modal-FilterList'>
                 {generateFilterAccordions(filterArr, checkedItems, handleCheckboxChange)}
               </div>
             </Grid>
-            <Grid item xs={6} md={9}>
+            <Grid xs={6} md={9}>
               <div className='smr3_Modal-cardList'>
                 <Grid container spacing={2}>
                   {filteredItems?.map(product => (
-                    <Grid item key={product.id} xs={12} sm={4} md={4}>
+                    <Grid key={product.id} xs={12} sm={4} md={4}>
                       <Card className='smr3_cartListCard' sx={{ maxWidth: 250, position: 'relative' }}>
                         <CardActionArea>
                           <CardMedia

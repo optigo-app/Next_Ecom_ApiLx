@@ -318,7 +318,7 @@ const ProductCard = ({
                 {storeInit?.IsGrossWeight == 1 &&
                     Number(productData?.Gwt) !== 0 && (
                         <>
-                            <Grid item size={{ xs: 6 }}>
+                            <Grid size={{ xs: 6 }}>
                                 <Typography
                                     sx={{
 
@@ -337,7 +337,7 @@ const ProductCard = ({
                 }
                 {Number(productData?.Nwt) !== 0 && (
                     <>
-                        <Grid item size={{ xs: 6 }}>
+                        <Grid size={{ xs: 6 }}>
                             <Typography
                                 sx={{
 
@@ -358,7 +358,7 @@ const ProductCard = ({
                 {storeInit?.IsDiamondWeight == 1 &&
                     (Number(productData?.Dwt) !== 0 && (
                         <>
-                            <Grid item xs={6}>
+                            <Grid xs={6}>
                                 <Typography
                                     sx={{
 
@@ -381,7 +381,7 @@ const ProductCard = ({
                 {storeInit?.IsStoneWeight == 1 &&
                     (Number(productData?.CSwt) !== 0 && (
                         <>
-                            <Grid item xs={6}>
+                            <Grid xs={6}>
                                 <Typography
                                     sx={{
 

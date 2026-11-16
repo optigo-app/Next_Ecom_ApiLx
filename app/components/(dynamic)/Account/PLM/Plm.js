@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { TextField,  Grid, IconButton } from "@mui/material";
+import { TextField, Grid, IconButton } from "@mui/material";
 import "./Plm.scss";
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
@@ -10,7 +10,7 @@ const Plm = () => {
     labelName: "",
     logo: null,
     markUp: 0,
-    logoPreview:null
+    logoPreview: null
   });
 
   const [showPreview, setShowPreview] = useState(false);
@@ -25,7 +25,7 @@ const Plm = () => {
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
-    if(file){
+    if (file) {
       const fileUrl = URL.createObjectURL(file);
       setFormData({
         ...formData,
@@ -33,11 +33,11 @@ const Plm = () => {
         logoPreview: fileUrl,
       });
     }
-    };
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    
+
 
     const data = new FormData();
     data.append('labelName', formData?.labelName);
@@ -46,7 +46,7 @@ const Plm = () => {
     data.append('markUp', formData?.markUp);
 
 
-    
+
 
   };
 
@@ -56,65 +56,65 @@ const Plm = () => {
 
   return (
     <>
-    <div className="plm_Account_SMR plm_container">
-    <div className="plm_width">
-      <div className="plm_title" style={{cursor:'pointer', textAlign:'center', width:'100%'}}>
-        Private Label Setup
-      </div>
-      <div className="fieldContainer">
-        <form onSubmit={handleSubmit}>
-          <Grid container spacing={2}>
-            <Grid item xs={12} className=" margin_plm"> 
-              <TextField
-                id="labelName"
-                name="labelName"
-                label="Label Name"
-                variant="outlined"
-                value={formData.labelName}
-                onChange={handleChange}
-                // style={{ minWidth: "400px", maxWidth: "400px" }}
-                className="FieldWidthPLM"
-                required
-              />
-            </Grid>
-            <Grid item xs={12} className="margin_plm">
-              <Grid container spacing={2} alignItems="center" style={{display: 'flex'}}>
-                <Grid item xs={10} style={{width:'70%'}}>
+      <div className="plm_Account_SMR plm_container">
+        <div className="plm_width">
+          <div className="plm_title" style={{ cursor: 'pointer', textAlign: 'center', width: '100%' }}>
+            Private Label Setup
+          </div>
+          <div className="fieldContainer">
+            <form onSubmit={handleSubmit}>
+              <Grid container spacing={2}>
+                <Grid xs={12} className=" margin_plm">
                   <TextField
-                    type="file"
-                    id="logo"
-                    name="logo"
-                    label="Upload Logo"
-                    onChange={handleFileChange}
-                    required
-                    fullWidth
-                    InputLabelProps={{
-                      shrink: true,
-                    }}
+                    id="labelName"
+                    name="labelName"
+                    label="Label Name"
                     variant="outlined"
-                    InputProps={{
-                      endAdornment: (
-                        <IconButton onClick={togglePreview}>
-                          {showPreview ? <VisibilityOff titleAccess="Hide" /> : <Visibility titleAccess="Show" />}
-                        </IconButton>
-                      ),
-                    }}
+                    value={formData.labelName}
+                    onChange={handleChange}
+                    // style={{ minWidth: "400px", maxWidth: "400px" }}
+                    className="FieldWidthPLM"
+                    required
                   />
                 </Grid>
-                {formData.logoPreview && (
-                  <Grid item xs={2} style={{ width: '20%' }}>
-                    {showPreview ? (
-                      <img
-                        src={formData.logoPreview}
-                        alt="Logo Preview"
-                        className="smr_plmPreviewImgage"
+                <Grid xs={12} className="margin_plm">
+                  <Grid container spacing={2} alignItems="center" style={{ display: 'flex' }}>
+                    <Grid xs={10} style={{ width: '70%' }}>
+                      <TextField
+                        type="file"
+                        id="logo"
+                        name="logo"
+                        label="Upload Logo"
+                        onChange={handleFileChange}
+                        required
+                        fullWidth
+                        InputLabelProps={{
+                          shrink: true,
+                        }}
+                        variant="outlined"
+                        InputProps={{
+                          endAdornment: (
+                            <IconButton onClick={togglePreview}>
+                              {showPreview ? <VisibilityOff titleAccess="Hide" /> : <Visibility titleAccess="Show" />}
+                            </IconButton>
+                          ),
+                        }}
                       />
-                    ) : <span style={{minWidth:'100%'}}></span> }
+                    </Grid>
+                    {formData.logoPreview && (
+                      <Grid xs={2} style={{ width: '20%' }}>
+                        {showPreview ? (
+                          <img
+                            src={formData.logoPreview}
+                            alt="Logo Preview"
+                            className="smr_plmPreviewImgage"
+                          />
+                        ) : <span style={{ minWidth: '100%' }}></span>}
+                      </Grid>
+                    )}
                   </Grid>
-                )}
-              </Grid>
-          </Grid>
-            {/* <Grid item xs={12}  className=" margin_plm">
+                </Grid>
+                {/* <Grid xs={12}  className=" margin_plm">
               <TextField
                 type="file"
                 id="logo"
@@ -138,39 +138,39 @@ const Plm = () => {
 
             </Grid>
              {(formData.logoPreview) && (
-            <Grid item xs={12} className="margin_plm d-flex justify-content-center align-items-center ">
+            <Grid xs={12} className="margin_plm d-flex justify-content-center align-items-center ">
               {showPreview && <img src={formData.logoPreview} alt="Logo Preview" style={{ maxWidth: '100%' }} />}
             </Grid>
             )} */}
-            <Grid item xs={12} className=" margin_plm">
-              <TextField
-                type="number"
-                id="markUp"
-                name="markUp"
-                label="Mark Up (%)"
-                variant="outlined"
-                value={formData.markUp}
-                onChange={handleChange}
-                required
-                // style={{ minWidth: "400px", maxWidth: "400px" }}
-                className="FieldWidthPLM"
-                InputLabelProps={{
-                  shrink: true,
-                }}
-                inputProps={{
-                  min: 0,
-                  max: 100,
-                }}
-              />
-            </Grid>
-            <Grid item xs={12} sx={{display:'flex', justifyContent:'center', alignItems:'center'}}>
-                <button  className='SmilingAddEditAddrwess' style={{ backgroundColor: 'lightgray', marginTop: '15px' }}>Save</button>
-            </Grid>
-          </Grid>
-        </form>
+                <Grid xs={12} className=" margin_plm">
+                  <TextField
+                    type="number"
+                    id="markUp"
+                    name="markUp"
+                    label="Mark Up (%)"
+                    variant="outlined"
+                    value={formData.markUp}
+                    onChange={handleChange}
+                    required
+                    // style={{ minWidth: "400px", maxWidth: "400px" }}
+                    className="FieldWidthPLM"
+                    InputLabelProps={{
+                      shrink: true,
+                    }}
+                    inputProps={{
+                      min: 0,
+                      max: 100,
+                    }}
+                  />
+                </Grid>
+                <Grid xs={12} sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                  <button className='SmilingAddEditAddrwess' style={{ backgroundColor: 'lightgray', marginTop: '15px' }}>Save</button>
+                </Grid>
+              </Grid>
+            </form>
+          </div>
+        </div>
       </div>
-    </div>
-    </div>
     </>
   );
 };

@@ -6,7 +6,7 @@ import JewelryCarousel from "./Carousel";
 const noImageFound = "/image-not-found.jpg";
 
 const LeftSide = ({
-  HandleImageDialogOpen = () => {},
+  HandleImageDialogOpen = () => { },
   loading = false,
   media,
   isMediaReady,
@@ -56,7 +56,7 @@ const LeftSide = ({
     return (
       <Grid size={{ xs: 12, sm: 12, md: 6 }}>
         <Grid container spacing={0.6}>
-          <Grid item size={{ xs: 6 }}>
+          <Grid size={{ xs: 6 }}>
             <Box
               sx={{
                 position: "relative",
@@ -90,7 +90,7 @@ const LeftSide = ({
   if (Ismobile) {
     return (
       <>
-        <Grid item size={{ xs: 12, sm: 12 }}>
+        <Grid size={{ xs: 12, sm: 12 }}>
           <Box>
             <JewelryCarousel
               carouselItems={media}

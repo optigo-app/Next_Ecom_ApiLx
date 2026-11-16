@@ -244,7 +244,7 @@ const WishlistItems = ({ item, index, selectedValue, itemInCart, updateCount, co
           </Card>
         </Grid>
       ) : (
-        <Grid item
+        <Grid
           size={{
             xs: itemsLength <= 2 ? 6 : 6,
             sm: itemsLength <= 2 ? 4 : 3,

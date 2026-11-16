@@ -16,7 +16,7 @@ const Main = ({ storeData }) => {
   const [isLoading, setIsLoading] = useState(true);
   const imageUrl = storeData?.AlbumImageFol;
 
- 
+
 
   const isFetchingRef = useRef(false);
   const lastRequestKeyRef = useRef("");
@@ -88,7 +88,7 @@ const Main = ({ storeData }) => {
   }, [islogin, pricingContext, storeData, fetchAndSetAlbums, loginUserDetail?.id]);
 
   const skeletons = Array.from({ length: 5 }).map((_, i) => (
-    <Grid item size={{ xs: 12, sm: 6, md: 4, lg: 2 }} key={i} mb={4}>
+    <Grid size={{ xs: 12, sm: 6, md: 4, lg: 2 }} key={i} mb={4}>
       <Card sx={{ borderRadius: 2, boxShadow: "0 1px 3px rgba(0,0,0,0.08)" }}>
         <Skeleton variant="rectangular" height={300} />
         <CardContent>
@@ -107,7 +107,7 @@ const Main = ({ storeData }) => {
         {isLoading
           ? skeletons
           : albumData.slice(0, 5).map((album, index) => (
-            <Grid item size={{ xs: 12, sm: 6, md: 4, lg: 2 }} key={index}>
+            <Grid size={{ xs: 12, sm: 6, md: 4, lg: 2 }} key={index}>
               <Card
                 sx={{
                   overflow: "hidden",
@@ -313,7 +313,7 @@ export default Main;
 //   }, [islogin, pricingContext, storeData, fetchAndSetAlbums, loginUserDetail?.id, cacheList]);
 
 //   const skeletons = Array.from({ length: 5 }).map((_, i) => (
-//     <Grid item size={{ xs: 12, sm: 6, md: 4, lg: 2 }} key={i} mb={4}>
+//     <Grid size={{ xs: 12, sm: 6, md: 4, lg: 2 }} key={i} mb={4}>
 //       <Card
 //         sx={{
 //           borderRadius: 2,
@@ -342,7 +342,7 @@ export default Main;
 //         {isLoading
 //           ? skeletons
 //           : albumData.slice(0, 5).map((album, index) => (
-//             <Grid item size={{ xs: 12, sm: 6, md: 4, lg: 2 }} key={index}>
+//             <Grid size={{ xs: 12, sm: 6, md: 4, lg: 2 }} key={index}>
 //               <Card
 //                 sx={{
 //                   overflow: "hidden",

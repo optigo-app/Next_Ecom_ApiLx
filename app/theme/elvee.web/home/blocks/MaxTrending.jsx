@@ -177,7 +177,7 @@ const MaxTrending = ({ data, storeInit }) => {
 
             <Grid container spacing={1.5} sx={{ mt: 1 }}>
                 {/* Left: Large Banner */}
-                <Grid item size={{ xs: 12, md: 6 }}>
+                <Grid size={{ xs: 12, md: 6 }}>
                     <BannerContainer onClick={() => push(`/p/Trending/?T=${btoa("Trending")}`)}>
                         <img src="WebSiteStaticImage/Banner/trendingbanner2.webp" alt="Trending Banner" loading="lazy" />
                         <BannerOverlay>
@@ -202,10 +202,10 @@ const MaxTrending = ({ data, storeInit }) => {
                 </Grid>
 
                 {/* Right: 4 Small Product Cards */}
-                <Grid item size={{ xs: 12, md: 6 }}>
+                <Grid size={{ xs: 12, md: 6 }}>
                     <Grid container spacing={1.5}>
                         {validatedData.slice(0, 4).map((item, index) => (
-                            <Grid item size={{ xs: 6 }} key={index}>
+                            <Grid size={{ xs: 6 }} key={index}>
                                 <ProductCardWrapper onClick={() => handleNavigation(item)}>
                                     <ImageBox>
                                         <Box

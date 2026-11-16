@@ -52,7 +52,7 @@ export default function CartHeader({
                 maxWidth: "95%",
               }}
             >
-             
+
             </motion.div>
             {isMobile && <motion.div
               initial={{ y: -100, opacity: 0, scale: 0.8 }}
@@ -103,13 +103,13 @@ export default function CartHeader({
         )}
       </AnimatePresence>
 
-       
 
-    
 
-      
 
- 
+
+
+
+
 
       {/* ---- Buttons Row ---- */}
       {
@@ -130,11 +130,11 @@ export default function CartHeader({
             }}
           >
             {/* LEFT SIDE spacer */}
-         
+
 
             {/* CENTER BUTTONS */}
-            <Stack   direction="row" spacing={2} sx={{flex:1, flexShrink: 0,  }}>
-             
+            <Stack direction="row" spacing={2} sx={{ flex: 1, flexShrink: 0, }}>
+
 
               <Button
                 variant="outlined"
@@ -153,10 +153,10 @@ export default function CartHeader({
               </Button>
             </Stack>
 
-            <Stack direction="row" spacing={2} sx={{flex:1, flexShrink: 0, justifyContent: "center" }}>
-             
+            <Stack direction="row" spacing={2} sx={{ flex: 1, flexShrink: 0, justifyContent: "center" }}>
 
-            <Typography fontSize={40} fontWeight={500} color="black" >My Cart</Typography>
+
+              <Typography fontSize={40} fontWeight={500} color="black" >My Cart</Typography>
             </Stack>
 
             {/* RIGHT SIDE — Place Order Button */}
@@ -283,7 +283,7 @@ const PriceTooltipContent = ({ summary }) => (
 //             textAlign="center"
 //           >
 //             {/* Gross Weight */}
-//             <Grid item xs={6} sm={3}>
+//             <Grid  xs={6} sm={3}>
 //               <Typography
 //                 sx={{
 //                   fontSize: 13,
@@ -306,7 +306,7 @@ const PriceTooltipContent = ({ summary }) => (
 //             </Grid>
 
 //             {/* Net Weight */}
-//             <Grid item xs={6} sm={3}>
+//             <Grid  xs={6} sm={3}>
 //               <Typography
 //                 sx={{
 //                   fontSize: 13,
@@ -329,7 +329,7 @@ const PriceTooltipContent = ({ summary }) => (
 //             </Grid>
 
 //             {/* Diamond Weight */}
-//             <Grid item xs={6} sm={3}>
+//             <Grid  xs={6} sm={3}>
 //               <Typography
 //                 sx={{
 //                   fontSize: 13,
@@ -355,7 +355,7 @@ const PriceTooltipContent = ({ summary }) => (
 //             </Grid>
 
 //             {/* CS Weight */}
-//             {/* <Grid item xs={6} sm={3}>
+//             {/* <Grid  xs={6} sm={3}>
 //         <Typography
 //           sx={{
 //             fontSize: 13,

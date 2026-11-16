@@ -112,7 +112,7 @@ export default function RelatedProduct({
       {!shouldUseSwiper && (
         <Grid container spacing={3}>
           {SimilarBrandArr?.slice(0, 4).map((elv, i) => (
-            <Grid item size={{
+            <Grid size={{
               xs: 6,
               sm: 4,
               md: 3

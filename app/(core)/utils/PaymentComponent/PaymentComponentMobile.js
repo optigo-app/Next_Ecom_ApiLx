@@ -305,7 +305,7 @@ export default function PaymentComponent({ bgcolor, textColor, top, storeinit })
                     <Container maxWidth="sm" disableGutters>
                         <Grid container spacing={2} alignItems="center">
                             {!isPriceHidden(IsPriceShow) && (
-                                <Grid item size={{
+                                <Grid size={{
                                     xs : 6
                                 }}>
                                     <Typography variant="caption" color="text.secondary" fontWeight="600">
@@ -321,7 +321,7 @@ export default function PaymentComponent({ bgcolor, textColor, top, storeinit })
                                 </Grid>
                             )}
                             
-                                <Grid item size={{
+                                <Grid size={{
                                     xs : 6
                                 }}>
                                 <Button
@@ -430,7 +430,7 @@ export default function PaymentComponent({ bgcolor, textColor, top, storeinit })
 //             <Box sx={{ bgcolor: 'background.default', minHeight: '100vh', py: 2, marginTop: top ?? "", paddingBottom: '80px' }}>
 //                 <Container maxWidth="xl">
 //                     <Grid container spacing={2}>
-//                         <Grid item size={{ xs: 12, md: 6 }}>
+//                         <Grid size={{ xs: 12, md: 6 }}>
 //                             <Stack spacing={2}>
 //                                 <Card sx={{
 //                                     maxHeight: '500px',
@@ -450,7 +450,7 @@ export default function PaymentComponent({ bgcolor, textColor, top, storeinit })
 //                                         >
 //                                             <Grid container spacing={2}>
 //                                                 {paymentMethods.map((method) => (
-//                                                     <Grid item size={{ xs: 12, sm: 12, md: 12 }} key={method.id}>
+//                                                     <Grid size={{ xs: 12, sm: 12, md: 12 }} key={method.id}>
 //                                                         <Paper
 //                                                             elevation={selectedPayment === method.id ? 3 : 1}
 //                                                             sx={{
@@ -502,7 +502,7 @@ export default function PaymentComponent({ bgcolor, textColor, top, storeinit })
 //                                             Billing Address
 //                                         </Typography>
 //                                         <Grid container spacing={3} sx={{ mt: 1 }}>
-//                                             <Grid item size={{ xs: 12 }}>
+//                                             <Grid size={{ xs: 12 }}>
 //                                                 <label style={{ fontWeight: 'bold', color: '#7d7f85' }} htmlFor="fullName">Full Name</label>
 //                                                 <TextField
 //                                                     disabled
@@ -513,7 +513,7 @@ export default function PaymentComponent({ bgcolor, textColor, top, storeinit })
 //                                                     variant="outlined"
 //                                                 />
 //                                             </Grid>
-//                                             <Grid item size={{ xs: 12 }}>
+//                                             <Grid size={{ xs: 12 }}>
 //                                                 <label style={{ fontWeight: 'bold', color: '#7d7f85' }} htmlFor="email">Email</label>
 //                                                 <TextField
 //                                                     disabled
@@ -524,7 +524,7 @@ export default function PaymentComponent({ bgcolor, textColor, top, storeinit })
 //                                                     variant="outlined"
 //                                                 />
 //                                             </Grid>
-//                                             <Grid item size={{ xs: 6 }}>
+//                                             <Grid size={{ xs: 6 }}>
 //                                                 <label style={{ fontWeight: 'bold', color: '#7d7f85' }} htmlFor="city">City</label>
 //                                                 <TextField
 //                                                     disabled
@@ -535,7 +535,7 @@ export default function PaymentComponent({ bgcolor, textColor, top, storeinit })
 //                                                     variant="outlined"
 //                                                 />
 //                                             </Grid>
-//                                             <Grid item size={{ xs: 6 }}>
+//                                             <Grid size={{ xs: 6 }}>
 //                                                 <label style={{ fontWeight: 'bold', color: '#7d7f85' }} htmlFor="state">State</label>
 //                                                 <TextField
 //                                                     disabled
@@ -546,7 +546,7 @@ export default function PaymentComponent({ bgcolor, textColor, top, storeinit })
 //                                                     variant="outlined"
 //                                                 />
 //                                             </Grid>
-//                                             <Grid item size={{ xs: 12 }}>
+//                                             <Grid size={{ xs: 12 }}>
 //                                                 <label style={{ fontWeight: 'bold', color: '#7d7f85' }} htmlFor="zip">Mobile No</label>
 //                                                 <TextField
 //                                                     disabled
@@ -563,7 +563,7 @@ export default function PaymentComponent({ bgcolor, textColor, top, storeinit })
 //                             </Stack>
 //                         </Grid>
 
-//                         <Grid item size={{ xs: 12, md: 6 }}>
+//                         <Grid size={{ xs: 12, md: 6 }}>
 //                             <Stack spacing={2}>
 //                                 {!isPriceHidden(IsPriceShow) && <Card>
 //                                     <CardContent>

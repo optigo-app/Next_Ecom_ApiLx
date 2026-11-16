@@ -570,550 +570,550 @@ export default function PushDashboardClient() {
                     {dom}
                   </MenuItem>
                 ))}
-              </Select>
-            </FormControl>
-          </Box>
+            </Select>
+          </FormControl>
+        </Box>
 
-          <Box sx={{ flex: 1, width: "100%" }}>
-            <TextField
-              fullWidth
-              size="small"
-              placeholder="Or enter custom domain (e.g. beluxjewel.web)"
-              value={customDomain}
-              onChange={(e) => setCustomDomain(e.target.value)}
-              label="Custom Domain Override"
-              InputLabelProps={{ sx: { color: "#94A3B8" } }}
-              InputProps={{
-                sx: {
-                  color: "#FFFFFF",
-                  backgroundColor: "#1E293B",
-                  "& .MuiOutlinedInput-notchedOutline": { borderColor: "rgba(255, 255, 255, 0.15)" },
-                },
-              }}
-            />
-          </Box>
+        <Box sx={{ flex: 1, width: "100%" }}>
+          <TextField
+            fullWidth
+            size="small"
+            placeholder="Or enter custom domain (e.g. beluxjewel.web)"
+            value={customDomain}
+            onChange={(e) => setCustomDomain(e.target.value)}
+            label="Custom Domain Override"
+            InputLabelProps={{ sx: { color: "#94A3B8" } }}
+            InputProps={{
+              sx: {
+                color: "#FFFFFF",
+                backgroundColor: "#1E293B",
+                "& .MuiOutlinedInput-notchedOutline": { borderColor: "rgba(255, 255, 255, 0.15)" },
+              },
+            }}
+          />
+        </Box>
 
-          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-            <Typography variant="body2" sx={{ color: "#94A3B8" }}>
-              Active Database:
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+          <Typography variant="body2" sx={{ color: "#94A3B8" }}>
+            Active Database:
+          </Typography>
+          <Chip
+            label={activeDomain}
+            color="primary"
+            variant="outlined"
+            sx={{ fontWeight: 700, fontSize: "0.85rem", borderColor: "#38BDF8", color: "#38BDF8" }}
+          />
+        </Box>
+      </Paper>
+
+      {/* 1-Click Master Pipeline Button */}
+      <Paper
+        elevation={0}
+        sx={{
+          p: 3,
+          mb: 4,
+          background: "linear-gradient(135deg, rgba(37, 99, 235, 0.25) 0%, rgba(147, 51, 234, 0.25) 100%)",
+          border: "1px solid rgba(96, 165, 250, 0.3)",
+          borderRadius: "16px",
+          display: "flex",
+          flexDirection: { xs: "column", md: "row" },
+          alignItems: { xs: "flex-start", md: "center" },
+          justifyContent: "space-between",
+          gap: 2,
+        }}
+      >
+        <Box>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 0.5 }}>
+            <Sparkles size={20} color="#FBBF24" />
+            <Typography variant="h6" sx={{ fontWeight: 700, color: "#FFFFFF" }}>
+              1-Click Master Push & Sync Pipeline
             </Typography>
-            <Chip
-              label={activeDomain}
-              color="primary"
-              variant="outlined"
-              sx={{ fontWeight: 700, fontSize: "0.85rem", borderColor: "#38BDF8", color: "#38BDF8" }}
-            />
           </Box>
-        </Paper>
+          <Typography variant="body2" sx={{ color: "#CBD5E1" }}>
+            Sequentially triggers StoreInit → Products Policy → Articles Policy → Packages → Menus → Albums → Content → Color → Stock → Flush WAL.
+          </Typography>
+        </Box>
 
-        {/* 1-Click Master Pipeline Button */}
-        <Paper
-          elevation={0}
+        <Button
+          variant="contained"
+          disabled={isRunningAll || Boolean(runningStep)}
+          onClick={handleRunAllPipeline}
+          startIcon={isRunningAll ? <RotateCw className="animate-spin" size={18} /> : <Play size={18} />}
           sx={{
-            p: 3,
-            mb: 4,
-            background: "linear-gradient(135deg, rgba(37, 99, 235, 0.25) 0%, rgba(147, 51, 234, 0.25) 100%)",
-            border: "1px solid rgba(96, 165, 250, 0.3)",
-            borderRadius: "16px",
-            display: "flex",
-            flexDirection: { xs: "column", md: "row" },
-            alignItems: { xs: "flex-start", md: "center" },
-            justifyContent: "space-between",
-            gap: 2,
+            backgroundColor: "#2563EB",
+            px: 4,
+            py: 1.25,
+            fontWeight: 700,
+            fontSize: "0.95rem",
+            textTransform: "none",
+            borderRadius: "10px",
+            boxShadow: "0 4px 20px rgba(37, 99, 235, 0.4)",
+            "&:hover": { backgroundColor: "#1D4ED8" },
           }}
         >
-          <Box>
-            <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 0.5 }}>
-              <Sparkles size={20} color="#FBBF24" />
-              <Typography variant="h6" sx={{ fontWeight: 700, color: "#FFFFFF" }}>
-                1-Click Master Push & Sync Pipeline
-              </Typography>
-            </Box>
-            <Typography variant="body2" sx={{ color: "#CBD5E1" }}>
-              Sequentially triggers StoreInit → Products Policy → Articles Policy → Packages → Menus → Albums → Content → Color → Stock → Flush WAL.
-            </Typography>
-          </Box>
+          {isRunningAll ? `Running Pipeline (${activeStepIndex}/10)...` : "Run Full Pipeline Now"}
+        </Button>
+      </Paper>
 
-          <Button
-            variant="contained"
-            disabled={isRunningAll || Boolean(runningStep)}
-            onClick={handleRunAllPipeline}
-            startIcon={isRunningAll ? <RotateCw className="animate-spin" size={18} /> : <Play size={18} />}
+      {isRunningAll && (
+        <Box sx={{ mb: 4 }}>
+          <LinearProgress sx={{ borderRadius: "4px", height: 6, backgroundColor: "#1E293B" }} />
+        </Box>
+      )}
+
+      {/* Configuration JSON Editors Grid */}
+      <Grid container spacing={3} sx={{ mb: 4 }}>
+        {/* StoreInit Config */}
+        <Grid xs={12} md={6}>
+          <Paper
+            elevation={0}
             sx={{
-              backgroundColor: "#2563EB",
-              px: 4,
-              py: 1.25,
-              fontWeight: 700,
-              fontSize: "0.95rem",
-              textTransform: "none",
-              borderRadius: "10px",
-              boxShadow: "0 4px 20px rgba(37, 99, 235, 0.4)",
-              "&:hover": { backgroundColor: "#1D4ED8" },
+              p: 2.5,
+              backgroundColor: "#131C2E",
+              border: "1px solid rgba(255, 255, 255, 0.1)",
+              borderRadius: "14px",
+              height: "100%",
+              display: "flex",
+              flexDirection: "column",
             }}
           >
-            {isRunningAll ? `Running Pipeline (${activeStepIndex}/10)...` : "Run Full Pipeline Now"}
-          </Button>
-        </Paper>
+            <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mb: 1.5 }}>
+              <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                <Store size={18} color="#38BDF8" />
+                <Typography variant="subtitle1" sx={{ fontWeight: 700, color: "#FFFFFF" }}>
+                  Store Init Payload
+                </Typography>
+              </Box>
+              <Chip label="POST /api/sqlite/store-init" size="small" sx={{ backgroundColor: "rgba(56, 189, 248, 0.15)", color: "#38BDF8", fontSize: "0.72rem" }} />
+            </Box>
 
-        {isRunningAll && (
-          <Box sx={{ mb: 4 }}>
-            <LinearProgress sx={{ borderRadius: "4px", height: 6, backgroundColor: "#1E293B" }} />
-          </Box>
-        )}
-
-        {/* Configuration JSON Editors Grid */}
-        <Grid container spacing={3} sx={{ mb: 4 }}>
-          {/* StoreInit Config */}
-          <Grid item xs={12} md={6}>
-            <Paper
-              elevation={0}
+            <TextField
+              multiline
+              rows={9}
+              fullWidth
+              value={storeInitPayloadStr}
+              onChange={(e) => setStoreInitPayloadStr(e.target.value)}
               sx={{
-                p: 2.5,
-                backgroundColor: "#131C2E",
-                border: "1px solid rgba(255, 255, 255, 0.1)",
-                borderRadius: "14px",
-                height: "100%",
-                display: "flex",
-                flexDirection: "column",
+                fontFamily: "monospace",
+                fontSize: "0.82rem",
+                backgroundColor: "#0B0F19",
+                borderRadius: "8px",
+                "& .MuiInputBase-input": { color: "#38BDF8", fontFamily: "Consolas, monospace", fontSize: "0.85rem" },
+                "& .MuiOutlinedInput-notchedOutline": { borderColor: "rgba(255, 255, 255, 0.1)" },
               }}
-            >
-              <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mb: 1.5 }}>
-                <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                  <Store size={18} color="#38BDF8" />
-                  <Typography variant="subtitle1" sx={{ fontWeight: 700, color: "#FFFFFF" }}>
-                    Store Init Payload
-                  </Typography>
-                </Box>
-                <Chip label="POST /api/sqlite/store-init" size="small" sx={{ backgroundColor: "rgba(56, 189, 248, 0.15)", color: "#38BDF8", fontSize: "0.72rem" }} />
-              </Box>
+            />
 
-              <TextField
-                multiline
-                rows={9}
+            <Box sx={{ display: "flex", gap: 1.5, mt: 2 }}>
+              <Button
                 fullWidth
-                value={storeInitPayloadStr}
-                onChange={(e) => setStoreInitPayloadStr(e.target.value)}
+                variant="contained"
+                disabled={Boolean(runningStep)}
+                onClick={handlePushStoreInit}
+                startIcon={runningStep === "store-init" ? <RotateCw className="animate-spin" size={16} /> : <Play size={16} />}
                 sx={{
-                  fontFamily: "monospace",
-                  fontSize: "0.82rem",
-                  backgroundColor: "#0B0F19",
-                  borderRadius: "8px",
-                  "& .MuiInputBase-input": { color: "#38BDF8", fontFamily: "Consolas, monospace", fontSize: "0.85rem" },
-                  "& .MuiOutlinedInput-notchedOutline": { borderColor: "rgba(255, 255, 255, 0.1)" },
+                  backgroundColor: "#0284C7",
+                  textTransform: "none",
+                  fontWeight: 600,
+                  "&:hover": { backgroundColor: "#0369A1" },
                 }}
-              />
-
-              <Box sx={{ display: "flex", gap: 1.5, mt: 2 }}>
-                <Button
-                  fullWidth
-                  variant="contained"
-                  disabled={Boolean(runningStep)}
-                  onClick={handlePushStoreInit}
-                  startIcon={runningStep === "store-init" ? <RotateCw className="animate-spin" size={16} /> : <Play size={16} />}
-                  sx={{
-                    backgroundColor: "#0284C7",
-                    textTransform: "none",
-                    fontWeight: 600,
-                    "&:hover": { backgroundColor: "#0369A1" },
-                  }}
-                >
-                  Push Store Init
-                </Button>
-                <Button
-                  variant="outlined"
-                  disabled={Boolean(runningStep)}
-                  onClick={handleInspectStoreInit}
-                  sx={{
-                    borderColor: "rgba(255, 255, 255, 0.2)",
-                    color: "#E2E8F0",
-                    textTransform: "none",
-                    fontWeight: 600,
-                  }}
-                >
-                  Verify
-                </Button>
-              </Box>
-            </Paper>
-          </Grid>
-
-          {/* Policy Pricing Config */}
-          <Grid item xs={12} md={6}>
-            <Paper
-              elevation={0}
-              sx={{
-                p: 2.5,
-                backgroundColor: "#131C2E",
-                border: "1px solid rgba(255, 255, 255, 0.1)",
-                borderRadius: "14px",
-                height: "100%",
-                display: "flex",
-                flexDirection: "column",
-              }}
-            >
-              <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mb: 1.5 }}>
-                <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                  <Layers size={18} color="#C084FC" />
-                  <Typography variant="subtitle1" sx={{ fontWeight: 700, color: "#FFFFFF" }}>
-                    Policy Configuration (Products, Articles & Stock List)
-                  </Typography>
-                </Box>
-                <Chip label="Config [...]" size="small" sx={{ backgroundColor: "rgba(192, 132, 252, 0.15)", color: "#C084FC", fontSize: "0.72rem" }} />
-              </Box>
-
-              <TextField
-                multiline
-                rows={9}
-                fullWidth
-                value={policyPayloadStr}
-                onChange={(e) => setPolicyPayloadStr(e.target.value)}
+              >
+                Push Store Init
+              </Button>
+              <Button
+                variant="outlined"
+                disabled={Boolean(runningStep)}
+                onClick={handleInspectStoreInit}
                 sx={{
-                  fontFamily: "monospace",
-                  fontSize: "0.82rem",
-                  backgroundColor: "#0B0F19",
-                  borderRadius: "8px",
-                  "& .MuiInputBase-input": { color: "#C084FC", fontFamily: "Consolas, monospace", fontSize: "0.85rem" },
-                  "& .MuiOutlinedInput-notchedOutline": { borderColor: "rgba(255, 255, 255, 0.1)" },
+                  borderColor: "rgba(255, 255, 255, 0.2)",
+                  color: "#E2E8F0",
+                  textTransform: "none",
+                  fontWeight: 600,
                 }}
-              />
-
-              <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1.5, mt: 2 }}>
-                <Button
-                  sx={{
-                    flex: 1,
-                    minWidth: "120px",
-                    backgroundColor: "#7E22CE",
-                    textTransform: "none",
-                    fontWeight: 600,
-                    "&:hover": { backgroundColor: "#6B21A8" },
-                  }}
-                  variant="contained"
-                  disabled={Boolean(runningStep)}
-                  onClick={handlePushProducts}
-                  startIcon={runningStep === "products" ? <RotateCw className="animate-spin" size={16} /> : <Play size={16} />}
-                >
-                  Sync Products
-                </Button>
-                <Button
-                  sx={{
-                    flex: 1,
-                    minWidth: "120px",
-                    backgroundColor: "#9333EA",
-                    textTransform: "none",
-                    fontWeight: 600,
-                    "&:hover": { backgroundColor: "#7E22CE" },
-                  }}
-                  variant="contained"
-                  disabled={Boolean(runningStep)}
-                  onClick={handlePushArticles}
-                  startIcon={runningStep === "articles" ? <RotateCw className="animate-spin" size={16} /> : <Play size={16} />}
-                >
-                  Sync Articles
-                </Button>
-                <Button
-                  sx={{
-                    flex: 1,
-                    minWidth: "120px",
-                    backgroundColor: "#059669",
-                    textTransform: "none",
-                    fontWeight: 600,
-                    "&:hover": { backgroundColor: "#047857" },
-                  }}
-                  variant="contained"
-                  disabled={Boolean(runningStep)}
-                  onClick={handleSyncStock}
-                  startIcon={runningStep === "stock" ? <RotateCw className="animate-spin" size={16} /> : <Play size={16} />}
-                >
-                  Sync Stock List
-                </Button>
-              </Box>
-            </Paper>
-          </Grid>
+              >
+                Verify
+              </Button>
+            </Box>
+          </Paper>
         </Grid>
 
-        {/* Individual Step Action Buttons Grid */}
-        <Paper
-          elevation={0}
-          sx={{
-            p: 3,
-            mb: 4,
-            backgroundColor: "#131C2E",
-            border: "1px solid rgba(255, 255, 255, 0.1)",
-            borderRadius: "14px",
-          }}
-        >
-          <Typography variant="subtitle1" sx={{ fontWeight: 700, color: "#FFFFFF", mb: 2 }}>
-            Individual Master Sync Endpoints
-          </Typography>
+        {/* Policy Pricing Config */}
+        <Grid xs={12} md={6}>
+          <Paper
+            elevation={0}
+            sx={{
+              p: 2.5,
+              backgroundColor: "#131C2E",
+              border: "1px solid rgba(255, 255, 255, 0.1)",
+              borderRadius: "14px",
+              height: "100%",
+              display: "flex",
+              flexDirection: "column",
+            }}
+          >
+            <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mb: 1.5 }}>
+              <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                <Layers size={18} color="#C084FC" />
+                <Typography variant="subtitle1" sx={{ fontWeight: 700, color: "#FFFFFF" }}>
+                  Policy Configuration (Products, Articles & Stock List)
+                </Typography>
+              </Box>
+              <Chip label="Config [...]" size="small" sx={{ backgroundColor: "rgba(192, 132, 252, 0.15)", color: "#C084FC", fontSize: "0.72rem" }} />
+            </Box>
 
-          <Grid container spacing={2}>
-            <Grid item xs={6} sm={4} md={3}>
+            <TextField
+              multiline
+              rows={9}
+              fullWidth
+              value={policyPayloadStr}
+              onChange={(e) => setPolicyPayloadStr(e.target.value)}
+              sx={{
+                fontFamily: "monospace",
+                fontSize: "0.82rem",
+                backgroundColor: "#0B0F19",
+                borderRadius: "8px",
+                "& .MuiInputBase-input": { color: "#C084FC", fontFamily: "Consolas, monospace", fontSize: "0.85rem" },
+                "& .MuiOutlinedInput-notchedOutline": { borderColor: "rgba(255, 255, 255, 0.1)" },
+              }}
+            />
+
+            <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1.5, mt: 2 }}>
               <Button
-                fullWidth
-                variant="outlined"
-                disabled={Boolean(runningStep)}
-                onClick={handleSyncPackages}
-                startIcon={<Boxes size={16} />}
                 sx={{
-                  borderColor: "rgba(255, 255, 255, 0.15)",
-                  color: "#E2E8F0",
+                  flex: 1,
+                  minWidth: "120px",
+                  backgroundColor: "#7E22CE",
                   textTransform: "none",
-                  py: 1.25,
-                  fontSize: "0.85rem",
-                  "&:hover": { borderColor: "#38BDF8", backgroundColor: "rgba(56, 189, 248, 0.08)" },
+                  fontWeight: 600,
+                  "&:hover": { backgroundColor: "#6B21A8" },
                 }}
-              >
-                Package Master
-              </Button>
-            </Grid>
-
-            <Grid item xs={6} sm={4} md={3}>
-              <Button
-                fullWidth
-                variant="outlined"
+                variant="contained"
                 disabled={Boolean(runningStep)}
-                onClick={handleSyncMenus}
-                startIcon={<FolderTree size={16} />}
-                sx={{
-                  borderColor: "rgba(255, 255, 255, 0.15)",
-                  color: "#E2E8F0",
-                  textTransform: "none",
-                  py: 1.25,
-                  fontSize: "0.85rem",
-                  "&:hover": { borderColor: "#38BDF8", backgroundColor: "rgba(56, 189, 248, 0.08)" },
-                }}
+                onClick={handlePushProducts}
+                startIcon={runningStep === "products" ? <RotateCw className="animate-spin" size={16} /> : <Play size={16} />}
               >
-                Menus Master
+                Sync Products
               </Button>
-            </Grid>
-
-            <Grid item xs={6} sm={4} md={3}>
               <Button
-                fullWidth
-                variant="outlined"
+                sx={{
+                  flex: 1,
+                  minWidth: "120px",
+                  backgroundColor: "#9333EA",
+                  textTransform: "none",
+                  fontWeight: 600,
+                  "&:hover": { backgroundColor: "#7E22CE" },
+                }}
+                variant="contained"
                 disabled={Boolean(runningStep)}
-                onClick={handleSyncAlbums}
-                startIcon={<Image size={16} />}
-                sx={{
-                  borderColor: "rgba(255, 255, 255, 0.15)",
-                  color: "#E2E8F0",
-                  textTransform: "none",
-                  py: 1.25,
-                  fontSize: "0.85rem",
-                  "&:hover": { borderColor: "#EC4899", backgroundColor: "rgba(236, 72, 153, 0.08)" },
-                }}
+                onClick={handlePushArticles}
+                startIcon={runningStep === "articles" ? <RotateCw className="animate-spin" size={16} /> : <Play size={16} />}
               >
-                Exclusive Albums
+                Sync Articles
               </Button>
-            </Grid>
-
-            <Grid item xs={6} sm={4} md={3}>
               <Button
-                fullWidth
-                variant="outlined"
-                disabled={Boolean(runningStep)}
-                onClick={handleSyncContent}
-                startIcon={<Globe size={16} />}
                 sx={{
-                  borderColor: "rgba(255, 255, 255, 0.15)",
-                  color: "#E2E8F0",
+                  flex: 1,
+                  minWidth: "120px",
+                  backgroundColor: "#059669",
                   textTransform: "none",
-                  py: 1.25,
-                  fontSize: "0.85rem",
-                  "&:hover": { borderColor: "#8B5CF6", backgroundColor: "rgba(139, 92, 246, 0.08)" },
+                  fontWeight: 600,
+                  "&:hover": { backgroundColor: "#047857" },
                 }}
-              >
-                Website Content
-              </Button>
-            </Grid>
-
-            <Grid item xs={6} sm={4} md={3}>
-              <Button
-                fullWidth
-                variant="outlined"
-                disabled={Boolean(runningStep)}
-                onClick={handleSyncColor}
-                startIcon={<Palette size={16} />}
-                sx={{
-                  borderColor: "rgba(255, 255, 255, 0.15)",
-                  color: "#E2E8F0",
-                  textTransform: "none",
-                  py: 1.25,
-                  fontSize: "0.85rem",
-                  "&:hover": { borderColor: "#F43F5E", backgroundColor: "rgba(244, 63, 94, 0.08)" },
-                }}
-              >
-                Website Color
-              </Button>
-            </Grid>
-
-            <Grid item xs={6} sm={4} md={3}>
-              <Button
-                fullWidth
-                variant="outlined"
+                variant="contained"
                 disabled={Boolean(runningStep)}
                 onClick={handleSyncStock}
-                startIcon={<FileCode size={16} />}
-                sx={{
-                  borderColor: "rgba(255, 255, 255, 0.15)",
-                  color: "#E2E8F0",
-                  textTransform: "none",
-                  py: 1.25,
-                  fontSize: "0.85rem",
-                  "&:hover": { borderColor: "#10B981", backgroundColor: "rgba(16, 185, 129, 0.08)" },
-                }}
+                startIcon={runningStep === "stock" ? <RotateCw className="animate-spin" size={16} /> : <Play size={16} />}
               >
-                Stock List
+                Sync Stock List
               </Button>
-            </Grid>
-
-            <Grid item xs={6} sm={4} md={3}>
-              <Button
-                fullWidth
-                variant="outlined"
-                disabled={Boolean(runningStep)}
-                onClick={handleFlushWal}
-                startIcon={<Database size={16} />}
-                sx={{
-                  borderColor: "rgba(255, 255, 255, 0.15)",
-                  color: "#F59E0B",
-                  textTransform: "none",
-                  py: 1.25,
-                  fontSize: "0.85rem",
-                  "&:hover": { borderColor: "#F59E0B", backgroundColor: "rgba(245, 158, 11, 0.08)" },
-                }}
-              >
-                Flush WAL Checkpoint
-              </Button>
-            </Grid>
-          </Grid>
-        </Paper>
-
-        {/* Live Terminal & Logs Output */}
-        <Paper
-          elevation={0}
-          sx={{
-            p: 3,
-            backgroundColor: "#0B0F19",
-            border: "1px solid rgba(255, 255, 255, 0.12)",
-            borderRadius: "14px",
-          }}
-        >
-          <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mb: 2 }}>
-            <Box sx={{ display: "flex", alignItems: "center", gap: 1.2 }}>
-              <Terminal size={20} color="#38BDF8" />
-              <Typography variant="h6" sx={{ fontWeight: 700, color: "#FFFFFF" }}>
-                Execution Console & Response Logs
-              </Typography>
-              <Chip label={`${logs.length} events`} size="small" sx={{ backgroundColor: "rgba(255, 255, 255, 0.1)", color: "#94A3B8" }} />
             </Box>
+          </Paper>
+        </Grid>
+      </Grid>
 
-            {logs.length > 0 && (
-              <Button
-                size="small"
-                onClick={() => setLogs([])}
-                sx={{ color: "#94A3B8", textTransform: "none", fontSize: "0.78rem" }}
-              >
-                Clear Console
-              </Button>
-            )}
-          </Box>
+      {/* Individual Step Action Buttons Grid */}
+      <Paper
+        elevation={0}
+        sx={{
+          p: 3,
+          mb: 4,
+          backgroundColor: "#131C2E",
+          border: "1px solid rgba(255, 255, 255, 0.1)",
+          borderRadius: "14px",
+        }}
+      >
+        <Typography variant="subtitle1" sx={{ fontWeight: 700, color: "#FFFFFF", mb: 2 }}>
+          Individual Master Sync Endpoints
+        </Typography>
 
-          {logs.length === 0 ? (
-            <Box
+        <Grid container spacing={2}>
+          <Grid xs={6} sm={4} md={3}>
+            <Button
+              fullWidth
+              variant="outlined"
+              disabled={Boolean(runningStep)}
+              onClick={handleSyncPackages}
+              startIcon={<Boxes size={16} />}
               sx={{
-                py: 6,
-                textAlign: "center",
-                color: "#64748B",
-                fontFamily: "Consolas, monospace",
+                borderColor: "rgba(255, 255, 255, 0.15)",
+                color: "#E2E8F0",
+                textTransform: "none",
+                py: 1.25,
                 fontSize: "0.85rem",
+                "&:hover": { borderColor: "#38BDF8", backgroundColor: "rgba(56, 189, 248, 0.08)" },
               }}
             >
-              No API requests dispatched yet. Click "Run Full Pipeline Now" or an individual button above.
-            </Box>
-          ) : (
-            <Box sx={{ display: "flex", flexDirection: "column", gap: 1.5, maxHeight: 520, overflowY: "auto", pr: 1 }}>
-              {logs.map((log, index) => {
-                const isSuccess = log.type === "success";
-                const isError = log.type === "error";
-                const isStart = log.type === "start";
+              Package Master
+            </Button>
+          </Grid>
 
-                return (
-                  <Box
-                    key={log.id}
-                    sx={{
-                      p: 2,
-                      backgroundColor: "#131C2E",
-                      borderLeft: `4px solid ${isSuccess ? "#10B981" : isError ? "#EF4444" : isStart ? "#38BDF8" : "#818CF8"
-                        }`,
-                      borderRadius: "6px",
-                    }}
-                  >
-                    <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mb: 0.5 }}>
-                      <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                        {isSuccess && <CheckCircle2 size={16} color="#10B981" />}
-                        {isError && <AlertCircle size={16} color="#EF4444" />}
-                        {isStart && <RotateCw size={16} color="#38BDF8" className="animate-spin" />}
-                        <Typography
-                          variant="body2"
-                          sx={{
-                            fontWeight: 600,
-                            color: isSuccess ? "#A7F3D0" : isError ? "#FCA5A5" : "#E2E8F0",
-                            fontFamily: "Consolas, monospace",
-                          }}
-                        >
-                          {log.title}
-                        </Typography>
-                      </Box>
+          <Grid xs={6} sm={4} md={3}>
+            <Button
+              fullWidth
+              variant="outlined"
+              disabled={Boolean(runningStep)}
+              onClick={handleSyncMenus}
+              startIcon={<FolderTree size={16} />}
+              sx={{
+                borderColor: "rgba(255, 255, 255, 0.15)",
+                color: "#E2E8F0",
+                textTransform: "none",
+                py: 1.25,
+                fontSize: "0.85rem",
+                "&:hover": { borderColor: "#38BDF8", backgroundColor: "rgba(56, 189, 248, 0.08)" },
+              }}
+            >
+              Menus Master
+            </Button>
+          </Grid>
 
-                      <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
-                        {log.duration !== null && (
-                          <Box sx={{ display: "flex", alignItems: "center", gap: 0.5, color: "#64748B", fontSize: "0.75rem" }}>
-                            <Clock size={12} />
-                            <span>{log.duration}ms</span>
-                          </Box>
-                        )}
-                        <Typography variant="caption" sx={{ color: "#64748B" }}>
-                          {log.timestamp}
-                        </Typography>
-                        {log.data && (
-                          <Tooltip title={copiedLogIndex === index ? "Copied!" : "Copy JSON"}>
-                            <IconButton
-                              size="small"
-                              onClick={() => copyLogData(index, log.data)}
-                              sx={{ color: "#94A3B8", p: "2px" }}
-                            >
-                              {copiedLogIndex === index ? <Check size={14} color="#10B981" /> : <Copy size={14} />}
-                            </IconButton>
-                          </Tooltip>
-                        )}
-                      </Box>
-                    </Box>
+          <Grid xs={6} sm={4} md={3}>
+            <Button
+              fullWidth
+              variant="outlined"
+              disabled={Boolean(runningStep)}
+              onClick={handleSyncAlbums}
+              startIcon={<Image size={16} />}
+              sx={{
+                borderColor: "rgba(255, 255, 255, 0.15)",
+                color: "#E2E8F0",
+                textTransform: "none",
+                py: 1.25,
+                fontSize: "0.85rem",
+                "&:hover": { borderColor: "#EC4899", backgroundColor: "rgba(236, 72, 153, 0.08)" },
+              }}
+            >
+              Exclusive Albums
+            </Button>
+          </Grid>
 
-                    {log.data && (
-                      <Box
-                        component="pre"
+          <Grid xs={6} sm={4} md={3}>
+            <Button
+              fullWidth
+              variant="outlined"
+              disabled={Boolean(runningStep)}
+              onClick={handleSyncContent}
+              startIcon={<Globe size={16} />}
+              sx={{
+                borderColor: "rgba(255, 255, 255, 0.15)",
+                color: "#E2E8F0",
+                textTransform: "none",
+                py: 1.25,
+                fontSize: "0.85rem",
+                "&:hover": { borderColor: "#8B5CF6", backgroundColor: "rgba(139, 92, 246, 0.08)" },
+              }}
+            >
+              Website Content
+            </Button>
+          </Grid>
+
+          <Grid xs={6} sm={4} md={3}>
+            <Button
+              fullWidth
+              variant="outlined"
+              disabled={Boolean(runningStep)}
+              onClick={handleSyncColor}
+              startIcon={<Palette size={16} />}
+              sx={{
+                borderColor: "rgba(255, 255, 255, 0.15)",
+                color: "#E2E8F0",
+                textTransform: "none",
+                py: 1.25,
+                fontSize: "0.85rem",
+                "&:hover": { borderColor: "#F43F5E", backgroundColor: "rgba(244, 63, 94, 0.08)" },
+              }}
+            >
+              Website Color
+            </Button>
+          </Grid>
+
+          <Grid xs={6} sm={4} md={3}>
+            <Button
+              fullWidth
+              variant="outlined"
+              disabled={Boolean(runningStep)}
+              onClick={handleSyncStock}
+              startIcon={<FileCode size={16} />}
+              sx={{
+                borderColor: "rgba(255, 255, 255, 0.15)",
+                color: "#E2E8F0",
+                textTransform: "none",
+                py: 1.25,
+                fontSize: "0.85rem",
+                "&:hover": { borderColor: "#10B981", backgroundColor: "rgba(16, 185, 129, 0.08)" },
+              }}
+            >
+              Stock List
+            </Button>
+          </Grid>
+
+          <Grid xs={6} sm={4} md={3}>
+            <Button
+              fullWidth
+              variant="outlined"
+              disabled={Boolean(runningStep)}
+              onClick={handleFlushWal}
+              startIcon={<Database size={16} />}
+              sx={{
+                borderColor: "rgba(255, 255, 255, 0.15)",
+                color: "#F59E0B",
+                textTransform: "none",
+                py: 1.25,
+                fontSize: "0.85rem",
+                "&:hover": { borderColor: "#F59E0B", backgroundColor: "rgba(245, 158, 11, 0.08)" },
+              }}
+            >
+              Flush WAL Checkpoint
+            </Button>
+          </Grid>
+        </Grid>
+      </Paper>
+
+      {/* Live Terminal & Logs Output */}
+      <Paper
+        elevation={0}
+        sx={{
+          p: 3,
+          backgroundColor: "#0B0F19",
+          border: "1px solid rgba(255, 255, 255, 0.12)",
+          borderRadius: "14px",
+        }}
+      >
+        <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mb: 2 }}>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1.2 }}>
+            <Terminal size={20} color="#38BDF8" />
+            <Typography variant="h6" sx={{ fontWeight: 700, color: "#FFFFFF" }}>
+              Execution Console & Response Logs
+            </Typography>
+            <Chip label={`${logs.length} events`} size="small" sx={{ backgroundColor: "rgba(255, 255, 255, 0.1)", color: "#94A3B8" }} />
+          </Box>
+
+          {logs.length > 0 && (
+            <Button
+              size="small"
+              onClick={() => setLogs([])}
+              sx={{ color: "#94A3B8", textTransform: "none", fontSize: "0.78rem" }}
+            >
+              Clear Console
+            </Button>
+          )}
+        </Box>
+
+        {logs.length === 0 ? (
+          <Box
+            sx={{
+              py: 6,
+              textAlign: "center",
+              color: "#64748B",
+              fontFamily: "Consolas, monospace",
+              fontSize: "0.85rem",
+            }}
+          >
+            No API requests dispatched yet. Click "Run Full Pipeline Now" or an individual button above.
+          </Box>
+        ) : (
+          <Box sx={{ display: "flex", flexDirection: "column", gap: 1.5, maxHeight: 520, overflowY: "auto", pr: 1 }}>
+            {logs.map((log, index) => {
+              const isSuccess = log.type === "success";
+              const isError = log.type === "error";
+              const isStart = log.type === "start";
+
+              return (
+                <Box
+                  key={log.id}
+                  sx={{
+                    p: 2,
+                    backgroundColor: "#131C2E",
+                    borderLeft: `4px solid ${isSuccess ? "#10B981" : isError ? "#EF4444" : isStart ? "#38BDF8" : "#818CF8"
+                      }`,
+                    borderRadius: "6px",
+                  }}
+                >
+                  <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mb: 0.5 }}>
+                    <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                      {isSuccess && <CheckCircle2 size={16} color="#10B981" />}
+                      {isError && <AlertCircle size={16} color="#EF4444" />}
+                      {isStart && <RotateCw size={16} color="#38BDF8" className="animate-spin" />}
+                      <Typography
+                        variant="body2"
                         sx={{
-                          mt: 1,
-                          p: 1.5,
-                          backgroundColor: "#0B0F19",
-                          borderRadius: "4px",
-                          color: "#94A3B8",
-                          fontSize: "0.78rem",
+                          fontWeight: 600,
+                          color: isSuccess ? "#A7F3D0" : isError ? "#FCA5A5" : "#E2E8F0",
                           fontFamily: "Consolas, monospace",
-                          overflowX: "auto",
-                          maxHeight: 180,
                         }}
                       >
-                        {JSON.stringify(log.data, null, 2)}
-                      </Box>
-                    )}
+                        {log.title}
+                      </Typography>
+                    </Box>
+
+                    <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
+                      {log.duration !== null && (
+                        <Box sx={{ display: "flex", alignItems: "center", gap: 0.5, color: "#64748B", fontSize: "0.75rem" }}>
+                          <Clock size={12} />
+                          <span>{log.duration}ms</span>
+                        </Box>
+                      )}
+                      <Typography variant="caption" sx={{ color: "#64748B" }}>
+                        {log.timestamp}
+                      </Typography>
+                      {log.data && (
+                        <Tooltip title={copiedLogIndex === index ? "Copied!" : "Copy JSON"}>
+                          <IconButton
+                            size="small"
+                            onClick={() => copyLogData(index, log.data)}
+                            sx={{ color: "#94A3B8", p: "2px" }}
+                          >
+                            {copiedLogIndex === index ? <Check size={14} color="#10B981" /> : <Copy size={14} />}
+                          </IconButton>
+                        </Tooltip>
+                      )}
+                    </Box>
                   </Box>
-                );
-              })}
-            </Box>
-          )}
-        </Paper>
-      </Container>
-    </Box>
+
+                  {log.data && (
+                    <Box
+                      component="pre"
+                      sx={{
+                        mt: 1,
+                        p: 1.5,
+                        backgroundColor: "#0B0F19",
+                        borderRadius: "4px",
+                        color: "#94A3B8",
+                        fontSize: "0.78rem",
+                        fontFamily: "Consolas, monospace",
+                        overflowX: "auto",
+                        maxHeight: 180,
+                      }}
+                    >
+                      {JSON.stringify(log.data, null, 2)}
+                    </Box>
+                  )}
+                </Box>
+              );
+            })}
+          </Box>
+        )}
+      </Paper>
+    </Container>
+    </Box >
   );
 }

@@ -216,8 +216,8 @@ const RightSide = ({
                 <span>
                   {formatter(
                     singleProd1?.UnitCostWithMarkUp ??
-                      singleProd?.UnitCostWithMarkUp ??
-                      0,
+                    singleProd?.UnitCostWithMarkUp ??
+                    0,
                   )}
                 </span>
               )}
@@ -278,11 +278,11 @@ const RightSide = ({
 
               {/* Diamond QC */}
               {storeInit?.IsDiamondCustomization === 1 &&
-              (isLoading ||
-                (diaQcCombo?.length > 0 &&
-                  diaList?.length > 0 &&
-                  singleProd?.DiaQuaCol !== "" &&
-                  selectDiaQc)) ? (
+                (isLoading ||
+                  (diaQcCombo?.length > 0 &&
+                    diaList?.length > 0 &&
+                    singleProd?.DiaQuaCol !== "" &&
+                    selectDiaQc)) ? (
                 <Grid
                   item
                   size={{
@@ -634,7 +634,7 @@ const RightSide = ({
 
                 {/* ===================== SIZE =====================
                                 {SizeSorting?.length > 0 && (
-                                    <Grid item size={{
+                                    <Grid  size={{
                                     xs={12} sm={6}}>
                                         <Typography sx={{ fontSize: "14px", color: "#666", mb: 0.5 }}>
                                             Size :
@@ -797,395 +797,395 @@ const RightSide = ({
                     getCost(
                       singleProd1?.Metal_Cost ?? singleProd?.Metal_Cost,
                     ) !== 0) && (
-                    <Box
-                      sx={{
-                        display: "flex",
-                        borderBottom: "1px solid #e0e0e0",
-                      }}
-                    >
                       <Box
                         sx={{
-                          width: "120px",
-                          bgcolor: "#f5f5f5",
-                          p: 2,
-                          borderRight: "1px solid #e0e0e0",
+                          display: "flex",
+                          borderBottom: "1px solid #e0e0e0",
                         }}
                       >
-                        <Typography
-                          variant="body2"
+                        <Box
                           sx={{
-                            color: "#616161",
-                            fontSize: "13px",
-                            fontWeight: 600,
+                            width: "120px",
+                            bgcolor: "#f5f5f5",
+                            p: 2,
+                            borderRight: "1px solid #e0e0e0",
                           }}
                         >
-                          Metal
-                        </Typography>
-                      </Box>
-                      <Box sx={{ flex: 1, p: 2 }}>
-                        <Typography
-                          variant="body2"
-                          sx={{ color: "#424242", fontSize: "13px" }}
-                        >
-                          {isLoading ? (
-                            <Skeleton
-                              variant="rounded"
-                              width={80}
-                              height={18}
-                            />
-                          ) : (
-                            <>
-                              <span className="elv_currencyFont">
-                                {loginData?.CurrencyCode ??
-                                  storeInit?.CurrencyCode}
-                              </span>{" "}
-                              {formatter(
-                                getCost(
-                                  singleProd1?.Metal_Cost ??
+                          <Typography
+                            variant="body2"
+                            sx={{
+                              color: "#616161",
+                              fontSize: "13px",
+                              fontWeight: 600,
+                            }}
+                          >
+                            Metal
+                          </Typography>
+                        </Box>
+                        <Box sx={{ flex: 1, p: 2 }}>
+                          <Typography
+                            variant="body2"
+                            sx={{ color: "#424242", fontSize: "13px" }}
+                          >
+                            {isLoading ? (
+                              <Skeleton
+                                variant="rounded"
+                                width={80}
+                                height={18}
+                              />
+                            ) : (
+                              <>
+                                <span className="elv_currencyFont">
+                                  {loginData?.CurrencyCode ??
+                                    storeInit?.CurrencyCode}
+                                </span>{" "}
+                                {formatter(
+                                  getCost(
+                                    singleProd1?.Metal_Cost ??
                                     singleProd?.Metal_Cost,
-                                ).toFixed(2),
-                              )}
-                            </>
-                          )}
-                        </Typography>
+                                  ).toFixed(2),
+                                )}
+                              </>
+                            )}
+                          </Typography>
+                        </Box>
                       </Box>
-                    </Box>
-                  )}
+                    )}
 
                   {/* Diamond */}
                   {(isLoading ||
                     getCost(
                       singleProd1?.Diamond_Cost ?? singleProd?.Diamond_Cost,
                     ) !== 0) && (
-                    <Box
-                      sx={{
-                        display: "flex",
-                        borderBottom: "1px solid #e0e0e0",
-                      }}
-                    >
                       <Box
                         sx={{
-                          width: "120px",
-                          bgcolor: "#f5f5f5",
-                          p: 2,
-                          borderRight: "1px solid #e0e0e0",
+                          display: "flex",
+                          borderBottom: "1px solid #e0e0e0",
                         }}
                       >
-                        <Typography
-                          variant="body2"
+                        <Box
                           sx={{
-                            color: "#616161",
-                            fontSize: "13px",
-                            fontWeight: 600,
+                            width: "120px",
+                            bgcolor: "#f5f5f5",
+                            p: 2,
+                            borderRight: "1px solid #e0e0e0",
                           }}
                         >
-                          Diamond
-                        </Typography>
-                      </Box>
-                      <Box sx={{ flex: 1, p: 2 }}>
-                        <Typography
-                          variant="body2"
-                          sx={{ color: "#424242", fontSize: "13px" }}
-                        >
-                          {isLoading ? (
-                            <Skeleton
-                              variant="rounded"
-                              width={80}
-                              height={18}
-                            />
-                          ) : (
-                            <>
-                              <span className="elv_currencyFont">
-                                {loginData?.CurrencyCode ??
-                                  storeInit?.CurrencyCode}
-                              </span>{" "}
-                              {formatter(
-                                getCost(
-                                  singleProd1?.Diamond_Cost ??
+                          <Typography
+                            variant="body2"
+                            sx={{
+                              color: "#616161",
+                              fontSize: "13px",
+                              fontWeight: 600,
+                            }}
+                          >
+                            Diamond
+                          </Typography>
+                        </Box>
+                        <Box sx={{ flex: 1, p: 2 }}>
+                          <Typography
+                            variant="body2"
+                            sx={{ color: "#424242", fontSize: "13px" }}
+                          >
+                            {isLoading ? (
+                              <Skeleton
+                                variant="rounded"
+                                width={80}
+                                height={18}
+                              />
+                            ) : (
+                              <>
+                                <span className="elv_currencyFont">
+                                  {loginData?.CurrencyCode ??
+                                    storeInit?.CurrencyCode}
+                                </span>{" "}
+                                {formatter(
+                                  getCost(
+                                    singleProd1?.Diamond_Cost ??
                                     singleProd?.Diamond_Cost,
-                                ).toFixed(2),
-                              )}
-                            </>
-                          )}
-                        </Typography>
+                                  ).toFixed(2),
+                                )}
+                              </>
+                            )}
+                          </Typography>
+                        </Box>
                       </Box>
-                    </Box>
-                  )}
+                    )}
 
                   {/* Stone */}
                   {(isLoading ||
                     getCost(
                       singleProd1?.ColorStone_Cost ??
-                        singleProd?.ColorStone_Cost,
+                      singleProd?.ColorStone_Cost,
                     ) !== 0) && (
-                    <Box
-                      sx={{
-                        display: "flex",
-                        borderBottom: "1px solid #e0e0e0",
-                      }}
-                    >
                       <Box
                         sx={{
-                          width: "120px",
-                          bgcolor: "#f5f5f5",
-                          p: 2,
-                          borderRight: "1px solid #e0e0e0",
+                          display: "flex",
+                          borderBottom: "1px solid #e0e0e0",
                         }}
                       >
-                        <Typography
-                          variant="body2"
+                        <Box
                           sx={{
-                            color: "#616161",
-                            fontSize: "13px",
-                            fontWeight: 600,
+                            width: "120px",
+                            bgcolor: "#f5f5f5",
+                            p: 2,
+                            borderRight: "1px solid #e0e0e0",
                           }}
                         >
-                          Stone
-                        </Typography>
-                      </Box>
-                      <Box sx={{ flex: 1, p: 2 }}>
-                        <Typography
-                          variant="body2"
-                          sx={{ color: "#424242", fontSize: "13px" }}
-                        >
-                          {isLoading ? (
-                            <Skeleton
-                              variant="rounded"
-                              width={80}
-                              height={18}
-                            />
-                          ) : (
-                            <>
-                              <span className="elv_currencyFont">
-                                {loginData?.CurrencyCode ??
-                                  storeInit?.CurrencyCode}
-                              </span>{" "}
-                              {formatter(
-                                getCost(
-                                  singleProd1?.ColorStone_Cost ??
+                          <Typography
+                            variant="body2"
+                            sx={{
+                              color: "#616161",
+                              fontSize: "13px",
+                              fontWeight: 600,
+                            }}
+                          >
+                            Stone
+                          </Typography>
+                        </Box>
+                        <Box sx={{ flex: 1, p: 2 }}>
+                          <Typography
+                            variant="body2"
+                            sx={{ color: "#424242", fontSize: "13px" }}
+                          >
+                            {isLoading ? (
+                              <Skeleton
+                                variant="rounded"
+                                width={80}
+                                height={18}
+                              />
+                            ) : (
+                              <>
+                                <span className="elv_currencyFont">
+                                  {loginData?.CurrencyCode ??
+                                    storeInit?.CurrencyCode}
+                                </span>{" "}
+                                {formatter(
+                                  getCost(
+                                    singleProd1?.ColorStone_Cost ??
                                     singleProd?.ColorStone_Cost,
-                                ).toFixed(2),
-                              )}
-                            </>
-                          )}
-                        </Typography>
+                                  ).toFixed(2),
+                                )}
+                              </>
+                            )}
+                          </Typography>
+                        </Box>
                       </Box>
-                    </Box>
-                  )}
+                    )}
 
                   {/* MISC */}
                   {(isLoading ||
                     getCost(singleProd1?.Misc_Cost ?? singleProd?.Misc_Cost) !==
-                      0) && (
-                    <Box
-                      sx={{
-                        display: "flex",
-                        borderBottom: "1px solid #e0e0e0",
-                      }}
-                    >
+                    0) && (
                       <Box
                         sx={{
-                          width: "120px",
-                          bgcolor: "#f5f5f5",
-                          p: 2,
-                          borderRight: "1px solid #e0e0e0",
+                          display: "flex",
+                          borderBottom: "1px solid #e0e0e0",
                         }}
                       >
-                        <Typography
-                          variant="body2"
+                        <Box
                           sx={{
-                            color: "#616161",
-                            fontSize: "13px",
-                            fontWeight: 600,
+                            width: "120px",
+                            bgcolor: "#f5f5f5",
+                            p: 2,
+                            borderRight: "1px solid #e0e0e0",
                           }}
                         >
-                          MISC
-                        </Typography>
-                      </Box>
-                      <Box sx={{ flex: 1, p: 2 }}>
-                        <Typography
-                          variant="body2"
-                          sx={{ color: "#424242", fontSize: "13px" }}
-                        >
-                          {isLoading ? (
-                            <Skeleton
-                              variant="rounded"
-                              width={80}
-                              height={18}
-                            />
-                          ) : (
-                            <>
-                              <span className="elv_currencyFont">
-                                {loginData?.CurrencyCode ??
-                                  storeInit?.CurrencyCode}
-                              </span>{" "}
-                              {formatter(
-                                getCost(
-                                  singleProd1?.Misc_Cost ??
+                          <Typography
+                            variant="body2"
+                            sx={{
+                              color: "#616161",
+                              fontSize: "13px",
+                              fontWeight: 600,
+                            }}
+                          >
+                            MISC
+                          </Typography>
+                        </Box>
+                        <Box sx={{ flex: 1, p: 2 }}>
+                          <Typography
+                            variant="body2"
+                            sx={{ color: "#424242", fontSize: "13px" }}
+                          >
+                            {isLoading ? (
+                              <Skeleton
+                                variant="rounded"
+                                width={80}
+                                height={18}
+                              />
+                            ) : (
+                              <>
+                                <span className="elv_currencyFont">
+                                  {loginData?.CurrencyCode ??
+                                    storeInit?.CurrencyCode}
+                                </span>{" "}
+                                {formatter(
+                                  getCost(
+                                    singleProd1?.Misc_Cost ??
                                     singleProd?.Misc_Cost,
-                                ).toFixed(2),
-                              )}
-                            </>
-                          )}
-                        </Typography>
+                                  ).toFixed(2),
+                                )}
+                              </>
+                            )}
+                          </Typography>
+                        </Box>
                       </Box>
-                    </Box>
-                  )}
+                    )}
 
                   {/* Labour */}
                   {(isLoading ||
                     getCost(
                       singleProd1?.Labour_Cost ?? singleProd?.Labour_Cost,
                     ) !== 0) && (
-                    <Box
-                      sx={{
-                        display: "flex",
-                        borderBottom: "1px solid #e0e0e0",
-                      }}
-                    >
                       <Box
                         sx={{
-                          width: "120px",
-                          bgcolor: "#f5f5f5",
-                          p: 2,
-                          borderRight: "1px solid #e0e0e0",
+                          display: "flex",
+                          borderBottom: "1px solid #e0e0e0",
                         }}
                       >
-                        <Typography
-                          variant="body2"
+                        <Box
                           sx={{
-                            fontSize: "13px",
-                            color: "#616161",
-                            fontWeight: 600,
+                            width: "120px",
+                            bgcolor: "#f5f5f5",
+                            p: 2,
+                            borderRight: "1px solid #e0e0e0",
                           }}
                         >
-                          Labour
-                        </Typography>
-                      </Box>
-                      <Box sx={{ flex: 1, p: 2 }}>
-                        <Typography
-                          variant="body2"
-                          sx={{ color: "#424242", fontSize: "13px" }}
-                        >
-                          {isLoading ? (
-                            <Skeleton
-                              variant="rounded"
-                              width={80}
-                              height={18}
-                            />
-                          ) : (
-                            <>
-                              <span>
-                                {loginData?.CurrencyCode ??
-                                  storeInit?.CurrencyCode}
-                              </span>{" "}
-                              {formatter(
-                                getCost(
-                                  singleProd1?.Labour_Cost ??
+                          <Typography
+                            variant="body2"
+                            sx={{
+                              fontSize: "13px",
+                              color: "#616161",
+                              fontWeight: 600,
+                            }}
+                          >
+                            Labour
+                          </Typography>
+                        </Box>
+                        <Box sx={{ flex: 1, p: 2 }}>
+                          <Typography
+                            variant="body2"
+                            sx={{ color: "#424242", fontSize: "13px" }}
+                          >
+                            {isLoading ? (
+                              <Skeleton
+                                variant="rounded"
+                                width={80}
+                                height={18}
+                              />
+                            ) : (
+                              <>
+                                <span>
+                                  {loginData?.CurrencyCode ??
+                                    storeInit?.CurrencyCode}
+                                </span>{" "}
+                                {formatter(
+                                  getCost(
+                                    singleProd1?.Labour_Cost ??
                                     singleProd?.Labour_Cost,
-                                ).toFixed(2),
-                              )}
-                            </>
-                          )}
-                        </Typography>
+                                  ).toFixed(2),
+                                )}
+                              </>
+                            )}
+                          </Typography>
+                        </Box>
                       </Box>
-                    </Box>
-                  )}
+                    )}
 
                   {/* Other */}
                   {(isLoading ||
                     getCost(singleProd1?.Other_Cost ?? singleProd?.Other_Cost) +
-                      getCost(
-                        singleProd1?.Size_MarkUp ?? singleProd?.Size_MarkUp,
-                      ) +
-                      getCost(
-                        singleProd1?.DesignMarkUpAmount ??
-                          singleProd?.DesignMarkUpAmount,
-                      ) +
-                      getCost(
-                        singleProd1?.ColorStone_SettingCost ??
-                          singleProd?.ColorStone_SettingCost,
-                      ) +
-                      getCost(
-                        singleProd1?.Diamond_SettingCost ??
-                          singleProd?.Diamond_SettingCost,
-                      ) +
-                      getCost(
-                        singleProd1?.Misc_SettingCost ??
-                          singleProd?.Misc_SettingCost,
-                      ) !==
-                      0) && (
-                    <Box sx={{ display: "flex" }}>
-                      <Box
-                        sx={{
-                          width: "120px",
-                          bgcolor: "#f5f5f5",
-                          p: 2,
-                          borderRight: "1px solid #e0e0e0",
-                        }}
-                      >
-                        <Typography
-                          variant="body2"
+                    getCost(
+                      singleProd1?.Size_MarkUp ?? singleProd?.Size_MarkUp,
+                    ) +
+                    getCost(
+                      singleProd1?.DesignMarkUpAmount ??
+                      singleProd?.DesignMarkUpAmount,
+                    ) +
+                    getCost(
+                      singleProd1?.ColorStone_SettingCost ??
+                      singleProd?.ColorStone_SettingCost,
+                    ) +
+                    getCost(
+                      singleProd1?.Diamond_SettingCost ??
+                      singleProd?.Diamond_SettingCost,
+                    ) +
+                    getCost(
+                      singleProd1?.Misc_SettingCost ??
+                      singleProd?.Misc_SettingCost,
+                    ) !==
+                    0) && (
+                      <Box sx={{ display: "flex" }}>
+                        <Box
                           sx={{
-                            fontSize: "13px",
-                            color: "#616161",
-                            fontWeight: 600,
+                            width: "120px",
+                            bgcolor: "#f5f5f5",
+                            p: 2,
+                            borderRight: "1px solid #e0e0e0",
                           }}
                         >
-                          Other
-                        </Typography>
-                      </Box>
-                      <Box sx={{ flex: 1, p: 2 }}>
-                        <Typography
-                          variant="body2"
-                          sx={{ color: "#424242", fontSize: "13px" }}
-                        >
-                          {isLoading ? (
-                            <Skeleton
-                              variant="rounded"
-                              width={80}
-                              height={18}
-                            />
-                          ) : (
-                            <>
-                              <span className="elv_currencyFont">
-                                {loginData?.CurrencyCode ??
-                                  storeInit?.CurrencyCode}
-                              </span>{" "}
-                              {formatter(
-                                (
-                                  getCost(
-                                    singleProd1?.Other_Cost ??
+                          <Typography
+                            variant="body2"
+                            sx={{
+                              fontSize: "13px",
+                              color: "#616161",
+                              fontWeight: 600,
+                            }}
+                          >
+                            Other
+                          </Typography>
+                        </Box>
+                        <Box sx={{ flex: 1, p: 2 }}>
+                          <Typography
+                            variant="body2"
+                            sx={{ color: "#424242", fontSize: "13px" }}
+                          >
+                            {isLoading ? (
+                              <Skeleton
+                                variant="rounded"
+                                width={80}
+                                height={18}
+                              />
+                            ) : (
+                              <>
+                                <span className="elv_currencyFont">
+                                  {loginData?.CurrencyCode ??
+                                    storeInit?.CurrencyCode}
+                                </span>{" "}
+                                {formatter(
+                                  (
+                                    getCost(
+                                      singleProd1?.Other_Cost ??
                                       singleProd?.Other_Cost,
-                                  ) +
-                                  getCost(
-                                    singleProd1?.Size_MarkUp ??
+                                    ) +
+                                    getCost(
+                                      singleProd1?.Size_MarkUp ??
                                       singleProd?.Size_MarkUp,
-                                  ) +
-                                  getCost(
-                                    singleProd1?.DesignMarkUpAmount ??
+                                    ) +
+                                    getCost(
+                                      singleProd1?.DesignMarkUpAmount ??
                                       singleProd?.DesignMarkUpAmount,
-                                  ) +
-                                  getCost(
-                                    singleProd1?.ColorStone_SettingCost ??
+                                    ) +
+                                    getCost(
+                                      singleProd1?.ColorStone_SettingCost ??
                                       singleProd?.ColorStone_SettingCost,
-                                  ) +
-                                  getCost(
-                                    singleProd1?.Diamond_SettingCost ??
+                                    ) +
+                                    getCost(
+                                      singleProd1?.Diamond_SettingCost ??
                                       singleProd?.Diamond_SettingCost,
-                                  ) +
-                                  getCost(
-                                    singleProd1?.Misc_SettingCost ??
+                                    ) +
+                                    getCost(
+                                      singleProd1?.Misc_SettingCost ??
                                       singleProd?.Misc_SettingCost,
-                                  )
-                                ).toFixed(2),
-                              )}
-                            </>
-                          )}
-                        </Typography>
+                                    )
+                                  ).toFixed(2),
+                                )}
+                              </>
+                            )}
+                          </Typography>
+                        </Box>
                       </Box>
-                    </Box>
-                  )}
+                    )}
                 </Box>
               </Box>
             )}

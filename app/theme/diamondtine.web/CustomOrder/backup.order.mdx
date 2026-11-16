@@ -358,10 +358,10 @@ const OrderForm = () => {
                 <FormControl component="fieldset">
                   <FormLabel sx={{ mb: 2 }}>Delivery Preference</FormLabel>
                   <Grid container spacing={2}>
-                    <Grid item xs={12} sm={6}>
+                    <Grid  xs={12} sm={6}>
                       <DatePicker label="Delivery Date" value={formData.deliveryDate} onChange={(val) => handleDateChange("deliveryDate", val)} slotProps={{ textField: { fullWidth: true } }} />
                     </Grid>
-                    <Grid item xs={12} sm={6}>
+                    <Grid  xs={12} sm={6}>
                       <TimePicker label="Delivery Time" value={formData.deliveryTime} onChange={(val) => handleDateChange("deliveryTime", val)} slotProps={{ textField: { fullWidth: true } }} />
                     </Grid>
                   </Grid>
@@ -832,7 +832,7 @@ const OrderForm = () => {
                       
                       {/* Rhodium & Stamping */}
                       <Grid container spacing={3}>
-                        <Grid item xs={12} sm={6}>
+                        <Grid  xs={12} sm={6}>
                           <FormControl required error={!!errors.rhodium} sx={{ width: '100%' }}>
                             <FormLabel sx={{ fontWeight: 600, color: COLORS.black, mb: 1 }}>Rhodium Plating</FormLabel>
                             <RadioGroup name="rhodium" value={formData.rhodium} onChange={handleInputChange}>
@@ -846,7 +846,7 @@ const OrderForm = () => {
                           </FormControl>
                         </Grid>
 
-                        <Grid item xs={12} sm={6}>
+                        <Grid  xs={12} sm={6}>
                           <FormControl required error={!!errors.stamping} sx={{ width: '100%' }}>
                             <FormLabel sx={{ fontWeight: 600, color: COLORS.black, mb: 1 }}>Stamping</FormLabel>
                             <RadioGroup name="stamping" value={formData.stamping} onChange={handleInputChange}>
@@ -870,10 +870,10 @@ const OrderForm = () => {
                           </Typography>
                           <FormGroup>
                             <Grid container spacing={1}>
-                              <Grid item xs={6} sm={3}><FormControlLabel control={<Checkbox name="diamond" checked={diamondOptions.diamond} onChange={handleCheckboxChange} />} label={<Typography variant="body2">Diamond</Typography>} /></Grid>
-                              <Grid item xs={6} sm={3}><FormControlLabel control={<Checkbox name="colorStone" checked={diamondOptions.colorStone} onChange={handleCheckboxChange} />} label={<Typography variant="body2">Color Stone</Typography>} /></Grid>
-                              <Grid item xs={6} sm={3}><FormControlLabel control={<Checkbox name="byParty" checked={diamondOptions.byParty} onChange={handleCheckboxChange} />} label={<Typography variant="body2">By Party</Typography>} /></Grid>
-                              <Grid item xs={6} sm={3}><FormControlLabel control={<Checkbox name="other" checked={diamondOptions.other} onChange={handleCheckboxChange} />} label={<Typography variant="body2">Other</Typography>} /></Grid>
+                              <Grid  xs={6} sm={3}><FormControlLabel control={<Checkbox name="diamond" checked={diamondOptions.diamond} onChange={handleCheckboxChange} />} label={<Typography variant="body2">Diamond</Typography>} /></Grid>
+                              <Grid  xs={6} sm={3}><FormControlLabel control={<Checkbox name="colorStone" checked={diamondOptions.colorStone} onChange={handleCheckboxChange} />} label={<Typography variant="body2">Color Stone</Typography>} /></Grid>
+                              <Grid  xs={6} sm={3}><FormControlLabel control={<Checkbox name="byParty" checked={diamondOptions.byParty} onChange={handleCheckboxChange} />} label={<Typography variant="body2">By Party</Typography>} /></Grid>
+                              <Grid  xs={6} sm={3}><FormControlLabel control={<Checkbox name="other" checked={diamondOptions.other} onChange={handleCheckboxChange} />} label={<Typography variant="body2">Other</Typography>} /></Grid>
                             </Grid>
                           </FormGroup>
                         </FormControl>
@@ -889,10 +889,10 @@ const OrderForm = () => {
                     <Stack spacing={3}>
                       
                       <Grid container spacing={2.5}>
-                        <Grid item xs={12} sm={6}>
+                        <Grid  xs={12} sm={6}>
                           <DatePicker label="Preferred Delivery Date" value={formData.deliveryDate} onChange={(val) => handleDateChange("deliveryDate", val)} slotProps={{ textField: { fullWidth: true } }} />
                         </Grid>
-                        <Grid item xs={12} sm={6}>
+                        <Grid  xs={12} sm={6}>
                           <TimePicker label="Preferred Delivery Time" value={formData.deliveryTime} onChange={(val) => handleDateChange("deliveryTime", val)} slotProps={{ textField: { fullWidth: true } }} />
                         </Grid>
                       </Grid>

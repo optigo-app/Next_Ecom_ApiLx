@@ -215,7 +215,7 @@ const Customization = ({ ispriceloding, selectedItem, qtyCount, handleIncrement,
               <Grid container spacing={2}>
                 {/* 1. Metal Type */}
                 {selectedItem?.metaltypename !== "" && (
-                  <Grid item xs={12} sm={6}>
+                  <Grid xs={12} sm={6}>
                     <Typography variant="caption" sx={{ fontWeight: "bold", mb: 0.5, display: "block", textTransform: "uppercase", color: "#7d7d7d" }}>
                       Metal Type:
                     </Typography>
@@ -239,7 +239,7 @@ const Customization = ({ ispriceloding, selectedItem, qtyCount, handleIncrement,
 
                 {/* 2. Metal Color */}
                 {selectedItem?.metaltypename !== "" && (
-                  <Grid item xs={12} sm={6}>
+                  <Grid xs={12} sm={6}>
                     <Typography variant="caption" sx={{ fontWeight: "bold", mb: 0.5, display: "block", textTransform: "uppercase", color: "#7d7d7d" }}>
                       Metal Color:
                     </Typography>
@@ -263,7 +263,7 @@ const Customization = ({ ispriceloding, selectedItem, qtyCount, handleIncrement,
 
                 {/* 3. Diamond */}
                 {(selectedItem?.Dwt != "0" || selectedItem?.Dpcs != "0") && (
-                  <Grid item xs={12} sm={6}>
+                  <Grid xs={12} sm={6}>
                     <Typography variant="caption" sx={{ fontWeight: "bold", mb: 0.5, display: "block", textTransform: "uppercase", color: "#7d7d7d" }}>
                       Diamond:
                     </Typography>
@@ -287,7 +287,7 @@ const Customization = ({ ispriceloding, selectedItem, qtyCount, handleIncrement,
 
                 {/* 4. Color Stone */}
                 {(selectedItem?.CSwt != "0" || selectedItem?.CSpcs != "0") && (
-                  <Grid item xs={12} sm={6}>
+                  <Grid xs={12} sm={6}>
                     <Typography variant="caption" sx={{ fontWeight: "bold", mb: 0.5, display: "block", textTransform: "uppercase", color: "#7d7d7d" }}>
                       Color Stone:
                     </Typography>
@@ -311,7 +311,7 @@ const Customization = ({ ispriceloding, selectedItem, qtyCount, handleIncrement,
 
                 {/* 5. Size (If available) */}
                 {selectedItem?.Size !== "" && (
-                  <Grid item xs={12} sm={6}>
+                  <Grid xs={12} sm={6}>
                     <Typography variant="caption" sx={{ fontWeight: "bold", mb: 0.5, display: "block", textTransform: "uppercase", color: "#7d7d7d" }}>
                       Size:
                     </Typography>
@@ -341,7 +341,7 @@ const Customization = ({ ispriceloding, selectedItem, qtyCount, handleIncrement,
               {/* ======================================= */}
               <Grid container spacing={2} alignItems="center">
                 {/* Quantity */}
-                <Grid item xs={6} sm={4}>
+                <Grid xs={6} sm={4}>
                   {selectedItem?.IsMrpBase === 0 ? (
                     <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                       <Typography variant="body1" sx={{ fontWeight: "bold" }}>
@@ -356,7 +356,7 @@ const Customization = ({ ispriceloding, selectedItem, qtyCount, handleIncrement,
 
                 {/* Price */}
                 {!isPriceHidden(storeInit) && (
-                  <Grid item xs={6} sm={4} sx={{ display: "flex", justifyContent: "flex-end" }}>
+                  <Grid xs={6} sm={4} sx={{ display: "flex", justifyContent: "flex-end" }}>
                     <Box sx={{ display: "flex", alignItems: "center" }}>
                       <span
                         className="elv_currencyFont"
@@ -378,7 +378,7 @@ const Customization = ({ ispriceloding, selectedItem, qtyCount, handleIncrement,
 
                 {/* Apply Button */}
                 {selectedItem?.IsMrpBase === 1 && (
-                  <Grid item xs={12} sm={4} sx={{ display: "flex", justifyContent: { xs: "flex-start", sm: "flex-end" } }}>
+                  <Grid xs={12} sm={4} sx={{ display: "flex", justifyContent: { xs: "flex-start", sm: "flex-end" } }}>
                     <Button
                       variant="contained"
                       onClick={() => handleUpdateCart(selectedItem)}
@@ -412,7 +412,7 @@ export default Customization;
 
 //     {/* METAL TYPE */}
 //     {storeInitData?.IsMetalCustomization == 1 && (
-//       <Grid item xs={12} sm={6}>
+//       <Grid  xs={12} sm={6}>
 //         {selectedItem?.StockId != 0 ? (
 //           <LabelField
 //             label="Metal Type"
@@ -443,7 +443,7 @@ export default Customization;
 
 //     {/* METAL COLOR */}
 //     {storeInitData?.IsMetalCustomization == 1 && (
-//       <Grid item xs={12} sm={6}>
+//       <Grid  xs={12} sm={6}>
 //         {selectedItem?.StockId != 0 ? (
 //           <LabelField
 //             label="Metal Color"
@@ -475,7 +475,7 @@ export default Customization;
 //     {/* DIAMOND */}
 //     {storeInitData?.IsDiamondCustomization == 1 &&
 //       (selectedItem?.Dwt !== "0" || selectedItem?.Dpcs !== "0") && (
-//         <Grid item xs={12} sm={6}>
+//         <Grid  xs={12} sm={6}>
 //           {selectedItem?.StockId != 0 ? (
 //             <LabelField
 //               label="Diamond"
@@ -515,7 +515,7 @@ export default Customization;
 //     {/* COLOR STONE */}
 //     {storeInitData?.IsCsCustomization == 1 &&
 //       (selectedItem?.CSwt !== "0" || selectedItem?.CSpcs !== "0") && (
-//         <Grid item xs={12} sm={6}>
+//         <Grid  xs={12} sm={6}>
 //           {selectedItem?.StockId != 0 ? (
 //             <LabelField
 //               label="Color Stone"
@@ -550,7 +550,7 @@ export default Customization;
 
 //     {/* SIZE */}
 //     {sizeCombo?.rd?.length > 0 && (
-//       <Grid item xs={12} sm={6}>
+//       <Grid  xs={12} sm={6}>
 //         {selectedItem?.StockId != 0 ? (
 //           <LabelField label="Size" value={selectedItem?.Size} />
 //         ) : (

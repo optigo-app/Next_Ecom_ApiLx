@@ -83,7 +83,7 @@ export default function ProCatFooter({
     >
       <Grid container spacing={{ xs: 4, sm: 4, md: 6, lg: 8 }}>
         {/* COLUMN 1: CONTACT US */}
-        <Grid item size={{ xs: 12, md: 4.2 }}>
+        <Grid size={{ xs: 12, md: 4.2 }}>
           <Typography component="h4" sx={headingStyle}>
             Contact Us
           </Typography>
@@ -165,7 +165,7 @@ export default function ProCatFooter({
         </Grid>
 
         {/* COLUMN 2: QUICK LINKS */}
-        <Grid item size={{ xs: 12, md: 4.8 }}>
+        <Grid size={{ xs: 12, md: 4.8 }}>
           <Typography component="h4" sx={headingStyle}>
             Quick Links
           </Typography>
@@ -201,7 +201,7 @@ export default function ProCatFooter({
         </Grid>
 
         {/* COLUMN 3: FOLLOW US */}
-        <Grid item size={{ xs: 12, md: 3 }}>
+        <Grid size={{ xs: 12, md: 3 }}>
           <Typography component="h4" sx={headingStyle}>
             Follow Us
           </Typography>

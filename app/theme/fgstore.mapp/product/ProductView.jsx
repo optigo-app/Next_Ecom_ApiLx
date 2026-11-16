@@ -58,7 +58,7 @@ const ProductView = ({
           const isAvailable = imageAvailability[productData?.autocode];
 
           return (
-            <Grid item size={{ xs: ImageView ? 12 : 6 }} key={index} className="gridItem" sx={{ display: "flex" }}>
+            <Grid size={{ xs: ImageView ? 12 : 6 }} key={index} className="gridItem" sx={{ display: "flex" }}>
               <ProductCard
                 key={index}
                 productData={productData}

@@ -35,9 +35,9 @@ const CartItem = ({ item, index, CartCardImageFunc, onSelect, handleMoveToDetail
       onSelect(item);
     }
   };
-  
+
   const isLoading = item?.loading;
-  
+
   const CDNDesignImageFolThumb = storeInit?.CDNDesignImageFolThumb;
   const fullImagePath = `${CDNDesignImageFolThumb}${item?.designno}~1.jpg`;
   const defaultUrl = item?.images && typeof item?.images === 'string'
@@ -248,7 +248,7 @@ const CartItem = ({ item, index, CartCardImageFunc, onSelect, handleMoveToDetail
 =========================== */}
         <Grid container spacing={0.8}>
           {/* DWT (SLOT 1) */}
-          <Grid item size={{
+          <Grid size={{
             xs: 6
           }}>
             <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
@@ -265,7 +265,7 @@ const CartItem = ({ item, index, CartCardImageFunc, onSelect, handleMoveToDetail
               </Typography>
             </Box>
           </Grid>
-          <Grid item size={{
+          <Grid size={{
             xs: 6
           }}>
             <Box sx={{ display: "flex", alignItems: "center", gap: 0.5, justifyContent: "flex-end" }}>
@@ -297,7 +297,7 @@ const CartItem = ({ item, index, CartCardImageFunc, onSelect, handleMoveToDetail
               </Typography>
             </Box>
           </Grid>
-          <Grid item size={{
+          <Grid size={{
             xs: 6
           }}>
             <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
@@ -335,7 +335,7 @@ const CartItem = ({ item, index, CartCardImageFunc, onSelect, handleMoveToDetail
             </Box>
           </Grid>
 
-          <Grid item size={{
+          <Grid size={{
             xs: 6
           }}>
             <Box sx={{ display: "flex", alignItems: "center", gap: 0.5, justifyContent: "flex-end" }}>

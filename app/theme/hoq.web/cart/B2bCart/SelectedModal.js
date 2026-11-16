@@ -209,16 +209,16 @@ const MyModal = ({ open, onClose, selectedItems, onRemove, onUpdateCart, onCance
             <Divider />
           </div>
           <Grid container spacing={2}>
-            <Grid item xs={6} md={3}>
+            <Grid xs={6} md={3}>
               <div className='hoq_Modal-FilterList'>
                 {generateFilterAccordions(filterArr, checkedItems, handleCheckboxChange)}
               </div>
             </Grid>
-            <Grid item xs={6} md={9}>
+            <Grid xs={6} md={9}>
               <div className='hoq_Modal-cardList'>
                 <Grid container spacing={2}>
                   {filteredItems?.map(product => (
-                    <Grid item key={product.id} xs={12} sm={4} md={4}>
+                    <Grid key={product.id} xs={12} sm={4} md={4}>
                       <Card className='hoq_cartListCard' sx={{ maxWidth: 250, position: 'relative' }}>
                         <CardActionArea>
                           <CardMedia

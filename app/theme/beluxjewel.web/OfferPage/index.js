@@ -102,7 +102,7 @@ const CouponPage = () => {
             const colorIndex = index % couponColors.length;
             const cardColor = couponColors[colorIndex];
             return (
-              <Grid item size={{ xs: 12, sm: 6, lg: 4 }} key={coupon.id}>
+              <Grid size={{ xs: 12, sm: 6, lg: 4 }} key={coupon.id}>
                 <CouponCard coupon={coupon} onCopy={handleCopy} cardColor={cardColor} />
               </Grid>
             );

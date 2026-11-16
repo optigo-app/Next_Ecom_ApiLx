@@ -5,7 +5,7 @@ const ProductListSkeleton = ({ count = 6 }) => {
   return (
     <Grid container spacing={0}>
       {Array.from(new Array(count)).map((_, index) => (
-        <Grid item size={{ xs: 6 }} key={index}>
+        <Grid size={{ xs: 6 }} key={index}>
           <div style={{ padding: "8px" }}>
 
             <Skeleton

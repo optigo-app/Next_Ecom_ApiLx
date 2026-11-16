@@ -103,7 +103,7 @@ export default function AddressChangeModal({
               {addressList?.map((addr) => {
                 const isSelected = selectedAddress?.id === addr?.id;
                 return (
-                  <Grid item xs={12} sm={6} key={addr.id}>
+                  <Grid  xs={12} sm={6} key={addr.id}>
                     <Paper
                       elevation={0}
                       onClick={() => onSelectAddress(addr)}
@@ -168,7 +168,7 @@ export default function AddressChangeModal({
         ) : (
           <Box sx={{ mt: 1 }}>
             <Grid container spacing={2}>
-              <Grid item xs={12} sm={6}>
+              <Grid xs={12} sm={6}>
                 <TextField
                   label="First Name"
                   fullWidth
@@ -179,7 +179,7 @@ export default function AddressChangeModal({
                   helperText={errors.firstName}
                 />
               </Grid>
-              <Grid item xs={12} sm={6}>
+              <Grid xs={12} sm={6}>
                 <TextField
                   label="Last Name"
                   fullWidth
@@ -190,7 +190,7 @@ export default function AddressChangeModal({
                   helperText={errors.lastName}
                 />
               </Grid>
-              <Grid item xs={12} sm={6}>
+              <Grid xs={12} sm={6}>
                 <TextField
                   label="Mobile Number (10 Digits)"
                   fullWidth
@@ -201,7 +201,7 @@ export default function AddressChangeModal({
                   helperText={errors.mobileNo}
                 />
               </Grid>
-              <Grid item xs={12} sm={6}>
+              <Grid xs={12} sm={6}>
                 <TextField
                   label="Country"
                   fullWidth
@@ -210,7 +210,7 @@ export default function AddressChangeModal({
                   onChange={(e) => handleInputChange("country", e.target.value)}
                 />
               </Grid>
-              <Grid item xs={12}>
+              <Grid xs={12}>
                 <TextField
                   label="Street Address / Flat / Building"
                   fullWidth
@@ -223,7 +223,7 @@ export default function AddressChangeModal({
                   helperText={errors.address}
                 />
               </Grid>
-              <Grid item xs={12} sm={4}>
+              <Grid xs={12} sm={4}>
                 <TextField
                   label="City"
                   fullWidth
@@ -234,7 +234,7 @@ export default function AddressChangeModal({
                   helperText={errors.city}
                 />
               </Grid>
-              <Grid item xs={12} sm={4}>
+              <Grid xs={12} sm={4}>
                 <TextField
                   label="State"
                   fullWidth
@@ -245,7 +245,7 @@ export default function AddressChangeModal({
                   helperText={errors.state}
                 />
               </Grid>
-              <Grid item xs={12} sm={4}>
+              <Grid xs={12} sm={4}>
                 <TextField
                   label="ZIP / Postal Code"
                   fullWidth

@@ -69,6 +69,7 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
     handleCart,
     handleWishList,
     handleCustomChange,
+    handleDesignCustomChange,
     handleCustomizerConfirm,
     handleMetalWiseColorImg,
     handleMetalWiseColorImgWithFlag,
@@ -154,6 +155,7 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
                 selectDiaQc={selectDiaQc}
                 SizeSorting={SizeSorting(SizeCombo?.rd)}
                 handleCustomChange={handleCustomChange}
+                handleDesignCustomChange={handleDesignCustomChange}
                 SizeCombo={SizeCombo}
                 sizeData={sizeData}
                 metalTypeCombo={metalTypeCombo}

@@ -124,7 +124,7 @@ export default function CartHeader({
                     ":hover": { background: "#f0f0f0" }
                   }}
                 >
-                  <ShoppingBagIcon    fontSize="small" />
+                  <ShoppingBagIcon fontSize="small" />
                 </Button>}
               </Box>
             </motion.div>
@@ -177,7 +177,7 @@ export default function CartHeader({
         )}
       </AnimatePresence>
 
-       
+
 
       {/* ---- Title Section (Centered) ---- */}
       <Box sx={{ textAlign: "center", mb: 2 }}>
@@ -239,7 +239,7 @@ export default function CartHeader({
               textAlign="center"
             >
               {/* Gross Weight */}
-              <Grid item size={{
+              <Grid size={{
                 xs: 4, sm: 3
               }}>
                 <Typography sx={{ fontSize: 12, fontWeight: 700, color: "#94a3b8", textTransform: 'uppercase', mb: 0.5 }}>
@@ -251,7 +251,7 @@ export default function CartHeader({
               </Grid>
 
               {/* Net Weight */}
-              <Grid item size={{
+              <Grid size={{
                 xs: 4, sm: 3
               }}>
                 <Typography sx={{ fontSize: 12, fontWeight: 700, color: "#94a3b8", textTransform: 'uppercase', mb: 0.5 }}>
@@ -263,7 +263,7 @@ export default function CartHeader({
               </Grid>
 
               {/* Diamond Weight */}
-              <Grid item size={{
+              <Grid size={{
                 xs: 4, sm: 3
               }}>
                 <Typography sx={{ fontSize: 12, fontWeight: 700, color: "#94a3b8", textTransform: 'uppercase', mb: 0.5 }}>
@@ -464,7 +464,7 @@ const PriceTooltipContent = ({ summary }) => (
 //             textAlign="center"
 //           >
 //             {/* Gross Weight */}
-//             <Grid item xs={6} sm={3}>
+//             <Grid  xs={6} sm={3}>
 //               <Typography
 //                 sx={{
 //                   fontSize: 13,
@@ -487,7 +487,7 @@ const PriceTooltipContent = ({ summary }) => (
 //             </Grid>
 
 //             {/* Net Weight */}
-//             <Grid item xs={6} sm={3}>
+//             <Grid  xs={6} sm={3}>
 //               <Typography
 //                 sx={{
 //                   fontSize: 13,
@@ -510,7 +510,7 @@ const PriceTooltipContent = ({ summary }) => (
 //             </Grid>
 
 //             {/* Diamond Weight */}
-//             <Grid item xs={6} sm={3}>
+//             <Grid  xs={6} sm={3}>
 //               <Typography
 //                 sx={{
 //                   fontSize: 13,
@@ -536,7 +536,7 @@ const PriceTooltipContent = ({ summary }) => (
 //             </Grid>
 
 //             {/* CS Weight */}
-//             {/* <Grid item xs={6} sm={3}>
+//             {/* <Grid  xs={6} sm={3}>
 //         <Typography
 //           sx={{
 //             fontSize: 13,

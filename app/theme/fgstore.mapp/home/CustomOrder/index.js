@@ -321,12 +321,12 @@ const OrderForm = ({ storeInit }) => {
               <FormControl component="fieldset">
                 <FormLabel sx={{ mb: 2 }}>Delivery Preference</FormLabel>
                 <Grid container spacing={2}>
-                  <Grid item size={{
+                  <Grid size={{
                     xs: 12, sm: 12
                   }}>
                     <DatePicker label="Delivery Date" value={formData.deliveryDate} onChange={(val) => handleDateChange("deliveryDate", val)} slotProps={{ textField: { fullWidth: true } }} />
                   </Grid>
-                  <Grid item size={{
+                  <Grid size={{
                     xs: 12, sm: 12
                   }}>
                     <TimePicker label="Delivery Time" value={formData.deliveryTime} onChange={(val) => handleDateChange("deliveryTime", val)} slotProps={{ textField: { fullWidth: true } }} />
@@ -356,7 +356,7 @@ const OrderForm = ({ storeInit }) => {
               </FormControl>
 
               {/* Section 4: Checkboxes */}
-            <FormControl component="fieldset">
+              <FormControl component="fieldset">
                 <FormLabel component="legend">Diamonds or Colorstone By {storeInit?.companyname || ""}</FormLabel>
                 <FormGroup row>
                   <FormControlLabel control={<Checkbox name="diamond" checked={diamondOptions.diamond} onChange={handleCheckboxChange} color="success" />} label="Diamond" />

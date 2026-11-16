@@ -21,7 +21,7 @@ const AddressCard = ({ address, handleOpen, handleDeleteClick, handleDefaultSele
   } = address;
 
   return (
-    <Grid item size={{ xs: 12, sm: 6, md: 4, lg: 3 }} >
+    <Grid size={{ xs: 12, sm: 6, md: 4, lg: 3 }} >
       <Card
         onClick={() => handleDefaultSelection(address)}
         sx={{
@@ -161,7 +161,7 @@ export default AddressCard;
 //     // };
 
 //     return (
-//         <Grid item size={{ xs: 12, sm: 6, md: 4, lg: 3 }} style={{ marginBottom: '20px' }}>
+//         <Grid  size={{ xs: 12, sm: 6, md: 4, lg: 3 }} style={{ marginBottom: '20px' }}>
 //             <Card
 //                 // onMouseEnter={handleMouseEnter}
 //                 // onMouseLeave={handleMouseLeave}

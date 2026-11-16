@@ -66,7 +66,7 @@ const RightSide = ({ TitleLine, DesignNo, collection, description,
 
     return (
         <>
-            <Grid item size={{
+            <Grid size={{
                 xs: 12,
                 md: 6
             }} >
@@ -203,7 +203,7 @@ const RightSide = ({ TitleLine, DesignNo, collection, description,
                         <Grid container spacing={2}>
 
                             {/* Metal Purity */}
-                            <Grid item size={{
+                            <Grid size={{
                                 xs: 6
                             }}>
                                 <Typography sx={{ fontSize: "14px", color: "#666" }}>
@@ -217,7 +217,7 @@ const RightSide = ({ TitleLine, DesignNo, collection, description,
                             </Grid>
 
                             {/* Metal Color */}
-                            <Grid item size={{
+                            <Grid size={{
                                 xs: 6
                             }}>
                                 <Typography sx={{ fontSize: "14px", color: "#666" }}>
@@ -240,7 +240,7 @@ const RightSide = ({ TitleLine, DesignNo, collection, description,
                                 diaList?.length > 0 &&
                                 singleProd?.DiaQuaCol !== "" &&
                                 selectDiaQc ? (
-                                <Grid item size={{
+                                <Grid size={{
                                     xs: 6
                                 }}>
                                     <Typography sx={{ fontSize: "14px", color: "#666" }}>
@@ -261,7 +261,7 @@ const RightSide = ({ TitleLine, DesignNo, collection, description,
 
                             {/* Net Weight */}
                             {storeInit?.IsMetalWeight === 1 && (
-                                <Grid item size={{
+                                <Grid size={{
                                     xs: 6
                                 }}>
                                     <Typography sx={{ fontSize: "14px", color: "#666" }}>
@@ -371,7 +371,7 @@ const RightSide = ({ TitleLine, DesignNo, collection, description,
 
                                 {/* ===================== METAL TYPE ===================== */}
                                 {metalTypeCombo?.length > 0 && storeInit?.IsMetalCustomization === 1 && (
-                                    <Grid item size={{
+                                    <Grid size={{
                                         xs: 12, sm: 6
                                     }}>
                                         <Typography sx={{ fontSize: "14px", color: "#666", mb: 0.5 }}>
@@ -406,7 +406,7 @@ const RightSide = ({ TitleLine, DesignNo, collection, description,
 
                                 {/* ===================== METAL COLOR ===================== */}
                                 {metalColorCombo?.length > 0 && storeInit?.IsMetalTypeWithColor === 1 && (
-                                    <Grid item size={{
+                                    <Grid size={{
                                         xs: 12, sm: 6
                                     }
                                     } >
@@ -449,7 +449,7 @@ const RightSide = ({ TitleLine, DesignNo, collection, description,
                                 {storeInit?.IsDiamondCustomization === 1 &&
                                     diaQcCombo?.length > 0 &&
                                     diaList?.length > 0 && (
-                                        <Grid item size={{
+                                        <Grid size={{
                                             xs: 12, sm: 6
                                         }} >
                                             <Typography sx={{ fontSize: "14px", color: "#666", mb: 0.5 }}>
@@ -490,7 +490,7 @@ const RightSide = ({ TitleLine, DesignNo, collection, description,
                                 {storeInit?.IsCsCustomization === 1 &&
                                     selectCsQC?.length > 0 &&
                                     csList?.filter((ele) => ele?.D !== "MISC")?.length > 0 && (
-                                        <Grid item size={{
+                                        <Grid size={{
                                             xs: 12, sm: 6
                                         }
                                         } >
@@ -531,7 +531,7 @@ const RightSide = ({ TitleLine, DesignNo, collection, description,
 
                                 {/* ===================== SIZE =====================
                                 {SizeSorting?.length > 0 && (
-                                    <Grid item size={{
+                                    <Grid  size={{
                                     xs={12} sm={6}}>
                                         <Typography sx={{ fontSize: "14px", color: "#666", mb: 0.5 }}>
                                             Size :

@@ -153,7 +153,7 @@ export default function CraftsmanshipBlock({ assetBase }) {
         <Container maxWidth="lg">
           <Grid container spacing={{ xs: 4, md: 8 }} alignItems="center">
             {/* Left: Image Stack */}
-            <Grid item size={{ xs: 12, md: 6 }}>
+            <Grid size={{ xs: 12, md: 6 }}>
               <Box
                 sx={{
                   position: "relative",
@@ -215,7 +215,7 @@ export default function CraftsmanshipBlock({ assetBase }) {
             </Grid>
 
             {/* Right: Text Stack */}
-            <Grid item size={{ xs: 12, md: 6 }}>
+            <Grid size={{ xs: 12, md: 6 }}>
               <Box
                 sx={{
                   position: "relative",
@@ -346,9 +346,8 @@ export default function CraftsmanshipBlock({ assetBase }) {
                           sx={{
                             position: "absolute",
                             inset: 0,
-                            width: `${
-                              isDone ? 100 : isActive ? segProgress * 100 : 0
-                            }%`,
+                            width: `${isDone ? 100 : isActive ? segProgress * 100 : 0
+                              }%`,
                             backgroundColor: "#111827",
                             transition: "width 0.15s linear",
                           }}

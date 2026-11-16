@@ -152,7 +152,7 @@ const CollectionPage = () => {
           const hasImage = item?.imgsrc && item?.imgsrc.length > 0;
           const bgColor = FALLBACK_COLORS[index % FALLBACK_COLORS.length];
           return (
-            <Grid item size={{
+            <Grid size={{
               xs: 12, md: gridSize
             }} key={index}>
               <Box

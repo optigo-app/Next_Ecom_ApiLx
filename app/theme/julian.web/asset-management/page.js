@@ -262,13 +262,13 @@ function AssetManagementContent() {
 
       loggedIn = Boolean(
         islogin ||
-          cookieToken ||
-          cookieLoginUser === "true" ||
-          sessionLoginUser === true ||
-          (sessionUserDetail &&
-            (sessionUserDetail?.id ||
-              sessionUserDetail?.userid ||
-              sessionUserDetail?.EmailId)),
+        cookieToken ||
+        cookieLoginUser === "true" ||
+        sessionLoginUser === true ||
+        (sessionUserDetail &&
+          (sessionUserDetail?.id ||
+            sessionUserDetail?.userid ||
+            sessionUserDetail?.EmailId)),
       );
     }
 
@@ -848,7 +848,7 @@ function AssetManagementContent() {
         </>
       ) : (
         /* ─── Folder & File Explorer Mode ─────────────────────────────────────── */
-        <Container   sx={{ py: 6 }}>
+        <Container sx={{ py: 6 }}>
           {/* Back to All Categories Bar */}
           <Box
             sx={{
@@ -1024,7 +1024,7 @@ function AssetManagementContent() {
                 if (isFolder) {
                   const childCount = childCountsMap[String(item.Id)] || 0;
                   return (
-                    <Grid item key={item.Id} size={{ xs: 12, sm: 6, md: 4 }}>
+                    <Grid key={item.Id} size={{ xs: 12, sm: 6, md: 4 }}>
                       <Card
                         className="assetCard"
                         onClick={() => handleOpenFolder(item.Id)}
@@ -1079,7 +1079,7 @@ function AssetManagementContent() {
                 const isDownloading = downloadingNodeId === item.Id;
 
                 return (
-                  <Grid item key={item.Id} size={{ xs: 12, sm: 6, md: 4 }}>
+                  <Grid key={item.Id} size={{ xs: 12, sm: 6, md: 4 }}>
                     <Box
                       className="assetCard"
                       sx={{
@@ -1289,7 +1289,7 @@ function AssetManagementContent() {
               })}
 
               {currentChildren.length === 0 && (
-                <Grid item xs={12}>
+                <Grid xs={12}>
                   <Box
                     sx={{
                       py: 10,
@@ -1561,7 +1561,7 @@ function AssetManagementContent() {
                 }}
               >
                 {previewFile.FileCategory === "image" &&
-                previewFile.StoragePath ? (
+                  previewFile.StoragePath ? (
                   <Box
                     component="img"
                     src={previewFile.StoragePath}
@@ -1599,7 +1599,7 @@ function AssetManagementContent() {
 
               {/* File Details Grid */}
               {/* <Grid container spacing={2} sx={{ textAlign: "left" }}>
-                <Grid item xs={12} sm={6}>
+                <Grid  xs={12} sm={6}>
                   <Typography
                     variant="caption"
                     sx={{ color: "#888", display: "block" }}
@@ -1610,7 +1610,7 @@ function AssetManagementContent() {
                     {previewFile.OriginalFileName || previewFile.Name}
                   </Typography>
                 </Grid>
-                <Grid item xs={6} sm={3}>
+                <Grid  xs={6} sm={3}>
                   <Typography
                     variant="caption"
                     sx={{ color: "#888", display: "block" }}
@@ -1621,7 +1621,7 @@ function AssetManagementContent() {
                     {formatSize(previewFile.FileSizeBytes)}
                   </Typography>
                 </Grid>
-                <Grid item xs={6} sm={3}>
+                <Grid  xs={6} sm={3}>
                   <Typography
                     variant="caption"
                     sx={{ color: "#888", display: "block" }}
@@ -1638,7 +1638,7 @@ function AssetManagementContent() {
                   </Typography>
                 </Grid>
                 {previewFile.MimeType && (
-                  <Grid item xs={12} sm={6}>
+                  <Grid  xs={12} sm={6}>
                     <Typography
                       variant="caption"
                       sx={{ color: "#888", display: "block" }}
@@ -1651,7 +1651,7 @@ function AssetManagementContent() {
                   </Grid>
                 )}
                 {previewFile.StorageProvider && (
-                  <Grid item xs={12} sm={6}>
+                  <Grid  xs={12} sm={6}>
                     <Typography
                       variant="caption"
                       sx={{ color: "#888", display: "block" }}

@@ -20,6 +20,8 @@ import {
 } from "@mui/material";
 
 import { LableField, MenuItemSx, SelectSx } from "../New/CustomField";
+import ProductCustomizationSection from "@/app/(core)/components/product/customization/ProductCustomizationSection";
+import useCustomizationMode from "@/app/(core)/components/product/customization/useCustomizationMode";
 import { formatter } from "@/app/(core)/utils/Glob_Functions/GlobalFunction";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import FavoriteIcon from "@mui/icons-material/Favorite";
@@ -55,6 +57,7 @@ const RightSide = ({
   selectDiaQc,
   SizeSorting,
   handleCustomChange,
+  handleDesignCustomChange,
   SizeCombo,
   sizeData,
   metalTypeCombo,
@@ -85,7 +88,6 @@ const RightSide = ({
   storeWishArr,
 }) => {
   const [isExpanded, setIsExpanded] = useState(false);
-  const [isCustomizerOpen, setIsCustomizerOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("details");
 
   const toggleText = () => {
@@ -99,8 +101,20 @@ const RightSide = ({
   const defaultArticle =
     rd1?.find((r) => r.ArticleId === defaultArticleId) || rd1?.[0] || null;
 
-  // Prioritize active combination details from customizationDetail state
-  const activeArticle = customizationDetail || defaultArticle;
+  // IsDesignBaseWeb = 1 -> design-based customization, otherwise article-based (shared module).
+  const {
+    rawArticle,
+    isDesignBase,
+    isModeKnown: isCustomizationModeKnown,
+    activeArticle,
+  } = useCustomizationMode({
+    rd1,
+    customizationDetail,
+    defaultArticleId,
+    loadingdata,
+    isPriceloading,
+  });
+  const onDesignChange = handleDesignCustomChange || handleCustomChange;
 
   const isLoading = isPriceloading || pdLoadImage || loadingdata;
   const isPriceLoadingState = (isPriceloading || pdLoadImage || loadingdata) && !activeArticle && !singleProd?.UnitCostWithmarkup && !singleProd?.UnitCostWithMarkUp;
@@ -174,10 +188,10 @@ const RightSide = ({
     : null;
   const productStockInfo = resolvedStockRecord
     ? {
-        ...getDeliveryInfo(singleProd, singleProd1, stockItemArr),
-        isInMemo: resolvedStockRecord.InMemo === 1,
-        isInStock: resolvedStockRecord.InMemo !== 1 && resolvedStockRecord.InStock === 1,
-      }
+      ...getDeliveryInfo(singleProd, singleProd1, stockItemArr),
+      isInMemo: resolvedStockRecord.InMemo === 1,
+      isInStock: resolvedStockRecord.InMemo !== 1 && resolvedStockRecord.InStock === 1,
+    }
     : getDeliveryInfo(singleProd, singleProd1, stockItemArr);
   const hasAnyInStockArticle = rd1.some((article) => {
     return resolveProductStockStatus(article, stockMap).isInStock;
@@ -237,26 +251,26 @@ const RightSide = ({
       label: "Other",
       cost: activeArticle
         ? getCost(activeArticle?.TotalOtherCost) +
-          getCost(activeArticle?.TotalSettingCost) +
-          getCost(activeArticle?.TotalDiamondhandlingCost) +
-          getCost(activeArticle?.TotalCSSettingCost) +
-          getCost(activeArticle?.TotalDiaSettingCost)
+        getCost(activeArticle?.TotalSettingCost) +
+        getCost(activeArticle?.TotalDiamondhandlingCost) +
+        getCost(activeArticle?.TotalCSSettingCost) +
+        getCost(activeArticle?.TotalDiaSettingCost)
         : getCost(singleProd1?.Other_Cost ?? singleProd?.Other_Cost) +
-          getCost(singleProd1?.Size_MarkUp ?? singleProd?.Size_MarkUp) +
-          getCost(
-            singleProd1?.DesignMarkUpAmount ?? singleProd?.DesignMarkUpAmount,
-          ) +
-          getCost(
-            singleProd1?.ColorStone_SettingCost ??
-              singleProd?.ColorStone_SettingCost,
-          ) +
-          getCost(
-            singleProd1?.Diamond_SettingCost ??
-              singleProd?.Diamond_SettingCost,
-          ) +
-          getCost(
-            singleProd1?.Misc_SettingCost ?? singleProd?.Misc_SettingCost,
-          ),
+        getCost(singleProd1?.Size_MarkUp ?? singleProd?.Size_MarkUp) +
+        getCost(
+          singleProd1?.DesignMarkUpAmount ?? singleProd?.DesignMarkUpAmount,
+        ) +
+        getCost(
+          singleProd1?.ColorStone_SettingCost ??
+          singleProd?.ColorStone_SettingCost,
+        ) +
+        getCost(
+          singleProd1?.Diamond_SettingCost ??
+          singleProd?.Diamond_SettingCost,
+        ) +
+        getCost(
+          singleProd1?.Misc_SettingCost ?? singleProd?.Misc_SettingCost,
+        ),
     },
   ].filter((item) => isLoading || item.cost !== 0);
   const showPriceBreakup =
@@ -325,25 +339,25 @@ const RightSide = ({
               {activeArticle?.ArticleNo || DesignNo}
             </Typography>
             {productReadyStockStatus === 1 || productReadyStockStatus === 2 ? (
-            <Box
-              component="span"
-              sx={{
-                display: "inline-flex",
-                alignItems: "center",
-                flexShrink: 0,
-                px: 1.25,
-                py: 0.5,
-                borderRadius: "4px",
-                fontSize: "12px",
-                fontWeight: 600,
-                letterSpacing: "0.3px",
-                color: productReadyStockStatus === 2 ? "#9A5A00" : "#216E3A",
-                backgroundColor: productReadyStockStatus === 2 ? "#FFF4DF" : "#E8F5EC",
-                border: `1px solid ${productReadyStockStatus === 2 ? "#F2D39A" : "#BFE3CA"}`,
-              }}
-            >
-              {productReadyStockStatus === 2 ? "In Memo" : "In Stock"}
-            </Box>
+              <Box
+                component="span"
+                sx={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  flexShrink: 0,
+                  px: 1.25,
+                  py: 0.5,
+                  borderRadius: "4px",
+                  fontSize: "12px",
+                  fontWeight: 600,
+                  letterSpacing: "0.3px",
+                  color: productReadyStockStatus === 2 ? "#9A5A00" : "#216E3A",
+                  backgroundColor: productReadyStockStatus === 2 ? "#FFF4DF" : "#E8F5EC",
+                  border: `1px solid ${productReadyStockStatus === 2 ? "#F2D39A" : "#BFE3CA"}`,
+                }}
+              >
+                {productReadyStockStatus === 2 ? "In Memo" : "In Stock"}
+              </Box>
             ) : null}
           </Box>
 
@@ -437,10 +451,10 @@ const RightSide = ({
                 <span>
                   {formatter(
                     activeArticle?.UnitCostWithmarkup ??
-                      activeArticle?.TotalUnitCost ??
-                      singleProd?.UnitCostWithmarkup ??
-                      singleProd?.UnitCostWithMarkUp ??
-                      0,
+                    activeArticle?.TotalUnitCost ??
+                    singleProd?.UnitCostWithmarkup ??
+                    singleProd?.UnitCostWithMarkUp ??
+                    0,
                   )}
                 </span>
               )}
@@ -663,286 +677,38 @@ const RightSide = ({
             </Box>
           )} */}
 
-          {/* Material Customization */}
-          {/* <Divider sx={{ mb: 2 }} /> */}
-          {/* {storeInit?.IsProductWebCustomization == 1 && (
-            <Box sx={{ width: "100%", mt: 2 }}>
-              <Grid container spacing={2}> */}
-          {/* ===================== METAL TYPE ===================== */}
-          {/* {metalTypeCombo?.length > 0 &&
-                  storeInit?.IsMetalCustomization === 1 && (
-                    <Grid
-                      item
-                      size={{
-                        xs: 12,
-                        sm: 6,
-                      }}
-                    >
-                      <Typography
-                        sx={{ fontSize: "14px", color: "#666", mb: 0.5 }}
-                      >
-                        Metal Type :
-                      </Typography>
-
-                      {singleProd?.IsMrpBase == 1 ? (
-                        <LableField
-                          label={
-                            metalTypeCombo?.find(
-                              (ele) =>
-                                ele?.Metalid == singleProd?.MetalPurityid,
-                            )?.metaltype
-                          }
-                        />
-                      ) : (
-                        <Select
-                          fullWidth
-                          value={metalType || ""}
-                          onChange={(e) => handleCustomChange(e, "mt")}
-                          displayEmpty
-                          renderValue={(selected) =>
-                            selected || metalTypeCombo?.[0]?.metaltype
-                          }
-                          {...SelectSx}
-                        >
-                          {metalTypeCombo.map((ele) => (
-                            <MenuItem
-                              key={ele.Metalid}
-                              value={ele.metaltype}
-                              sx={MenuItemSx}
-                            >
-                              {ele.metaltype}
-                            </MenuItem>
-                          ))}
-                        </Select>
-                      )}
-                    </Grid>
-                  )} */}
-
-          {/* ===================== METAL COLOR ===================== */}
-          {/* {metalColorCombo?.length > 0 &&
-                  storeInit?.IsMetalTypeWithColor === 1 && (
-                    <Grid
-                      item
-                      size={{
-                        xs: 12,
-                        sm: 6,
-                      }}
-                    >
-                      <Typography
-                        sx={{ fontSize: "14px", color: "#666", mb: 0.5 }}
-                      >
-                        Metal Color :
-                      </Typography>
-
-                      {singleProd?.IsMrpBase == 1 ? (
-                        <LableField
-                          label={
-                            metalColorCombo?.find(
-                              (ele) => ele?.id == singleProd?.MetalColorid,
-                            )?.metalcolorname
-                          }
-                        />
-                      ) : (
-                        <Select
-                          {...SelectSx}
-                          fullWidth
-                          value={metalColor || ""}
-                          onChange={(e) =>
-                            storeInit?.IsColorWiseImages === 1
-                              ? handleMetalWiseColorImg(e)
-                              : handleMetalWiseColorImgWithFlag(e)
-                          }
-                          displayEmpty
-                          renderValue={(selected) => {
-                            if (!selected)
-                              return metalColorCombo?.[0]?.metalcolorname;
-                            return (
-                              metalColorCombo?.find(
-                                (x) => x.colorcode === selected,
-                              )?.metalcolorname || ""
-                            );
-                          }}
-                        >
-                          {metalColorCombo?.map((ele) => (
-                            <MenuItem
-                              sx={MenuItemSx}
-                              key={ele.id}
-                              value={ele.colorcode}
-                            >
-                              {ele.metalcolorname}
-                            </MenuItem>
-                          ))}
-                        </Select>
-                      )}
-                    </Grid>
-                  )} */}
-
-          {/* ===================== DIAMOND ===================== */}
-          {/* {storeInit?.IsDiamondCustomization === 1 &&
-                  diaQcCombo?.length > 0 &&
-                  diaList?.length > 0 && (
-                    <Grid
-                      item
-                      size={{
-                        xs: 12,
-                        sm: 6,
-                      }}
-                    >
-                      <Typography
-                        sx={{ fontSize: "14px", color: "#666", mb: 0.5 }}
-                      >
-                        Diamond :
-                      </Typography>
-
-                      {singleProd?.IsMrpBase == 1 ? (
-                        <LableField label={singleProd?.DiaQuaCol} />
-                      ) : (
-                        <Select
-                          fullWidth
-                          value={selectDiaQc || ""}
-                          onChange={(e) => handleCustomChange(e, "dt")}
-                          displayEmpty
-                          renderValue={(selected) => {
-                            if (!selected) {
-                              const d = diaQcCombo?.[0];
-                              return `${d?.Quality},${d?.color}`;
-                            }
-                            return selected;
-                          }}
-                          {...SelectSx}
-                        >
-                          {diaQcCombo?.map((ele) => (
-                            <MenuItem
-                              sx={MenuItemSx}
-                              key={ele.QualityId}
-                              value={`${ele.Quality},${ele.color}`}
-                            >
-                              {`${ele.Quality},${ele.color}`}
-                            </MenuItem>
-                          ))}
-                        </Select>
-                      )}
-                    </Grid>
-                  )} */}
-
-          {/* ===================== COLOR STONE ===================== */}
-          {/* {storeInit?.IsCsCustomization === 1 &&
-                  selectCsQC?.length > 0 &&
-                  csList?.filter((ele) => ele?.D !== "MISC")?.length > 0 && (
-                    <Grid
-                      item
-                      size={{
-                        xs: 12,
-                        sm: 6,
-                      }}
-                    >
-                      <Typography
-                        sx={{ fontSize: "14px", color: "#666", mb: 0.5 }}
-                      >
-                        Color Stone :
-                      </Typography>
-
-                      {singleProd?.IsMrpBase == 1 ? (
-                        <LableField label={singleProd?.CsQuaCol} />
-                      ) : (
-                        <Select
-                          fullWidth
-                          value={selectCsQC || ""}
-                          onChange={(e) => handleCustomChange(e, "cs")}
-                          displayEmpty
-                          renderValue={(selected) => {
-                            if (!selected) {
-                              const cs = csQcCombo?.[0];
-                              return `${cs?.Quality},${cs?.color}`;
-                            }
-                            return selected;
-                          }}
-                          {...SelectSx}
-                        >
-                          {csQcCombo?.map((ele) => (
-                            <MenuItem
-                              sx={MenuItemSx}
-                              key={ele.QualityId}
-                              value={`${ele.Quality},${ele.color}`}
-                            >
-                              {`${ele.Quality}#${ele.color}`}
-                            </MenuItem>
-                          ))}
-                        </Select>
-                      )}
-                    </Grid>
-                  )} */}
-
-          {/* ===================== SIZE =====================
-                                {SizeSorting?.length > 0 && (
-                                    <Grid item size={{
-                                    xs={12} sm={6}}>
-                                        <Typography sx={{ fontSize: "14px", color: "#666", mb: 0.5 }}>
-                                            Size :
-                                        </Typography>
-
-                                        {singleProd?.IsMrpBase == 1 ? (
-                                            <LableField label={singleProd?.DefaultSize} />
-                                        ) : (
-                                            <Select
-                                                fullWidth
-                                                value={sizeData || ""}
-                                                onChange={(e) => handleCustomChange(e, "size")}
-                                                displayEmpty
-                                                renderValue={(selected) => selected || SizeCombo?.rd?.[0]?.sizename}
-                                                {...SelectSx}
-                                            >
-                                                {SizeCombo?.rd?.map(ele => (
-                                                    <MenuItem sx={MenuItemSx} key={ele.id} value={ele.sizename}>
-                                                        {ele.sizename}
-                                                    </MenuItem>
-                                                ))}
-                                            </Select>
-                                        )}
-                                    </Grid>
-                                )} */}
-          {/* </Grid>
-            </Box>
-          )} */}
-          {storeInit?.IsProductWebCustomization === 1 && (
-            <Box sx={{ width: "100%", mt: 3, mb: 0 }}>
-              <Button
-                fullWidth
-                variant="outlined"
-                onClick={() => setIsCustomizerOpen(true)}
-                sx={{
-                  height: 48,
-                  borderRadius: "2px",
-                  fontSize: "14px",
-                  fontWeight: 500,
-                  letterSpacing: "0.5px",
-                  textTransform: "none",
-                  color: "#0B2F83",
-                  borderColor: "#0B2F83",
-                  borderWidth: "1.5px",
-                  textTransform: "uppercase",
-                  letterSpacing: "0.05em",
-                  "&:hover": {
-                    borderColor: "#082360",
-                    backgroundColor: "#F0F4FC",
-                    borderWidth: "1.5px",
-                  },
-                }}
-              >
-                Customize Design
-              </Button>
-            </Box>
-          )}
-
-          <CustomizerDrawer
-            open={isCustomizerOpen}
-            onClose={() => setIsCustomizerOpen(false)}
-            rd1={rd1}
-            rd2={rd2}
-            defaultArticleId={defaultArticleId}
-            onConfirm={onCustomizerConfirm}
+          {/* Customization: design-based dropdowns OR article-based drawer (shared module) */}
+          <ProductCustomizationSection
             storeInit={storeInit}
-            loginData={loginData}
+            isDesignBase={isDesignBase}
+            isModeKnown={isCustomizationModeKnown}
+            designProps={{
+              singleProd,
+              metalType,
+              metalColor,
+              metalTypeCombo,
+              metalColorCombo,
+              diaQcCombo,
+              diaList,
+              selectDiaQc,
+              csQcCombo,
+              csList,
+              selectCsQC,
+              SizeSorting,
+              SizeCombo,
+              sizeData,
+              onChange: onDesignChange,
+              handleMetalWiseColorImg,
+              handleMetalWiseColorImgWithFlag,
+            }}
+            ArticleDrawer={CustomizerDrawer}
+            articleDrawerProps={{
+              rd1,
+              rd2,
+              defaultArticleId,
+              onConfirm: onCustomizerConfirm,
+              loginData,
+            }}
           />
 
           {/* Action Buttons & Product Info Section */}
@@ -1294,36 +1060,36 @@ const RightSide = ({
                     PRODUCT CARE
                   </Button>
                   {showPriceBreakup && (
-                      <Button
-                        disableRipple
-                        onClick={() => setActiveTab("pricebreakup")}
-                        sx={{
-                          py: 1.2,
-                          px: 1,
-                          borderRadius: 0,
-                          fontSize: "12px",
-                          fontWeight: 700,
-                          letterSpacing: "0.5px",
-                          textTransform: "uppercase",
+                    <Button
+                      disableRipple
+                      onClick={() => setActiveTab("pricebreakup")}
+                      sx={{
+                        py: 1.2,
+                        px: 1,
+                        borderRadius: 0,
+                        fontSize: "12px",
+                        fontWeight: 700,
+                        letterSpacing: "0.5px",
+                        textTransform: "uppercase",
+                        backgroundColor:
+                          activeTab === "pricebreakup" || activeTab === "shipping"
+                            ? "#000000"
+                            : "transparent",
+                        color:
+                          activeTab === "pricebreakup" || activeTab === "shipping"
+                            ? "#ffffff"
+                            : "#000000",
+                        "&:hover": {
                           backgroundColor:
                             activeTab === "pricebreakup" || activeTab === "shipping"
                               ? "#000000"
-                              : "transparent",
-                          color:
-                            activeTab === "pricebreakup" || activeTab === "shipping"
-                              ? "#ffffff"
-                              : "#000000",
-                          "&:hover": {
-                            backgroundColor:
-                              activeTab === "pricebreakup" || activeTab === "shipping"
-                                ? "#000000"
-                                : "#e0e0e0",
-                          },
-                        }}
-                      >
-                        PRICE BREAKUP
-                      </Button>
-                    )}
+                              : "#e0e0e0",
+                        },
+                      }}
+                    >
+                      PRICE BREAKUP
+                    </Button>
+                  )}
                 </Box>
 
                 {/* Tab Content Box */}
@@ -1657,8 +1423,8 @@ const RightSide = ({
 
                   {((activeTab === "shipping") ||
                     (activeTab === "pricebreakup" && showPriceBreakup)) && (
-                    <Box>
-                      {activeTab === "pricebreakup" && showPriceBreakup && (
+                      <Box>
+                        {activeTab === "pricebreakup" && showPriceBreakup && (
                           <TableContainer
                             sx={{
                               border: "1px solid #E5E5E5",
@@ -1752,8 +1518,8 @@ const RightSide = ({
                             </Table>
                           </TableContainer>
                         )}
-                    </Box>
-                  )}
+                      </Box>
+                    )}
                 </Box>
               </Box>
 
@@ -2477,7 +2243,7 @@ export default RightSide;
 
 //           {/* ===================== SIZE =====================
 //                                 {SizeSorting?.length > 0 && (
-//                                     <Grid item size={{
+//                                     <Grid  size={{
 //                                     xs={12} sm={6}}>
 //                                         <Typography sx={{ fontSize: "14px", color: "#666", mb: 0.5 }}>
 //                                             Size :
