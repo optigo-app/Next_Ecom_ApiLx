@@ -31,6 +31,7 @@ export const SingleArticleProdListAPI = async (
     Customerid: `${customerId ?? 0}`,
     designno: `${singprod?.b ?? ""}`,
     ArticleNo: `${singprod?.ArticleNo ?? ""}`,
+    ArticleId: `${singprod?.ArticleId ?? ""}`,
     CurrencyRate: `${loginInfo?.CurrencyRate ?? storeinit?.CurrencyRate}`,
     Metalid: `${obj?.mt == null ? (loginInfo?.MetalId ?? storeinit?.MetalId) : obj?.mt}`,
     DiaQCid: `${obj?.diaQc == null ? (loginInfo?.cmboDiaQCid ?? storeinit?.cmboDiaQCid) : obj?.diaQc}`,
@@ -106,6 +107,7 @@ export const SingleArticleProdListAPI = async (
       autocode: singprod?.a || singprod?.autocode || data.autocode,
       designno: singprod?.b || singprod?.designno || data.designno,
       ArticleNo: singprod?.ArticleNo || data.ArticleNo,
+      ArticleId: singprod?.ArticleId || data.ArticleId,
     };
 
     const res = await getSqliteProductArticle(payload, storeinit?.domain);

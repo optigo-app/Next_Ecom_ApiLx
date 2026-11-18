@@ -1,3 +1,4 @@
+import { AUTH_COOKIE_OPTIONS, SESSION_BASED_LOGIN } from "@/app/(core)/utils/authConfig";
 import { getSession } from "../FetchSessionData.js";
 
 import Cookies from "js-cookie";
@@ -113,21 +114,23 @@ export function syncUserDetailToCookies(userDetail, storeInit = null) {
   try {
     // 1. Direct Table Name in Cookie for instant server-side lookup
     const tableName = getDynamicDesignTableName(compact);
-    Cookies.set(POLICY_TABLE_COOKIE, tableName, { path: "/", expires: 7 });
-    Cookies.set(POLICY_TABLE_ALIAS, tableName, { path: "/", expires: 7 });
+    Cookies.set(POLICY_TABLE_COOKIE, tableName, AUTH_COOKIE_OPTIONS);
+    Cookies.set(POLICY_TABLE_ALIAS, tableName, AUTH_COOKIE_OPTIONS);
 
     // 2. Compact User Detail in Cookie
-    Cookies.set(LOGIN_USER_COOKIE, encodeURIComponent(JSON.stringify(compact)), { path: "/", expires: 7 });
-    Cookies.set("LoginUser", "true", { path: "/", expires: 7 });
+    Cookies.set(LOGIN_USER_COOKIE, encodeURIComponent(JSON.stringify(compact)), AUTH_COOKIE_OPTIONS);
+    Cookies.set("LoginUser", "true", AUTH_COOKIE_OPTIONS);
 
     if (compact.PackageId) {
-      Cookies.set("userPackageId", String(compact.PackageId), { path: "/", expires: 7 });
+      Cookies.set("userPackageId", String(compact.PackageId), AUTH_COOKIE_OPTIONS);
     }
 
     // 3. LocalStorage backups for multi-tab sync
-    localStorage.setItem(POLICY_TABLE_COOKIE, tableName);
-    localStorage.setItem(LOGIN_USER_COOKIE, JSON.stringify(userDetail));
-    localStorage.setItem("LoginUser", "true");
+    if (!SESSION_BASED_LOGIN) {
+      localStorage.setItem(POLICY_TABLE_COOKIE, tableName);
+      localStorage.setItem(LOGIN_USER_COOKIE, JSON.stringify(userDetail));
+      localStorage.setItem("LoginUser", "true");
+    }
   } catch (err) {
     console.warn("syncUserDetailToCookies error:", err);
   }

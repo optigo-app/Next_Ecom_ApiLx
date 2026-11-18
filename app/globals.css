@@ -198,6 +198,23 @@ button,
   width: auto !important;
 }
 
+/* Hide ProCatalog site chrome on server-rendered exclusive album links. */
+.procat-layout-frame:has([data-exclusive-album="true"]) {
+  background-image: none !important;
+  background-color: #fff !important;
+}
+
+.procat-layout-frame:has([data-exclusive-album="true"]) .procat-layout-chrome {
+  display: none !important;
+}
+
+.procat-layout-frame:has([data-exclusive-album="true"]) .procat-layout-page {
+  margin: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  background-color: #fff !important;
+}
+
 /* Mirror Category swiper & slide sizing for SSR / initial paint */
 .product-card-group {
   width: 100% !important;

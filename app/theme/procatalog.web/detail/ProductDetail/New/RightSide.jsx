@@ -109,11 +109,27 @@ const RightSide = ({
     loadingdata,
     isPriceloading,
   });
+  // Design-based products still have a default/selected article row with the
+  // metadata used by the summary, even though customization mode has no active
+  // article for the article-based drawer.
+  const displayArticle = activeArticle || rawArticle || defaultArticle;
+  const selectedMetalTypeOption = metalTypeCombo?.find(
+    (option) =>
+      String(option?.metaltype || "").trim().toLowerCase() ===
+      String(metalType || "").trim().toLowerCase(),
+  );
+  const purityMetalTypeOption = metalTypeCombo?.find(
+    (option) => Number(option?.Metalid) === Number(singleProd?.MetalPurityid),
+  );
+  const metalPurityLabel =
+    Number(singleProd?.IsMrpBase) === 1
+      ? purityMetalTypeOption?.metaltype || singleProd?.MetalTypePurity || metalType || "-"
+      : selectedMetalTypeOption?.metaltype || displayArticle?.MetalType || metalType || singleProd?.MetalTypePurity || "-";
   const onDesignChange = handleDesignCustomChange || handleCustomChange;
 
   const isLoading = isPriceloading || pdLoadImage || loadingdata;
   const isPriceLoadingState = (isPriceloading || pdLoadImage || loadingdata) && !activeArticle && !singleProd?.UnitCostWithmarkup && !singleProd?.UnitCostWithMarkUp;
-  const isNetWeightLoadingState = isLoading && !activeArticle?.NetWeight && !singleProd?.NetWeight && !singleProd?.Nwt;
+  const isNetWeightLoadingState = isLoading && !displayArticle?.NetWeight && !singleProd?.NetWeight && !singleProd?.Nwt;
 
   // Derive default diamond quality from rd2 for the activeArticle ArticleId
   const defaultDiaStone =
@@ -132,14 +148,17 @@ const RightSide = ({
     return txt.value;
   };
 
-  // Per-article cart/wish status: check rd1CartMap first, then fall back to optimistic flags
-  const activeArticleId = activeArticle?.ArticleId;
+  // Design-based cart status must use the same article identity as the listing,
+  // even though that mode has no active article in the customization drawer.
+  const cartIdentityArticle = isDesignBase ? displayArticle : activeArticle;
+  const activeArticleId = cartIdentityArticle?.ArticleId;
   const articleCartEntry = rd1CartMap[activeArticleId];
 
-  // Variant-exact identity for the active article (autocode + ArticleNo)
+  // Variant-exact identity for the active article. Design-based products must
+  // never fall back to the product-level singleProd identity.
   const activeVariant = {
-    autocode: activeArticle?.autocode ?? singleProd?.autocode,
-    ArticleNo: activeArticle?.ArticleNo ?? singleProd?.ArticleNo,
+    autocode: cartIdentityArticle?.autocode ?? (isDesignBase ? undefined : singleProd?.autocode),
+    ArticleNo: cartIdentityArticle?.ArticleNo ?? (isDesignBase ? undefined : singleProd?.ArticleNo),
   };
 
   // When the global GetCount maps are hydrated they are the source of truth
@@ -419,12 +438,10 @@ const RightSide = ({
                     textTransform: "uppercase",
                   }}
                 >
-                  {isLoading && !activeArticle && !metalType && !singleProd?.MetalTypePurity ? (
+                  {isLoading && !activeArticle && metalPurityLabel === "-" ? (
                     <Skeleton variant="text" width={60} />
-                  ) : singleProd?.IsMrpBase === 1 ? (
-                    singleProd?.MetalTypePurity || metalType || "-"
                   ) : (
-                    activeArticle?.MetalType || metalType || singleProd?.MetalTypePurity || "-"
+                    metalPurityLabel
                   )}
                 </Typography>
               </Grid>
@@ -440,10 +457,12 @@ const RightSide = ({
                   Metal Color
                 </Typography>
                 <Typography sx={{ fontSize: "15px", fontWeight: 600 }}>
-                  {isLoading && !activeArticle && !metalColor ? (
+                  {isLoading && !displayArticle?.MetalColor && !metalColor ? (
                     <Skeleton variant="text" width={60} />
                   ) : (
-                    activeArticle?.MetalColor || metalColor || "-"
+                    (metalColor && metalColor !== "-" ? metalColor : null) ||
+                    displayArticle?.MetalColor ||
+                    "-"
                   )}
                 </Typography>
               </Grid>
@@ -509,8 +528,8 @@ const RightSide = ({
                   <Typography sx={{ fontSize: "15px", fontWeight: 600 }}>
                     {isNetWeightLoadingState ? (
                       <Skeleton variant="text" width={50} />
-                    ) : activeArticle?.NetWeight != null ? (
-                      Number(activeArticle.NetWeight).toFixed(3)
+                    ) : displayArticle?.NetWeight != null ? (
+                      Number(displayArticle.NetWeight).toFixed(3)
                     ) : singleProd1?.NetWeight != null ||
                       singleProd?.NetWeight != null ||
                       singleProd?.Nwt != null ? (

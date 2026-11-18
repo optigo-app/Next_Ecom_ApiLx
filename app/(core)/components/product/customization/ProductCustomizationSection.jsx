@@ -22,7 +22,7 @@ const ProductCustomizationSection = ({
   articleDrawerProps = {},
 }) => {
   const [isCustomizerOpen, setIsCustomizerOpen] = useState(false);
-  const enabled = storeInit?.IsProductWebCustomization === 1 || storeInit?.IsProductWebCustomization == 1;
+  const enabled = Number(storeInit?.IsProductWebCustomization) === 1;
 
   return (
     <>

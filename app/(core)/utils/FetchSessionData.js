@@ -1,3 +1,4 @@
+import { AUTH_COOKIE_OPTIONS, SESSION_BASED_LOGIN } from "@/app/(core)/utils/authConfig";
 import Cookies from "js-cookie";
 import {
     syncUserDetailToCookies,
@@ -38,7 +39,10 @@ export const getSession = (key, defaultValue = null) => {
 
         // LocalStorage Fallback (cross-tab / new tab / browser reload)
         if (key === "loginUserDetail" || key === "LoginUser") {
-            try {
+            // localStorage backup is only honoured while the (expiring) login cookie is still valid,
+            // so the login really ends LOGIN_EXPIRY_DAYS after the last visit.
+            if (!SESSION_BASED_LOGIN) try {
+                if (!Cookies.get("userLoginCookie")) throw new Error("login cookie expired");
                 const lsVal = localStorage.getItem(key);
                 if (lsVal !== null) {
                     const parsed = parseValue(lsVal);
@@ -85,10 +89,12 @@ export const setSession = (key, value) => {
             const parsed = typeof value === "string" ? parseValue(value) : value;
             syncUserDetailToCookies(parsed);
         } else if (key === "LoginUser") {
-            Cookies.set("LoginUser", String(value), { path: "/", expires: 7 });
-            try {
-                localStorage.setItem("LoginUser", String(value));
-            } catch (_) {}
+            Cookies.set("LoginUser", String(value), AUTH_COOKIE_OPTIONS);
+            if (!SESSION_BASED_LOGIN) {
+                try {
+                    localStorage.setItem("LoginUser", String(value));
+                } catch (_) {}
+            }
         } else if (key === "storeInit") {
             const parsed = typeof value === "string" ? parseValue(value) : value;
             // If user is guest, automatically set guest table in cookie for instant SSR

@@ -1,5 +1,6 @@
 "use client";
 
+import { AUTH_COOKIE_OPTIONS } from "@/app/(core)/utils/authConfig";
 import { useEffect, useState } from "react";
 import CryptoJS from "crypto-js";
 import { toast } from "react-toastify";
@@ -74,10 +75,10 @@ export function usePasswordLogin({ searchParams }) {
       const userDetail = response?.Data?.rd?.[0];
       if (userDetail?.stat === 1) {
         const pkgId = userDetail?.PackageId ?? userDetail?.packageId ?? userDetail?.PackageID;
-        Cookies.set("userLoginCookie", userDetail?.Token, { path: "/", expires: 7 });
-        Cookies.set("LoginUser", "true", { path: "/", expires: 7 });
+        Cookies.set("userLoginCookie", userDetail?.Token, AUTH_COOKIE_OPTIONS);
+        Cookies.set("LoginUser", "true", AUTH_COOKIE_OPTIONS);
         if (pkgId != null && pkgId !== "" && String(pkgId) !== "undefined" && String(pkgId) !== "null") {
-          Cookies.set("userPackageId", String(pkgId), { path: "/", expires: 7 });
+          Cookies.set("userPackageId", String(pkgId), AUTH_COOKIE_OPTIONS);
         }
 
         sessionStorage.setItem("registerEmail", email);

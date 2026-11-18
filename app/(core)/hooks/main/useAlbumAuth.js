@@ -1,5 +1,6 @@
 "use client";
 
+import { AUTH_COOKIE_OPTIONS } from "@/app/(core)/utils/authConfig";
 import { useEffect, useRef } from "react";
 import Cookies from "js-cookie";
 import { useStore } from "../../contexts/StoreProvider";
@@ -23,8 +24,8 @@ export function useAlbumAuth(customerId, enabled = true) {
         if (Number(userDetail?.stat) !== 1) return;
 
         const token = userDetail?.Token ?? userDetail?.token;
-        if (token) Cookies.set("userLoginCookie", String(token), { path: "/", expires: 7 });
-        Cookies.set("LoginUser", "true", { path: "/", expires: 7 });
+        if (token) Cookies.set("userLoginCookie", String(token), AUTH_COOKIE_OPTIONS);
+        Cookies.set("LoginUser", "true", AUTH_COOKIE_OPTIONS);
         syncUserDetailToCookies(userDetail);
         setSession("LoginUser", true);
         setSession("loginUserDetail", userDetail);

@@ -30,6 +30,7 @@ const SonasonsHome = async (props) => {
 
   return (
     <Box
+      data-exclusive-album={isExclusive ? "true" : undefined}
       sx={{
         width: "100%",
         height: "100%",
