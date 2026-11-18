@@ -18,10 +18,8 @@ const DesignBaseCustomization = ({
   metalTypeCombo,
   metalColorCombo,
   diaQcCombo,
-  diaList,
   selectDiaQc,
   csQcCombo,
-  csList,
   selectCsQC,
   SizeSorting,
   SizeCombo,
@@ -34,7 +32,7 @@ const DesignBaseCustomization = ({
     <Box sx={{ width: "100%", mt: 2 }}>
       <Grid container spacing={2}>
           {metalTypeCombo?.length > 0 &&
-                  storeInit?.IsMetalCustomization === 1 && (
+                  Number(storeInit?.IsMetalCustomization) === 1 && (
                     <Grid
                       item
                       size={{
@@ -48,7 +46,7 @@ const DesignBaseCustomization = ({
                         Metal Type :
                       </Typography>
 
-                      {singleProd?.IsMrpBase == 1 ? (
+                      {Number(singleProd?.IsMrpBase) === 1 ? (
                         <LableField
                           label={
                             metalTypeCombo?.find(
@@ -82,7 +80,7 @@ const DesignBaseCustomization = ({
                     </Grid>
                   )}
           {metalColorCombo?.length > 0 &&
-                  storeInit?.IsMetalTypeWithColor === 1 && (
+                  Number(storeInit?.IsMetalTypeWithColor) === 1 && (
                     <Grid
                       item
                       size={{
@@ -96,7 +94,7 @@ const DesignBaseCustomization = ({
                         Metal Color :
                       </Typography>
 
-                      {singleProd?.IsMrpBase == 1 ? (
+                      {Number(singleProd?.IsMrpBase) === 1 ? (
                         <LableField
                           label={
                             metalColorCombo?.find(
@@ -110,7 +108,7 @@ const DesignBaseCustomization = ({
                           fullWidth
                           value={metalColor || ""}
                           onChange={(e) =>
-                            storeInit?.IsColorWiseImages === 1
+                            Number(storeInit?.IsColorWiseImages) === 1
                               ? handleMetalWiseColorImg(e)
                               : handleMetalWiseColorImgWithFlag(e)
                           }
@@ -138,9 +136,8 @@ const DesignBaseCustomization = ({
                       )}
                     </Grid>
                   )}
-          {storeInit?.IsDiamondCustomization === 1 &&
-                  diaQcCombo?.length > 0 &&
-                  diaList?.length > 0 && (
+          {Number(storeInit?.IsDiamondCustomization) === 1 &&
+                  diaQcCombo?.length > 0 && (
                     <Grid
                       item
                       size={{
@@ -154,7 +151,7 @@ const DesignBaseCustomization = ({
                         Diamond :
                       </Typography>
 
-                      {singleProd?.IsMrpBase == 1 ? (
+                      {Number(singleProd?.IsMrpBase) === 1 ? (
                         <LableField label={singleProd?.DiaQuaCol} />
                       ) : (
                         <Select
@@ -184,9 +181,8 @@ const DesignBaseCustomization = ({
                       )}
                     </Grid>
                   )}
-          {storeInit?.IsCsCustomization === 1 &&
-                  selectCsQC?.length > 0 &&
-                  csList?.filter((ele) => ele?.D !== "MISC")?.length > 0 && (
+          {Number(storeInit?.IsCsCustomization) === 1 &&
+                  csQcCombo?.length > 0 && (
                     <Grid
                       item
                       size={{
@@ -200,7 +196,7 @@ const DesignBaseCustomization = ({
                         Color Stone :
                       </Typography>
 
-                      {singleProd?.IsMrpBase == 1 ? (
+                      {Number(singleProd?.IsMrpBase) === 1 ? (
                         <LableField label={singleProd?.CsQuaCol} />
                       ) : (
                         <Select
@@ -236,7 +232,7 @@ const DesignBaseCustomization = ({
                                             Size :
                                         </Typography>
 
-                                        {singleProd?.IsMrpBase == 1 ? (
+                                        {Number(singleProd?.IsMrpBase) === 1 ? (
                                             <LableField label={singleProd?.DefaultSize} />
                                         ) : (
                                             <Select

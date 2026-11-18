@@ -1,4 +1,5 @@
 'use client';
+import { AUTH_COOKIE_OPTIONS } from "@/app/(core)/utils/authConfig";
 import React, { useEffect, useState, useRef } from 'react';
 import { toast } from 'react-toastify';
 import { LoginWithEmailCodeAPI } from '@/app/(core)/utils/API/Auth/LoginWithEmailCodeAPI';
@@ -87,11 +88,11 @@ export default function LoginWithEmailCode({ params, searchParams }) {
         const pkgId = userDetail?.PackageId ?? userDetail?.packageId ?? userDetail?.PackageID;
 
         if (userDetail?.Token) {
-          Cookies.set('userLoginCookie', userDetail.Token, { path: '/', expires: 7 });
+          Cookies.set('userLoginCookie', userDetail.Token, AUTH_COOKIE_OPTIONS);
         }
-        Cookies.set('LoginUser', 'true', { path: '/', expires: 7 });
+        Cookies.set('LoginUser', 'true', AUTH_COOKIE_OPTIONS);
         if (pkgId != null && pkgId !== '' && String(pkgId) !== 'undefined' && String(pkgId) !== 'null') {
-          Cookies.set('userPackageId', String(pkgId), { path: '/', expires: 7 });
+          Cookies.set('userPackageId', String(pkgId), AUTH_COOKIE_OPTIONS);
         }
 
         setSession('LoginUser', true);

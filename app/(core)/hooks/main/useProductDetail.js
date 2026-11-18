@@ -153,6 +153,12 @@ export function useProductDetail({ storeinit, searchParams, params }) {
   const [rd1Data, setRd1Data] = useState([]);
   const [rd2Data, setRd2Data] = useState([]);
   const [customizationDetail, setCustomizationDetail] = useState(null);
+  // Default ArticleId passed from product listing page via URL param.
+  // Declare it before effects that use it during hook initialization.
+  const [defaultArticleId, setDefaultArticleId] = useState(() => {
+    const id = initialDecodeUrl?.ArticleId;
+    return id ? parseInt(id, 10) : null;
+  });
   // Per-article cart/wishlist status map: { [ArticleId]: { IsInCart, IsInWish, CartId } }
   const [rd1CartMap, setRd1CartMap] = useState({});
   const Navigate = useNextRouterLikeRR();
@@ -491,9 +497,17 @@ export function useProductDetail({ storeinit, searchParams, params }) {
 
   useEffect(() => {
     if (metalTypeCombo.length) {
-      const mtType = metalTypeCombo.find(
-        (ele) => ele.Metalid === singleProd?.MetalPurityid,
-      )?.metaltype;
+      const selectedArticle =
+        rd1Data?.find((article) => article.ArticleId == defaultArticleId) ||
+        customizationDetail ||
+        rd1Data?.[0];
+      const isDesignBaseArticle =
+        Number(selectedArticle?.IsDesignBaseWeb) === 1;
+      const mtType = isDesignBaseArticle && selectedArticle?.MetalType
+        ? selectedArticle.MetalType
+        : metalTypeCombo.find(
+            (ele) => Number(ele?.Metalid) === Number(singleProd?.MetalPurityid),
+          )?.metaltype;
       setMetalType(mtType);
     }
     if (metalColorCombo.length) {
@@ -502,7 +516,7 @@ export function useProductDetail({ storeinit, searchParams, params }) {
       )?.colorcode;
       setMetalColor(getCurrentMetalColor);
     }
-  }, [singleProd, metalTypeCombo, metalColorCombo]);
+  }, [singleProd, metalTypeCombo, metalColorCombo, rd1Data, defaultArticleId, customizationDetail]);
 
   // useEffect(() => {
   //   const isInCart = singleProd?.IsInCart === 0 ? false : true;
@@ -548,6 +562,11 @@ export function useProductDetail({ storeinit, searchParams, params }) {
     setIsCartBtnLoading(true);
     // Design-based products ignore the article variant; the selected dropdown values are sent instead.
     const cartCustomization = isDesignBaseWeb ? null : customizationDetail;
+    const articleIdentity =
+      customizationDetail ||
+      rd1Data?.find((article) => article.ArticleId == defaultArticleId) ||
+      rd1Data?.[0] ||
+      {};
     const metal =
       metalTypeCombo?.find((ele) => {
         return ele?.metaltype == metalType;
@@ -577,6 +596,7 @@ export function useProductDetail({ storeinit, searchParams, params }) {
     const prodObj = {
       autocode:
         cartCustomization?.autocode ||
+        (isDesignBaseWeb ? articleIdentity?.autocode : null) ||
         singleProd1?.autocode ||
         singleProd?.autocode,
       StockBarcode: cartCustomization?.StockBarcode || singleProd1?.StockBarcode || singleProd?.StockBarcode || "",
@@ -646,9 +666,17 @@ export function useProductDetail({ storeinit, searchParams, params }) {
         cartCustomization?.SolPrice ||
         singleProd?.SolPric ||
         singleProd1?.SolPrice,
-      ArticleNo: cartCustomization?.ArticleNo || singleProd?.ArticleNo || "",
+      ArticleNo:
+        cartCustomization?.ArticleNo ||
+        articleIdentity?.ArticleNo ||
+        singleProd1?.ArticleNo ||
+        singleProd?.ArticleNo ||
+        decodeUrl?.ArticleNo ||
+        "",
       ArticleId:
         cartCustomization?.ArticleId ||
+        articleIdentity?.ArticleId ||
+        defaultArticleId ||
         singleProd1?.ArticleId ||
         singleProd?.ArticleId ||
         0,
@@ -656,6 +684,8 @@ export function useProductDetail({ storeinit, searchParams, params }) {
 
     const activeArticleId =
       cartCustomization?.ArticleId ||
+      articleIdentity?.ArticleId ||
+      defaultArticleId ||
       singleProd1?.ArticleId ||
       singleProd?.ArticleId;
 
@@ -712,11 +742,11 @@ export function useProductDetail({ storeinit, searchParams, params }) {
       try {
         res1 = await RemoveCartAndWishAPI(
           "Cart",
-          cartCustomization?.autocode || singleProd?.autocode,
+          prodObj?.autocode,
           cookie,
           false,
           "",
-          cartCustomization?.ArticleNo || singleProd?.ArticleNo || "",
+          prodObj?.ArticleNo || "",
           cartIdToRemove,
         );
       } catch (err) {
@@ -764,6 +794,11 @@ export function useProductDetail({ storeinit, searchParams, params }) {
 
   const handleWishList = async (e, elv) => {
     const cartCustomization = isDesignBaseWeb ? null : customizationDetail;
+    const articleIdentity =
+      customizationDetail ||
+      rd1Data?.find((article) => article.ArticleId == defaultArticleId) ||
+      rd1Data?.[0] ||
+      {};
     setWishListFlag(e?.target?.checked);
     setIsWishBtnLoading(true);
 
@@ -878,9 +913,17 @@ export function useProductDetail({ storeinit, searchParams, params }) {
         cartCustomization?.SolPrice ||
         singleProd?.SolPric ||
         singleProd1?.SolPrice,
-      ArticleNo: cartCustomization?.ArticleNo || singleProd?.ArticleNo || "",
+      ArticleNo:
+        cartCustomization?.ArticleNo ||
+        articleIdentity?.ArticleNo ||
+        singleProd1?.ArticleNo ||
+        singleProd?.ArticleNo ||
+        decodeUrl?.ArticleNo ||
+        "",
       ArticleId:
         cartCustomization?.ArticleId ||
+        articleIdentity?.ArticleId ||
+        defaultArticleId ||
         singleProd1?.ArticleId ||
         singleProd?.ArticleId ||
         0,
@@ -888,6 +931,8 @@ export function useProductDetail({ storeinit, searchParams, params }) {
 
     const activeArticleId =
       cartCustomization?.ArticleId ||
+      articleIdentity?.ArticleId ||
+      defaultArticleId ||
       singleProd1?.ArticleId ||
       singleProd?.ArticleId;
 
@@ -941,7 +986,7 @@ export function useProductDetail({ storeinit, searchParams, params }) {
           cookie,
           false,
           "",
-          cartCustomization?.ArticleNo || singleProd?.ArticleNo || "",
+          prodObj?.ArticleNo || "",
         );
       } catch (err) {
         console.log("removewishErr", err);
@@ -1050,14 +1095,24 @@ export function useProductDetail({ storeinit, searchParams, params }) {
           )[0];
         }
 
-        setMetalType(metalArr?.metaltype);
+        const selectedArticle =
+          rd1Data?.find((article) => article.ArticleId == defaultArticleId) ||
+          customizationDetail ||
+          rd1Data?.[0];
+        const isDesignBaseArticle =
+          Number(selectedArticle?.IsDesignBaseWeb) === 1;
+        setMetalType(
+          isDesignBaseArticle && selectedArticle?.MetalType
+            ? selectedArticle.MetalType
+            : metalArr?.metaltype,
+        );
 
         setSelectDiaQc(`${diaArr?.Quality},${diaArr?.color}`);
 
         setSelectCsQC(`${csArr?.Quality},${csArr?.color}`);
       }
     }, 500);
-  }, [singleProd]);
+  }, [singleProd, rd1Data, defaultArticleId, customizationDetail]);
 
   useEffect(() => {
     try {
@@ -1848,6 +1903,7 @@ export function useProductDetail({ storeinit, searchParams, params }) {
       a: targetAutocode,
       b: targetDesignNo,
       ArticleNo: activeArticleNo,
+      ArticleId: matchedArticle?.ArticleId || defaultArticleId || "",
     };
 
     let obj = {
@@ -1919,12 +1975,6 @@ export function useProductDetail({ storeinit, searchParams, params }) {
 
     return SizeSorted;
   };
-
-  // Default ArticleId passed from product listing page via URL param
-  const [defaultArticleId, setDefaultArticleId] = useState(() => {
-    const id = initialDecodeUrl?.ArticleId;
-    return id ? parseInt(id, 10) : null;
-  });
 
   // Keep state sync if searchParams/url changes
   useEffect(() => {

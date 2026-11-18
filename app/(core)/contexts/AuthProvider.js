@@ -1,4 +1,5 @@
 "use client";
+import { AUTH_COOKIE_OPTIONS, SESSION_BASED_LOGIN, purgePersistentAuthStorage } from "@/app/(core)/utils/authConfig";
 import React, { createContext, useContext, useEffect, useState, useRef } from "react";
 import { LoginWithEmailAPI } from "../utils/API/Auth/LoginWithEmailAPI";
 import { useStore } from "./StoreProvider";
@@ -96,6 +97,7 @@ export function AuthProvider({ children, storeInit, theme }) {
   const prevTokenRef = useRef(token);
 
   useEffect(() => {
+    purgePersistentAuthStorage();
     if (token && token !== prevTokenRef.current) {
       hasInitializedAuth.current = false;
       prevTokenRef.current = token;
@@ -109,15 +111,18 @@ export function AuthProvider({ children, storeInit, theme }) {
 
     if (token) {
       setSession("token", token);
-      localStorage.setItem("token", token);
+      if (!SESSION_BASED_LOGIN) localStorage.setItem("token", token);
     }
     const existingLoginUser = getSession("LoginUser") || Cookies.get("LoginUser");
     const existingDetail = getSession("loginUserDetail");
     const hasUserCookie = !!Cookies.get("userLoginCookie");
-    if ((existingLoginUser === true || existingLoginUser === "true" || hasUserCookie) && existingDetail && !token) {
+    // In session-based mode a new tab only has the compact cookie copy of the user detail (no userid /
+    // currency etc.), so it is re-verified with the login token instead of being trusted as-is.
+    const hasFullDetail = !SESSION_BASED_LOGIN || existingDetail?.userid != null;
+    if ((existingLoginUser === true || existingLoginUser === "true" || hasUserCookie) && existingDetail && hasFullDetail && !token) {
       const pkgId = existingDetail?.PackageId ?? existingDetail?.packageId ?? existingDetail?.PackageID;
       if (pkgId != null && pkgId !== "" && String(pkgId) !== "undefined" && String(pkgId) !== "null") {
-        Cookies.set("userPackageId", String(pkgId), { path: "/", expires: 7 });
+        Cookies.set("userPackageId", String(pkgId), AUTH_COOKIE_OPTIONS);
       }
       syncUserDetailToCookies(existingDetail, storeInit);
       setislogin(true);
@@ -139,10 +144,10 @@ export function AuthProvider({ children, storeInit, theme }) {
             if (response?.Data?.rd[0]?.stat === 1) {
               const userDetail = response.Data.rd[0];
               const pkgId = userDetail?.PackageId ?? userDetail?.packageId ?? userDetail?.PackageID;
-              Cookies.set("userLoginCookie", userDetail?.Token, { path: "/", expires: 7 });
-              Cookies.set("LoginUser", "true", { path: "/", expires: 7 });
+              Cookies.set("userLoginCookie", userDetail?.Token, AUTH_COOKIE_OPTIONS);
+              Cookies.set("LoginUser", "true", AUTH_COOKIE_OPTIONS);
               if (pkgId != null && pkgId !== "" && String(pkgId) !== "undefined" && String(pkgId) !== "null") {
-                Cookies.set("userPackageId", String(pkgId), { path: "/", expires: 7 });
+                Cookies.set("userPackageId", String(pkgId), AUTH_COOKIE_OPTIONS);
               }
               syncUserDetailToCookies(userDetail, storeInit);
               setislogin(true);

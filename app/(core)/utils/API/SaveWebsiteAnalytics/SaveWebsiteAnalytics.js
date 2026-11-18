@@ -1,39 +1,26 @@
 import { getSession } from "../../FetchSessionData";
 import { CommonAPI } from "../CommonAPI/CommonAPI";
 
-/**
- * Saves a product detail page view into the website analytics (ERP).
- * Fire-and-forget: never throws, returns the first response row or null.
- */
-export const SaveWebsiteAnalytics = async (visiterId, autocode, designno) => {
+export const SaveWebsiteAnalytics = async (finalID) => {
+  let response;
   try {
-    const storeInit = (typeof window !== "undefined" && window.__STORE_INIT__) ? window.__STORE_INIT__ : getSession("storeInit");
-    const loginInfo = getSession("loginUserDetail");
+    const storeInit = (typeof window !== 'undefined' && window.__STORE_INIT__) ? window.__STORE_INIT__ : getSession('storeInit');
+
+    const email = getSession("registerEmail") ?? "";
     const islogin = getSession("LoginUser");
-
-    const isGuest = storeInit?.IsB2BWebsite == 0 && (islogin == false || islogin == null);
-    const customerId = isGuest ? visiterId : (loginInfo?.id ?? 0);
-    const customerEmail = isGuest ? visiterId : (loginInfo?.userid ?? "");
-
-    const data = {
-      FrontEnd_RegNo: `${storeInit?.FrontEnd_RegNo ?? 0}`,
-      autocode: `${autocode ?? 0}`,
-      designno: `${designno ?? 0}`,
-      Customerid: `${customerId ?? 0}`,
-    };
+    const loginUserDetail = getSession("loginUserDetail");
+    let packageId = (storeInit?.IsB2BWebsite == 0 && islogin == false) || islogin == null ? storeInit?.PackageId : loginUserDetail?.PackageId ?? 0;
 
     const body = {
-      con: `{\"id\":\"\",\"mode\":\"SaveWebsiteAnalytics\",\"appuserid\":\"${customerEmail ?? ""}\"}`,
-      f: "SaveLastViewDesign",
-      p: JSON.stringify(data),
+      con: `{\"id\":\"\",\"mode\":\"SaveWebsiteAnalytics\",\"appuserid\":\"${email}\"}`,
+      f: "onload (GETMENU SETUP)",
+      p: `{\"FrontEnd_RegNo\":\"${storeInit?.FrontEnd_RegNo}\",\"autocode\":\"${finalID}\",\"designno\":\"${packageId}\",\"Customerid\":${storeInit?.Customerid}}`,
     };
-
-    const res = await CommonAPI(body);
-    return res?.Data?.rd?.[0] ?? null;
+    response = await CommonAPI(body);
   } catch (error) {
-    console.log("SaveWebsiteAnalyticsErr", error);
-    return null;
+    console.error("Error:", error);
   }
+
+  return response;
 };
 
-export default SaveWebsiteAnalytics;
