@@ -103,7 +103,16 @@ export default function TestCheckoutMain({ theme: customTheme }) {
     [],
   );
   const handleCartItemEdit = useCallback((item) => {
-    if (isArticleBasedCartCustomization) {
+    // GetCartList uses IsCustomize=1 for the regular cart editor and 0 for
+    // article-based customization. Older rows may omit the field, so retain
+    // the store-level behavior as their fallback.
+    const hasItemCustomizationMode =
+      item?.IsCustomize != null || item?.IsDesignBaseWeb != null;
+    const isArticleBasedItem = hasItemCustomizationMode
+      ? Number(item?.IsCustomize ?? item?.IsDesignBaseWeb) === 0
+      : isArticleBasedCartCustomization;
+
+    if (isArticleBasedCartCustomization && isArticleBasedItem) {
       if (item?.IsMrpBase === 1) return;
       setArticleCustomizationItem(item);
       return;

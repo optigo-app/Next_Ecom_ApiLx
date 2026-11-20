@@ -12,7 +12,10 @@ import { ColorStoneQualityColorComboAPI } from "@/app/(core)/utils/API/Combo/Col
 import { trackAlbumAction } from "@/app/(core)/utils/API/Album/albumTracker";
 import { CartAndWishListAPI } from "@/app/(core)/utils/API/CartAndWishList/CartAndWishListAPI";
 import { RemoveCartAndWishAPI } from "@/app/(core)/utils/API/RemoveCartandWishAPI/RemoveCartAndWishAPI";
-import { getCartWishKey } from "@/app/(core)/utils/API/GetCount/GetCountAPI";
+import {
+  getCartWishKey,
+  getDesignBaseCartWishKey,
+} from "@/app/(core)/utils/API/GetCount/GetCountAPI";
 import { formatRedirectTitleLine, formatTitleLine } from "@/app/(core)/utils/Glob_Functions/GlobalFunction";
 import { StockItemApi } from "@/app/(core)/utils/API/StockItemAPI/StockItemApi";
 import { DesignSetListAPI } from "@/app/(core)/utils/API/DesignSetListAPI/DesignSetListAPI";
@@ -62,6 +65,12 @@ export function useProductDetail({ storeinit, searchParams, params }) {
     console.log("[PRODUCT DETAIL LOG] decompressed from searchParams:", decompressed);
     return decompressed;
   }, [unwrappedSearchParams]);
+
+  // Cart detail navigation carries a normalized IsDesignBaseWeb hint derived
+  // from DesignId; IsCustomize is a separate cart editor mode flag.
+  const isDesignBaseCartFlow =
+    Number(initialDecodeUrl?.fromCart) === 1 &&
+    Number(initialDecodeUrl?.IsDesignBaseWeb) === 1;
 
   const hasPreHydratedData = Boolean(
     initialDecodeUrl?.b ||
@@ -225,11 +234,6 @@ export function useProductDetail({ storeinit, searchParams, params }) {
             const rawColor = parts[2].split(".")[0];
             if (rawColor) sessionColorCode = rawColor;
           }
-        }
-        if (!sessionColorCode && initialDecodeUrl?.m) {
-          const mtColorLocal = getSession("MetalColorCombo") || [];
-          const matchedObj = mtColorLocal.find(ele => Number(ele.id) === Number(initialDecodeUrl.m));
-          if (matchedObj?.colorcode) sessionColorCode = matchedObj.colorcode;
         }
         // Resolve from the product's actual metal color id (most reliable — not filter metal type)
         if (!sessionColorCode && initialDecodeUrl?.metalColorId) {
@@ -502,7 +506,7 @@ export function useProductDetail({ storeinit, searchParams, params }) {
         customizationDetail ||
         rd1Data?.[0];
       const isDesignBaseArticle =
-        Number(selectedArticle?.IsDesignBaseWeb) === 1;
+        isDesignBaseCartFlow || Number(selectedArticle?.IsDesignBaseWeb) === 1;
       const mtType = isDesignBaseArticle && selectedArticle?.MetalType
         ? selectedArticle.MetalType
         : metalTypeCombo.find(
@@ -511,12 +515,18 @@ export function useProductDetail({ storeinit, searchParams, params }) {
       setMetalType(mtType);
     }
     if (metalColorCombo.length) {
-      const getCurrentMetalColor = mtColorLocal.find(
-        (ele) => ele?.id === singleProd?.MetalColorid,
-      )?.colorcode;
+      const requestedColorId = initialDecodeUrl?.metalColorId;
+      const getCurrentMetalColor =
+        metalColorCombo.find(
+          (ele) => Number(ele?.id) === Number(requestedColorId),
+        )?.colorcode ||
+        mtColorLocal.find(
+          (ele) => Number(ele?.id) === Number(singleProd?.MetalColorid),
+        )?.colorcode;
       setMetalColor(getCurrentMetalColor);
+      if (getCurrentMetalColor) setSelectedMetalColor(getCurrentMetalColor);
     }
-  }, [singleProd, metalTypeCombo, metalColorCombo, rd1Data, defaultArticleId, customizationDetail]);
+  }, [singleProd, metalTypeCombo, metalColorCombo, rd1Data, defaultArticleId, customizationDetail, initialDecodeUrl, isDesignBaseCartFlow]);
 
   // useEffect(() => {
   //   const isInCart = singleProd?.IsInCart === 0 ? false : true;
@@ -556,7 +566,8 @@ export function useProductDetail({ storeinit, searchParams, params }) {
 
   const isDesignBaseWeb =
     rd1Data?.length > 0 &&
-    Number((customizationDetail ?? rd1Data[0])?.IsDesignBaseWeb) === 1;
+    (isDesignBaseCartFlow ||
+      Number((customizationDetail ?? rd1Data[0])?.IsDesignBaseWeb) === 1);
 
   const handleCart = async (cartFlag) => {
     setIsCartBtnLoading(true);
@@ -567,43 +578,62 @@ export function useProductDetail({ storeinit, searchParams, params }) {
       rd1Data?.find((article) => article.ArticleId == defaultArticleId) ||
       rd1Data?.[0] ||
       {};
-    const metal =
-      metalTypeCombo?.find((ele) => {
-        return ele?.metaltype == metalType;
-      }) ?? metalTypeCombo;
+    const normalizeOption = (value) => String(value ?? "").trim().toLowerCase();
+    const selectedMetalType = normalizeOption(metalType);
+    const metal = selectedMetalType
+      ? metalTypeCombo?.find(
+          (ele) => normalizeOption(ele?.metaltype) === selectedMetalType,
+        )
+      : undefined;
 
+    const [selectedDiaQuality = "", selectedDiaColor = ""] = String(
+      selectDiaQc ?? "",
+    ).split(",");
     const dia =
-      diaQcCombo?.find((ele) => {
-        return (
-          ele?.Quality == selectDiaQc.split(",")[0] &&
-          ele?.color == selectDiaQc.split(",")[1]
-        );
-      }) ?? diaQcCombo;
+      diaQcCombo?.find(
+        (ele) =>
+          ele?.Quality == selectedDiaQuality &&
+          ele?.color == selectedDiaColor,
+      ) ?? (isDesignBaseWeb ? diaQcCombo?.[0] : diaQcCombo);
 
+    const [selectedCsQuality = "", selectedCsColor = ""] = String(
+      selectCsQC ?? "",
+    ).split(",");
     const cs =
-      csQcCombo?.find((ele) => {
-        return (
-          ele?.Quality == selectCsQC.split(",")[0] &&
-          ele?.color == selectCsQC.split(",")[1]
-        );
-      }) ?? csQcCombo;
+      csQcCombo?.find(
+        (ele) =>
+          ele?.Quality == selectedCsQuality &&
+          ele?.color == selectedCsColor,
+      ) ?? (isDesignBaseWeb ? csQcCombo?.[0] : csQcCombo);
 
-    const mcArr =
-      metalColorCombo?.find((ele) => {
-        return ele?.metalcolorname == metalColor;
-      }) ?? metalColorCombo;
+    const selectedMetalColor = normalizeOption(metalColor);
+    const mcArr = metalColorCombo?.find(
+      (ele) =>
+        (selectedMetalColor &&
+          (normalizeOption(ele?.colorcode) === selectedMetalColor ||
+            normalizeOption(ele?.metalcolorname) === selectedMetalColor)) ||
+        Number(ele?.id) === Number(articleIdentity?.MetalColorId),
+    );
 
     const prodObj = {
+      IsDesignBaseWeb: isDesignBaseWeb ? 1 : 0,
       autocode:
         cartCustomization?.autocode ||
         (isDesignBaseWeb ? articleIdentity?.autocode : null) ||
         singleProd1?.autocode ||
         singleProd?.autocode,
       StockBarcode: cartCustomization?.StockBarcode || singleProd1?.StockBarcode || singleProd?.StockBarcode || "",
-      Metalid: cartCustomization?.MetalTypeId || metal?.Metalid,
+      Metalid:
+        cartCustomization?.MetalTypeId ??
+        metal?.Metalid ??
+        metal?.metalid ??
+        (isDesignBaseWeb ? articleIdentity?.MetalTypeId : null) ??
+        (isDesignBaseWeb ? articleIdentity?.Metalid : null) ??
+        singleProd?.MetalPurityid,
       MetalColorId:
-        cartCustomization?.MetalColorId ||
-        mcArr?.id ||
+        cartCustomization?.MetalColorId ??
+        mcArr?.id ??
+        (isDesignBaseWeb ? articleIdentity?.MetalColorId : null) ??
         singleProd?.MetalColorid,
       DiaQCid:
         cartCustomization?.DiaQCid ||
@@ -717,7 +747,9 @@ export function useProductDetail({ storeinit, searchParams, params }) {
           }
           // Update global store map with the variant-exact key so listing &
           // detail stay in sync for this specific ArticleNo
-          const addedKey = getCartWishKey(prodObj);
+          const addedKey = isDesignBaseWeb
+            ? getDesignBaseCartWishKey(prodObj)
+            : getCartWishKey(prodObj);
           if (addedKey) {
             setStoreCartArr?.((prev) => ({ ...prev, [addedKey]: true }));
           }
@@ -770,7 +802,9 @@ export function useProductDetail({ storeinit, searchParams, params }) {
               },
             }));
           }
-          const removedKey = getCartWishKey(prodObj);
+          const removedKey = isDesignBaseWeb
+            ? getDesignBaseCartWishKey(prodObj)
+            : getCartWishKey(prodObj);
           if (removedKey) {
             setStoreCartArr?.((prev) => ({ ...prev, [removedKey]: false }));
           }
@@ -805,44 +839,66 @@ export function useProductDetail({ storeinit, searchParams, params }) {
     let storeinitInside = storeinit;
     let logininfoInside = loginUserDetail;
 
-    let metal = metalTypeCombo?.filter((ele) => ele?.metaltype == metalType);
+    const normalizeOption = (value) => String(value ?? "").trim().toLowerCase();
+    const selectedMetalType = normalizeOption(metalType);
+    let metal = selectedMetalType
+      ? metalTypeCombo?.find(
+          (ele) => normalizeOption(ele?.metaltype) === selectedMetalType,
+        )
+      : undefined;
 
+    const [selectedDiaQuality = "", selectedDiaColor = ""] = String(
+      selectDiaQc ?? "",
+    ).split(",");
     let dia = diaQcCombo?.filter(
       (ele) =>
-        ele?.Quality == selectDiaQc.split(",")[0] &&
-        ele?.color == selectDiaQc.split(",")[1],
+        ele?.Quality == selectedDiaQuality &&
+        ele?.color == selectedDiaColor,
     );
+    if (isDesignBaseWeb && !dia?.length && diaQcCombo?.length) {
+      dia = [diaQcCombo[0]];
+    }
 
+    const [selectedCsQuality = "", selectedCsColor = ""] = String(
+      selectCsQC ?? "",
+    ).split(",");
     let cs = csQcCombo?.filter(
       (ele) =>
-        ele?.Quality == selectCsQC.split(",")[0] &&
-        ele?.color == selectCsQC.split(",")[1],
+        ele?.Quality == selectedCsQuality &&
+        ele?.color == selectedCsColor,
+    );
+    if (isDesignBaseWeb && !cs?.length && csQcCombo?.length) {
+      cs = [csQcCombo[0]];
+    }
+
+    const selectedMetalColor = normalizeOption(metalColor);
+    let mcArr = metalColorCombo?.find(
+      (ele) =>
+        (selectedMetalColor &&
+          (normalizeOption(ele?.colorcode) === selectedMetalColor ||
+            normalizeOption(ele?.metalcolorname) === selectedMetalColor)) ||
+        Number(ele?.id) === Number(articleIdentity?.MetalColorId),
     );
 
-    let mcArr = metalColorCombo?.filter((ele) => {
-      if (metalColor) {
-        return ele?.colorcode == metalColor;
-      } else {
-        return (
-          ele?.id == (singleProd1?.MetalColorid ?? singleProd?.MetalColorid)
-        );
-      }
-    })[0];
-
     let prodObj = {
+      IsDesignBaseWeb: isDesignBaseWeb ? 1 : 0,
       autocode:
         cartCustomization?.autocode ||
+        (isDesignBaseWeb ? articleIdentity?.autocode : null) ||
         singleProd1?.autocode ||
         singleProd?.autocode,
       StockBarcode: cartCustomization?.StockBarcode || singleProd1?.StockBarcode || singleProd?.StockBarcode || "",
       Metalid:
-        cartCustomization?.MetalTypeId ||
-        (metal?.length
-          ? metal[0]?.Metalid
-          : (logininfoInside?.MetalId ?? storeinitInside?.MetalId)),
+        cartCustomization?.MetalTypeId ??
+        metal?.Metalid ??
+        metal?.metalid ??
+        (isDesignBaseWeb ? articleIdentity?.MetalTypeId : null) ??
+        (isDesignBaseWeb ? articleIdentity?.Metalid : null) ??
+        (logininfoInside?.MetalId ?? storeinitInside?.MetalId),
       MetalColorId:
-        cartCustomization?.MetalColorId ||
-        mcArr?.id ||
+        cartCustomization?.MetalColorId ??
+        mcArr?.id ??
+        (isDesignBaseWeb ? articleIdentity?.MetalColorId : null) ??
         singleProd?.MetalColorid,
       DiaQCid:
         cartCustomization?.DiaQCid ||
@@ -960,7 +1016,9 @@ export function useProductDetail({ storeinit, searchParams, params }) {
               },
             }));
           }
-          const addedWishKey = getCartWishKey(prodObj);
+          const addedWishKey = isDesignBaseWeb
+            ? getDesignBaseCartWishKey(prodObj)
+            : getCartWishKey(prodObj);
           if (addedWishKey) {
             setStoreWishArr?.((prev) => ({ ...prev, [addedWishKey]: true }));
           }
@@ -1008,7 +1066,9 @@ export function useProductDetail({ storeinit, searchParams, params }) {
               },
             }));
           }
-          const removedWishKey = getCartWishKey(prodObj);
+          const removedWishKey = isDesignBaseWeb
+            ? getDesignBaseCartWishKey(prodObj)
+            : getCartWishKey(prodObj);
           if (removedWishKey) {
             setStoreWishArr?.((prev) => ({ ...prev, [removedWishKey]: false }));
           }
@@ -1100,7 +1160,7 @@ export function useProductDetail({ storeinit, searchParams, params }) {
           customizationDetail ||
           rd1Data?.[0];
         const isDesignBaseArticle =
-          Number(selectedArticle?.IsDesignBaseWeb) === 1;
+          isDesignBaseCartFlow || Number(selectedArticle?.IsDesignBaseWeb) === 1;
         setMetalType(
           isDesignBaseArticle && selectedArticle?.MetalType
             ? selectedArticle.MetalType
@@ -1112,7 +1172,7 @@ export function useProductDetail({ storeinit, searchParams, params }) {
         setSelectCsQC(`${csArr?.Quality},${csArr?.color}`);
       }
     }, 500);
-  }, [singleProd, rd1Data, defaultArticleId, customizationDetail]);
+  }, [singleProd, rd1Data, defaultArticleId, customizationDetail, isDesignBaseCartFlow]);
 
   useEffect(() => {
     try {
@@ -1248,7 +1308,7 @@ export function useProductDetail({ storeinit, searchParams, params }) {
       try {
         const res = await SingleArticleProdListAPI(
           decodeobj,
-          sizeData,
+          decodeobj?.Size ?? sizeData,
           obj,
           cookie,
         );
@@ -1290,6 +1350,10 @@ export function useProductDetail({ storeinit, searchParams, params }) {
           setCsList(res?.pdResp?.rd4);
 
           let mappedRd1 = [];
+          const mappedRd2 = (res?.pdResp?.rd2 || []).map((r) => ({
+            ...r,
+            ArticleId: r.ArticleId || r.id,
+          }));
           if (res?.pdResp?.rd1?.length) {
             mappedRd1 = res.pdResp.rd1.map(r => {
               const metalId = r.metaltypeid || r.MetalTypeId || r.Metalid;
@@ -1319,19 +1383,97 @@ export function useProductDetail({ storeinit, searchParams, params }) {
             });
             setRd1CartMap(initMap);
           }
-          if (res?.pdResp?.rd2?.length) {
-            const mappedRd2 = res.pdResp.rd2.map(r => ({
-              ...r,
-              ArticleId: r.ArticleId || r.id,
-            }));
-            setRd2Data(mappedRd2);
-          }
+          if (mappedRd2.length) setRd2Data(mappedRd2);
 
           const initialArticleId = decodeobj?.ArticleId
             ? parseInt(decodeobj?.ArticleId, 10)
             : null;
+          const normalizedRouteValue = (value) =>
+            String(value ?? "").trim().toLowerCase();
+          const routeMetalId = decodeobj?.m;
+          const routeMetalColorId = decodeobj?.metalColorId;
+          const routeSize = decodeobj?.Size;
+          const [routeDiaQualityId, routeDiaColorId] = String(
+            decodeobj?.d ?? "",
+          ).split(",");
+          const [routeCsQualityId, routeCsColorId] = String(
+            decodeobj?.c ?? "",
+          ).split(",");
+          const matchesRouteStone = (article, stoneType, qualityId, colorId) => {
+            if (qualityId == null || colorId == null || qualityId === "") {
+              return true;
+            }
+            const stone = mappedRd2.find(
+              (row) =>
+                row.ArticleId == article.ArticleId &&
+                Number(row.StoneTypeid) === stoneType,
+            );
+            const rowQualityId =
+              stone?.QualityId ??
+              (stoneType === 1
+                ? article.diamondqualityid
+                : article.colorstonequalityid);
+            const rowColorId =
+              stone?.ColorId ??
+              (stoneType === 1
+                ? article.diamondcolorid
+                : article.colorstonecolorid);
+            if (rowQualityId == null && rowColorId == null) {
+              return Number(qualityId) === 0 && Number(colorId) === 0;
+            }
+            return (
+              Number(rowQualityId ?? 0) === Number(qualityId) &&
+              Number(rowColorId ?? 0) === Number(colorId)
+            );
+          };
+          const isCartNavigation = Number(decodeobj?.fromCart) === 1;
+          const cartArticleRows = isCartNavigation
+            ? mappedRd1.filter((article) => {
+                const articleNoMatches = decodeobj?.ArticleNo
+                  ? normalizedRouteValue(article?.ArticleNo) ===
+                    normalizedRouteValue(decodeobj.ArticleNo)
+                  : normalizedRouteValue(article?.autocode) ===
+                    normalizedRouteValue(decodeobj?.a);
+                const metalMatches =
+                  routeMetalId == null ||
+                  Number(article?.MetalTypeId ?? article?.Metalid) ===
+                    Number(routeMetalId);
+                const metalColorMatches =
+                  routeMetalColorId == null ||
+                  Number(article?.MetalColorId) === Number(routeMetalColorId);
+                const articleSize = normalizedRouteValue(
+                  article?.Size ?? article?.DesignSize,
+                );
+                const sizeMatches =
+                  !routeSize || !articleSize ||
+                  articleSize === normalizedRouteValue(routeSize);
+                return (
+                  articleNoMatches &&
+                  metalMatches &&
+                  metalColorMatches &&
+                  sizeMatches
+                );
+              })
+            : [];
+          const cartVariantArticle =
+            cartArticleRows.find(
+              (article) =>
+                matchesRouteStone(
+                  article,
+                  1,
+                  routeDiaQualityId,
+                  routeDiaColorId,
+                ) &&
+                matchesRouteStone(
+                  article,
+                  2,
+                  routeCsQualityId,
+                  routeCsColorId,
+                ),
+            ) || cartArticleRows[0];
           const initialArticle =
-            (initialArticleId != null &&
+            cartVariantArticle ||
+            (initialArticleId != null && !isCartNavigation &&
               mappedRd1.find(
                 (r) =>
                   r.ArticleId === initialArticleId ||
@@ -1351,13 +1493,13 @@ export function useProductDetail({ storeinit, searchParams, params }) {
             mappedRd1[0];
           if (initialArticle) {
             setDefaultArticleId(initialArticle.ArticleId);
-            const diaStone = res?.pdResp?.rd2?.find(
+            const diaStone = mappedRd2.find(
               (r) =>
-                r.ArticleId === initialArticle.ArticleId && r.StoneTypeid === 1,
+                r.ArticleId == initialArticle.ArticleId && r.StoneTypeid === 1,
             );
-            const csStone = res?.pdResp?.rd2?.find(
+            const csStone = mappedRd2.find(
               (r) =>
-                r.ArticleId === initialArticle.ArticleId && r.StoneTypeid === 2,
+                r.ArticleId == initialArticle.ArticleId && r.StoneTypeid === 2,
             );
             setCustomizationDetail({
               ...initialArticle,

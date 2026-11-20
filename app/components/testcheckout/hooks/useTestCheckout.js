@@ -312,21 +312,36 @@ export function useTestCheckout(initialStoreInit) {
     }
 
     // Resolve matching metal
-    const foundMetal = metalTypeCombo.find(
-      (m) =>
-        (item?.metaltypeid && m.Metalid === item.metaltypeid) ||
-        m.metaltypename?.trim().toLowerCase() === item?.metaltypename?.trim().toLowerCase() ||
-        m.metaltype?.trim().toLowerCase() === item?.metaltypename?.trim().toLowerCase()
+    const normalizeOption = (value) => String(value ?? "").trim().toLowerCase();
+    const itemMetalName = normalizeOption(
+      item?.metaltypename ?? item?.metaltype ?? item?.metal,
     );
+    const foundMetalByName = metalTypeCombo.find(
+      (metal) =>
+        itemMetalName &&
+        [metal?.metaltypename, metal?.metaltype]
+          .some((name) => normalizeOption(name) === itemMetalName),
+    );
+    const foundMetal = foundMetalByName || (!itemMetalName && metalTypeCombo.find(
+      (metal) =>
+        item?.metaltypeid != null &&
+        String(metal?.Metalid) === String(item.metaltypeid),
+    ));
     const mId = foundMetal ? foundMetal.Metalid : item?.metaltypeid;
 
     // Resolve matching color
-    const foundColor = metalColorCombo.find(
-      (c) =>
-        (item?.metalcolorid && c.id === item.metalcolorid) ||
-        c.colorname?.trim().toLowerCase() === item?.metalcolorname?.trim().toLowerCase() ||
-        c.metalcolorname?.trim().toLowerCase() === item?.metalcolorname?.trim().toLowerCase()
+    const itemMetalColorName = normalizeOption(item?.metalcolorname);
+    const foundColorByName = metalColorCombo.find(
+      (color) =>
+        itemMetalColorName &&
+        [color?.colorname, color?.metalcolorname]
+          .some((name) => normalizeOption(name) === itemMetalColorName),
     );
+    const foundColor = foundColorByName || (!itemMetalColorName && metalColorCombo.find(
+      (color) =>
+        item?.metalcolorid != null &&
+        String(color?.id) === String(item.metalcolorid),
+    ));
     const mcId = foundColor ? foundColor.id : item?.metalcolorid;
 
     // Resolve matching diamond
@@ -353,7 +368,9 @@ export function useTestCheckout(initialStoreInit) {
 
     const workingItem = {
       ...item,
-      metaltypename: foundMetal ? foundMetal.metaltypename : item?.metaltypename,
+      metaltypename: foundMetal
+        ? foundMetal.metaltype || foundMetal.metaltypename
+        : item?.metaltypename,
       metalcolorname: foundColor ? (foundColor.colorname || foundColor.metalcolorname) : item?.metalcolorname,
       diamondquality: foundDia ? foundDia.Quality : item?.diamondquality,
       diamondcolor: foundDia ? foundDia.color : item?.diamondcolor,
@@ -414,7 +431,7 @@ export function useTestCheckout(initialStoreInit) {
       if (found) {
         newMetalId = found.Metalid;
         updated.metaltypeid = found.Metalid;
-        updated.metaltypename = found.metaltypename;
+        updated.metaltypename = found.metaltype || found.metaltypename;
         setActiveMetalId(found.Metalid);
       }
     } else if (type === "metalColor") {

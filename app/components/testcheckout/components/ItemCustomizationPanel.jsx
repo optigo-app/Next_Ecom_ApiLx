@@ -121,46 +121,95 @@ export default function ItemCustomizationPanel({
     customizingItem?.FinalCost ||
     (customizingItem?.UnitCostWithMarkUp || 0) * editQty;
 
+  const normalizeOption = (value) => String(value ?? "").trim().toLowerCase();
+  const hasSavedDiamondSelection =
+    Number(customizingItem?.diamondqualityid) > 0 ||
+    Number(customizingItem?.diamondcolorid) > 0 ||
+    Boolean(customizingItem?.diamondquality || customizingItem?.diamondcolor);
+  const hasSavedColorStoneSelection =
+    Number(customizingItem?.colorstonequalityid) > 0 ||
+    Number(customizingItem?.colorstonecolorid) > 0 ||
+    Boolean(customizingItem?.colorstonequality || customizingItem?.colorstonecolor);
+
   const hasDiamonds =
     storeinit?.IsDiamondCustomization == 1 &&
-    (Number(customizingItem?.Dwt) > 0 || Number(customizingItem?.Dpcs) > 0);
+    (Number(customizingItem?.Dwt ?? customizingItem?.CW_Dwt) > 0 ||
+      Number(customizingItem?.Dpcs ?? customizingItem?.CW_Dpcs) > 0 ||
+      hasSavedDiamondSelection);
 
   const hasColorStones =
     storeinit?.IsCsCustomization == 1 &&
-    (Number(customizingItem?.CSwt) > 0 || Number(customizingItem?.CSpcs) > 0);
+    (Number(customizingItem?.CSwt ?? customizingItem?.CW_CSwt) > 0 ||
+      Number(customizingItem?.CSpcs ?? customizingItem?.CW_CSpcs) > 0 ||
+      hasSavedColorStoneSelection);
 
   const hasSize = sizeCombo?.rd?.length > 0 && customizingItem?.IsSize !== 0;
 
   // Accurately resolve selected values with case-insensitivity and ID matching
   const selectedMetalVal = (() => {
     if (!customizingItem) return "";
-    const match = metalTypeCombo?.find(
-      (m) =>
-        (customizingItem.metaltypeid && m.Metalid === customizingItem.metaltypeid) ||
-        m.metaltypename?.trim().toLowerCase() === customizingItem.metaltypename?.trim().toLowerCase() ||
-        m.metaltype?.trim().toLowerCase() === customizingItem.metaltypename?.trim().toLowerCase()
+    const itemMetalName = normalizeOption(
+      customizingItem?.metaltypename ?? customizingItem?.metaltype ?? customizingItem?.metal,
     );
-    return match ? match.metaltypename : customizingItem?.metaltypename || "";
+    const matchByName = metalTypeCombo?.find(
+      (metal) =>
+        itemMetalName &&
+        [metal?.metaltypename, metal?.metaltype]
+          .some((name) => normalizeOption(name) === itemMetalName),
+    );
+    const match = matchByName || (!itemMetalName && metalTypeCombo?.find(
+      (metal) =>
+        customizingItem?.metaltypeid != null &&
+        String(metal?.Metalid) === String(customizingItem.metaltypeid),
+    ));
+    return match
+      ? match.metaltype || match.metaltypename
+      : customizingItem?.metaltypename || customizingItem?.metaltype || customizingItem?.metal || "";
   })();
 
   const selectedMetalColorVal = (() => {
     if (!customizingItem) return "";
-    const match = metalColorCombo?.find(
-      (c) =>
-        (customizingItem.metalcolorid && c.id === customizingItem.metalcolorid) ||
-        c.colorname?.trim().toLowerCase() === customizingItem.metalcolorname?.trim().toLowerCase() ||
-        c.metalcolorname?.trim().toLowerCase() === customizingItem.metalcolorname?.trim().toLowerCase()
+    const itemMetalColorName = normalizeOption(customizingItem?.metalcolorname);
+    const matchByName = metalColorCombo?.find(
+      (color) =>
+        itemMetalColorName &&
+        [color?.colorname, color?.metalcolorname]
+          .some((name) => normalizeOption(name) === itemMetalColorName),
     );
+    const match = matchByName || (!itemMetalColorName && metalColorCombo?.find(
+      (color) =>
+        customizingItem?.metalcolorid != null &&
+        String(color?.id) === String(customizingItem.metalcolorid),
+    ));
     return match ? (match.colorname || match.metalcolorname) : customizingItem?.metalcolorname || "";
   })();
+  const hasSelectedMetalOption = metalTypeCombo?.some((metal) =>
+    [metal?.metaltypename, metal?.metaltype].some(
+      (name) => normalizeOption(name) === normalizeOption(selectedMetalVal),
+    ),
+  );
+  const hasSelectedMetalColorOption = metalColorCombo?.some((color) =>
+    [color?.colorname, color?.metalcolorname].some(
+      (name) => normalizeOption(name) === normalizeOption(selectedMetalColorVal),
+    ),
+  );
 
   const selectedDiaVal = (() => {
     if (!customizingItem) return "";
-    const match = diamondQualityColorCombo?.find(
-      (opt) =>
-        (customizingItem.diamondqualityid && opt.QualityId === customizingItem.diamondqualityid && customizingItem.diamondcolorid && opt.ColorId === customizingItem.diamondcolorid) ||
-        (opt.Quality?.trim().toLowerCase() === customizingItem.diamondquality?.trim().toLowerCase() &&
-         opt.color?.trim().toLowerCase() === customizingItem.diamondcolor?.trim().toLowerCase())
+    const savedQuality = normalizeOption(customizingItem?.diamondquality);
+    const savedColor = normalizeOption(customizingItem?.diamondcolor);
+    const matchByName = diamondQualityColorCombo?.find(
+      (option) =>
+        savedQuality && savedColor &&
+        normalizeOption(option?.Quality) === savedQuality &&
+        normalizeOption(option?.color) === savedColor,
+    );
+    const match = matchByName || diamondQualityColorCombo?.find(
+      (option) =>
+        customizingItem?.diamondqualityid != null &&
+        customizingItem?.diamondcolorid != null &&
+        String(option?.QualityId) === String(customizingItem.diamondqualityid) &&
+        String(option?.ColorId) === String(customizingItem.diamondcolorid),
     );
     return match
       ? `${match.Quality},${match.color}`
@@ -169,16 +218,31 @@ export default function ItemCustomizationPanel({
 
   const selectedCsVal = (() => {
     if (!customizingItem) return "";
-    const match = colorStoneCombo?.find(
-      (opt) =>
-        (customizingItem.colorstonequalityid && opt.QualityId === customizingItem.colorstonequalityid && customizingItem.colorstonecolorid && opt.ColorId === customizingItem.colorstonecolorid) ||
-        (opt.Quality?.trim().toLowerCase() === customizingItem.colorstonequality?.trim().toLowerCase() &&
-         opt.color?.trim().toLowerCase() === customizingItem.colorstonecolor?.trim().toLowerCase())
+    const savedQuality = normalizeOption(customizingItem?.colorstonequality);
+    const savedColor = normalizeOption(customizingItem?.colorstonecolor);
+    const matchByName = colorStoneCombo?.find(
+      (option) =>
+        savedQuality && savedColor &&
+        normalizeOption(option?.Quality) === savedQuality &&
+        normalizeOption(option?.color) === savedColor,
+    );
+    const match = matchByName || colorStoneCombo?.find(
+      (option) =>
+        customizingItem?.colorstonequalityid != null &&
+        customizingItem?.colorstonecolorid != null &&
+        String(option?.QualityId) === String(customizingItem.colorstonequalityid) &&
+        String(option?.ColorId) === String(customizingItem.colorstonecolorid),
     );
     return match
       ? `${match.Quality},${match.color}`
       : `${customizingItem?.colorstonequality || ""},${customizingItem?.colorstonecolor || ""}`;
   })();
+  const hasSelectedDiamondOption = diamondQualityColorCombo?.some(
+    (option) => `${option?.Quality},${option?.color}` === selectedDiaVal,
+  );
+  const hasSelectedColorStoneOption = colorStoneCombo?.some(
+    (option) => `${option?.Quality},${option?.color}` === selectedCsVal,
+  );
 
   // Inner Content Element
   const panelContent = (
@@ -344,8 +408,11 @@ export default function ItemCustomizationPanel({
                       color: "#222",
                     }}
                   >
+                    {selectedMetalVal && !hasSelectedMetalOption && (
+                      <option value={selectedMetalVal}>{selectedMetalVal}</option>
+                    )}
                     {metalTypeCombo.map((opt) => (
-                      <option key={opt.Metalid} value={opt.metaltypename}>
+                      <option key={opt.Metalid} value={opt.metaltype || opt.metaltypename}>
                         {opt.metaltype || opt.metaltypename}
                       </option>
                     ))}
@@ -388,6 +455,9 @@ export default function ItemCustomizationPanel({
                       color: "#222",
                     }}
                   >
+                    {selectedMetalColorVal && !hasSelectedMetalColorOption && (
+                      <option value={selectedMetalColorVal}>{selectedMetalColorVal}</option>
+                    )}
                     {metalColorCombo.map((opt) => (
                       <option key={opt.id} value={opt.colorname || opt.metalcolorname}>
                         {opt.colorname || opt.metalcolorname}
@@ -432,6 +502,9 @@ export default function ItemCustomizationPanel({
                       color: "#222",
                     }}
                   >
+                    {selectedDiaVal && !hasSelectedDiamondOption && (
+                      <option value={selectedDiaVal}>{selectedDiaVal}</option>
+                    )}
                     {diamondQualityColorCombo.map((opt) => (
                       <option
                         key={`${opt.QualityId},${opt.ColorId}`}
@@ -479,6 +552,9 @@ export default function ItemCustomizationPanel({
                       color: "#222",
                     }}
                   >
+                    {selectedCsVal && !hasSelectedColorStoneOption && (
+                      <option value={selectedCsVal}>{selectedCsVal}</option>
+                    )}
                     {colorStoneCombo.map((opt) => (
                       <option
                         key={`${opt.QualityId},${opt.ColorId}`}

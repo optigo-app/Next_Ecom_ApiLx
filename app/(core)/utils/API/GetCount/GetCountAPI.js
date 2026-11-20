@@ -1,6 +1,7 @@
 import { getSession } from "@/app/(core)/utils/FetchSessionData";
 import { CommonAPI } from "@/app/(core)/utils/API/CommonAPI/CommonAPI";
 import Cookies from "js-cookie";
+import { getOrCreateVisitorId } from "@/app/(core)/utils/VisitorId";
 
 /**
  * Normalizes an autocode: trims and strips left-padded zeros for numeric codes
@@ -20,6 +21,38 @@ const normalizeArticle = (value) => {
     if (value == null) return null;
     const s = String(value).trim();
     return s === "" ? null : s;
+};
+
+const normalizeVariantValue = (value, fallback = "0") => {
+    if (value == null || String(value).trim() === "") return fallback;
+    return String(value).trim().toLowerCase();
+};
+
+/**
+ * Builds a design-based cart key from the selected customization dimensions.
+ * Unlike ArticleNo, this distinguishes multiple metal/stone/size variants of
+ * the same design.
+ */
+export const getDesignBaseCartWishKey = (item = {}) => {
+    const auto = normalizeAutocode(item?.autocode);
+    if (!auto) return null;
+
+    const diaQc = String(item?.DiaQCid ?? "").split(",");
+    const metalTypeId = item?.metaltypeid ?? item?.MetalTypeId ?? item?.Metalid ?? item?.MetalPurityid;
+    const metalColorId = item?.metalcolorid ?? item?.MetalColorId ?? item?.MetalColorid;
+    const diamondQualityId = item?.diamondqualityid ?? item?.DiamondQualityId ?? diaQc[0];
+    const diamondColorId = item?.diamondcolorid ?? item?.DiamondColorId ?? diaQc[1];
+    const size = item?.DesignSize ?? item?.Size ?? item?.size;
+
+    return [
+        auto,
+        "designbase",
+        normalizeVariantValue(metalTypeId),
+        normalizeVariantValue(metalColorId),
+        normalizeVariantValue(diamondQualityId),
+        normalizeVariantValue(diamondColorId),
+        normalizeVariantValue(size, ""),
+    ].join("|");
 };
 
 /**
@@ -57,6 +90,17 @@ export const isItemInMap = (map, item = {}, fallback = false) => {
     return Boolean(fallback);
 };
 
+/** Looks up a design-based cart/wishlist entry by its selected variant. */
+export const isDesignBaseItemInMap = (map, item = {}, fallback = false) => {
+    if (!map || typeof map !== "object") return Boolean(fallback);
+    const designBaseKey = getDesignBaseCartWishKey(item);
+    if (designBaseKey && map[designBaseKey] !== undefined) {
+        return Boolean(map[designBaseKey]);
+    }
+    if (map.__hydrated) return false;
+    return Boolean(fallback);
+};
+
 /**
  * Converts rd1 array from GetCountAPI into quick-lookup maps for Cart and Wishlist.
  * - IsWishList === 1 -> in Wishlist
@@ -76,13 +120,18 @@ export const buildCartAndWishMaps = (rd1Array = []) => {
             if (!isWish && !isCart) return;
 
             const preciseKey = getCartWishKey(item);
+            const isDesignBaseItem =
+                Number(item?.IsDesignBaseWeb ?? item?.IsCustomize) === 1;
+            const designBaseKey = isDesignBaseItem
+                ? getDesignBaseCartWishKey(item)
+                : null;
 
             const autocodeKey = item?.autocode != null && item?.autocode !== "" ? String(item.autocode) : null;
             const unpaddedAutocode = normalizeAutocode(item?.autocode);
             const articleKey = normalizeArticle(item?.ArticleNo);
             const designKey = item?.designno != null && item?.designno !== "" ? String(item.designno) : null;
 
-            const keys = [preciseKey, autocodeKey, unpaddedAutocode, articleKey, designKey].filter(Boolean);
+            const keys = [preciseKey, designBaseKey, autocodeKey, unpaddedAutocode, articleKey, designKey].filter(Boolean);
 
             keys.forEach((key) => {
                 if (isWish) {
@@ -96,7 +145,6 @@ export const buildCartAndWishMaps = (rd1Array = []) => {
     return { newCartObj, newWishObj };
 };
 
-import { getOrCreateVisitorId } from "@/app/(core)/utils/VisitorId";
 
 export const GetCountAPI = async (visiterId) => {
     let storeInit = getSession("storeInit");
@@ -105,25 +153,25 @@ export const GetCountAPI = async (visiterId) => {
 
     let visitor = visiterId || Cookies.get("visiterId") || "";
     if (!visitor || visitor === "undefined" || visitor === "null" || visitor === "0") {
-      visitor = getOrCreateVisitorId(storeInit?.VisitorId);
+        visitor = getOrCreateVisitorId(storeInit?.VisitorId);
     }
 
     const isLoggedInUser = Boolean(islogin) && Boolean(loginInfo?.id || loginInfo?.userid);
 
     const customerId = isLoggedInUser
-      ? (loginInfo?.id ?? 0)
-      : (storeInit?.IsB2BWebsite == 0 ? visitor : (loginInfo?.id ?? 0));
+        ? (loginInfo?.id ?? 0)
+        : (storeInit?.IsB2BWebsite == 0 ? visitor : (loginInfo?.id ?? 0));
 
     const customerEmail = isLoggedInUser
-      ? (loginInfo?.userid ?? "")
-      : (storeInit?.IsB2BWebsite == 0 ? visitor : (loginInfo?.userid ?? ""));
+        ? (loginInfo?.userid ?? "")
+        : (storeInit?.IsB2BWebsite == 0 ? visitor : (loginInfo?.userid ?? ""));
 
     const safeCustomerId = (customerId === "undefined" || customerId === "null" || customerId == null)
-      ? (visitor || "0")
-      : customerId;
+        ? (visitor || "0")
+        : customerId;
     const safeCustomerEmail = (customerEmail === "undefined" || customerEmail === "null" || customerEmail == null)
-      ? (visitor || "")
-      : customerEmail;
+        ? (visitor || "")
+        : customerEmail;
 
     let data = {
         "FrontEnd_RegNo": `${storeInit?.FrontEnd_RegNo ?? ""}`,

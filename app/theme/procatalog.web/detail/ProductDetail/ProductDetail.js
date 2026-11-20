@@ -167,6 +167,7 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
                 selectCsQC={selectCsQC}
                 csList={csList}
                 csQcCombo={csQcCombo}
+                showColorStoneCustomization={false}
                 loginData={loginData}
                 loadingdata={loadingdata}
                 isPriceloading={isPriceloading}
@@ -180,6 +181,7 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
                 stockItemArr={stockItemArr}
                 rd1={rd1Data}
                 rd2={rd2Data}
+                initialDecodeUrl={pd.initialDecodeUrl}
                 defaultArticleId={defaultArticleId}
                 customizationDetail={customizationDetail}
                 rd1CartMap={rd1CartMap}
