@@ -35,6 +35,7 @@ export async function POST(req) {
       const syncResult = await syncDynamicPolicyProducts({
         domain: targetDomain,
         Config: configArray,
+        ALC: body?.ALC,
       });
 
       return NextResponse.json(

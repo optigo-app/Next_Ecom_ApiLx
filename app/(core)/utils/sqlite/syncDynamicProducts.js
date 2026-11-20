@@ -24,7 +24,7 @@ import { logger } from "../../../../db/logger.js";
  * @param {object} [options.storeInit] - Optional pre-loaded storeinit record
  * @returns {Promise<{ success: boolean, domain: string, syncedTables: Array<object>, error?: string }>}
  */
-export async function syncDynamicPolicyProducts({ domain, Config, storeInit: inputStoreInit }) {
+export async function syncDynamicPolicyProducts({ domain, Config, ALC, storeInit: inputStoreInit }) {
   try {
     let targetDomain = domain;
     if (!targetDomain) {
@@ -100,6 +100,9 @@ export async function syncDynamicPolicyProducts({ domain, Config, storeInit: inp
 
     // 3. Loop through every configuration in Config
     for (const item of configList) {
+      const alcValue = ALC ?? item.ALC;
+      const normalizedALC = Array.isArray(alcValue) ? alcValue.join(",") : (alcValue == null ? "" : String(alcValue));
+      const hasALC = normalizedALC.trim() !== "";
       const laboursetId =
         item.Laboursetid ??
         item.laboursetid ??
@@ -156,6 +159,7 @@ export async function syncDynamicPolicyProducts({ domain, Config, storeInit: inp
         SettingPriceUniqueNo: resolvedConfig.SettingPriceUniqueNo,
         DomainForNo: resolvedConfig.DomainForNo,
         domainname: toDomainName(targetDomain),
+        ...(hasALC ? { ALC: normalizedALC } : {}),
       };
 
       const requestBody = {
@@ -235,7 +239,7 @@ export async function syncDynamicPolicyProducts({ domain, Config, storeInit: inp
       const insertResult = syncTableViaTemp(db, {
         mainTable: tableName,
         keyCols: ["ArticleNo"],
-        deleteStale: true,
+        deleteStale: !hasALC,
         ensureMainTable: (d, t) => ensureDynamicDesignTable(d, t),
         stage: (tmp) => batchInsertDesigns(db, products, "DYNAMIC_POLICY_SYNC", { flush: false }, tmp),
       });

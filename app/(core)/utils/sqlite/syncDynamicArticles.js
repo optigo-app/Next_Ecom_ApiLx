@@ -57,7 +57,7 @@ function createSyncProgressTable(db, sessionId) {
         updated_at  TEXT DEFAULT (datetime('now'))
       )
     `).run();
-  } catch (_) {}
+  } catch (_) { }
   return tableName;
 }
 
@@ -70,7 +70,7 @@ function upsertProgress(db, progressTable, { policyKey, tableName, page, totalPa
       INSERT INTO "${progressTable}" (policy_key, table_name, page, total_pages, status, rows_stored, error, updated_at)
       VALUES (?, ?, ?, ?, ?, ?, ?, datetime('now'))
     `).run(policyKey, tableName, page, totalPages, status, rowsStored, error);
-  } catch (_) {}
+  } catch (_) { }
 }
 
 /**
@@ -79,7 +79,7 @@ function upsertProgress(db, progressTable, { policyKey, tableName, page, totalPa
 function dropSyncProgressTable(db, progressTable) {
   try {
     db.prepare(`DROP TABLE IF EXISTS "${progressTable}"`).run();
-  } catch (_) {}
+  } catch (_) { }
 }
 
 // ---------------------------------------------------------------------------
@@ -242,7 +242,7 @@ async function fetchArticlePage(endpoint, headers, baseRequestBody, page, batchS
  * @param {boolean} [options.force]              - If true, skip the "already-has-data" check and always re-sync
  * @returns {Promise<{ success: boolean, domain: string, syncedTables: Array<object>, totalConfigsProcessed: number, error?: string }>}
  */
-export async function syncDynamicPolicyArticles({ domain, Config, storeInit: inputStoreInit, batchSize, force = false }) {
+export async function syncDynamicPolicyArticles({ domain, Config, ALC, storeInit: inputStoreInit, batchSize, force = false }) {
   const effectiveBatchSize = Number(batchSize) > 0 ? Number(batchSize) : ARTICLE_BATCH_SIZE;
 
   try {
@@ -270,7 +270,7 @@ export async function syncDynamicPolicyArticles({ domain, Config, storeInit: inp
     if (!storeInit || !storeInit.token || !storeInit.YearCode) {
       try {
         storeInit = db.prepare("SELECT * FROM storeinit LIMIT 1").get();
-      } catch (_) {}
+      } catch (_) { }
     }
 
     if (!storeInit) {
@@ -383,6 +383,9 @@ export async function syncDynamicPolicyArticles({ domain, Config, storeInit: inp
         SettingPriceUniqueNo: settingPriceUniqueNo != null ? Number(settingPriceUniqueNo) : 0,
         DomainForNo: domainForNo != null ? Number(domainForNo) : 0,
       };
+      const alcValue = ALC ?? item.ALC;
+      const normalizedALC = Array.isArray(alcValue) ? alcValue.join(",") : (alcValue == null ? "" : String(alcValue));
+      const hasALC = normalizedALC.trim() !== "";
 
       // Human-readable policy key used for logging and progress tracking
       const policyKey = `L${resolvedConfig.Laboursetid}_D${resolvedConfig.diamondpricelistName}_C${resolvedConfig.colorstonepricelistName}_S${resolvedConfig.SettingPriceUniqueNo}`;
@@ -409,6 +412,7 @@ export async function syncDynamicPolicyArticles({ domain, Config, storeInit: inp
           SettingPriceUniqueNo: String(resolvedConfig.SettingPriceUniqueNo),
           DomainForNo: String(resolvedConfig.DomainForNo),
           domainname: toDomainName(targetDomain),
+          ...(hasALC ? { ALC: normalizedALC } : {}),
         }),
       };
 
@@ -713,7 +717,7 @@ export async function syncDynamicPolicyArticles({ domain, Config, storeInit: inp
         let policyMatDeleted = 0;
         if (!policyFailed) {
           try {
-            const artMerge = mergeTempIntoMain(db, tableName, artTempTable, { keyCols: ["ArticleNo"], deleteStale: true });
+            const artMerge = mergeTempIntoMain(db, tableName, artTempTable, { keyCols: ["ArticleNo"], deleteStale: !hasALC });
             policyInserted = artMerge.insertedCount;
             policyUpdated = artMerge.updatedCount;
             policyDeleted = artMerge.deletedCount;
@@ -726,7 +730,7 @@ export async function syncDynamicPolicyArticles({ domain, Config, storeInit: inp
 
           if (!policyFailed && policyTotalMaterials > 0) {
             try {
-              const matMerge = mergeTempIntoMain(db, matTableName, matTempTable, { keyCols: ["id"], deleteStale: true });
+              const matMerge = mergeTempIntoMain(db, matTableName, matTempTable, { keyCols: ["id"], deleteStale: !hasALC });
               policyMatInserted = matMerge.insertedCount;
               policyMatDeleted = matMerge.deletedCount;
               console.log(`[ARTICLE_SYNC] merge materials -> inserted: ${matMerge.insertedCount}, updated: ${matMerge.updatedCount}, deleted: ${matMerge.deletedCount}`);
@@ -782,7 +786,7 @@ export async function syncDynamicPolicyArticles({ domain, Config, storeInit: inp
               config_json: resolvedConfig,
               total_products: finalArticleCount,
             });
-          } catch (_) {}
+          } catch (_) { }
 
           try {
             recordDynamicTableSync(db, {
@@ -795,7 +799,7 @@ export async function syncDynamicPolicyArticles({ domain, Config, storeInit: inp
               config_json: resolvedConfig,
               total_products: finalMatCount,
             });
-          } catch (_) {}
+          } catch (_) { }
 
           logger.info(
             "DYNAMIC_ARTICLE_SYNC",
@@ -842,7 +846,7 @@ export async function syncDynamicPolicyArticles({ domain, Config, storeInit: inp
         dropTempTable(db, matTempTable);
         try {
           db.pragma("wal_checkpoint(TRUNCATE)");
-        } catch (_) {}
+        } catch (_) { }
       }
     } // end config loop
 
