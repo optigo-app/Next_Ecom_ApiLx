@@ -31,6 +31,7 @@ import { usePathname } from "next/navigation";
 import { ParseAndDecodeSearchParams } from "@/app/(core)/utils/GlobalFunctions/Parser";
 import { getSession } from "@/app/(core)/utils/FetchSessionData";
 import { decodeAndDecompress } from "@/app/(core)/utils/seo/seo-utils";
+import { convertNetWeightByMetal } from "@/app/(core)/utils/product/metalWeightConversion";
 
 const imageNotFound = "/image-not-found.jpg";
 const noImageFound = imageNotFound;
@@ -50,12 +51,14 @@ export function useProductDetail({ storeinit, searchParams, params }) {
   const unwrappedSearchParams = (searchParams && typeof searchParams.then === "function")
     ? React.use(searchParams)
     : searchParams;
+  const rawProductPayload = unwrappedSearchParams?.p ||
+    (typeof window !== "undefined"
+      ? new URLSearchParams(window.location.search).get("p")
+      : null);
 
   const initialDecodeUrl = useMemo(() => {
-    const rawP = unwrappedSearchParams?.p || (typeof window !== "undefined" ? new URLSearchParams(window.location.search).get("p") : null);
-    console.log("[PRODUCT DETAIL LOG] rawP:", rawP);
-    if (rawP) {
-      const decompressed = decodeAndDecompress(rawP);
+    if (rawProductPayload) {
+      const decompressed = decodeAndDecompress(rawProductPayload);
       console.log("[PRODUCT DETAIL LOG] decompressed from rawP:", decompressed);
       if (decompressed) return decompressed;
     }
@@ -64,7 +67,7 @@ export function useProductDetail({ storeinit, searchParams, params }) {
     const decompressed = decodeAndDecompress(navVal);
     console.log("[PRODUCT DETAIL LOG] decompressed from searchParams:", decompressed);
     return decompressed;
-  }, [unwrappedSearchParams]);
+  }, [rawProductPayload, unwrappedSearchParams]);
 
   // Cart detail navigation carries a normalized IsDesignBaseWeb hint derived
   // from DesignId; IsCustomize is a separate cart editor mode flag.
@@ -113,6 +116,10 @@ export function useProductDetail({ storeinit, searchParams, params }) {
   const [diaList, setDiaList] = useState([]);
   const [csList, setCsList] = useState([]);
   const [netWTData, setnetWTData] = useState([]);
+  const [metalDensities, setMetalDensities] = useState([]);
+  const [metalDensityLoaded, setMetalDensityLoaded] = useState(false);
+  const [calculatedNetWeight, setCalculatedNetWeight] = useState(null);
+  const [hasUserChangedCartMetal, setHasUserChangedCartMetal] = useState(false);
   const [SizeCombo, setSizeCombo] = useState([]);
   const [metalTypeCombo, setMetalTypeCombo] = useState([]);
   const [metalType, setMetalType] = useState();
@@ -143,6 +150,7 @@ export function useProductDetail({ storeinit, searchParams, params }) {
   const [filterData, setFilterData] = useState([]);
   const [showPlaceholder, setShowPlaceholder] = useState(false);
   const { imageRefs, handleMouseMove, handleMouseLeave } = useImageZoom(2.2);
+  const netWeightConversionBaseRef = useRef(null);
   const [selectedMetalColor, setSelectedMetalColor] = useState(() => {
     // Initialize from URL's metalColorId immediately so ProdCardImageFunc always uses
     // the correct color from the very first render — prevents the Yellow flash
@@ -507,16 +515,31 @@ export function useProductDetail({ storeinit, searchParams, params }) {
         rd1Data?.[0];
       const isDesignBaseArticle =
         isDesignBaseCartFlow || Number(selectedArticle?.IsDesignBaseWeb) === 1;
-      const mtType = isDesignBaseArticle && selectedArticle?.MetalType
+      const cartMetalType = Number(initialDecodeUrl?.fromCart) === 1
+        ? metalTypeCombo.find(
+            (ele) => String(ele?.metaltype ?? "").trim().toLowerCase() ===
+              String(initialDecodeUrl?.metalTypeName ?? "").trim().toLowerCase(),
+          )?.metaltype || metalTypeCombo.find(
+            (ele) => Number(ele?.Metalid) === Number(initialDecodeUrl?.m),
+          )?.metaltype || initialDecodeUrl?.metalTypeName
+        : null;
+      const mtType = cartMetalType || (isDesignBaseArticle && selectedArticle?.MetalType
         ? selectedArticle.MetalType
         : metalTypeCombo.find(
             (ele) => Number(ele?.Metalid) === Number(singleProd?.MetalPurityid),
-          )?.metaltype;
+          )?.metaltype);
       setMetalType(mtType);
     }
     if (metalColorCombo.length) {
-      const requestedColorId = initialDecodeUrl?.metalColorId;
+      const requestedColorId = initialDecodeUrl?.metalColorId ?? initialDecodeUrl?.i;
+      const requestedColor = Number(initialDecodeUrl?.fromCart) === 1
+        ? metalColorCombo.find(
+            (ele) => String(ele?.metalcolorname ?? "").trim().toLowerCase() ===
+              String(initialDecodeUrl?.metalColorName ?? "").trim().toLowerCase(),
+          )?.colorcode
+        : null;
       const getCurrentMetalColor =
+        requestedColor ||
         metalColorCombo.find(
           (ele) => Number(ele?.id) === Number(requestedColorId),
         )?.colorcode ||
@@ -1161,10 +1184,18 @@ export function useProductDetail({ storeinit, searchParams, params }) {
           rd1Data?.[0];
         const isDesignBaseArticle =
           isDesignBaseCartFlow || Number(selectedArticle?.IsDesignBaseWeb) === 1;
+        const requestedCartMetal = Number(decodeobj?.fromCart) === 1
+          ? mtTypeLocal.find(
+              (metal) => String(metal?.metaltype ?? "").trim().toLowerCase() ===
+                String(decodeobj?.metalTypeName ?? "").trim().toLowerCase(),
+            ) || mtTypeLocal.find(
+              (metal) => Number(metal?.Metalid) === Number(decodeobj?.m),
+            )
+          : null;
         setMetalType(
-          isDesignBaseArticle && selectedArticle?.MetalType
+          requestedCartMetal?.metaltype || (isDesignBaseArticle && selectedArticle?.MetalType
             ? selectedArticle.MetalType
-            : metalArr?.metaltype,
+            : metalArr?.metaltype),
         );
 
         setSelectDiaQc(`${diaArr?.Quality},${diaArr?.color}`);
@@ -1429,11 +1460,13 @@ export function useProductDetail({ storeinit, searchParams, params }) {
           const isCartNavigation = Number(decodeobj?.fromCart) === 1;
           const cartArticleRows = isCartNavigation
             ? mappedRd1.filter((article) => {
-                const articleNoMatches = decodeobj?.ArticleNo
-                  ? normalizedRouteValue(article?.ArticleNo) ===
-                    normalizedRouteValue(decodeobj.ArticleNo)
-                  : normalizedRouteValue(article?.autocode) ===
-                    normalizedRouteValue(decodeobj?.a);
+                const articleIdentityMatches = decodeobj?.ArticleId != null
+                  ? article?.ArticleId == decodeobj.ArticleId
+                  : decodeobj?.ArticleNo
+                    ? normalizedRouteValue(article?.ArticleNo) ===
+                      normalizedRouteValue(decodeobj.ArticleNo)
+                    : normalizedRouteValue(article?.autocode) ===
+                      normalizedRouteValue(decodeobj?.a);
                 const metalMatches =
                   routeMetalId == null ||
                   Number(article?.MetalTypeId ?? article?.Metalid) ===
@@ -1448,7 +1481,7 @@ export function useProductDetail({ storeinit, searchParams, params }) {
                   !routeSize || !articleSize ||
                   articleSize === normalizedRouteValue(routeSize);
                 return (
-                  articleNoMatches &&
+                  articleIdentityMatches &&
                   metalMatches &&
                   metalColorMatches &&
                   sizeMatches
@@ -1597,7 +1630,7 @@ export function useProductDetail({ storeinit, searchParams, params }) {
       top: 0,
       behavior: "smooth",
     });
-  }, [location, unwrappedSearchParams]);
+  }, [location, rawProductPayload, unwrappedSearchParams]);
 
   const callAllApi = async () => {
     let mtTypeLocal = getSession("metalTypeCombo");
@@ -1688,6 +1721,91 @@ export function useProductDetail({ storeinit, searchParams, params }) {
     if (storeinit) setStoreInit(storeinit);
     if (loginUserDetail) setLoginData(loginUserDetail);
   }, [storeinit, loginUserDetail]);
+
+  useEffect(() => {
+    const restoredWeight = Number(initialDecodeUrl?.nwt);
+    const hasCartWeight =
+      Number(initialDecodeUrl?.fromCart) === 1 &&
+      initialDecodeUrl?.nwt != null &&
+      initialDecodeUrl?.nwt !== "" &&
+      Number.isFinite(restoredWeight);
+
+    if (hasCartWeight) {
+      const restoredMetalType =
+        initialDecodeUrl?.metalTypeName ||
+        metalTypeCombo.find(
+          (metal) => Number(metal?.Metalid) === Number(initialDecodeUrl?.m),
+        )?.metaltype;
+      netWeightConversionBaseRef.current = {
+        metalType: restoredMetalType,
+        weight: restoredWeight,
+      };
+      setCalculatedNetWeight(restoredWeight);
+      setHasUserChangedCartMetal(false);
+      return;
+    }
+
+    netWeightConversionBaseRef.current = null;
+    setCalculatedNetWeight(null);
+    setHasUserChangedCartMetal(false);
+  }, [
+    rawProductPayload,
+    location,
+    initialDecodeUrl?.a,
+    initialDecodeUrl?.b,
+    initialDecodeUrl?.fromCart,
+    initialDecodeUrl?.nwt,
+    initialDecodeUrl?.metalTypeName,
+    initialDecodeUrl?.m,
+    metalTypeCombo,
+  ]);
+
+  useEffect(() => {
+    const domain = storeInit?.domain || storeinit?.domain ||
+      (typeof window !== "undefined" ? window.location.hostname : "");
+    if (!domain) return;
+
+    let cancelled = false;
+    setMetalDensityLoaded(false);
+    setMetalDensities([]);
+    fetch(`/api/sqlite/metal-density?domain=${encodeURIComponent(domain)}`)
+      .then((response) => response.ok ? response.json() : null)
+      .then((result) => {
+        if (!cancelled) {
+          setMetalDensities(Array.isArray(result?.data) ? result.data : []);
+          setMetalDensityLoaded(true);
+        }
+      })
+      .catch((error) => {
+        console.warn("Metal density cache unavailable:", error);
+        if (!cancelled) setMetalDensityLoaded(true);
+      });
+
+    return () => { cancelled = true; };
+  }, [storeInit?.domain, storeinit?.domain]);
+
+  useEffect(() => {
+    if (
+      !metalDensityLoaded ||
+      !hasUserChangedCartMetal ||
+      Number(initialDecodeUrl?.fromCart) !== 1 ||
+      !netWeightConversionBaseRef.current ||
+      !metalType
+    ) return;
+
+    setCalculatedNetWeight(convertNetWeightByMetal({
+      fromMetalType: netWeightConversionBaseRef.current.metalType,
+      fromWeight: netWeightConversionBaseRef.current.weight,
+      toMetalType: metalType,
+      metalDensities,
+    }));
+  }, [
+    metalDensityLoaded,
+    metalDensities,
+    hasUserChangedCartMetal,
+    initialDecodeUrl?.fromCart,
+    metalType,
+  ]);
 
   useEffect(() => {
     callAllApi();
@@ -1890,17 +2008,24 @@ export function useProductDetail({ storeinit, searchParams, params }) {
 
   useEffect(() => {
     let mtColorLocal = getSession("MetalColorCombo");
-    let mcArr;
-
-    if (mtColorLocal?.length) {
-      mcArr = mtColorLocal?.filter(
-        (ele) =>
-          ele?.id == (singleProd?.MetalColorid ?? singleProd1?.MetalColorid),
-      )[0];
-    }
+    const requestedColorId = Number(initialDecodeUrl?.fromCart) === 1
+      ? initialDecodeUrl?.metalColorId ?? initialDecodeUrl?.i
+      : null;
+    const selectedColorId = requestedColorId ?? singleProd?.MetalColorid ?? singleProd1?.MetalColorid;
+    const mcArr = (Number(initialDecodeUrl?.fromCart) === 1
+      ? mtColorLocal?.find(
+          (ele) => String(ele?.metalcolorname ?? "").trim().toLowerCase() ===
+            String(initialDecodeUrl?.metalColorName ?? "").trim().toLowerCase(),
+        )
+      : null) || mtColorLocal?.find(
+        (ele) => Number(ele?.id) === Number(selectedColorId),
+      );
 
     setMetalColor(mcArr?.colorcode);
-  }, [singleProd]);
+    if (requestedColorId != null && mcArr?.colorcode) {
+      setSelectedMetalColor(mcArr.colorcode);
+    }
+  }, [singleProd, singleProd1, initialDecodeUrl, metalColorCombo]);
 
   const getDynamicVideo = (designno, count, extension) => {
     const getDesignVideoFol =
@@ -1916,11 +2041,54 @@ export function useProductDetail({ storeinit, searchParams, params }) {
     return txt.value;
   };
 
-  // Design-based customization (IsDesignBaseWeb = 1): dropdown changes only store the selected value.
-  // The values are passed to the API later, when the item is added to cart / wishlist.
+  // Design-based customization (IsDesignBaseWeb = 1): update the selected metal
+  // and calculate its displayed net weight from the cached density snapshot.
   const handleDesignCustomChange = (e, type) => {
     const value = e?.target?.value;
-    if (type === "mt") setMetalType(value);
+    if (type === "mt") {
+      if (Number(initialDecodeUrl?.fromCart) === 1) {
+        setHasUserChangedCartMetal(true);
+      }
+      const selectedMetal = metalTypeCombo.find(
+        (metal) => String(metal?.metaltype ?? metal?.metaltypename).trim().toLowerCase() === String(value ?? "").trim().toLowerCase(),
+      );
+      const targetMetalType = selectedMetal?.metaltype || selectedMetal?.metaltypename || value;
+      const currentArticle = customizationDetail || rd1Data?.find((article) => article.ArticleId === defaultArticleId) || rd1Data?.[0];
+      const isCartRestore = Number(initialDecodeUrl?.fromCart) === 1;
+      const cartWeight = Number(initialDecodeUrl?.nwt);
+      const hasCartWeight = isCartRestore && initialDecodeUrl?.nwt != null &&
+        initialDecodeUrl?.nwt !== "" && Number.isFinite(cartWeight);
+      const fromMetalType = netWeightConversionBaseRef.current?.metalType ||
+        (isCartRestore ? initialDecodeUrl?.metalTypeName : null) ||
+        metalType || currentArticle?.MetalType || currentArticle?.metaltypename;
+      const fromWeight = netWeightConversionBaseRef.current?.weight ??
+        (hasCartWeight ? cartWeight : null) ??
+        currentArticle?.NetWeight ?? currentArticle?.Nwt ??
+        singleProd1?.NetWeight ?? singleProd?.NetWeight ?? singleProd?.Nwt;
+      if (!netWeightConversionBaseRef.current && Number.isFinite(Number(fromWeight))) {
+        netWeightConversionBaseRef.current = {
+          metalType: fromMetalType,
+          weight: Number(fromWeight),
+        };
+      }
+      const conversionBase = netWeightConversionBaseRef.current || {
+        metalType: fromMetalType,
+        weight: fromWeight,
+      };
+      const convertedNetWeight = convertNetWeightByMetal({
+        fromMetalType: conversionBase.metalType,
+        fromWeight: conversionBase.weight,
+        toMetalType: targetMetalType,
+        metalDensities,
+      });
+
+      setMetalType(targetMetalType);
+      if (Number.isFinite(Number(fromWeight))) {
+        // Keep the cart's saved weight visible while density rows are loading.
+        // Recalculate from the same original cart basis when the fetch completes.
+        setCalculatedNetWeight(metalDensityLoaded ? convertedNetWeight : Number(fromWeight));
+      }
+    }
     if (type === "dt") setSelectDiaQc(value);
     if (type === "cs") setSelectCsQC(value);
     if (type === "size") setSizeData(value);
@@ -2442,6 +2610,8 @@ export function useProductDetail({ storeinit, searchParams, params }) {
     diaList,
     csList,
     netWTData,
+    calculatedNetWeight,
+    hasUserChangedCartMetal,
     SizeCombo,
     metalTypeCombo,
     metalType,

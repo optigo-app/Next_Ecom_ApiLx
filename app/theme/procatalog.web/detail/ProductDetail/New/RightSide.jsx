@@ -46,6 +46,8 @@ const RightSide = ({
   description,
   singleProd,
   singleProd1,
+  calculatedNetWeight,
+  hasUserChangedCartMetal = false,
   stockItemArr,
   metalType,
   metalColor,
@@ -127,8 +129,10 @@ const RightSide = ({
   const purityMetalTypeOption = metalTypeCombo?.find(
     (option) => Number(option?.Metalid) === Number(singleProd?.MetalPurityid),
   );
-  const metalPurityLabel =
-    Number(singleProd?.IsMrpBase) === 1
+  const isCartRestore = Number(initialDecodeUrl?.fromCart) === 1;
+  const metalPurityLabel = isCartRestore
+    ? selectedMetalTypeOption?.metaltype || metalType || displayArticle?.MetalType || "-"
+    : Number(singleProd?.IsMrpBase) === 1
       ? purityMetalTypeOption?.metaltype || singleProd?.MetalTypePurity || metalType || "-"
       : selectedMetalTypeOption?.metaltype || displayArticle?.MetalType || metalType || singleProd?.MetalTypePurity || "-";
   const onDesignChange = handleDesignCustomChange || handleCustomChange;
@@ -561,6 +565,14 @@ const RightSide = ({
                   <Typography sx={{ fontSize: "15px", fontWeight: 600 }}>
                     {isNetWeightLoadingState ? (
                       <Skeleton variant="text" width={50} />
+                    ) : isCartRestore &&
+                      !hasUserChangedCartMetal &&
+                      initialDecodeUrl?.nwt != null &&
+                      initialDecodeUrl?.nwt !== "" &&
+                      Number.isFinite(Number(initialDecodeUrl.nwt)) ? (
+                      Number(initialDecodeUrl.nwt).toFixed(3)
+                    ) : calculatedNetWeight != null ? (
+                      Number(calculatedNetWeight).toFixed(3)
                     ) : displayArticle?.NetWeight != null ? (
                       Number(displayArticle.NetWeight).toFixed(3)
                     ) : singleProd1?.NetWeight != null ||
@@ -677,7 +689,10 @@ const RightSide = ({
               singleProd,
               articleIdentity: displayArticle,
               metalType,
+              metalTypeName: initialDecodeUrl?.metalTypeName || "",
               metalColor,
+              metalColorName: initialDecodeUrl?.metalColorName || "",
+              isCartRestore,
               metalTypeCombo,
               metalColorCombo,
               diaQcCombo,

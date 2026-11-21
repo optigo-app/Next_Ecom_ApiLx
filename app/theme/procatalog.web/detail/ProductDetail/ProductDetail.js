@@ -31,6 +31,8 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
     sizeData,
     singleProd,
     singleProd1,
+    calculatedNetWeight,
+    hasUserChangedCartMetal,
     diaList,
     csList,
     SizeCombo,
@@ -147,6 +149,8 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
                 }
                 singleProd={singleProd}
                 singleProd1={singleProd1}
+                calculatedNetWeight={calculatedNetWeight}
+                hasUserChangedCartMetal={hasUserChangedCartMetal}
                 metalType={metalType}
                 metalColor={metalColor}
                 storeInit={storeInit}

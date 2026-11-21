@@ -15,6 +15,8 @@ const DesignBaseCustomization = ({
   singleProd,
   metalType,
   metalColor,
+  metalColorName = "",
+  isCartRestore = false,
   metalTypeCombo,
   metalColorCombo,
   diaQcCombo,
@@ -65,7 +67,7 @@ const DesignBaseCustomization = ({
                 Metal Type :
               </Typography>
 
-              {Number(singleProd?.IsMrpBase) === 1 ? (
+              {Number(singleProd?.IsMrpBase) === 1 && !isCartRestore ? (
                 <LableField
                   label={
                     metalTypeCombo?.find(
@@ -98,8 +100,9 @@ const DesignBaseCustomization = ({
               )}
             </Grid>
           )}
-        {metalColorCombo?.length > 0 &&
-          Number(storeInit?.IsMetalTypeWithColor) === 1 && (
+        {((metalColorCombo?.length > 0 &&
+          (Number(storeInit?.IsMetalTypeWithColor) === 1 || isCartRestore)) ||
+          (isCartRestore && (metalColorName || metalColor))) && (
             <Grid
               item
               size={fieldSize}
@@ -111,7 +114,9 @@ const DesignBaseCustomization = ({
                 Metal Color :
               </Typography>
 
-              {Number(singleProd?.IsMrpBase) === 1 ? (
+              {isCartRestore && !metalColorCombo?.length ? (
+                <LableField label={metalColorName || metalColor || "-"} />
+              ) : Number(singleProd?.IsMrpBase) === 1 && !isCartRestore ? (
                 <LableField
                   label={
                     metalColorCombo?.find(

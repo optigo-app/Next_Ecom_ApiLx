@@ -592,6 +592,7 @@ export function useTestCheckout(initialStoreInit) {
     const unitCost = Number(
       article?.UnitCostWithmarkup ?? article?.TotalUnitCost ?? cartItem?.UnitCostWithMarkUp ?? 0,
     );
+
     const quantity = Number(cartItem?.Quantity) || 1;
     const updatedItem = {
       ...cartItem,
@@ -671,8 +672,12 @@ export function useTestCheckout(initialStoreInit) {
   const compressAndEncode = (inputString) => {
     try {
       const uint8Array = new TextEncoder().encode(inputString);
-      const compressed = pako.deflate(uint8Array, { to: "string" });
-      return btoa(String.fromCharCode.apply(null, compressed));
+      const compressed = pako.deflate(uint8Array);
+      let binary = "";
+      for (let index = 0; index < compressed.length; index += 1) {
+        binary += String.fromCharCode(compressed[index]);
+      }
+      return btoa(binary);
     } catch (error) {
       console.error("Error compressing and encoding:", error);
       return null;
@@ -689,38 +694,82 @@ export function useTestCheckout(initialStoreInit) {
       router.push(`/d/${formatRedirectTitleLine(item?.TitleLine)}${item?.designno}?p=${encodedObj}`);
     };
 
-    const metalId =
-      item?.metaltypeid ||
-      item?.Metalid ||
-      logindata?.MetalId ||
-      storeInitData?.MetalId;
+    // Preserve the exact cart variant. The detail page uses these normalized
+    // fields to select the matching ArticleId and restore its configuration.
+    const savedCartVariant = {
+      fromCart: 1,
+      ArticleId: item?.ArticleId ?? item?.articleid ?? null,
+      ArticleNo: item?.ArticleNo ?? item?.articleno ?? "",
+      metalColorId:
+        item?.metalcolorid ?? item?.MetalColorId ?? item?.MetalColorid ?? item?.Metalcolorid ?? item?.metalColorId ?? null,
+      metalColorName:
+        item?.metalcolorname ?? item?.MetalColor ?? item?.MetalColorName ?? item?.metalColorName ?? "",
+      metalTypeName:
+        item?.metaltypename ?? item?.MetalType ?? item?.MetalTypeName ?? item?.metaltype ?? item?.metalType ?? "",
+      Size: item?.Size ?? "",
+      nwt:
+        item?.Nwt ?? item?.NWT ?? item?.nwt ?? item?.NetWeight ??
+        item?.NetWt ?? item?.netWeight ?? item?.netweight ?? item?.netwt ?? null,
+    };
 
-    const metalColorId =
-      item?.metalcolorid ||
-      item?.MetalColorId ||
-      item?.MetalColorid ||
-      "";
+    const metalTypeCombo = JSON.parse(sessionStorage.getItem("metalTypeCombo") || "[]");
+    const requestedMetalId =
+      item?.metaltypeid ?? item?.MetalTypeId ?? item?.MetalTypeid ?? item?.metalTypeId ??
+      item?.Metalid ?? item?.metalid ?? item?.MetalPurityid ?? item?.MetalPurityId;
+    const matchedMetal = metalTypeCombo.find(
+      (option) => String(option?.metaltype ?? "").trim().toLowerCase() ===
+        String(savedCartVariant.metalTypeName).trim().toLowerCase(),
+    );
+    const metalId = matchedMetal?.Metalid ?? requestedMetalId ?? null;
+
+    const requestedMetalColorId = savedCartVariant.metalColorId;
+    const metalColorCombo = JSON.parse(sessionStorage.getItem("MetalColorCombo") || "[]");
+    const matchedMetalColor = metalColorCombo.find(
+      (option) => String(option?.metalcolorname ?? "").trim().toLowerCase() ===
+        String(savedCartVariant.metalColorName).trim().toLowerCase(),
+    );
+    const metalColorId = matchedMetalColor?.id ?? requestedMetalColorId ?? "";
+    savedCartVariant.metalColorId = metalColorId === "" ? null : metalColorId;
 
     let diaQc = "";
-    if (item?.diamondqualityid && item?.diamondcolorid) {
-      diaQc = `${item.diamondqualityid},${item.diamondcolorid}`;
-    } else if (item?.diamondqualityid) {
-      diaQc = `${item.diamondqualityid}`;
+    const diamondQualityId = item?.diamondqualityid ?? item?.DiamondQualityId;
+    const diamondColorId = item?.diamondcolorid ?? item?.DiamondColorId;
+    const diamondCombo = JSON.parse(sessionStorage.getItem("diamondQualityColorCombo") || "[]");
+    const matchedDiamond = diamondCombo.find((option) =>
+      String(option?.Quality ?? "").trim().toLowerCase() ===
+        String(item?.diamondquality ?? item?.DiamondQuality ?? "").trim().toLowerCase() &&
+      String(option?.Color ?? option?.color ?? "").trim().toLowerCase() ===
+        String(item?.diamondcolor ?? item?.DiamondColor ?? "").trim().toLowerCase(),
+    );
+    if (diamondQualityId != null || diamondColorId != null) {
+      diaQc = `${diamondQualityId ?? 0},${diamondColorId ?? 0}`;
+    } else if (matchedDiamond) {
+      diaQc = `${matchedDiamond.QualityId ?? 0},${matchedDiamond.ColorId ?? 0}`;
     } else {
       diaQc = logindata?.cmboDiaQCid || storeInitData?.cmboDiaQCid || "0,0";
     }
 
     let csQc = "";
-    if (item?.colorstonequalityid && item?.colorstonecolorid) {
-      csQc = `${item.colorstonequalityid},${item.colorstonecolorid}`;
-    } else if (item?.colorstonequalityid) {
-      csQc = `${item.colorstonequalityid}`;
+    const colorStoneQualityId = item?.colorstonequalityid ?? item?.ColorStoneQualityId;
+    const colorStoneColorId = item?.colorstonecolorid ?? item?.ColorStoneColorId;
+    const colorStoneCombo = JSON.parse(sessionStorage.getItem("ColorStoneQualityColorCombo") || "[]");
+    const matchedColorStone = colorStoneCombo.find((option) =>
+      String(option?.Quality ?? "").trim().toLowerCase() ===
+        String(item?.colorstonequality ?? item?.ColorStoneQuality ?? "").trim().toLowerCase() &&
+      String(option?.Color ?? option?.color ?? "").trim().toLowerCase() ===
+        String(item?.colorstonecolor ?? item?.ColorStoneColor ?? "").trim().toLowerCase(),
+    );
+    if (colorStoneQualityId != null || colorStoneColorId != null) {
+      csQc = `${colorStoneQualityId ?? 0},${colorStoneColorId ?? 0}`;
+    } else if (matchedColorStone) {
+      csQc = `${matchedColorStone.QualityId ?? 0},${matchedColorStone.ColorId ?? 0}`;
     } else {
       csQc = logindata?.cmboCSQCid || storeInitData?.cmboCSQCid || "0,0";
     }
 
     if (isStoreInitFlagEnabled(storeinit, "multiVariantCart")) {
       const obj = {
+        ...savedCartVariant,
         a: item?.autocode,
         b: item?.designno,
         m: metalId,
@@ -740,11 +789,12 @@ export function useTestCheckout(initialStoreInit) {
 
     if (item?.StockNo && String(item.StockNo).trim() !== "") {
       const obj = {
+        ...savedCartVariant,
         a: item?.autocode,
         b: item?.designno,
-        m: logindata?.MetalId || metalId,
-        d: logindata?.cmboDiaQCid || diaQc,
-        c: logindata?.cmboCSQCid || csQc,
+        m: metalId,
+        d: diaQc,
+        c: csQc,
         f: {},
         g: [["", ""], ["", "", ""]],
         i: metalColorId,
@@ -755,6 +805,7 @@ export function useTestCheckout(initialStoreInit) {
       createAndNavigate(obj);
     } else {
       const obj = {
+        ...savedCartVariant,
         a: item?.autocode,
         b: item?.designno,
         m: metalId,

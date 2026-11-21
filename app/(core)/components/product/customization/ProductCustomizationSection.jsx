@@ -34,7 +34,11 @@ const ProductCustomizationSection = ({
   )?.metalcolorname;
   const selectedConfig = [
     {
-      value: [designProps.metalType, metalColorLabel || designProps.metalColor]
+      value: [
+        designProps.metalType || (designProps.isCartRestore && designProps.metalTypeName),
+        metalColorLabel || designProps.metalColor ||
+          (designProps.isCartRestore && designProps.metalColorName),
+      ]
         .filter(Boolean)
         .join(" · "),
     },

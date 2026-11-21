@@ -4,6 +4,7 @@ import { saveStoreInit } from "@/db/procedures/saveStoreInit";
 import { getStoreInit } from "@/db/procedures/getStoreInit";
 import { deleteStoreInit } from "@/db/procedures/deleteStoreInit";
 import { syncStoreInit } from "@/app/(core)/utils/sqlite/syncStoreInit";
+import { syncMetalDensity } from "@/app/(core)/utils/sqlite/syncMetalDensity";
 import { clearStoreInitCache, setStoreInitCache } from "@/app/(core)/cache_utility/storeInitCache";
 import { logger } from "@/db/logger";
 
@@ -103,6 +104,9 @@ export async function POST(req) {
 
       // Read fresh data from SQLite and seed the cache directly
       const freshData = getStoreInit(db, { domain: targetDomain });
+      const metalDensitySync = freshData?.Data?.rd?.[0]
+        ? await syncMetalDensity(targetDomain, freshData.Data.rd[0])
+        : { success: false, error: "StoreInit row was not available after sync." };
       await clearStoreInitCache();
       if (freshData?.Data?.rd?.length > 0) {
         await setStoreInitCache(targetDomain, freshData);
@@ -113,6 +117,7 @@ export async function POST(req) {
         message: "StoreInit data successfully synced and saved from external API.",
         verified,
         savedFileCreateDate,
+        metalDensitySync,
         ...syncResult
       }, { status: 200 });
     }
@@ -153,6 +158,9 @@ export async function POST(req) {
 
     // Read fresh data from SQLite and seed the cache directly — zero stale window
     const freshData = getStoreInit(db, { domain: targetDomain });
+    const metalDensitySync = freshData?.Data?.rd?.[0]
+      ? await syncMetalDensity(targetDomain, freshData.Data.rd[0])
+      : { success: false, error: "StoreInit row was not available after push." };
     await clearStoreInitCache();
     if (freshData?.Data?.rd?.length > 0) {
       await setStoreInitCache(targetDomain, freshData);
@@ -170,6 +178,7 @@ export async function POST(req) {
         savedFileCreateDate,
         counts: result.count,
         elapsedMs: result.elapsedMs,
+        metalDensitySync,
       },
       { status: 200 }
     );

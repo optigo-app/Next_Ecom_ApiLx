@@ -3,6 +3,7 @@ import fs from "fs";
 import path from "path";
 import { initSchema, ensureDesignTableColumns, ensureDynamicStockListTable } from "./schema.js";
 import { ensureStoreInitColumns } from "./schema/storeInit.js";
+import { ensureMetalDensityTable } from "./schema/metalDensity.js";
 
 // In-memory connection pool on globalThis to avoid reopening file descriptors across Next.js HMR reloads
 const globalForDb = globalThis;
@@ -169,6 +170,7 @@ export function getTenantDb(domain = "default", options = {}) {
             // Self-healing migration for existing databases: ensure storeinit and design columns
             try {
                 ensureStoreInitColumns(db);
+                ensureMetalDensityTable(db);
                 ensureDesignTableColumns(db, "designs");
                 ensureDynamicStockListTable(db, "stock_list");
             } catch (_) {}
