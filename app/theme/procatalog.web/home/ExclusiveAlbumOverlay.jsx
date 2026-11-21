@@ -1,7 +1,7 @@
 
 "use client";
 
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useExclusiveAlbum } from "@/app/(core)/hooks/main/useExclusiveAlbum";
 import { useAlbumAuth } from "@/app/(core)/hooks/main/useAlbumAuth";
@@ -35,7 +35,29 @@ import {
 
 const imageNotFound = "/image-not-found.jpg";
 
-function AlbumCoverCollage({ album, getProductImageUrl }) {
+function buildAlbumCoverUrl(album, albumImageBase) {
+  const base = String(albumImageBase || "")
+    .trim()
+    .replace(/\/+$/, "")
+    .replace(/(^|\/)AlbumImages$/i, "$1ProAlbumImages");
+
+  const folder = String(album?.AlbumImageFol || "")
+    .trim()
+    .replace(/^\/+|\/+$/g, "");
+
+  const imageName = String(album?.AlbumImageName || "").trim();
+
+  if (!base || !/\/ProAlbumImages$/i.test(base) || !folder || !imageName) {
+    return "";
+  }
+
+  const encodedName = encodeURIComponent(imageName)
+    .replace(/%25([0-9a-f]{2})/gi, "%$1");
+
+  return `${base}/${folder}/${encodedName}`;
+}
+
+function AlbumDesignCollage({ album, getProductImageUrl }) {
   const designs = Array.isArray(album?.designs) ? album.designs : [];
   const totalCount = Math.max(
     album?.designCount || 0,
@@ -241,6 +263,31 @@ function AlbumCoverCollage({ album, getProductImageUrl }) {
   );
 }
 
+function AlbumCoverCollage({ album, getProductImageUrl, albumImageBase }) {
+  const coverUrl = buildAlbumCoverUrl(album, albumImageBase);
+  const [coverFailed, setCoverFailed] = useState(false);
+
+  useEffect(() => {
+    setCoverFailed(false);
+  }, [coverUrl]);
+
+  if (coverUrl && !coverFailed) {
+    return (
+      <Box sx={{ width: "100%", height: "100%", overflow: "hidden", backgroundColor: "#F4F4F5" }}>
+        <img
+          src={coverUrl}
+          alt={album?.albumName || "Album cover"}
+          loading="lazy"
+          onError={() => setCoverFailed(true)}
+          style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
+        />
+      </Box>
+    );
+  }
+
+  return <AlbumDesignCollage album={album} getProductImageUrl={getProductImageUrl} />;
+}
+
 export default function ExclusiveAlbumOverlay({
   initialDomain = "beluxjewel.web",
 }) {
@@ -248,6 +295,7 @@ export default function ExclusiveAlbumOverlay({
     isOpen,
     resolvedCustomerId,
     loading,
+    error: albumLoadError,
     albums,
     selectedAlbum,
     setSelectedAlbum,
@@ -1123,13 +1171,13 @@ export default function ExclusiveAlbumOverlay({
                   ) : displayedAlbums.length === 0 ? (
                     <Box sx={{ py: 8, textAlign: "center" }}>
                       <Typography sx={{ fontSize: "1rem", color: "#64748B", mb: 2 }}>
-                        {error
+                        {albumLoadError
                           ? "We couldn’t load the albums. Please try again."
                           : searchQuery
                             ? `No albums found matching "${searchQuery}".`
                             : "No albums are available for this customer yet."}
                       </Typography>
-                      {error && (
+                      {albumLoadError && (
                         <Button onClick={handleBackToAlbums} sx={{ textTransform: "none" }}>
                           Try again
                         </Button>
@@ -1186,6 +1234,7 @@ export default function ExclusiveAlbumOverlay({
                               <AlbumCoverCollage
                                 album={album}
                                 getProductImageUrl={getProductImageUrl}
+                                albumImageBase={storeInit?.AlbumImageFol}
                               />
                             </Box>
 
@@ -1274,6 +1323,7 @@ export default function ExclusiveAlbumOverlay({
                       <AlbumCoverCollage
                         album={selectedAlbum}
                         getProductImageUrl={getProductImageUrl}
+                        albumImageBase={storeInit?.AlbumImageFol}
                       />
                     </Box>
 

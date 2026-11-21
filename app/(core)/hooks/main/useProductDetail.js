@@ -1528,11 +1528,13 @@ export function useProductDetail({ storeinit, searchParams, params }) {
             setDefaultArticleId(initialArticle.ArticleId);
             const diaStone = mappedRd2.find(
               (r) =>
-                r.ArticleId == initialArticle.ArticleId && r.StoneTypeid === 1,
+                String(r.ArticleId) === String(initialArticle.ArticleId) &&
+                Number(r.StoneTypeid) === 1,
             );
             const csStone = mappedRd2.find(
               (r) =>
-                r.ArticleId == initialArticle.ArticleId && r.StoneTypeid === 2,
+                String(r.ArticleId) === String(initialArticle.ArticleId) &&
+                Number(r.StoneTypeid) === 2,
             );
             setCustomizationDetail({
               ...initialArticle,
@@ -2153,7 +2155,9 @@ export function useProductDetail({ storeinit, searchParams, params }) {
 
     if (matchedArticle && rd2Data?.length) {
       const diaStone = rd2Data.find(
-        (r) => r.ArticleId === matchedArticle.ArticleId && r.StoneTypeid === 1,
+        (r) =>
+          String(r.ArticleId) === String(matchedArticle.ArticleId) &&
+          Number(r.StoneTypeid) === 1,
       );
       if (diaStone) {
         diaQcVal = `${diaStone.QualityId ?? 0},${diaStone.ColorId ?? 0}`;
@@ -2161,7 +2165,9 @@ export function useProductDetail({ storeinit, searchParams, params }) {
       }
 
       const csStone = rd2Data.find(
-        (r) => r.ArticleId === matchedArticle.ArticleId && r.StoneTypeid === 2,
+        (r) =>
+          String(r.ArticleId) === String(matchedArticle.ArticleId) &&
+          Number(r.StoneTypeid) === 2,
       );
       if (csStone) {
         csQcVal = `${csStone.QualityId ?? 0},${csStone.ColorId ?? 0}`;
@@ -2302,14 +2308,19 @@ export function useProductDetail({ storeinit, searchParams, params }) {
     metalCombo,
     selectedArticle,
   ) => {
-    const mTypeLocal = getSession("metalTypeCombo") || [];
+    const selectedArticleObj =
+      selectedArticle ||
+      rd1Data?.find((r) => String(r.ArticleId) === String(articleId));
+    if (!selectedArticleObj) {
+      console.warn("Customizer selection did not match an article; keeping the current article.", {
+        articleId,
+        metalType: metalCombo?.MetalType,
+      });
+      return;
+    }
+
     const diaQcLocal = getSession("diamondQualityColorCombo") || [];
     const csQcLocal = getSession("ColorStoneQualityColorCombo") || [];
-
-    // Find metal by MetalType name (mapped from combo)
-    const metalArr = mTypeLocal.find(
-      (ele) => ele?.metaltype === metalCombo?.MetalType,
-    );
 
     // Resolve current dia/cs or keep existing selection
     const [dq, dc] = diaQcKey ? diaQcKey.split("-") : [null, null];
@@ -2325,18 +2336,11 @@ export function useProductDetail({ storeinit, searchParams, params }) {
         ele?.color === selectCsQC?.split(",")[1],
     );
 
-    const newSize = size ?? sizeData;
-    if (metalCombo?.MetalType) setMetalType(metalCombo.MetalType);
-    if (size) setSizeData(size);
-
-    // Update the defaultArticleId state so main page info fields update
-    if (articleId) setDefaultArticleId(articleId);
-
-    // Find selected article object from rd1Data to pass correct ArticleNo
-    const selectedArticleObj =
-      selectedArticle ||
-      rd1Data?.find((r) => r.ArticleId === articleId) ||
-      rd1Data?.[0];
+    // Bind every displayed field to the exact article selected in the drawer.
+    setDefaultArticleId(selectedArticleObj.ArticleId);
+    setMetalType(selectedArticleObj.MetalType || metalCombo?.MetalType || metalType);
+    setMetalColor(selectedArticleObj.MetalColor || metalCombo?.MetalColor || metalColor);
+    setSizeData(selectedArticleObj.Size ?? size ?? sizeData);
     const targetArticleNo =
       selectedArticleObj?.ArticleNo || singleProd?.ArticleNo || "";
     const targetAutocode =

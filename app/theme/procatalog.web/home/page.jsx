@@ -7,6 +7,7 @@ import TopSection from "./TopSection";
 import CategoryAlbumGrid from "./CategoryAlbumGrid";
 import ExclusiveAlbumOverlay from "./ExclusiveAlbumOverlay";
 import { getSqliteHomeCategory } from "@/app/(core)/utils/sqlite/sqliteActions";
+import AlbumSection from "./AlbumSection";
 
 export const metadata = generatePageMetadata(pages["/"], "Sonasons");
 
@@ -45,6 +46,7 @@ const SonasonsHome = async (props) => {
       ) : (
         <>
           <TopSection initialBanner={storeData?.ProCatLogbanner} />
+          <AlbumSection />
           <CategoryAlbumGrid
             initialCategories={initialCategories}
             storeInit={storeData}
