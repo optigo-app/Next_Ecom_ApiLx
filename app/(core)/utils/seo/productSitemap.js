@@ -52,7 +52,7 @@ function getPackageCte(disabled) {
         END
       ) item
       WHERE TRIM(item.value) != '' AND CAST(TRIM(item.value) AS INTEGER) > 0
-    ),`;
+    )`;
 }
 
 function getSourceRowsCte(db, tables) {
@@ -83,7 +83,8 @@ function getSourceRowsCte(db, tables) {
   });
 
   const packageCte = getPackageCte(packageFilterDisabled);
-  return `${packageCte}${packageCte ? "," : ""}
+  const ctePrefix = packageCte ? `${packageCte},` : "WITH";
+  return `${ctePrefix}
     SourceRows AS (${sourceQueries.join("\nUNION ALL\n")})`;
 }
 
