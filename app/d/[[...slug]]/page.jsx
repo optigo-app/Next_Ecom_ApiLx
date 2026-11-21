@@ -2,13 +2,28 @@ import { getActiveTheme } from "@/app/(core)/lib/getActiveTheme";
 import { themeMap } from "@/app/(core)/utils/ThemeMap";
 import { getStoreInit } from "@/app/(core)/utils/GlobalFunctions/GlobalFunctions";
 import { headers } from "next/headers";
+import pako from "pako";
 import { resolveProductDetail } from "@/app/(core)/utils/ThemeRouteResolver";
+import {
+  formatProductDetailSlug,
+  getProductByDetailSlug,
+} from "@/app/(core)/utils/seo/productSitemap";
 import {
   getDynamicMetadata,
   generateWebSiteJsonLd,
   getCanonicalUrl,
   generateBreadcrumbJsonLd
 } from "@/app/(core)/utils/seo/seo-utils";
+
+function getProductSlug(params) {
+  return (params?.slug || []).map((part) => {
+    try {
+      return decodeURIComponent(part);
+    } catch {
+      return part;
+    }
+  }).join("/");
+}
 
 export const dynamic = "force-dynamic";
 
@@ -28,15 +43,25 @@ export async function generateMetadata({ params, searchParams }) {
       defaultTitle: "Jewelry Detail"
     });
 
+    const slug = getProductSlug(awaitedParams);
+    const product = !awaitedSearchParams?.p
+      ? await getProductByDetailSlug(slug).catch(() => null)
+      : null;
+    if (product) {
+      meta.title = product.TitleLine || product.designno || meta.title;
+      meta.description = product.description || `Explore ${product.TitleLine || product.designno}.`;
+    }
+
     if (headerList) {
       const host = headerList.get("host");
       const protocol = headerList.get("x-forwarded-proto") || "https";
       const pathname = headerList.get("x-invoke-path") || headerList.get("next-url") || "";
       if (host) {
         const baseUrl = `${protocol}://${host}`;
-        meta.alternates = {
-          canonical: getCanonicalUrl(baseUrl, pathname),
-        };
+        const canonicalPath = product
+          ? `/d/${encodeURIComponent(formatProductDetailSlug(product))}`
+          : pathname;
+        meta.alternates = { canonical: getCanonicalUrl(baseUrl, canonicalPath) };
       }
     }
 
@@ -57,11 +82,40 @@ export default async function Page({ params, searchParams }) {
 
     const DetailPage = await resolveProductDetail(themeData.page);
 
-    const [awaitedParams, awaitedSearchParams, headerList] = await Promise.all([
+    const [awaitedParams, incomingSearchParams, headerList] = await Promise.all([
       params || {},
       searchParams || {},
       headers().catch(() => null)
     ]);
+    let awaitedSearchParams = incomingSearchParams;
+
+    // Sitemap and shared product URLs are clean paths. Build the compact data
+    // payload internally so the same detail page can render without `?p=`.
+    if (!incomingSearchParams?.p) {
+      const slug = getProductSlug(awaitedParams);
+      const product = await getProductByDetailSlug(slug).catch(() => null);
+      if (product) {
+        const payload = {
+          a: product.autocode ?? "",
+          b: product.designno,
+          m: product.MetalTypeid ?? product.MetalPurityid ?? "",
+          i: product.MetalColorid ?? "",
+          ArticleNo: product.ArticleNo ?? "",
+          ArticleId: product.ArticleId ?? null,
+          title: product.TitleLine ?? product.designno,
+          nwt: product.Nwt ?? 0,
+          price: product.UnitCostWithMarkUp ?? 0,
+          mediaDet: product.ImageVideoDetail ?? "0",
+          l: product.ImageExtension || "webp",
+          count: product.ImageCount ?? 0,
+        };
+        const compressed = pako.deflate(new TextEncoder().encode(JSON.stringify(payload)));
+        awaitedSearchParams = {
+          ...incomingSearchParams,
+          p: Buffer.from(compressed).toString("base64"),
+        };
+      }
+    }
 
     let baseUrl = "";
     if (headerList) {

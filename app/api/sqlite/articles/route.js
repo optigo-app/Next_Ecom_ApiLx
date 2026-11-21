@@ -119,6 +119,7 @@ export async function POST(req) {
       const syncResult = await syncDynamicPolicyArticles({
         domain: targetDomain,
         Config: policyConfigs,
+        ALC: body?.ALC,
         batchSize: body?.batchSize || searchParams.get("batchSize") ? Number(body?.batchSize || searchParams.get("batchSize")) : undefined,
         force: body?.force === true || searchParams.get("force") === "true",
       });

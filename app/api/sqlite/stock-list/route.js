@@ -58,6 +58,7 @@ export async function POST(req) {
       const syncResult = await syncDynamicStockList({
         domain: targetDomain,
         Config: configArray,
+        ALC: body?.ALC,
       });
 
       return NextResponse.json(

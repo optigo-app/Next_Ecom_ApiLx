@@ -26,13 +26,24 @@ export const CartAndWishListAPI = async (
   const isGuest =
     storeInit?.IsB2BWebsite == 0 && (islogin == false || islogin == null);
 
+  const withDesignBaseFlag = (product) => ({
+    ...product,
+    IsDesignBaseWeb:
+      product?.IsDesignBaseWeb === 1 || product?.IsDesignBaseWeb === "1" ? 1 : 0,
+  });
+  const addCartDetail = type2
+    ? Array.isArray(obj)
+      ? obj.map(withDesignBaseFlag)
+      : withDesignBaseFlag(obj)
+    : [withDesignBaseFlag(obj)];
+
   let FinalObj = {
     ForEvt: `${type}`,
     FrontEnd_RegNo: `${storeInit?.FrontEnd_RegNo}`,
     userid: `${customerEmail}`,
     Customerid: `${customerId ?? 0}`,
     IsPLW: `${storeInit?.IsPLW}`,
-    AddCartDetail: type2 ? obj : [obj],
+    AddCartDetail: addCartDetail,
     stockno: `${stockno ?? ""}`,
     isPair: `${isPair ?? ""}`,
     DomainForNo: `${storeInit?.DomainForNo ?? ""}`,

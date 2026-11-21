@@ -11,6 +11,7 @@ export default function useCustomizationMode({
   rd1 = [],
   customizationDetail,
   defaultArticleId,
+  initialDecodeUrl,
   loadingdata,
   isPriceloading,
 }) {
@@ -18,7 +19,10 @@ export default function useCustomizationMode({
     const defaultArticle =
       rd1?.find((r) => r.ArticleId === defaultArticleId) || rd1?.[0] || null;
     const rawArticle = customizationDetail || defaultArticle;
-    const isDesignBase = Number(rawArticle?.IsDesignBaseWeb) === 1;
+    const isCartDesignBase =
+      Number(initialDecodeUrl?.fromCart) === 1 &&
+      Number(initialDecodeUrl?.IsDesignBaseWeb) === 1;
+    const isDesignBase = isCartDesignBase || Number(rawArticle?.IsDesignBaseWeb) === 1;
     const isModeKnown = rd1?.length > 0 || (!loadingdata && !isPriceloading);
     return {
       defaultArticle,
@@ -27,5 +31,5 @@ export default function useCustomizationMode({
       isModeKnown,
       activeArticle: isDesignBase ? null : rawArticle,
     };
-  }, [rd1, customizationDetail, defaultArticleId, loadingdata, isPriceloading]);
+  }, [rd1, customizationDetail, defaultArticleId, initialDecodeUrl, loadingdata, isPriceloading]);
 }

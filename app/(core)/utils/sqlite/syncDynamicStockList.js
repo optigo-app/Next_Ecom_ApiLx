@@ -106,6 +106,9 @@ export async function syncDynamicStockList(options = {}) {
 
     // 3. Process each policy configuration
     for (const item of configList) {
+      const alcValue = options.ALC ?? item.ALC;
+      const normalizedALC = Array.isArray(alcValue) ? alcValue.join(",") : (alcValue == null ? "" : String(alcValue));
+      const hasALC = normalizedALC.trim() !== "";
       const laboursetId =
         item.Laboursetid ??
         item.laboursetid ??
@@ -166,6 +169,7 @@ export async function syncDynamicStockList(options = {}) {
         colorstonepricelistname: resolvedConfig.colorstonepricelistname,
         SettingPriceUniqueNo: resolvedConfig.SettingPriceUniqueNo,
         domainname: toDomainName(targetDomain),
+        ...(hasALC ? { ALC: normalizedALC } : {}),
       };
 
       const requestBody = {
@@ -231,7 +235,7 @@ export async function syncDynamicStockList(options = {}) {
       const syncResult = syncTableViaTemp(db, {
         mainTable: tableName,
         keyCols: ["StockBarcode"],
-        deleteStale: true,
+        deleteStale: !hasALC,
         ensureMainTable: (d, t) => ensureDynamicStockListTable(d, t),
         stage: (tmpTable) => batchInsertStockList(db, rawStockList, { flush: false, slotSize: options?.slotSize || 1000 }, tmpTable),
       });

@@ -1,6 +1,8 @@
 import { getStoreInit } from "./(core)/utils/GlobalFunctions/GlobalFunctions";
 import { getSiteDetails } from "./(core)/seo";
 
+export const dynamic = "force-dynamic";
+
 export default async function sitemap() {
   let siteUrl = "https://beluxjewel.web";
   try {
@@ -8,6 +10,8 @@ export default async function sitemap() {
     const details = await getSiteDetails(storeInit);
     if (details?.siteUrl) siteUrl = details.siteUrl;
   } catch { }
+
+  siteUrl = siteUrl.replace(/\/+$/, "");
 
   const now = new Date().toISOString();
 

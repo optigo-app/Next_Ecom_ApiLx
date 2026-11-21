@@ -123,13 +123,13 @@ const useCart = () => {
           setMetalCOLORID(response?.Data?.rd[0]?.metalcolorid);
           setdiaID(
             response?.Data?.rd[0]?.diamondqualityid +
-              "," +
-              response?.Data?.rd[0]?.diamondcolorid,
+            "," +
+            response?.Data?.rd[0]?.diamondcolorid,
           );
           setColorStoneID(
             response?.Data?.rd[0]?.colorstonequalityid +
-              "," +
-              response?.Data?.rd[0]?.colorstonecolorid,
+            "," +
+            response?.Data?.rd[0]?.colorstonecolorid,
           );
         }
       } else {
@@ -292,7 +292,7 @@ const useCart = () => {
 
         setSizeChangeData(sizeChangeData);
       }
-    } catch (error) {}
+    } catch (error) { }
   };
 
   // const handleCategorySize = async (item) => {
@@ -374,23 +374,23 @@ const useCart = () => {
             updatedCartData = finalCartData.map((cart) =>
               cart?.id === updatedItems?.id
                 ? {
-                    ...cart,
-                    metaltypename: mtType ?? updatedItems?.metaltypename,
-                    metalcolorname: mtColor ?? updatedItems?.metalcolorname,
-                    diamondquality: diaQua ?? updatedItems?.diamondquality,
-                    diamondcolor: diaColor ?? updatedItems?.diamondcolor,
-                    colorstonecolor: csColor ?? updatedItems?.colorstonecolor,
-                    // images: `${storeInit?.CDNDesignImageFol}${updatedItems?.designno}~1~${mtcCode?.colorcode}.${updatedItems?.ImageExtension}`,
-                    images: `${storeInit?.CDNDesignImageFolThumb}${updatedItems?.designno}~1~${mtcCode?.colorcode}.jpg`,
-                    loading: false,
-                    colorstonequality: csQua ?? updatedItems?.colorstonequality,
-                    FinalCost: Price ?? updatedItems?.FinalCost,
-                    UnitCostWithMarkUp:
-                      finalPrice?.UnitCostWithMarkUp ??
-                      updatedItems?.UnitCostWithMarkUp,
-                    Quantity: qtyCount,
-                    Size: sizeId,
-                  }
+                  ...cart,
+                  metaltypename: mtType ?? updatedItems?.metaltypename,
+                  metalcolorname: mtColor ?? updatedItems?.metalcolorname,
+                  diamondquality: diaQua ?? updatedItems?.diamondquality,
+                  diamondcolor: diaColor ?? updatedItems?.diamondcolor,
+                  colorstonecolor: csColor ?? updatedItems?.colorstonecolor,
+                  // images: `${storeInit?.CDNDesignImageFol}${updatedItems?.designno}~1~${mtcCode?.colorcode}.${updatedItems?.ImageExtension}`,
+                  images: `${storeInit?.CDNDesignImageFolThumb}${updatedItems?.designno}~1~${mtcCode?.colorcode}.jpg`,
+                  loading: false,
+                  colorstonequality: csQua ?? updatedItems?.colorstonequality,
+                  FinalCost: Price ?? updatedItems?.FinalCost,
+                  UnitCostWithMarkUp:
+                    finalPrice?.UnitCostWithMarkUp ??
+                    updatedItems?.UnitCostWithMarkUp,
+                  Quantity: qtyCount,
+                  Size: sizeId,
+                }
                 : cart,
             );
             setFinalCartData(updatedCartData);
@@ -426,20 +426,20 @@ const useCart = () => {
           const updatedCartData = cartData.map((cart) =>
             cart?.id === updatedItems?.id
               ? {
-                  ...cart,
-                  metaltypename: mtType ?? updatedItems?.metaltypename,
-                  metalcolorname: mtColor ?? updatedItems?.metalcolorname,
-                  diamondquality: diaQua ?? updatedItems?.diamondquality,
-                  diamondcolor: diaColor ?? updatedItems?.diamondcolor,
-                  colorstonecolor: csColor ?? updatedItems?.colorstonecolor,
-                  colorstonequality: csQua ?? updatedItems?.colorstonequality,
-                  FinalCost: Price ?? updatedItems?.FinalCost,
-                  UnitCostWithMarkUp:
-                    finalPrice?.UnitCostWithMarkUp ??
-                    updatedItems?.UnitCostWithMarkUp,
-                  Quantity: qtyCount,
-                  Size: sizeId,
-                }
+                ...cart,
+                metaltypename: mtType ?? updatedItems?.metaltypename,
+                metalcolorname: mtColor ?? updatedItems?.metalcolorname,
+                diamondquality: diaQua ?? updatedItems?.diamondquality,
+                diamondcolor: diaColor ?? updatedItems?.diamondcolor,
+                colorstonecolor: csColor ?? updatedItems?.colorstonecolor,
+                colorstonequality: csQua ?? updatedItems?.colorstonequality,
+                FinalCost: Price ?? updatedItems?.FinalCost,
+                UnitCostWithMarkUp:
+                  finalPrice?.UnitCostWithMarkUp ??
+                  updatedItems?.UnitCostWithMarkUp,
+                Quantity: qtyCount,
+                Size: sizeId,
+              }
               : cart,
           );
           setCartData(updatedCartData);
@@ -902,8 +902,8 @@ const useCart = () => {
 
     if (data?.ImageVideoDetail && data.ImageVideoDetail !== "0") {
       try {
-        const parsed = typeof data.ImageVideoDetail === "string" 
-          ? JSON.parse(data.ImageVideoDetail) 
+        const parsed = typeof data.ImageVideoDetail === "string"
+          ? JSON.parse(data.ImageVideoDetail)
           : data.ImageVideoDetail;
         if (Array.isArray(parsed) && parsed.length > 0) {
           const targetColorId = data?.metalcolorid || data?.MetalColorid;
@@ -928,7 +928,7 @@ const useCart = () => {
             return `${cdnFol}${data.designno}~${normalImg.Nm}.${normalImg.Ex || ext}`;
           }
         }
-      } catch (e) {}
+      } catch (e) { }
     }
     return `${cdnFol}${data.designno}~1.${ext}`;
   };
@@ -945,23 +945,29 @@ const useCart = () => {
     };
 
     const itemDiaQc =
-      (cartData?.diamondqualityid != null && cartData?.diamondcolorid != null && cartData?.diamondqualityid !== 0)
+      cartData?.diamondqualityid != null && cartData?.diamondcolorid != null
         ? `${cartData.diamondqualityid},${cartData.diamondcolorid}`
-        : (cartData?.cmboDiaQCid || logindata?.cmboDiaQCid);
+        : "0,0";
 
     const itemCsQc =
-      (cartData?.colorstonequalityid != null && cartData?.colorstonecolorid != null && cartData?.colorstonequalityid !== 0)
+      cartData?.colorstonequalityid != null && cartData?.colorstonecolorid != null
         ? `${cartData.colorstonequalityid},${cartData.colorstonecolorid}`
-        : (cartData?.cmboCSQCid || logindata?.cmboCSQCid);
+        : "0,0";
 
-    const targetColorId = cartData?.metalcolorid || cartData?.MetalColorid;
+    const targetColorId = cartData?.metalcolorid ?? cartData?.MetalColorid;
+    const isDesignBase =
+      Number(cartData?.IsDesignBaseWeb) === 1 ||
+      (cartData?.DesignId != null && cartData?.DesignId !== "");
     const ext = cartData?.ImageExtension || "webp";
     const imgUrl = getCardImageUrl(cartData, storeInit);
 
     const commonObj = {
+      fromCart: 1,
+      IsCustomize: cartData?.IsCustomize ?? null,
+      IsDesignBaseWeb: isDesignBase ? 1 : 0,
       a: cartData?.autocode,
       b: cartData?.designno,
-      m: cartData?.metaltypeid || cartData?.MetalPurityid || cartData?.Metalid || logindata?.MetalId,
+      m: cartData?.metaltypeid ?? cartData?.MetalPurityid ?? cartData?.Metalid ?? logindata?.MetalId,
       d: itemDiaQc,
       c: itemCsQc,
       f: {},
@@ -969,11 +975,13 @@ const useCart = () => {
         ["", ""],
         ["", "", ""],
       ],
-      metalColorId: targetColorId || null,
+      metalColorId: targetColorId ?? null,
       l: ext,
       count: (cartData?.ImageCount && Number(cartData.ImageCount) > 0) ? Number(cartData.ImageCount) : 1,
       ArticleNo: cartData?.ArticleNo || cartData?.designno,
-      ArticleId: cartData?.ArticleId || cartData?.id,
+      // `id` is the cart-line id in GetCartList; only pass ArticleId when the
+      // cart response contains the actual article identity.
+      ArticleId: cartData?.ArticleId ?? null,
       Size: cartData?.Size,
       Purity: cartData?.Purity,
       metalpurityname: cartData?.metalpurityname,

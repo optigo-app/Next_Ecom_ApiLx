@@ -16,6 +16,7 @@ import { RECENTLY_VIEWED_TABLE_SQL } from "./recentlyViewed.js";
 import { ALBUMS_TABLE_SQL, ensureAlbumsTable } from "./albums.js";
 import { WEBSITE_CONTENT_TABLE_SQL, ensureWebsiteContentTable } from "./websiteContent.js";
 import { WEBSITE_COLOR_TABLE_SQL, ensureWebsiteColorTable } from "./websiteColor.js";
+import { METAL_DENSITY_TABLE_SQL, ensureMetalDensityTable } from "./metalDensity.js";
 import { ensureDesignTableColumns } from "./dynamicDesigns.js";
 import {
     ARTICLE_INFO_PREFIX,
@@ -55,7 +56,9 @@ export {
     WEBSITE_CONTENT_TABLE_SQL,
     ensureWebsiteContentTable,
     WEBSITE_COLOR_TABLE_SQL,
+    METAL_DENSITY_TABLE_SQL,
     ensureWebsiteColorTable,
+    ensureMetalDensityTable,
     ARTICLE_INFO_PREFIX,
     ARTICLE_MATERIAL_PREFIX,
     ARTICLE_TABLE_PREFIX,
@@ -86,6 +89,7 @@ export const SCHEMA_SQL = [
     ALBUMS_TABLE_SQL,
     WEBSITE_CONTENT_TABLE_SQL,
     WEBSITE_COLOR_TABLE_SQL,
+    METAL_DENSITY_TABLE_SQL,
     STOCK_LIST_BASE_TABLE_SQL,
 ].join("\n\n");
 
@@ -107,6 +111,7 @@ export function truncateAllData(db) {
             DELETE FROM albums;
             DELETE FROM website_content;
             DELETE FROM website_color;
+            DELETE FROM metal_density;
             DELETE FROM sqlite_sequence WHERE name IN ('menu_filters', 'sync_logs', 'storeinit', 'account', 'companyinfo', 'menus', 'packagemaster', 'albums', 'website_content', 'website_color');
         `);
         db.pragma("wal_checkpoint(TRUNCATE)");
@@ -178,6 +183,7 @@ export function initSchema(db, domain, themeInfo = {}) {
     ensureAlbumsTable(db);
     ensureWebsiteContentTable(db);
     ensureWebsiteColorTable(db);
+    ensureMetalDensityTable(db);
     ensureDesignTableColumns(db, "designs");
     ensureDynamicStockListTable(db, "stock_list");
 
