@@ -4,6 +4,7 @@ import path from "path";
 import { initSchema, ensureDesignTableColumns, ensureDynamicStockListTable } from "./schema.js";
 import { ensureStoreInitColumns } from "./schema/storeInit.js";
 import { ensureMetalDensityTable } from "./schema/metalDensity.js";
+import { ensureAlbumsTable } from "./schema/albums.js";
 
 // In-memory connection pool on globalThis to avoid reopening file descriptors across Next.js HMR reloads
 const globalForDb = globalThis;
@@ -171,6 +172,7 @@ export function getTenantDb(domain = "default", options = {}) {
             try {
                 ensureStoreInitColumns(db);
                 ensureMetalDensityTable(db);
+                ensureAlbumsTable(db);
                 ensureDesignTableColumns(db, "designs");
                 ensureDynamicStockListTable(db, "stock_list");
             } catch (_) {}

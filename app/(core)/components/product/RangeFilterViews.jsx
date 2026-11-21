@@ -471,11 +471,26 @@ export const RangeFilterView2 = ({
   setShow2,
   setAppliedRange3,
   appliedRange3,
+  sliderValue: sliderValueOverride,
+  setSliderValue: setSliderValueOverride,
+  handleRangeFilterApi: handleRangeFilterApiOverride,
+  show: showOverride,
+  setShow: setShowOverride,
+  setAppliedRange: setAppliedRangeOverride,
+  appliedRange: appliedRangeOverride,
+  resetFilterName = "Gross",
 }) => {
+  const activeSliderValue = sliderValueOverride ?? sliderValue2;
+  const activeSetSliderValue = setSliderValueOverride ?? setSliderValue2;
+  const activeHandleRangeFilterApi = handleRangeFilterApiOverride ?? handleRangeFilterApi2;
+  const activeShow = showOverride ?? show2;
+  const activeSetShow = setShowOverride ?? setShow2;
+  const activeSetAppliedRange = setAppliedRangeOverride ?? setAppliedRange3;
+  const activeAppliedRange = appliedRangeOverride ?? appliedRange3;
   const parsedOptions = JSON.parse(ele?.options || "[]")?.[0] || {};
   const min = parsedOptions.Min ?? "";
   const max = parsedOptions.Max ?? "";
-  const [tempSliderValue, setTempSliderValue] = useState(sliderValue2);
+  const [tempSliderValue, setTempSliderValue] = useState(activeSliderValue);
   const [isShowBtn, setIsShowBtn] = useState(false);
   const inputRefs = useRef([]);
 
@@ -496,22 +511,22 @@ export const RangeFilterView2 = ({
   };
 
   useEffect(() => {
-    if (Array.isArray(sliderValue2) && sliderValue2.length === 2) {
-      setTempSliderValue(sliderValue2);
+    if (Array.isArray(activeSliderValue) && activeSliderValue.length === 2) {
+      setTempSliderValue(activeSliderValue);
     }
-  }, [sliderValue2]);
+  }, [activeSliderValue]);
 
   const handleInputChange = (index) => (event) => {
     const newValue = event.target.value === "" ? "" : Number(event.target.value);
     const updated = [...tempSliderValue];
     updated[index] = newValue;
     setTempSliderValue(updated);
-    setIsShowBtn(updated[0] !== sliderValue2[0] || updated[1] !== sliderValue2[1]);
+    setIsShowBtn(updated[0] !== activeSliderValue[0] || updated[1] !== activeSliderValue[1]);
   };
 
   const handleSliderChange = (_, newValue) => {
     setTempSliderValue(newValue);
-    setIsShowBtn(newValue[0] !== sliderValue2[0] || newValue[1] !== sliderValue2[1]);
+    setIsShowBtn(newValue[0] !== activeSliderValue[0] || newValue[1] !== activeSliderValue[1]);
   };
 
   const handleSave = () => {
@@ -567,23 +582,23 @@ export const RangeFilterView2 = ({
       return;
     }
 
-    setSliderValue2(tempSliderValue);
+    activeSetSliderValue(tempSliderValue);
     setTempSliderValue(tempSliderValue);
-    handleRangeFilterApi2(tempSliderValue);
-    setAppliedRange3([min, max]);
+    activeHandleRangeFilterApi(tempSliderValue);
+    activeSetAppliedRange([min, max]);
     setIsShowBtn(false);
-    setShow2(true);
+    activeSetShow(true);
   };
 
   return (
     <div style={{ position: "relative" }}>
-      {appliedRange3 && (
+      {activeAppliedRange && (
         <div style={{ display: "flex", justifyContent: "space-between", marginTop: "4px", position: "absolute", top: "-12px", width: "100%" }}>
           <Typography variant="caption" color="text.secondary" fontSize="11px">
-            {appliedRange3[0] !== "" ? `Min: ${appliedRange3[0]}` : ""}
+            {activeAppliedRange[0] !== "" ? `Min: ${activeAppliedRange[0]}` : ""}
           </Typography>
           <Typography variant="caption" color="text.secondary" fontSize="11px">
-            {appliedRange3[1] !== "" ? `Max: ${appliedRange3[1]}` : ""}
+            {activeAppliedRange[1] !== "" ? `Max: ${activeAppliedRange[1]}` : ""}
           </Typography>
         </div>
       )}
@@ -633,22 +648,22 @@ export const RangeFilterView2 = ({
       </div>
 
       <Stack direction="row" justifyContent="flex-end" gap={1} mt={1}>
-        {show2 && (
+        {activeShow && (
           <Button
             variant="outlined"
             sx={{ paddingBottom: "0" }}
             onClick={() =>
               resetRangeFilter({
-                filterName: "Gross",
-                setSliderValue: setSliderValue2,
+                filterName: resetFilterName,
+                setSliderValue: activeSetSliderValue,
                 setTempSliderValue,
-                handleRangeFilterApi: handleRangeFilterApi2,
+                handleRangeFilterApi: activeHandleRangeFilterApi,
                 prodListType,
                 cookie,
                 setIsShowBtn,
-                show: show2,
-                setShow: setShow2,
-                setAppliedRange: setAppliedRange3,
+                show: activeShow,
+                setShow: activeSetShow,
+                setAppliedRange: activeSetAppliedRange,
               })
             }
             color="error"
@@ -665,6 +680,29 @@ export const RangeFilterView2 = ({
     </div>
   );
 };
+
+export const RangeFilterView3 = ({
+  sliderValue3,
+  setSliderValue3,
+  handleRangeFilterApi3,
+  show3,
+  setShow3,
+  appliedRange4,
+  setAppliedRange4,
+  ...props
+}) => (
+  <RangeFilterView2
+    {...props}
+    sliderValue={sliderValue3}
+    setSliderValue={setSliderValue3}
+    handleRangeFilterApi={handleRangeFilterApi3}
+    show={show3}
+    setShow={setShow3}
+    appliedRange={appliedRange4}
+    setAppliedRange={setAppliedRange4}
+    resetFilterName="Wastage"
+  />
+);
 
 export const PriceRangeInputs = ({
   priceValue,

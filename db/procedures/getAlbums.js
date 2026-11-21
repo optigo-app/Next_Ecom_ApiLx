@@ -35,6 +35,9 @@ export function getAlbums(db, options = {}) {
             albumcode,
             CustomerId,
             RandomNo,
+            AlbumImageName,
+            AlbumImageFol,
+            AlbumSecurityId,
             EntryDate
         FROM albums
     `;

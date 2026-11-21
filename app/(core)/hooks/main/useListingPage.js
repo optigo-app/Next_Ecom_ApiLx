@@ -175,6 +175,8 @@ export function useListingPage({
 
       const grossSec = data.find((ele) => ele?.Name === "Gross" || ele?.id === "Gross_Weight_Range");
       const grossOpts = grossSec?.options ? JSON.parse(grossSec.options)[0] : null;
+      const wastageSec = data.find((ele) => ele?.Name === "Wastage" || ele?.id === "Metal_Wastage_Range");
+      const wastageOpts = wastageSec?.options ? JSON.parse(wastageSec.options)[0] : null;
 
       if (diaOpts?.Min != null || diaOpts?.Max != null) {
         setSliderValue([diaOpts.Min ?? 0, diaOpts.Max ?? 0]);
@@ -187,6 +189,10 @@ export function useListingPage({
       if (grossOpts?.Min != null || grossOpts?.Max != null) {
         setSliderValue2([grossOpts.Min ?? 0, grossOpts.Max ?? 0]);
         setInputGross([grossOpts.Min ?? 0, grossOpts.Max ?? 0]);
+      }
+      if (wastageOpts?.Min != null || wastageOpts?.Max != null) {
+        setSliderValue3([wastageOpts.Min ?? 0, wastageOpts.Max ?? 0]);
+        setInputWastage([wastageOpts.Min ?? 0, wastageOpts.Max ?? 0]);
       }
     } catch (e) {
       console.warn("Error updating sliders from filterData:", e);
@@ -315,15 +321,19 @@ export function useListingPage({
   const [sliderValue, setSliderValue] = useState([]);
   const [sliderValue1, setSliderValue1] = useState([]);
   const [sliderValue2, setSliderValue2] = useState([]);
+  const [sliderValue3, setSliderValue3] = useState([]);
   const [inputDia, setInputDia] = useState([]);
   const [inputNet, setInputNet] = useState([]);
   const [inputGross, setInputGross] = useState([]);
+  const [inputWastage, setInputWastage] = useState([]);
   const [appliedRange1, setAppliedRange1] = useState(["", ""]);
   const [appliedRange2, setAppliedRange2] = useState(["", ""]);
   const [appliedRange3, setAppliedRange3] = useState(["", ""]);
+  const [appliedRange4, setAppliedRange4] = useState(["", ""]);
   const [show, setShow] = useState(false);
   const [show1, setShow1] = useState(false);
   const [show2, setShow2] = useState(false);
+  const [show3, setShow3] = useState(false);
   const [isReset, setIsReset] = useState(false);
   const [isClearAllClicked, setIsClearAllClicked] = useState(false);
 
@@ -716,6 +726,10 @@ export function useListingPage({
       filterData?.find((ele) => ele?.Name === "Gross")?.options?.length > 0
         ? JSON.parse(filterData.find((ele) => ele?.Name === "Gross")?.options)[0]
         : [];
+    const wastageFilter =
+      filterData?.find((ele) => ele?.Name === "Wastage")?.options?.length > 0
+        ? JSON.parse(filterData.find((ele) => ele?.Name === "Wastage")?.options)[0]
+        : [];
 
     const isFilterChecked = Object.values(filterChecked).some((ele) => ele.checked);
     const isSliderChanged =
@@ -730,7 +744,10 @@ export function useListingPage({
       JSON.stringify(sliderValue2) !==
         JSON.stringify(
           diafilter2?.Min != null || diafilter2?.Max != null ? [diafilter2?.Min, diafilter2?.Max] : []
-        );
+        ) ||
+      JSON.stringify(sliderValue3) !== JSON.stringify(
+        wastageFilter?.Min != null || wastageFilter?.Max != null ? [wastageFilter?.Min, wastageFilter?.Max] : []
+      );
 
     const isInputFields = JSON.stringify(priceRangeValue) !== JSON.stringify(["", ""]);
 
@@ -738,23 +755,27 @@ export function useListingPage({
       setSliderValue(diafilter?.Min != null || diafilter?.Max != null ? [diafilter.Min, diafilter.Max] : []);
       setSliderValue1(diafilter1?.Min != null || diafilter1?.Max != null ? [diafilter1.Min, diafilter1.Max] : []);
       setSliderValue2(diafilter2?.Min != null || diafilter2?.Max != null ? [diafilter2.Min, diafilter2.Max] : []);
+      setSliderValue3(wastageFilter?.Min != null || wastageFilter?.Max != null ? [wastageFilter.Min, wastageFilter.Max] : []);
       setPriceRangeValue(["", ""]);
       setInputPrice(["", ""]);
       setInputDia(diafilter?.Min != null || diafilter?.Max != null ? [diafilter.Min, diafilter.Max] : []);
       setInputNet(diafilter1?.Min != null || diafilter1?.Max != null ? [diafilter1.Min, diafilter1.Max] : []);
       setInputGross(diafilter2?.Min != null || diafilter2?.Max != null ? [diafilter2.Min, diafilter2.Max] : []);
+      setInputWastage(wastageFilter?.Min != null || wastageFilter?.Max != null ? [wastageFilter.Min, wastageFilter.Max] : []);
       setAppliedRange1(["", ""]);
       setAppliedRange2(["", ""]);
       setAppliedRange3(["", ""]);
+      setAppliedRange4(["", ""]);
       setShow(false);
       setShow1(false);
       setShow2(false);
+      setShow3(false);
       setIsReset(false);
       setFilterChecked({});
       setIsClearAllClicked(true);
       resetUrlPage();
     }
-  }, [filterData, filterChecked, sliderValue, sliderValue1, sliderValue2, priceRangeValue, resetUrlPage]);
+  }, [filterData, filterChecked, sliderValue, sliderValue1, sliderValue2, sliderValue3, priceRangeValue, resetUrlPage]);
 
   const anyFilterApplied = useMemo(() => {
     const isFilterChecked = Object.values(filterChecked).some((ele) => ele.checked);
@@ -762,20 +783,23 @@ export function useListingPage({
     const diafilter = filterData?.find((ele) => ele?.Name === "Diamond")?.options;
     const netfilter = filterData?.find((ele) => ele?.Name === "NetWt")?.options;
     const grossfilter = filterData?.find((ele) => ele?.Name === "Gross")?.options;
+    const wastagefilter = filterData?.find((ele) => ele?.Name === "Wastage")?.options;
 
     const diaOptions = diafilter ? JSON.parse(diafilter)[0] : null;
     const netOptions = netfilter ? JSON.parse(netfilter)[0] : null;
     const grossOptions = grossfilter ? JSON.parse(grossfilter)[0] : null;
+    const wastageOptions = wastagefilter ? JSON.parse(wastagefilter)[0] : null;
 
     const isSliderChanged =
       (diaOptions && JSON.stringify(sliderValue) !== JSON.stringify(diaOptions.Min != null && diaOptions.Max != null ? [diaOptions.Min, diaOptions.Max] : [])) ||
       (netOptions && JSON.stringify(sliderValue1) !== JSON.stringify(netOptions.Min != null && netOptions.Max != null ? [netOptions.Min, netOptions.Max] : [])) ||
-      (grossOptions && JSON.stringify(sliderValue2) !== JSON.stringify(grossOptions.Min != null && grossOptions.Max != null ? [grossOptions.Min, grossOptions.Max] : []));
+      (grossOptions && JSON.stringify(sliderValue2) !== JSON.stringify(grossOptions.Min != null && grossOptions.Max != null ? [grossOptions.Min, grossOptions.Max] : [])) ||
+      (wastageOptions && JSON.stringify(sliderValue3) !== JSON.stringify(wastageOptions.Min != null && wastageOptions.Max != null ? [wastageOptions.Min, wastageOptions.Max] : []));
 
     const isInputPriceApplied = JSON.stringify(priceRangeValue) !== JSON.stringify(["", ""]);
 
     return isFilterChecked || isSliderChanged || isInputPriceApplied;
-  }, [filterChecked, sliderValue, sliderValue1, sliderValue2, priceRangeValue, filterData]);
+  }, [filterChecked, sliderValue, sliderValue1, sliderValue2, sliderValue3, priceRangeValue, filterData]);
 
   const showClearAllButton = anyFilterApplied;
 
@@ -791,6 +815,7 @@ export function useListingPage({
       diaVal = sliderValue,
       grossVal = sliderValue2,
       netVal = sliderValue1,
+      wastageVal = sliderValue3,
       sortVal = sortBySelect,
       priceVal = priceRangeValue,
       append = false,
@@ -800,6 +825,7 @@ export function useListingPage({
       const DiaRange = parseRangeData(filterData, "Dia", diaVal, inputDia);
       const grossRange = parseRangeData(filterData, "Gross", grossVal, inputGross);
       const netRange = parseRangeData(filterData, "net", netVal, inputNet);
+      const wastageRange = parseRangeData(filterData, "Wastage", wastageVal, inputWastage);
 
       const menuIdent =
         (typeof window !== "undefined" && window.location?.pathname?.replace(/^\/p\//, "").replace(/\/+$/, "")) ||
@@ -839,6 +865,8 @@ export function useListingPage({
         grossMax: grossRange?.grossMax || undefined,
         netMin: netRange?.netMin || undefined,
         netMax: netRange?.netMax || undefined,
+        wastageMin: wastageRange?.wastageMin || undefined,
+        wastageMax: wastageRange?.wastageMax || undefined,
         diaMin: DiaRange?.DiaMin || undefined,
         diaMax: DiaRange?.DiaMax || undefined,
         sortBy: sortVal || undefined,
@@ -908,12 +936,14 @@ export function useListingPage({
       filterData,
       inputDia,
       inputGross,
+      inputWastage,
       inputNet,
       prodListType,
       searchParams,
       sliderValue,
       sliderValue1,
       sliderValue2,
+      sliderValue3,
       sortBySelect,
       priceRangeValue,
       storeinit,
@@ -1071,6 +1101,17 @@ export function useListingPage({
       fetchProductsFromSqlite,
       resetUrlPage,
     ]
+  );
+
+  const handleRangeFilterApi3 = useCallback(
+    async (Rangeval3) => {
+      const output = FilterValueWithCheckedOnly();
+      setCurrPage(1);
+      setInputPage(1);
+      resetUrlPage();
+      await fetchProductsFromSqlite({ targetPage: 1, outputFilters: output, wastageVal: Rangeval3 });
+    },
+    [FilterValueWithCheckedOnly, fetchProductsFromSqlite, resetUrlPage]
   );
 
   // ----------------------------------------------------
@@ -1470,12 +1511,20 @@ export function useListingPage({
     setAppliedRange2,
     appliedRange3,
     setAppliedRange3,
+    sliderValue3,
+    setSliderValue3,
+    inputWastage,
+    setInputWastage,
+    appliedRange4,
+    setAppliedRange4,
     show,
     setShow,
     show1,
     setShow1,
     show2,
     setShow2,
+    show3,
+    setShow3,
     isReset,
     setIsReset,
     isClearAllClicked,
@@ -1483,6 +1532,7 @@ export function useListingPage({
     handleRangeFilterApi,
     handleRangeFilterApi1,
     handleRangeFilterApi2,
+    handleRangeFilterApi3,
 
     // Price Range
     priceRangeValue,

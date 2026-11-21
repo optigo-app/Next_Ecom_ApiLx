@@ -519,6 +519,17 @@ ResolvedPackages(package_id) AS (
     params.push(Number(maxNet));
   }
 
+  const minWastage = filters.Min_MetalWastage ?? filters.wastageMin ?? filters.minWastage ?? null;
+  const maxWastage = filters.Max_MetalWastage ?? filters.wastageMax ?? filters.maxWastage ?? null;
+  if (minWastage != null && minWastage !== "" && Number(minWastage) > 0) {
+    conditions.push(`COALESCE(MetalWastage, 0) >= ?`);
+    params.push(Number(minWastage));
+  }
+  if (maxWastage != null && maxWastage !== "" && Number(maxWastage) > 0) {
+    conditions.push(`COALESCE(MetalWastage, 0) <= ?`);
+    params.push(Number(maxWastage));
+  }
+
   const minCS = filters.Min_StoneWeight ?? filters.Min_CSWeight ?? filters.stoneMin ?? filters.csMin ?? null;
   const maxCS = filters.Max_StoneWeight ?? filters.Max_CSWeight ?? filters.stoneMax ?? filters.csMax ?? null;
   if (minCS != null && minCS !== "" && Number(minCS) > 0) {

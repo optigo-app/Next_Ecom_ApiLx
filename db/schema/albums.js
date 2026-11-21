@@ -12,6 +12,9 @@ CREATE TABLE IF NOT EXISTS albums (
     albumcode TEXT DEFAULT '',
     CustomerId INTEGER DEFAULT 0,
     RandomNo TEXT DEFAULT '',
+    AlbumImageName TEXT DEFAULT '',
+    AlbumImageFol TEXT DEFAULT '',
+    AlbumSecurityId TEXT DEFAULT '',
     EntryDate TEXT DEFAULT '',
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -42,6 +45,18 @@ export function ensureAlbumsTable(db) {
             }
             if (!cols.includes("IsDeactive")) {
                 db.exec("ALTER TABLE albums ADD COLUMN IsDeactive INTEGER DEFAULT 0");
+                cols.push("IsDeactive");
+            }
+            const newColumns = [
+                ["AlbumImageName", "TEXT DEFAULT ''"],
+                ["AlbumImageFol", "TEXT DEFAULT ''"],
+                ["AlbumSecurityId", "TEXT DEFAULT ''"],
+            ];
+            for (const [name, definition] of newColumns) {
+                if (!cols.includes(name)) {
+                    db.exec(`ALTER TABLE albums ADD COLUMN "${name}" ${definition}`);
+                    cols.push(name);
+                }
             }
         }
         db.exec(ALBUMS_TABLE_SQL);
