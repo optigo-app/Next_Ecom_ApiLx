@@ -128,6 +128,13 @@ const FilterSidebar = ({
     sliderValue2,
     setSliderValue2,
     handleRangeFilterApi2,
+    sliderValue3,
+    setSliderValue3,
+    handleRangeFilterApi3,
+    show3,
+    setShow3,
+    appliedRange4,
+    setAppliedRange4,
     show2,
     setShow2,
     appliedRange3,
@@ -135,6 +142,7 @@ const FilterSidebar = ({
     PriceRangeInputs,
     RangeFilterView1,
     RangeFilterView2,
+    RangeFilterView3,
     RangeFilterView,
     CustomLabel,
     isFiltering,
@@ -497,6 +505,33 @@ const FilterSidebar = ({
                                         setShow={setShow}
                                         appliedRange1={appliedRange1}
                                         setAppliedRange1={setAppliedRange1}
+                                    />
+                                </AccordionDetails>
+                            </Accordion>
+                        );
+
+                    if (item?.Name?.includes("Wastage"))
+                        return (
+                            <Accordion key={index} disableGutters elevation={0}>
+                                <AccordionSummary
+                                    sx={{ px: 0, py: 1.5, "& .MuiAccordionSummary-content": { margin: 0 } }}
+                                    expandIcon={<AddRoundedIcon sx={{ fontSize: 20, color: "#222" }} />}>
+                                    <Typography sx={{ fontWeight: 600, fontSize: "15px", color: "#000", letterSpacing: "0.2px" }}>
+                                        {formatFilterTitle(item?.Fil_DisName)}
+                                    </Typography>
+                                </AccordionSummary>
+                                <AccordionDetails sx={{ px: 2, display: "flex", flexDirection: "column", gap: 1 }}>
+                                    <RangeFilterView3
+                                        ele={item}
+                                        sliderValue3={sliderValue3}
+                                        setSliderValue3={setSliderValue3}
+                                        handleRangeFilterApi3={handleRangeFilterApi3}
+                                        prodListType={prodListType}
+                                        cookie={cookie}
+                                        show3={show3}
+                                        setShow3={setShow3}
+                                        appliedRange4={appliedRange4}
+                                        setAppliedRange4={setAppliedRange4}
                                     />
                                 </AccordionDetails>
                             </Accordion>

@@ -18,6 +18,7 @@ const ProductListApi = async (
   Shape = "",
   dno = "",
   album = "",
+  wastage = {},
 ) => {
   let MenuParams = {};
   let serachVar = {};
@@ -160,6 +161,8 @@ const ProductListApi = async (
     Max_GrossWeight: gross?.grossMax ?? "",
     Min_NetWt: netWt?.netMin ?? "",
     Max_NetWt: netWt?.netMax ?? "",
+    Min_MetalWastage: wastage?.wastageMin ?? "",
+    Max_MetalWastage: wastage?.wastageMax ?? "",
     FilPrice: isNonEmptyObject(foreveryPrice)
       ? [foreveryPrice]
       : isNonEmptyObject(elveePrice)

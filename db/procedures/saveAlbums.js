@@ -59,6 +59,9 @@ export function saveAlbums(db, rawPayload = []) {
             albumcode,
             CustomerId,
             RandomNo,
+            AlbumImageName,
+            AlbumImageFol,
+            AlbumSecurityId,
             EntryDate,
             updated_at
         ) VALUES (
@@ -70,6 +73,9 @@ export function saveAlbums(db, rawPayload = []) {
             @albumcode,
             @CustomerId,
             @RandomNo,
+            @AlbumImageName,
+            @AlbumImageFol,
+            @AlbumSecurityId,
             @EntryDate,
             CURRENT_TIMESTAMP
         )
@@ -95,6 +101,9 @@ export function saveAlbums(db, rawPayload = []) {
                 albumcode: String(row.albumcode ?? row.AlbumCode ?? row.albumCode ?? "").trim(),
                 CustomerId: row.CustomerId != null && row.CustomerId !== "" ? Number(row.CustomerId) : 0,
                 RandomNo: row.RandomNo != null ? String(row.RandomNo).trim() : "",
+                AlbumImageName: String(row.AlbumImageName ?? "").trim(),
+                AlbumImageFol: String(row.AlbumImageFol ?? "").trim(),
+                AlbumSecurityId: String(row.AlbumSecurityId ?? "").trim(),
                 EntryDate: row.EntryDate ? String(row.EntryDate).trim() : "",
             });
             count++;

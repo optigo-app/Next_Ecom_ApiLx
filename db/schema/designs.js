@@ -25,6 +25,7 @@ CREATE TABLE IF NOT EXISTS designs (
     SoldCnt INTEGER DEFAULT 0,
     Nwt DECIMAL(18,3),
     Gwt DECIMAL(18,3),
+    MetalWastage DECIMAL(18,3),
     Dwt DECIMAL(18,3),
     Dpcs INTEGER DEFAULT 0,
     CSwt DECIMAL(18,3),

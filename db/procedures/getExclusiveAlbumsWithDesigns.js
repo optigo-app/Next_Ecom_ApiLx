@@ -64,6 +64,9 @@ export function getExclusiveAlbumsWithDesigns(db, options = {}) {
       albumcode,
       CustomerId,
       RandomNo,
+      AlbumImageName,
+      AlbumImageFol,
+      AlbumSecurityId,
       EntryDate
     FROM albums
     WHERE (IsDeactive IS NULL OR IsDeactive = 0)

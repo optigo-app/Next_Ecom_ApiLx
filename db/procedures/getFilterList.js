@@ -659,6 +659,14 @@ ResolvedPackages(package_id) AS (
       fetch: () => fetchRange("Nwt"),
     },
     {
+      id: "Metal_Wastage_Range",
+      Name: "Wastage",
+      Fil_DisName: "Wastage",
+      Fil_No: 25,
+      FilDisNo: 15,
+      fetch: () => fetchRange("MetalWastage"),
+    },
+    {
       id: "Diamond_Weight_Range",
       Name: "Diamond",
       Fil_DisName: "DiamondWt",
