@@ -127,22 +127,6 @@ export const THEMES = {
     },
   },
 
-  DIAMONDTINE: {
-    domain: "nxtdiamondtine.web",
-    page: "diamondtine.web",
-    brand: "Sonasons",
-    websiteName: "Diamondtine",
-    logos: {
-      web: "/WebSiteStaticImage/logoIcon/webLogo.png",
-      white_logo: "/WebSiteStaticImage/logoIcon/webLogo.png",
-      black_logo: "/WebSiteStaticImage/logoIcon/webLogo11.png",
-      blackLogo: "/WebSiteStaticImage/logoIcon/webLogo11.png",
-      mobile: "/WebSiteStaticImage/logoIcon/mobileLogo.png",
-      transparent_mobile: "/WebSiteStaticImage/logoIcon/image.png",
-      favicon: "/optigo_favicon.ico",
-    },
-  },
-
   JULIAN: {
     domain: "nxtjulian.web",
     page: "julian.web",

@@ -25,7 +25,6 @@ export const WEBSITE_DOMAINS = {
   FGSTOREMAPP: "nxtmobileapp.web",
   NXT10: "nxt10.optigoapps.com",
   ELVEEWEB: "nxtelvee.web",
-  DIAMONDINEWEB: "nxtdiamondtine.web",
   MALAKANJWEWLSWEB: "nxtmalakanJwewls.web",
   JULIANWEB: "nxtjulian.web",
   JULIAN4WEB: "nxtjulian4.web",

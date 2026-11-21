@@ -16,7 +16,6 @@ export const themeMap = {
   "procatalog2.web": { page: "procatalog.web" },
   "nxtelvee.web": { page: "elvee.web" },
   "nxthoq.web": { page: "hoq.web" },
-  "nxtdiamondtine.web": { page: "diamondtine.web" },
   "nxtjulian.web": { page: "julian.web" },
   "nxtjulian4.web": { page: "julian4.web" },
   "nxtmalakanJwewls.web": { page: "elvee.web" },
