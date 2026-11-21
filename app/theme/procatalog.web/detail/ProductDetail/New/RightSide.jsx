@@ -141,16 +141,20 @@ const RightSide = ({
   const isPriceLoadingState = (isPriceloading || pdLoadImage || loadingdata) && !activeArticle && !singleProd?.UnitCostWithmarkup && !singleProd?.UnitCostWithMarkUp;
   const isNetWeightLoadingState = isLoading && !displayArticle?.NetWeight && !singleProd?.NetWeight && !singleProd?.Nwt;
 
-  // Derive default diamond quality from rd2 for the activeArticle ArticleId
+  // Resolve diamond data against the displayed article (activeArticle is null in design-base mode).
   const defaultDiaStone =
     rd2?.find(
-      (r) => r.ArticleId === activeArticle?.ArticleId && r.StoneTypeid === 1,
+      (r) =>
+        Number(r.ArticleId) === Number(displayArticle?.ArticleId) &&
+        Number(r.StoneTypeid) === 1,
     ) || null;
-  const defaultDiaQcLabel =
-    activeArticle?.DiaQCLabel ||
-    (defaultDiaStone
-      ? `${defaultDiaStone.Quality?.toUpperCase()}-${defaultDiaStone.Color?.toUpperCase()}`
-      : null);
+  const defaultDiaQcLabel = defaultDiaStone
+    ? [defaultDiaStone.Quality, defaultDiaStone.Color]
+        .map((value) => String(value ?? "").trim().toUpperCase())
+        .filter(Boolean)
+        .join("-") || null
+    : null;
+  const defaultDiaOrigin = String(defaultDiaStone?.MaterialTypeName ?? "").trim();
 
   const decodeEntities = (html) => {
     var txt = document.createElement("textarea");
@@ -505,7 +509,7 @@ const RightSide = ({
               </Grid>
 
               {/* Diamond QC — article based from rd2 */}
-              {(isLoading || defaultDiaStone || selectDiaQc) && (
+              {(isLoading || defaultDiaQcLabel) && (
                 <Grid
                   item
                   size={{
@@ -517,17 +521,17 @@ const RightSide = ({
                   </Typography>
 
                   <Typography sx={{ fontSize: "15px", fontWeight: 600 }}>
-                    {isLoading && !activeArticle && !defaultDiaQcLabel && !selectDiaQc ? (
+                    {isLoading && !defaultDiaStone ? (
                       <Skeleton variant="text" width={80} />
                     ) : (
-                      defaultDiaQcLabel || (selectDiaQc && selectDiaQc !== "undefined,undefined" ? selectDiaQc.replace(",", "-") : "-")
+                      defaultDiaQcLabel
                     )}
                   </Typography>
                 </Grid>
               )}
 
               {/* Diamond Origin */}
-              {(isLoading || defaultDiaStone || selectDiaQc) && (
+              {(isLoading || defaultDiaOrigin) && (
                 <Grid
                   item
                   size={{
@@ -538,13 +542,10 @@ const RightSide = ({
                     Diamond Origin
                   </Typography>
                   <Typography sx={{ fontSize: "15px", fontWeight: 600 }}>
-                    {isLoading && !activeArticle && !defaultDiaStone ? (
+                    {isLoading && !defaultDiaStone ? (
                       <Skeleton variant="text" width={80} />
-                    ) : defaultDiaStone?.MaterialTypeName &&
-                      defaultDiaStone.MaterialTypeName.trim() !== "" ? (
-                      defaultDiaStone.MaterialTypeName
                     ) : (
-                      "Natural"
+                      defaultDiaOrigin
                     )}
                   </Typography>
                 </Grid>
