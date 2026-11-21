@@ -341,14 +341,16 @@ export default function CustomizerDrawer({
     const matching = selectedMetal
       ? rd1.filter(
           (r) =>
-            r.MetalTypeId === selectedMetal.MetalTypeId &&
-            r.MetalColorId === selectedMetal.MetalColorId,
+            String(r.MetalTypeId) === String(selectedMetal.MetalTypeId) &&
+            String(r.MetalColorId) === String(selectedMetal.MetalColorId),
         )
       : [];
 
     return matching.map((art) => {
       const diaStone = rd2.find(
-        (stone) => stone.ArticleId === art.ArticleId && stone.StoneTypeid === 1,
+        (stone) =>
+          String(stone.ArticleId) === String(art.ArticleId) &&
+          Number(stone.StoneTypeid) === 1,
       );
       const rawOrigin = diaStone?.MaterialTypeName;
       const normalizedOrigin =
@@ -385,14 +387,14 @@ export default function CustomizerDrawer({
       if (defArt) {
         const found = metalCombos.find(
           (m) =>
-            m.MetalTypeId === defArt.MetalTypeId &&
-            m.MetalColorId === defArt.MetalColorId,
+            String(m.MetalTypeId) === String(defArt.MetalTypeId) &&
+            String(m.MetalColorId) === String(defArt.MetalColorId),
         );
         if (found) targetMetal = found;
         if (defArt.Size) targetSize = defArt.Size;
 
         const defStone = rd2.find(
-          (s) => s.ArticleId == defaultArticleId && s.StoneTypeid === 1,
+          (s) => String(s.ArticleId) === String(defaultArticleId) && Number(s.StoneTypeid) === 1,
         );
         if (
           defStone?.MaterialTypeName &&
@@ -419,7 +421,7 @@ export default function CustomizerDrawer({
     const sizeMap = new Map();
     matchingOriginArticles.forEach((art) => {
       if (!art.Size) return;
-      const rd1Article = rd1.find((a) => a.ArticleId === art.ArticleId);
+      const rd1Article = rd1.find((a) => String(a.ArticleId) === String(art.ArticleId));
       const isInStock = rd1Article?.InStock === 1;
       if (!sizeMap.has(art.Size)) {
         sizeMap.set(art.Size, isInStock);
@@ -457,32 +459,53 @@ export default function CustomizerDrawer({
 
   // ── 6. Active article (metal + size + origin) ──────────────────────────────
   const activeArticle = useMemo(() => {
+    const [selectedQuality = "", selectedColor = ""] = String(
+      selectedDiaQc ?? "",
+    ).split("-");
+    const matchesSelectedQuality = (article) => {
+      if (!selectedQuality || !selectedColor) return true;
+      const stone = rd2.find(
+        (row) =>
+          String(row.ArticleId) === String(article.ArticleId) &&
+          Number(row.StoneTypeid) === 1,
+      );
+      return (
+        String(stone?.Quality ?? "").trim().toUpperCase() === selectedQuality.trim().toUpperCase() &&
+        String(stone?.Color ?? "").trim().toUpperCase() === selectedColor.trim().toUpperCase()
+      );
+    };
     let found = matchingArticlesWithOrigin.find(
-      (r) => r.Size === selectedSize && r.MaterialTypeName === selectedOrigin,
+      (r) =>
+        r.Size === selectedSize &&
+        r.MaterialTypeName === selectedOrigin &&
+        matchesSelectedQuality(r),
     );
     if (!found) {
       found = matchingArticlesWithOrigin.find(
-        (r) => r.MaterialTypeName === selectedOrigin,
+        (r) => r.MaterialTypeName === selectedOrigin && matchesSelectedQuality(r),
       );
     }
     if (!found) {
-      found = matchingArticlesWithOrigin.find((r) => r.Size === selectedSize);
+      found = matchingArticlesWithOrigin.find(
+        (r) => r.Size === selectedSize && matchesSelectedQuality(r),
+      );
     }
-    return found || matchingArticlesWithOrigin[0] || null;
-  }, [matchingArticlesWithOrigin, selectedSize, selectedOrigin]);
+    if (!found && !selectedQuality) found = matchingArticlesWithOrigin[0] || null;
+    return found || null;
+  }, [matchingArticlesWithOrigin, selectedSize, selectedOrigin, selectedDiaQc, rd2]);
 
   // ── 7. Stone Quality options for selected metal & origin ───────────────────
   const stoneQualityCombos = useMemo(() => {
     const matchingIds = new Set(
       matchingArticlesWithOrigin
         .filter((r) => r.MaterialTypeName === selectedOrigin)
-        .map((r) => r.ArticleId),
+        .map((r) => String(r.ArticleId)),
     );
     const seen = new Set();
     return rd2
       .filter((r) => {
-        if (!matchingIds.has(r.ArticleId)) return false;
-        if (r.StoneTypeid !== 1) return false;
+        if (!matchingIds.has(String(r.ArticleId))) return false;
+        if (Number(r.StoneTypeid) !== 1) return false;
         // normalize key to uppercase to dedupe casing variants
         const key = `${r.Quality?.toUpperCase()}-${r.Color?.toUpperCase()}`;
         if (seen.has(key)) return false;
@@ -494,15 +517,16 @@ export default function CustomizerDrawer({
         const articlesWithThisQuality = rd2
           .filter(
             (s) =>
-              s.StoneTypeid === 1 &&
+              Number(s.StoneTypeid) === 1 &&
               s.Quality?.toUpperCase() === r.Quality?.toUpperCase() &&
               s.Color?.toUpperCase() === r.Color?.toUpperCase() &&
-              matchingIds.has(s.ArticleId),
+              matchingIds.has(String(s.ArticleId)),
           )
           .map((s) => s.ArticleId);
         const hasStock = rd1.some(
           (a) =>
-            articlesWithThisQuality.includes(a.ArticleId) && a.InStock === 1,
+            articlesWithThisQuality.some((articleId) => String(articleId) === String(a.ArticleId)) &&
+            a.InStock === 1,
         );
         return {
           ...r,
@@ -520,7 +544,7 @@ export default function CustomizerDrawer({
     }
     if (defaultArticleId && rd2.length) {
       const defStone = rd2.find(
-        (r) => r.ArticleId == defaultArticleId && r.StoneTypeid === 1,
+        (r) => String(r.ArticleId) === String(defaultArticleId) && Number(r.StoneTypeid) === 1,
       );
       if (defStone) {
         const key = `${defStone.Quality?.toUpperCase()}-${defStone.Color?.toUpperCase()}`;
@@ -548,6 +572,7 @@ export default function CustomizerDrawer({
       selectedSize,
       selectedDiaQc,
       selectedMetal,
+      activeArticle,
     );
     onClose();
   };

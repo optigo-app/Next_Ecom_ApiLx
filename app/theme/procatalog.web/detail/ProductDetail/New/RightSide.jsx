@@ -101,7 +101,7 @@ const RightSide = ({
   };
 
   const defaultArticle =
-    rd1?.find((r) => r.ArticleId === defaultArticleId) || rd1?.[0] || null;
+    rd1?.find((r) => String(r.ArticleId) === String(defaultArticleId)) || rd1?.[0] || null;
 
   // IsDesignBaseWeb = 1 -> design-based customization, otherwise article-based (shared module).
   const {
@@ -126,15 +126,10 @@ const RightSide = ({
       String(option?.metaltype || "").trim().toLowerCase() ===
       String(metalType || "").trim().toLowerCase(),
   );
-  const purityMetalTypeOption = metalTypeCombo?.find(
-    (option) => Number(option?.Metalid) === Number(singleProd?.MetalPurityid),
-  );
   const isCartRestore = Number(initialDecodeUrl?.fromCart) === 1;
-  const metalPurityLabel = isCartRestore
-    ? selectedMetalTypeOption?.metaltype || metalType || displayArticle?.MetalType || "-"
-    : Number(singleProd?.IsMrpBase) === 1
-      ? purityMetalTypeOption?.metaltype || singleProd?.MetalTypePurity || metalType || "-"
-      : selectedMetalTypeOption?.metaltype || displayArticle?.MetalType || metalType || singleProd?.MetalTypePurity || "-";
+  const metalPurityLabel = isDesignBase
+    ? selectedMetalTypeOption?.metaltype || metalType || displayArticle?.MetalType || singleProd?.MetalTypePurity || "-"
+    : activeArticle?.MetalType || selectedMetalTypeOption?.metaltype || displayArticle?.MetalType || metalType || singleProd?.MetalTypePurity || "-";
   const onDesignChange = handleDesignCustomChange || handleCustomChange;
 
   const isLoading = isPriceloading || pdLoadImage || loadingdata;

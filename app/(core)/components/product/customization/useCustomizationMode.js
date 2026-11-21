@@ -17,7 +17,7 @@ export default function useCustomizationMode({
 }) {
   return useMemo(() => {
     const defaultArticle =
-      rd1?.find((r) => r.ArticleId === defaultArticleId) || rd1?.[0] || null;
+      rd1?.find((r) => String(r.ArticleId) === String(defaultArticleId)) || rd1?.[0] || null;
     const rawArticle = customizationDetail || defaultArticle;
     const isCartDesignBase =
       Number(initialDecodeUrl?.fromCart) === 1 &&

@@ -47,7 +47,7 @@ const TopSection = ({ initialBanner }) => {
   const handleImageError = useCallback(() => {
     try {
       if (sessionStorage.getItem(BANNER_CACHE_KEY) === imageSrc) sessionStorage.removeItem(BANNER_CACHE_KEY);
-    } catch (_) {}
+    } catch (_) { }
     if (imageSrc === DEFAULT_IMAGE) {
       setFailed(true);
       return;
@@ -66,7 +66,7 @@ const TopSection = ({ initialBanner }) => {
     if (imageSrc === DEFAULT_IMAGE) return;
     try {
       sessionStorage.setItem(BANNER_CACHE_KEY, imageSrc.split(/[?&]r=\d+/)[0]);
-    } catch (_) {}
+    } catch (_) { }
   }, [imageSrc]);
 
   // Covers images that already failed before React attached onError (SSR / slow hydration).
@@ -81,7 +81,6 @@ const TopSection = ({ initialBanner }) => {
       sx={{
         width: "100%",
         overflow: "hidden",
-        mb: { xs: 2, sm: 3, md: 4 },
       }}
     >
       {failed ? (
