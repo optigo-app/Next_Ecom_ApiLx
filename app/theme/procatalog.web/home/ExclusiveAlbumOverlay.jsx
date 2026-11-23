@@ -8,6 +8,8 @@ import { useAlbumAuth } from "@/app/(core)/hooks/main/useAlbumAuth";
 import { useStore } from "@/app/(core)/contexts/StoreProvider";
 import { logoutUser } from "@/app/(core)/utils/authLogout";
 import ReusableConfirmModal from "@/app/components/ui/Modal";
+import AlbumDeactivatedPage from "./fallbacks/AlbumDeactivatedPage";
+import AlbumExpiredPage from "./fallbacks/AlbumExpiredPage";
 import {
   Box,
   Typography,
@@ -321,6 +323,7 @@ export default function ExclusiveAlbumOverlay({
     cartDesigns,
     getProductImageUrl,
     formatPrice,
+    blockedStatus,
   } = useExclusiveAlbum({ initialDomain });
 
   const { islogin, loginUserDetail, setislogin, storeInit } = useStore();
@@ -368,6 +371,33 @@ export default function ExclusiveAlbumOverlay({
   );
 
   if (!isOpen) return null;
+
+  // Album is expired/deactivated: render ONLY the status page inside the same
+  // full-screen Dialog so no album content is reachable.
+  if (blockedStatus) {
+    const StatusPage =
+      blockedStatus === "expired" ? AlbumExpiredPage : AlbumDeactivatedPage;
+    return (
+      <Dialog
+        open={isOpen}
+        onClose={handleClose}
+        fullScreen
+        TransitionComponent={Fade}
+        transitionDuration={200}
+        PaperProps={{
+          sx: {
+            backgroundColor: "#F8F9FA",
+            color: "#27272A",
+            display: "flex",
+            flexDirection: "column",
+            overflow: "hidden",
+          },
+        }}
+      >
+        <StatusPage onReturnHome={handleClose} />
+      </Dialog>
+    );
+  }
 
   return (
     <>

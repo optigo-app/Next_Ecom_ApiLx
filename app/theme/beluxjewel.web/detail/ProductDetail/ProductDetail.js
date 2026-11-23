@@ -25,6 +25,8 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
     sizeData,
     singleProd,
     singleProd1,
+    calculatedNetWeight,
+    hasUserChangedCartMetal,
     diaList,
     csList,
     SizeCombo,
@@ -139,6 +141,8 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
                 }
                 singleProd={singleProd}
                 singleProd1={singleProd1}
+                calculatedNetWeight={calculatedNetWeight}
+                hasUserChangedCartMetal={hasUserChangedCartMetal}
                 metalType={metalType}
                 metalColor={metalColor}
                 storeInit={storeInit}
@@ -159,6 +163,7 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
                 selectCsQC={selectCsQC}
                 csList={csList}
                 csQcCombo={csQcCombo}
+                showColorStoneCustomization={false}
                 loginData={loginData}
                 loadingdata={loadingdata}
                 isPriceloading={isPriceloading}
@@ -172,6 +177,7 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
                 stockItemArr={stockItemArr}
                 rd1={rd1Data}
                 rd2={rd2Data}
+                initialDecodeUrl={pd.initialDecodeUrl}
                 defaultArticleId={defaultArticleId}
                 customizationDetail={customizationDetail}
                 rd1CartMap={rd1CartMap}

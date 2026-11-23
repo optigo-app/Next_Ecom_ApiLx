@@ -53,6 +53,7 @@ import {
   RangeFilterView,
   RangeFilterView1,
   RangeFilterView2,
+  RangeFilterView3,
   PriceRangeInputs,
 } from "@/app/(core)/components/product/RangeFilterViews";
 
@@ -167,6 +168,12 @@ const ProductList = ({ storeinit, searchParams, params, initialData, initialFilt
     setAppliedRange2,
     appliedRange3,
     setAppliedRange3,
+    sliderValue3,
+    setSliderValue3,
+    appliedRange4,
+    setAppliedRange4,
+    show3,
+    setShow3,
     show,
     setShow,
     show1,
@@ -178,6 +185,7 @@ const ProductList = ({ storeinit, searchParams, params, initialData, initialFilt
     handleRangeFilterApi,
     handleRangeFilterApi1,
     handleRangeFilterApi2,
+    handleRangeFilterApi3,
     priceRangeValue,
     setPriceRangeValue,
     lowestPrice,
@@ -297,6 +305,7 @@ const ProductList = ({ storeinit, searchParams, params, initialData, initialFilt
             PriceRangeInputs={PriceRangeInputs}
             RangeFilterView1={RangeFilterView1}
             RangeFilterView2={RangeFilterView2}
+            RangeFilterView3={RangeFilterView3}
             RangeFilterView={RangeFilterView}
             /** Drawer Controls */
             open={openFilter}
@@ -354,6 +363,14 @@ const ProductList = ({ storeinit, searchParams, params, initialData, initialFilt
             setShow2={setShow2}
             appliedRange3={appliedRange3}
             setAppliedRange3={setAppliedRange3}
+            /** Metal Wastage Range Filter */
+            sliderValue3={sliderValue3}
+            setSliderValue3={setSliderValue3}
+            handleRangeFilterApi3={handleRangeFilterApi3}
+            show3={show3}
+            setShow3={setShow3}
+            appliedRange4={appliedRange4}
+            setAppliedRange4={setAppliedRange4}
             isFiltering={isOnlyProdLoading || isProdLoading}
             isBelow768={isBelow768}
             // Sorting

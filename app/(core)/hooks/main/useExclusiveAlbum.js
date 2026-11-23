@@ -134,6 +134,35 @@ export function useExclusiveAlbum({
     initialParams.randomNo || ""
   );
 
+  // 2.2 Album availability status (active / deactivated / expired)
+  const [blockedStatus, setBlockedStatus] = useState(null); // "deactivated" | "expired" | null
+  const [blockedAlbum, setBlockedAlbum] = useState(null);
+  const [albumStatusMap, setAlbumStatusMap] = useState({}); // albumKey -> {status, expiresAt}
+  const [nowMs, setNowMs] = useState(() => Date.now());
+
+  const albumKey = useCallback(
+    (a) => String(a?.RandomNo || a?.albumcode || a?.id || ""),
+    []
+  );
+
+  // Effective status for an album: server-reported status wins, then the local
+  // clock is compared against the server-provided expiresAt instant.
+  const getAlbumStatus = useCallback(
+    (a) => {
+      if (!a) return "active";
+      const polled = albumStatusMap[albumKey(a)];
+      const status = polled?.status || a.status || "active";
+      if (status === "deactivated" || status === "expired") return status;
+      const expIso = polled?.expiresAt ?? a.expiresAt;
+      if (expIso) {
+        const t = Date.parse(expIso);
+        if (!Number.isNaN(t) && t <= nowMs) return "expired";
+      }
+      return "active";
+    },
+    [albumStatusMap, albumKey, nowMs]
+  );
+
   // 2.1 Interaction & Unique Tracker State
   const [likedOverrides, setLikedOverrides] = useState({});
   const [cartOverrides, setCartOverrides] = useState({});
@@ -178,13 +207,35 @@ export function useExclusiveAlbum({
       });
       const data = await res.json();
 
-      if (data?.Status === "200" && Array.isArray(data?.Data?.rd)) {
+      if (data?.Status === "200" && data?.Data?.blockedStatus) {
+        // Shared-link album exists but is deactivated/expired.
+        const row = Array.isArray(data.Data.rd) ? data.Data.rd[0] : null;
+        const albumCustomerId =
+          row?.CustomerId ?? row?.Customerid ?? row?.customerId ??
+          row?.customerid ?? data?.Data?.customerId ?? data?.Data?.CustomerId ?? custId;
+        setResolvedCustomerId(albumCustomerId ? String(albumCustomerId) : "");
+        setBlockedStatus(data.Data.blockedStatus);
+        setBlockedAlbum(row);
+        setAlbums([]);
+        setSelectedAlbum(null);
+        if (data.Data.storeConfig) setStoreConfig(data.Data.storeConfig);
+      } else if (data?.Status === "200" && Array.isArray(data?.Data?.rd)) {
         const fetchedAlbums = data.Data.rd;
         const firstAlbum = fetchedAlbums[0];
         const albumCustomerId =
           firstAlbum?.CustomerId ?? firstAlbum?.Customerid ?? firstAlbum?.customerId ??
           firstAlbum?.customerid ?? data?.Data?.customerId ?? data?.Data?.CustomerId ?? custId;
         setResolvedCustomerId(albumCustomerId ? String(albumCustomerId) : "");
+        setBlockedStatus(null);
+        setBlockedAlbum(null);
+        setAlbumStatusMap((prev) => {
+          const next = { ...prev };
+          for (const a of fetchedAlbums) {
+            const k = albumKey(a);
+            if (k) next[k] = { status: a.status, expiresAt: a.expiresAt };
+          }
+          return next;
+        });
 
         if (randomNo && autoSelectRandomNo) {
           const albumToSelect = fetchedAlbums.find(
@@ -220,7 +271,7 @@ export function useExclusiveAlbum({
     return () => {
       abortController.abort();
     };
-  }, [checkUrlParams, initialDomain, defaultCustomerId, autoSelectRandomNo]);
+  }, [checkUrlParams, initialDomain, defaultCustomerId, autoSelectRandomNo, albumKey]);
 
   useEffect(() => {
     const cleanup = fetchAlbums();
@@ -228,6 +279,107 @@ export function useExclusiveAlbum({
       if (typeof cleanup === "function") cleanup();
     };
   }, [fetchAlbums]);
+
+  // 4.3 Accurate countdown: tick every second while the overlay is open and
+  // compare Date.now() against the server-provided expiresAt instant. No local
+  // decrement counter, so expiry fires at the exact moment even if the tab was
+  // throttled or the clock changed.
+  useEffect(() => {
+    if (!isOpen) return;
+    const t = setInterval(() => setNowMs(Date.now()), 1000);
+    return () => clearInterval(t);
+  }, [isOpen]);
+
+  // 4.4 Live status polling: server stays authoritative. Every 15s a light
+  // statusOnly request refreshes IsDeactive/expiresAt for every album of this
+  // customer, so deactivation, resend (new expiry) and reactivation all land
+  // without a reload.
+  useEffect(() => {
+    if (!isOpen) return;
+    let cancelled = false;
+
+    const poll = async () => {
+      try {
+        const { custId } = checkUrlParams();
+        const customerId = resolvedCustomerId || custId;
+        if (!customerId) return;
+        const targetDomain = initialDomain || "beluxjewel.web";
+        const res = await fetch(
+          `/api/sqlite/exclusive-albums?domain=${encodeURIComponent(targetDomain)}&customerId=${encodeURIComponent(customerId)}&statusOnly=1`
+        );
+        const data = await res.json();
+        if (cancelled) return;
+        const rows = data?.Data?.rd;
+        if (!Array.isArray(rows)) return;
+
+        const map = {};
+        for (const r of rows) {
+          const k = albumKey(r);
+          if (k) map[k] = { status: r.status, expiresAt: r.expiresAt };
+        }
+        setAlbumStatusMap(map);
+
+        // Merge fresh status into loaded albums so countdowns stay accurate.
+        setAlbums((prev) =>
+          prev.map((a) => {
+            const s = map[albumKey(a)];
+            return s ? { ...a, status: s.status, expiresAt: s.expiresAt } : a;
+          })
+        );
+        setSelectedAlbum((prev) => {
+          if (!prev) return prev;
+          const s = map[albumKey(prev)];
+          return s ? { ...prev, status: s.status, expiresAt: s.expiresAt } : prev;
+        });
+
+        // Reactivation / resend: a blocked album is active again -> reload it.
+        const bk = albumKey(blockedAlbum);
+        if (blockedStatus && bk && map[bk]?.status === "active") {
+          setBlockedStatus(null);
+          setBlockedAlbum(null);
+          fetchAlbums();
+        }
+      } catch (_) {}
+    };
+
+    const t = setInterval(poll, 15000);
+    return () => {
+      cancelled = true;
+      clearInterval(t);
+    };
+  }, [
+    isOpen,
+    resolvedCustomerId,
+    blockedAlbum,
+    blockedStatus,
+    checkUrlParams,
+    initialDomain,
+    albumKey,
+    fetchAlbums,
+  ]);
+
+  // 4.5 Derived blocked status: fires the instant the countdown reaches zero
+  // (no need to wait for the next poll), or when the selected / shared-link
+  // album is reported blocked by a poll.
+  const activeBlockedStatus = useMemo(() => {
+    if (blockedStatus) return blockedStatus;
+    const target =
+      selectedAlbum ||
+      (initialRandomNo
+        ? albums.find((a) => String(a.RandomNo) === String(initialRandomNo)) ||
+          blockedAlbum
+        : null);
+    if (!target) return null;
+    const s = getAlbumStatus(target);
+    return s !== "active" ? s : null;
+  }, [
+    blockedStatus,
+    selectedAlbum,
+    albums,
+    initialRandomNo,
+    blockedAlbum,
+    getAlbumStatus,
+  ]);
 
   // 4.1 Persist album context so listing/detail pages can track against this album (isalbumlogin == 1)
   useEffect(() => {
@@ -333,7 +485,8 @@ export function useExclusiveAlbum({
   // 7. Memoized Filtered & Sorted Albums (Level 1)
   const displayedAlbums = useMemo(() => {
     if (!albums || albums.length === 0) return [];
-    let list = [...albums];
+    // Expired/deactivated albums never reach the grid.
+    let list = albums.filter((a) => getAlbumStatus(a) === "active");
 
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase().trim();
@@ -355,7 +508,7 @@ export function useExclusiveAlbum({
     }
 
     return list;
-  }, [albums, searchQuery, sortBy]);
+  }, [albums, searchQuery, sortBy, getAlbumStatus]);
 
   // 8. Memoized Filtered Designs for Selected Album (Level 2)
   const currentAlbumDesigns = useMemo(() => {
@@ -401,6 +554,12 @@ export function useExclusiveAlbum({
 
   // 11. Navigation Actions
   const handleAlbumSelect = useCallback((album) => {
+    const s = getAlbumStatus(album);
+    if (s !== "active") {
+      setBlockedStatus(s);
+      setBlockedAlbum(album);
+      return;
+    }
     setSelectedAlbum(album);
     setSearchQuery("");
     if (scrollContainerRef.current) {
@@ -410,7 +569,7 @@ export function useExclusiveAlbum({
         behavior: "smooth",
       });
     }
-  }, []);
+  }, [getAlbumStatus]);
 
   const handleBackToAlbums = useCallback(async () => {
     if (initialRandomNo) {
@@ -466,6 +625,8 @@ export function useExclusiveAlbum({
     clearAlbumContext();
     setIsOpen(false);
     setSelectedAlbum(null);
+    setBlockedStatus(null);
+    setBlockedAlbum(null);
     try {
       const nextParams = new URLSearchParams(searchParams.toString());
       nextParams.delete("exclusive-album");
@@ -762,6 +923,10 @@ export function useExclusiveAlbum({
     storeConfig,
     initialRandomNo,
     currencySymbol,
+
+    // Album availability status
+    blockedStatus: activeBlockedStatus,
+    blockedAlbum,
 
     // Like & Cart States
     likedDesigns,

@@ -30,7 +30,10 @@ import { getSession } from "@/app/(core)/utils/FetchSessionData";
 import CustomizerDrawer from "../Customiziation";
 import ProductDetailsSection from "./ProductDetailsSection";
 import { getDeliveryInfo } from "./deliveryUtils";
-import { isItemInMap } from "@/app/(core)/utils/API/GetCount/GetCountAPI";
+import {
+  isDesignBaseItemInMap,
+  isItemInMap,
+} from "@/app/(core)/utils/API/GetCount/GetCountAPI";
 import { useProductStock } from "@/app/(core)/hooks/useProductStock";
 import {
   getStockBarcodeForProduct,
@@ -48,6 +51,8 @@ const RightSide = ({
   description,
   singleProd,
   singleProd1,
+  calculatedNetWeight,
+  hasUserChangedCartMetal = false,
   stockItemArr,
   metalType,
   metalColor,
@@ -80,12 +85,14 @@ const RightSide = ({
   // Customizer drawer props
   rd1 = [],
   rd2 = [],
+  initialDecodeUrl,
   defaultArticleId,
   customizationDetail,
   onCustomizerConfirm,
   rd1CartMap = {},
   storeCartArr,
   storeWishArr,
+  showColorStoneCustomization = true,
 }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [activeTab, setActiveTab] = useState("details");
@@ -111,22 +118,38 @@ const RightSide = ({
     rd1,
     customizationDetail,
     defaultArticleId,
+    initialDecodeUrl,
     loadingdata,
     isPriceloading,
   });
+  // Design-based products still have a default/selected article row with the
+  // metadata used by the summary, even though customization mode has no active
+  // article for the article-based drawer.
+  const displayArticle = activeArticle || rawArticle || defaultArticle;
+  const selectedMetalTypeOption = metalTypeCombo?.find(
+    (option) =>
+      String(option?.metaltype || "").trim().toLowerCase() ===
+      String(metalType || "").trim().toLowerCase(),
+  );
+  const isCartRestore = Number(initialDecodeUrl?.fromCart) === 1;
+  const metalPurityLabel = isDesignBase
+    ? selectedMetalTypeOption?.metaltype || metalType || displayArticle?.MetalType || singleProd?.MetalTypePurity || "-"
+    : activeArticle?.MetalType || selectedMetalTypeOption?.metaltype || displayArticle?.MetalType || metalType || singleProd?.MetalTypePurity || "-";
   const onDesignChange = handleDesignCustomChange || handleCustomChange;
 
   const isLoading = isPriceloading || pdLoadImage || loadingdata;
   const isPriceLoadingState = (isPriceloading || pdLoadImage || loadingdata) && !activeArticle && !singleProd?.UnitCostWithmarkup && !singleProd?.UnitCostWithMarkUp;
-  const isNetWeightLoadingState = isLoading && !activeArticle?.NetWeight && !singleProd?.NetWeight && !singleProd?.Nwt;
+  const isNetWeightLoadingState = isLoading && !displayArticle?.NetWeight && !singleProd?.NetWeight && !singleProd?.Nwt;
 
-  // Derive default diamond quality from rd2 for the activeArticle ArticleId
+  // Derive default diamond quality from rd2 for the displayed article ArticleId
   const defaultDiaStone =
     rd2?.find(
-      (r) => r.ArticleId === activeArticle?.ArticleId && r.StoneTypeid === 1,
+      (r) =>
+        Number(r.ArticleId) === Number(displayArticle?.ArticleId) &&
+        Number(r.StoneTypeid) === 1,
     ) || null;
   const defaultDiaQcLabel =
-    activeArticle?.DiaQCLabel ||
+    displayArticle?.DiaQCLabel ||
     (defaultDiaStone
       ? `${defaultDiaStone.Quality?.toUpperCase()}-${defaultDiaStone.Color?.toUpperCase()}`
       : null);
@@ -138,21 +161,51 @@ const RightSide = ({
     return txt.value;
   };
 
-  // Per-article cart/wish status: check rd1CartMap first, then fall back to optimistic flags
-  const activeArticleId = activeArticle?.ArticleId;
+  // Design-based cart status must use the same article identity as the listing,
+  // even though that mode has no active article in the customization drawer.
+  const cartIdentityArticle = isDesignBase ? displayArticle : activeArticle;
+  const activeArticleId = cartIdentityArticle?.ArticleId;
   const articleCartEntry = rd1CartMap[activeArticleId];
 
-  // Variant-exact identity for the active article (autocode + ArticleNo)
-  const activeVariant = {
-    autocode: activeArticle?.autocode ?? singleProd?.autocode,
-    ArticleNo: activeArticle?.ArticleNo ?? singleProd?.ArticleNo,
-  };
+  const normalizedOption = (value) => String(value ?? "").trim().toLowerCase();
+  const [selectedDiamondQuality, selectedDiamondColor] = String(
+    selectDiaQc || "",
+  ).split(",");
+  const selectedDiamondOption = diaQcCombo?.find(
+    (option) =>
+      normalizedOption(option?.Quality) ===
+        normalizedOption(selectedDiamondQuality) &&
+      normalizedOption(option?.color) === normalizedOption(selectedDiamondColor),
+  );
+  const selectedMetalColorOption = metalColorCombo?.find(
+    (option) =>
+      normalizedOption(option?.colorcode) === normalizedOption(metalColor) ||
+      normalizedOption(option?.metalcolorname) === normalizedOption(metalColor) ||
+      Number(option?.id) === Number(displayArticle?.MetalColorId),
+  );
+
+  // Design-based cart identity follows every selected customization dimension;
+  // article-based items continue to use their exact ArticleNo variant.
+  const activeVariant = isDesignBase
+    ? {
+        IsDesignBaseWeb: 1,
+        autocode: cartIdentityArticle?.autocode,
+        metaltypeid: selectedMetalTypeOption?.Metalid ?? displayArticle?.MetalTypeId ?? displayArticle?.Metalid,
+        metalcolorid: selectedMetalColorOption?.id ?? displayArticle?.MetalColorId,
+        diamondqualityid: selectedDiamondOption?.QualityId ?? 0,
+        diamondcolorid: selectedDiamondOption?.ColorId ?? 0,
+        DesignSize: sizeData ?? displayArticle?.Size ?? "",
+      }
+    : {
+        autocode: cartIdentityArticle?.autocode ?? singleProd?.autocode,
+        ArticleNo: cartIdentityArticle?.ArticleNo ?? singleProd?.ArticleNo,
+      };
 
   // When the global GetCount maps are hydrated they are the source of truth
   // (same maps the listing page uses), so the detail page always agrees with
   // the listing for this exact ArticleNo variant.
   const isAddedToCart = storeCartArr?.__hydrated
-    ? isItemInMap(storeCartArr, activeVariant)
+    ? (isDesignBase ? isDesignBaseItemInMap : isItemInMap)(storeCartArr, activeVariant)
     : articleCartEntry != null
       ? articleCartEntry.IsInCart === 1
       : addToCardFlag !== null
@@ -160,7 +213,7 @@ const RightSide = ({
         : singleProd?.IsInCart === 1;
 
   const isInWishlist = storeWishArr?.__hydrated
-    ? isItemInMap(storeWishArr, activeVariant)
+    ? (isDesignBase ? isDesignBaseItemInMap : isItemInMap)(storeWishArr, activeVariant)
     : articleCartEntry != null
       ? articleCartEntry.IsInWish === 1
       : wishListFlag !== null
@@ -481,12 +534,10 @@ const RightSide = ({
                     textTransform: "uppercase",
                   }}
                 >
-                  {isLoading && !activeArticle && !singleProd?.MetalTypePurity ? (
+                  {isLoading && !activeArticle && metalPurityLabel === "-" ? (
                     <Skeleton variant="text" width={60} />
-                  ) : singleProd?.IsMrpBase === 1 ? (
-                    singleProd?.MetalTypePurity || metalType || "-"
                   ) : (
-                    activeArticle?.MetalType || singleProd?.MetalTypePurity || metalType || "-"
+                    metalPurityLabel
                   )}
                 </Typography>
               </Grid>
@@ -502,10 +553,12 @@ const RightSide = ({
                   Metal Color
                 </Typography>
                 <Typography sx={{ fontSize: "15px", fontWeight: 600 }}>
-                  {isLoading && !activeArticle ? (
+                  {isLoading && !displayArticle?.MetalColor && !metalColor ? (
                     <Skeleton variant="text" width={60} />
                   ) : (
-                    activeArticle?.MetalColor || metalColor || "-"
+                    (metalColor && metalColor !== "-" ? metalColor : null) ||
+                    displayArticle?.MetalColor ||
+                    "-"
                   )}
                 </Typography>
               </Grid>
@@ -571,8 +624,16 @@ const RightSide = ({
                   <Typography sx={{ fontSize: "15px", fontWeight: 600 }}>
                     {isNetWeightLoadingState ? (
                       <Skeleton variant="text" width={50} />
-                    ) : activeArticle?.NetWeight != null ? (
-                      Number(activeArticle.NetWeight).toFixed(3)
+                    ) : isCartRestore &&
+                      !hasUserChangedCartMetal &&
+                      initialDecodeUrl?.nwt != null &&
+                      initialDecodeUrl?.nwt !== "" &&
+                      Number.isFinite(Number(initialDecodeUrl.nwt)) ? (
+                      Number(initialDecodeUrl.nwt).toFixed(3)
+                    ) : calculatedNetWeight != null ? (
+                      Number(calculatedNetWeight).toFixed(3)
+                    ) : displayArticle?.NetWeight != null ? (
+                      Number(displayArticle.NetWeight).toFixed(3)
                     ) : singleProd1?.NetWeight != null ||
                       singleProd?.NetWeight != null ||
                       singleProd?.Nwt != null ? (
@@ -682,10 +743,15 @@ const RightSide = ({
             storeInit={storeInit}
             isDesignBase={isDesignBase}
             isModeKnown={isCustomizationModeKnown}
+            designBaseInDrawer
             designProps={{
               singleProd,
+              articleIdentity: displayArticle,
               metalType,
+              metalTypeName: initialDecodeUrl?.metalTypeName || "",
               metalColor,
+              metalColorName: initialDecodeUrl?.metalColorName || "",
+              isCartRestore,
               metalTypeCombo,
               metalColorCombo,
               diaQcCombo,
@@ -700,6 +766,7 @@ const RightSide = ({
               onChange: onDesignChange,
               handleMetalWiseColorImg,
               handleMetalWiseColorImgWithFlag,
+              showColorStoneCustomization,
             }}
             ArticleDrawer={CustomizerDrawer}
             articleDrawerProps={{

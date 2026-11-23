@@ -1,5 +1,41 @@
 import { resolveHomeTable } from "./getHomeProducts.js";
-import { ensureAlbumsTable, isAlbumUsable } from "../schema/albums.js";
+import { ensureAlbumsTable, isAlbumUsable, isAlbumExpired, parseAlbumExpiry } from "../schema/albums.js";
+
+/**
+ * Computes the effective status of an album row.
+ * @returns {"active"|"deactivated"|"expired"}
+ */
+function albumStatus(row) {
+  if (!row) return "deactivated";
+  if (Number(row.IsDeactive) === 1) return "deactivated";
+  if (isAlbumExpired(row.ExpiryDate)) return "expired";
+  return "active";
+}
+
+/**
+ * ISO timestamp of the album expiry moment, or null when no valid ExpiryDate.
+ */
+function albumExpiresAt(row) {
+  const d = parseAlbumExpiry(row?.ExpiryDate);
+  return d ? d.toISOString() : null;
+}
+
+/**
+ * Lightweight status-only listing: rows without the usable filter and without designs.
+ */
+function buildStatusRows(rows) {
+  return (rows || []).map((a) => ({
+    id: a.id,
+    albumcode: a.albumcode,
+    albumName: a.albumName,
+    CustomerId: a.CustomerId,
+    RandomNo: a.RandomNo,
+    IsDeactive: a.IsDeactive,
+    ExpiryDate: a.ExpiryDate,
+    expiresAt: albumExpiresAt(a),
+    status: albumStatus(a),
+  }));
+}
 
 /**
  * Retrieves customer-exclusive albums joined with their respective design products from SQLite.
@@ -53,9 +89,17 @@ export function getExclusiveAlbumsWithDesigns(db, options = {}) {
     }
   } catch (_) {}
 
-  // 2. Fetch albums for this customer
+  // 2. Fetch albums for this customer. Shared-link queries (RandomNo/albumcode/id)
+  //    read the row unfiltered so a blocked album can report its real status.
+  const isSpecificQuery = Boolean(
+    options.RandomNo ||
+      options.albumcode ||
+      (options.id !== undefined && options.id !== null && options.id !== "")
+  );
+  const unfiltered = options.statusOnly === true || isSpecificQuery;
+
   let sql = `
-    SELECT 
+    SELECT
       id,
       albumName,
       AutocodeList,
@@ -69,8 +113,9 @@ export function getExclusiveAlbumsWithDesigns(db, options = {}) {
       AlbumSecurityId,
       EntryDate
     FROM albums
-    WHERE (IsDeactive IS NULL OR IsDeactive = 0)
+    WHERE 1 = 1
   `;
+  if (!unfiltered) sql += " AND (IsDeactive IS NULL OR IsDeactive = 0)";
   const params = {};
 
   if (customerId) {
@@ -93,9 +138,56 @@ export function getExclusiveAlbumsWithDesigns(db, options = {}) {
 
   sql += " ORDER BY id ASC, EntryDate DESC";
 
-  const albums = db.prepare(sql).all(params).filter(isAlbumUsable);
+  const rows = db.prepare(sql).all(params);
 
-  if (!albums || albums.length === 0) {
+  // Lightweight status listing for client-side live monitoring.
+  if (options.statusOnly === true) {
+    const statusRows = buildStatusRows(rows);
+    return {
+      Status: "200",
+      Message: "Request processed successfully.",
+      Data: {
+        customerId: Number(customerId),
+        totalAlbums: statusRows.length,
+        statusOnly: true,
+        rd: statusRows,
+      },
+    };
+  }
+
+  const usableAlbums = rows.filter(isAlbumUsable);
+  const albums = unfiltered ? rows : usableAlbums;
+
+  // A shared link points at one album: if it exists but is blocked, report why
+  // instead of pretending it does not exist.
+  let blockedStatus = null;
+  if (isSpecificQuery && rows.length > 0) {
+    const requestedStatus = albumStatus(rows[0]);
+    if (requestedStatus !== "active") blockedStatus = requestedStatus;
+  }
+
+  for (const a of albums) {
+    a.status = albumStatus(a);
+    a.expiresAt = albumExpiresAt(a);
+  }
+
+  if (blockedStatus) {
+    return {
+      Status: "200",
+      Message: `Album is ${blockedStatus}.`,
+      Data: {
+        customerId: Number(customerId),
+        totalAlbums: albums.length,
+        storeConfig,
+        blockedStatus,
+        rd: albums,
+      },
+    };
+  }
+
+  const albumsToServe = usableAlbums;
+
+  if (!albumsToServe || albumsToServe.length === 0) {
     return {
       Status: "200",
       Message: "No exclusive albums found for this customer.",
@@ -110,7 +202,7 @@ export function getExclusiveAlbumsWithDesigns(db, options = {}) {
 
   // 3. Process autocodes
   const allCodesMap = new Map(); // normalized integer string -> Set of raw codes
-  for (const a of albums) {
+  for (const a of albumsToServe) {
     const rawList = a.AutocodeList ? a.AutocodeList.split(",").map((s) => s.trim()).filter(Boolean) : [];
     a.autocodeListParsed = rawList;
     a.totalAutocodes = rawList.length;
@@ -196,7 +288,7 @@ export function getExclusiveAlbumsWithDesigns(db, options = {}) {
         }
 
         // Attach designs to each album
-        for (const a of albums) {
+        for (const a of albumsToServe) {
           const matched = [];
           const seen = new Set();
           for (const code of a.autocodeListParsed) {
@@ -223,11 +315,11 @@ export function getExclusiveAlbumsWithDesigns(db, options = {}) {
     Message: "Request processed successfully.",
     Data: {
       customerId: Number(customerId),
-      totalAlbums: albums.length,
+      totalAlbums: albumsToServe.length,
       tableName,
       storeConfig,
       elapsedMs,
-      rd: albums,
+      rd: albumsToServe,
     },
   };
 }
