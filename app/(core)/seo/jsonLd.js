@@ -66,31 +66,38 @@ export function generateBreadcrumbJsonLd(breadcrumbs) {
  * @param {string} options.baseUrl
  * @returns {object|null}
  */
-export function generateProductJsonLd({ product, storeInit, baseUrl }) {
-  if (!product) return null;
+export function generateProductJsonLd({ product, storeInit, baseUrl, url }) {
+  if (!product?.designno) return null;
 
-  const imageUrl = product.ImageP_Path || product.MediumImagePath || "";
-  const currency = storeInit?.CurrencyCode || "USD";
-  const price = product.UnitCostWithMarkUp || product.UnitCost || 0;
+  const cdn = String(storeInit?.CDNDesignImageFol || "");
+  const isPublicCdn = cdn.startsWith("https://") || (cdn.startsWith("http://") && !/^http:\/\/(nzen|localhost|127\.)/i.test(cdn));
+  const image = isPublicCdn ? `${cdn}${product.designno}~1.${product.ImageExtension || "webp"}` : "";
+  const title = product.TitleLine && String(product.TitleLine).toLowerCase() !== "null" ? product.TitleLine : "";
+  const name = title || String(product.designno);
+  const currency = storeInit?.CurrencyCode;
+  const price = Number(product.UnitCostWithMarkUp) || 0;
 
-  return {
+  const schema = {
     "@context": "https://schema.org/",
     "@type": "Product",
-    name: product.TitleLine || product.DesignNo,
-    image: [imageUrl],
-    description: product.Description || product.TitleLine || "High-quality jewelry",
-    sku: product.DesignNo,
+    name,
+    description: product.description || product.Description || name,
+    sku: String(product.designno),
     brand: {
       "@type": "Brand",
-      name: storeInit?.BrowserTitle || "Jewelry Store",
-    },
-    offers: {
-      "@type": "Offer",
-      url: `${baseUrl}/d/${product.TitleLine?.replace(/\s+/g, "-")}/${product.autocode}`,
-      priceCurrency: currency,
-      price: price,
-      availability: "https://schema.org/InStock",
-      itemCondition: "https://schema.org/NewCondition",
+      name: storeInit?.BrowserTitle || storeInit?.companyname || "Jewelry Store",
     },
   };
+  if (image) schema.image = [image];
+  if (currency && price > 0) {
+    schema.offers = {
+      "@type": "Offer",
+      url: url || baseUrl,
+      priceCurrency: currency,
+      price,
+      availability: "https://schema.org/InStock",
+      itemCondition: "https://schema.org/NewCondition",
+    };
+  }
+  return schema;
 }

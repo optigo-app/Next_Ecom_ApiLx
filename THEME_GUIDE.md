@@ -145,3 +145,21 @@ export const ACTIVE_THEME_KEY = "MYBRAND";
   `getActiveTheme()` explicitly uses `NEXT_APP_WEB` from your active preset.
 - **Live Domains (`sonasons.procatalog.in`, `nxt10.optigoapps.com`)**:
   `getActiveTheme()` uses the incoming host name directly. Live domains **never** fall back to or interfere with your local development theme.
+
+
+
+
+Let's assess the XState v6 beta.
+
+1. Research what it does and the problem it solves.
+2. Find the gnarliest problem in our application that it might assist with
+3. Create a proof-of-concept implementation in a draft PR
+4. Fully verify the results
+5. Grade it on:
+5a. How much nuance there is in the API (more is worse, agents perform better with fewer choices)
+5b. How typesafe it is
+5c. How easy-to-test it is
+5d. How much cyclomatic complexity it introduces
+5e. The quality of docs provided
+5f. What changes to deployment will be needed
+6. Give me your overall recommendation

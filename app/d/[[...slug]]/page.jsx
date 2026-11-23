@@ -2,14 +2,15 @@ import { getActiveTheme } from "@/app/(core)/lib/getActiveTheme";
 import { themeMap } from "@/app/(core)/utils/ThemeMap";
 import { getStoreInit } from "@/app/(core)/utils/GlobalFunctions/GlobalFunctions";
 import { headers } from "next/headers";
-import pako from "pako";
 import { resolveProductDetail } from "@/app/(core)/utils/ThemeRouteResolver";
 import {
+  encodeProductDetailParam,
   formatProductDetailSlug,
   getProductByDetailSlug,
 } from "@/app/(core)/utils/seo/productSitemap";
 import {
   getDynamicMetadata,
+  generateProductJsonLd,
   generateWebSiteJsonLd,
   getCanonicalUrl,
   generateBreadcrumbJsonLd
@@ -95,24 +96,9 @@ export default async function Page({ params, searchParams }) {
       const slug = getProductSlug(awaitedParams);
       const product = await getProductByDetailSlug(slug).catch(() => null);
       if (product) {
-        const payload = {
-          a: product.autocode ?? "",
-          b: product.designno,
-          m: product.MetalTypeid ?? product.MetalPurityid ?? "",
-          i: product.MetalColorid ?? "",
-          ArticleNo: product.ArticleNo ?? "",
-          ArticleId: product.ArticleId ?? null,
-          title: product.TitleLine ?? product.designno,
-          nwt: product.Nwt ?? 0,
-          price: product.UnitCostWithMarkUp ?? 0,
-          mediaDet: product.ImageVideoDetail ?? "0",
-          l: product.ImageExtension || "webp",
-          count: product.ImageCount ?? 0,
-        };
-        const compressed = pako.deflate(new TextEncoder().encode(JSON.stringify(payload)));
         awaitedSearchParams = {
           ...incomingSearchParams,
-          p: Buffer.from(compressed).toString("base64"),
+          p: encodeProductDetailParam(product),
         };
       }
     }
@@ -141,8 +127,28 @@ export default async function Page({ params, searchParams }) {
     const breadcrumbJsonLd = generateBreadcrumbJsonLd(breadcrumbs);
     const webSiteJsonLd = generateWebSiteJsonLd(baseUrl);
 
+    let productJsonLd = null;
+    try {
+      const jsonLdProduct = await getProductByDetailSlug(getProductSlug(awaitedParams));
+      if (jsonLdProduct) {
+        const storeInit = await getStoreInit().catch(() => ({}));
+        productJsonLd = generateProductJsonLd({
+          product: jsonLdProduct,
+          storeInit,
+          baseUrl,
+          url: `${baseUrl}/d/${encodeURIComponent(formatProductDetailSlug(jsonLdProduct))}`,
+        });
+      }
+    } catch (_) { }
+
     return (
       <>
+        {productJsonLd && (
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{ __html: JSON.stringify(productJsonLd) }}
+          />
+        )}
         {breadcrumbJsonLd && (
           <script
             type="application/ld+json"
