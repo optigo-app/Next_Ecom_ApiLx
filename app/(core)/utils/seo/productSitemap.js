@@ -1,6 +1,7 @@
 import { getTenantDb } from "@/db/tenantManager";
 import { isPackageFilterDisabled } from "@/db/packageScope";
 import { getDomainInfo } from "@/app/(core)/utils/getDomainInfo";
+import pako from "pako";
 
 export const PRODUCT_SITEMAP_PAGE_SIZE = 45000;
 
@@ -10,6 +11,30 @@ export function formatProductDetailSlug(product) {
     ? ""
     : `${title.replace(/\s+/g, "_")}_`;
   return `${titlePrefix}${String(product?.designno ?? "")}`;
+}
+
+const DETAIL_PAYLOAD_COLUMNS = [
+  "autocode", "MetalTypeid", "MetalPurityid", "MetalColorid", "ArticleNo", "ArticleId",
+  "Nwt", "UnitCostWithMarkUp", "ImageVideoDetail", "ImageExtension", "ImageCount",
+];
+
+export function encodeProductDetailParam(product) {
+  const payload = {
+    a: product.autocode ?? "",
+    b: product.designno,
+    m: product.MetalTypeid ?? product.MetalPurityid ?? "",
+    i: product.MetalColorid ?? "",
+    ArticleNo: product.ArticleNo ?? "",
+    ArticleId: product.ArticleId ?? null,
+    title: product.TitleLine ?? product.designno,
+    nwt: product.Nwt ?? 0,
+    price: product.UnitCostWithMarkUp ?? 0,
+    mediaDet: product.ImageVideoDetail ?? "0",
+    l: product.ImageExtension || "webp",
+    count: product.ImageCount ?? 0,
+  };
+  const compressed = pako.deflate(new TextEncoder().encode(JSON.stringify(payload)));
+  return Buffer.from(compressed).toString("base64");
 }
 
 function quoteIdentifier(value) {
@@ -65,6 +90,9 @@ function getSourceRowsCte(db, tables) {
     const entryDate = columns.has("EntryDate") ? "EntryDate" : "NULL";
     const rowId = columns.has("id") ? "id" : "rowid";
     const packageIds = columns.has("PackageIdList") ? "PackageIdList" : "NULL";
+    const payloadColumns = DETAIL_PAYLOAD_COLUMNS
+      .map((column) => `${columns.has(column) ? quoteIdentifier(column) : "NULL"} AS ${column}`)
+      .join(", ");
     const visibility = packageFilterDisabled ? "" : `
       AND (
         ${packageIds} IS NULL OR TRIM(${packageIds}) = ''
@@ -75,7 +103,7 @@ function getSourceRowsCte(db, tables) {
             LIKE ('%,' || rp.package_id || ',%')
         )
       )`;
-    return `SELECT designno, ${title} AS TitleLine,
+    return `SELECT designno, ${title} AS TitleLine, ${payloadColumns},
         COALESCE(${updated}, ${entryDate}) AS lastModified,
         ${rowId} AS sourceId, ${sourceRank} AS sourceRank
       FROM ${table}
@@ -90,7 +118,7 @@ function getSourceRowsCte(db, tables) {
 
 function getRankedSourceCte(sourceCte) {
   return `${sourceCte}, RankedRows AS (
-    SELECT designno, TitleLine, lastModified,
+    SELECT designno, TitleLine, lastModified, ${DETAIL_PAYLOAD_COLUMNS.join(", ")},
       ROW_NUMBER() OVER (
         PARTITION BY designno COLLATE NOCASE
         ORDER BY sourceRank, sourceId
@@ -124,7 +152,7 @@ export async function getProductSitemapRows(pageIndex = 0) {
   const page = Math.max(0, Number(pageIndex) || 0);
   return db.prepare(`
     ${getRankedSourceCte(sourceCte)}
-    SELECT designno, TitleLine, lastModified
+    SELECT designno, TitleLine, lastModified, ${DETAIL_PAYLOAD_COLUMNS.join(", ")}
     FROM RankedRows WHERE rowNumber = 1
     ORDER BY designno COLLATE NOCASE
     LIMIT ? OFFSET ?

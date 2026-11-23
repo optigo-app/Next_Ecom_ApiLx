@@ -1,6 +1,7 @@
 import { getStoreInit } from "@/app/(core)/utils/GlobalFunctions/GlobalFunctions";
 import { getSiteDetails } from "@/app/(core)/seo";
 import {
+  encodeProductDetailParam,
   formatProductDetailSlug,
   getProductSitemapRows,
 } from "@/app/(core)/utils/seo/productSitemap";
@@ -34,7 +35,7 @@ export async function GET(_request, { params }) {
   const entries = products
     .filter((product) => product?.designno)
     .map((product) => {
-      const url = `${baseUrl}/d/${encodeURIComponent(formatProductDetailSlug(product))}`;
+      const url = `${baseUrl}/d/${encodeURIComponent(formatProductDetailSlug(product))}?p=${encodeURIComponent(encodeProductDetailParam(product))}`;
       const date = product.lastModified ? new Date(product.lastModified) : null;
       const lastModified = date && !Number.isNaN(date.getTime())
         ? `<lastmod>${date.toISOString()}</lastmod>`

@@ -55,6 +55,7 @@ export async function GET(req) {
       albumcode: searchParams.get("albumcode") || searchParams.get("albumCode"),
       RandomNo: searchParams.get("RandomNo") || searchParams.get("randomNo"),
       includeDesigns: searchParams.get("includeDesigns") !== "false",
+      statusOnly: searchParams.get("statusOnly") === "1" || searchParams.get("statusOnly") === "true",
     };
 
     logger.info("API_EXCLUSIVE_ALBUMS", `Reading exclusive albums for customer ${customerId} on domain '${targetDomain}'`);

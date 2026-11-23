@@ -14,6 +14,8 @@ import CloseIcon from "@mui/icons-material/Close";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import DiamondIcon from "@mui/icons-material/Diamond";
 import { formatter } from "@/app/(core)/utils/Glob_Functions/GlobalFunction";
+import { useProductStock } from "@/app/(core)/hooks/useProductStock";
+import { resolveProductStockStatus } from "@/app/(core)/utils/product/stockUtils";
 
 // ── Brand design tokens ─────────────────────────────────────────────────────
 const colors = {
@@ -142,7 +144,11 @@ const MetalCard = ({ combo, isSelected, onClick }) => {
             fontSize: "9.5px",
             fontWeight: 600,
             color:
-              combo.inStockLabel === "In Stock" ? "#2e7d32" : colors.textMuted,
+              combo.inStockLabel === "In Stock"
+                ? "#2e7d32"
+                : combo.inStockLabel === "In Memo"
+                  ? "#ed6c02"
+                  : colors.textMuted,
             lineHeight: 1.3,
             mt: 0.2,
           }}
@@ -191,7 +197,11 @@ const SizePill = ({ sizeObj, isSelected, onClick }) => (
         fontSize: "9.5px",
         fontWeight: 600,
         color:
-          sizeObj.inStockLabel === "In Stock" ? "#2e7d32" : colors.textMuted,
+          sizeObj.inStockLabel === "In Stock"
+            ? "#2e7d32"
+            : sizeObj.inStockLabel === "In Memo"
+              ? "#ed6c02"
+              : colors.textMuted,
         lineHeight: 1.3,
         mt: 0.3,
       }}
@@ -273,7 +283,11 @@ const QualityCard = ({ combo, isSelected, onClick }) => {
           fontSize: "9.5px",
           fontWeight: 600,
           color:
-            combo.inStockLabel === "In Stock" ? "#2e7d32" : colors.textMuted,
+            combo.inStockLabel === "In Stock"
+              ? "#2e7d32"
+              : combo.inStockLabel === "In Memo"
+                ? "#ed6c02"
+                : colors.textMuted,
           mt: 0.4,
         }}
       >
@@ -300,6 +314,34 @@ export default function CustomizerDrawer({
   const [selectedDiaQc, setSelectedDiaQc] = useState(null);
   const [selectedOrigin, setSelectedOrigin] = useState(null);
 
+  const { stockMap, isStockLoading } = useProductStock(rd1, {
+    storeinit: storeInit,
+    loginUserDetail: loginData,
+    autoFetch: open,
+  });
+
+  const articleStockById = useMemo(() => {
+    const statusById = new Map();
+
+    rd1.forEach((article) => {
+      const articleId = article?.ArticleId;
+      if (articleId == null) return;
+
+      const stockStatus = resolveProductStockStatus(article, stockMap);
+      const inMemo = stockStatus.isInMemo;
+      const inStock = stockStatus.isInStock;
+
+      statusById.set(articleId, {
+        StockBarcode: stockStatus.barcode || article?.StockBarcode || "",
+        InStock: stockStatus.InStock,
+        InMemo: stockStatus.InMemo,
+        inStockLabel: inStock ? "In Stock" : inMemo ? "In Memo" : isStockLoading ? "Checking Stock" : "Make to Order",
+      });
+    });
+
+    return statusById;
+  }, [rd1, stockMap, isStockLoading]);
+
   // ── 1. Unique metal combos (MetalTypeId + MetalColorId as key) sorted by Karat ──
   const metalCombos = useMemo(() => {
     const seen = new Set();
@@ -320,19 +362,29 @@ export default function CustomizerDrawer({
         return getKarat(a.MetalType) - getKarat(b.MetalType);
       })
       .map((combo) => {
-        // Check if any article with this metal has InStock === 1
-        const hasStock = rd1.some(
+        const matchingArticles = rd1.filter(
           (r) =>
             r.MetalTypeId === combo.MetalTypeId &&
-            r.MetalColorId === combo.MetalColorId &&
-            r.InStock === 1,
+            r.MetalColorId === combo.MetalColorId,
+        );
+        const hasStock = matchingArticles.some(
+          (article) => articleStockById.get(article.ArticleId)?.InStock === 1,
+        );
+        const hasMemo = matchingArticles.some(
+          (article) => articleStockById.get(article.ArticleId)?.InMemo === 1,
         );
         return {
           ...combo,
-          inStockLabel: hasStock ? "In Stock" : "Made to Order",
+          inStockLabel: hasStock
+            ? "In Stock"
+            : hasMemo
+              ? "In Memo"
+              : isStockLoading
+                ? "Checking Stock"
+                : "Make to Order",
         };
       });
-  }, [rd1]);
+  }, [rd1, articleStockById, isStockLoading]);
 
   // ── 1b. Enhance matchingArticles with their diamond's MaterialTypeName from rd2
   const matchingArticlesWithOrigin = useMemo(() => {
@@ -361,10 +413,11 @@ export default function CustomizerDrawer({
             : null;
       return {
         ...art,
+        ...articleStockById.get(art.ArticleId),
         MaterialTypeName: normalizedOrigin,
       };
     });
-  }, [rd1, selectedMetal, rd2]);
+  }, [rd1, selectedMetal, rd2, articleStockById]);
 
   // ── 1c. Unique Diamond Origin values for matching articles
   const availableOrigins = useMemo(() => {
@@ -422,18 +475,29 @@ export default function CustomizerDrawer({
     matchingOriginArticles.forEach((art) => {
       if (!art.Size) return;
       const rd1Article = rd1.find((a) => String(a.ArticleId) === String(art.ArticleId));
-      const isInStock = rd1Article?.InStock === 1;
+      const articleStock = articleStockById.get(art.ArticleId) || rd1Article || {};
+      const isInStock = articleStock.InStock === 1;
+      const isInMemo = articleStock.InMemo === 1;
       if (!sizeMap.has(art.Size)) {
-        sizeMap.set(art.Size, isInStock);
-      } else if (isInStock) {
-        // If any article with this size is in stock, mark as in stock
-        sizeMap.set(art.Size, true);
+        sizeMap.set(art.Size, { isInStock, isInMemo });
+      } else if (isInStock || isInMemo) {
+        const current = sizeMap.get(art.Size);
+        sizeMap.set(art.Size, {
+          isInStock: current.isInStock || isInStock,
+          isInMemo: current.isInMemo || isInMemo,
+        });
       }
     });
     return Array.from(sizeMap.entries())
-      .map(([size, inStock]) => ({
+      .map(([size, status]) => ({
         size,
-        inStockLabel: inStock ? "In Stock" : "Made to Order",
+        inStockLabel: status.isInStock
+          ? "In Stock"
+          : status.isInMemo
+            ? "In Memo"
+            : isStockLoading
+              ? "Checking Stock"
+              : "Make to Order",
       }))
       .sort((a, b) => {
         const numA = parseFloat(a.size);
@@ -441,7 +505,7 @@ export default function CustomizerDrawer({
         if (!isNaN(numA) && !isNaN(numB)) return numA - numB;
         return String(a.size).localeCompare(String(b.size));
       });
-  }, [matchingArticlesWithOrigin, selectedOrigin, rd1]);
+  }, [matchingArticlesWithOrigin, selectedOrigin, rd1, articleStockById, isStockLoading]);
 
   // ── 5. Reset / set size when metal or origin changes ───────────────────────
   useEffect(() => {
@@ -523,19 +587,29 @@ export default function CustomizerDrawer({
               matchingIds.has(String(s.ArticleId)),
           )
           .map((s) => s.ArticleId);
-        const hasStock = rd1.some(
-          (a) =>
-            articlesWithThisQuality.some((articleId) => String(articleId) === String(a.ArticleId)) &&
-            a.InStock === 1,
+        const articlesForQuality = rd1.filter((a) =>
+          articlesWithThisQuality.some((articleId) => String(articleId) === String(a.ArticleId)),
+        );
+        const hasStock = articlesForQuality.some(
+          (article) => articleStockById.get(article.ArticleId)?.InStock === 1,
+        );
+        const hasMemo = articlesForQuality.some(
+          (article) => articleStockById.get(article.ArticleId)?.InMemo === 1,
         );
         return {
           ...r,
           Quality: r.Quality?.toUpperCase(),
           Color: r.Color?.toUpperCase(),
-          inStockLabel: hasStock ? "In Stock" : "Made to Order",
+          inStockLabel: hasStock
+            ? "In Stock"
+            : hasMemo
+              ? "In Memo"
+              : isStockLoading
+                ? "Checking Stock"
+                : "Make to Order",
         };
       });
-  }, [rd2, rd1, matchingArticlesWithOrigin, selectedOrigin]);
+  }, [rd2, rd1, matchingArticlesWithOrigin, selectedOrigin, articleStockById, isStockLoading]);
 
   useEffect(() => {
     if (!stoneQualityCombos.length) {

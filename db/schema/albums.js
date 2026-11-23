@@ -73,13 +73,13 @@ export function parseAlbumExpiry(value) {
     if (value === null || value === undefined) return null;
     const str = String(value).trim();
     if (!str) return null;
-    let m = str.match(/^(d{1,2})[-/.](d{1,2})[-/.](d{4})(?:[ T](d{1,2}):(d{2})(?::(d{2}))?)?$/);
+    let m = str.match(/^(\d{1,2})[-/.](\d{1,2})[-/.](\d{4})(?:[ T](\d{1,2}):(\d{2})(?::(\d{2}))?)?$/);
     let d;
     if (m) {
         const hasTime = m[4] !== undefined;
         d = new Date(+m[3], +m[2] - 1, +m[1], hasTime ? +m[4] : 23, hasTime ? +m[5] : 59, hasTime ? +(m[6] || 0) : 59);
     } else {
-        m = str.match(/^d{4}-d{2}-d{2}$/);
+        m = str.match(/^\d{4}-\d{2}-\d{2}$/);
         d = m ? new Date(str + "T23:59:59") : new Date(str);
     }
     return isNaN(d.getTime()) ? null : d;

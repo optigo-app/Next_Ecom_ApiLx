@@ -27,8 +27,8 @@ export async function GET() {
   const pageCount = Math.max(1, Math.ceil(productCount / PRODUCT_SITEMAP_PAGE_SIZE));
   const sitemapUrls = [
     `${baseUrl}/sitemap.xml`,
-    ...Array.from({ length: pageCount }, (_, page) =>
-      `${baseUrl}/api/sitemap/products/${page}`,
+    ...Array.from({ length: pageCount - 1 }, (_, index) =>
+      `${baseUrl}/api/sitemap/products/${index + 1}`,
     ),
   ];
 

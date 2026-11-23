@@ -123,13 +123,6 @@ export const RangeFilterView = ({
       });
       return;
     }
-    if (Number(minDiaWt) === Number(maxDiaWt)) {
-      toast.error("Please enter valid range values.", {
-        hideProgressBar: true,
-        duration: 5000,
-      });
-      return;
-    }
     if (Number(minDiaWt) > Number(maxDiaWt)) {
       toast.error("Please enter valid range values.", {
         hideProgressBar: true,
@@ -328,13 +321,6 @@ export const RangeFilterView1 = ({
       return;
     }
     if (minNetWt < 0 || maxNetWt < 0) {
-      toast.error("Please enter valid range values.", {
-        hideProgressBar: true,
-        duration: 5000,
-      });
-      return;
-    }
-    if (Number(minNetWt) === Number(maxNetWt)) {
       toast.error("Please enter valid range values.", {
         hideProgressBar: true,
         duration: 5000,
@@ -547,13 +533,6 @@ export const RangeFilterView2 = ({
       return;
     }
     if (minWeight < 0 || maxWeight < 0) {
-      toast.error("Please enter valid range values.", {
-        hideProgressBar: true,
-        duration: 5000,
-      });
-      return;
-    }
-    if (Number(minWeight) === Number(maxWeight)) {
       toast.error("Please enter valid range values.", {
         hideProgressBar: true,
         duration: 5000,
@@ -785,7 +764,7 @@ export const PriceRangeInputs = ({
       });
       return;
     }
-    if (Number(min) > Number(max) || Number(min) === Number(max)) {
+    if (Number(min) > Number(max)) {
       toast.error("Please enter valid range values.", {
         hideProgressBar: true,
         duration: 5000,
