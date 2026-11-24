@@ -72,7 +72,7 @@ function AlbumDesignCollage({ album, getProductImageUrl }) {
         sx={{
           width: "100%",
           height: "100%",
-          backgroundColor: "#F4F4F5",
+          backgroundColor: "var(--hm-surface-subtle, #f4f4f5)",
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
@@ -85,18 +85,18 @@ function AlbumDesignCollage({ album, getProductImageUrl }) {
             width: 52,
             height: 52,
             borderRadius: "50%",
-            backgroundColor: "#E4E4E7",
+            backgroundColor: "var(--hm-border-strong, #e4e4e7)",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
           }}
         >
-          <Gem size={22} color="#71717A" strokeWidth={1.5} />
+          <Gem size={22} color="var(--hm-text-faint, #71717a)" strokeWidth={1.5} />
         </Box>
         <Typography
           sx={{
             fontSize: "0.75rem",
-            color: "#A1A1AA",
+            color: "var(--hm-text-zinc, #a1a1aa)",
             fontWeight: 600,
             letterSpacing: "0.08em",
             textTransform: "uppercase",
@@ -118,7 +118,7 @@ function AlbumDesignCollage({ album, getProductImageUrl }) {
           height: "100%",
           overflow: "hidden",
           position: "relative",
-          backgroundColor: "#F4F4F5",
+          backgroundColor: "var(--hm-surface-subtle, #f4f4f5)",
         }}
       >
         <img
@@ -154,7 +154,7 @@ function AlbumDesignCollage({ album, getProductImageUrl }) {
         gridTemplateColumns: "1fr 1fr",
         gridTemplateRows: "1fr 1fr",
         gap: "2px",
-        backgroundColor: "#FFFFFF",
+        backgroundColor: "var(--hm-surface, #ffffff)",
         overflow: "hidden",
       }}
     >
@@ -171,7 +171,7 @@ function AlbumDesignCollage({ album, getProductImageUrl }) {
               width: "100%",
               height: "100%",
               overflow: "hidden",
-              backgroundColor: "#F4F4F5",
+              backgroundColor: "var(--hm-surface-subtle, #f4f4f5)",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
@@ -198,7 +198,7 @@ function AlbumDesignCollage({ album, getProductImageUrl }) {
                 sx={{
                   width: "100%",
                   height: "100%",
-                  backgroundColor: "#F4F4F5",
+                  backgroundColor: "var(--hm-surface-subtle, #f4f4f5)",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
@@ -232,7 +232,7 @@ function AlbumDesignCollage({ album, getProductImageUrl }) {
               >
                 <Typography
                   sx={{
-                    color: "#FFFFFF",
+                    color: "var(--hm-surface, #ffffff)",
                     fontFamily: "'Inter', sans-serif",
                     fontWeight: 700,
                     fontSize: { xs: "1.1rem", sm: "1.25rem", md: "1.4rem" },
@@ -275,7 +275,7 @@ function AlbumCoverCollage({ album, getProductImageUrl, albumImageBase }) {
 
   if (coverUrl && !coverFailed) {
     return (
-      <Box sx={{ width: "100%", height: "100%", overflow: "hidden", backgroundColor: "#F4F4F5" }}>
+      <Box sx={{ width: "100%", height: "100%", overflow: "hidden", backgroundColor: "var(--hm-surface-subtle, #f4f4f5)" }}>
         <img
           src={coverUrl}
           alt={album?.albumName || "Album cover"}
@@ -324,6 +324,7 @@ export default function ExclusiveAlbumOverlay({
     getProductImageUrl,
     formatPrice,
     blockedStatus,
+    blockedAlbum,
   } = useExclusiveAlbum({ initialDomain });
 
   const { islogin, loginUserDetail, setislogin, storeInit } = useStore();
@@ -377,6 +378,7 @@ export default function ExclusiveAlbumOverlay({
   if (blockedStatus) {
     const StatusPage =
       blockedStatus === "expired" ? AlbumExpiredPage : AlbumDeactivatedPage;
+    const statusAlbum = blockedAlbum || selectedAlbum;
     return (
       <Dialog
         open={isOpen}
@@ -385,16 +387,21 @@ export default function ExclusiveAlbumOverlay({
         TransitionComponent={Fade}
         transitionDuration={200}
         PaperProps={{
+          className: "home-root",
           sx: {
-            backgroundColor: "#F8F9FA",
-            color: "#27272A",
+            backgroundColor: "var(--hm-surface-muted, #f8f9fa)",
+            color: "var(--hm-text-dark, #27272a)",
             display: "flex",
             flexDirection: "column",
             overflow: "hidden",
           },
         }}
       >
-        <StatusPage onReturnHome={handleClose} />
+        <StatusPage
+          onReturnHome={handleClose}
+          albumName={statusAlbum?.albumName}
+          expiresAt={statusAlbum?.expiresAt}
+        />
       </Dialog>
     );
   }
@@ -414,9 +421,10 @@ export default function ExclusiveAlbumOverlay({
         TransitionComponent={Fade}
         transitionDuration={200}
         PaperProps={{
+          className: "home-root",
           sx: {
-            backgroundColor: "#FAF9F6", // elegant off-white
-            color: "#27272A",
+            backgroundColor: "var(--hm-surface-cream2, #faf9f6)", // elegant off-white
+            color: "var(--hm-text-dark, #27272a)",
             display: "flex",
             flexDirection: "column",
             overflow: "hidden",
@@ -431,8 +439,8 @@ export default function ExclusiveAlbumOverlay({
           rel="noopener noreferrer"
           sx={{
             width: "100%",
-            background: "linear-gradient(135deg, #b434ff 0%, #6900c6 40%, #9e00ff 70%, rgba(242, 0, 255, 0.56)  100%)",
-            color: "#FFFFFF",
+            background: "var(--hm-topbar-gradient)",
+            color: "var(--hm-surface, #ffffff)",
             py: { xs: 0.9, sm: 1.1 },
             px: 2,
             display: "flex",
@@ -445,7 +453,7 @@ export default function ExclusiveAlbumOverlay({
             zIndex: 35,
             transition: "background-color 0.2s ease",
             "&:hover": {
-              backgroundColor: "#0052CC",
+              backgroundColor: "var(--hm-blue, #0052cc)",
               "& .announcement-arrow": {
                 transform: "translateX(4px)",
               },
@@ -549,7 +557,7 @@ export default function ExclusiveAlbumOverlay({
                       width: 32,
                       height: 32,
                       borderRadius: "25px",
-                      border: "1px solid #E2E8F0",
+                      border: "1px solid var(--hm-border, #e2e8f0)",
                       opacity: selectedAlbum ? 1 : 0.4,
                     }}
                   >
@@ -562,7 +570,7 @@ export default function ExclusiveAlbumOverlay({
                       width: 32,
                       height: 32,
                       borderRadius: "25px",
-                      border: "1px solid #E2E8F0",
+                      border: "1px solid var(--hm-border, #e2e8f0)",
                       opacity: 0.3,
                     }}
                   >
@@ -576,18 +584,18 @@ export default function ExclusiveAlbumOverlay({
                       startIcon={<ArrowLeft size={15} />}
                       sx={{
                         borderRadius: "2px",
-                        color: "#0F172A",
+                        color: "var(--hm-text, #0f172a)",
                         fontWeight: 700,
                         fontSize: "0.8rem",
                         letterSpacing: "0.04em",
                         textTransform: "none",
                         ml: 1,
                         px: 1.5,
-                        backgroundColor: "#F8FAFC",
-                        border: "1px solid #E2E8F0",
+                        backgroundColor: "var(--hm-surface-soft, #f8fafc)",
+                        border: "1px solid var(--hm-border, #e2e8f0)",
                         "&:hover": {
-                          backgroundColor: "#0F172A",
-                          color: "#FFFFFF",
+                          backgroundColor: "var(--hm-text, #0f172a)",
+                          color: "var(--hm-surface, #ffffff)",
                         },
                       }}
                     >
@@ -620,7 +628,7 @@ export default function ExclusiveAlbumOverlay({
                             fontFamily: "'Playfair Display', Georgia, serif",
                             fontSize: { xs: "0.95rem", sm: "1.08rem", md: "1.18rem" },
                             fontWeight: 600,
-                            color: "#18181B",
+                            color: "var(--hm-text-ink-alt, #18181b)",
                             lineHeight: 1.15,
                             letterSpacing: "-0.01em",
                             whiteSpace: "nowrap",
@@ -635,7 +643,7 @@ export default function ExclusiveAlbumOverlay({
                           sx={{
                             fontFamily: "'Inter', sans-serif",
                             fontSize: { xs: "0.64rem", sm: "0.7rem" },
-                            color: "#71717A",
+                            color: "var(--hm-text-faint, #71717a)",
                             fontWeight: 400,
                             letterSpacing: "0.02em",
                             lineHeight: 1.1,
@@ -664,12 +672,12 @@ export default function ExclusiveAlbumOverlay({
                     width: 34,
                     height: 34,
                     borderRadius: "25px",
-                    border: "1px solid #E2E8F0",
-                    color: "#0F172A",
+                    border: "1px solid var(--hm-border, #e2e8f0)",
+                    color: "var(--hm-text, #0f172a)",
                     flexShrink: 0,
                     "&:hover": {
-                      backgroundColor: "#0F172A",
-                      color: "#FFFFFF",
+                      backgroundColor: "var(--hm-text, #0f172a)",
+                      color: "var(--hm-surface, #ffffff)",
                     },
                   }}
                 >
@@ -692,23 +700,23 @@ export default function ExclusiveAlbumOverlay({
                   sx={{
                     display: "flex",
                     alignItems: "center",
-                    backgroundColor: "#F8FAFC",
+                    backgroundColor: "var(--hm-surface-soft, #f8fafc)",
                     borderRadius: "15px",
-                    border: "1px solid #E2E8F0",
+                    border: "1px solid var(--hm-border, #e2e8f0)",
                     px: 1.75,
                     py: 0.85,
                     width: { xs: "100%", md: 320 },
                     flex: { xs: 1, md: "none" },
                     transition: "all 0.15s ease",
                     "&:focus-within": {
-                      backgroundColor: "#FFFFFF",
-                      borderColor: "#0F172A",
+                      backgroundColor: "var(--hm-surface, #ffffff)",
+                      borderColor: "var(--hm-text, #0f172a)",
                     },
                   }}
                 >
                   <Search
                     size={16}
-                    color="#64748B"
+                    color="var(--hm-text-gray, #64748b)"
                     style={{ marginRight: 8, flexShrink: 0 }}
                   />
                   <input
@@ -724,7 +732,7 @@ export default function ExclusiveAlbumOverlay({
                       backgroundColor: "transparent",
                       width: "100%",
                       fontSize: "0.95rem",
-                      color: "#0F172A",
+                      color: "var(--hm-text, #0f172a)",
                     }}
                   />
                   {searchQuery && (
@@ -748,8 +756,8 @@ export default function ExclusiveAlbumOverlay({
                         width: 34,
                         height: 34,
                         borderRadius: "50%",
-                        background: "linear-gradient(135deg, #0F172A 0%, #334155 100%)",
-                        color: "#FFFFFF",
+                        background: "linear-gradient(135deg, var(--hm-text, #0f172a) 0%, var(--hm-text-slate, #334155) 100%)",
+                        color: "var(--hm-surface, #ffffff)",
                         display: { xs: "none", md: "flex" },
                         alignItems: "center",
                         justifyContent: "center",
@@ -780,6 +788,7 @@ export default function ExclusiveAlbumOverlay({
                   transformOrigin={{ vertical: "top", horizontal: "right" }}
                   slotProps={{
                     paper: {
+                      className: "home-root",
                       sx: {
                         mt: 1,
                         borderRadius: "16px",
@@ -795,7 +804,7 @@ export default function ExclusiveAlbumOverlay({
                     sx={{
                       px: 2.5,
                       py: 2,
-                      background: "linear-gradient(135deg, #0F172A 0%, #334155 100%)",
+                      background: "linear-gradient(135deg, var(--hm-text, #0f172a) 0%, var(--hm-text-slate, #334155) 100%)",
                       display: "flex",
                       alignItems: "center",
                       gap: 1.5,
@@ -813,7 +822,7 @@ export default function ExclusiveAlbumOverlay({
                         fontFamily: "'Inter', sans-serif",
                         fontWeight: 700,
                         fontSize: "1rem",
-                        color: "#FFFFFF",
+                        color: "var(--hm-surface, #ffffff)",
                         flexShrink: 0,
                       }}
                     >
@@ -825,7 +834,7 @@ export default function ExclusiveAlbumOverlay({
                           fontFamily: "'Inter', sans-serif",
                           fontWeight: 600,
                           fontSize: "0.9rem",
-                          color: "#FFFFFF",
+                          color: "var(--hm-surface, #ffffff)",
                           lineHeight: 1.2,
                           whiteSpace: "nowrap",
                           overflow: "hidden",
@@ -870,12 +879,12 @@ export default function ExclusiveAlbumOverlay({
                         fontFamily: "'Inter', sans-serif",
                         fontWeight: 600,
                         fontSize: "0.85rem",
-                        color: "#EF4444",
-                        backgroundColor: "#FEF2F2",
+                        color: "var(--hm-danger-red, #ef4444)",
+                        backgroundColor: "var(--hm-danger-bg, #fef2f2)",
                         justifyContent: "flex-start",
                         px: 2,
                         "&:hover": {
-                          backgroundColor: "#FEE2E2",
+                          backgroundColor: "var(--hm-danger-soft, #fee2e2)",
                         },
                       }}
                     >
@@ -893,11 +902,11 @@ export default function ExclusiveAlbumOverlay({
                     width: 34,
                     height: 34,
                     borderRadius: "25px",
-                    border: "1px solid #E2E8F0",
-                    color: "#0F172A",
+                    border: "1px solid var(--hm-border, #e2e8f0)",
+                    color: "var(--hm-text, #0f172a)",
                     "&:hover": {
-                      backgroundColor: "#0F172A",
-                      color: "#FFFFFF",
+                      backgroundColor: "var(--hm-text, #0f172a)",
+                      color: "var(--hm-surface, #ffffff)",
                     },
                   }}
                 >
@@ -928,7 +937,7 @@ export default function ExclusiveAlbumOverlay({
               {/* ============================================================= */}
               {!selectedAlbum && loading && initialRandomNo && (
                 <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-                  <Box sx={{ display: "flex", flexDirection: { xs: "column", sm: "row" }, gap: 3.5, mb: 4, pb: 3.5, borderBottom: "1px solid #EEEEEE" }}>
+                  <Box sx={{ display: "flex", flexDirection: { xs: "column", sm: "row" }, gap: 3.5, mb: 4, pb: 3.5, borderBottom: "1px solid var(--hm-border, #eeeeee)" }}>
                     <Skeleton variant="rectangular" width={180} height={180} sx={{ borderRadius: "20px", flexShrink: 0 }} />
                     <Box sx={{ display: 'flex', flexDirection: 'column', pt: 1, width: { xs: '100%', sm: '50%' } }}>
                       <Skeleton width="25%" height={20} sx={{ mb: 1, borderRadius: "6px" }} />
@@ -953,7 +962,7 @@ export default function ExclusiveAlbumOverlay({
                         key={i}
                         sx={{
                           borderRadius: "20px",
-                          backgroundColor: "#FFFFFF",
+                          backgroundColor: "var(--hm-surface, #ffffff)",
                           boxShadow: "0 8px 30px rgba(0, 0, 0, 0.03)",
                           overflow: "hidden",
                         }}
@@ -996,8 +1005,8 @@ export default function ExclusiveAlbumOverlay({
                       borderRadius: "50%",
                       display: "grid",
                       placeItems: "center",
-                      backgroundColor: "#F1F0ED",
-                      color: "#71717A",
+                      backgroundColor: "var(--hm-surface-warm2, #f1f0ed)",
+                      color: "var(--hm-text-faint, #71717a)",
                       fontSize: 30,
                     }}
                     aria-hidden="true"
@@ -1008,13 +1017,13 @@ export default function ExclusiveAlbumOverlay({
                     sx={{
                       fontFamily: "'Playfair Display', Georgia, serif",
                       fontSize: { xs: "1.8rem", sm: "2.2rem" },
-                      color: "#27272A",
+                      color: "var(--hm-text-dark, #27272a)",
                       mb: 1,
                     }}
                   >
                     No such album exists
                   </Typography>
-                  <Typography sx={{ color: "#71717A", mb: 3 }}>
+                  <Typography sx={{ color: "var(--hm-text-faint, #71717a)", mb: 3 }}>
                     This album link may be invalid or expired.
                   </Typography>
                   <Button
@@ -1025,8 +1034,8 @@ export default function ExclusiveAlbumOverlay({
                       px: 2.5,
                       py: 1.1,
                       textTransform: "none",
-                      backgroundColor: "#27272A",
-                      "&:hover": { backgroundColor: "#3F3F46" },
+                      backgroundColor: "var(--hm-text-dark, #27272a)",
+                      "&:hover": { backgroundColor: "var(--hm-hover-dark, #3f3f46)" },
                     }}
                   >
                     Browse albums
@@ -1055,7 +1064,7 @@ export default function ExclusiveAlbumOverlay({
                         fontSize: { xs: "2.5rem", sm: "3.2rem", md: "3.8rem" },
                         fontWeight: 400,
                         letterSpacing: "-0.01em",
-                        color: "#27272A",
+                        color: "var(--hm-text-dark, #27272a)",
                         lineHeight: 1.1,
                         mb: 1,
                       }}
@@ -1065,7 +1074,7 @@ export default function ExclusiveAlbumOverlay({
                     <Typography
                       sx={{
                         fontSize: "0.95rem",
-                        color: "#71717A",
+                        color: "var(--hm-text-faint, #71717a)",
                         fontFamily: "'Inter', sans-serif",
                         fontWeight: 300,
                         letterSpacing: "0.02em",
@@ -1091,7 +1100,7 @@ export default function ExclusiveAlbumOverlay({
                           alignItems: "center",
                           gap: 0.5,
                           fontSize: "0.85rem",
-                          color: "#71717A",
+                          color: "var(--hm-text-faint, #71717a)",
                         }}
                       >
                         <span>Sort by:</span>
@@ -1104,7 +1113,7 @@ export default function ExclusiveAlbumOverlay({
                             backgroundColor: "transparent",
                             fontWeight: 500,
                             fontSize: "0.85rem",
-                            color: "#27272A",
+                            color: "var(--hm-text-dark, #27272a)",
                             cursor: "pointer",
                           }}
                         >
@@ -1137,7 +1146,7 @@ export default function ExclusiveAlbumOverlay({
                           sx={{
                             display: "flex",
                             flexDirection: "column",
-                            backgroundColor: "#FFFFFF",
+                            backgroundColor: "var(--hm-surface, #ffffff)",
                             borderRadius: "20px",
                             boxShadow: "0 8px 30px rgba(0, 0, 0, 0.04)",
                             overflow: "hidden",
@@ -1149,7 +1158,7 @@ export default function ExclusiveAlbumOverlay({
                               width: "100%",
                               aspectRatio: "1 / 1",
                               position: "relative",
-                              backgroundColor: "#F4F4F5",
+                              backgroundColor: "var(--hm-surface-subtle, #f4f4f5)",
                               overflow: "hidden",
                             }}
                           >
@@ -1200,7 +1209,7 @@ export default function ExclusiveAlbumOverlay({
                     </Box>
                   ) : displayedAlbums.length === 0 ? (
                     <Box sx={{ py: 8, textAlign: "center" }}>
-                      <Typography sx={{ fontSize: "1rem", color: "#64748B", mb: 2 }}>
+                      <Typography sx={{ fontSize: "1rem", color: "var(--hm-text-gray, #64748b)", mb: 2 }}>
                         {albumLoadError
                           ? "We couldn’t load the albums. Please try again."
                           : searchQuery
@@ -1245,7 +1254,7 @@ export default function ExclusiveAlbumOverlay({
                               cursor: "pointer",
                               display: "flex",
                               flexDirection: "column",
-                              backgroundColor: "#FFFFFF",
+                              backgroundColor: "var(--hm-surface, #ffffff)",
                               borderRadius: "20px",
                               boxShadow: "0 8px 30px rgba(0, 0, 0, 0.04)",
                               overflow: "hidden",
@@ -1257,7 +1266,7 @@ export default function ExclusiveAlbumOverlay({
                                 width: "100%",
                                 aspectRatio: "1 / 1",
                                 position: "relative",
-                                backgroundColor: "#F4F4F5",
+                                backgroundColor: "var(--hm-surface-subtle, #f4f4f5)",
                                 overflow: "hidden",
                               }}
                             >
@@ -1287,7 +1296,7 @@ export default function ExclusiveAlbumOverlay({
                                   fontFamily: "'Playfair Display', Georgia, serif",
                                   fontSize: "1.3rem",
                                   fontWeight: 500,
-                                  color: "#27272A",
+                                  color: "var(--hm-text-dark, #27272a)",
                                   lineHeight: 1.25,
                                   whiteSpace: "nowrap",
                                   overflow: "hidden",
@@ -1303,7 +1312,7 @@ export default function ExclusiveAlbumOverlay({
                               <Typography
                                 sx={{
                                   fontSize: "0.82rem",
-                                  color: "#71717A",
+                                  color: "var(--hm-text-faint, #71717a)",
                                   fontFamily: "'Inter', sans-serif",
                                   fontWeight: 500,
                                   textAlign: "center",
@@ -1335,7 +1344,7 @@ export default function ExclusiveAlbumOverlay({
                       gap: 3.5,
                       mb: 4,
                       pb: 3.5,
-                      borderBottom: "1px solid #EEEEEE",
+                      borderBottom: "1px solid var(--hm-border, #eeeeee)",
                     }}
                   >
                     {/* Album Cover Art */}
@@ -1344,7 +1353,7 @@ export default function ExclusiveAlbumOverlay({
                         width: { xs: 140, sm: 180, md: 220 },
                         height: { xs: 140, sm: 180, md: 220 },
                         borderRadius: "20px",
-                        backgroundColor: "#F4F4F5",
+                        backgroundColor: "var(--hm-surface-subtle, #f4f4f5)",
                         overflow: "hidden",
                         flexShrink: 0,
                         boxShadow: "0 8px 30px rgba(0, 0, 0, 0.04)"
@@ -1365,7 +1374,7 @@ export default function ExclusiveAlbumOverlay({
                           fontWeight: 600,
                           letterSpacing: "0.1em",
                           textTransform: "uppercase",
-                          color: "#71717A",
+                          color: "var(--hm-text-faint, #71717a)",
                           mb: 0.5,
                         }}
                       >
@@ -1376,7 +1385,7 @@ export default function ExclusiveAlbumOverlay({
                           fontFamily: "'Playfair Display', Georgia, serif",
                           fontSize: { xs: "2.2rem", sm: "3rem", md: "3.5rem" },
                           fontWeight: 400,
-                          color: "#27272A",
+                          color: "var(--hm-text-dark, #27272a)",
                           lineHeight: 1.1,
                           mb: 2,
                         }}
@@ -1393,18 +1402,18 @@ export default function ExclusiveAlbumOverlay({
                         }}
                       >
                         {/* Item Count Pill */}
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.8, backgroundColor: '#FFFFFF', border: '1px solid #E4E4E7', px: 1.5, py: 0.6, borderRadius: '12px' }}>
-                          <Gem size={14} color="#71717A" strokeWidth={1.5} />
-                          <Typography sx={{ fontSize: '0.8rem', color: '#52525B', fontWeight: 500 }}>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.8, backgroundColor: 'var(--hm-surface, #ffffff)', border: '1px solid var(--hm-border-strong, #e4e4e7)', px: 1.5, py: 0.6, borderRadius: '12px' }}>
+                          <Gem size={14} color="var(--hm-text-faint, #71717a)" strokeWidth={1.5} />
+                          <Typography sx={{ fontSize: '0.8rem', color: 'var(--hm-text-muted, #52525b)', fontWeight: 500 }}>
                             {selectedAlbum.designCount || 0} items
                           </Typography>
                         </Box>
 
                         {/* Expiry Pill */}
                         {selectedAlbum.ExpiryDate && (
-                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.8, backgroundColor: '#FFFFFF', border: '1px solid #E4E4E7', px: 1.5, py: 0.6, borderRadius: '12px' }}>
-                            <Calendar size={14} color="#71717A" strokeWidth={1.5} />
-                            <Typography sx={{ fontSize: '0.8rem', color: '#52525B', fontWeight: 500 }}>
+                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.8, backgroundColor: 'var(--hm-surface, #ffffff)', border: '1px solid var(--hm-border-strong, #e4e4e7)', px: 1.5, py: 0.6, borderRadius: '12px' }}>
+                            <Calendar size={14} color="var(--hm-text-faint, #71717a)" strokeWidth={1.5} />
+                            <Typography sx={{ fontSize: '0.8rem', color: 'var(--hm-text-muted, #52525b)', fontWeight: 500 }}>
                               Valid until {new Date(selectedAlbum.ExpiryDate).toLocaleDateString()}
                             </Typography>
                           </Box>
@@ -1417,17 +1426,17 @@ export default function ExclusiveAlbumOverlay({
                       sx={{
                         py: 8,
                         textAlign: "center",
-                        border: "1px dashed #E2E8F0",
+                        border: "1px dashed var(--hm-border, #e2e8f0)",
                         borderRadius: "2px",
-                        backgroundColor: "#F8FAFC",
+                        backgroundColor: "var(--hm-surface-soft, #f8fafc)",
                       }}
                     >
-                      <Gem size={36} color="#94A3B8" style={{ marginBottom: 12 }} />
+                      <Gem size={36} color="var(--hm-text-light, #94a3b8)" style={{ marginBottom: 12 }} />
                       <Typography
                         sx={{
                           fontWeight: 700,
                           fontSize: "1rem",
-                          color: "#0F172A",
+                          color: "var(--hm-text, #0f172a)",
                           mb: 0.5,
                         }}
                       >
@@ -1435,7 +1444,7 @@ export default function ExclusiveAlbumOverlay({
                           ? "No designs match your search"
                           : "Designs available for this collection are being prepared"}
                       </Typography>
-                      <Typography sx={{ fontSize: "0.82rem", color: "#64748B" }}>
+                      <Typography sx={{ fontSize: "0.82rem", color: "var(--hm-text-gray, #64748b)" }}>
                         {searchQuery
                           ? `Try searching with another keyword or clear search.`
                           : `Total registered items in this album: ${selectedAlbum.totalAutocodes || 0}`}
@@ -1470,7 +1479,7 @@ export default function ExclusiveAlbumOverlay({
                             onClick={() => handleMoveToDesignWithCache(design)}
                             sx={{
                               borderRadius: "20px",
-                              backgroundColor: "#FFFFFF",
+                              backgroundColor: "var(--hm-surface, #ffffff)",
                               boxShadow: "0 8px 30px rgba(0, 0, 0, 0.03)",
                               overflow: "hidden",
                               cursor: "pointer",
@@ -1483,7 +1492,7 @@ export default function ExclusiveAlbumOverlay({
                               sx={{
                                 width: "100%",
                                 aspectRatio: "1 / 1",
-                                backgroundColor: "#F4F4F5",
+                                backgroundColor: "var(--hm-surface-subtle, #f4f4f5)",
                                 position: "relative",
                                 overflow: "hidden",
                                 display: "flex",
@@ -1519,7 +1528,7 @@ export default function ExclusiveAlbumOverlay({
                                   top: 10,
                                   left: 10,
                                   backgroundColor: isLiked
-                                    ? "#FFF1F2"
+                                    ? "var(--hm-danger-tint, #fff1f2)"
                                     : "rgba(255, 255, 255, 0.92)",
                                   backdropFilter: "blur(4px)",
                                   width: 34,
@@ -1528,15 +1537,15 @@ export default function ExclusiveAlbumOverlay({
                                   transition: "all 0.2s cubic-bezier(0.16, 1, 0.3, 1)",
                                   zIndex: 2,
                                   "&:hover": {
-                                    backgroundColor: "#FFFFFF",
+                                    backgroundColor: "var(--hm-surface, #ffffff)",
                                     transform: "scale(1.08)",
                                   },
                                 }}
                               >
                                 <Heart
                                   size={17}
-                                  color={isLiked ? "#E11D48" : "#52525B"}
-                                  fill={isLiked ? "#E11D48" : "transparent"}
+                                  color={isLiked ? "var(--hm-rose, #e11d48)" : "var(--hm-text-muted, #52525b)"}
+                                  fill={isLiked ? "var(--hm-rose, #e11d48)" : "transparent"}
                                   strokeWidth={isLiked ? 0 : 2}
                                 />
                               </IconButton>
@@ -1545,8 +1554,8 @@ export default function ExclusiveAlbumOverlay({
                                   position: "absolute",
                                   top: 12,
                                   right: 12,
-                                  backgroundColor: "#FFFFFF",
-                                  color: "#27272A",
+                                  backgroundColor: "var(--hm-surface, #ffffff)",
+                                  color: "var(--hm-text-dark, #27272a)",
                                   px: 1.2,
                                   py: 0.5,
                                   borderRadius: "12px",
@@ -1570,7 +1579,7 @@ export default function ExclusiveAlbumOverlay({
                                 sx={{
                                   fontSize: "0.88rem",
                                   fontWeight: 700,
-                                  color: "#0F172A",
+                                  color: "var(--hm-text, #0f172a)",
                                   overflow: "hidden",
                                   textOverflow: "ellipsis",
                                   whiteSpace: "nowrap",
@@ -1586,7 +1595,7 @@ export default function ExclusiveAlbumOverlay({
                                   alignItems: "center",
                                   justifyContent: "space-between",
                                   fontSize: "0.72rem",
-                                  color: "#64748B",
+                                  color: "var(--hm-text-gray, #64748b)",
                                   fontVariantNumeric: "tabular-nums",
                                   mb: 1.5,
                                 }}
@@ -1599,7 +1608,7 @@ export default function ExclusiveAlbumOverlay({
                                 </span>
                                 {design.Dwt && Number(design.Dwt) > 0 ? (
                                   <span
-                                    style={{ color: "#002FA7", fontWeight: 600 }}
+                                    style={{ color: "var(--hm-blue-deep, #002fa7)", fontWeight: 600 }}
                                   >
                                     {Number(design.Dwt).toFixed(2)}ct
                                   </span>
@@ -1611,7 +1620,7 @@ export default function ExclusiveAlbumOverlay({
                                 sx={{
                                   mt: "auto",
                                   pt: 1.25,
-                                  borderTop: "1px solid #F1F5F9",
+                                  borderTop: "1px solid var(--hm-surface-blue, #f1f5f9)",
                                   display: "flex",
                                   alignItems: "center",
                                   justifyContent: "space-between",
@@ -1622,7 +1631,7 @@ export default function ExclusiveAlbumOverlay({
                                     sx={{
                                       fontSize: "0.95rem",
                                       fontWeight: 800,
-                                      color: "#0F172A",
+                                      color: "var(--hm-text, #0f172a)",
                                       fontVariantNumeric: "tabular-nums",
                                     }}
                                   >
@@ -1630,7 +1639,7 @@ export default function ExclusiveAlbumOverlay({
                                   </Typography>
                                 ) : (
                                   <Typography
-                                    sx={{ fontSize: "0.76rem", color: "#94A3B8" }}
+                                    sx={{ fontSize: "0.76rem", color: "var(--hm-text-light, #94a3b8)" }}
                                   >
                                     Price on request
                                   </Typography>
@@ -1646,15 +1655,15 @@ export default function ExclusiveAlbumOverlay({
                                     }}
                                     sx={{
                                       border: isInCart
-                                        ? "1px solid #16A34A"
-                                        : "1px solid #E2E8F0",
-                                      backgroundColor: isInCart ? "#DCFCE7" : "#FFFFFF",
-                                      color: isInCart ? "#16A34A" : "#0F172A",
+                                        ? "1px solid var(--hm-success, #16a34a)"
+                                        : "1px solid var(--hm-border, #e2e8f0)",
+                                      backgroundColor: isInCart ? "var(--hm-success-border, #dcfce7)" : "var(--hm-surface, #ffffff)",
+                                      color: isInCart ? "var(--hm-success, #16a34a)" : "var(--hm-text, #0f172a)",
                                       p: "5px",
                                       borderRadius: "4px",
                                       transition: "all 0.2s ease",
                                       "&:hover": {
-                                        backgroundColor: isInCart ? "#BBF7D0" : "#F4F4F5",
+                                        backgroundColor: isInCart ? "var(--hm-success-text, #bbf7d0)" : "var(--hm-surface-subtle, #f4f4f5)",
                                         transform: "scale(1.06)",
                                       },
                                     }}
@@ -1678,11 +1687,11 @@ export default function ExclusiveAlbumOverlay({
                                       fontSize: "0.72rem",
                                       fontWeight: 700,
                                       borderRadius: "2px",
-                                      color: "#0F172A",
-                                      border: "1px solid #E2E8F0",
+                                      color: "var(--hm-text, #0f172a)",
+                                      border: "1px solid var(--hm-border, #e2e8f0)",
                                       "&:hover": {
-                                        backgroundColor: "#0F172A",
-                                        color: "#FFFFFF",
+                                        backgroundColor: "var(--hm-text, #0f172a)",
+                                        color: "var(--hm-surface, #ffffff)",
                                       },
                                     }}
                                   >

@@ -63,6 +63,11 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
     productSchema,
     defaultArticleId,
     handleCart,
+    cartQty,
+    cartRemark,
+    isCartExtrasSaving,
+    handleCartQtyChange,
+    handleCartRemarkChange,
     handleWishList,
     handleCustomChange,
     handleDesignCustomChange,
@@ -169,6 +174,11 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
                 isPriceloading={isPriceloading}
                 pdLoadImage={pdLoadImage}
                 handleCart={handleCart}
+                cartQty={cartQty}
+                cartRemark={cartRemark}
+                onCartRemarkChange={handleCartRemarkChange}
+                onCartQtyChange={handleCartQtyChange}
+                isCartExtrasSaving={isCartExtrasSaving}
                 addToCardFlag={addToCardFlag}
                 isCartBtnLoading={isCartBtnLoading}
                 handleWishList={handleWishList}

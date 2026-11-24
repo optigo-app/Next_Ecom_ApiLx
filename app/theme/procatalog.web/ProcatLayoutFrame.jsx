@@ -3,6 +3,7 @@
 import React from "react";
 import { useSearchParams } from "next/navigation";
 import { Box } from "@mui/material";
+import "./home/home.theme.css";
 
 export default function ProcatLayoutFrame({
   children,
@@ -20,8 +21,8 @@ export default function ProcatLayoutFrame({
   if (isExclusiveAlbum) {
     return (
       <Box
-        className="procat-layout-frame"
-        sx={{ minHeight: "100vh", width: "100%", backgroundColor: "#fff" }}
+        className="procat-layout-frame home-root"
+        sx={{ minHeight: "100vh", width: "100%", backgroundColor: "var(--hm-surface, #fff)" }}
       >
         {children}
       </Box>
@@ -30,7 +31,7 @@ export default function ProcatLayoutFrame({
 
   return (
     <Box
-      className="procat-layout-frame"
+      className="procat-layout-frame home-root"
       sx={{
         display: "flex",
         flexDirection: "column",
@@ -53,7 +54,7 @@ export default function ProcatLayoutFrame({
         className="procat-layout-page"
         sx={{
           flex: 1,
-          backgroundColor: "#ffffff",
+          backgroundColor: "var(--hm-surface, #ffffff)",
           marginInline: "6%",
           "@media screen and (max-width: 1400px)": { marginInline: "3%" },
           "@media screen and (max-width: 1200px)": { marginInline: "1.5%" },

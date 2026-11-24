@@ -89,7 +89,7 @@ const CategoryAlbumGrid = ({ initialCategories = [], storeInit = {} }) => {
       sx={{
         width: "100%",
         py: { xs: 4, sm: 5, md: 6 },
-        backgroundColor: "#ffffff",
+        backgroundColor: "var(--hm-surface, #ffffff)",
       }}
     >
       <Box
@@ -124,7 +124,7 @@ const CategoryAlbumGrid = ({ initialCategories = [], storeInit = {} }) => {
               fontWeight: 400,
               letterSpacing: "1.5px",
               textTransform: "uppercase",
-              color: "#0F3D4C",
+              color: "var(--hm-accent, #0f3d4c)",
             }}
           >
             Categories
@@ -133,7 +133,7 @@ const CategoryAlbumGrid = ({ initialCategories = [], storeInit = {} }) => {
             sx={{
               width: "44px",
               height: "2px",
-              backgroundColor: "#0F3D4C",
+              backgroundColor: "var(--hm-accent, #0f3d4c)",
               mx: "auto",
               mt: 1.5,
             }}
@@ -160,7 +160,7 @@ const CategoryAlbumGrid = ({ initialCategories = [], storeInit = {} }) => {
                     borderRadius: { xs: "8px", sm: "12px" },
                     overflow: "hidden",
                     border: "1px solid rgba(226, 232, 240, 0.9)",
-                    backgroundColor: "#ffffff",
+                    backgroundColor: "var(--hm-surface, #ffffff)",
                     display: "flex",
                     flexDirection: "column",
                     width: "100%",
@@ -224,7 +224,7 @@ const CategoryAlbumGrid = ({ initialCategories = [], storeInit = {} }) => {
                       flexDirection: "column",
                       flexGrow: 1,
                       justifyContent: "space-between",
-                      backgroundColor: "#ffffff",
+                      backgroundColor: "var(--hm-surface, #ffffff)",
                     }}
                   >
                     {/* CATEGORY TITLE */}
@@ -234,7 +234,7 @@ const CategoryAlbumGrid = ({ initialCategories = [], storeInit = {} }) => {
                         fontFamily: '"Poppins", sans-serif',
                         fontWeight: 600,
                         fontSize: { xs: "0.82rem", sm: "0.95rem", md: "1.02rem" },
-                        color: "#0F3D4C",
+                        color: "var(--hm-accent, #0f3d4c)",
                         lineHeight: 1.3,
                         textAlign: "center",
                         mb: { xs: 1, sm: 1.5 },
@@ -263,7 +263,7 @@ const CategoryAlbumGrid = ({ initialCategories = [], storeInit = {} }) => {
                           borderRadius: "6px",
                           border: "1.5px solid rgba(15, 61, 76, 0.25)",
                           backgroundColor: "rgba(15, 61, 76, 0.03)",
-                          color: "#0F3D4C",
+                          color: "var(--hm-accent, #0f3d4c)",
                           fontWeight: 600,
                           fontSize: { xs: "0.62rem", sm: "0.72rem" },
                           letterSpacing: "0.03em",
@@ -293,8 +293,8 @@ const CategoryAlbumGrid = ({ initialCategories = [], storeInit = {} }) => {
                           flex: "1 1 50%",
                           height: { xs: "28px", sm: "34px" },
                           borderRadius: "6px",
-                          backgroundColor: "#0F3D4C",
-                          color: "#ffffff",
+                          backgroundColor: "var(--hm-accent, #0f3d4c)",
+                          color: "var(--hm-surface, #ffffff)",
                           fontWeight: 600,
                           fontSize: { xs: "0.62rem", sm: "0.72rem" },
                           letterSpacing: "0.05em",
@@ -302,7 +302,7 @@ const CategoryAlbumGrid = ({ initialCategories = [], storeInit = {} }) => {
                           px: 0.5,
                           whiteSpace: "nowrap",
                           boxShadow: "none",
-                          border: "1px solid #0F3D4C",
+                          border: "1px solid var(--hm-accent, #0f3d4c)",
                           transition: "all 0.2s ease",
                         }}
                       >

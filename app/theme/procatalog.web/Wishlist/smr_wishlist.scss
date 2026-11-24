@@ -106,7 +106,7 @@
 }
 
 .WlMainPageDiv {
-  background-color: #fff;
+  background-color: var(--wl-surface, #fff);
   margin-inline: 6%;
 }
 
@@ -162,7 +162,7 @@
       transition: background-color 0.3s;
 
       &:hover {
-        background-color: #666;
+        background-color: var(--wl-text-muted, #666);
       }
 
       &.smr_cartActivebtn {
@@ -285,8 +285,8 @@
   position: absolute;
   top: 0;
   right: 0;
-  background: #c9c9c9;
-  color: #fff;
+  background: var(--wl-border-strong, #c9c9c9);
+  color: var(--wl-surface, #fff);
 }
 
 .closeWlIcon {
@@ -533,7 +533,7 @@
     box-shadow: none !important;
 
     .smr_addwishlistSkelton {
-      background-color: #f6f6f6 !important;
+      background-color: var(--wl-surface-subtle, #f6f6f6) !important;
     }
   }
 }

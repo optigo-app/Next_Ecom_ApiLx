@@ -93,7 +93,7 @@
     }
 
     .nav_li_smining_Fixed_Icone {
-        color: #7d7f85;
+        color: var(--hm-text-faint, #7d7f85);
         font-size: 13px;
         font-weight: 500;
         position: relative;
@@ -101,7 +101,7 @@
     }
 
     .nav_li_smining_Fixed {
-        color: #7d7f85;
+        color: var(--hm-text-faint, #7d7f85);
         font-size: 13px;
         font-weight: 500;
         position: relative;
@@ -115,7 +115,7 @@
         right: 0;
         width: 0%;
         height: 1px;
-        background-color: #7d7f85;
+        background-color: var(--hm-text-faint, #7d7f85);
         transition: width 0.3s ease-out;
     }
 
@@ -157,7 +157,7 @@
         height: auto;
         width: 100%;
         position: absolute;
-        background: #fff;
+        background: var(--hm-surface, #fff);
         top: 72px;
         left: 0;
         display: none;
@@ -316,13 +316,13 @@
 
 
     .badgeColor .MuiBadge-badge {
-        background-color: #000000 !important;
-        color: #ffffff !important;
+        background-color: var(--hm-text, #000000) !important;
+        color: var(--hm-surface, #ffffff) !important;
     }
 
     .badgeColorFix .MuiBadge-badge {
-        background-color: #000000 !important;
-        color: #ffffff !important;
+        background-color: var(--hm-text, #000000) !important;
+        color: var(--hm-surface, #ffffff) !important;
     }
 
     @media screen and (min-width:1201px) {

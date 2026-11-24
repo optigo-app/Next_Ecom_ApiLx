@@ -96,8 +96,8 @@ const WishlistItems = ({
               position: "relative",
               borderRadius: 3,
               overflow: "hidden",
-              background: "#fff",
-              border: "1px solid #eee",
+              background: "var(--wl-surface, #fff)",
+              border: "1px solid var(--wl-border-light, #eee)",
               boxShadow: "none",
               outline: "none",
             }}
@@ -124,7 +124,7 @@ const WishlistItems = ({
                   height="100%"
                   width="100%"
                   sx={{
-                    bgcolor: "#fafafa",
+                    bgcolor: "var(--wl-surface-muted, #fafafa)",
                   }}
                 />
               ) : (
@@ -190,7 +190,7 @@ const WishlistItems = ({
                     borderRadius: "999px", // ✨ fully rounded
                     fontSize: "13px",
                     fontWeight: 600,
-                    color: item?.IsInCart === 1 ? "#444" : "#fff",
+                    color: item?.IsInCart === 1 ? "var(--wl-text-muted, #444)" : "var(--wl-surface, #fff)",
                     background:
                       item?.IsInCart === 1
                         ? "rgba(255,255,255,0.9)"
@@ -224,7 +224,7 @@ const WishlistItems = ({
                 sx={{
                   fontWeight: 600,
                   lineHeight: 1.35,
-                  color: "#0a1f47",
+                  color: "var(--wl-nav, #0a1f47)",
                   textAlign: "center",
                   mb: 1,
                   whiteSpace: "nowrap",
@@ -259,7 +259,7 @@ const WishlistItems = ({
                             sm: "0.8rem",
                             md: "0.85rem",
                           },
-                          color: item?.ArticleNo ? "#000" : "transparent",
+                          color: item?.ArticleNo ? "var(--wl-text-ink, #000)" : "transparent",
                           letterSpacing: "0.02em",
                         }}
                       >
@@ -287,7 +287,7 @@ const WishlistItems = ({
                             sm: "0.8rem",
                             md: "0.85rem",
                           },
-                          color: item?.Dwt ? "#000" : "transparent",
+                          color: item?.Dwt ? "var(--wl-text-ink, #000)" : "transparent",
                           letterSpacing: "0.02em",
                         }}
                       >
@@ -303,7 +303,7 @@ const WishlistItems = ({
                             sm: "0.8rem",
                             md: "0.85rem",
                           },
-                          color: item?.Dwt ? "#000" : "transparent",
+                          color: item?.Dwt ? "var(--wl-text-ink, #000)" : "transparent",
                         }}
                       >
                         {item?.Dwt
@@ -328,7 +328,7 @@ const WishlistItems = ({
                               sm: "0.8rem",
                               md: "0.85rem",
                             },
-                            color: item?.FinalCost ? "#000" : "transparent",
+                            color: item?.FinalCost ? "var(--wl-text-ink, #000)" : "transparent",
                           }}
                         >
                           <span
@@ -352,7 +352,7 @@ const WishlistItems = ({
                               sm: "0.8rem",
                               md: "0.85rem",
                             },
-                            color: "#000",
+                            color: "var(--wl-text-ink, #000)",
                           }}
                         >
                           --
@@ -380,7 +380,7 @@ const WishlistItems = ({
                             sm: "0.8rem",
                             md: "0.85rem",
                           },
-                          color: item?.Nwt ? "#000" : "transparent",
+                          color: item?.Nwt ? "var(--wl-text-ink, #000)" : "transparent",
                           letterSpacing: "0.02em",
                         }}
                       >
@@ -396,7 +396,7 @@ const WishlistItems = ({
                             sm: "0.8rem",
                             md: "0.85rem",
                           },
-                          color: item?.Nwt ? "#000" : "transparent",
+                          color: item?.Nwt ? "var(--wl-text-ink, #000)" : "transparent",
                         }}
                       >
                         {item?.Nwt?.toFixed(3) || "0"}

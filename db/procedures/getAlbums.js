@@ -1,6 +1,13 @@
 import { ensureAlbumsTable, isAlbumUsable } from "../schema/albums.js";
 
 /**
+ * AlbumSecurityId drives visibility: 0/'' = public, 1 = ignored, 2 = private.
+ * Column is TEXT, so normalize once and compare numerically.
+ */
+const ALBUM_SECURITY_SQL =
+    "CAST(COALESCE(NULLIF(TRIM(AlbumSecurityId), ''), '0') AS INTEGER)";
+
+/**
  * Retrieves album records from SQLite.
  * Formats matching the standard ERP response: { Status: "200", Message: "...", Data: { rd: [...] } }.
  * 
@@ -52,11 +59,12 @@ export function getAlbums(db, options = {}) {
 
     if (options.CustomerId !== undefined && options.CustomerId !== null && options.CustomerId !== "") {
         const custId = Number(options.CustomerId);
-        if (options.includePublic) {
-            conditions.push("(CustomerId = @CustomerId OR CustomerId = 0 OR CustomerId IS NULL)");
-        } else {
-            conditions.push("CustomerId = @CustomerId");
-        }
+        // Visibility by AlbumSecurityId: public albums for everyone, private
+        // albums only for their owning customer, ignored albums never.
+        conditions.push(`${ALBUM_SECURITY_SQL} <> 1`);
+        conditions.push(
+            `(${ALBUM_SECURITY_SQL} = 0 OR (${ALBUM_SECURITY_SQL} = 2 AND @CustomerId <> 0 AND CustomerId = @CustomerId))`
+        );
         params.CustomerId = custId;
     }
 

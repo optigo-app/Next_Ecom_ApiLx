@@ -34,16 +34,16 @@ import AddressDrawer from "./AddressDrawer";
 import OrderRemarkModal from "./OrderRemarkModal";
 
 const PAYMENT_METHODS_INFO = {
-  1: { icon: <BsPaypal />, description: "Pay securely with PayPal", color: "#003087" },
-  2: { icon: <BsCreditCard2Front />, description: "Pay with EBS", color: "#0051BA" },
-  3: { icon: <LocalShipping />, description: "Pay when you receive", color: "#FFD700" },
-  4: { icon: <SiPaytm />, description: "Pay using Paytm wallet", color: "#02b3ea" },
-  5: { icon: <PaymentsIcon />, description: "Pay with Eazypay", color: "#5C6BC0" },
-  6: { icon: <CreditCardIcon />, description: "Pay using PayUMoney", color: "#2196F3" },
-  7: { icon: <BsCreditCard />, description: "Pay with Payeezy", color: "#FF4081" },
-  8: { icon: <FaStripeS />, description: "International payments via Stripe", color: "#6058f7" },
-  9: { icon: <SiPhonepe />, description: "Pay with PhonePe", color: "#5c249a" },
-  10: { icon: <SiRazorpay />, description: "Pay with Razorpay", color: "#3395ff" },
+  1: { icon: <BsPaypal />, description: "Pay securely with PayPal", color: "var(--tc-pay-paypal, #003087)" },
+  2: { icon: <BsCreditCard2Front />, description: "Pay with EBS", color: "var(--tc-pay-deepblue, #0051ba)" },
+  3: { icon: <LocalShipping />, description: "Pay when you receive", color: "var(--tc-gold, #ffd700)" },
+  4: { icon: <SiPaytm />, description: "Pay using Paytm wallet", color: "var(--tc-pay-cyan, #02b3ea)" },
+  5: { icon: <PaymentsIcon />, description: "Pay with Eazypay", color: "var(--tc-pay-indigo-light, #5c6bc0)" },
+  6: { icon: <CreditCardIcon />, description: "Pay using PayUMoney", color: "var(--tc-pay-blue, #2196f3)" },
+  7: { icon: <BsCreditCard />, description: "Pay with Payeezy", color: "var(--tc-pink, #ff4081)" },
+  8: { icon: <FaStripeS />, description: "International payments via Stripe", color: "var(--tc-pay-indigo, #6058f7)" },
+  9: { icon: <SiPhonepe />, description: "Pay with PhonePe", color: "var(--tc-pay-purple, #5c249a)" },
+  10: { icon: <SiRazorpay />, description: "Pay with Razorpay", color: "var(--tc-pay-sky, #3395ff)" },
 };
 
 export default function CheckoutPanel({
@@ -107,44 +107,44 @@ export default function CheckoutPanel({
         sx={{
           p: { xs: 2.5, sm: 3 },
           borderRadius: "8px",
-          border: "1px solid #eee",
-          bgcolor: "#fff",
+          border: "1px solid var(--tc-border-light, #eee)",
+          bgcolor: "var(--tc-surface, #fff)",
         }}
       >
-        <Typography sx={{ color: "#222", mb: 0.5, fontSize: "20px", fontWeight: 800, letterSpacing: "0.2px" }}>
+        <Typography sx={{ color: "var(--tc-text-body, #222)", mb: 0.5, fontSize: "20px", fontWeight: 800, letterSpacing: "0.2px" }}>
           Order Summary
         </Typography>
-        <Typography variant="body2" sx={{ color: "#888", fontSize: "0.85rem", fontWeight: 600, mb: 2 }}>
+        <Typography variant="body2" sx={{ color: "var(--tc-text-faint, #888)", fontSize: "0.85rem", fontWeight: 600, mb: 2 }}>
           Review your order details
         </Typography>
 
         <Stack spacing={1.3}>
           <Box sx={{ display: "flex", justifyContent: "space-between", fontSize: "0.9rem" }}>
-            <Typography sx={{ color: "#666", fontSize: "0.9rem", fontWeight: 600 }}>Subtotal</Typography>
+            <Typography sx={{ color: "var(--tc-text-muted, #666)", fontSize: "0.9rem", fontWeight: 600 }}>Subtotal</Typography>
             {isSummaryLoading ? (
               <Skeleton width={90} height={22} />
             ) : (
-              <Typography fontWeight={600} color="#222">
+              <Typography fontWeight={600} color="var(--tc-text-body, #222)">
                 {currencyCode} {formatter(subtotal)}
               </Typography>
             )}
           </Box>
 
           <Box sx={{ display: "flex", justifyContent: "space-between", fontSize: "0.9rem" }}>
-            <Typography sx={{ color: "#666", fontSize: "0.9rem", fontWeight: 600 }}>Estimated Tax</Typography>
+            <Typography sx={{ color: "var(--tc-text-muted, #666)", fontSize: "0.9rem", fontWeight: 600 }}>Estimated Tax</Typography>
             {isSummaryLoading ? (
               <Skeleton width={80} height={22} />
             ) : (
-              <Typography fontWeight={600} color="#222">
+              <Typography fontWeight={600} color="var(--tc-text-body, #222)">
                 {currencyCode} {formatter(estimatedTax)}
               </Typography>
             )}
           </Box>
 
-          <Divider sx={{ my: 0.8, borderColor: "#f0f0f0" }} />
+          <Divider sx={{ my: 0.8, borderColor: "var(--tc-border-light, #f0f0f0)" }} />
 
           <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-            <Typography variant="subtitle1" fontWeight={700} color="#222" sx={{ fontSize: "1rem" }}>
+            <Typography variant="subtitle1" fontWeight={700} color="var(--tc-text-body, #222)" sx={{ fontSize: "1rem" }}>
               Total Amount
             </Typography>
             {isSummaryLoading ? (
@@ -165,18 +165,18 @@ export default function CheckoutPanel({
           sx={{
             p: { xs: 2.5, sm: 3 },
             borderRadius: "12px",
-            border: "1px solid #E8E8EC",
-            bgcolor: "#FFFFFF",
+            border: "1px solid var(--tc-border-light, #e8e8ec)",
+            bgcolor: "var(--tc-surface, #ffffff)",
             boxShadow: "0 2px 10px rgba(0, 0, 0, 0.03)",
           }}
         >
           {/* Card Header */}
           <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", mb: 2 }}>
             <Box>
-              <Typography sx={{ color: "#111", fontSize: "20px", fontWeight: 800, letterSpacing: "0.2px" }}>
+              <Typography sx={{ color: "var(--tc-text, #111)", fontSize: "20px", fontWeight: 800, letterSpacing: "0.2px" }}>
                 Shipping Address
               </Typography>
-              <Typography variant="body2" sx={{ color: "#777", fontSize: "0.85rem", fontWeight: 600, mt: 0.2 }}>
+              <Typography variant="body2" sx={{ color: "var(--tc-text-faint, #777)", fontSize: "0.85rem", fontWeight: 600, mt: 0.2 }}>
                 Where should we deliver?
               </Typography>
             </Box>
@@ -192,17 +192,17 @@ export default function CheckoutPanel({
                   textTransform: "none",
                   fontWeight: 600,
                   borderRadius: "20px",
-                  borderColor: "#DCDCE0",
-                  color: "#222",
-                  bgcolor: "#FAFAFA",
+                  borderColor: "var(--tc-border, #dcdce0)",
+                  color: "var(--tc-text-body, #222)",
+                  bgcolor: "var(--tc-surface-muted, #fafafa)",
                   px: 1.8,
                   py: 0.5,
                   boxShadow: "none",
                   transition: "all 0.2s ease",
                   "&:hover": {
-                    borderColor: "#111",
-                    bgcolor: "#111",
-                    color: "#FFF",
+                    borderColor: "var(--tc-text, #111)",
+                    bgcolor: "var(--tc-text, #111)",
+                    color: "var(--tc-surface, #fff)",
                   },
                 }}
               >
@@ -246,7 +246,7 @@ export default function CheckoutPanel({
                   >
                     <LocationOnOutlinedIcon sx={{ fontSize: 16 }} />
                   </Box>
-                  <Typography variant="subtitle2" fontWeight={800} sx={{ textTransform: "capitalize", color: "#111", fontSize: "0.95rem" }}>
+                  <Typography variant="subtitle2" fontWeight={800} sx={{ textTransform: "capitalize", color: "var(--tc-text, #111)", fontSize: "0.95rem" }}>
                     {selectedAddress?.shippingfirstname} {selectedAddress?.shippinglastname}
                   </Typography>
                 </Box>
@@ -268,7 +268,7 @@ export default function CheckoutPanel({
               </Box>
 
               <Box sx={{ display: "flex", alignItems: "flex-start", gap: 1, mt: 1.2, pl: 4.2 }}>
-                <Typography variant="body2" sx={{ color: "#444", fontSize: "0.88rem", lineHeight: 1.5 }}>
+                <Typography variant="body2" sx={{ color: "var(--tc-text-secondary, #444)", fontSize: "0.88rem", lineHeight: 1.5 }}>
                   {[
                     selectedAddress?.street,
                     selectedAddress?.address1,
@@ -285,8 +285,8 @@ export default function CheckoutPanel({
 
               {selectedAddress?.shippingmobile && (
                 <Box sx={{ display: "flex", alignItems: "center", gap: 1, mt: 0.8, pl: 4.2 }}>
-                  <PhoneOutlinedIcon sx={{ fontSize: 16, color: "#666", flexShrink: 0 }} />
-                  <Typography variant="body2" sx={{ color: "#555", fontSize: "0.85rem", fontWeight: 600 }}>
+                  <PhoneOutlinedIcon sx={{ fontSize: 16, color: "var(--tc-text-muted, #666)", flexShrink: 0 }} />
+                  <Typography variant="body2" sx={{ color: "var(--tc-text-muted, #555)", fontSize: "0.85rem", fontWeight: 600 }}>
                     {selectedAddress?.shippingmobile}
                   </Typography>
                 </Box>
@@ -298,12 +298,12 @@ export default function CheckoutPanel({
               sx={{
                 p: 3,
                 textAlign: "center",
-                bgcolor: "#FAFAFA",
+                bgcolor: "var(--tc-surface-muted, #fafafa)",
                 borderRadius: "10px",
-                border: "1px dashed #DDD",
+                border: "1px dashed var(--tc-border, #ddd)",
               }}
             >
-              <Typography variant="body2" color="#666" sx={{ mb: 1.5 }}>
+              <Typography variant="body2" color="var(--tc-text-muted, #666)" sx={{ mb: 1.5 }}>
                 No delivery address selected yet.
               </Typography>
               <Button
@@ -332,15 +332,15 @@ export default function CheckoutPanel({
             sx={{
               mt: 2,
               pt: 2,
-              borderTop: "1px dashed #eee",
+              borderTop: "1px dashed var(--tc-border-light, #eee)",
               display: "flex",
               justifyContent: "space-between",
               alignItems: "center",
             }}
           >
             <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-              <NotesOutlinedIcon sx={{ fontSize: 18, color: "#888" }} />
-              <Typography variant="body2" sx={{ color: "#666", fontSize: "0.85rem", fontWeight: 500 }}>
+              <NotesOutlinedIcon sx={{ fontSize: 18, color: "var(--tc-text-faint, #888)" }} />
+              <Typography variant="body2" sx={{ color: "var(--tc-text-muted, #666)", fontSize: "0.85rem", fontWeight: 500 }}>
                 {orderRemark ? "Special Instruction added" : "Add Order Instructions / Note"}
               </Typography>
             </Box>
@@ -362,11 +362,11 @@ export default function CheckoutPanel({
           </Box>
 
           {orderRemark && (
-            <Box sx={{ mt: 1, p: 1.2, bgcolor: "#f9f9f9", borderRadius: "6px", border: "1px solid #f0f0f0" }}>
-              <Typography variant="caption" sx={{ color: "#888", display: "block", fontWeight: 600 }}>
+            <Box sx={{ mt: 1, p: 1.2, bgcolor: "var(--tc-surface-muted, #f9f9f9)", borderRadius: "6px", border: "1px solid var(--tc-border-light, #f0f0f0)" }}>
+              <Typography variant="caption" sx={{ color: "var(--tc-text-faint, #888)", display: "block", fontWeight: 600 }}>
                 Note for seller:
               </Typography>
-              <Typography variant="body2" sx={{ color: "#333", fontSize: "0.85rem", mt: 0.2 }}>
+              <Typography variant="body2" sx={{ color: "var(--tc-text-secondary, #333)", fontSize: "0.85rem", mt: 0.2 }}>
                 {orderRemark}
               </Typography>
             </Box>
@@ -381,19 +381,19 @@ export default function CheckoutPanel({
           sx={{
             p: { xs: 2.5, sm: 3 },
             borderRadius: "8px",
-            border: "1px solid #eee",
-            bgcolor: "#fff",
+            border: "1px solid var(--tc-border-light, #eee)",
+            bgcolor: "var(--tc-surface, #fff)",
           }}
         >
           <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", mb: 0.5 }}>
-            <Typography sx={{ color: "#222", fontSize: "20px", fontWeight: 800, letterSpacing: "0.2px" }}>
+            <Typography sx={{ color: "var(--tc-text-body, #222)", fontSize: "20px", fontWeight: 800, letterSpacing: "0.2px" }}>
               Payment Method
             </Typography>
-            <Typography variant="caption" sx={{ color: "#888", fontSize: "0.75rem", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.5px" }}>
+            <Typography variant="caption" sx={{ color: "var(--tc-text-faint, #888)", fontSize: "0.75rem", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.5px" }}>
               Secure Checkout
             </Typography>
           </Box>
-          <Typography variant="body2" sx={{ color: "#888", fontSize: "0.85rem", fontWeight: 600, mb: 2 }}>
+          <Typography variant="body2" sx={{ color: "var(--tc-text-faint, #888)", fontSize: "0.85rem", fontWeight: 600, mb: 2 }}>
             Select your preferred payment gateway
           </Typography>
 
@@ -409,29 +409,29 @@ export default function CheckoutPanel({
                   <OutlinedInput
                     sx={{
                       borderRadius: "8px",
-                      bgcolor: "#FAFAFA",
-                      "& fieldset": { borderColor: "#E5E5E5" },
-                      "&:hover fieldset": { borderColor: "#BBB" },
-                      "&.Mui-focused fieldset": { borderColor: "#000000" },
+                      bgcolor: "var(--tc-surface-muted, #fafafa)",
+                      "& fieldset": { borderColor: "var(--tc-border, #e5e5e5)" },
+                      "&:hover fieldset": { borderColor: "var(--tc-border, #bbb)" },
+                      "&.Mui-focused fieldset": { borderColor: "var(--tc-text-ink, #000000)" },
                     }}
                   />
                 }
                 renderValue={(val) => {
                   const method = paymentMethods.find((m) => String(m.id) === String(val));
                   if (!method) {
-                    return <Typography sx={{ color: "#999" }}>Choose payment method</Typography>;
+                    return <Typography sx={{ color: "var(--tc-text-disabled, #999)" }}>Choose payment method</Typography>;
                   }
-                  const info = PAYMENT_METHODS_INFO[method.id] || { icon: <CreditCardIcon />, color: "#555" };
+                  const info = PAYMENT_METHODS_INFO[method.id] || { icon: <CreditCardIcon />, color: "var(--tc-text-muted, #555)" };
                   return (
                     <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, py: 0.2 }}>
                       <Box sx={{ color: info.color, fontSize: "1.2rem", display: "flex", alignItems: "center" }}>
                         {info.icon}
                       </Box>
                       <Box>
-                        <Typography sx={{ fontWeight: 600, color: "#111", fontSize: "0.92rem", lineHeight: 1.2 }}>
+                        <Typography sx={{ fontWeight: 600, color: "var(--tc-text, #111)", fontSize: "0.92rem", lineHeight: 1.2 }}>
                           {method.GatewayName}
                         </Typography>
-                        <Typography variant="caption" sx={{ color: "#777", fontSize: "0.75rem" }}>
+                        <Typography variant="caption" sx={{ color: "var(--tc-text-faint, #777)", fontSize: "0.75rem" }}>
                           {method.id === 3 ? "Pay on delivery" : "Online Payment"}
                         </Typography>
                       </Box>
@@ -441,7 +441,7 @@ export default function CheckoutPanel({
               >
                 {paymentMethods.map((method) => {
                   const isSelected = String(selectedPaymentMethod) === String(method.id);
-                  const info = PAYMENT_METHODS_INFO[method.id] || { icon: <CreditCardIcon />, color: "#555" };
+                  const info = PAYMENT_METHODS_INFO[method.id] || { icon: <CreditCardIcon />, color: "var(--tc-text-muted, #555)" };
                   return (
                     <MenuItem
                       key={method.id}
@@ -460,10 +460,10 @@ export default function CheckoutPanel({
                           {info.icon}
                         </Box>
                         <Box sx={{ flex: 1 }}>
-                          <Typography sx={{ fontWeight: 600, color: isSelected ? "var(--checkout-primary-text, #9c6d48)" : "#222", fontSize: "0.92rem" }}>
+                          <Typography sx={{ fontWeight: 600, color: isSelected ? "var(--checkout-primary-text, #9c6d48)" : "var(--tc-text-body, #222)", fontSize: "0.92rem" }}>
                             {method.GatewayName}
                           </Typography>
-                          <Typography variant="caption" sx={{ color: "#777", fontSize: "0.75rem", display: "block" }}>
+                          <Typography variant="caption" sx={{ color: "var(--tc-text-faint, #777)", fontSize: "0.75rem", display: "block" }}>
                             {method.id === 3 ? "Pay on delivery" : "Online Payment"}
                           </Typography>
                         </Box>
@@ -512,7 +512,7 @@ export default function CheckoutPanel({
           </Button>
           <Typography
             variant="caption"
-            sx={{ color: "#888888", textAlign: "center", fontSize: "0.8rem", mt: 0.3 }}
+            sx={{ color: "var(--tc-text-faint, #888888)", textAlign: "center", fontSize: "0.8rem", mt: 0.3 }}
           >
             Please log in to set your delivery address and complete your purchase.
           </Typography>
@@ -554,7 +554,7 @@ export default function CheckoutPanel({
           textAlign: "center",
         }}
       >
-        <Typography variant="subtitle2" fontWeight={700} color="#111" gutterBottom>
+        <Typography variant="subtitle2" fontWeight={700} color="var(--tc-text, #111)" gutterBottom>
           Need Help?
         </Typography>
         <Typography variant="body2" color="text.secondary" sx={{ fontSize: "0.82rem" }}>

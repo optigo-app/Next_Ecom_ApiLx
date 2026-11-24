@@ -23,12 +23,39 @@ export default function ArticleBasedCustomizationDrawer({
   loginData,
   onApply,
   item,
+  cartItems = [],
   onClose,
 }) {
   const [loading, setLoading] = useState(false);
   const [articles, setArticles] = useState([]);
   const [stones, setStones] = useState([]);
   const [defaultArticleId, setDefaultArticleId] = useState(null);
+  const [qty, setQty] = useState(1);
+
+  // Seed the stepper from the cart row each time a new item is edited
+  useEffect(() => {
+    setQty(Math.max(1, Number(item?.Quantity) || 1));
+  }, [item]);
+
+  // Variant-aware quantity (same rule as the detail page): the edited row keeps
+  // its own qty; another cart row with the picked ArticleNo shows that row's
+  // qty; a variant that isn't in the cart starts at 1.
+  const handleActiveArticleChange = (article) => {
+    const norm = (v) => String(v ?? "").trim().toLowerCase();
+    const own = norm(item?.ArticleNo ?? item?.articleno);
+    const picked = norm(article?.ArticleNo);
+    if (!picked || picked === own) {
+      setQty(Math.max(1, Number(item?.Quantity) || 1));
+      return;
+    }
+    const other = (cartItems || []).find(
+      (r) =>
+        r?.id !== item?.id &&
+        String(r?.autocode) === String(item?.autocode) &&
+        norm(r?.ArticleNo ?? r?.articleno) === picked,
+    );
+    setQty(Math.max(1, Number(other?.Quantity) || 1));
+  };
 
   useEffect(() => {
     if (!item || item?.IsMrpBase === 1) return;
@@ -83,7 +110,7 @@ export default function ArticleBasedCustomizationDrawer({
     return () => { cancelled = true; };
   }, [item, onClose]);
 
-  const handleConfirm = async (articleId, size, selectedDiaQc, selectedMetal) => {
+  const handleConfirm = async (articleId, size, selectedDiaQc, selectedMetal, _activeArticle, quantity) => {
     let article = articles.find((row) => String(row.ArticleId) === String(articleId));
     if (selectedDiaQc && selectedMetal) {
       const [quality, color] = selectedDiaQc.split("-");
@@ -119,13 +146,14 @@ export default function ArticleBasedCustomizationDrawer({
       size: size || article.Size || "",
       diamond: articleStones.find((stone) => Number(stone.StoneTypeid) === 1),
       colorStone: articleStones.find((stone) => Number(stone.StoneTypeid) === 2),
+      quantity: Math.max(1, Number(quantity ?? qty) || 1),
     });
     onClose?.();
   };
 
   return (
     <>
-      <Backdrop open={loading} sx={{ zIndex: 1400, color: "#fff" }}>
+      <Backdrop open={loading} sx={{ zIndex: 1400, color: "var(--tc-surface, #fff)" }}>
         <CircularProgress color="inherit" />
       </Backdrop>
       <CustomizerDrawer
@@ -138,6 +166,9 @@ export default function ArticleBasedCustomizationDrawer({
         storeInit={storeInit}
         loginData={loginData}
         showArticleId={false}
+        quantity={qty}
+        onQuantityChange={setQty}
+        onActiveArticleChange={handleActiveArticleChange}
       />
     </>
   );

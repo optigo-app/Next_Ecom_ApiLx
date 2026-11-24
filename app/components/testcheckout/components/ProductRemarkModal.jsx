@@ -16,8 +16,31 @@ export default function ProductRemarkModal({ open, onClose, initialRemark, onSav
   };
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="xs" fullWidth>
-      <DialogTitle sx={{ fontWeight: 600, fontSize: "1.1rem" }}>Product Remark</DialogTitle>
+    <Dialog
+      open={open}
+      onClose={onClose}
+      maxWidth="xs"
+      fullWidth
+      PaperProps={{
+        className: "tc-root",
+        sx: {
+          bgcolor: "var(--tc-surface-beige)",
+          borderRadius: "var(--tc-radius)",
+          border: "1px solid var(--tc-border-warm)",
+          boxShadow: "var(--tc-overlay-shadow)",
+        },
+      }}
+    >
+      <DialogTitle
+        sx={{
+          fontWeight: 600,
+          fontSize: "1.05rem",
+          color: "var(--tc-text-warm)",
+          pb: 1,
+        }}
+      >
+        Product Remark
+      </DialogTitle>
       <DialogContent>
         <TextField
           autoFocus
@@ -31,13 +54,28 @@ export default function ProductRemarkModal({ open, onClose, initialRemark, onSav
           onChange={(e) => setRemark(e.target.value)}
           variant="outlined"
           placeholder="e.g. Please engrave 'Love Forever'"
+          sx={{
+            "& .MuiOutlinedInput-root": {
+              bgcolor: "var(--tc-surface)",
+              "& fieldset": { borderColor: "var(--tc-border-warm-strong)" },
+              "&:hover fieldset": { borderColor: "var(--tc-border-focus)" },
+              "&.Mui-focused fieldset": { borderColor: "var(--tc-border-focus-deep)", borderWidth: 1 },
+            },
+            "& .MuiInputLabel-root": { color: "var(--tc-text-warm-muted)" },
+            "& .MuiInputLabel-root.Mui-focused": { color: "var(--tc-text-warm-accent)" },
+          }}
         />
       </DialogContent>
-      <DialogActions sx={{ px: 3, pb: 2 }}>
-        <Button onClick={onClose} sx={{ color: "#777" }}>
+      <DialogActions sx={{ px: 3, pb: 2.5 }}>
+        <Button onClick={onClose} sx={{ color: "var(--tc-text-warm-muted)", textTransform: "none" }}>
           Cancel
         </Button>
-        <Button onClick={handleSave} variant="contained" className="btnColorProCat">
+        <Button
+          onClick={handleSave}
+          variant="contained"
+          className="btnColorProCat"
+          sx={{ textTransform: "none", borderRadius: "8px" }}
+        >
           Save
         </Button>
       </DialogActions>

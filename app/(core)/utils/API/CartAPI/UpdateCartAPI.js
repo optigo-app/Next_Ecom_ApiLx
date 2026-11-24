@@ -17,6 +17,8 @@ export const updateCartAPI = async (updatedItems, metalID, metalCOLORID, diaIDDa
         // console.log('jbjasd--', updatedItems, metalID, metalCOLORID, diaIDData, colorStoneID, sizeId, markupData, finalPrice, finalPriceWithMarkup);
 
         const IsElvee = LocalSetup === "elvee.web";
+        const isGuest =
+            storeInit?.IsB2BWebsite == 0 && (islogin == false || islogin == null);
         const combinedValue = JSON.stringify({
             ForEvt: "Cart",
             FrontEnd_RegNo: `${storeInit?.FrontEnd_RegNo ?? ""}`,
@@ -28,13 +30,21 @@ export const updateCartAPI = async (updatedItems, metalID, metalCOLORID, diaIDDa
                     ...(articleSelection && {
                         ArticleId: `${articleSelection?.ArticleId ?? ""}`,
                         ArticleNo: `${articleSelection?.ArticleNo ?? ""}`,
+                        ...(articleSelection?.Quantity != null && {
+                            Quantity: Number(articleSelection.Quantity),
+                        }),
+                        ...Object.fromEntries(
+                            Object.entries(articleSelection?.Extra ?? {}).filter(
+                                ([, v]) => v !== undefined && v !== null,
+                            ),
+                        ),
                     }),
                     "Metalid": metalID ?? 0,
                     "MetalColorId": metalCOLORID ?? 0,
                     "DiaQCid": `${diaIDData}` ?? "0,0",
                     "CsQCid": `${colorStoneID}` ?? "0,0",
                     "Size": `${sizeId ?? 0}`,
-                    "Unitcost": `${updatedItems?.FinalCost ?? 0}`,
+                    "Unitcost": `${articleSelection?.UnitCost ?? updatedItems?.FinalCost ?? 0}`,
                     "markup": `${updatedItems?.SizeMarkUp ?? 0}`,
                     "UnitCostWithmarkup": `${updatedItems?.UnitCostWithMarkUp ?? 0}`,
                     "WebDiscount": islogin ? `${loginUserDetail?.WebDiscount ?? 0}` : `${0}`,
@@ -44,7 +54,27 @@ export const updateCartAPI = async (updatedItems, metalID, metalCOLORID, diaIDDa
                         ...ObjExtra
                     })
                 }],
-            DomainForNo: `${storeInit?.DomainForNo ?? ""}`
+            DomainForNo: `${storeInit?.DomainForNo ?? ""}`,
+            Laboursetid: isGuest
+                ? (storeInit?.pricemanagement_laboursetid ?? "")
+                : (loginUserDetail?.pricemanagement_laboursetid ??
+                  storeInit?.pricemanagement_laboursetid ??
+                  ""),
+            diamondpricelistname: isGuest
+                ? (storeInit?.diamondpricelistname ?? "")
+                : (loginUserDetail?.diamondpricelistname ??
+                  storeInit?.diamondpricelistname ??
+                  ""),
+            colorstonepricelistname: isGuest
+                ? (storeInit?.colorstonepricelistname ?? "")
+                : (loginUserDetail?.colorstonepricelistname ??
+                  storeInit?.colorstonepricelistname ??
+                  ""),
+            SettingPriceUniqueNo: isGuest
+                ? (storeInit?.SettingPriceUniqueNo ?? "")
+                : (loginUserDetail?.SettingPriceUniqueNo ??
+                  storeInit?.SettingPriceUniqueNo ??
+                  "")
         });
         const encodedCombinedValue = btoa(combinedValue);
         const body = {

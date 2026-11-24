@@ -23,7 +23,7 @@ export default function OrderProcessingBackdrop({
           width: "100vw",
           height: "100vh",
           zIndex: 99999,
-          bgcolor: "#ffffff",
+          bgcolor: "var(--tc-surface, #ffffff)",
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
@@ -62,18 +62,18 @@ export default function OrderProcessingBackdrop({
                   width: 80,
                   height: 80,
                   borderRadius: "50%",
-                  bgcolor: "#f0fdf4",
+                  bgcolor: "var(--tc-success-bg, #f0fdf4)",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
                   mb: 3,
-                  border: "1px solid #dcfce7",
+                  border: "1px solid var(--tc-success-border, #dcfce7)",
                 }}
               >
                 <CheckCircleRoundedIcon
                   sx={{
                     fontSize: 54,
-                    color: "#16a34a",
+                    color: "var(--tc-success, #16a34a)",
                   }}
                 />
               </Box>
@@ -84,7 +84,7 @@ export default function OrderProcessingBackdrop({
                   fontWeight: 600,
                   fontSize: { xs: "1.25rem", sm: "1.5rem" },
                   letterSpacing: "0.5px",
-                  color: "#111827",
+                  color: "var(--tc-text, #111827)",
                   fontFamily: "inherit",
                   mb: 1,
                 }}
@@ -96,7 +96,7 @@ export default function OrderProcessingBackdrop({
                 <Typography
                   variant="body2"
                   sx={{
-                    color: "#4b5563",
+                    color: "var(--tc-text-muted, #4b5563)",
                     fontWeight: 500,
                     fontSize: "0.95rem",
                     mb: 1.5,
@@ -109,7 +109,7 @@ export default function OrderProcessingBackdrop({
               <Typography
                 variant="body2"
                 sx={{
-                  color: "#6b7280",
+                  color: "var(--tc-text-faint, #6b7280)",
                   fontSize: "0.875rem",
                   letterSpacing: "0.2px",
                 }}
@@ -138,7 +138,7 @@ export default function OrderProcessingBackdrop({
                   size={56}
                   thickness={2.5}
                   sx={{
-                    color: "#111827",
+                    color: "var(--tc-text, #111827)",
                     animationDuration: "900ms",
                   }}
                 />
@@ -151,7 +151,7 @@ export default function OrderProcessingBackdrop({
                   fontWeight: 600,
                   fontSize: { xs: "1.15rem", sm: "1.35rem" },
                   letterSpacing: "0.4px",
-                  color: "#111827",
+                  color: "var(--tc-text, #111827)",
                   fontFamily: "inherit",
                   mb: 1,
                 }}
@@ -163,7 +163,7 @@ export default function OrderProcessingBackdrop({
               <Typography
                 variant="body2"
                 sx={{
-                  color: "#6b7280",
+                  color: "var(--tc-text-faint, #6b7280)",
                   fontSize: "0.875rem",
                   lineHeight: 1.6,
                   maxWidth: 360,
