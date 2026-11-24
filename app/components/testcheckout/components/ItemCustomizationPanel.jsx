@@ -15,9 +15,8 @@ import {
   FormLabel,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
-import AddIcon from "@mui/icons-material/Add";
-import RemoveIcon from "@mui/icons-material/Remove";
 import { formatTitleLine } from "@/app/(core)/utils/Glob_Functions/GlobalFunction";
+import QuantityStepper from "./QuantityStepper";
 
 const noImageFound = "/image-not-found.jpg";
 
@@ -251,7 +250,7 @@ export default function ItemCustomizationPanel({
         display: "flex",
         flexDirection: "column",
         height: isDrawer ? "100%" : "auto",
-        bgcolor: "#fff",
+        bgcolor: "var(--tc-surface, #fff)",
         overflowX: "hidden",
       }}
     >
@@ -263,7 +262,7 @@ export default function ItemCustomizationPanel({
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
-          borderBottom: "1px solid #f0f0f0",
+          borderBottom: "1px solid var(--tc-border-light, #f0f0f0)",
         }}
       >
         <Typography
@@ -272,7 +271,7 @@ export default function ItemCustomizationPanel({
             fontSize: "0.95rem",
             letterSpacing: "0.5px",
             textTransform: "uppercase",
-            color: "#111",
+            color: "var(--tc-text, #111)",
           }}
         >
           Customize Item
@@ -280,7 +279,7 @@ export default function ItemCustomizationPanel({
         <IconButton
           size="small"
           onClick={onCancel}
-          sx={{ color: "#777", "&:hover": { color: "#111", bgcolor: "#f5f5f5" } }}
+          sx={{ color: "var(--tc-text-faint, #777)", "&:hover": { color: "var(--tc-text, #111)", bgcolor: "var(--tc-surface-subtle, #f5f5f5)" } }}
         >
           <CloseIcon fontSize="small" />
         </IconButton>
@@ -352,7 +351,7 @@ export default function ItemCustomizationPanel({
           onClick={() => handleMoveToDetail && handleMoveToDetail(customizingItem)}
           sx={{
             fontWeight: 600,
-            color: "#222",
+            color: "var(--tc-text-body, #222)",
             mb: 0.3,
             fontSize: "1rem",
             cursor: "pointer",
@@ -365,7 +364,7 @@ export default function ItemCustomizationPanel({
         {customizingItem?.TitleLine && (
           <Typography
             variant="body2"
-            sx={{ mb: 2.5, color: "#777", fontSize: "0.82rem" }}
+            sx={{ mb: 2.5, color: "var(--tc-text-faint, #777)", fontSize: "0.82rem" }}
           >
             {formatTitleLine(customizingItem?.TitleLine)}
           </Typography>
@@ -382,7 +381,7 @@ export default function ItemCustomizationPanel({
                     sx={{
                       fontSize: "0.78rem",
                       fontWeight: 600,
-                      color: "#333",
+                      color: "var(--tc-text-secondary, #333)",
                       mb: 0.6,
                       letterSpacing: "0.3px",
                       textTransform: "uppercase",
@@ -401,11 +400,11 @@ export default function ItemCustomizationPanel({
                       width: "100%",
                       padding: "9px 12px",
                       borderRadius: "4px",
-                      border: "1px solid #dcdcdc",
+                      border: "1px solid var(--tc-border, #dcdcdc)",
                       fontSize: "0.88rem",
                       outline: "none",
-                      backgroundColor: "#fff",
-                      color: "#222",
+                      backgroundColor: "var(--tc-surface, #fff)",
+                      color: "var(--tc-text-body, #222)",
                     }}
                   >
                     {selectedMetalVal && !hasSelectedMetalOption && (
@@ -429,7 +428,7 @@ export default function ItemCustomizationPanel({
                     sx={{
                       fontSize: "0.78rem",
                       fontWeight: 600,
-                      color: "#333",
+                      color: "var(--tc-text-secondary, #333)",
                       mb: 0.6,
                       letterSpacing: "0.3px",
                       textTransform: "uppercase",
@@ -448,11 +447,11 @@ export default function ItemCustomizationPanel({
                       width: "100%",
                       padding: "9px 12px",
                       borderRadius: "4px",
-                      border: "1px solid #dcdcdc",
+                      border: "1px solid var(--tc-border, #dcdcdc)",
                       fontSize: "0.88rem",
                       outline: "none",
-                      backgroundColor: "#fff",
-                      color: "#222",
+                      backgroundColor: "var(--tc-surface, #fff)",
+                      color: "var(--tc-text-body, #222)",
                     }}
                   >
                     {selectedMetalColorVal && !hasSelectedMetalColorOption && (
@@ -476,7 +475,7 @@ export default function ItemCustomizationPanel({
                     sx={{
                       fontSize: "0.78rem",
                       fontWeight: 600,
-                      color: "#333",
+                      color: "var(--tc-text-secondary, #333)",
                       mb: 0.6,
                       letterSpacing: "0.3px",
                       textTransform: "uppercase",
@@ -495,11 +494,11 @@ export default function ItemCustomizationPanel({
                       width: "100%",
                       padding: "9px 12px",
                       borderRadius: "4px",
-                      border: "1px solid #dcdcdc",
+                      border: "1px solid var(--tc-border, #dcdcdc)",
                       fontSize: "0.88rem",
                       outline: "none",
-                      backgroundColor: "#fff",
-                      color: "#222",
+                      backgroundColor: "var(--tc-surface, #fff)",
+                      color: "var(--tc-text-body, #222)",
                     }}
                   >
                     {selectedDiaVal && !hasSelectedDiamondOption && (
@@ -526,7 +525,7 @@ export default function ItemCustomizationPanel({
                     sx={{
                       fontSize: "0.78rem",
                       fontWeight: 600,
-                      color: "#333",
+                      color: "var(--tc-text-secondary, #333)",
                       mb: 0.6,
                       letterSpacing: "0.3px",
                       textTransform: "uppercase",
@@ -545,11 +544,11 @@ export default function ItemCustomizationPanel({
                       width: "100%",
                       padding: "9px 12px",
                       borderRadius: "4px",
-                      border: "1px solid #dcdcdc",
+                      border: "1px solid var(--tc-border, #dcdcdc)",
                       fontSize: "0.88rem",
                       outline: "none",
-                      backgroundColor: "#fff",
-                      color: "#222",
+                      backgroundColor: "var(--tc-surface, #fff)",
+                      color: "var(--tc-text-body, #222)",
                     }}
                   >
                     {selectedCsVal && !hasSelectedColorStoneOption && (
@@ -576,7 +575,7 @@ export default function ItemCustomizationPanel({
                     sx={{
                       fontSize: "0.78rem",
                       fontWeight: 600,
-                      color: "#333",
+                      color: "var(--tc-text-secondary, #333)",
                       mb: 0.6,
                       letterSpacing: "0.3px",
                       textTransform: "uppercase",
@@ -593,11 +592,11 @@ export default function ItemCustomizationPanel({
                       width: "100%",
                       padding: "9px 12px",
                       borderRadius: "4px",
-                      border: "1px solid #dcdcdc",
+                      border: "1px solid var(--tc-border, #dcdcdc)",
                       fontSize: "0.88rem",
                       outline: "none",
-                      backgroundColor: "#fff",
-                      color: "#222",
+                      backgroundColor: "var(--tc-surface, #fff)",
+                      color: "var(--tc-text-body, #222)",
                     }}
                   >
                     {sizeCombo.rd.map((opt) => (
@@ -617,7 +616,7 @@ export default function ItemCustomizationPanel({
                   sx={{
                     fontSize: "0.78rem",
                     fontWeight: 600,
-                    color: "#333",
+                    color: "var(--tc-text-secondary, #333)",
                     mb: 0.6,
                     letterSpacing: "0.3px",
                     textTransform: "uppercase",
@@ -625,66 +624,11 @@ export default function ItemCustomizationPanel({
                 >
                   Quantity
                 </FormLabel>
-                <Box
-                  sx={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                    border: "1px solid #dcdcdc",
-                    borderRadius: "4px",
-                    bgcolor: "#fff",
-                    height: 38,
-                    px: 0.5,
-                  }}
-                >
-                  <IconButton
-                    size="small"
-                    onClick={() => onEditQtyChange(-1)}
-                    disabled={Number(editQty) <= 1}
-                    sx={{ color: "#555", p: 0.8 }}
-                  >
-                    <RemoveIcon sx={{ fontSize: 16 }} />
-                  </IconButton>
-                  <input
-                    type="number"
-                    min="1"
-                    value={editQty}
-                    onChange={(e) => {
-                      const val = e.target.value;
-                      if (val === "") {
-                        onEditQtyChange("", true);
-                      } else {
-                        const parsed = parseInt(val, 10);
-                        if (!isNaN(parsed)) {
-                          onEditQtyChange(parsed, true);
-                        }
-                      }
-                    }}
-                    onBlur={() => {
-                      if (!editQty || Number(editQty) < 1) {
-                        onEditQtyChange(1, true);
-                      }
-                    }}
-                    style={{
-                      fontWeight: 600,
-                      fontSize: "0.9rem",
-                      color: "#222",
-                      textAlign: "center",
-                      width: "60px",
-                      border: "none",
-                      outline: "none",
-                      backgroundColor: "transparent",
-                      MozAppearance: "textfield",
-                    }}
-                  />
-                  <IconButton
-                    size="small"
-                    onClick={() => onEditQtyChange(1)}
-                    sx={{ color: "#555", p: 0.8 }}
-                  >
-                    <AddIcon sx={{ fontSize: 16 }} />
-                  </IconButton>
-                </Box>
+                <QuantityStepper
+                  value={editQty}
+                  onChange={(next) => onEditQtyChange(next, true)}
+                  sx={{ height: 34 }}
+                />
               </FormControl>
             </Grid>
           </Grid>
@@ -699,15 +643,15 @@ export default function ItemCustomizationPanel({
           alignItems: "center",
           p: { xs: 2, sm: 2.5 },
           px: { xs: 2.5, sm: 3 },
-          borderTop: "1px solid #f0f0f0",
-          bgcolor: "#fafafa",
+          borderTop: "1px solid var(--tc-border-light, #f0f0f0)",
+          bgcolor: "var(--tc-surface-muted, #fafafa)",
         }}
       >
         <Box>
           <Typography
             variant="caption"
             sx={{
-              color: "#888",
+              color: "var(--tc-text-faint, #888)",
               display: "block",
               fontSize: "0.72rem",
               letterSpacing: "0.3px",
@@ -734,8 +678,8 @@ export default function ItemCustomizationPanel({
             variant="outlined"
             onClick={onCancel}
             sx={{
-              color: "#555",
-              borderColor: "#dcdcdc",
+              color: "var(--tc-text-muted, #555)",
+              borderColor: "var(--tc-border, #dcdcdc)",
               textTransform: "uppercase",
               fontSize: "0.8rem",
               fontWeight: 500,
@@ -743,7 +687,7 @@ export default function ItemCustomizationPanel({
               px: 2,
               py: 0.8,
               borderRadius: "2px",
-              "&:hover": { borderColor: "#999", bgcolor: "#f9f9f9" },
+              "&:hover": { borderColor: "var(--tc-text-disabled, #999)", bgcolor: "var(--tc-surface-muted, #f9f9f9)" },
             }}
           >
             Cancel
@@ -788,7 +732,7 @@ export default function ItemCustomizationPanel({
           sx: {
             width: { xs: "100%", sm: 460, md: 480 },
             maxWidth: "100%",
-            bgcolor: "#ffffff",
+            bgcolor: "var(--tc-surface, #ffffff)",
             display: "flex",
             flexDirection: "column",
             boxShadow: "-4px 0 24px rgba(0, 0, 0, 0.08)",
@@ -805,8 +749,8 @@ export default function ItemCustomizationPanel({
     <Box
       className="testCheckout_editPanel"
       sx={{
-        bgcolor: "#fff",
-        border: "1px solid #eee",
+        bgcolor: "var(--tc-surface, #fff)",
+        border: "1px solid var(--tc-border-light, #eee)",
         borderRadius: "8px",
         overflow: "hidden",
         boxShadow: "0 2px 12px rgba(0,0,0,0.03)",

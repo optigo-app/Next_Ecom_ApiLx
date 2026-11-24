@@ -1,7 +1,8 @@
 "use client";
 
 import { isStoreInitFlagEnabled } from "@/app/(core)/utils/storeFlags";
-import { useState, useEffect, useCallback } from "react";
+import { buildArticleCartSelection } from "@/app/(core)/utils/product/articleCartSelection";
+import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import Cookies from "js-cookie";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
@@ -39,16 +40,16 @@ import PaymentsIcon from "@mui/icons-material/Payments";
 import CreditCardIcon from "@mui/icons-material/CreditCard";
 
 const PAYMENT_METHODS_INFO = {
-  1: { icon: <BsPaypal />, description: "Pay securely with PayPal", color: "#003087" },
-  2: { icon: <BsCreditCard2Front />, description: "Pay with EBS", color: "#0051BA" },
-  3: { icon: <LocalShipping />, description: "Pay when you receive", color: "#FFD700" },
-  4: { icon: <SiPaytm />, description: "Pay using Paytm wallet", color: "#02b3ea" },
-  5: { icon: <PaymentsIcon />, description: "Pay with Eazypay", color: "#5C6BC0" },
-  6: { icon: <CreditCardIcon />, description: "Pay using PayUMoney", color: "#2196F3" },
-  7: { icon: <BsCreditCard />, description: "Pay with Payeezy", color: "#FF4081" },
-  8: { icon: <FaStripeS />, description: "International payments via Stripe", color: "#6058f7" },
-  9: { icon: <SiPhonepe />, description: "Pay with PhonePe", color: "#5c249a" },
-  10: { icon: <SiRazorpay />, description: "Pay with Razorpay", color: "#3395ff" },
+  1: { icon: <BsPaypal />, description: "Pay securely with PayPal", color: "var(--tc-pay-paypal, #003087)" },
+  2: { icon: <BsCreditCard2Front />, description: "Pay with EBS", color: "var(--tc-pay-deepblue, #0051ba)" },
+  3: { icon: <LocalShipping />, description: "Pay when you receive", color: "var(--tc-gold, #ffd700)" },
+  4: { icon: <SiPaytm />, description: "Pay using Paytm wallet", color: "var(--tc-pay-cyan, #02b3ea)" },
+  5: { icon: <PaymentsIcon />, description: "Pay with Eazypay", color: "var(--tc-pay-indigo-light, #5c6bc0)" },
+  6: { icon: <CreditCardIcon />, description: "Pay using PayUMoney", color: "var(--tc-pay-blue, #2196f3)" },
+  7: { icon: <BsCreditCard />, description: "Pay with Payeezy", color: "var(--tc-pink, #ff4081)" },
+  8: { icon: <FaStripeS />, description: "International payments via Stripe", color: "var(--tc-pay-indigo, #6058f7)" },
+  9: { icon: <SiPhonepe />, description: "Pay with PhonePe", color: "var(--tc-pay-purple, #5c249a)" },
+  10: { icon: <SiRazorpay />, description: "Pay with Razorpay", color: "var(--tc-pay-sky, #3395ff)" },
 };
 
 export function useTestCheckout(initialStoreInit) {
@@ -150,7 +151,10 @@ export function useTestCheckout(initialStoreInit) {
   }, [loadCartData]);
 
   // 3. Load Addresses
+  const addressesLoadedRef = useRef(false);
   const loadAddresses = useCallback(async () => {
+    if (addressesLoadedRef.current) return;
+    addressesLoadedRef.current = true;
     setIsLoadingAddress(true);
     try {
       const addresses = await fetchAddresses();
@@ -173,6 +177,11 @@ export function useTestCheckout(initialStoreInit) {
       setIsLoadingAddress(false);
     }
   }, []);
+  // Allow a manual refetch (e.g. after adding an address)
+  const reloadAddresses = useCallback(() => {
+    addressesLoadedRef.current = false;
+    return loadAddresses();
+  }, [loadAddresses]);
 
   useEffect(() => {
     if (islogin) {
@@ -197,11 +206,28 @@ export function useTestCheckout(initialStoreInit) {
     }
   }, []);
 
+  // Refetch tax only when the inputs tax actually depends on change:
+  // item ids/quantities/costs and the selected address. Plain identity changes
+  // (re-renders, unrelated refetches, StrictMode re-mount) don't trigger it.
+  const taxKey = useMemo(
+    () =>
+      `${(cartItems || [])
+        .map((i) => `${i?.id}:${i?.Quantity}:${i?.FinalCost}`)
+        .join(",")}|${selectedAddress?.id ?? ""}`,
+    [cartItems, selectedAddress],
+  );
+  const taxKeyRef = useRef("");
+
   useEffect(() => {
-    loadTaxData();
     const storedRemark = sessionStorage.getItem("orderRemark") || "";
     setOrderRemark(storedRemark);
-  }, [cartItems, selectedAddress, loadTaxData]);
+    // No tax for an empty bag; and wait for the address fetch to finish so a
+    // logged-in user gets one call with the real address, not a second one.
+    if (!cartItems?.length || (islogin && isLoadingAddress)) return;
+    if (taxKey === taxKeyRef.current) return;
+    taxKeyRef.current = taxKey;
+    loadTaxData();
+  }, [taxKey, cartItems, islogin, isLoadingAddress, loadTaxData]);
 
   // 5. Load Payment Methods
   useEffect(() => {
@@ -216,7 +242,7 @@ export function useTestCheckout(initialStoreInit) {
             return {
               ...m,
               icon: info?.icon || <CreditCardIcon />,
-              color: info?.color || "#555",
+              color: info?.color || "var(--tc-text-muted, #555)",
               description: info?.description || "Payment Option",
             };
           });
@@ -233,7 +259,7 @@ export function useTestCheckout(initialStoreInit) {
             id: 3,
             GatewayName: "Cash On Delivery",
             description: "Pay when you receive",
-            color: "#FFD700",
+            color: "var(--tc-gold, #ffd700)",
             icon: <LocalShipping />,
           },
         ]);
@@ -583,17 +609,14 @@ export function useTestCheckout(initialStoreInit) {
 
   // Article based drawer apply: persist the selected SQLite article against
   // the existing live cart row. The design based handler above stays unchanged.
-  const handleApplyArticleCustomization = async ({ cartItem, article, size, diamond, colorStone }) => {
+  const handleApplyArticleCustomization = async ({ cartItem, article, size, diamond, colorStone, quantity: requestedQty }) => {
     if (!cartItem || !article?.ArticleId || !article?.ArticleNo) {
       toast.error("The selected article is missing its cart identity");
       return;
     }
 
-    const unitCost = Number(
-      article?.UnitCostWithmarkup ?? article?.TotalUnitCost ?? cartItem?.UnitCostWithMarkUp ?? 0,
-    );
-
-    const quantity = Number(cartItem?.Quantity) || 1;
+    const sel = buildArticleCartSelection({ article, diamond, colorStone, size, quantity: requestedQty, cartItem });
+    const { unitCost, quantity } = sel;
     const updatedItem = {
       ...cartItem,
       ArticleId: article.ArticleId,
@@ -620,17 +643,23 @@ export function useTestCheckout(initialStoreInit) {
       setIsPriceLoading(true);
       await updateCartAPI(
         updatedItem,
-        article.MetalTypeId,
-        article.MetalColorId,
-        `${diamond?.QualityId ?? 0},${diamond?.ColorId ?? 0}`,
-        `${colorStone?.QualityId ?? 0},${colorStone?.ColorId ?? 0}`,
+        sel.metalId,
+        sel.metalColorId,
+        sel.diaQc,
+        sel.csQc,
         updatedItem.Size,
-        updatedItem.SizeMarkUp,
+        sel.markup,
         updatedItem.FinalCost,
         unitCost,
         undefined,
-        { ArticleId: article.ArticleId, ArticleNo: article.ArticleNo },
+        sel.articleSelection,
       );
+
+      // Persist quantity when the drawer stepper changed it
+      if (quantity !== (Number(cartItem?.Quantity) || 1)) {
+        await updateQuantity(cartItem.id, quantity, Cookies.get("visiterId"));
+      }
+
       toast.success("Cart updated successfully");
       await loadCartData(true);
     } catch (err) {
@@ -638,6 +667,52 @@ export function useTestCheckout(initialStoreInit) {
       toast.error("Failed to update cart");
     } finally {
       setIsPriceLoading(false);
+    }
+  };
+
+  // 9b. Direct Quantity Update (from bag item stepper)
+  const [qtyUpdatingId, setQtyUpdatingId] = useState(null);
+  const handleUpdateItemQty = async (item, newQty) => {
+    const qty = Math.max(1, parseInt(newQty, 10) || 1);
+    const currentQty = Number(item?.Quantity) || 1;
+    if (qty === currentQty || !item?.id) return;
+
+    const visiterId = Cookies.get("visiterId");
+    const unitCost = Number(item?.UnitCostWithMarkUp) || 0;
+
+    // Optimistic update so the stepper + totals react instantly
+    setCartItems((prev) =>
+      prev.map((ci) =>
+        ci.id === item.id
+          ? { ...ci, Quantity: qty, FinalCost: unitCost * qty }
+          : ci,
+      ),
+    );
+    setQtyUpdatingId(item.id);
+
+    try {
+      await updateQuantity(item.id, qty, visiterId);
+      // Keep the inline editor in sync if this item is being customized
+      if (editingItem?.id === item.id) {
+        setEditingItem((prev) => (prev ? { ...prev, Quantity: qty } : prev));
+        setCustomizingItem((prev) =>
+          prev
+            ? {
+                ...prev,
+                Quantity: qty,
+                FinalCost: (prev?.UnitCostWithMarkUp || 0) * qty,
+              }
+            : prev,
+        );
+        setEditQty(qty);
+      }
+      await loadCartData(true);
+    } catch (err) {
+      console.error("Failed to update quantity:", err);
+      toast.error("Failed to update quantity");
+      await loadCartData(true); // revert to server state
+    } finally {
+      setQtyUpdatingId(null);
     }
   };
 
@@ -1002,6 +1077,8 @@ export function useTestCheckout(initialStoreInit) {
     handleEditQtyChange,
     handleApplyCustomization,
     handleApplyArticleCustomization,
+    handleUpdateItemQty,
+    qtyUpdatingId,
 
     // Cart actions
     handleRemoveItem,

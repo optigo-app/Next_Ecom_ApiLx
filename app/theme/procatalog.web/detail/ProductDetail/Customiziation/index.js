@@ -16,6 +16,7 @@ import DiamondIcon from "@mui/icons-material/Diamond";
 import { formatter } from "@/app/(core)/utils/Glob_Functions/GlobalFunction";
 import { useProductStock } from "@/app/(core)/hooks/useProductStock";
 import { resolveProductStockStatus } from "@/app/(core)/utils/product/stockUtils";
+import QuantityStepper from "@/app/components/testcheckout/components/QuantityStepper";
 
 // ── Brand design tokens ─────────────────────────────────────────────────────
 const colors = {
@@ -308,6 +309,9 @@ export default function CustomizerDrawer({
   storeInit,
   loginData,
   showArticleId = true,
+  quantity,
+  onQuantityChange,
+  onActiveArticleChange,
 }) {
   const [selectedMetal, setSelectedMetal] = useState(null);
   const [selectedSize, setSelectedSize] = useState(null);
@@ -558,6 +562,10 @@ export default function CustomizerDrawer({
     return found || null;
   }, [matchingArticlesWithOrigin, selectedSize, selectedOrigin, selectedDiaQc, rd2]);
 
+  useEffect(() => {
+    if (activeArticle) onActiveArticleChange?.(activeArticle);
+  }, [activeArticle?.ArticleId]);
+
   // ── 7. Stone Quality options for selected metal & origin ───────────────────
   const stoneQualityCombos = useMemo(() => {
     const matchingIds = new Set(
@@ -647,6 +655,7 @@ export default function CustomizerDrawer({
       selectedDiaQc,
       selectedMetal,
       activeArticle,
+      quantity,
     );
     onClose();
   };
@@ -662,6 +671,7 @@ export default function CustomizerDrawer({
       anchor="right"
       open={open}
       onClose={onClose}
+      slotProps={{ paper: { className: "tc-root" } }}
       sx={{
         zIndex: 99999,
         "& .MuiDrawer-paper": {
@@ -1049,6 +1059,21 @@ export default function CustomizerDrawer({
                   Size not available
                 </Typography>
               </Box>
+            )}
+
+            {/* ── Section 4: Quantity (cart flows only) ─────────────────── */}
+            {typeof onQuantityChange === "function" && (
+              <>
+                <Divider sx={{ mb: 3.5, borderColor: colors.borderLight }} />
+                <Box sx={{ mb: 2 }}>
+                  <SectionLabel>Quantity</SectionLabel>
+                  <QuantityStepper
+                    variant="square"
+                    value={quantity}
+                    onChange={onQuantityChange}
+                  />
+                </Box>
+              </>
             )}
 
             {/* End of content */}

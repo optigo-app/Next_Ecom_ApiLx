@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import Grid from '@mui/material/Grid';
+import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import WishlistItems from './WishlistItems';
 import { ToggleButton, ToggleButtonGroup } from '@mui/material';
 
@@ -53,13 +54,13 @@ const WishlistData = ({
                 borderRadius: '0px',
                 '.Mui-selected': {
                   backgroundColor: '#7d7f856e',
-                  color: '#fff',
+                  color: 'var(--wl-surface, #fff)',
                 },
                 '.MuiToggleButton-root': {
                   borderRadius: '0px',
                   '&:not(.Mui-selected)': {
                     backgroundColor: 'transparent',
-                    color: '#000',
+                    color: 'var(--wl-text-ink, #000)',
                   }
                 }
               }}
@@ -92,9 +93,45 @@ const WishlistData = ({
         </Grid>
         {items.length == 0 &&
           <div className='smr_noWishlistData'>
-            <p className='smr_title'>No Wishlist Found!</p>
-            <p className='smr_desc'>Please First Add Product in Wishlist</p>
-            <button className='smr_browseOurCollectionbtn' onClick={handelMenu}>Browse our collection</button>
+            <div style={{
+              maxWidth: 420,
+              margin: "0 auto",
+              padding: "48px 32px",
+              textAlign: "center",
+              background: "var(--wl-surface-muted, #fafafa)",
+              border: "1px dashed var(--wl-border, #dcdcdc)",
+              borderRadius: 12,
+            }}>
+              <div style={{
+                width: 64,
+                height: 64,
+                borderRadius: "50%",
+                background: "var(--wl-surface-warm, #faf4ee)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                margin: "0 auto 16px",
+              }}>
+                <FavoriteBorderIcon style={{ fontSize: 30, color: "var(--wl-accent, #cca182)" }} />
+              </div>
+              <p className='smr_title' style={{ margin: "0 0 8px", fontSize: "1.15rem", fontWeight: 600, color: "var(--wl-text-secondary, #333)" }}>Your wishlist is empty</p>
+              <p className='smr_desc' style={{ margin: "0 0 24px", color: "var(--wl-text-faint, #777)", fontSize: "0.9rem" }}>Save your favorite pieces here and find them anytime.</p>
+              <button
+                className='smr_browseOurCollectionbtn'
+                onClick={handelMenu}
+                style={{
+                  background: "var(--wl-accent, #cca182)",
+                  color: "var(--wl-surface, #fff)",
+                  border: "none",
+                  borderRadius: 8,
+                  padding: "10px 28px",
+                  fontSize: "0.9rem",
+                  cursor: "pointer",
+                }}
+              >
+                Browse Our Collection
+              </button>
+            </div>
           </div>
         }
       </>

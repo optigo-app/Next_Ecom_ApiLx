@@ -57,14 +57,14 @@ export default function ProCatFooter({
     fontFamily: '"Poppins", sans-serif',
     fontSize: { xs: "1rem", sm: "1.08rem" },
     fontWeight: 600,
-    color: "#222222",
+    color: "var(--hm-text-body, #222222)",
     mb: 2.5,
     letterSpacing: "0.2px",
   };
 
   const textStyle = {
     fontSize: "0.875rem",
-    color: "#7D7F85",
+    color: "var(--hm-text-faint, #7d7f85)",
     lineHeight: 1.6,
   };
 
@@ -72,12 +72,12 @@ export default function ProCatFooter({
     <Box
       component="footer"
       sx={{
-        backgroundColor: "#ffffff",
-        borderTop: "1px solid #EAEAEA",
+        backgroundColor: "var(--hm-surface, #ffffff)",
+        borderTop: "1px solid var(--hm-border, #eaeaea)",
         pt: { xs: 4, sm: 5, md: 6 },
         pb: { xs: 3, sm: 4 },
         px: { xs: 2, sm: 4, md: 6, lg: 8 },
-        color: "#7D7F85",
+        color: "var(--hm-text-faint, #7d7f85)",
         fontFamily: '"Poppins", "Segoe UI", sans-serif',
       }}
     >
@@ -95,7 +95,7 @@ export default function ProCatFooter({
                 <LocationOnOutlinedIcon
                   sx={{
                     fontSize: 20,
-                    color: "#0F3D4C",
+                    color: "var(--hm-accent, #0f3d4c)",
                     mt: 0.25,
                     flexShrink: 0,
                   }}
@@ -115,7 +115,7 @@ export default function ProCatFooter({
                 <PhoneOutlinedIcon
                   sx={{
                     fontSize: 19,
-                    color: "#0F3D4C",
+                    color: "var(--hm-accent, #0f3d4c)",
                     flexShrink: 0,
                   }}
                 />
@@ -128,7 +128,7 @@ export default function ProCatFooter({
                       sx={{
                         ...textStyle,
                         textDecoration: "none",
-                        "&:hover": { color: "#0F3D4C" },
+                        "&:hover": { color: "var(--hm-accent, #0f3d4c)" },
                       }}
                     >
                       {num}
@@ -144,7 +144,7 @@ export default function ProCatFooter({
                 <EmailOutlinedIcon
                   sx={{
                     fontSize: 19,
-                    color: "#0F3D4C",
+                    color: "var(--hm-accent, #0f3d4c)",
                     flexShrink: 0,
                   }}
                 />
@@ -154,7 +154,7 @@ export default function ProCatFooter({
                   sx={{
                     ...textStyle,
                     textDecoration: "none",
-                    "&:hover": { color: "#0F3D4C" },
+                    "&:hover": { color: "var(--hm-accent, #0f3d4c)" },
                   }}
                 >
                   {email}
@@ -189,7 +189,7 @@ export default function ProCatFooter({
                   py: 0.25,
                   transition: "color 0.2s ease, transform 0.2s ease",
                   "&:hover": {
-                    color: "#0F3D4C",
+                    color: "var(--hm-accent, #0f3d4c)",
                     transform: "translateX(2px)",
                   },
                 }}
@@ -219,17 +219,17 @@ export default function ProCatFooter({
                     width: 38,
                     height: 38,
                     borderRadius: "50%",
-                    border: "1px solid #DEDEDE",
+                    border: "1px solid var(--hm-border, #dedede)",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
-                    color: "#555555",
-                    backgroundColor: "#ffffff",
+                    color: "var(--hm-text-muted, #555555)",
+                    backgroundColor: "var(--hm-surface, #ffffff)",
                     textDecoration: "none",
                     transition: "all 0.25s ease",
                     "&:hover": {
-                      borderColor: "#0F3D4C",
-                      color: "#0F3D4C",
+                      borderColor: "var(--hm-accent, #0f3d4c)",
+                      color: "var(--hm-accent, #0f3d4c)",
                       transform: "translateY(-2px)",
                       boxShadow: "0 3px 8px rgba(0, 0, 0, 0.08)",
                     },
@@ -271,7 +271,7 @@ export default function ProCatFooter({
       {/* FOOTER BOTTOM: COPYRIGHT */}
       <Box
         sx={{
-          borderTop: "1px solid #F0F0F0",
+          borderTop: "1px solid var(--hm-border, #f0f0f0)",
           mt: { xs: 4, sm: 5, md: 6 },
           pt: 3,
           textAlign: "center",
@@ -280,7 +280,7 @@ export default function ProCatFooter({
         <Typography
           sx={{
             fontSize: "0.82rem",
-            color: "#888888",
+            color: "var(--hm-text-faint, #888888)",
             letterSpacing: "0.2px",
           }}
         >
@@ -303,17 +303,17 @@ function SocialLink({ href, label, children }) {
         width: 38,
         height: 38,
         borderRadius: "50%",
-        border: "1px solid #E2E2E2",
+        border: "1px solid var(--hm-border, #e2e2e2)",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        color: "#666666",
-        backgroundColor: "#ffffff",
+        color: "var(--hm-text-muted, #666666)",
+        backgroundColor: "var(--hm-surface, #ffffff)",
         textDecoration: "none",
         transition: "all 0.25s ease",
         "&:hover": {
-          borderColor: "#0F3D4C",
-          color: "#0F3D4C",
+          borderColor: "var(--hm-accent, #0f3d4c)",
+          color: "var(--hm-accent, #0f3d4c)",
           transform: "translateY(-2px)",
           boxShadow: "0 3px 8px rgba(0, 0, 0, 0.08)",
         },

@@ -10,7 +10,7 @@
     padding-inline: 6%;
     display: flex;
     height: 100%;
-    background-color: #fff;
+    background-color: var(--hm-surface, #fff);
   }
 
   .smiling_Top_header_div1 {
@@ -148,7 +148,7 @@
     text-align: center;
     transform: translateY(-200px);
     height: 90px; // matches normal header height
-    // background-color: #fff;
+    // background-color: var(--hm-surface, #fff);
   }
 
   .Smining-Top-Header-fixed-main.fixed {
@@ -159,7 +159,7 @@
     transform: translateY(0px);
     transition: all 0.4s ease;
     height: 90px; // matches normal header height
-    // background-color: #fff;
+    // background-color: var(--hm-surface, #fff);
   }
 
   /// open dropdownList
@@ -167,7 +167,7 @@
     height: auto;
     width: 100%;
     position: absolute;
-    background: #fff;
+    background: var(--hm-surface, #fff);
     top: 72px;
     left: 0;
     display: none;
@@ -204,7 +204,7 @@
   .smr_menuSubTitle {
     font-size: 13px;
     text-decoration: none;
-    color: #9b978f;
+    color: var(--hm-text-warm-alt, #9b978f);
     // color: rgb(192 187 184);
   }
 
@@ -332,13 +332,13 @@
   }
 
   .badgeColor .MuiBadge-badge {
-    background-color: #000000 !important;
-    color: #ffffff !important;
+    background-color: var(--hm-text, #000000) !important;
+    color: var(--hm-surface, #ffffff) !important;
   }
 
   .badgeColorFix .MuiBadge-badge {
-    background-color: #000000 !important;
-    color: #ffffff !important;
+    background-color: var(--hm-text, #000000) !important;
+    color: var(--hm-surface, #ffffff) !important;
     margin-left: 10px !important;
   }
 
@@ -353,7 +353,7 @@
   .smr_mobile_subMenu {
     margin: 0px 0px 0px 15px;
     padding-block: 5px;
-    color: #f6f6f6;
+    color: var(--hm-surface-subtle, #f6f6f6);
   }
 
   .mobileSideBarSearch::placeholder {

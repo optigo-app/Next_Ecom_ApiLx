@@ -12,6 +12,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import ModeEditOutlineOutlinedIcon from "@mui/icons-material/ModeEditOutlineOutlined";
 import RateReviewOutlinedIcon from "@mui/icons-material/RateReviewOutlined";
 import ProductRemarkModal from "./ProductRemarkModal";
+import QuantityStepper from "./QuantityStepper";
 import ConfirmationDialog from "@/app/(core)/utils/Glob_Functions/ConfirmationDialog/ConfirmationDialog";
 
 const noImageFound = "/image-not-found.jpg";
@@ -26,6 +27,8 @@ export default function ShoppingBagItem({
   onStartEdit,
   onRemoveItem,
   onSaveProductRemark,
+  onUpdateQty,
+  isQtyUpdating = false,
   handleMoveToDetail,
 }) {
   const articleFlagValue = storeinit?.IsArticleBasedCartCustomization;
@@ -66,11 +69,11 @@ export default function ShoppingBagItem({
         display: "flex",
         alignItems: "center",
         gap: { xs: 2, sm: 3 },
-        borderBottom: "1px solid #f2f2f2",
+        borderBottom: "1px solid var(--tc-border-light, #f2f2f2)",
         position: "relative",
         transition: "background-color 0.2s ease",
         "&:hover": {
-          bgcolor: "#fafafa",
+          bgcolor: "var(--tc-surface-muted, #fafafa)",
         },
       }}
     >
@@ -80,7 +83,6 @@ export default function ShoppingBagItem({
         onClick={() => handleMoveToDetail && handleMoveToDetail(item)}
         sx={{
           width: { xs: 110, sm: 150, md: 250 },
-          minHeight: { xs: 110, sm: 150, md: "100%" },
           aspectRatio: "1 / 1",
           flexShrink: 0,
           position: "relative",
@@ -98,8 +100,8 @@ export default function ShoppingBagItem({
               position: "absolute",
               top: { xs: 6, sm: 8 },
               left: { xs: 6, sm: 8 },
-              bgcolor: "#2e7d32",
-              color: "#fff",
+              bgcolor: "var(--tc-success, #2e7d32)",
+              color: "var(--tc-surface, #fff)",
               fontSize: { xs: "0.6rem", sm: "0.68rem" },
               fontWeight: 700,
               letterSpacing: "0.4px",
@@ -131,6 +133,31 @@ export default function ShoppingBagItem({
           }}
           loading="lazy"
         />
+
+        {/* Quantity Stepper - overlaid, centered at the bottom of the image */}
+        <Box
+          onClick={(e) => e.stopPropagation()}
+          sx={{
+            position: "absolute",
+            bottom: { xs: 5, sm: 7, md: 10 },
+            left: "50%",
+            transform: {
+              xs: "translateX(-50%) scale(0.88)",
+              sm: "translateX(-50%)",
+            },
+            zIndex: 2,
+            borderRadius: "999px",
+            bgcolor: "var(--tc-surface, #fff)",
+            boxShadow: "0 1px 6px rgba(0,0,0,0.18)",
+            display: "flex",
+          }}
+        >
+          <QuantityStepper
+            value={item?.Quantity || 1}
+            disabled={isQtyUpdating}
+            onChange={(next) => onUpdateQty && onUpdateQty(item, next)}
+          />
+        </Box>
       </Box>
 
       {/* Product Details - Clean Light Aesthetic */}
@@ -149,7 +176,7 @@ export default function ShoppingBagItem({
             sx={{
               fontWeight: 600,
               fontSize: { xs: "0.88rem", sm: "1.05rem" },
-              color: "#222",
+              color: "var(--tc-text-body, #222)",
               letterSpacing: "0.2px",
               cursor: "pointer",
               "&:hover": {
@@ -165,9 +192,9 @@ export default function ShoppingBagItem({
               component="span"
               sx={{
                 display: { xs: "inline-block", sm: "none" },
-                bgcolor: "#e8f5e9",
-                color: "#2e7d32",
-                border: "1px solid #c8e6c9",
+                bgcolor: "var(--tc-success-bg, #e8f5e9)",
+                color: "var(--tc-success, #2e7d32)",
+                border: "1px solid var(--tc-success-border, #c8e6c9)",
                 fontSize: "0.68rem",
                 fontWeight: 600,
                 px: 0.8,
@@ -186,7 +213,7 @@ export default function ShoppingBagItem({
             flexWrap: "wrap",
             gap: "6px 12px",
             fontSize: "0.8rem",
-            color: "#777",
+            color: "var(--tc-text-faint, #777)",
             fontWeight: 600,
             mb: 0.6,
           }}
@@ -218,7 +245,7 @@ export default function ShoppingBagItem({
             flexWrap: "wrap",
             gap: "6px",
             fontSize: "0.8rem",
-            color: "#555",
+            color: "var(--tc-text-muted, #555)",
             fontWeight: 600,
             mb: 0.8,
           }}
@@ -241,7 +268,6 @@ export default function ShoppingBagItem({
             </span>
           )}
           {item?.Size && <span> | Size: {item?.Size}</span>}
-          <span> | Qty: {item?.Quantity || 1}</span>
         </Box>
 
         {/* Price */}
@@ -250,7 +276,7 @@ export default function ShoppingBagItem({
             sx={{
               fontWeight: 700,
               fontSize: { xs: "0.95rem", sm: "1.05rem" },
-              color: "#1a1a1a",
+              color: "var(--tc-text-deep, #1a1a1a)",
               mt: 0.3,
               mb: 0.8,
             }}
@@ -265,7 +291,7 @@ export default function ShoppingBagItem({
             variant="body2"
             sx={{
               fontSize: "0.8rem",
-              color: "#777",
+              color: "var(--tc-text-faint, #777)",
               fontWeight: 600,
               fontStyle: "italic",
               mb: 1,
@@ -322,14 +348,14 @@ export default function ShoppingBagItem({
               letterSpacing: "0.2px",
               textTransform: "none",
               borderRadius: "4px",
-              border: "1px solid #e0e0e0",
-              color: "#555",
-              bgcolor: "#fff",
+              border: "1px solid var(--tc-border, #e0e0e0)",
+              color: "var(--tc-text-muted, #555)",
+              bgcolor: "var(--tc-surface, #fff)",
               transition: "all 0.15s ease",
               "&:hover": {
-                borderColor: "#999",
-                color: "#111",
-                bgcolor: "#f7f7f7",
+                borderColor: "var(--tc-text-disabled, #999)",
+                color: "var(--tc-text, #111)",
+                bgcolor: "var(--tc-surface-subtle, #f7f7f7)",
               },
             }}
           >
@@ -347,16 +373,16 @@ export default function ShoppingBagItem({
           position: "absolute",
           top: 12,
           right: 12,
-          color: "#999",
-          border: "1px solid #eee",
+          color: "var(--tc-text-disabled, #999)",
+          border: "1px solid var(--tc-border-light, #eee)",
           borderRadius: "4px",
           width: 28,
           height: 28,
           p: 0,
           "&:hover": {
-            color: "#e53935",
-            borderColor: "#e53935",
-            bgcolor: "#fff5f5",
+            color: "var(--tc-danger, #e53935)",
+            borderColor: "var(--tc-danger, #e53935)",
+            bgcolor: "var(--tc-danger-bg, #fff5f5)",
           },
         }}
       >

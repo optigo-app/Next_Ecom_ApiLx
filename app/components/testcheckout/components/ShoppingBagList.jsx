@@ -17,6 +17,8 @@ export default function ShoppingBagList({
   onStartEdit,
   onRemoveItem,
   onSaveProductRemark,
+  onUpdateQty,
+  qtyUpdatingId,
   handleMoveToDetail,
 }) {
   const router = useRouter();
@@ -64,9 +66,9 @@ export default function ShoppingBagList({
           py: 8,
           px: 3,
           textAlign: "center",
-          bgcolor: "#fafafa",
+          bgcolor: "var(--tc-surface-muted, #fafafa)",
           borderRadius: 2,
-          border: "1px dashed #ddd",
+          border: "1px dashed var(--tc-border, #ddd)",
         }}
       >
         <Typography variant="h6" fontWeight={600} color="text.secondary" gutterBottom>
@@ -111,6 +113,8 @@ export default function ShoppingBagList({
           onStartEdit={onStartEdit}
           onRemoveItem={onRemoveItem}
           onSaveProductRemark={onSaveProductRemark}
+          onUpdateQty={onUpdateQty}
+          isQtyUpdating={qtyUpdatingId === item.id}
           handleMoveToDetail={handleMoveToDetail}
         />
       ))}

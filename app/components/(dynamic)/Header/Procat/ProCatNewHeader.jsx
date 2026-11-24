@@ -87,7 +87,7 @@ const ProCatNewHeader = ({ storeinit, logos }) => {
     fontWeight: 500,
     letterSpacing: "1.2px",
     textTransform: "uppercase",
-    color: "#222222",
+    color: "var(--hm-text-body, #222222)",
     cursor: "pointer",
     position: "relative",
     padding: "6px 2px",
@@ -100,11 +100,11 @@ const ProCatNewHeader = ({ storeinit, logos }) => {
       height: "2px",
       bottom: 0,
       left: 0,
-      backgroundColor: "#111111",
+      backgroundColor: "var(--hm-text, #111111)",
       transition: "width 0.25s ease-in-out",
     },
     "&:hover": {
-      color: "#000000",
+      color: "var(--hm-text, #000000)",
       "&:after": {
         width: "100%",
       },
@@ -127,7 +127,7 @@ const ProCatNewHeader = ({ storeinit, logos }) => {
         sx={{
           top: 0,
           zIndex: 1200,
-          backgroundColor: "#ffffff",
+          backgroundColor: "var(--hm-surface, #ffffff)",
           borderBottom: "1px solid rgba(0, 0, 0, 0.08)",
           boxShadow: "0 2px 8px rgba(0, 0, 0, 0.04)",
           transition: "all 0.3s ease",
@@ -247,7 +247,7 @@ const ProCatNewHeader = ({ storeinit, logos }) => {
                   <IconButton
                     aria-label="search"
                     onClick={() => setSearchOpen((prev) => !prev)}
-                    sx={{ p: 0.8, color: "#1a1a1a", "&:hover": { backgroundColor: "rgba(0, 0, 0, 0.04)" } }}
+                    sx={{ p: 0.8, color: "var(--hm-text, #1a1a1a)", "&:hover": { backgroundColor: "rgba(0, 0, 0, 0.04)" } }}
                   >
                     <SearchIcon sx={{ fontSize: 24 }} />
                   </IconButton>
@@ -260,7 +260,7 @@ const ProCatNewHeader = ({ storeinit, logos }) => {
                     onClick={() => navigate("/myWishList")}
                     sx={{
                       p: 0.8,
-                      color: "#1a1a1a",
+                      color: "var(--hm-text, #1a1a1a)",
                       "&:hover": {
                         backgroundColor: "rgba(0, 0, 0, 0.04)",
                       },
@@ -271,8 +271,8 @@ const ProCatNewHeader = ({ storeinit, logos }) => {
                       max={999}
                       sx={{
                         "& .MuiBadge-badge": {
-                          backgroundColor: "#000000",
-                          color: "#ffffff",
+                          backgroundColor: "var(--hm-badge-bg, var(--hm-text, #000000))",
+                          color: "var(--hm-badge-text, var(--hm-surface, #ffffff))",
                           fontSize: "11px",
                           fontWeight: 600,
                           minWidth: "18px",
@@ -293,7 +293,7 @@ const ProCatNewHeader = ({ storeinit, logos }) => {
                     onClick={() => navigate("/cartPage")}
                     sx={{
                       p: 0.8,
-                      color: "#1a1a1a",
+                      color: "var(--hm-text, #1a1a1a)",
                       "&:hover": {
                         backgroundColor: "rgba(0, 0, 0, 0.04)",
                       },
@@ -304,8 +304,8 @@ const ProCatNewHeader = ({ storeinit, logos }) => {
                       max={999}
                       sx={{
                         "& .MuiBadge-badge": {
-                          backgroundColor: "#000000",
-                          color: "#ffffff",
+                          backgroundColor: "var(--hm-badge-bg, var(--hm-text, #000000))",
+                          color: "var(--hm-badge-text, var(--hm-surface, #ffffff))",
                           fontSize: "11px",
                           fontWeight: 600,
                           minWidth: "18px",
@@ -332,7 +332,7 @@ const ProCatNewHeader = ({ storeinit, logos }) => {
               <IconButton
                 aria-label="search"
                 onClick={() => setSearchOpen((prev) => !prev)}
-                sx={{ color: "#1a1a1a" }}
+                sx={{ color: "var(--hm-text, #1a1a1a)" }}
               >
                 <SearchIcon sx={{ fontSize: 24 }} />
               </IconButton>
@@ -340,15 +340,15 @@ const ProCatNewHeader = ({ storeinit, logos }) => {
               <IconButton
                 aria-label="wishlist"
                 onClick={() => navigate("/myWishList")}
-                sx={{ color: "#1a1a1a" }}
+                sx={{ color: "var(--hm-text, #1a1a1a)" }}
               >
                 <Badge
                   badgeContent={isMounted ? wishCountNum : 0}
                   max={999}
                   sx={{
                     "& .MuiBadge-badge": {
-                      backgroundColor: "#000000",
-                      color: "#ffffff",
+                      backgroundColor: "var(--hm-badge-bg, var(--hm-text, #000000))",
+                      color: "var(--hm-badge-text, var(--hm-surface, #ffffff))",
                       fontSize: "10px",
                       fontWeight: 600,
                     },
@@ -361,15 +361,15 @@ const ProCatNewHeader = ({ storeinit, logos }) => {
               <IconButton
                 aria-label="cart"
                 onClick={() => navigate("/cartPage")}
-                sx={{ color: "#1a1a1a" }}
+                sx={{ color: "var(--hm-text, #1a1a1a)" }}
               >
                 <Badge
                   badgeContent={isMounted ? cartCountNum : 0}
                   max={999}
                   sx={{
                     "& .MuiBadge-badge": {
-                      backgroundColor: "#000000",
-                      color: "#ffffff",
+                      backgroundColor: "var(--hm-badge-bg, var(--hm-text, #000000))",
+                      color: "var(--hm-badge-text, var(--hm-surface, #ffffff))",
                       fontSize: "10px",
                       fontWeight: 600,
                     },
@@ -383,7 +383,7 @@ const ProCatNewHeader = ({ storeinit, logos }) => {
                 aria-label="open drawer"
                 edge="end"
                 onClick={handleDrawerToggle}
-                sx={{ color: "#1a1a1a" }}
+                sx={{ color: "var(--hm-text, #1a1a1a)" }}
               >
                 <MenuIcon sx={{ fontSize: 28 }} />
               </IconButton>
@@ -398,12 +398,13 @@ const ProCatNewHeader = ({ storeinit, logos }) => {
         open={mobileOpen}
         onClose={handleDrawerToggle}
         ModalProps={{ keepMounted: true }}
+        PaperProps={{ className: "home-root" }}
         sx={{
           display: { xs: "block", md: "none" },
           "& .MuiDrawer-paper": {
             boxSizing: "border-box",
             width: { xs: "75%", sm: 320 },
-            backgroundColor: "#ffffff",
+            backgroundColor: "var(--hm-surface, #ffffff)",
           },
         }}
       >
@@ -414,7 +415,7 @@ const ProCatNewHeader = ({ storeinit, logos }) => {
             alt="Logo"
             sx={{ maxHeight: 40, maxWidth: 150, objectFit: "contain" }}
           />
-          <IconButton onClick={handleDrawerToggle} sx={{ color: "#444" }}>
+          <IconButton onClick={handleDrawerToggle} sx={{ color: "var(--hm-text-muted, #444)" }}>
             <CloseIcon />
           </IconButton>
         </Box>
@@ -517,7 +518,7 @@ const ProCatNewHeader = ({ storeinit, logos }) => {
                     fontSize: 14,
                     fontWeight: 600,
                     textTransform: "uppercase",
-                    color: islogin ? "#d32f2f" : "#1976d2",
+                    color: islogin ? "var(--hm-danger, #d32f2f)" : "var(--hm-accent, #1976d2)",
                   }}
                 />
               </ListItemButton>

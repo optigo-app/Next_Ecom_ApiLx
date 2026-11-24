@@ -14,6 +14,17 @@ import {
   MailOutlineRounded,
 } from "@mui/icons-material";
 
+const formatExpiry = (iso) => {
+  if (!iso) return null;
+  const d = new Date(iso);
+  if (isNaN(d.getTime())) return null;
+  return d.toLocaleDateString("en-IN", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
+};
+
 const ExpiredIllustration = () => (
   <svg
     viewBox="0 0 280 200"
@@ -30,7 +41,7 @@ const ExpiredIllustration = () => (
     </defs>
 
     {/* soft ground shadow */}
-    <ellipse cx="140" cy="178" rx="94" ry="11" fill="#EDF1F5" />
+    <ellipse cx="140" cy="178" rx="94" ry="11" fill="var(--hm-accent-soft, #edf1f5)" />
 
     {/* rear card, tilted */}
     <rect
@@ -39,7 +50,7 @@ const ExpiredIllustration = () => (
       width="122"
       height="94"
       rx="14"
-      fill="#E2E8F0"
+      fill="var(--hm-border, #e2e8f0)"
       transform="rotate(-7 127 109)"
     />
 
@@ -50,8 +61,8 @@ const ExpiredIllustration = () => (
       width="124"
       height="104"
       rx="14"
-      fill="#FFFFFF"
-      stroke="#E2E8F0"
+      fill="var(--hm-surface, #ffffff)"
+      stroke="var(--hm-border, #e2e8f0)"
       strokeWidth="2"
     />
 
@@ -61,50 +72,54 @@ const ExpiredIllustration = () => (
     </g>
 
     {/* binder rings */}
-    <rect x="98" y="42" width="9" height="22" rx="4.5" fill="#94A3B8" />
-    <rect x="165" y="42" width="9" height="22" rx="4.5" fill="#94A3B8" />
+    <rect x="98" y="42" width="9" height="22" rx="4.5" fill="var(--hm-text-light, #94a3b8)" />
+    <rect x="165" y="42" width="9" height="22" rx="4.5" fill="var(--hm-text-light, #94a3b8)" />
 
     {/* date grid row 1 */}
-    <rect x="95" y="94" width="22" height="17" rx="4" fill="#EDF1F5" />
-    <rect x="125" y="94" width="22" height="17" rx="4" fill="#EDF1F5" />
-    <rect x="155" y="94" width="22" height="17" rx="4" fill="#EDF1F5" />
+    <rect x="95" y="94" width="22" height="17" rx="4" fill="var(--hm-accent-soft, #edf1f5)" />
+    <rect x="125" y="94" width="22" height="17" rx="4" fill="var(--hm-accent-soft, #edf1f5)" />
+    <rect x="155" y="94" width="22" height="17" rx="4" fill="var(--hm-accent-soft, #edf1f5)" />
 
     {/* date grid row 2 — middle square is the expired date, crossed out */}
-    <rect x="95" y="120" width="22" height="17" rx="4" fill="#EDF1F5" />
+    <rect x="95" y="120" width="22" height="17" rx="4" fill="var(--hm-accent-soft, #edf1f5)" />
     <rect x="125" y="120" width="22" height="17" rx="4" fill="#FDE68A" />
     <path
       d="M129 124.5 L143 132.5 M143 124.5 L129 132.5"
-      stroke="#D97706"
+      stroke="var(--hm-gold, #d97706)"
       strokeWidth="2.5"
       strokeLinecap="round"
     />
-    <rect x="155" y="120" width="22" height="17" rx="4" fill="#EDF1F5" />
+    <rect x="155" y="120" width="22" height="17" rx="4" fill="var(--hm-accent-soft, #edf1f5)" />
 
     {/* clock badge overlapping bottom-right */}
-    <circle cx="208" cy="150" r="28" fill="#F8F9FA" />
-    <circle cx="208" cy="150" r="24" fill="#1E293B" />
-    <circle cx="208" cy="150" r="15" fill="#FFFFFF" />
+    <circle cx="208" cy="150" r="28" fill="var(--hm-surface-muted, #f8f9fa)" />
+    <circle cx="208" cy="150" r="24" fill="var(--hm-text-secondary, #1e293b)" />
+    <circle cx="208" cy="150" r="15" fill="var(--hm-surface, #ffffff)" />
     <path
       d="M208 137 v3 M208 160 v3 M221 150 h-3 M195 150 h3"
-      stroke="#94A3B8"
+      stroke="var(--hm-text-light, #94a3b8)"
       strokeWidth="2"
       strokeLinecap="round"
     />
     <path
       d="M208 141 v9 l6.5 4"
-      stroke="#D97706"
+      stroke="var(--hm-gold, #d97706)"
       strokeWidth="3"
       strokeLinecap="round"
       fill="none"
     />
-    <circle cx="208" cy="150" r="2.2" fill="#D97706" />
+    <circle cx="208" cy="150" r="2.2" fill="var(--hm-gold, #d97706)" />
   </svg>
 );
 
 const AlbumExpiredPage = ({
   onReturnHome = () => (window.location.href = "/"),
-  onContactSupport,
+  onRequestNewLink,
+  albumName,
+  expiresAt,
 }) => {
+  const expiryLabel = formatExpiry(expiresAt);
+
   return (
     <Box
       sx={{
@@ -112,7 +127,7 @@ const AlbumExpiredPage = ({
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        bgcolor: "#F8F9FA",
+        bgcolor: "var(--hm-surface-muted, #f8f9fa)",
         px: 2,
         py: 6,
       }}
@@ -137,7 +152,7 @@ const AlbumExpiredPage = ({
             color: "#B45309",
             bgcolor: "#FFFBEB",
             border: "1px solid #FDE68A",
-            "& .MuiChip-icon": { color: "#D97706" },
+            "& .MuiChip-icon": { color: "var(--hm-gold, #d97706)" },
           }}
         />
 
@@ -147,7 +162,7 @@ const AlbumExpiredPage = ({
           component="h1"
           sx={{
             fontWeight: 700,
-            color: "#111827",
+            color: "var(--hm-text-body, #111827)",
             fontSize: { xs: "1.5rem", sm: "1.85rem" },
             letterSpacing: "-0.02em",
             mb: 1.5,
@@ -164,12 +179,23 @@ const AlbumExpiredPage = ({
             lineHeight: 1.7,
             maxWidth: 420,
             mx: "auto",
-            mb: 3.5,
+            mb: albumName || expiryLabel ? 2.5 : 3.5,
           }}
         >
           Sorry! This album is no longer available because its validity period
           has ended.
         </Typography>
+
+        {(albumName || expiryLabel) && (
+          <Typography
+            variant="body2"
+            sx={{ color: "var(--hm-text-disabled, #9ca3af)", mb: 3, fontWeight: 500 }}
+          >
+            {albumName}
+            {albumName && expiryLabel ? " • " : ""}
+            {expiryLabel ? `Expired on ${expiryLabel}` : ""}
+          </Typography>
+        )}
 
         <Divider sx={{ maxWidth: 340, mx: "auto", my: 3, borderColor: "#EAECEF" }} />
 
@@ -202,18 +228,18 @@ const AlbumExpiredPage = ({
               borderRadius: 2.5,
               textTransform: "none",
               fontWeight: 600,
-              bgcolor: "#111827",
+              bgcolor: "var(--hm-text-body, #111827)",
               "&:hover": { bgcolor: "#1F2937" },
             }}
           >
             Back to Store
           </Button>
 
-          {onContactSupport && (
+          {onRequestNewLink && (
             <Button
               variant="outlined"
               startIcon={<MailOutlineRounded />}
-              onClick={onContactSupport}
+              onClick={onRequestNewLink}
               sx={{
                 py: 1.25,
                 px: 3,
@@ -223,7 +249,7 @@ const AlbumExpiredPage = ({
                 color: "#374151",
                 borderColor: "#D1D5DB",
                 "&:hover": {
-                  borderColor: "#9CA3AF",
+                  borderColor: "var(--hm-text-disabled, #9ca3af)",
                   bgcolor: "#F9FAFB",
                 },
               }}

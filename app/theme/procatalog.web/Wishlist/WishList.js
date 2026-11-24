@@ -4,6 +4,7 @@ import Usewishlist from "@/app/(core)/utils/Glob_Functions/Cart_Wishlist/Wishlis
 import WishlistItems from "./WishlistItems";
 import Button from "@mui/material/Button";
 import "./smr_wishlist.scss";
+import "./wishlist.theme.css";
 import WishlistData from "./WishlistData";
 import SkeletonLoader from "./WishlistSkelton";
 import Link from "next/link";
@@ -73,7 +74,7 @@ const Wishlist = ({ storeInit }) => {
   }, [])
 
   const setCSSVariable = () => {
-    const backgroundColor = storeInit?.IsPLW == 1 ? "#c4cfdb" : "#c0bbb1";
+    const backgroundColor = storeInit?.IsPLW == 1 ? "var(--wl-border-strong, #c4cfdb)" : "var(--wl-border-warm-strong, #c0bbb1)";
     document.documentElement.style.setProperty(
       "--background-color",
       backgroundColor
@@ -81,7 +82,7 @@ const Wishlist = ({ storeInit }) => {
   };
 
   return (
-    <div className="fg_smr_MainWlDiv" style={{
+    <div className="fg_smr_MainWlDiv wl-root" style={{
       paddingBottom: "4rem"
     }}>
       <div className="WlMainPageDiv">

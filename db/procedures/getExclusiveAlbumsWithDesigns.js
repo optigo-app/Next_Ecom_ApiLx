@@ -30,12 +30,22 @@ function buildStatusRows(rows) {
     albumName: a.albumName,
     CustomerId: a.CustomerId,
     RandomNo: a.RandomNo,
+    AlbumSecurityId: a.AlbumSecurityId,
     IsDeactive: a.IsDeactive,
     ExpiryDate: a.ExpiryDate,
     expiresAt: albumExpiresAt(a),
     status: albumStatus(a),
   }));
 }
+
+/**
+ * AlbumSecurityId drives visibility: 0/'' = public, 1 = ignored, 2 = private.
+ * Column is TEXT, so normalize once and compare numerically.
+ */
+const ALBUM_SECURITY_SQL =
+  "CAST(COALESCE(NULLIF(TRIM(AlbumSecurityId), ''), '0') AS INTEGER)";
+const SECURITY_NOT_IGNORED_SQL = `${ALBUM_SECURITY_SQL} <> 1`;
+const SECURITY_VISIBLE_SQL = `(${ALBUM_SECURITY_SQL} = 0 OR (${ALBUM_SECURITY_SQL} = 2 AND @customerId <> 0 AND CustomerId = @customerId))`;
 
 /**
  * Retrieves customer-exclusive albums joined with their respective design products from SQLite.
@@ -115,12 +125,15 @@ export function getExclusiveAlbumsWithDesigns(db, options = {}) {
     FROM albums
     WHERE 1 = 1
   `;
+  sql += ` AND ${SECURITY_NOT_IGNORED_SQL}`;
   if (!unfiltered) sql += " AND (IsDeactive IS NULL OR IsDeactive = 0)";
   const params = {};
 
-  if (customerId) {
-    sql += " AND CustomerId = @customerId";
-    params.customerId = Number(customerId);
+  if (!isSpecificQuery) {
+    // Visibility by AlbumSecurityId: public albums for everyone, private
+    // albums only for their owning customer. customerId=0 -> public only.
+    sql += ` AND ${SECURITY_VISIBLE_SQL}`;
+    params.customerId = Number(customerId || 0);
   }
 
   if (options.id !== undefined && options.id !== null && options.id !== "") {

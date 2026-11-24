@@ -1,0 +1,52 @@
+/*
+ * Wishlist page color tokens — SINGLE SOURCE for this page.
+ * Scoped to .wl-root so the palette stays page-local.
+ * Use var(--wl-*) in jsx/scss; the hex after the comma in var() is the
+ * fallback for places rendered outside .wl-root.
+ *
+ * TO RECOLOR THE WISHLIST PAGE: edit the hexes below.
+ */
+.wl-root {
+  /* Brand accent */
+  --wl-accent: #cca182;
+  --wl-accent-strong: #b88d6e;
+  --wl-accent-deep: #9c6d48;
+  --wl-accent-soft: #edd8c7;
+
+  /* Surfaces */
+  --wl-surface: #ffffff;
+  --wl-surface-muted: #fafafa;
+  --wl-surface-subtle: #f6f6f6;
+  --wl-surface-warm: #faf4ee;
+
+  /* Text */
+  --wl-text: #1f1919;
+  --wl-text-ink: #000000;
+  --wl-text-body: #212529;
+  --wl-text-secondary: #333333;
+  --wl-text-muted: #555555;
+  --wl-text-faint: #777777;
+  --wl-text-disabled: #7d7f85;
+  --wl-text-light: #999999;
+
+  /* Borders */
+  --wl-border: #dcdcdc;
+  --wl-border-strong: #c9c9c9;
+  --wl-border-light: #eeeeee;
+  --wl-border-warm: #e7e2d8;
+  --wl-border-warm-strong: #ddd5c4;
+
+  /* Warm text (on beige surfaces) */
+  --wl-text-warm: #3b3428;
+  --wl-text-warm-muted: #8a7f6a;
+
+  /* Feedback */
+  --wl-danger: #d32f2f;
+  --wl-success: #2e7d32;
+  --wl-gold: #af8238;
+  --wl-nav: #0a1f47;
+
+  /* Misc */
+  --wl-overlay-shadow: 0 16px 48px rgba(60, 50, 35, 0.18);
+  --wl-radius: 12px;
+}
