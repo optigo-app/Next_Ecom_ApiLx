@@ -5,9 +5,6 @@ import {
     Box,
     Typography,
     IconButton,
-    Accordion,
-    AccordionSummary,
-    AccordionDetails,
     Checkbox,
     Button,
     Divider,
@@ -19,9 +16,61 @@ import {
     Select,
     MenuItem,
 } from "@mui/material";
-import AddRoundedIcon from "@mui/icons-material/AddRounded";
 import { TfiClose } from "react-icons/tfi";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+
+const VISIBLE_FILTER_OPTIONS = 5;
+
+const FilterCard = ({ title, children }) => (
+    <Box
+        sx={{
+            bgcolor: "#fff",
+            border: "1px solid #efefef",
+            borderRadius: "10px",
+            boxShadow: "0 1px 3px rgba(0,0,0,0.04)",
+            px: 1.5,
+            py: 1.25,
+            mb: 1.5,
+        }}
+    >
+        <Typography
+            sx={{
+                fontWeight: 600,
+                fontSize: "12.5px",
+                color: "#111",
+                letterSpacing: "0.8px",
+                textTransform: "uppercase",
+                mb: 0.75,
+            }}
+        >
+            {title}
+        </Typography>
+        {children}
+    </Box>
+);
+
+const ViewMoreToggle = ({ expanded, onToggle }) => (
+    <Typography
+        component="button"
+        type="button"
+        onClick={onToggle}
+        sx={{
+            background: "none",
+            border: "none",
+            p: 0,
+            mt: 0.5,
+            cursor: "pointer",
+            fontSize: "13px",
+            fontWeight: 500,
+            color: "#b26605",
+            letterSpacing: "0.3px",
+            fontFamily: "inherit",
+            "&:hover": { textDecoration: "underline" },
+        }}
+    >
+        {expanded ? "View Less" : "View More"}
+    </Typography>
+);
 
 
 const CustomFormControlLabel = styled(FormControlLabel)(({ theme }) => ({
@@ -155,14 +204,15 @@ const FilterSidebar = ({
     diamondType,
     setSelectedDiaId,
     isBelow768,
-    /** When true the sidebar is always visible (desktop inline) — hides the close button */
     isInline = false,
 }) => {
     const storeInit = storeInitProp || storeinitProp;
+    const [expandedFilters, setExpandedFilters] = React.useState({});
+    const toggleFilter = (key) =>
+        setExpandedFilters((prev) => ({ ...prev, [key]: !prev[key] }));
     return (
         <>
         <Box sx={isInline ? { display: "flex", flexDirection: "column", height: "100%" } : {}}>
-            {/* HEADER — only shown in Drawer/mobile mode */}
             {!isInline && (
             <Box
                 sx={{
@@ -237,11 +287,14 @@ const FilterSidebar = ({
                 sx={{
                     flex: 1,
                     overflowY: "auto",
+                    overflowX: "hidden",
                     pb: 3,
-                    "&::-webkit-scrollbar": { width: "6px" },
-                    "&::-webkit-scrollbar-thumb": { background: "#ccc", borderRadius: "3px" },
-                    paddingTop: 3,
-                    px: 2.5,
+                    "&::-webkit-scrollbar": { width: "4px" },
+                    "&::-webkit-scrollbar-thumb": { background: "#d5d5d5", borderRadius: "4px" },
+                    paddingTop: 1.5,
+                    pl: 1.25,
+                    pr: 0.75,
+                    bgcolor: "#f7f7f7",
                 }}
             >
                 {filterData?.map((item, index) => {
@@ -255,30 +308,18 @@ const FilterSidebar = ({
                             return null;
                         }
 
-                        return (
-                            <Accordion key={index} disableGutters elevation={0} sx={{ borderBottom: "1px solid #eee" }}>
-                                <AccordionSummary
-                                    expandIcon={<AddRoundedIcon sx={{ fontSize: 20, color: "#222" }} />}
-                                    sx={{
-                                        px: 0,
-                                        py: 1.5,
-                                        "& .MuiAccordionSummary-content": { margin: 0 },
-                                    }}
-                                >
-                                    <Typography sx={{ fontWeight: 600, fontSize: "15px", color: "#000", letterSpacing: "0.2px" }}>
-                                        {formatFilterTitle(item?.Fil_DisName)}
-                                    </Typography>
-                                </AccordionSummary>
+                        const isExpanded = !!expandedFilters[item?.id];
+                        const visibleOpts = isExpanded ? parsedOpts : parsedOpts.slice(0, VISIBLE_FILTER_OPTIONS);
 
-                                <AccordionDetails
+                        return (
+                            <FilterCard key={index} title={formatFilterTitle(item?.Fil_DisName)}>
+                                <Box
                                     sx={{
-                                        px: 0,
-                                        py: 0.5,
                                         display: "flex",
                                         flexDirection: "column",
                                         gap: 0.4,
-                                        maxHeight: "340px",
-                                        overflowY: "auto",
+                                        maxHeight: isExpanded ? "340px" : "none",
+                                        overflowY: isExpanded ? "auto" : "visible",
                                         "&::-webkit-scrollbar": { width: "5px" },
                                         "&::-webkit-scrollbar-thumb": {
                                             background: "#d9d9d9",
@@ -286,7 +327,7 @@ const FilterSidebar = ({
                                         },
                                     }}
                                 >
-                                    {parsedOpts.map((opt) => (
+                                    {visibleOpts.map((opt) => (
                                         <CustomFormControlLabel
                                             key={opt?.id}
                                             sx={{
@@ -327,42 +368,26 @@ const FilterSidebar = ({
                                             }
                                         />
                                     ))}
-                                </AccordionDetails>
-
-                            </Accordion>
+                                </Box>
+                                {parsedOpts.length > VISIBLE_FILTER_OPTIONS && (
+                                    <ViewMoreToggle
+                                        expanded={isExpanded}
+                                        onToggle={() => toggleFilter(item?.id)}
+                                    />
+                                )}
+                            </FilterCard>
                         );
                     }
 
                     // 💰 Price filter
                     if (!isPriceHidden(storeInit) && (item?.id?.includes("Price") || item?.id?.toLowerCase() === "price" || item?.Name === "Price")) {
                         return (
-                            <Accordion key={index} disableGutters elevation={0} sx={{ borderBottom: "1px solid #eee" }}>
-                                <AccordionSummary
-                                    expandIcon={<AddRoundedIcon sx={{ fontSize: 20, color: "#222" }} />}
+                            <FilterCard key={index} title={formatFilterTitle(item?.Fil_DisName)}>
+                                <Box
                                     sx={{
-                                        px: 0,
-                                        py: 1.5,
-                                        "& .MuiAccordionSummary-content": { margin: 0 },
-                                    }}
-                                >
-                                    <Typography sx={{ fontWeight: 600, fontSize: "15px", color: "#000", letterSpacing: "0.2px" }}>
-                                        {formatFilterTitle(item?.Fil_DisName)}
-                                    </Typography>
-                                </AccordionSummary>
-                                <AccordionDetails
-                                    sx={{
-                                        px: 0,
-                                        py: 1,
                                         display: "flex",
                                         flexDirection: "column",
                                         gap: 0.6,
-                                        maxHeight: "340px",
-                                        overflowY: "auto",
-                                        "&::-webkit-scrollbar": { width: "5px" },
-                                        "&::-webkit-scrollbar-thumb": {
-                                            background: "#d9d9d9",
-                                            borderRadius: "4px",
-                                        },
                                     }}
                                 >
                                     {/* PRICE OPTIONS */}
@@ -472,131 +497,82 @@ const FilterSidebar = ({
                                             setIsReset={setIsReset}
                                         />
                                     </Box>
-                                </AccordionDetails>
-
-                            </Accordion>
+                                </Box>
+                            </FilterCard>
                         );
                     }
 
                     // 💎 Range-type filters (Diamond, NetWt, Gross)
                     if (item?.Name?.includes("Diamond"))
                         return (
-                            <Accordion key={index} disableGutters elevation={0} sx={{ borderBottom: "1px solid #eee" }}>
-                                <AccordionSummary
-                                    sx={{
-                                        px: 0,
-                                        py: 1.5,
-                                        "& .MuiAccordionSummary-content": { margin: 0 },
-                                    }}
-                                    expandIcon={<AddRoundedIcon sx={{ fontSize: 20, color: "#222" }} />}>
-                                    <Typography sx={{ fontWeight: 600, fontSize: "15px", color: "#000", letterSpacing: "0.2px" }}>
-                                        {formatFilterTitle(item?.Fil_DisName)}
-                                    </Typography>
-                                </AccordionSummary>
-                                <AccordionDetails sx={{ px: 2, display: "flex", flexDirection: "column", gap: 1 }}>
-                                    <RangeFilterView
-                                        ele={item}
-                                        sliderValue={sliderValue}
-                                        setSliderValue={setSliderValue}
-                                        handleRangeFilterApi={handleRangeFilterApi}
-                                        prodListType={prodListType}
-                                        cookie={cookie}
-                                        show={show}
-                                        setShow={setShow}
-                                        appliedRange1={appliedRange1}
-                                        setAppliedRange1={setAppliedRange1}
-                                    />
-                                </AccordionDetails>
-                            </Accordion>
+                            <FilterCard key={index} title={formatFilterTitle(item?.Fil_DisName)}>
+                                <RangeFilterView
+                                    ele={item}
+                                    sliderValue={sliderValue}
+                                    setSliderValue={setSliderValue}
+                                    handleRangeFilterApi={handleRangeFilterApi}
+                                    prodListType={prodListType}
+                                    cookie={cookie}
+                                    show={show}
+                                    setShow={setShow}
+                                    appliedRange1={appliedRange1}
+                                    setAppliedRange1={setAppliedRange1}
+                                />
+                            </FilterCard>
                         );
 
                     if (item?.Name?.includes("Wastage"))
                         return (
-                            <Accordion key={index} disableGutters elevation={0}>
-                                <AccordionSummary
-                                    sx={{ px: 0, py: 1.5, "& .MuiAccordionSummary-content": { margin: 0 } }}
-                                    expandIcon={<AddRoundedIcon sx={{ fontSize: 20, color: "#222" }} />}>
-                                    <Typography sx={{ fontWeight: 600, fontSize: "15px", color: "#000", letterSpacing: "0.2px" }}>
-                                        {formatFilterTitle(item?.Fil_DisName)}
-                                    </Typography>
-                                </AccordionSummary>
-                                <AccordionDetails sx={{ px: 2, display: "flex", flexDirection: "column", gap: 1 }}>
-                                    <RangeFilterView3
-                                        ele={item}
-                                        sliderValue3={sliderValue3}
-                                        setSliderValue3={setSliderValue3}
-                                        handleRangeFilterApi3={handleRangeFilterApi3}
-                                        prodListType={prodListType}
-                                        cookie={cookie}
-                                        show3={show3}
-                                        setShow3={setShow3}
-                                        appliedRange4={appliedRange4}
-                                        setAppliedRange4={setAppliedRange4}
-                                    />
-                                </AccordionDetails>
-                            </Accordion>
+                            <FilterCard key={index} title={formatFilterTitle(item?.Fil_DisName)}>
+                                <RangeFilterView3
+                                    ele={item}
+                                    sliderValue3={sliderValue3}
+                                    setSliderValue3={setSliderValue3}
+                                    handleRangeFilterApi3={handleRangeFilterApi3}
+                                    prodListType={prodListType}
+                                    cookie={cookie}
+                                    show3={show3}
+                                    setShow3={setShow3}
+                                    appliedRange4={appliedRange4}
+                                    setAppliedRange4={setAppliedRange4}
+                                />
+                            </FilterCard>
                         );
 
                     if (item?.Name?.includes("Gross"))
                         return (
-                            <Accordion key={index} disableGutters elevation={0}>
-                                <AccordionSummary
-                                    sx={{
-                                        px: 0,
-                                        py: 1.5,
-                                        "& .MuiAccordionSummary-content": { margin: 0 },
-                                    }}
-                                    expandIcon={<AddRoundedIcon sx={{ fontSize: 20, color: "#222" }} />}>
-                                    <Typography sx={{ fontWeight: 600, fontSize: "15px", color: "#000", letterSpacing: "0.2px" }}>
-                                        {formatFilterTitle(item?.Fil_DisName)}
-                                    </Typography>
-                                </AccordionSummary>
-                                <AccordionDetails sx={{ px: 2, display: "flex", flexDirection: "column", gap: 1 }}>
-                                    <RangeFilterView2
-                                        ele={item}
-                                        sliderValue2={sliderValue2}
-                                        setSliderValue2={setSliderValue2}
-                                        handleRangeFilterApi2={handleRangeFilterApi2}
-                                        prodListType={prodListType}
-                                        cookie={cookie}
-                                        show2={show2}
-                                        setShow2={setShow2}
-                                        appliedRange3={appliedRange3}
-                                        setAppliedRange3={setAppliedRange3}
-                                    />
-                                </AccordionDetails>
-                            </Accordion>
+                            <FilterCard key={index} title={formatFilterTitle(item?.Fil_DisName)}>
+                                <RangeFilterView2
+                                    ele={item}
+                                    sliderValue2={sliderValue2}
+                                    setSliderValue2={setSliderValue2}
+                                    handleRangeFilterApi2={handleRangeFilterApi2}
+                                    prodListType={prodListType}
+                                    cookie={cookie}
+                                    show2={show2}
+                                    setShow2={setShow2}
+                                    appliedRange3={appliedRange3}
+                                    setAppliedRange3={setAppliedRange3}
+                                />
+                            </FilterCard>
                         );
 
                     if (item?.Name?.includes("NetWt"))
                         return (
-                            <Accordion key={index} disableGutters elevation={0} sx={{ borderBottom: "1px solid #eee" }}>
-                                <AccordionSummary
-                                    sx={{
-                                        px: 0,
-                                        py: 1.5,
-                                        "& .MuiAccordionSummary-content": { margin: 0 },
-                                    }}
-                                    expandIcon={<AddRoundedIcon sx={{ fontSize: 20, color: "#222" }} />}>
-                                    <Typography sx={{ fontWeight: 600, fontSize: "15px", color: "#000", letterSpacing: "0.2px" }}>
-                                        {formatFilterTitle(item?.Fil_DisName)}
-                                    </Typography>
-                                </AccordionSummary>
-                                <AccordionDetails sx={{ px: 2, display: "flex", flexDirection: "column", gap: 1 }}>
-                                    <RangeFilterView1
-                                        ele={item}
-                                        sliderValue1={sliderValue1}
-                                        setSliderValue1={setSliderValue1}
-                                        handleRangeFilterApi1={handleRangeFilterApi1}
-                                        prodListType={prodListType}
-                                        cookie={cookie}
-                                        show1={show1}
-                                        setShow1={setShow1}
-                                        appliedRange2={appliedRange2}
-                                        setAppliedRange2={setAppliedRange2}
-                                    />
-                                </AccordionDetails>
-                            </Accordion>
+                            <FilterCard key={index} title={formatFilterTitle(item?.Fil_DisName)}>
+                                <RangeFilterView1
+                                    ele={item}
+                                    sliderValue1={sliderValue1}
+                                    setSliderValue1={setSliderValue1}
+                                    handleRangeFilterApi1={handleRangeFilterApi1}
+                                    prodListType={prodListType}
+                                    cookie={cookie}
+                                    show1={show1}
+                                    setShow1={setShow1}
+                                    appliedRange2={appliedRange2}
+                                    setAppliedRange2={setAppliedRange2}
+                                />
+                            </FilterCard>
                         );
 
 
@@ -604,28 +580,7 @@ const FilterSidebar = ({
                     return null;
                 })}
                 {isBelow768 && <Box>
-                    <Accordion disableGutters elevation={0} sx={{ borderBottom: "1px solid #eee" }}>
-                        <AccordionSummary
-                            expandIcon={<AddRoundedIcon sx={{ fontSize: 20, color: "#222" }} />}
-                            sx={{
-                                px: 0,
-                                py: 1.5,
-                                "& .MuiAccordionSummary-content": { margin: 0 },
-                            }}
-                        >
-                            <Typography sx={{ fontWeight: 600, fontSize: "15px", color: "#000", letterSpacing: "0.2px" }}>
-                                Sorting
-                            </Typography>
-                        </AccordionSummary>
-                        <AccordionDetails
-                            sx={{
-                                px: 0,
-                                py: 1,
-                                display: "flex",
-                                flexDirection: "column",
-                                gap: 1.5,
-                            }}
-                        >
+                    <FilterCard title="Sorting">
                             <FormControl
                                 variant="filled"
                                 size="small"
@@ -669,33 +624,11 @@ const FilterSidebar = ({
                                     <MenuItem value="PRICE HIGH TO LOW">Price High to Low</MenuItem>
                                 </Select>
                             </FormControl>
-                        </AccordionDetails>
-                    </Accordion>
+                    </FilterCard>
 
                     {/* 💍 METAL CUSTOMIZATION */}
                     {storeInit?.IsMetalCustomization === 1 && (
-                        <Accordion disableGutters elevation={0} sx={{ borderBottom: "1px solid #eee" }}>
-                            <AccordionSummary
-                                expandIcon={<AddRoundedIcon sx={{ fontSize: 20, color: "#222" }} />}
-                                sx={{
-                                    px: 0,
-                                    py: 1.5,
-                                    "& .MuiAccordionSummary-content": { margin: 0 },
-                                }}
-                            >
-                                <Typography sx={{ fontWeight: 600, fontSize: "15px", color: "#000", letterSpacing: "0.2px" }}>
-                                    Metal
-                                </Typography>
-                            </AccordionSummary>
-                            <AccordionDetails
-                                sx={{
-                                    px: 0,
-                                    py: 1,
-                                    display: "flex",
-                                    flexDirection: "column",
-                                    gap: 1.5,
-                                }}
-                            >
+                        <FilterCard title="Metal">
                                 <FormControl
                                     variant="filled"
                                     size="small"
@@ -732,34 +665,12 @@ const FilterSidebar = ({
                                         ))}
                                     </Select>
                                 </FormControl>
-                            </AccordionDetails>
-                        </Accordion>
+                        </FilterCard>
                     )}
 
                     {/* 💎 DIAMOND CUSTOMIZATION */}
                     {storeInit?.IsDiamondCustomization === 1 && (
-                        <Accordion disableGutters elevation={0} >
-                            <AccordionSummary
-                                expandIcon={<AddRoundedIcon sx={{ fontSize: 20, color: "#222" }} />}
-                                sx={{
-                                    px: 0,
-                                    py: 1.5,
-                                    "& .MuiAccordionSummary-content": { margin: 0 },
-                                }}
-                            >
-                                <Typography sx={{ fontWeight: 600, fontSize: "15px", color: "#000", letterSpacing: "0.2px" }}>
-                                    Diamond
-                                </Typography>
-                            </AccordionSummary>
-                            <AccordionDetails
-                                sx={{
-                                    px: 0,
-                                    py: 1,
-                                    display: "flex",
-                                    flexDirection: "column",
-                                    gap: 1.5,
-                                }}
-                            >
+                        <FilterCard title="Diamond">
                                 <FormControl
                                     variant="filled"
                                     size="small"
@@ -796,8 +707,7 @@ const FilterSidebar = ({
                                         ))}
                                     </Select>
                                 </FormControl>
-                            </AccordionDetails>
-                        </Accordion>
+                        </FilterCard>
                     )}
                 </Box>
                 }

@@ -10,6 +10,7 @@ import {
 import { syncTableViaTemp } from "../../../../db/procedures/tempTableSync.js";
 import { rebuildPolicyCategories } from "../../../../db/procedures/materializePolicyCategories.js";
 import { logger } from "../../../../db/logger.js";
+import { normalizeListingMetals } from "../../../../db/procedures/normalizeMetalWeights.js";
 
 /**
  * Synchronizes products from the remote ERP API (GETPRODUCTFULLLIST) into dynamic
@@ -255,6 +256,10 @@ export async function syncDynamicPolicyProducts({ domain, Config, ALC, storeInit
         config_json: pPayload,
         total_products: insertResult.totalInDatabase || products.length,
       });
+
+      // 7b. Metal normalization (non-fatal): listing rows whose metal is not in metal_type_master
+      //     get the fallback metal with density-converted Nwt/Gwt. Runs before categories are built.
+      normalizeListingMetals(db, tableName);
 
       // 8. Pre-compute and materialize categories for this policy table
       try {

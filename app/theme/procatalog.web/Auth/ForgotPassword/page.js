@@ -67,8 +67,8 @@ export default function ForgotPassword({ params, storeInit }) {
   const handlePasswordChange = (event) => {
     const { value } = event.target;
     setPassword(value);
-    if (!validatePassword(value)) {
-      setPasswordError("Password must contain at least 8 characters, including one uppercase letter, one lowercase letter, and one number.");
+    if (!value.trim()) {
+      setPasswordError("Password is required");
     } else {
       setPasswordError("");
     }
@@ -86,10 +86,6 @@ export default function ForgotPassword({ params, storeInit }) {
     return CryptoJS.SHA1(password).toString(CryptoJS.enc.Hex);
   }
 
-  const validatePassword = (value) => {
-    const passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/;
-    return passwordRegex.test(value);
-  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();

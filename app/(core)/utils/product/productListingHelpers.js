@@ -105,6 +105,23 @@ export const convertUrl = ({
 };
 
 /**
+ * Resolve the diamond quality/color combo ("QualityId,ColorId") for a product
+ * from the master diamondQualityColorCombo list.
+ * - Row DiaQuaCol ("Quality,Color") matches a master entry -> first matching entry
+ * - No match -> first master entry
+ * - Row has no diamond quality, or no master list -> undefined (caller keeps default)
+ */
+export const resolveProductDiaCombo = (productData, masterCombo) => {
+  const master = Array.isArray(masterCombo) ? masterCombo : getSession("diamondQualityColorCombo");
+  const raw = String(productData?.DiaQuaCol ?? "").trim();
+  if (!raw || !Array.isArray(master) || master.length === 0) return undefined;
+  const norm = (v) => String(v ?? "").trim().toLowerCase();
+  const [quality, color] = raw.split(",").map(norm);
+  const hit = master.find((e) => norm(e?.Quality) === quality && norm(e?.color) === color) ?? master[0];
+  return hit?.QualityId != null ? `${hit.QualityId},${hit.ColorId}` : undefined;
+};
+
+/**
  * Navigate to Product Detail Page (PDP) with encoded product object
  */
 export const handleMoveToDetail = ({

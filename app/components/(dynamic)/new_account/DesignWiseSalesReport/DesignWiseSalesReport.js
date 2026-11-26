@@ -6,8 +6,13 @@ import jsonData from "../json/AccountDesignWiseSales.json";
 import SearchIcon from '@mui/icons-material/Search';
 import { NumberWithCommas, checkMonth } from '@/app/(core)/utils/Glob_Functions/AccountPages/AccountPage';
 import moment from 'moment';
-import ReactPaginate from 'react-paginate';
+import ReactPaginateModule from 'react-paginate';
 import { CommonAPI } from '@/app/(core)/utils/API/CommonAPI/CommonAPI';
+
+// react-paginate ships a UMD/CJS bundle whose default export can resolve to the
+// module namespace object (instead of the component) in production builds —
+// causing React error #130 "element type is invalid: got object".
+const ReactPaginate = ReactPaginateModule?.default ?? ReactPaginateModule;
 import Skeleton from '@mui/material/Skeleton';
 import Swal from 'sweetalert2';
 import { getDesignWiseSalesReport } from '@/app/(core)/utils/API/AccountTabs/designWiseSalesReport';
@@ -643,21 +648,21 @@ const DesignWiseSalesReport = () => {
                         />
 
                         <Box sx={{ display: "flex", justifyContent: "space-between" }} className="netWtSliderSec">
-                            <Typography sx={{ maxWidth: "50px" }}>
+                            <Box sx={{ maxWidth: "50px" }}>
                                 <TextField type="number" value={(netWtSlider[0])} sx={{ maxWidth: "50px", width: "50px", minWidth: "65px" }}
                                     onChange={handleNetWtSliderCustom(0)}
                                     onBlur={handleBlurNetWt(0)}
                                     inputProps={{ min: netWtLimit?.min, max: netWtSlider[1], type: 'number', step: 1 }}
                                 />
-                            </Typography>
-                            <Typography sx={{ maxWidth: "50px" }}>
+                            </Box>
+                            <Box sx={{ maxWidth: "50px" }}>
                                 <TextField type="number" value={(netWtSlider[1])}
                                     sx={{ maxWidth: "50px", width: "50px", minWidth: "65px" }}
                                     inputProps={{ min: netWtSlider[0], max: netWtLimit?.max, type: 'number', step: 1 }}
                                     onChange={handleNetWtSliderCustom(1)}
                                     onBlur={handleBlurNetWt(1)}
                                 />
-                            </Typography>
+                            </Box>
                         </Box>
                     </Box>
 
@@ -674,21 +679,21 @@ const DesignWiseSalesReport = () => {
                             max={grossWtLimit?.max}
                         />
                         <Box sx={{ display: "flex", justifyContent: "space-between" }} className="netWtSliderSec">
-                            <Typography sx={{ maxWidth: "50px" }}>
+                            <Box sx={{ maxWidth: "50px" }}>
                                 <TextField type="number" value={grossWtSlider[0]} sx={{ maxWidth: "50px", width: "50px", minWidth: "65px" }}
                                     onChange={handleGrossWtSliderCustom(0)}
                                     onBlur={handleBlurGrossWt(0)}
                                     inputProps={{ min: grossWtLimit?.min, max: grossWtSlider[1], type: 'number', step: 1 }}
                                 />
-                            </Typography>
-                            <Typography sx={{ maxWidth: "50px" }}>
+                            </Box>
+                            <Box sx={{ maxWidth: "50px" }}>
                                 <TextField type="number" value={grossWtSlider[1]}
                                     sx={{ maxWidth: "50px", width: "50px", minWidth: "65px" }}
                                     inputProps={{ min: grossWtSlider[0], max: grossWtLimit?.max, type: 'number', step: 1 }}
                                     onChange={handleGrossWtSliderCustom(1)}
                                     onBlur={handleBlurGrossWt(1)}
                                 />
-                            </Typography>
+                            </Box>
                         </Box>
                     </Box>
 
@@ -892,21 +897,21 @@ const DesignWiseSalesReport = () => {
                                             max={(netWtLimit?.max)}
                                         />
                                         <Box sx={{ display: "flex", justifyContent: "space-between" }} className="netWtSliderSec">
-                                            <Typography sx={{ maxWidth: "50px" }}>
+                                            <Box sx={{ maxWidth: "50px" }}>
                                                 <TextField type="number" value={(netWtSlider[0])} sx={{ maxWidth: "50px", width: "50px", minWidth: "65px" }}
                                                     onChange={handleNetWtSliderCustom(0)}
                                                     onBlur={handleBlurNetWt(0)}
                                                     inputProps={{ min: netWtLimit?.min, max: netWtSlider[1], type: 'number', step: 1 }}
                                                 />
-                                            </Typography>
-                                            <Typography sx={{ maxWidth: "50px" }}>
+                                            </Box>
+                                            <Box sx={{ maxWidth: "50px" }}>
                                                 <TextField type="number" value={(netWtSlider[1])}
                                                     sx={{ maxWidth: "50px", width: "50px", minWidth: "65px" }}
                                                     inputProps={{ min: netWtSlider[0], max: netWtLimit?.max, type: 'number', step: 1 }}
                                                     onChange={handleNetWtSliderCustom(1)}
                                                     onBlur={handleBlurNetWt(1)}
                                                 />
-                                            </Typography>
+                                            </Box>
                                         </Box>
                                     </Box>
                                 </Box>
@@ -924,21 +929,21 @@ const DesignWiseSalesReport = () => {
                                             max={grossWtLimit?.max}
                                         />
                                         <Box sx={{ display: "flex", justifyContent: "space-between" }} className="netWtSliderSec">
-                                            <Typography sx={{ maxWidth: "50px" }}>
+                                            <Box sx={{ maxWidth: "50px" }}>
                                                 <TextField type="number" value={grossWtSlider[0]} sx={{ maxWidth: "50px", width: "50px", minWidth: "65px" }}
                                                     onChange={handleGrossWtSliderCustom(0)}
                                                     onBlur={handleBlurGrossWt(0)}
                                                     inputProps={{ min: grossWtLimit?.min, max: grossWtSlider[1], type: 'number', step: 1 }}
                                                 />
-                                            </Typography>
-                                            <Typography sx={{ maxWidth: "50px" }}>
+                                            </Box>
+                                            <Box sx={{ maxWidth: "50px" }}>
                                                 <TextField type="number" value={grossWtSlider[1]}
                                                     sx={{ maxWidth: "50px", width: "50px", minWidth: "65px" }}
                                                     inputProps={{ min: grossWtSlider[0], max: grossWtLimit?.max, type: 'number', step: 1 }}
                                                     onChange={handleGrossWtSliderCustom(1)}
                                                     onBlur={handleBlurGrossWt(1)}
                                                 />
-                                            </Typography>
+                                            </Box>
                                         </Box>
                                     </Box>
                                 </Box>

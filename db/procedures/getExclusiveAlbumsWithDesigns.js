@@ -31,6 +31,7 @@ function buildStatusRows(rows) {
     CustomerId: a.CustomerId,
     RandomNo: a.RandomNo,
     AlbumSecurityId: a.AlbumSecurityId,
+    IsPublish: a.IsPublish,
     IsDeactive: a.IsDeactive,
     ExpiryDate: a.ExpiryDate,
     expiresAt: albumExpiresAt(a),
@@ -39,13 +40,17 @@ function buildStatusRows(rows) {
 }
 
 /**
- * AlbumSecurityId drives visibility: 0/'' = public, 1 = ignored, 2 = private.
- * Column is TEXT, so normalize once and compare numerically.
+ * AlbumSecurityId no longer gates listing visibility — it only drives the
+ * lock badge in the UI. IsPublish controls the public "Albums" tab:
+ * listing returns every published album plus all albums owned by the
+ * requesting customer. AlbumSecurityId = 1 still means "ignored/hidden".
+ * Columns are loosely typed, so normalize once and compare numerically.
  */
 const ALBUM_SECURITY_SQL =
   "CAST(COALESCE(NULLIF(TRIM(AlbumSecurityId), ''), '0') AS INTEGER)";
 const SECURITY_NOT_IGNORED_SQL = `${ALBUM_SECURITY_SQL} <> 1`;
-const SECURITY_VISIBLE_SQL = `(${ALBUM_SECURITY_SQL} = 0 OR (${ALBUM_SECURITY_SQL} = 2 AND @customerId <> 0 AND CustomerId = @customerId))`;
+const VISIBILITY_SQL =
+  "(CAST(COALESCE(IsPublish, 0) AS INTEGER) = 1 OR (@customerId <> 0 AND CustomerId = @customerId))";
 
 /**
  * Retrieves customer-exclusive albums joined with their respective design products from SQLite.
@@ -74,7 +79,7 @@ export function getExclusiveAlbumsWithDesigns(db, options = {}) {
   const startTime = performance.now();
   const customerId = options.customerId || options.CustomerId;
 
-  if (!customerId && !options.RandomNo) {
+  if (!customerId && !options.RandomNo && !options.album) {
     return {
       Status: "400",
       Message: "customerId or RandomNo is required to fetch exclusive albums.",
@@ -103,6 +108,7 @@ export function getExclusiveAlbumsWithDesigns(db, options = {}) {
   //    read the row unfiltered so a blocked album can report its real status.
   const isSpecificQuery = Boolean(
     options.RandomNo ||
+      options.album ||
       options.albumcode ||
       (options.id !== undefined && options.id !== null && options.id !== "")
   );
@@ -110,6 +116,7 @@ export function getExclusiveAlbumsWithDesigns(db, options = {}) {
 
   let sql = `
     SELECT
+      rowid AS _rowid,
       id,
       albumName,
       AutocodeList,
@@ -121,6 +128,7 @@ export function getExclusiveAlbumsWithDesigns(db, options = {}) {
       AlbumImageName,
       AlbumImageFol,
       AlbumSecurityId,
+      IsPublish,
       EntryDate
     FROM albums
     WHERE 1 = 1
@@ -130,9 +138,9 @@ export function getExclusiveAlbumsWithDesigns(db, options = {}) {
   const params = {};
 
   if (!isSpecificQuery) {
-    // Visibility by AlbumSecurityId: public albums for everyone, private
-    // albums only for their owning customer. customerId=0 -> public only.
-    sql += ` AND ${SECURITY_VISIBLE_SQL}`;
+    // Listing visibility: all published albums + every album owned by the
+    // requesting customer. Guests (customerId=0) get published albums only.
+    sql += ` AND ${VISIBILITY_SQL}`;
     params.customerId = Number(customerId || 0);
   }
 
@@ -148,10 +156,25 @@ export function getExclusiveAlbumsWithDesigns(db, options = {}) {
     sql += " AND RandomNo = @RandomNo";
     params.RandomNo = String(options.RandomNo).trim();
   }
+  if (options.album) {
+    sql += " AND (RandomNo = @album OR LOWER(albumcode) = LOWER(@album) OR CAST(id AS TEXT) = @album)";
+    params.album = String(options.album).trim();
+  }
 
   sql += " ORDER BY id ASC, EntryDate DESC";
 
-  const rows = db.prepare(sql).all(params);
+  let rows = db.prepare(sql).all(params);
+
+  // Re-shares insert a new row for the same album (new albumcode/RandomNo/expiry)
+  // under the same album id. Collapse duplicates so each album appears once,
+  // keeping the last-inserted (newest) share row.
+  const latestByAlbum = new Map();
+  for (const r of rows) {
+    const k = r?.id ?? `rowid:${r?._rowid}`;
+    const prev = latestByAlbum.get(k);
+    if (!prev || Number(r?._rowid) >= Number(prev?._rowid)) latestByAlbum.set(k, r);
+  }
+  rows = Array.from(latestByAlbum.values()).map(({ _rowid, ...rest }) => rest);
 
   // Lightweight status listing for client-side live monitoring.
   if (options.statusOnly === true) {
@@ -301,6 +324,7 @@ export function getExclusiveAlbumsWithDesigns(db, options = {}) {
         }
 
         // Attach designs to each album
+        const designLimit = Number(options.designLimit) > 0 ? Number(options.designLimit) : 0;
         for (const a of albumsToServe) {
           const matched = [];
           const seen = new Set();
@@ -312,7 +336,7 @@ export function getExclusiveAlbumsWithDesigns(db, options = {}) {
               matched.push(found);
             }
           }
-          a.designs = matched;
+          a.designs = designLimit ? matched.slice(0, designLimit) : matched;
           a.designCount = matched.length;
         }
       } catch (err) {

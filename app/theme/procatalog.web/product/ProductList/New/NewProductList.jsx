@@ -400,8 +400,19 @@ const ProductCard = ({
     },
   };
 
+  const readyStockStatus = Number(productData?.IsInReadyStock);
+  const isInMemo =
+    productData?.isInMemo === true ||
+    productData?.stockStatus === "IN_MEMO" ||
+    readyStockStatus === 2;
+  const isInStock =
+    !isInMemo &&
+    (productData?.isInStock === true ||
+      productData?.stockStatus === "IN_STOCK" ||
+      readyStockStatus === 1);
   const hasUpperTags =
-    productData?.IsInReadyStock == 1 ||
+    isInMemo ||
+    isInStock ||
     productData?.IsBestSeller == 1 ||
     productData?.IsTrending == 1 ||
     productData?.IsNewArrival == 1;
@@ -621,7 +632,8 @@ const ProductCard = ({
             gap: 0.8,
           }}
         >
-          {productData?.IsInReadyStock == 1 && ChipBar("In Stock")}
+          {isInMemo && ChipBar("In Memo", "#9A5A00")}
+          {!isInMemo && isInStock && ChipBar("In Stock")}
           {productData?.IsBestSeller == 1 && ChipBar("Best Seller")}
           {productData?.IsTrending == 1 && ChipBar("Trending")}
           {productData?.IsNewArrival == 1 && ChipBar("New", "#163164")}

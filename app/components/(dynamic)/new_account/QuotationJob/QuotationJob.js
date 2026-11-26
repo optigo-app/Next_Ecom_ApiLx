@@ -27,7 +27,11 @@ import { getQuotationJobData } from '@/app/(core)/utils/API/AccountTabs/quotatio
 
 import { headCells_Jobs as columns } from "@/app/(core)/utils/Glob_Functions/AccountPages/AccountPageColumns";
 import { formatter } from '@/app/(core)/utils/Glob_Functions/GlobalFunction';
-import ReactPaginate from 'react-paginate';
+import ReactPaginateModule from 'react-paginate';
+
+// CJS/UMD interop guard: in production bundles the default import can resolve
+// to the module namespace object instead of the component (React error #130).
+const ReactPaginate = ReactPaginateModule?.default ?? ReactPaginateModule;
 
 const CustomSortIcon = ({ order }) => {
   return (

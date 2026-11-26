@@ -1,4 +1,5 @@
 import { CommonAPI } from "../../CommonAPI/CommonAPI";
+import { getPricingPolicyParams } from "@/app/(core)/utils/product/pricingPolicy";
 
 export const Get_Tren_BestS_NewAr_DesigSet_Album = async (
   storeData,
@@ -24,10 +25,11 @@ export const Get_Tren_BestS_NewAr_DesigSet_Album = async (
       FrontEnd_RegNo: storeInit?.FrontEnd_RegNo || "",
       Customerid: customerID || "",
       PackageId: dataSource?.PackageId || "",
-      Laboursetid: dataSource?.pricemanagement_laboursetid || "",
-      diamondpricelistname: dataSource?.diamondpricelistname || "",
-      colorstonepricelistname: dataSource?.colorstonepricelistname || "",
-      SettingPriceUniqueNo: dataSource?.SettingPriceUniqueNo || "",
+      ...getPricingPolicyParams({
+        storeinit: storeInit,
+        loginUserDetail: userData,
+        islogin: userLogin,
+      }),
       Metalid: dataSource?.MetalId || "",
       DiaQCid: dataSource?.cmboDiaQCid || "",
       CsQCid: dataSource?.cmboCSQCid || "",

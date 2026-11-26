@@ -15,6 +15,7 @@ CREATE TABLE IF NOT EXISTS albums (
     AlbumImageName TEXT DEFAULT '',
     AlbumImageFol TEXT DEFAULT '',
     AlbumSecurityId TEXT DEFAULT '',
+    IsPublish INTEGER DEFAULT 0,
     EntryDate TEXT DEFAULT '',
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -51,6 +52,7 @@ export function ensureAlbumsTable(db) {
                 ["AlbumImageName", "TEXT DEFAULT ''"],
                 ["AlbumImageFol", "TEXT DEFAULT ''"],
                 ["AlbumSecurityId", "TEXT DEFAULT ''"],
+                ["IsPublish", "INTEGER DEFAULT 0"],
             ];
             for (const [name, definition] of newColumns) {
                 if (!cols.includes(name)) {

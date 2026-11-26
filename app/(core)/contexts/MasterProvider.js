@@ -34,7 +34,6 @@ export const MasterProvider = ({
   getMyAccountFlags,
   theme,
 }) => {
-  const isBelux = true || theme === "beluxjewel.web" || theme === "julian.web";
   if (typeof window !== "undefined") {
     window.__STORE_INIT__ = getStoreInit;
     window.__LOGIN_USER__ =
@@ -157,65 +156,7 @@ export const MasterProvider = ({
         : loginUserDetail?.id || "0";
 
     try {
-      if (isBelux) {
-        const storedCountry = getSession("CountryCodeListApi");
-        const storedB2BMaster = getSession("B2BRegisterMasterApi");
-
-        const fetchPromises = [];
-
-        if (!storedCountry || storedCountry.length === 0) {
-          fetchPromises.push(
-            CountryCodeListApi(finalID).then((res) => {
-              if (res?.Data?.rd) setSession("CountryCodeListApi", res.Data.rd);
-            })
-          );
-        }
-
-        if (!storedB2BMaster) {
-          fetchPromises.push(
-            RegisterMasterApi(finalID).then((res) => {
-              if (res?.Data?.rd) setSession("B2BRegisterMasterApi", res.Data.rd);
-            })
-          );
-        }
-
-        if (fetchPromises.length > 0) {
-          await Promise.all(fetchPromises);
-        }
-
-        setIsMasterReady(true);
-        return;
-      }
-
-      // For all other themes: Fetch ALL master combo APIs
-      const requiredKeys = [
-        "metalTypeCombo",
-        "diamondQualityColorCombo",
-        "MetalColorCombo",
-        "ColorStoneQualityColorCombo",
-        "CurrencyCombo",
-        "CountryCodeListApi",
-        "B2BRegisterMasterApi",
-      ];
-
-      const hasAllKeys = requiredKeys.every((key) => {
-        const val = getSession(key);
-        return val && (Array.isArray(val) ? val.length > 0 : Object.keys(val).length > 0);
-      });
-
-      if (hasAllKeys) {
-        console.log(
-          "[Cache] All combo lists found in session storage. Loading from session.",
-        );
-        setIsMasterReady(true);
-        return;
-      }
-
-      console.log(
-        "[Cache] Combo lists missing. Fetching fresh combo data from server.",
-      );
-
-      // 2. Fetch all individual APIs concurrently for other themes
+      // Fetch all master combo APIs concurrently
       const [mt, dia, mc, cs, curr, country, b2bMaster] = await Promise.all([
         MetalTypeComboAPI(finalID),
         DiamondQualityColorComboAPI(finalID),
@@ -226,7 +167,7 @@ export const MasterProvider = ({
         RegisterMasterApi(finalID),
       ]);
 
-      // 3. Store the fresh combo data in session storage
+      // Store the fresh combo data in session storage
       if (mt?.Data?.rd) setSession("metalTypeCombo", mt.Data.rd);
       if (dia?.Data?.rd) setSession("diamondQualityColorCombo", dia.Data.rd);
       if (mc?.Data?.rd) setSession("MetalColorCombo", mc.Data.rd);

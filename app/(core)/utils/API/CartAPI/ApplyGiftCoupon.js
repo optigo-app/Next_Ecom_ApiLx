@@ -1,5 +1,6 @@
 import { getSession } from "../../FetchSessionData";
 import { CommonAPI } from "../CommonAPI/CommonAPI";
+import { getPricingPolicyParams } from "@/app/(core)/utils/product/pricingPolicy";
 
 export const ApplyGiftCoupon = async (visiterId, discountCode) => {
     let storeInit = getSession("storeInit");
@@ -10,10 +11,6 @@ export const ApplyGiftCoupon = async (visiterId, discountCode) => {
     const customerEmail = storeInit?.IsB2BWebsite == 0 && islogin == false || islogin == null ? visiterId : data?.userid ?? "";
 
     let packageId = storeInit?.IsB2BWebsite == 0 && islogin == false || islogin == null ? storeInit?.PackageId : data?.PackageId ?? 0;
-    let laboursetid = storeInit?.IsB2BWebsite == 0 && islogin == false || islogin == null ? storeInit?.pricemanagement_laboursetid : data?.pricemanagement_laboursetid ?? 0
-    let diamondpricelistname = storeInit?.IsB2BWebsite == 0 && islogin == false || islogin == null ? storeInit?.diamondpricelistname : data?.diamondpricelistname ?? ""
-    let colorstonepricelistname = storeInit?.IsB2BWebsite == 0 && islogin == false || islogin == null ? storeInit?.colorstonepricelistname : data?.colorstonepricelistname ?? ""
-    let SettingPriceUniqueNo = storeInit?.IsB2BWebsite == 0 && islogin == false || islogin == null ? storeInit?.SettingPriceUniqueNo : data?.SettingPriceUniqueNo ?? ""
 
     try {
         const combinedValue = JSON.stringify({
@@ -23,10 +20,11 @@ export const ApplyGiftCoupon = async (visiterId, discountCode) => {
             FrontEnd_RegNo: `${storeInit?.FrontEnd_RegNo}` ?? '',
             Customerid: `${customerId ?? ""}`,
             PackageId: packageId,
-            Laboursetid: laboursetid,
-            diamondpricelistname: diamondpricelistname,
-            colorstonepricelistname: colorstonepricelistname,
-            SettingPriceUniqueNo: SettingPriceUniqueNo,
+            ...getPricingPolicyParams({
+                storeinit: storeInit,
+                loginUserDetail: data,
+                islogin,
+            }),
             IsWishList: 0,
             IsPLW: storeInit?.IsPLW,
             CurrencyRate: `${data?.CurrencyRate ?? storeInit?.CurrencyRate}`,

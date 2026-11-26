@@ -1,5 +1,6 @@
 import { getSession } from "../../FetchSessionData";
 import { CommonAPI } from "../CommonAPI/CommonAPI";
+import { getPricingPolicyParams } from "@/app/(core)/utils/product/pricingPolicy";
 
 export const SingleFullProdPriceAPI = async (obj, autocode) => {
   const storeInit = getSession("storeInit");
@@ -7,28 +8,15 @@ export const SingleFullProdPriceAPI = async (obj, autocode) => {
   const islogin = getSession("LoginUser");
   const UserEmail = loginUserDetail?.userid ?? sessionStorage.getItem("registerEmail") ?? "";
 
-  const isGuest = storeInit?.IsB2BWebsite == 0 && (islogin == false || islogin == null);
-
   const GetPriceReq = {
     CurrencyRate: `${loginUserDetail?.CurrencyRate ?? storeInit?.CurrencyRate ?? ""}`,
     FrontEnd_RegNo: `${storeInit?.FrontEnd_RegNo ?? ""}`,
     Customerid: `${loginUserDetail?.id ?? 0}`,
-    Laboursetid: `${isGuest
-      ? storeInit?.pricemanagement_laboursetid ?? ""
-      : loginUserDetail?.pricemanagement_laboursetid ?? storeInit?.pricemanagement_laboursetid ?? ""
-      }`,
-    diamondpricelistname: `${isGuest
-      ? storeInit?.diamondpricelistname ?? ""
-      : loginUserDetail?.diamondpricelistname ?? storeInit?.diamondpricelistname ?? ""
-      }`,
-    colorstonepricelistname: `${isGuest
-      ? storeInit?.colorstonepricelistname ?? ""
-      : loginUserDetail?.colorstonepricelistname ?? storeInit?.colorstonepricelistname ?? ""
-      }`,
-    SettingPriceUniqueNo: `${isGuest
-      ? storeInit?.SettingPriceUniqueNo ?? ""
-      : loginUserDetail?.SettingPriceUniqueNo ?? storeInit?.SettingPriceUniqueNo ?? ""
-      }`,
+    ...getPricingPolicyParams({
+      storeinit: storeInit,
+      loginUserDetail,
+      islogin,
+    }),
     designno: `${obj?.b ?? ""}`,
     IsFromDesDet: 1,
     AutoCodeList: `${obj?.a ?? ""}`,

@@ -4,6 +4,7 @@ export {
   getCardImageUrl,
   convertUrl,
   handleMoveToDetail,
+  resolveProductDiaCombo,
   parseRangeData,
   decodeEntities,
   BreadCumsObj,

@@ -1553,7 +1553,9 @@ export function useProductDetail({ storeinit, searchParams, params }) {
         (ele) =>
           ele?.QualityId == stone.QualityId && ele?.ColorId == stone.ColorId,
       );
-      return `${comboMatch?.Quality ?? stone.Quality},${comboMatch?.color ?? stone.Color}`;
+      const firstCombo = stoneTypeId === 1 && !comboMatch ? getSession(comboName)?.[0] : null;
+      const pick = comboMatch ?? firstCombo;
+      return `${pick?.Quality ?? stone.Quality},${pick?.color ?? stone.Color}`;
     };
 
     const diaValue = toValue(1, "diamondQualityColorCombo");

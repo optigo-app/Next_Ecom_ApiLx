@@ -1,4 +1,5 @@
 import { getSession, getSessionAsync } from "../../FetchSessionData";
+import { getPricingPolicyParams } from "../../product/pricingPolicy";
 import { CommonAPI } from "../CommonAPI/CommonAPI";
 
 export const DiamondQualityColorComboAPI = async (finalID) => {
@@ -12,7 +13,10 @@ export const DiamondQualityColorComboAPI = async (finalID) => {
         const { FrontEnd_RegNo } = storeInit;
         const combinedValue = JSON.stringify({
             FrontEnd_RegNo: `${FrontEnd_RegNo}`,
-            diamondpricelistname: `${loginUserDetail?.diamondpricelistname ?? storeInit?.diamondpricelistname}`,
+            ...getPricingPolicyParams({
+                storeinit: storeInit,
+                loginUserDetail,
+            }),
         });
 
         const encodedCombinedValue = btoa(combinedValue);
@@ -20,8 +24,6 @@ export const DiamondQualityColorComboAPI = async (finalID) => {
             con: `{\"id\":\"\",\"mode\":\"DIAQUALITYCOLORCOMBO\",\"appuserid\":\"${storedEmail ?? ""}\"}`,
             f: "header (getQualityColor)",
             p: combinedValue,
-            // "p": encodedCombinedValue,
-            // "dp": combinedValue,
         };
 
         response = await CommonAPI(body);

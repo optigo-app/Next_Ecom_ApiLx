@@ -1,6 +1,7 @@
 import { getSession } from "../../FetchSessionData";
 import { CommonAPI } from "../CommonAPI/CommonAPI";
 import { getOrCreateVisitorId } from "@/app/(core)/utils/VisitorId";
+import { getPricingPolicyParams } from "@/app/(core)/utils/product/pricingPolicy";
 
 export const fetchCartDetails = async (visiterId) => {
     let storeInit = (typeof window !== 'undefined' && window.__STORE_INIT__) ? window.__STORE_INIT__ : getSession('storeInit');
@@ -20,10 +21,6 @@ export const fetchCartDetails = async (visiterId) => {
     const customerEmail = (rawCustomerEmail === "undefined" || rawCustomerEmail === "null" || rawCustomerEmail == null) ? (cleanVisiterId || "") : rawCustomerEmail;
 
     let packageId = isGuest ? (storeInit?.PackageId ?? 0) : (data?.PackageId ?? storeInit?.PackageId ?? 0);
-    let laboursetid = isGuest ? (storeInit?.pricemanagement_laboursetid ?? "") : (data?.pricemanagement_laboursetid ?? storeInit?.pricemanagement_laboursetid ?? "");
-    let diamondpricelistname = isGuest ? (storeInit?.diamondpricelistname ?? "") : (data?.diamondpricelistname ?? storeInit?.diamondpricelistname ?? "");
-    let colorstonepricelistname = isGuest ? (storeInit?.colorstonepricelistname ?? "") : (data?.colorstonepricelistname ?? storeInit?.colorstonepricelistname ?? "");
-    let SettingPriceUniqueNo = isGuest ? (storeInit?.SettingPriceUniqueNo ?? "") : (data?.SettingPriceUniqueNo ?? storeInit?.SettingPriceUniqueNo ?? "");
 
     try {
         const combinedValue = JSON.stringify({
@@ -33,10 +30,11 @@ export const fetchCartDetails = async (visiterId) => {
             FrontEnd_RegNo: `${storeInit?.FrontEnd_RegNo ?? ""}`,
             Customerid: `${customerId ?? ""}`,
             PackageId: packageId,
-            Laboursetid: laboursetid,
-            diamondpricelistname: diamondpricelistname,
-            colorstonepricelistname: colorstonepricelistname,
-            SettingPriceUniqueNo: SettingPriceUniqueNo,
+            ...getPricingPolicyParams({
+                storeinit: storeInit,
+                loginUserDetail: data,
+                islogin,
+            }),
             IsWishList: 0,
             IsPLW: storeInit?.IsPLW,
             CurrencyRate: `${data?.CurrencyRate ?? storeInit?.CurrencyRate ?? ""}`,

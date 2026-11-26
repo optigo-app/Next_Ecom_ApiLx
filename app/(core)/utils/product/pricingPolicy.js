@@ -3,6 +3,17 @@ import { getSession } from "../FetchSessionData.js";
 
 import Cookies from "js-cookie";
 
+function getFirstVal(obj, ...keys) {
+  if (!obj || typeof obj !== "object") return undefined;
+  for (const k of keys) {
+    const val = obj[k];
+    if (val !== undefined && val !== null && String(val).trim() !== "") {
+      return val;
+    }
+  }
+  return undefined;
+}
+
 export const DESIGN_TABLE_PREFIX = "design_Productlist_";
 export const ARTICLE_TABLE_PREFIX = "article_DesignInfo_Web_";
 export const STOCK_TABLE_PREFIX = "stock_list_";
@@ -99,12 +110,23 @@ export function syncUserDetailToCookies(userDetail, storeInit = null) {
     return;
   }
 
+  const activeStoreInit = storeInit && typeof storeInit === "object" ? storeInit : (getSession("storeInit") || {});
+
   const compact = {
     id: userDetail.id || userDetail.userid || 0,
-    pricemanagement_laboursetid: userDetail.pricemanagement_laboursetid || userDetail.Laboursetid || 0,
-    diamondpricelistname: userDetail.diamondpricelistname || userDetail.diamondpricelistName || "",
-    colorstonepricelistname: userDetail.colorstonepricelistname || userDetail.colorstonepricelistName || "",
-    SettingPriceUniqueNo: userDetail.SettingPriceUniqueNo || userDetail.settingpriceuniqueno || 0,
+    pricemanagement_laboursetid:
+      getFirstVal(userDetail, "pricemanagement_laboursetid", "Laboursetid") ??
+      getFirstVal(activeStoreInit, "pricemanagement_laboursetid", "Laboursetid") ?? 0,
+    diamondpricelistname:
+      getFirstVal(userDetail, "diamondpricelistname", "diamondpricelistName") ??
+      getFirstVal(activeStoreInit, "diamondpricelistname", "diamondpricelistName") ?? "",
+    colorstonepricelistname:
+      getFirstVal(userDetail, "colorstonepricelistname", "colorstonepricelistName") ??
+      getFirstVal(activeStoreInit, "colorstonepricelistname", "colorstonepricelistName") ?? "",
+    SettingPriceUniqueNo:
+      getFirstVal(userDetail, "SettingPriceUniqueNo", "settingpriceuniqueno") ??
+      getFirstVal(activeStoreInit, "SettingPriceUniqueNo", "settingpriceuniqueno") ?? 0,
+    Customerdiamondpricelistname: userDetail.Customerdiamondpricelistname || userDetail.customerdiamondpricelistname || "",
     PackageId: userDetail.PackageId || userDetail.packageId || null,
     MetalId: userDetail.MetalId || null,
     cmboDiaQCid: userDetail.cmboDiaQCid || "",
@@ -134,24 +156,6 @@ export function syncUserDetailToCookies(userDetail, storeInit = null) {
   } catch (err) {
     console.warn("syncUserDetailToCookies error:", err);
   }
-}
-
-/**
- * Extracts a non-empty string or number value from an object checking candidate keys in order.
- *
- * @param {object} obj
- * @param  {...string} keys
- * @returns {any}
- */
-function getFirstVal(obj, ...keys) {
-  if (!obj || typeof obj !== "object") return undefined;
-  for (const k of keys) {
-    const val = obj[k];
-    if (val !== undefined && val !== null && String(val).trim() !== "") {
-      return val;
-    }
-  }
-  return undefined;
 }
 
 /**
@@ -238,6 +242,9 @@ export function getPricingPolicyParams({ storeinit, loginUserDetail, islogin } =
     setting = getFirstVal(activeStoreInit, "SettingPriceUniqueNo", "settingpriceuniqueno", "SettingPriceUniqueNo") ?? "";
   }
 
+  const custDia =
+    getFirstVal(activeLoginUser, "Customerdiamondpricelistname", "customerdiamondpricelistname", "CustomerDiamondPriceListName") ?? "";
+
   const frontEndRegNo = getFirstVal(activeStoreInit, "FrontEnd_RegNo", "FrontEndRegNo", "frontend_regno") ?? "";
 
   const pkgId =
@@ -258,6 +265,8 @@ export function getPricingPolicyParams({ storeinit, loginUserDetail, islogin } =
     Colorstonepricelistname: cs,
     SettingPriceUniqueNo: setting,
     settingpriceuniqueno: setting,
+    Customerdiamondpricelistname: custDia,
+    customerdiamondpricelistname: custDia,
     FrontEnd_RegNo: frontEndRegNo,
     ...(pkgId != null ? { PackageId: pkgId, packageId: pkgId } : {}),
   };

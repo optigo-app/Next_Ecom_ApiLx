@@ -62,6 +62,7 @@ export function saveAlbums(db, rawPayload = []) {
             AlbumImageName,
             AlbumImageFol,
             AlbumSecurityId,
+            IsPublish,
             EntryDate,
             updated_at
         ) VALUES (
@@ -76,6 +77,7 @@ export function saveAlbums(db, rawPayload = []) {
             @AlbumImageName,
             @AlbumImageFol,
             @AlbumSecurityId,
+            @IsPublish,
             @EntryDate,
             CURRENT_TIMESTAMP
         )
@@ -104,6 +106,7 @@ export function saveAlbums(db, rawPayload = []) {
                 AlbumImageName: String(row.AlbumImageName ?? "").trim(),
                 AlbumImageFol: String(row.AlbumImageFol ?? "").trim(),
                 AlbumSecurityId: String(row.AlbumSecurityId ?? "").trim(),
+                IsPublish: Number(row.IsPublish ?? row.isPublish ?? 0) === 1 ? 1 : 0,
                 EntryDate: row.EntryDate ? String(row.EntryDate).trim() : "",
             });
             count++;

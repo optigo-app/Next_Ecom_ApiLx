@@ -15,6 +15,7 @@ import {
 import { recordDynamicTableSync } from "../../../../db/schema/dynamicDesigns.js";
 import { mergeTempIntoMain, dropTempTable, getTempTableName } from "../../../../db/procedures/tempTableSync.js";
 import { logger } from "../../../../db/logger.js";
+import { normalizeArticleMetals } from "../../../../db/procedures/normalizeMetalWeights.js";
 
 // In-flight active table sync tracking to prevent concurrent double-hit corruption
 const activeTableSyncs = new Set();
@@ -737,6 +738,16 @@ export async function syncDynamicPolicyArticles({ domain, Config, ALC, storeInit
             } catch (matMergeErr) {
               console.warn(`[ARTICLE_SYNC] material merge failed (non-fatal): ${matMergeErr.message}`);
               logger.error("DYNAMIC_ARTICLE_SYNC", `[${policyKey}] Material merge failed (non-fatal): ${matMergeErr.message}`, { domain: targetDomain, table: matTableName, error: matMergeErr.message });
+            }
+          }
+
+          // ---- Metal normalization (non-fatal): metals missing from metal_type_master get the
+          //      first GOLD/SILVER and a density-converted weight (material rows 4,5, then Info
+          //      totals). Runs before the repair below so the repair copies the final metal. ----
+          if (!policyFailed) {
+            const normalizeResult = normalizeArticleMetals(db, matTableName, tableName);
+            if (normalizeResult.metalRowsFixed > 0) {
+              console.log(`[ARTICLE_SYNC] metal normalize -> rows fixed: ${normalizeResult.metalRowsFixed}, info rows updated: ${normalizeResult.articlesUpdated}`);
             }
           }
 

@@ -7,6 +7,7 @@ export const BookCache = async (visiterId, type, pricingContext, alc) => {
   const diamondpricelistname = pricingContext?.diamondpricelistname ?? "";
   const colorstonepricelistname = pricingContext?.colorstonepricelistname ?? "";
   const SettingPriceUniqueNo = pricingContext?.SettingPriceUniqueNo ?? "";
+  const Customerdiamondpricelistname = pricingContext?.Customerdiamondpricelistname ?? "";
   const ACL = alc;
 
   let response;
@@ -29,6 +30,7 @@ export const BookCache = async (visiterId, type, pricingContext, alc) => {
       diamondpricelistname: diamondpricelistname,
       colorstonepricelistname: colorstonepricelistname,
       SettingPriceUniqueNo: SettingPriceUniqueNo,
+      Customerdiamondpricelistname: Customerdiamondpricelistname,
       ALC: ACL,
       ForEvt: "CacheRebuildDateSave"
     });

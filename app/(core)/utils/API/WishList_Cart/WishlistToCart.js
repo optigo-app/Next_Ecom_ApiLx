@@ -1,6 +1,7 @@
 import { getSession } from "../../FetchSessionData";
 import { CommonAPI } from "../CommonAPI/CommonAPI";
 import { getOrCreateVisitorId } from "@/app/(core)/utils/VisitorId";
+import { getPricingPolicyParams } from "@/app/(core)/utils/product/pricingPolicy";
 
 export const handleWishlistToCartAPI = async (param, item, visiterId) => {
   const storeInit = getSession("storeInit");
@@ -21,24 +22,11 @@ export const handleWishlistToCartAPI = async (param, item, visiterId) => {
   const rawCustomerEmail = isGuest ? cleanVisiterId : (data?.userid ?? "");
   const customerEmail = (rawCustomerEmail === "undefined" || rawCustomerEmail === "null" || rawCustomerEmail == null) ? (cleanVisiterId || "") : rawCustomerEmail;
 
-  const Policys = {
-    Laboursetid: isGuest
-      ? (storeInit?.pricemanagement_laboursetid ?? "")
-      : (data?.pricemanagement_laboursetid ??
-        storeInit?.pricemanagement_laboursetid ??
-        ""),
-    diamondpricelistname: isGuest
-      ? (storeInit?.diamondpricelistname ?? "")
-      : (data?.diamondpricelistname ?? storeInit?.diamondpricelistname ?? ""),
-    colorstonepricelistname: isGuest
-      ? (storeInit?.colorstonepricelistname ?? "")
-      : (data?.colorstonepricelistname ??
-        storeInit?.colorstonepricelistname ??
-        ""),
-    SettingPriceUniqueNo: isGuest
-      ? (storeInit?.SettingPriceUniqueNo ?? "")
-      : (data?.SettingPriceUniqueNo ?? storeInit?.SettingPriceUniqueNo ?? ""),
-  };
+  const Policys = getPricingPolicyParams({
+    storeinit: storeInit,
+    loginUserDetail: data,
+    islogin,
+  });
   try {
     let combinedValue;
     if (param == "isSelectAll") {

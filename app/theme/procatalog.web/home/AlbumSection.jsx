@@ -3,6 +3,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useStore } from "@/app/(core)/contexts/StoreProvider";
+import { buildAlbumListingUrl } from "@/app/(core)/utils/album/albumScopeUrl";
 import { Box, Button, CircularProgress, Grid, Typography, useMediaQuery, useTheme } from "@mui/material";
 import { FolderHeart, Globe2, LockKeyhole, ArrowUpRight } from "lucide-react";
 
@@ -100,9 +101,8 @@ function AlbumArtwork({ album, storeInit }) {
     );
 }
 
-function AlbumCard({ album, access, storeInit, onClick, onLoginRequired, showLoginLock, index }) {
+function AlbumCard({ album, storeInit, onClick, onLoginRequired, showLoginLock, index }) {
     const designCount = Number(album?.designCount || album?.totalAutocodes || album?.designs?.length || 0);
-    const isPrivate = access === "private";
 
     return (
         <Box
@@ -132,10 +132,6 @@ function AlbumCard({ album, access, storeInit, onClick, onLoginRequired, showLog
         >
             <Box sx={{ position: "relative", aspectRatio: "1 / 1", overflow: "hidden" }}>
                 <AlbumArtwork album={album} storeInit={storeInit} />
-                <Box sx={{ position: "absolute", top: 12, left: 12, display: "flex", alignItems: "center", gap: 0.6, px: 1.15, py: 0.6, borderRadius: "20px", bgcolor: "rgba(255,255,255,0.9)", color: "var(--hm-text-slate, #334155)", backdropFilter: "blur(8px)" }}>
-                    {isPrivate ? <LockKeyhole size={13} strokeWidth={1.7} /> : <Globe2 size={13} strokeWidth={1.7} />}
-                    <Typography sx={{ fontSize: "0.68rem", fontWeight: 600, letterSpacing: "0.03em" }}>{isPrivate ? "PRIVATE" : "PUBLIC"}</Typography>
-                </Box>
                 <Box className="album-open-icon" sx={{ position: "absolute", right: 12, bottom: 12, width: 34, height: 34, display: "grid", placeItems: "center", borderRadius: "50%", bgcolor: "rgba(255,255,255,0.92)", color: "var(--hm-accent, #0f3d4c)", opacity: { xs: 1, sm: 0 }, transform: { sm: "translate(4px, 4px)" }, transition: "all 180ms ease" }}>
                     <ArrowUpRight size={17} strokeWidth={1.7} />
                 </Box>
@@ -207,23 +203,22 @@ export default function AlbumSection() {
             setLoading(true);
             setError(false);
             try {
-                // AlbumSecurityId drives visibility: 0/'' = public, 1 = ignored
-                // (already excluded server-side), 2 = private to its owner.
-                // One request returns every album visible to this customer.
+                // IsPublish drives the public "Albums" tab; "My Albums" lists
+                // every album owned by the logged-in customer. AlbumSecurityId
+                // only drives the lock badge per card. One request returns
+                // every album visible to this customer.
                 const custParam = islogin && customerId ? customerId : 0;
                 const response = await fetch(
-                    `/api/sqlite/exclusive-albums?domain=${encodeURIComponent(domain)}&customerId=${encodeURIComponent(custParam)}`,
+                    `/api/sqlite/exclusive-albums?domain=${encodeURIComponent(domain)}&customerId=${encodeURIComponent(custParam)}&designLimit=3`,
                     { signal: controller.signal }
                 );
                 const payload = response.ok ? await response.json() : null;
                 const rd = Array.isArray(payload?.Data?.rd) ? payload.Data.rd : [];
-                const securityOf = (a) => {
-                    const n = Number(a?.AlbumSecurityId);
-                    return Number.isNaN(n) ? 0 : n;
-                };
                 setAlbums({
-                    public: rd.filter((a) => securityOf(a) === 0),
-                    private: rd.filter((a) => securityOf(a) === 2),
+                    public: rd.filter((a) => Number(a?.IsPublish) === 1),
+                    private: rd.filter(
+                        (a) => customerId != null && String(a?.CustomerId) === String(customerId)
+                    ),
                 });
             } catch (fetchError) {
                 if (fetchError?.name !== "AbortError") {
@@ -243,9 +238,13 @@ export default function AlbumSection() {
         { key: "public", label: "Albums", Icon: Globe2 },
         { key: "private", label: "My Albums", Icon: LockKeyhole },
     ], []);
+    const isPrivateAlbum = (album) => Number(album?.AlbumSecurityId) === 2;
     const visibleAlbums = albums[activeTab] || [];
     const maxVisibleAlbums = isLargeScreen ? 8 : isMediumScreen ? 6 : 4;
     const displayedAlbums = useMemo(() => visibleAlbums.slice(0, maxVisibleAlbums), [visibleAlbums, maxVisibleAlbums]);
+    // The lock only applies to guests. Private (AlbumSecurityId=2) albums are
+    // always locked for them; a couple of public cards stay randomly locked as
+    // the existing login nudge.
     const loginLockIndexes = useMemo(() => {
         if (islogin || displayedAlbums.length === 0) return new Set();
         const lockCount = Math.min(displayedAlbums.length, Math.random() < 0.5 ? 1 : 2);
@@ -275,11 +274,7 @@ export default function AlbumSection() {
     };
 
     const openAlbum = (album) => {
-        const params = new URLSearchParams({ "exclusive-album": "1" });
-        if (album?.RandomNo) params.set("randomNo", String(album.RandomNo));
-        else if (album?.CustomerId !== undefined && album?.CustomerId !== null) params.set("customerid", String(album.CustomerId));
-        else return;
-        router.push(`/?${params.toString()}`);
+        router.push(buildAlbumListingUrl(album));
     };
 
     const redirectToLoginForAlbum = (album) => {
@@ -363,7 +358,7 @@ export default function AlbumSection() {
                         <Grid container spacing={{ xs: 1.5, sm: 2.25, md: 3 }}>
                             {displayedAlbums.map((album, index) => (
                                 <Grid item key={`${album.id}-${album.albumcode || ""}-${album.RandomNo || index}`} size={{ xs: 6, sm: 6, md: 4, lg: 3 }}>
-                                    <AlbumCard album={album} access={activeTab} storeInit={storeInit} index={index} showLoginLock={loginLockIndexes.has(index)} onLoginRequired={() => redirectToLoginForAlbum(album)} onClick={() => openAlbum(album)} />
+                                    <AlbumCard album={album} storeInit={storeInit} index={index} showLoginLock={!islogin && (isPrivateAlbum(album) || loginLockIndexes.has(index))} onLoginRequired={() => redirectToLoginForAlbum(album)} onClick={() => (!islogin && isPrivateAlbum(album) ? redirectToLoginForAlbum(album) : openAlbum(album))} />
                                 </Grid>
                             ))}
                         </Grid>

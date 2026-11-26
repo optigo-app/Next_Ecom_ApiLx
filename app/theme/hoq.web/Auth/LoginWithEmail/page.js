@@ -255,7 +255,7 @@ export default function LoginWithEmail({ params, searchParams }) {
     // const encodedCombinedValue = btoa(combinedValue);
     // const body = {
     //     "con": "{\"id\":\"\",\"mode\":\"FORGOTPASSWORDEMAIL\",\"appuserid\":\"\"}",
-    //     "f": "m-test2.orail.co.in (getdesignnolist)",
+    //     "f": "m-test2.orail.co.in (FORGOTPASSWORDEMAIL)",
     //     p: encodedCombinedValue
     // };
     // const response = await CommonAPI(body);

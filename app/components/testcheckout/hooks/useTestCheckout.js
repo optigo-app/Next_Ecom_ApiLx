@@ -17,7 +17,7 @@ import { removeFromCartList } from "@/app/(core)/utils/API/RemoveCartAPI/RemoveC
 import { updateCartAPI } from "@/app/(core)/utils/API/CartAPI/UpdateCartAPI";
 import { updateQuantity } from "@/app/(core)/utils/API/CartAPI/QuantityAPI";
 import { handleProductRemark } from "@/app/(core)/utils/API/CartAPI/ProductRemarkAPIData";
-import { fetchSingleProdDT } from "@/app/(core)/utils/API/CartAPI/SingleProdDtAPI";
+
 import { getSizeData } from "@/app/(core)/utils/API/CartAPI/GetCategorySizeAPI";
 import {
   fetchAddresses,
@@ -510,33 +510,8 @@ export function useTestCheckout(initialStoreInit) {
       setActiveSize(val);
     }
 
+    updated.FinalCost = (updated.UnitCostWithMarkUp || 0) * editQty;
     setCustomizingItem(updated);
-
-    // Recalculate price live
-    try {
-      setIsPriceLoading(true);
-      const visiterId = Cookies.get("visiterId");
-      const priceRes = await fetchSingleProdDT(
-        updated,
-        newSize,
-        newDiaQc,
-        newCsQc,
-        newMetalId,
-        visiterId
-      );
-
-      if (priceRes?.Data?.rd && priceRes.Data.rd[0]) {
-        const pData = priceRes.Data.rd[0];
-        const singleUnitCost = pData?.UnitCostWithMarkUp || updated.UnitCostWithMarkUp;
-        updated.UnitCostWithMarkUp = singleUnitCost;
-        updated.FinalCost = singleUnitCost * editQty;
-        setCustomizingItem({ ...updated });
-      }
-    } catch (e) {
-      console.error("Price recalculation failed:", e);
-    } finally {
-      setIsPriceLoading(false);
-    }
   };
 
   const handleEditQtyChange = (valOrDelta, isDirect = false) => {

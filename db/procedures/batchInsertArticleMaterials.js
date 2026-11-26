@@ -84,7 +84,8 @@ export function batchInsertArticleMaterials(db, rawPayload = [], options = {}, t
       findingtypeid,
       findingAccessoriesId,
       findingtypename,
-      findingAccessories
+      findingAccessories,
+      IsDesignBaseWeb
     ) VALUES (
       @id,
       @DesignId,
@@ -126,7 +127,8 @@ export function batchInsertArticleMaterials(db, rawPayload = [], options = {}, t
       @findingtypeid,
       @findingAccessoriesId,
       @findingtypename,
-      @findingAccessories
+      @findingAccessories,
+      @IsDesignBaseWeb
     )
     ON CONFLICT(id) DO UPDATE SET
       DesignId = excluded.DesignId,
@@ -169,6 +171,7 @@ export function batchInsertArticleMaterials(db, rawPayload = [], options = {}, t
       findingAccessoriesId = excluded.findingAccessoriesId,
       findingtypename = excluded.findingtypename,
       findingAccessories = excluded.findingAccessories,
+      IsDesignBaseWeb = excluded.IsDesignBaseWeb,
       updated_at = CURRENT_TIMESTAMP
   `);
 
@@ -245,6 +248,7 @@ export function batchInsertArticleMaterials(db, rawPayload = [], options = {}, t
         findingAccessoriesId: sanitizeNumber(item.findingAccessoriesId, 0),
         findingtypename: sanitizeString(item.findingtypename),
         findingAccessories: sanitizeString(item.findingAccessories),
+        IsDesignBaseWeb: Number(item.IsDesignBaseWeb ?? item.isDesignBaseWeb ?? 0) === 1 ? 1 : 0,
       };
 
       upsertStmt.run(record);

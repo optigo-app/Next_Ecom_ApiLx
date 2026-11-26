@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import { useSearchParams, usePathname, useRouter } from "next/navigation";
+import { buildAlbumListingUrl } from "@/app/(core)/utils/album/albumScopeUrl";
 import Cookies from "js-cookie";
 import { toast } from "react-toastify";
 import { handleMoveToDetail } from "@/app/(core)/utils/product/productListingHelpers";
@@ -116,6 +117,17 @@ export function useExclusiveAlbum({
 
   const initialParams = useMemo(() => checkUrlParams(), [checkUrlParams]);
 
+  // Logged-in users always see albums filtered by their own customer id;
+  // the URL `customerid` param is only honoured for guests opening shared links.
+  const resolveEffectiveCustomerId = useCallback((urlCustId = "") => {
+    const isLogin = getSession("LoginUser");
+    const loginInfo = getSession("loginUserDetail");
+    const ownId =
+      loginInfo?.id ?? loginInfo?.CustomerId ?? loginInfo?.customerid;
+    if (isLogin && ownId != null && ownId !== "") return String(ownId);
+    return urlCustId || "";
+  }, []);
+
   // 2. Core State
   const [isOpen, setIsOpen] = useState(initialParams.hasExclusive);
   const [loading, setLoading] = useState(false);
@@ -124,6 +136,8 @@ export function useExclusiveAlbum({
   const [resolvedCustomerId, setResolvedCustomerId] = useState("");
   const [showAlbumList, setShowAlbumList] = useState(false);
   const [selectedAlbum, setSelectedAlbum] = useState(null); // null = Grid view; object = Detail view
+  const [matchedAlbum, setMatchedAlbum] = useState(null); // shared-link album row (RandomNo match)
+  const [albumListScope, setAlbumListScope] = useState("one"); // "one" = matched album card; "all" = customer album grid
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState("name"); // "name" | "count" | "date"
   const [storeConfig, setStoreConfig] = useState({
@@ -199,9 +213,10 @@ export function useExclusiveAlbum({
       const baseApiUrl = `/api/sqlite/exclusive-albums?domain=${targetDomain}`;
       // A shared link identifies one album. Fetch it directly; its row also
       // contains CustomerId, which is used only if the visitor goes back.
+      const effectiveCustId = resolveEffectiveCustomerId(custId);
       const query = randomNo
         ? `&RandomNo=${encodeURIComponent(randomNo)}`
-        : `&customerId=${encodeURIComponent(custId || defaultCustomerId)}`;
+        : `&customerId=${encodeURIComponent(effectiveCustId || defaultCustomerId)}`;
       const res = await fetch(`${baseApiUrl}${query}`, {
         signal: abortController.signal,
       });
@@ -241,10 +256,12 @@ export function useExclusiveAlbum({
           const albumToSelect = fetchedAlbums.find(
             (a) => String(a.RandomNo) === String(randomNo)
           );
-          setSelectedAlbum(albumToSelect || null);
-          // Keep the initial shared-link view scoped to the requested album.
-          // The customer album grid is fetched only when Back is clicked.
+          setMatchedAlbum(albumToSelect || null);
+          setSelectedAlbum(null);
+          // Keep the initial shared-link view scoped to the requested album;
+          // the scope toggle fetches the full customer album grid.
           setAlbums(albumToSelect ? [albumToSelect] : []);
+          setShowAlbumList(Boolean(albumToSelect));
         } else {
           setSelectedAlbum(null);
           setAlbums(fetchedAlbums);
@@ -271,7 +288,7 @@ export function useExclusiveAlbum({
     return () => {
       abortController.abort();
     };
-  }, [checkUrlParams, initialDomain, defaultCustomerId, autoSelectRandomNo, albumKey]);
+  }, [checkUrlParams, initialDomain, defaultCustomerId, autoSelectRandomNo, albumKey, resolveEffectiveCustomerId]);
 
   useEffect(() => {
     const cleanup = fetchAlbums();
@@ -301,7 +318,7 @@ export function useExclusiveAlbum({
     const poll = async () => {
       try {
         const { custId } = checkUrlParams();
-        const customerId = resolvedCustomerId || custId;
+        const customerId = resolveEffectiveCustomerId(resolvedCustomerId || custId);
         if (!customerId) return;
         const targetDomain = initialDomain || "beluxjewel.web";
         const res = await fetch(
@@ -356,6 +373,7 @@ export function useExclusiveAlbum({
     initialDomain,
     albumKey,
     fetchAlbums,
+    resolveEffectiveCustomerId,
   ]);
 
   // 4.5 Derived blocked status: fires the instant the countdown reaches zero
@@ -560,6 +578,11 @@ export function useExclusiveAlbum({
       setBlockedAlbum(album);
       return;
     }
+    const albumKey = album?.RandomNo || album?.albumcode || album?.id;
+    if (albumKey) {
+      router.push(buildAlbumListingUrl(albumKey));
+      return;
+    }
     setSelectedAlbum(album);
     setSearchQuery("");
     if (scrollContainerRef.current) {
@@ -569,12 +592,12 @@ export function useExclusiveAlbum({
         behavior: "smooth",
       });
     }
-  }, [getAlbumStatus]);
+  }, [getAlbumStatus, router]);
 
   const handleBackToAlbums = useCallback(async () => {
     if (initialRandomNo) {
       const { custId } = checkUrlParams();
-      const customerId = resolvedCustomerId || custId;
+      const customerId = resolveEffectiveCustomerId(resolvedCustomerId || custId);
       if (!customerId) {
         setSelectedAlbum(null);
         setAlbums([]);
@@ -619,7 +642,25 @@ export function useExclusiveAlbum({
         behavior: "smooth",
       });
     }
-  }, [initialRandomNo, resolvedCustomerId, initialDomain, checkUrlParams]);
+  }, [initialRandomNo, resolvedCustomerId, initialDomain, checkUrlParams, resolveEffectiveCustomerId]);
+
+  // Shared-link scope toggle: "one" shows only the album from the URL's
+  // randomNo; "all" fetches every album shared with this customer.
+  const switchAlbumScope = useCallback(
+    (next) => {
+      if (!next || next === albumListScope) return;
+      setAlbumListScope(next);
+      if (next === "all") {
+        handleBackToAlbums();
+        return;
+      }
+      setSelectedAlbum(null);
+      setAlbums(matchedAlbum ? [matchedAlbum] : []);
+      setShowAlbumList(Boolean(matchedAlbum));
+      setSearchQuery("");
+    },
+    [albumListScope, handleBackToAlbums, matchedAlbum]
+  );
 
   const handleClose = useCallback(() => {
     clearAlbumContext();
@@ -923,6 +964,9 @@ export function useExclusiveAlbum({
     storeConfig,
     initialRandomNo,
     currencySymbol,
+    matchedAlbum,
+    albumListScope,
+    switchAlbumScope,
 
     // Album availability status
     blockedStatus: activeBlockedStatus,

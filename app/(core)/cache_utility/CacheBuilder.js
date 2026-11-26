@@ -89,6 +89,7 @@ const getPricingContext = (loginUserDetail, storeinit, islogin) => {
     diamondpricelistname: !islogin ? storeinit?.diamondpricelistname : loginInfo?.diamondpricelistname ?? "",
     colorstonepricelistname: !islogin ? storeinit?.colorstonepricelistname : loginInfo?.colorstonepricelistname ?? "",
     SettingPriceUniqueNo: !islogin ? storeinit?.SettingPriceUniqueNo : loginInfo?.SettingPriceUniqueNo ?? "",
+    Customerdiamondpricelistname: loginInfo?.Customerdiamondpricelistname ?? "",
   };
 };
 
