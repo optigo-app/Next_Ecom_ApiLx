@@ -64,6 +64,7 @@ async function fetchGroupedContentFromApi(bypassCache = false) {
  *   craftsmanship: object|null,
  *   exhibitionconfig: object|null,
  *   designlibrary: object|null,
+ *   sequenceconfig: object|null,
  *   banners: Array,
  *   bannersByType: object,
  *   bannerConfig: object|null,

@@ -50,6 +50,9 @@ export function normalizeWebContent(rawGroupedData = {}) {
   const  designlibraryItem = data?.designlibrary?.[0] || null;
   const designlibrary = designlibraryItem?.ContentJson || null;
 
+  const  sequenceconfigItem = data?.sequenceconfig?.[0] || null;
+  const sequenceconfig = sequenceconfigItem?.ContentJson || null;
+
 
   // Banner Configuration & Grouped Banners
   const bannerGroup = data?.banner || {
@@ -87,6 +90,7 @@ export function normalizeWebContent(rawGroupedData = {}) {
     craftsmanship,
     exhibitionconfig,
     designlibrary,
+    sequenceconfig,
     banners,
     bannersByType,
     bannerConfig,

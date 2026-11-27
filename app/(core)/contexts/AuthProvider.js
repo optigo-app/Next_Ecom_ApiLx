@@ -40,6 +40,7 @@ const publicPages = [
   "/forgotPassword",
   "/privacyPolicy",
   "/aboutUs",
+  "/career",
   "/contactUs",
   "/appointment",
   "/bespoke-jewelry",

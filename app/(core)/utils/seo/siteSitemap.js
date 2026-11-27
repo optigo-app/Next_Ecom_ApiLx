@@ -6,6 +6,7 @@ import { getCurrentTenantDomain } from "./productSitemap";
 
 const themeRoutes = [
   { path: "/aboutUs", load: (t) => import(`@/app/theme/${t}/AboutUs/page.js`) },
+  { path: "/career", load: (t) => import(`@/app/theme/${t}/career/page.js`) },
   { path: "/contactUs", load: (t) => import(`@/app/theme/${t}/contactUs/page.js`) },
   { path: "/faq", load: (t) => import(`@/app/theme/${t}/faq/page.js`) },
   { path: "/appointment", load: (t) => import(`@/app/theme/${t}/appointment/page.js`) },

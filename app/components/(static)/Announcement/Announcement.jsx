@@ -6,12 +6,14 @@ import Page from "./Page"
 
 export default async function Announcement() {
   const { announcement, isError, error } = await getWebContentManagement();
+  
+  console.log("TCL: Announcement -> announcement", announcement)
  
   if (isError) {
     console.error("[Announcement] Error loading Announcement:", error);
   }
 
-  if (BELUX_JEWEL) {
+  if (BELUX_JEWEL && announcement?.visible) {
    
   if (announcement) {
     return (

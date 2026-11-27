@@ -63,6 +63,8 @@ const FIXED_LINK_MAP = {
   
   // Optional: Keep hyphenated/spaced versions if your normalizer preserves them
   "customer-services": "/customer-service",
+  career: "/career",
+  careers: "/career",
 };
 
 const normalizeLabel = (label = "") =>

@@ -10,6 +10,8 @@ import TopSection from "@/app/components/(static)/HeroSection/HeroSection";
 import { assetBase } from "@/app/(core)/lib/ServerHelper";
 import BrandInfoMarquee from "./blocks/Marquee";
 import CategoryBlock from "./blocks/Category";
+import CollectionBlock from "./blocks/Collection";
+
 import MaxBestSeller from "./blocks/MaxBestSeller";
 import MaxNewArrival from "./blocks/MaxNewArrival";
 // import MaxAlbum from "./blocks/MaxAlbum";
@@ -65,6 +67,7 @@ const BeluxJewelHome = async () => {
 
   const {
     pageTemplates,
+    sequenceconfig,
     raw: initialWebsiteContent,
     categoryConfig: initialCategoryConfig,
     categories: initialCategories,
@@ -74,6 +77,75 @@ const BeluxJewelHome = async () => {
 
   const socialMediaTemplates = (pageTemplates || []).filter(
     (t) => t?.PageKey === "social-media"
+  );
+ 
+  
+
+ 
+  /* ---------- section registry: sequenceconfig key -> component ---------- */
+  const sectionRenderers = {
+    marquee: () => <BrandInfoMarquee assetBase={assetBase} />,
+
+    categories: () => (
+      <B2BContent>
+        <CategoryBlock
+          assetBase={assetBase}
+          storeInit={storeData}
+          initialData={initialWebsiteContent}
+          initialCategoryConfig={initialCategoryConfig}
+          initialCategories={initialCategories}
+        />
+      </B2BContent>
+    ),
+
+    collections: () => (
+      <B2BContent>
+        <CollectionBlock
+          assetBase={assetBase}
+          storeInit={storeData}
+          initialData={initialWebsiteContent}
+          initialCollectionConfig={initialCollectionConfig}
+          initialCollections={initialCollections}
+        />
+      </B2BContent>
+    ),
+
+    exhibition: () => <ExhibitionConfig />,
+    socialMedia: () => <SocialMedia templates={socialMediaTemplates} />,
+    craftsmanship: () => <CraftsmanshipPage />,
+    showroom: () => <PhysicalStore />,
+    designLibrary: () => <DesignLibrary />,
+
+    // optional: only show if you add these keys to sequenceconfig
+    bestSeller: () =>
+      showBestSeller ? (
+        <B2BContent>
+          <MaxBestSeller storeInit={storeData} initialData={initialBestSellers} />
+        </B2BContent>
+      ) : null,
+    newArrival: () =>
+      showNewArrival ? (
+        <B2BContent>
+          <MaxNewArrival storeInit={storeData} initialData={initialNewArrivals} />
+        </B2BContent>
+      ) : null,
+    trending: () =>
+      showTrending ? (
+        <B2BContent>
+          <MaxTrendingView storeInit={storeData} initialData={initialTrending} />
+        </B2BContent>
+      ) : null,
+  };
+
+  
+  const sectionList = Array.isArray(sequenceconfig?.sections)
+    ? sequenceconfig.sections
+    : Array.isArray(sequenceconfig)
+    ? sequenceconfig
+    : [];
+
+  const orderedSections = [...sectionList].sort(
+    (a, b) => (a?.sortOrder ?? 0) - (b?.sortOrder ?? 0)
   );
 
 
@@ -87,33 +159,11 @@ const BeluxJewelHome = async () => {
       }}
     >
       <TopSection />
-      <BrandInfoMarquee assetBase={assetBase} />
-      <B2BContent>
-        <CategoryBlock
-          assetBase={assetBase}
-          storeInit={storeData}
-          initialData={initialWebsiteContent}
-          initialCategoryConfig={initialCategoryConfig}
-          initialCategories={initialCategories}
-          initialCollectionConfig={initialCollectionConfig}
-          initialCollections={initialCollections}
-        />
-        {showBestSeller && (
-          <MaxBestSeller storeInit={storeData} initialData={initialBestSellers} />
-        )}
-        {showNewArrival && (
-          <MaxNewArrival storeInit={storeData} initialData={initialNewArrivals} />
-        )}
-        {showTrending && (
-          <MaxTrendingView storeInit={storeData} initialData={initialTrending} />
-        )}
-      </B2BContent>
-      <PhysicalStore />
-      <ExhibitionConfig   />
-      <CraftsmanshipPage />
-      <DesignLibrary />
-      {/* <SocialMediaVideoSection /> */}
-      <SocialMedia templates={socialMediaTemplates} />
+
+      {orderedSections.map(({ key }) => {
+        const render = sectionRenderers[key];
+        return render ? <React.Fragment key={key}>{render()}</React.Fragment> : null;
+      })}
     </Box>
   );
 };
