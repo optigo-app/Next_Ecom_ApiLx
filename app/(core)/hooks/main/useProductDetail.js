@@ -12,6 +12,9 @@ import { ColorStoneQualityColorComboAPI } from "@/app/(core)/utils/API/Combo/Col
 import { trackAlbumAction } from "@/app/(core)/utils/API/Album/albumTracker";
 import { CartAndWishListAPI } from "@/app/(core)/utils/API/CartAndWishList/CartAndWishListAPI";
 import { RemoveCartAndWishAPI } from "@/app/(core)/utils/API/RemoveCartandWishAPI/RemoveCartAndWishAPI";
+import { updateQuantity } from "@/app/(core)/utils/API/CartAPI/QuantityAPI";
+import { handleProductRemark } from "@/app/(core)/utils/API/CartAPI/ProductRemarkAPIData";
+import { toast } from "react-toastify";
 import {
   getCartWishKey,
   getDesignBaseCartWishKey,
@@ -46,6 +49,7 @@ export function useProductDetail({ storeinit, searchParams, params }) {
     setCartArr: setStoreCartArr,
     setWishArr: setStoreWishArr,
     fetchGetCountData: storeFetchGetCountData,
+    cartAndWishListRd1,
   } = useStore();
 
   const unwrappedSearchParams = (searchParams && typeof searchParams.then === "function")
@@ -523,7 +527,7 @@ export function useProductDetail({ storeinit, searchParams, params }) {
             (ele) => Number(ele?.Metalid) === Number(initialDecodeUrl?.m),
           )?.metaltype || initialDecodeUrl?.metalTypeName
         : null;
-      const mtType = cartMetalType || (isDesignBaseArticle && selectedArticle?.MetalType
+      const mtType = cartMetalType || (selectedArticle?.MetalType
         ? selectedArticle.MetalType
         : metalTypeCombo.find(
             (ele) => Number(ele?.Metalid) === Number(singleProd?.MetalPurityid),
@@ -538,8 +542,23 @@ export function useProductDetail({ storeinit, searchParams, params }) {
               String(initialDecodeUrl?.metalColorName ?? "").trim().toLowerCase(),
           )?.colorcode
         : null;
+      const defaultArticleRow =
+        rd1Data?.find((article) => article.ArticleId == defaultArticleId) ||
+        customizationDetail ||
+        rd1Data?.[0];
+      const articleColor =
+        Number(initialDecodeUrl?.fromCart) === 1 || !defaultArticleRow
+          ? null
+          : metalColorCombo.find(
+              (ele) =>
+                Number(ele?.id) === Number(defaultArticleRow?.MetalColorId) ||
+                (defaultArticleRow?.MetalColor &&
+                  String(ele?.metalcolorname ?? "").trim().toLowerCase() ===
+                    String(defaultArticleRow.MetalColor).trim().toLowerCase()),
+            )?.colorcode;
       const getCurrentMetalColor =
         requestedColor ||
+        articleColor ||
         metalColorCombo.find(
           (ele) => Number(ele?.id) === Number(requestedColorId),
         )?.colorcode ||
@@ -592,6 +611,292 @@ export function useProductDetail({ storeinit, searchParams, params }) {
     (isDesignBaseCartFlow ||
       Number((customizationDetail ?? rd1Data[0])?.IsDesignBaseWeb) === 1);
 
+  // ── Cart quantity / remark (product detail) ──────────────────────────────
+  // Seeded from GetCount rd1 (Quantity / Remarks) so refresh & navigation keep
+  // the values. Before the item is in the cart they are held locally and sent
+  // with ADDTOCART; once in the cart edits call the Quantity / Remark APIs.
+  const [cartQty, setCartQty] = useState(1);
+  // `cartRemark` state only feeds the field's initial/external value; user
+  // edits live in `cartRemarkRef` so typing never re-renders this page.
+  const [cartRemark, setCartRemark] = useState("");
+  const cartRemarkRef = useRef("");
+  const [isCartExtrasSaving, setIsCartExtrasSaving] = useState(false);
+  const hadCartRowRef = useRef(false);
+  // Last values known to be on the server for the active variant (used to skip
+  // no-op calls and to revert on failure).
+  const syncedQtyRef = useRef(1);
+  const syncedRemarkRef = useRef("");
+  // Pending debounced saves: { timer, target, variantKey }
+  const qtySaveRef = useRef({ timer: null, target: null, variantKey: "" });
+  const remarkSaveRef = useRef({ timer: null, target: null, variantKey: "" });
+  const variantKeyRef = useRef("");
+
+  const normCartCode = (v) => {
+    if (v == null) return "";
+    const s = String(v).trim();
+    return s !== "" && !isNaN(s) ? String(Number(s)) : s;
+  };
+  const normCartText = (v) => String(v ?? "").trim().toLowerCase();
+
+  const getActiveCartIdentity = () => {
+    const art =
+      customizationDetail ||
+      rd1Data?.find((article) => article.ArticleId == defaultArticleId) ||
+      rd1Data?.[0] ||
+      {};
+    return {
+      art,
+      autocode: normCartCode(art?.autocode || singleProd1?.autocode || singleProd?.autocode),
+      articleNo: normCartText(art?.ArticleNo || singleProd1?.ArticleNo || singleProd?.ArticleNo),
+      articleId: art?.ArticleId || defaultArticleId || singleProd1?.ArticleId || singleProd?.ArticleId,
+    };
+  };
+
+  // Finds the cart row (GetCount rd1 row or GetCart_Details row) that belongs
+  // to the variant currently shown on the detail page.
+  const matchActiveCartRow = (rows = []) => {
+    const { art, autocode, articleNo } = getActiveCartIdentity();
+    if (!autocode || !Array.isArray(rows)) return null;
+    let list = rows.filter((r) => normCartCode(r?.autocode) === autocode);
+    if (!list.length) return null;
+
+    if (isDesignBaseWeb) {
+      // Strict: a cart row only belongs to this page if every known selection
+      // matches. No match means this exact configuration is not in the cart.
+      const narrow = (pred) => {
+        list = list.filter(pred);
+      };
+      const [selDiaQuality = "", selDiaColor = ""] = String(selectDiaQc ?? "").split(",");
+      const diaOption = selDiaQuality
+        ? diaQcCombo?.find(
+            (e) => e?.Quality == selDiaQuality && e?.color == selDiaColor,
+          )
+        : undefined;
+      const metalId =
+        metalTypeCombo?.find((e) => normCartText(e?.metaltype) === normCartText(metalType))?.Metalid ??
+        art?.MetalTypeId ??
+        art?.Metalid;
+      const colorId =
+        metalColorCombo?.find(
+          (e) =>
+            normCartText(e?.colorcode) === normCartText(metalColor) ||
+            normCartText(e?.metalcolorname) === normCartText(metalColor),
+        )?.id ?? art?.MetalColorId;
+      if (metalId != null) narrow((r) => String(r?.metaltypeid ?? r?.MetalTypeId ?? "") === String(metalId));
+      if (colorId != null) narrow((r) => String(r?.metalcolorid ?? r?.MetalColorId ?? "") === String(colorId));
+      if (diaOption) {
+        narrow(
+          (r) =>
+            String(r?.diamondqualityid ?? r?.DiamondQualityId ?? 0) === String(diaOption.QualityId ?? 0) &&
+            String(r?.diamondcolorid ?? r?.DiamondColorId ?? 0) === String(diaOption.ColorId ?? 0),
+        );
+      }
+      if (sizeData) {
+        narrow(
+          (r) => normCartText(r?.DesignSize ?? r?.Size) === normCartText(sizeData),
+        );
+      }
+      return list[0] ?? null;
+    }
+
+    return (
+      list.find((r) => articleNo && normCartText(r?.ArticleNo) === articleNo) ||
+      list.find((r) => !normCartText(r?.ArticleNo)) ||
+      (articleNo ? null : list[0]) ||
+      null
+    );
+  };
+
+  const activeCartRow = matchActiveCartRow(
+    (cartAndWishListRd1 || []).filter((r) => Number(r?.IsWishList) === 0),
+  );
+  const activeCartRowSig = activeCartRow
+    ? `${normCartCode(activeCartRow.autocode)}|${normCartText(activeCartRow.ArticleNo)}|${activeCartRow.Quantity ?? ""}|${activeCartRow.Remarks ?? ""}`
+    : "";
+  // Identifies the exact variant on screen: ArticleNo for article-based items,
+  // metal / colour / diamond / size for design-based items.
+  const activeCartIdentityKey = (() => {
+    const { autocode, articleNo } = getActiveCartIdentity();
+    if (!isDesignBaseWeb) return `${autocode}|${articleNo}`;
+    return [
+      autocode,
+      "designbase",
+      normCartText(metalType),
+      normCartText(metalColor),
+      normCartText(selectDiaQc),
+      normCartText(selectCsQC),
+      normCartText(sizeData),
+    ].join("|");
+  })();
+  variantKeyRef.current = activeCartIdentityKey;
+  const isPendingFor = (ref) =>
+    Boolean(ref.current.timer) && ref.current.variantKey === activeCartIdentityKey;
+
+  // Seeds qty / remark from the matching GetCount row whenever the row or the
+  // selected variant changes. Variants without a cart row start clean.
+  useEffect(() => {
+    if (activeCartRow) {
+      hadCartRowRef.current = true;
+      const qty = Math.max(1, Number(activeCartRow.Quantity) || 1);
+      const remark = activeCartRow.Remarks ?? "";
+      syncedQtyRef.current = qty;
+      syncedRemarkRef.current = remark;
+      const recentlyEdited = (ref) =>
+        ref.current.editedKey === activeCartIdentityKey && Date.now() - (ref.current.editedAt || 0) < 4000;
+      if (!isPendingFor(qtySaveRef) && !recentlyEdited(qtySaveRef)) setCartQty(qty);
+      if (!isPendingFor(remarkSaveRef) && !recentlyEdited(remarkSaveRef)) {
+        cartRemarkRef.current = remark;
+        setCartRemark(remark);
+      }
+    } else if (
+      (remarkSaveRef.current.editedKey === activeCartIdentityKey && Date.now() - (remarkSaveRef.current.editedAt || 0) < 4000) ||
+      (qtySaveRef.current.editedKey === activeCartIdentityKey && Date.now() - (qtySaveRef.current.editedAt || 0) < 4000)
+    ) {
+      // user is mid-edit on this same variant; keep what they typed
+    } else {
+      hadCartRowRef.current = false;
+      syncedQtyRef.current = 1;
+      syncedRemarkRef.current = "";
+      console.log("[cartExtras] reset: no matching cart row", activeCartIdentityKey);
+      setCartQty(1);
+      cartRemarkRef.current = "";
+      setCartRemark("");
+    }
+  }, [activeCartRowSig, activeCartIdentityKey]);
+
+  // Flush pending debounced saves immediately when focus leaves the field,
+  // the tab is hidden, or the page is closed.
+  useEffect(() => {
+    const flush = () =>
+      [qtySaveRef, remarkSaveRef].forEach((ref) => {
+        const p = ref.current;
+        if (p.timer) {
+          clearTimeout(p.timer);
+          p.timer = null;
+          p.run?.();
+        }
+      });
+    const onHide = () => document.visibilityState === "hidden" && flush();
+    document.addEventListener("focusout", flush);
+    document.addEventListener("visibilitychange", onHide);
+    window.addEventListener("pagehide", flush);
+    return () => {
+      document.removeEventListener("focusout", flush);
+      document.removeEventListener("visibilitychange", onHide);
+      window.removeEventListener("pagehide", flush);
+    };
+  }, []);
+
+  // Flush any pending debounced save if the page unmounts.
+  useEffect(
+    () => () => {
+      [qtySaveRef, remarkSaveRef].forEach((ref) => {
+        const p = ref.current;
+        if (p.timer) {
+          clearTimeout(p.timer);
+          p.timer = null;
+          p.run?.();
+        }
+      });
+    },
+    [],
+  );
+
+  const resolveActiveCartTarget = async () => {
+    // GetCount rd1 now carries `cartid`, so no GetCart_Details call is needed.
+    const row = matchActiveCartRow(
+      (cartAndWishListRd1 || []).filter((r) => Number(r?.IsWishList) === 0),
+    );
+    const rowCartId = Number(row?.cartid ?? row?.CartId ?? row?.cartId) || 0;
+    if (rowCartId > 0) return { id: rowCartId, autocode: row.autocode };
+    const { articleId, art } = getActiveCartIdentity();
+    const mappedCartId = Number(rd1CartMap?.[articleId]?.CartId) || 0;
+    return mappedCartId > 0 && !isDesignBaseWeb
+      ? { id: mappedCartId, autocode: art?.autocode }
+      : null;
+  };
+
+  // Debounces a save for the variant currently on screen. The cart target is
+  // resolved up front so a later variant switch can't redirect the save, and a
+  // pending save for a previous variant is flushed immediately.
+  const scheduleCartSave = (ref, delay, run) => {
+    const p = ref.current;
+    const key = variantKeyRef.current;
+    if (p.timer && p.variantKey !== key) {
+      clearTimeout(p.timer);
+      p.timer = null;
+      p.target = null;
+      p.run?.();
+    }
+    if (p.timer) clearTimeout(p.timer);
+    if (!p.target) p.target = resolveActiveCartTarget().catch(() => null);
+    const target = p.target;
+    p.variantKey = key;
+    p.run = () => run(target, key);
+    p.timer = setTimeout(() => {
+      p.timer = null;
+      p.target = null;
+      p.run();
+    }, delay);
+  };
+
+  // Not in cart: only local state (sent with ADDTOCART). In cart: debounced API.
+  const handleCartQtyChange = (next, isInCart) => {
+    const qty = Math.max(1, parseInt(next, 10) || 1);
+    qtySaveRef.current.editedAt = Date.now();
+    qtySaveRef.current.editedKey = variantKeyRef.current;
+    setCartQty(qty);
+    if (!isInCart) return;
+    scheduleCartSave(qtySaveRef, 600, async (target, key) => {
+      if (key === variantKeyRef.current && qty === syncedQtyRef.current) return;
+      setIsCartExtrasSaving(true);
+      try {
+        const t = await target;
+        if (!t?.id) throw new Error("Cart item not found");
+        await updateQuantity(t.id, qty, cookie);
+        if (key === variantKeyRef.current) syncedQtyRef.current = qty;
+        storeFetchGetCountData?.();
+      } catch (err) {
+        console.log("updateQtyErr", err);
+        if (key === variantKeyRef.current) setCartQty(syncedQtyRef.current);
+        toast.error("Failed to update quantity");
+      } finally {
+        setIsCartExtrasSaving(false);
+      }
+    });
+  };
+
+  const handleCartRemarkChange = (text, isInCart) => {
+    const value = String(text ?? "");
+    remarkSaveRef.current.editedAt = Date.now();
+    remarkSaveRef.current.editedKey = variantKeyRef.current;
+    cartRemarkRef.current = value;
+    if (!isInCart) return;
+    scheduleCartSave(remarkSaveRef, 800, async (target, key) => {
+      const trimmed = value.trim();
+      console.log("[cartRemark] saving", { trimmed, key, current: variantKeyRef.current, synced: syncedRemarkRef.current });
+      if (
+        key === variantKeyRef.current &&
+        trimmed === String(syncedRemarkRef.current ?? "").trim()
+      ) {
+        return;
+      }
+      setIsCartExtrasSaving(true);
+      try {
+        const t = await target;
+        if (!t?.id) throw new Error("Cart item not found");
+        await handleProductRemark({ id: t.id, autocode: t.autocode }, trimmed, cookie);
+        if (key === variantKeyRef.current) syncedRemarkRef.current = trimmed;
+        storeFetchGetCountData?.();
+      } catch (err) {
+        console.log("saveRemarkErr", err);
+        toast.error("Failed to save remark");
+      } finally {
+        setIsCartExtrasSaving(false);
+      }
+    });
+  };
+
   const handleCart = async (cartFlag) => {
     setIsCartBtnLoading(true);
     // Design-based products ignore the article variant; the selected dropdown values are sent instead.
@@ -630,13 +935,17 @@ export function useProductDetail({ storeinit, searchParams, params }) {
       ) ?? (isDesignBaseWeb ? csQcCombo?.[0] : csQcCombo);
 
     const selectedMetalColor = normalizeOption(metalColor);
-    const mcArr = metalColorCombo?.find(
-      (ele) =>
-        (selectedMetalColor &&
-          (normalizeOption(ele?.colorcode) === selectedMetalColor ||
-            normalizeOption(ele?.metalcolorname) === selectedMetalColor)) ||
-        Number(ele?.id) === Number(articleIdentity?.MetalColorId),
-    );
+    const mcArr =
+      (selectedMetalColor
+        ? metalColorCombo?.find(
+            (ele) =>
+              normalizeOption(ele?.colorcode) === selectedMetalColor ||
+              normalizeOption(ele?.metalcolorname) === selectedMetalColor,
+          )
+        : undefined) ??
+      metalColorCombo?.find(
+        (ele) => Number(ele?.id) === Number(articleIdentity?.MetalColorId),
+      );
 
     const prodObj = {
       IsDesignBaseWeb: isDesignBaseWeb ? 1 : 0,
@@ -678,7 +987,8 @@ export function useProductDetail({ storeinit, searchParams, params }) {
         cartCustomization?.TotalUnitCost ||
         singleProd1?.UnitCostWithMarkUp ||
         singleProd?.UnitCostWithMarkUp,
-      Remark: "",
+      Remark: String(cartRemarkRef.current ?? cartRemark ?? "").trim(),
+      Quantity: Math.max(1, Number(cartQty) || 1),
       Metal_Cost:
         cartCustomization?.TotalMetalCost ||
         singleProd?.Metal_Cost ||
@@ -776,6 +1086,10 @@ export function useProductDetail({ storeinit, searchParams, params }) {
           if (addedKey) {
             setStoreCartArr?.((prev) => ({ ...prev, [addedKey]: true }));
           }
+          syncedRemarkRef.current = String(
+            cartRemarkRef.current ?? cartRemark ?? "",
+          ).trim();
+          syncedQtyRef.current = Math.max(1, Number(cartQty) || 1);
           broadcast(
             "UPDATE_CART_COUNT",
             cartC,
@@ -895,13 +1209,17 @@ export function useProductDetail({ storeinit, searchParams, params }) {
     }
 
     const selectedMetalColor = normalizeOption(metalColor);
-    let mcArr = metalColorCombo?.find(
-      (ele) =>
-        (selectedMetalColor &&
-          (normalizeOption(ele?.colorcode) === selectedMetalColor ||
-            normalizeOption(ele?.metalcolorname) === selectedMetalColor)) ||
-        Number(ele?.id) === Number(articleIdentity?.MetalColorId),
-    );
+    let mcArr =
+      (selectedMetalColor
+        ? metalColorCombo?.find(
+            (ele) =>
+              normalizeOption(ele?.colorcode) === selectedMetalColor ||
+              normalizeOption(ele?.metalcolorname) === selectedMetalColor,
+          )
+        : undefined) ??
+      metalColorCombo?.find(
+        (ele) => Number(ele?.id) === Number(articleIdentity?.MetalColorId),
+      );
 
     let prodObj = {
       IsDesignBaseWeb: isDesignBaseWeb ? 1 : 0,
@@ -1193,17 +1511,57 @@ export function useProductDetail({ storeinit, searchParams, params }) {
             )
           : null;
         setMetalType(
-          requestedCartMetal?.metaltype || (isDesignBaseArticle && selectedArticle?.MetalType
+          requestedCartMetal?.metaltype || (selectedArticle?.MetalType
             ? selectedArticle.MetalType
             : metalArr?.metaltype),
         );
 
-        setSelectDiaQc(`${diaArr?.Quality},${diaArr?.color}`);
-
-        setSelectCsQC(`${csArr?.Quality},${csArr?.color}`);
+        // Design-base without an explicit cart/listing diamond: the article's
+        // own diamond (rd2) is applied by the dedicated effect below, never the
+        // store-wide default.
+        if (Number(decodeobj?.fromCart) === 1) {
+          setSelectDiaQc(`${diaArr?.Quality},${diaArr?.color}`);
+          setSelectCsQC(`${csArr?.Quality},${csArr?.color}`);
+        }
       }
     }, 500);
   }, [singleProd, rd1Data, defaultArticleId, customizationDetail, isDesignBaseCartFlow]);
+
+  // Design-base default diamond = the default article's own diamond from the
+  // SQLite response (rd2, StoneTypeid 1). Applied once per design/article so
+  // later user changes are never overridden; a cart/listing `d` still wins.
+  const articleDiaInitKeyRef = useRef(null);
+  useEffect(() => {
+    if (Number(initialDecodeUrl?.fromCart) === 1 || !rd1Data?.length || !rd2Data?.length) return;
+    const selectedArticle =
+      rd1Data.find((a) => a.ArticleId == defaultArticleId) ||
+      customizationDetail ||
+      rd1Data[0];
+    if (selectedArticle?.ArticleId == null) return;
+
+    const initKey = `${selectedArticle?.autocode ?? ""}:${selectedArticle.ArticleId}`;
+    if (articleDiaInitKeyRef.current === initKey) return;
+
+    const toValue = (stoneTypeId, comboName) => {
+      const stone = rd2Data.find(
+        (r) =>
+          String(r?.ArticleId) === String(selectedArticle.ArticleId) &&
+          Number(r?.StoneTypeid) === stoneTypeId,
+      );
+      if (!stone) return null;
+      const comboMatch = getSession(comboName)?.find(
+        (ele) =>
+          ele?.QualityId == stone.QualityId && ele?.ColorId == stone.ColorId,
+      );
+      return `${comboMatch?.Quality ?? stone.Quality},${comboMatch?.color ?? stone.Color}`;
+    };
+
+    const diaValue = toValue(1, "diamondQualityColorCombo");
+    const csValue = toValue(2, "ColorStoneQualityColorCombo");
+    articleDiaInitKeyRef.current = initKey;
+    if (diaValue) setSelectDiaQc(diaValue);
+    if (csValue) setSelectCsQC(csValue);
+  }, [rd1Data, rd2Data, defaultArticleId, customizationDetail, initialDecodeUrl]);
 
   useEffect(() => {
     try {
@@ -1790,7 +2148,6 @@ export function useProductDetail({ storeinit, searchParams, params }) {
     if (
       !metalDensityLoaded ||
       !hasUserChangedCartMetal ||
-      Number(initialDecodeUrl?.fromCart) !== 1 ||
       !netWeightConversionBaseRef.current ||
       !metalType
     ) return;
@@ -2013,7 +2370,15 @@ export function useProductDetail({ storeinit, searchParams, params }) {
     const requestedColorId = Number(initialDecodeUrl?.fromCart) === 1
       ? initialDecodeUrl?.metalColorId ?? initialDecodeUrl?.i
       : null;
-    const selectedColorId = requestedColorId ?? singleProd?.MetalColorid ?? singleProd1?.MetalColorid;
+    const defaultArticleForColor =
+      rd1Data?.find((article) => article.ArticleId == defaultArticleId) ||
+      customizationDetail ||
+      rd1Data?.[0];
+    const selectedColorId =
+      requestedColorId ??
+      defaultArticleForColor?.MetalColorId ??
+      singleProd?.MetalColorid ??
+      singleProd1?.MetalColorid;
     const mcArr = (Number(initialDecodeUrl?.fromCart) === 1
       ? mtColorLocal?.find(
           (ele) => String(ele?.metalcolorname ?? "").trim().toLowerCase() ===
@@ -2027,7 +2392,7 @@ export function useProductDetail({ storeinit, searchParams, params }) {
     if (requestedColorId != null && mcArr?.colorcode) {
       setSelectedMetalColor(mcArr.colorcode);
     }
-  }, [singleProd, singleProd1, initialDecodeUrl, metalColorCombo]);
+  }, [singleProd, singleProd1, initialDecodeUrl, metalColorCombo, rd1Data, defaultArticleId]);
 
   const getDynamicVideo = (designno, count, extension) => {
     const getDesignVideoFol =
@@ -2048,9 +2413,7 @@ export function useProductDetail({ storeinit, searchParams, params }) {
   const handleDesignCustomChange = (e, type) => {
     const value = e?.target?.value;
     if (type === "mt") {
-      if (Number(initialDecodeUrl?.fromCart) === 1) {
-        setHasUserChangedCartMetal(true);
-      }
+      setHasUserChangedCartMetal(true);
       const selectedMetal = metalTypeCombo.find(
         (metal) => String(metal?.metaltype ?? metal?.metaltypename).trim().toLowerCase() === String(value ?? "").trim().toLowerCase(),
       );
@@ -2705,6 +3068,11 @@ export function useProductDetail({ storeinit, searchParams, params }) {
     handleMoveToDetail,
     handleCartandWish,
     handleCart,
+    cartQty,
+    cartRemark,
+    isCartExtrasSaving,
+    handleCartQtyChange,
+    handleCartRemarkChange,
     handleWishList,
     getCollectionId,
     getCollName,

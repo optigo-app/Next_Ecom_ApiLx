@@ -1,0 +1,73 @@
+/*
+ * Home page color tokens — SINGLE SOURCE for the home page.
+ * Scoped to .home-root so the palette stays page-local.
+ * Use var(--hm-*) in jsx/scss; the hex after the comma in var() is the
+ * fallback for anything rendered outside .home-root (portals, shared comps).
+ *
+ * TO RECOLOR THE HOME PAGE: edit the hexes below.
+ */
+.home-root {
+  /* Brand accent (deep teal used on EXPLORE buttons & highlights) */
+  --hm-accent: #0f3d4c;
+  --hm-accent-strong: #0f172a;
+  --hm-accent-soft: #edf1f5;
+  --hm-gold: #d97706;
+
+  /* Surfaces */
+  --hm-surface: #ffffff;
+  --hm-surface-muted: #f8f9fa;
+  --hm-surface-soft: #f8fafc;
+  --hm-surface-subtle: #f4f4f5;
+  --hm-surface-warm: #fbf9f7;
+  --hm-chip: #eeeae6;
+
+  /* Text */
+  --hm-text: #0f172a;
+  --hm-text-body: #111827;
+  --hm-text-dark: #27272a;
+  --hm-text-secondary: #1e293b;
+  --hm-text-slate: #334155;
+  --hm-text-muted: #52525b;
+  --hm-text-faint: #71717a;
+  --hm-text-gray: #64748b;
+  --hm-text-light: #94a3b8;
+  --hm-text-disabled: #9ca3af;
+  --hm-text-warm: #77716c;
+  --hm-text-warm-alt: #8a7a70;
+  --hm-text-grayish: #85818a;
+
+  /* Borders */
+  --hm-border: #e2e8f0;
+  --hm-border-strong: #e4e4e7;
+  --hm-border-warm: #ddd5c4;
+
+  /* Header icon badges (wishlist/cart count) */
+  --hm-badge-bg: #0f172a;
+  --hm-badge-text: #ffffff;
+
+  /* Exclusive-album overlay extras */
+  --hm-topbar-gradient: linear-gradient(135deg, #b434ff 0%, #6900c6 40%, #9e00ff 70%, rgba(242, 0, 255, 0.56) 100%);
+  --hm-blue: #0052cc;
+  --hm-blue-deep: #002fa7;
+  --hm-text-ink-alt: #18181b;
+  --hm-hover-dark: #3f3f46;
+  --hm-text-zinc: #a1a1aa;
+  --hm-rose: #e11d48;
+  --hm-danger-red: #ef4444;
+  --hm-danger-bg: #fef2f2;
+  --hm-danger-soft: #fee2e2;
+  --hm-danger-tint: #fff1f2;
+  --hm-surface-warm2: #f1f0ed;
+  --hm-surface-cream2: #faf9f6;
+  --hm-surface-blue: #f1f5f9;
+  --hm-success-text: #bbf7d0;
+  --hm-success-border: #dcfce7;
+
+  /* Feedback */
+  --hm-danger: #d32f2f;
+  --hm-success: #16a34a;
+
+  /* Misc */
+  --hm-radius: 12px;
+  --hm-overlay-shadow: 0 16px 48px rgba(15, 23, 42, 0.14);
+}

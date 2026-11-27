@@ -8,6 +8,7 @@ import CategoryAlbumGrid from "./CategoryAlbumGrid";
 import ExclusiveAlbumOverlay from "./ExclusiveAlbumOverlay";
 import { getSqliteHomeCategory } from "@/app/(core)/utils/sqlite/sqliteActions";
 import AlbumSection from "./AlbumSection";
+import "./home.theme.css";
 
 export const metadata = generatePageMetadata(pages["/"], "Sonasons");
 
@@ -31,6 +32,7 @@ const SonasonsHome = async (props) => {
 
   return (
     <Box
+      className="home-root"
       data-exclusive-album={isExclusive ? "true" : undefined}
       sx={{
         width: "100%",
@@ -40,8 +42,8 @@ const SonasonsHome = async (props) => {
       }}
     >
       {isExclusive ? (
-        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', backgroundColor: '#fff' }}>
-          <CircularProgress size={40} sx={{ color: '#0F172A' }} />
+        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', backgroundColor: 'var(--hm-surface, #fff)' }}>
+          <CircularProgress size={40} sx={{ color: 'var(--hm-text, #0f172a)' }} />
         </Box>
       ) : (
         <>

@@ -23,6 +23,7 @@ import CheckoutPanel from "@/app/components/testcheckout/components/CheckoutPane
 import ItemCustomizationPanel from "@/app/components/testcheckout/components/ItemCustomizationPanel";
 import OrderProcessingBackdrop from "@/app/components/testcheckout/components/OrderProcessingBackdrop";
 import "../styles/testCheckout.scss";
+import "../testcheckout.theme.css";
 import { useStore } from "@/app/(core)/contexts/StoreProvider";
 import { CheckoutThemeProvider } from "@/app/components/testcheckout/theme/checkoutTheme";
 import { isStoreInitFlagEnabled } from "@/app/(core)/utils/storeFlags";
@@ -62,6 +63,8 @@ export default function TestCheckoutMain({ theme: customTheme }) {
     handleEditQtyChange,
     handleApplyCustomization,
     handleApplyArticleCustomization,
+    handleUpdateItemQty,
+    qtyUpdatingId,
 
     // Cart Actions
     handleRemoveItem,
@@ -149,7 +152,7 @@ export default function TestCheckoutMain({ theme: customTheme }) {
       theme={customTheme}
       fallbackBrand={storeInit?.domain}
     >
-      <div className="testCheckout_wrapper">
+      <div className="testCheckout_wrapper tc-root">
         <Container
           maxWidth="false"
           className="testCheckout_wrapper_Container"
@@ -167,7 +170,7 @@ export default function TestCheckoutMain({ theme: customTheme }) {
               alignItems: "center",
               position: "relative",
               mb: { xs: 2, md: 3 },
-              borderBottom: "1px solid #f0f0f0",
+              borderBottom: "1px solid var(--tc-border-light, #f0f0f0)",
             }}
           >
             {/* Back to Home / Collection Button on Left */}
@@ -178,14 +181,14 @@ export default function TestCheckoutMain({ theme: customTheme }) {
                 left: 0,
                 top: "50%",
                 transform: "translateY(-50%)",
-                color: "#333",
-                border: "1px solid #eee",
+                color: "var(--tc-text-secondary, #333)",
+                border: "1px solid var(--tc-border-light, #eee)",
                 borderRadius: "1%",
                 width: { xs: 34, sm: 38 },
                 height: { xs: 34, sm: 38 },
                 "&:hover": {
-                  bgcolor: "#f5f5f5",
-                  borderColor: "#ccc",
+                  bgcolor: "var(--tc-surface-subtle, #f5f5f5)",
+                  borderColor: "var(--tc-border, #ccc)",
                 },
               }}
             >
@@ -199,7 +202,7 @@ export default function TestCheckoutMain({ theme: customTheme }) {
                 fontWeight: 400,
                 fontSize: { xs: "1.15rem", sm: "1.6rem", md: "1.9rem" },
                 letterSpacing: { xs: "0.5px", sm: "1.2px" },
-                color: "#111",
+                color: "var(--tc-text, #111)",
                 fontFamily: "inherit",
                 textAlign: "center",
                 lineHeight: 1.2,
@@ -210,7 +213,7 @@ export default function TestCheckoutMain({ theme: customTheme }) {
             <Typography
               variant="body2"
               sx={{
-                color: "#777",
+                color: "var(--tc-text-faint, #777)",
                 mt: 0.3,
                 fontSize: { xs: "0.75rem", sm: "0.85rem" },
                 fontWeight: 600,
@@ -230,7 +233,7 @@ export default function TestCheckoutMain({ theme: customTheme }) {
                   right: 0,
                   top: "50%",
                   transform: "translateY(-50%)",
-                  color: "#777",
+                  color: "var(--tc-text-faint, #777)",
                   fontSize: { xs: "0.72rem", sm: "0.84rem" },
                   fontWeight: 600,
                   textTransform: "none",
@@ -238,7 +241,7 @@ export default function TestCheckoutMain({ theme: customTheme }) {
                   letterSpacing: "0.3px",
                   p: { xs: 0.5, sm: 1 },
                   "&:hover": {
-                    color: "#d32f2f",
+                    color: "var(--tc-danger, #d32f2f)",
                     bgcolor: "transparent",
                     textDecoration: "underline",
                   },
@@ -268,7 +271,7 @@ export default function TestCheckoutMain({ theme: customTheme }) {
                   width: 76,
                   height: 76,
                   borderRadius: "50%",
-                  bgcolor: "#f9fafb",
+                  bgcolor: "var(--tc-gray-50, #f9fafb)",
                   border: "1px solid #f3f4f6",
                   display: "flex",
                   alignItems: "center",
@@ -277,7 +280,7 @@ export default function TestCheckoutMain({ theme: customTheme }) {
                 }}
               >
                 <ShoppingBagOutlinedIcon
-                  sx={{ fontSize: 38, color: "#9ca3af" }}
+                  sx={{ fontSize: 38, color: "var(--tc-text-disabled, #9ca3af)" }}
                 />
               </Box>
 
@@ -287,7 +290,7 @@ export default function TestCheckoutMain({ theme: customTheme }) {
                   fontWeight: 600,
                   fontSize: { xs: "1.25rem", sm: "1.5rem" },
                   letterSpacing: "0.3px",
-                  color: "#111827",
+                  color: "var(--tc-text, #111827)",
                   fontFamily: "inherit",
                   mb: 1,
                 }}
@@ -298,7 +301,7 @@ export default function TestCheckoutMain({ theme: customTheme }) {
               <Typography
                 variant="body1"
                 sx={{
-                  color: "#6b7280",
+                  color: "var(--tc-text-faint, #6b7280)",
                   fontSize: { xs: "0.88rem", sm: "0.95rem" },
                   maxWidth: 420,
                   mb: 3.5,
@@ -349,9 +352,9 @@ export default function TestCheckoutMain({ theme: customTheme }) {
               >
                 <Box
                   sx={{
-                    bgcolor: "#fff",
+                    bgcolor: "var(--tc-surface, #fff)",
                     borderRadius: "8px",
-                    border: "1px solid #eee",
+                    border: "1px solid var(--tc-border-light, #eee)",
                     overflow: "hidden",
                     boxShadow: "0 1px 4px rgba(0,0,0,0.02)",
                   }}
@@ -367,6 +370,8 @@ export default function TestCheckoutMain({ theme: customTheme }) {
                     onStartEdit={handleCartItemEdit}
                     onRemoveItem={handleRemoveItem}
                     onSaveProductRemark={handleSaveProductRemark}
+                    onUpdateQty={handleUpdateItemQty}
+                    qtyUpdatingId={qtyUpdatingId}
                     handleMoveToDetail={handleMoveToDetail}
                   />
                 </Box>
@@ -463,6 +468,7 @@ export default function TestCheckoutMain({ theme: customTheme }) {
           {isArticleBasedCartCustomization && (
             <ArticleBasedCustomizationDrawer
               item={articleCustomizationItem}
+              cartItems={cartItems}
               storeInit={storeInit}
               loginData={loginUserDetail}
               onClose={closeArticleCustomization}

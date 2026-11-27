@@ -86,7 +86,7 @@ export default function AddressChangeModal({
           justifyContent: "space-between",
           alignItems: "center",
           fontWeight: 600,
-          borderBottom: "1px solid #eee",
+          borderBottom: "1px solid var(--tc-border-light, #eee)",
           pb: 1.5,
         }}
       >
@@ -111,8 +111,8 @@ export default function AddressChangeModal({
                         p: 2.5,
                         borderRadius: 2,
                         cursor: "pointer",
-                        border: isSelected ? "2px solid var(--checkout-primary, #cca182)" : "1px solid #e0e0e0",
-                        bgcolor: isSelected ? "var(--checkout-primary-light, #faf4ee)" : "#fff",
+                        border: isSelected ? "2px solid var(--checkout-primary, #cca182)" : "1px solid var(--tc-border, #e0e0e0)",
+                        bgcolor: isSelected ? "var(--checkout-primary-light, #faf4ee)" : "var(--tc-surface, #fff)",
                         position: "relative",
                         transition: "all 0.2s ease-in-out",
                         "&:hover": {
@@ -261,10 +261,10 @@ export default function AddressChangeModal({
         )}
       </DialogContent>
 
-      <DialogActions sx={{ px: 3, pb: 2.5, borderTop: "1px solid #eee" }}>
+      <DialogActions sx={{ px: 3, pb: 2.5, borderTop: "1px solid var(--tc-border-light, #eee)" }}>
         {isAddingNew ? (
           <>
-            <Button onClick={() => setIsAddingNew(false)} sx={{ color: "#777" }}>
+            <Button onClick={() => setIsAddingNew(false)} sx={{ color: "var(--tc-text-faint, #777)" }}>
               Back to List
             </Button>
             <Button
@@ -281,7 +281,7 @@ export default function AddressChangeModal({
             </Button>
           </>
         ) : (
-          <Button onClick={onClose} sx={{ color: "#777" }}>
+          <Button onClick={onClose} sx={{ color: "var(--tc-text-faint, #777)" }}>
             Done
           </Button>
         )}

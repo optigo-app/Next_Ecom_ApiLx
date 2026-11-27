@@ -103,7 +103,7 @@ export default function AddressDrawer({
         sx: {
           width: { xs: "100%", sm: 460, md: 480 },
           maxWidth: "100%",
-          bgcolor: "#ffffff",
+          bgcolor: "var(--tc-surface, #ffffff)",
           display: "flex",
           flexDirection: "column",
           boxShadow: "-4px 0 24px rgba(0, 0, 0, 0.08)",
@@ -118,7 +118,7 @@ export default function AddressDrawer({
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
-          borderBottom: "1px solid #f0f0f0",
+          borderBottom: "1px solid var(--tc-border-light, #f0f0f0)",
         }}
       >
         <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
@@ -126,7 +126,7 @@ export default function AddressDrawer({
             <IconButton
               size="small"
               onClick={() => setIsAddingNew(false)}
-              sx={{ color: "#333", p: 0.5 }}
+              sx={{ color: "var(--tc-text-secondary, #333)", p: 0.5 }}
             >
               <ArrowBackIcon fontSize="small" />
             </IconButton>
@@ -137,7 +137,7 @@ export default function AddressDrawer({
               fontSize: "1rem",
               letterSpacing: "1px",
               textTransform: "uppercase",
-              color: "#111",
+              color: "var(--tc-text, #111)",
               fontFamily: "inherit",
             }}
           >
@@ -149,8 +149,8 @@ export default function AddressDrawer({
           size="small"
           onClick={handleDrawerClose}
           sx={{
-            color: "#666",
-            "&:hover": { color: "#111", bgcolor: "#f5f5f5" },
+            color: "var(--tc-text-muted, #666)",
+            "&:hover": { color: "var(--tc-text, #111)", bgcolor: "var(--tc-surface-subtle, #f5f5f5)" },
           }}
         >
           <CloseIcon fontSize="small" />
@@ -170,7 +170,7 @@ export default function AddressDrawer({
           <Box component="form" noValidate>
             <Typography
               variant="body2"
-              sx={{ color: "#777", fontSize: "0.83rem", mb: 3, letterSpacing: "0.2px" }}
+              sx={{ color: "var(--tc-text-faint, #777)", fontSize: "0.83rem", mb: 3, letterSpacing: "0.2px" }}
             >
               Please enter your shipping address details below.
             </Typography>
@@ -179,8 +179,8 @@ export default function AddressDrawer({
               {/* First Name */}
               <Grid size={{ xs: 12, sm: 6 }}>
                 <FormControl fullWidth error={Boolean(errors.firstName)}>
-                  <FormLabel sx={{ fontSize: "0.78rem", fontWeight: 600, color: "#333", mb: 0.6, letterSpacing: "0.3px", "&.Mui-focused": { color: "var(--checkout-primary, #cca182)" } }}>
-                    FIRST NAME <span style={{ color: "#d32f2f" }}>*</span>
+                  <FormLabel sx={{ fontSize: "0.78rem", fontWeight: 600, color: "var(--tc-text-secondary, #333)", mb: 0.6, letterSpacing: "0.3px", "&.Mui-focused": { color: "var(--checkout-primary, #cca182)" } }}>
+                    FIRST NAME <span style={{ color: "var(--tc-danger, #d32f2f)" }}>*</span>
                   </FormLabel>
                   <OutlinedInput
                     size="small"
@@ -190,9 +190,9 @@ export default function AddressDrawer({
                     sx={{
                       borderRadius: "4px",
                       fontSize: "0.88rem",
-                      bgcolor: "#fff",
-                      "& .MuiOutlinedInput-notchedOutline": { borderColor: "#dcdcdc" },
-                      "&:hover .MuiOutlinedInput-notchedOutline": { borderColor: "#999" },
+                      bgcolor: "var(--tc-surface, #fff)",
+                      "& .MuiOutlinedInput-notchedOutline": { borderColor: "var(--tc-border, #dcdcdc)" },
+                      "&:hover .MuiOutlinedInput-notchedOutline": { borderColor: "var(--tc-text-disabled, #999)" },
                       "&.Mui-focused .MuiOutlinedInput-notchedOutline": { borderColor: "var(--checkout-primary, #cca182)" },
                     }}
                   />
@@ -205,8 +205,8 @@ export default function AddressDrawer({
               {/* Last Name */}
               <Grid size={{ xs: 12, sm: 6 }}>
                 <FormControl fullWidth error={Boolean(errors.lastName)}>
-                  <FormLabel sx={{ fontSize: "0.78rem", fontWeight: 600, color: "#333", mb: 0.6, letterSpacing: "0.3px", "&.Mui-focused": { color: "var(--checkout-primary, #cca182)" } }}>
-                    LAST NAME <span style={{ color: "#d32f2f" }}>*</span>
+                  <FormLabel sx={{ fontSize: "0.78rem", fontWeight: 600, color: "var(--tc-text-secondary, #333)", mb: 0.6, letterSpacing: "0.3px", "&.Mui-focused": { color: "var(--checkout-primary, #cca182)" } }}>
+                    LAST NAME <span style={{ color: "var(--tc-danger, #d32f2f)" }}>*</span>
                   </FormLabel>
                   <OutlinedInput
                     size="small"
@@ -216,9 +216,9 @@ export default function AddressDrawer({
                     sx={{
                       borderRadius: "4px",
                       fontSize: "0.88rem",
-                      bgcolor: "#fff",
-                      "& .MuiOutlinedInput-notchedOutline": { borderColor: "#dcdcdc" },
-                      "&:hover .MuiOutlinedInput-notchedOutline": { borderColor: "#999" },
+                      bgcolor: "var(--tc-surface, #fff)",
+                      "& .MuiOutlinedInput-notchedOutline": { borderColor: "var(--tc-border, #dcdcdc)" },
+                      "&:hover .MuiOutlinedInput-notchedOutline": { borderColor: "var(--tc-text-disabled, #999)" },
                       "&.Mui-focused .MuiOutlinedInput-notchedOutline": { borderColor: "var(--checkout-primary, #cca182)" },
                     }}
                   />
@@ -231,8 +231,8 @@ export default function AddressDrawer({
               {/* Mobile Number */}
               <Grid size={{ xs: 12 }}>
                 <FormControl fullWidth error={Boolean(errors.mobileNo)}>
-                  <FormLabel sx={{ fontSize: "0.78rem", fontWeight: 600, color: "#333", mb: 0.6, letterSpacing: "0.3px", "&.Mui-focused": { color: "var(--checkout-primary, #cca182)" } }}>
-                    MOBILE NUMBER <span style={{ color: "#d32f2f" }}>*</span>
+                  <FormLabel sx={{ fontSize: "0.78rem", fontWeight: 600, color: "var(--tc-text-secondary, #333)", mb: 0.6, letterSpacing: "0.3px", "&.Mui-focused": { color: "var(--checkout-primary, #cca182)" } }}>
+                    MOBILE NUMBER <span style={{ color: "var(--tc-danger, #d32f2f)" }}>*</span>
                   </FormLabel>
                   <OutlinedInput
                     size="small"
@@ -243,9 +243,9 @@ export default function AddressDrawer({
                     sx={{
                       borderRadius: "4px",
                       fontSize: "0.88rem",
-                      bgcolor: "#fff",
-                      "& .MuiOutlinedInput-notchedOutline": { borderColor: "#dcdcdc" },
-                      "&:hover .MuiOutlinedInput-notchedOutline": { borderColor: "#999" },
+                      bgcolor: "var(--tc-surface, #fff)",
+                      "& .MuiOutlinedInput-notchedOutline": { borderColor: "var(--tc-border, #dcdcdc)" },
+                      "&:hover .MuiOutlinedInput-notchedOutline": { borderColor: "var(--tc-text-disabled, #999)" },
                       "&.Mui-focused .MuiOutlinedInput-notchedOutline": { borderColor: "var(--checkout-primary, #cca182)" },
                     }}
                   />
@@ -258,8 +258,8 @@ export default function AddressDrawer({
               {/* Street Address */}
               <Grid size={{ xs: 12 }}>
                 <FormControl fullWidth error={Boolean(errors.address)}>
-                  <FormLabel sx={{ fontSize: "0.78rem", fontWeight: 600, color: "#333", mb: 0.6, letterSpacing: "0.3px", "&.Mui-focused": { color: "var(--checkout-primary, #cca182)" } }}>
-                    STREET ADDRESS / HOUSE NO <span style={{ color: "#d32f2f" }}>*</span>
+                  <FormLabel sx={{ fontSize: "0.78rem", fontWeight: 600, color: "var(--tc-text-secondary, #333)", mb: 0.6, letterSpacing: "0.3px", "&.Mui-focused": { color: "var(--checkout-primary, #cca182)" } }}>
+                    STREET ADDRESS / HOUSE NO <span style={{ color: "var(--tc-danger, #d32f2f)" }}>*</span>
                   </FormLabel>
                   <OutlinedInput
                     size="small"
@@ -271,9 +271,9 @@ export default function AddressDrawer({
                     sx={{
                       borderRadius: "4px",
                       fontSize: "0.88rem",
-                      bgcolor: "#fff",
-                      "& .MuiOutlinedInput-notchedOutline": { borderColor: "#dcdcdc" },
-                      "&:hover .MuiOutlinedInput-notchedOutline": { borderColor: "#999" },
+                      bgcolor: "var(--tc-surface, #fff)",
+                      "& .MuiOutlinedInput-notchedOutline": { borderColor: "var(--tc-border, #dcdcdc)" },
+                      "&:hover .MuiOutlinedInput-notchedOutline": { borderColor: "var(--tc-text-disabled, #999)" },
                       "&.Mui-focused .MuiOutlinedInput-notchedOutline": { borderColor: "var(--checkout-primary, #cca182)" },
                     }}
                   />
@@ -286,8 +286,8 @@ export default function AddressDrawer({
               {/* City */}
               <Grid size={{ xs: 12, sm: 6 }}>
                 <FormControl fullWidth error={Boolean(errors.city)}>
-                  <FormLabel sx={{ fontSize: "0.78rem", fontWeight: 600, color: "#333", mb: 0.6, letterSpacing: "0.3px", "&.Mui-focused": { color: "var(--checkout-primary, #cca182)" } }}>
-                    CITY <span style={{ color: "#d32f2f" }}>*</span>
+                  <FormLabel sx={{ fontSize: "0.78rem", fontWeight: 600, color: "var(--tc-text-secondary, #333)", mb: 0.6, letterSpacing: "0.3px", "&.Mui-focused": { color: "var(--checkout-primary, #cca182)" } }}>
+                    CITY <span style={{ color: "var(--tc-danger, #d32f2f)" }}>*</span>
                   </FormLabel>
                   <OutlinedInput
                     size="small"
@@ -297,9 +297,9 @@ export default function AddressDrawer({
                     sx={{
                       borderRadius: "4px",
                       fontSize: "0.88rem",
-                      bgcolor: "#fff",
-                      "& .MuiOutlinedInput-notchedOutline": { borderColor: "#dcdcdc" },
-                      "&:hover .MuiOutlinedInput-notchedOutline": { borderColor: "#999" },
+                      bgcolor: "var(--tc-surface, #fff)",
+                      "& .MuiOutlinedInput-notchedOutline": { borderColor: "var(--tc-border, #dcdcdc)" },
+                      "&:hover .MuiOutlinedInput-notchedOutline": { borderColor: "var(--tc-text-disabled, #999)" },
                       "&.Mui-focused .MuiOutlinedInput-notchedOutline": { borderColor: "var(--checkout-primary, #cca182)" },
                     }}
                   />
@@ -312,8 +312,8 @@ export default function AddressDrawer({
               {/* State */}
               <Grid size={{ xs: 12, sm: 6 }}>
                 <FormControl fullWidth error={Boolean(errors.state)}>
-                  <FormLabel sx={{ fontSize: "0.78rem", fontWeight: 600, color: "#333", mb: 0.6, letterSpacing: "0.3px", "&.Mui-focused": { color: "var(--checkout-primary, #cca182)" } }}>
-                    STATE <span style={{ color: "#d32f2f" }}>*</span>
+                  <FormLabel sx={{ fontSize: "0.78rem", fontWeight: 600, color: "var(--tc-text-secondary, #333)", mb: 0.6, letterSpacing: "0.3px", "&.Mui-focused": { color: "var(--checkout-primary, #cca182)" } }}>
+                    STATE <span style={{ color: "var(--tc-danger, #d32f2f)" }}>*</span>
                   </FormLabel>
                   <OutlinedInput
                     size="small"
@@ -323,9 +323,9 @@ export default function AddressDrawer({
                     sx={{
                       borderRadius: "4px",
                       fontSize: "0.88rem",
-                      bgcolor: "#fff",
-                      "& .MuiOutlinedInput-notchedOutline": { borderColor: "#dcdcdc" },
-                      "&:hover .MuiOutlinedInput-notchedOutline": { borderColor: "#999" },
+                      bgcolor: "var(--tc-surface, #fff)",
+                      "& .MuiOutlinedInput-notchedOutline": { borderColor: "var(--tc-border, #dcdcdc)" },
+                      "&:hover .MuiOutlinedInput-notchedOutline": { borderColor: "var(--tc-text-disabled, #999)" },
                       "&.Mui-focused .MuiOutlinedInput-notchedOutline": { borderColor: "var(--checkout-primary, #cca182)" },
                     }}
                   />
@@ -338,8 +338,8 @@ export default function AddressDrawer({
               {/* PIN / Zip Code */}
               <Grid size={{ xs: 12, sm: 6 }}>
                 <FormControl fullWidth error={Boolean(errors.zipCode)}>
-                  <FormLabel sx={{ fontSize: "0.78rem", fontWeight: 600, color: "#333", mb: 0.6, letterSpacing: "0.3px", "&.Mui-focused": { color: "var(--checkout-primary, #cca182)" } }}>
-                    PIN / ZIP CODE <span style={{ color: "#d32f2f" }}>*</span>
+                  <FormLabel sx={{ fontSize: "0.78rem", fontWeight: 600, color: "var(--tc-text-secondary, #333)", mb: 0.6, letterSpacing: "0.3px", "&.Mui-focused": { color: "var(--checkout-primary, #cca182)" } }}>
+                    PIN / ZIP CODE <span style={{ color: "var(--tc-danger, #d32f2f)" }}>*</span>
                   </FormLabel>
                   <OutlinedInput
                     size="small"
@@ -349,9 +349,9 @@ export default function AddressDrawer({
                     sx={{
                       borderRadius: "4px",
                       fontSize: "0.88rem",
-                      bgcolor: "#fff",
-                      "& .MuiOutlinedInput-notchedOutline": { borderColor: "#dcdcdc" },
-                      "&:hover .MuiOutlinedInput-notchedOutline": { borderColor: "#999" },
+                      bgcolor: "var(--tc-surface, #fff)",
+                      "& .MuiOutlinedInput-notchedOutline": { borderColor: "var(--tc-border, #dcdcdc)" },
+                      "&:hover .MuiOutlinedInput-notchedOutline": { borderColor: "var(--tc-text-disabled, #999)" },
                       "&.Mui-focused .MuiOutlinedInput-notchedOutline": { borderColor: "var(--checkout-primary, #cca182)" },
                     }}
                   />
@@ -364,8 +364,8 @@ export default function AddressDrawer({
               {/* Country */}
               <Grid size={{ xs: 12, sm: 6 }}>
                 <FormControl fullWidth error={Boolean(errors.country)}>
-                  <FormLabel sx={{ fontSize: "0.78rem", fontWeight: 600, color: "#333", mb: 0.6, letterSpacing: "0.3px", "&.Mui-focused": { color: "var(--checkout-primary, #cca182)" } }}>
-                    COUNTRY <span style={{ color: "#d32f2f" }}>*</span>
+                  <FormLabel sx={{ fontSize: "0.78rem", fontWeight: 600, color: "var(--tc-text-secondary, #333)", mb: 0.6, letterSpacing: "0.3px", "&.Mui-focused": { color: "var(--checkout-primary, #cca182)" } }}>
+                    COUNTRY <span style={{ color: "var(--tc-danger, #d32f2f)" }}>*</span>
                   </FormLabel>
                   <OutlinedInput
                     size="small"
@@ -375,9 +375,9 @@ export default function AddressDrawer({
                     sx={{
                       borderRadius: "4px",
                       fontSize: "0.88rem",
-                      bgcolor: "#fff",
-                      "& .MuiOutlinedInput-notchedOutline": { borderColor: "#dcdcdc" },
-                      "&:hover .MuiOutlinedInput-notchedOutline": { borderColor: "#999" },
+                      bgcolor: "var(--tc-surface, #fff)",
+                      "& .MuiOutlinedInput-notchedOutline": { borderColor: "var(--tc-border, #dcdcdc)" },
+                      "&:hover .MuiOutlinedInput-notchedOutline": { borderColor: "var(--tc-text-disabled, #999)" },
                       "&.Mui-focused .MuiOutlinedInput-notchedOutline": { borderColor: "var(--checkout-primary, #cca182)" },
                     }}
                   />
@@ -421,11 +421,11 @@ export default function AddressDrawer({
                 disabled={isSubmitting}
                 onClick={() => setIsAddingNew(false)}
                 sx={{
-                  color: "#666",
+                  color: "var(--tc-text-muted, #666)",
                   fontSize: "0.82rem",
                   textTransform: "uppercase",
                   letterSpacing: "0.5px",
-                  "&:hover": { color: "#111", bgcolor: "transparent" },
+                  "&:hover": { color: "var(--tc-text, #111)", bgcolor: "transparent" },
                 }}
               >
                 Cancel
@@ -444,16 +444,16 @@ export default function AddressDrawer({
               sx={{
                 mb: 3,
                 py: 1.4,
-                borderColor: "#222",
-                color: "#111",
+                borderColor: "var(--tc-text-body, #222)",
+                color: "var(--tc-text, #111)",
                 borderRadius: "4px",
                 fontSize: "0.82rem",
                 fontWeight: 500,
                 letterSpacing: "0.8px",
                 textTransform: "uppercase",
                 "&:hover": {
-                  borderColor: "#000",
-                  bgcolor: "#f9f9f9",
+                  borderColor: "var(--tc-text-ink, #000)",
+                  bgcolor: "var(--tc-surface-muted, #f9f9f9)",
                 },
               }}
             >
@@ -462,7 +462,7 @@ export default function AddressDrawer({
 
             {addressList.length === 0 ? (
               <Box sx={{ py: 6, textAlign: "center" }}>
-                <Typography variant="body2" sx={{ color: "#888", fontSize: "0.9rem" }}>
+                <Typography variant="body2" sx={{ color: "var(--tc-text-faint, #888)", fontSize: "0.9rem" }}>
                   No saved addresses found.
                 </Typography>
               </Box>
@@ -481,12 +481,12 @@ export default function AddressDrawer({
                         p: 2.5,
                         borderRadius: "6px",
                         cursor: "pointer",
-                        border: isSelected ? "1.5px solid var(--checkout-primary, #cca182)" : "1px solid #e8e8e8",
-                        bgcolor: isSelected ? "var(--checkout-primary-light, #faf4ee)" : "#fff",
+                        border: isSelected ? "1.5px solid var(--checkout-primary, #cca182)" : "1px solid var(--tc-border-light, #e8e8e8)",
+                        bgcolor: isSelected ? "var(--checkout-primary-light, #faf4ee)" : "var(--tc-surface, #fff)",
                         position: "relative",
                         transition: "all 0.15s ease",
                         "&:hover": {
-                          borderColor: isSelected ? "var(--checkout-primary, #cca182)" : "#bbb",
+                          borderColor: isSelected ? "var(--checkout-primary, #cca182)" : "var(--tc-border, #bbb)",
                         },
                       }}
                     >
@@ -495,7 +495,7 @@ export default function AddressDrawer({
                           variant="subtitle2"
                           sx={{
                             fontWeight: 600,
-                            color: "#111",
+                            color: "var(--tc-text, #111)",
                             fontSize: "0.92rem",
                             textTransform: "capitalize",
                             mb: 0.5,
@@ -510,7 +510,7 @@ export default function AddressDrawer({
 
                       <Typography
                         variant="body2"
-                        sx={{ color: "#666", fontSize: "0.82rem", lineHeight: 1.6 }}
+                        sx={{ color: "var(--tc-text-muted, #666)", fontSize: "0.82rem", lineHeight: 1.6 }}
                       >
                         {addr?.street}
                         <br />
@@ -531,7 +531,7 @@ export default function AddressDrawer({
 
       {/* Footer / Done Button */}
       {!isAddingNew && addressList.length > 0 && (
-        <Box sx={{ p: 2.5, px: 3.5, borderTop: "1px solid #f0f0f0", bgcolor: "#fafafa" }}>
+        <Box sx={{ p: 2.5, px: 3.5, borderTop: "1px solid var(--tc-border-light, #f0f0f0)", bgcolor: "var(--tc-surface-muted, #fafafa)" }}>
           <Button
             variant="contained"
             fullWidth

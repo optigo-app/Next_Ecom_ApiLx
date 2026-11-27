@@ -91,7 +91,7 @@ const ElveeWishlist = ({ storeInit }) => {
           top: 0
         }}>
           <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', }}>
-            <CircularProgress sx={{ color: '#2e2d2d' }} />
+            <CircularProgress sx={{ color: 'var(--wl-text-secondary, #2e2d2d)' }} />
           </Box>
         </div>
       )}
@@ -100,7 +100,7 @@ const ElveeWishlist = ({ storeInit }) => {
         sx={{
           px: { xs: 1, sm: 2, md: 4 },
           width: "100%",
-          bgcolor: '#fff',
+          bgcolor: 'var(--wl-surface, #fff)',
           boxSizing: 'border-box'
         }}
       >

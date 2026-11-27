@@ -40,7 +40,7 @@ function AlbumArtwork({ album, storeInit }) {
 
     if (coverUrl && !coverFailed) {
         return (
-            <Box sx={{ width: "100%", height: "100%", overflow: "hidden", bgcolor: "#F4F4F5" }}>
+            <Box sx={{ width: "100%", height: "100%", overflow: "hidden", bgcolor: "var(--hm-surface-subtle, #f4f4f5)" }}>
                 <Box
                     component="img"
                     src={coverUrl}
@@ -55,7 +55,7 @@ function AlbumArtwork({ album, storeInit }) {
 
     if (designs.length === 0) {
         return (
-            <Box sx={{ height: "100%", display: "grid", placeItems: "center", bgcolor: "#F4F4F5", color: "#A1A1AA" }}>
+            <Box sx={{ height: "100%", display: "grid", placeItems: "center", bgcolor: "var(--hm-surface-subtle, #f4f4f5)", color: "#A1A1AA" }}>
                 <FolderHeart size={34} strokeWidth={1.25} />
             </Box>
         );
@@ -71,7 +71,7 @@ function AlbumArtwork({ album, storeInit }) {
                 gridTemplateRows: designs.length > 1 ? "1fr 1fr" : "1fr",
                 gap: "3px",
                 overflow: "hidden",
-                bgcolor: "#fff",
+                bgcolor: "var(--hm-surface, #fff)",
             }}
         >
             {designs.map((design, index) => (
@@ -92,7 +92,7 @@ function AlbumArtwork({ album, storeInit }) {
                         objectFit: "cover",
                         gridColumn: index === 0 && designs.length > 1 ? "1" : "2",
                         gridRow: index === 0 && designs.length > 1 ? "1 / span 2" : index === 1 ? "1" : "2",
-                        bgcolor: "#F4F4F5",
+                        bgcolor: "var(--hm-surface-subtle, #f4f4f5)",
                     }}
                 />
             ))}
@@ -120,23 +120,23 @@ function AlbumCard({ album, access, storeInit, onClick, onLoginRequired, showLog
                 cursor: "pointer",
                 borderRadius: { xs: "14px", sm: "18px" },
                 overflow: "hidden",
-                bgcolor: "#fff",
+                bgcolor: "var(--hm-surface, #fff)",
                 boxShadow: "0 8px 28px rgba(35, 29, 24, 0.07)",
                 transition: "transform 220ms ease, box-shadow 220ms ease",
                 animation: "album-enter 420ms ease both",
                 animationDelay: `${index * 45}ms`,
                 "@keyframes album-enter": { from: { opacity: 0, transform: "translateY(12px)" }, to: { opacity: 1, transform: "translateY(0)" } },
                 "&:hover": { transform: "translateY(-4px)", boxShadow: "0 14px 34px rgba(35, 29, 24, 0.12)", "& .album-open-icon": { opacity: 1, transform: "translate(0, 0)" } },
-                "&:focus-visible": { outline: "2px solid #0F3D4C", outlineOffset: 3 },
+                "&:focus-visible": { outline: "2px solid var(--hm-accent, #0f3d4c)", outlineOffset: 3 },
             }}
         >
             <Box sx={{ position: "relative", aspectRatio: "1 / 1", overflow: "hidden" }}>
                 <AlbumArtwork album={album} storeInit={storeInit} />
-                <Box sx={{ position: "absolute", top: 12, left: 12, display: "flex", alignItems: "center", gap: 0.6, px: 1.15, py: 0.6, borderRadius: "20px", bgcolor: "rgba(255,255,255,0.9)", color: "#334155", backdropFilter: "blur(8px)" }}>
+                <Box sx={{ position: "absolute", top: 12, left: 12, display: "flex", alignItems: "center", gap: 0.6, px: 1.15, py: 0.6, borderRadius: "20px", bgcolor: "rgba(255,255,255,0.9)", color: "var(--hm-text-slate, #334155)", backdropFilter: "blur(8px)" }}>
                     {isPrivate ? <LockKeyhole size={13} strokeWidth={1.7} /> : <Globe2 size={13} strokeWidth={1.7} />}
                     <Typography sx={{ fontSize: "0.68rem", fontWeight: 600, letterSpacing: "0.03em" }}>{isPrivate ? "PRIVATE" : "PUBLIC"}</Typography>
                 </Box>
-                <Box className="album-open-icon" sx={{ position: "absolute", right: 12, bottom: 12, width: 34, height: 34, display: "grid", placeItems: "center", borderRadius: "50%", bgcolor: "rgba(255,255,255,0.92)", color: "#0F3D4C", opacity: { xs: 1, sm: 0 }, transform: { sm: "translate(4px, 4px)" }, transition: "all 180ms ease" }}>
+                <Box className="album-open-icon" sx={{ position: "absolute", right: 12, bottom: 12, width: 34, height: 34, display: "grid", placeItems: "center", borderRadius: "50%", bgcolor: "rgba(255,255,255,0.92)", color: "var(--hm-accent, #0f3d4c)", opacity: { xs: 1, sm: 0 }, transform: { sm: "translate(4px, 4px)" }, transition: "all 180ms ease" }}>
                     <ArrowUpRight size={17} strokeWidth={1.7} />
                 </Box>
                 {showLoginLock && (
@@ -164,11 +164,11 @@ function AlbumCard({ album, access, storeInit, onClick, onLoginRequired, showLog
                             transform: "translate(-50%, -50%)",
                             bgcolor: "transparent",
                             cursor: "pointer",
-                            "&:focus-visible": { outline: "2px solid #0F3D4C", outlineOffset: -4 },
-                            "&:hover .album-login-lock": { transform: "scale(1.08)", bgcolor: "#fff" },
+                            "&:focus-visible": { outline: "2px solid var(--hm-accent, #0f3d4c)", outlineOffset: -4 },
+                            "&:hover .album-login-lock": { transform: "scale(1.08)", bgcolor: "var(--hm-surface, #fff)" },
                         }}
                     >
-                        <Box className="album-login-lock" sx={{ width: 48, height: 48, display: "grid", placeItems: "center", borderRadius: "50%", bgcolor: "rgba(255,255,255,0.94)", color: "#0F3D4C", boxShadow: "0 4px 18px rgba(15,61,76,0.18)", transition: "transform 180ms ease, background-color 180ms ease" }}>
+                        <Box className="album-login-lock" sx={{ width: 48, height: 48, display: "grid", placeItems: "center", borderRadius: "50%", bgcolor: "rgba(255,255,255,0.94)", color: "var(--hm-accent, #0f3d4c)", boxShadow: "0 4px 18px rgba(15,61,76,0.18)", transition: "transform 180ms ease, background-color 180ms ease" }}>
                             <LockKeyhole size={21} strokeWidth={1.8} />
                         </Box>
                     </Box>
@@ -176,10 +176,10 @@ function AlbumCard({ album, access, storeInit, onClick, onLoginRequired, showLog
             </Box>
 
             <Box sx={{ px: { xs: 1.5, sm: 2 }, py: { xs: 1.5, sm: 1.8 } }}>
-                <Typography noWrap sx={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: { xs: "1rem", sm: "1.12rem" }, color: "#27272A" }}>
+                <Typography noWrap sx={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: { xs: "1rem", sm: "1.12rem" }, color: "var(--hm-text-dark, #27272a)" }}>
                     {album?.albumName || album?.albumcode || "Jewellery Album"}
                 </Typography>
-                <Typography sx={{ mt: 0.45, fontSize: "0.76rem", color: "#85818A" }}>
+                <Typography sx={{ mt: 0.45, fontSize: "0.76rem", color: "var(--hm-text-grayish, #85818a)" }}>
                     {designCount} {designCount === 1 ? "Design" : "Designs"}
                 </Typography>
             </Box>
@@ -207,18 +207,23 @@ export default function AlbumSection() {
             setLoading(true);
             setError(false);
             try {
-                const requests = [
-                    fetch(`/api/sqlite/exclusive-albums?domain=${encodeURIComponent(domain)}&customerId=0`, { signal: controller.signal }),
-                ];
-                if (islogin && customerId) {
-                    requests.push(fetch(`/api/sqlite/exclusive-albums?domain=${encodeURIComponent(domain)}&customerId=${encodeURIComponent(customerId)}`, { signal: controller.signal }));
-                }
-
-                const responses = await Promise.all(requests);
-                const payloads = await Promise.all(responses.map((response) => response.ok ? response.json() : null));
+                // AlbumSecurityId drives visibility: 0/'' = public, 1 = ignored
+                // (already excluded server-side), 2 = private to its owner.
+                // One request returns every album visible to this customer.
+                const custParam = islogin && customerId ? customerId : 0;
+                const response = await fetch(
+                    `/api/sqlite/exclusive-albums?domain=${encodeURIComponent(domain)}&customerId=${encodeURIComponent(custParam)}`,
+                    { signal: controller.signal }
+                );
+                const payload = response.ok ? await response.json() : null;
+                const rd = Array.isArray(payload?.Data?.rd) ? payload.Data.rd : [];
+                const securityOf = (a) => {
+                    const n = Number(a?.AlbumSecurityId);
+                    return Number.isNaN(n) ? 0 : n;
+                };
                 setAlbums({
-                    public: Array.isArray(payloads[0]?.Data?.rd) ? payloads[0].Data.rd : [],
-                    private: Array.isArray(payloads[1]?.Data?.rd) ? payloads[1].Data.rd : [],
+                    public: rd.filter((a) => securityOf(a) === 0),
+                    private: rd.filter((a) => securityOf(a) === 2),
                 });
             } catch (fetchError) {
                 if (fetchError?.name !== "AbortError") {
@@ -295,19 +300,19 @@ export default function AlbumSection() {
     };
 
     return (
-        <Box component="section" sx={{ bgcolor: "#FBF9F7", py: { xs: 5, md: 8 } }}>
+        <Box component="section" sx={{ bgcolor: "var(--hm-surface-warm, #fbf9f7)", py: { xs: 5, md: 8 } }}>
             <Box sx={{ width: "100%", maxWidth: 1600, mx: "auto", px: { xs: 2, sm: 3, md: 5 } }}>
                 <Box sx={{ display: "flex", flexWrap: "wrap", alignItems: "end", justifyContent: "space-between", gap: 2, mb: { xs: 2.5, md: 3.5 } }}>
                     <Box>
-                        <Typography component="span" sx={{ display: "block", mb: 0.6, color: "#8A7A70", fontSize: "0.72rem", fontWeight: 600, letterSpacing: "0.18em", textTransform: "uppercase" }}>
+                        <Typography component="span" sx={{ display: "block", mb: 0.6, color: "var(--hm-text-warm-alt, #8a7a70)", fontSize: "0.72rem", fontWeight: 600, letterSpacing: "0.18em", textTransform: "uppercase" }}>
                             Curated collections
                         </Typography>
-                        <Typography component="h2" sx={{ fontSize: { xs: "1.6rem", sm: "2rem", md: "2.35rem" }, fontFamily: '"Poppins", sans-serif', fontWeight: 400, letterSpacing: "1.5px", textTransform: "uppercase", color: "#0F3D4C" }}>
+                        <Typography component="h2" sx={{ fontSize: { xs: "1.6rem", sm: "2rem", md: "2.35rem" }, fontFamily: '"Poppins", sans-serif', fontWeight: 400, letterSpacing: "1.5px", textTransform: "uppercase", color: "var(--hm-accent, #0f3d4c)" }}>
                             Albums
                         </Typography>
                     </Box>
 
-                    <Box role="tablist" aria-label="Album visibility" sx={{ display: "flex", gap: 0.75, p: 0.6, borderRadius: "14px", bgcolor: "#EEEAE6" }}>
+                    <Box role="tablist" aria-label="Album visibility" sx={{ display: "flex", gap: 0.75, p: 0.6, borderRadius: "14px", bgcolor: "var(--hm-chip, #eeeae6)" }}>
                         {tabs.map(({ key, label, Icon }) => {
                             const selected = activeTab === key;
                             return (
@@ -335,7 +340,7 @@ export default function AlbumSection() {
                                         selectAlbumTab(nextTab.key);
                                         event.currentTarget.parentElement?.querySelector(`#album-tab-${nextTab.key}`)?.focus();
                                     }}
-                                    sx={{ appearance: "none", border: 0, font: "inherit", display: "flex", alignItems: "center", justifyContent: "center", gap: 0.8, minWidth: { xs: 126, sm: 142 }, px: { xs: 1.25, sm: 1.8 }, py: 1, borderRadius: "10px", cursor: "pointer", color: selected ? "#173F4D" : "#77716C", bgcolor: selected ? "#fff" : "transparent", boxShadow: selected ? "0 2px 8px rgba(0,0,0,0.07)" : "none", transition: "all 180ms ease", "&:focus-visible": { outline: "2px solid #0F3D4C" } }}
+                                    sx={{ appearance: "none", border: 0, font: "inherit", display: "flex", alignItems: "center", justifyContent: "center", gap: 0.8, minWidth: { xs: 126, sm: 142 }, px: { xs: 1.25, sm: 1.8 }, py: 1, borderRadius: "10px", cursor: "pointer", color: selected ? "#173F4D" : "var(--hm-text-warm, #77716c)", bgcolor: selected ? "var(--hm-surface, #fff)" : "transparent", boxShadow: selected ? "0 2px 8px rgba(0,0,0,0.07)" : "none", transition: "all 180ms ease", "&:focus-visible": { outline: "2px solid var(--hm-accent, #0f3d4c)" } }}
                                 >
                                     <Icon size={16} strokeWidth={1.6} />
                                     <Typography sx={{ fontSize: { xs: "0.76rem", sm: "0.84rem" }, fontWeight: selected ? 600 : 500, whiteSpace: "nowrap" }}>{label}</Typography>
@@ -347,11 +352,11 @@ export default function AlbumSection() {
 
                 <Box role="tabpanel" id={`album-panel-${activeTab}`} aria-labelledby={`album-tab-${activeTab}`} tabIndex={0} sx={{ outline: "none" }}>
                     {loading ? (
-                        <Box sx={{ minHeight: 210, display: "grid", placeItems: "center" }}><CircularProgress size={28} sx={{ color: "#0F3D4C" }} /></Box>
+                        <Box sx={{ minHeight: 210, display: "grid", placeItems: "center" }}><CircularProgress size={28} sx={{ color: "var(--hm-accent, #0f3d4c)" }} /></Box>
                     ) : error ? (
-                        <Typography sx={{ py: 5, textAlign: "center", color: "#77716C" }}>Albums could not be loaded right now.</Typography>
+                        <Typography sx={{ py: 5, textAlign: "center", color: "var(--hm-text-warm, #77716c)" }}>Albums could not be loaded right now.</Typography>
                     ) : visibleAlbums.length === 0 ? (
-                        <Box sx={{ py: { xs: 4, md: 6 }, px: 2, textAlign: "center", border: "1px dashed #D8D2CC", borderRadius: "16px", color: "#77716C" }}>
+                        <Box sx={{ py: { xs: 4, md: 6 }, px: 2, textAlign: "center", border: "1px dashed #D8D2CC", borderRadius: "16px", color: "var(--hm-text-warm, #77716c)" }}>
                             <Typography sx={{ fontSize: "0.95rem" }}>{activeTab === "private" && !islogin ? "Log in to see your private albums." : `No ${activeTab} albums are available right now.`}</Typography>
                         </Box>
                     ) : (
@@ -372,12 +377,12 @@ export default function AlbumSection() {
                                 sx={{
                                     px: 3.5,
                                     py: 1.1,
-                                    borderColor: "#0F3D4C",
+                                    borderColor: "var(--hm-accent, #0f3d4c)",
                                     borderRadius: "10px",
-                                    color: "#0F3D4C",
+                                    color: "var(--hm-accent, #0f3d4c)",
                                     textTransform: "none",
                                     fontWeight: 600,
-                                    "&:hover": { borderColor: "#0F3D4C", bgcolor: "rgba(15,61,76,0.05)" },
+                                    "&:hover": { borderColor: "var(--hm-accent, #0f3d4c)", bgcolor: "rgba(15,61,76,0.05)" },
                                 }}
                             >
                                 View all {activeTab === "private" ? "my " : ""}albums ({visibleAlbums.length})
@@ -551,7 +556,7 @@ export default function AlbumSection() {
 //             elevation={0}
 //             sx={{
 //                 border: "1px solid rgba(226, 232, 240, 0.9)",
-//                 backgroundColor: "#ffffff",
+//                 backgroundColor: "var(--hm-surface, #ffffff)",
 //                 display: "flex",
 //                 flexDirection: "column",
 //                 width: "100%",
@@ -582,7 +587,7 @@ export default function AlbumSection() {
 //                     position: "relative",
 //                     width: "100%",
 //                     aspectRatio: "1 / 1.05",
-//                     bgcolor: product.isWhiteBg ? "#FFFFFF" : "#F3EFEA",
+//                     bgcolor: product.isWhiteBg ? "var(--hm-surface, #ffffff)" : "#F3EFEA",
 //                     overflow: "hidden",
 //                 }}
 //             >
@@ -641,7 +646,7 @@ export default function AlbumSection() {
 //                         right: 10,
 //                         bgcolor: "rgba(218, 218, 218, 0.65)",
 //                         backdropFilter: "blur(4px)",
-//                         color: liked ? "#D81B60" : "#FFFFFF",
+//                         color: liked ? "#D81B60" : "var(--hm-surface, #ffffff)",
 //                         transition: "all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1)",
 //                         "&:hover": {
 //                             bgcolor: "rgba(255, 255, 255, 0.9)",
@@ -699,7 +704,7 @@ export default function AlbumSection() {
 //                         sx={{
 //                             fontSize: "0.75rem",
 //                             fontWeight: 500,
-//                             color: "#555555",
+//                             color: "var(--hm-text-muted, #555555)",
 //                             mt: 0.4,
 //                         }}
 //                     >
@@ -725,7 +730,7 @@ export default function AlbumSection() {
 //         <Box
 //             sx={{
 //                 minHeight: "100vh",
-//                 bgcolor: "#FBF9F7", // Warm off-white background from screenshot
+//                 bgcolor: "var(--hm-surface-warm, #fbf9f7)", // Warm off-white background from screenshot
 //                 py: 15,
 //             }}
 //         >
@@ -761,7 +766,7 @@ export default function AlbumSection() {
 //                                 left: 4,
 //                                 width: "calc(50% - 4px)",
 //                                 borderRadius: "10px",
-//                                 bgcolor: "#FFFFFF",
+//                                 bgcolor: "var(--hm-surface, #ffffff)",
 //                                 border: "1px solid #4A4A4A",
 //                                 boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
 //                                 transform: `translateX(${activeIndex * 100}%)`,

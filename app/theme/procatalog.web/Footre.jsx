@@ -9,8 +9,8 @@ import MailIcon from "@mui/icons-material/Mail";
 
 // Main Footer Container
 const FooterRoot = styled("footer")(({ theme }) => ({
-  backgroundColor: "#ffffff",
-  borderTop: "1px solid #eaeaea",
+  backgroundColor: "var(--hm-surface, #ffffff)",
+  borderTop: "1px solid var(--hm-border, #eaeaea)",
   paddingTop: "64px",
   paddingBottom: "32px",
   fontFamily: '"Inter", "Helvetica Neue", Arial, sans-serif',
@@ -20,7 +20,7 @@ const FooterRoot = styled("footer")(({ theme }) => ({
 const LogoText = styled(Typography)({
   fontSize: "28px",
   fontWeight: 700,
-  color: "#000000",
+  color: "var(--hm-text, #000000)",
   lineHeight: 1,
   letterSpacing: "-0.5px",
 });
@@ -29,7 +29,7 @@ const LogoSubtitle = styled(Typography)({
   fontSize: "9px",
   fontWeight: 600,
   letterSpacing: "2.5px",
-  color: "#222222",
+  color: "var(--hm-text-body, #222222)",
   marginTop: "4px",
   textTransform: "uppercase",
 });
@@ -44,7 +44,7 @@ const InfoRow = styled(Box)({
 
 const InfoText = styled(Typography)({
   fontSize: "13px",
-  color: "#666666",
+  color: "var(--hm-text-muted, #666666)",
   lineHeight: "1.6",
 });
 
@@ -53,7 +53,7 @@ const ColumnTitle = styled(Typography)({
   fontSize: "13px",
   fontWeight: 600,
   letterSpacing: "1px",
-  color: "#444444",
+  color: "var(--hm-text-muted, #444444)",
   textTransform: "uppercase",
   marginBottom: "24px",
 });
@@ -62,19 +62,19 @@ const ColumnTitle = styled(Typography)({
 const FooterLink = styled(Link)({
   display: "block",
   fontSize: "13px",
-  color: "#666666",
+  color: "var(--hm-text-muted, #666666)",
   textDecoration: "none",
   marginBottom: "12px",
   transition: "color 0.2s ease-in-out",
   "&:hover": {
-    color: "#000000",
+    color: "var(--hm-text, #000000)",
   },
 });
 
 // Form and Input Styling
 const SubscriptionText = styled(Typography)({
   fontSize: "13px",
-  color: "#666666",
+  color: "var(--hm-text-muted, #666666)",
   lineHeight: "1.6",
   marginBottom: "20px",
 });
@@ -82,7 +82,7 @@ const SubscriptionText = styled(Typography)({
 const InputContainer = styled(Box)({
   display: "flex",
   alignItems: "center",
-  borderBottom: "1px solid #cccccc",
+  borderBottom: "1px solid var(--hm-border-strong, #cccccc)",
   marginTop: "16px",
 });
 
@@ -93,15 +93,15 @@ const CustomInput = styled("input")({
   padding: "12px 0",
   fontSize: "13px",
   fontFamily: "inherit",
-  color: "#222222",
+  color: "var(--hm-text-body, #222222)",
   "&::placeholder": {
-    color: "#999999",
+    color: "var(--hm-text-light, #999999)",
   },
 });
 
 const SignUpButton = styled(Button)({
-  backgroundColor: "#000000",
-  color: "#ffffff",
+  backgroundColor: "var(--hm-text, #000000)",
+  color: "var(--hm-surface, #ffffff)",
   borderRadius: 0,
   padding: "10px 28px",
   fontSize: "12px",
@@ -110,7 +110,7 @@ const SignUpButton = styled(Button)({
   height: "100%",
   boxShadow: "none",
   "&:hover": {
-    backgroundColor: "#222222",
+    backgroundColor: "var(--hm-text-body, #222222)",
     boxShadow: "none",
   },
 });
@@ -131,7 +131,7 @@ export default function Footer() {
             <Box sx={{ mt: 2 }}>
               <InfoRow>
                 <LocationOnIcon
-                  sx={{ fontSize: 18, color: "#555555", mt: "3px" }}
+                  sx={{ fontSize: 18, color: "var(--hm-text-muted, #555555)", mt: "3px" }}
                 />
                 <InfoText>
                   D-Block G20, ITC(
@@ -143,12 +143,12 @@ export default function Footer() {
               </InfoRow>
 
               <InfoRow>
-                <PhoneIcon sx={{ fontSize: 18, color: "#555555" }} />
+                <PhoneIcon sx={{ fontSize: 18, color: "var(--hm-text-muted, #555555)" }} />
                 <InfoText>+919099887762</InfoText>
               </InfoRow>
 
               <InfoRow>
-                <MailIcon sx={{ fontSize: 18, color: "#555555" }} />
+                <MailIcon sx={{ fontSize: 18, color: "var(--hm-text-muted, #555555)" }} />
                 <InfoText>hello@optigoapps.com</InfoText>
               </InfoRow>
             </Box>
@@ -196,7 +196,7 @@ export default function Footer() {
         {/* Bottom Copyright Section */}
         <Box
           sx={{
-            borderTop: "1px solid #f4f4f4",
+            borderTop: "1px solid var(--hm-surface-subtle, #f4f4f4)",
             marginTop: "56px",
             paddingTop: "24px",
           }}
@@ -205,7 +205,7 @@ export default function Footer() {
             variant="body2"
             sx={{
               fontSize: "12px",
-              color: "#777777",
+              color: "var(--hm-text-faint, #777777)",
               fontFamily: "inherit",
             }}
           >

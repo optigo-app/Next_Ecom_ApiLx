@@ -4,7 +4,7 @@
   width: 100%;
   min-height: 100vh;
   font-family: inherit;
-  color: #222;
+  color: var(--tc-text-body, #222);
 
   .testCheckout_wrapper_Container {
     width: 100%;
@@ -39,14 +39,14 @@
     }
 
     &:disabled {
-      background-color: #e0e0e0 !important;
-      border-color: #e0e0e0 !important;
-      color: #999999 !important;
+      background-color: var(--tc-border, #e0e0e0) !important;
+      border-color: var(--tc-border, #e0e0e0) !important;
+      color: var(--tc-text-disabled, #999999) !important;
     }
   }
 
   .testCheckout_itemCard {
-    background-color: #fff;
+    background-color: var(--tc-surface, #fff);
     &--editing {
       background-color: var(--checkout-primary-light, #faf4ee) !important;
       border-left: 3px solid var(--checkout-primary, #cca182);
@@ -54,7 +54,7 @@
   }
 
   .testCheckout_itemImageWrapper {
-    background-color: #f8f8f8;
+    background-color: var(--tc-surface-subtle, #f8f8f8);
     img {
       transition: transform 0.2s ease;
     }
@@ -69,7 +69,7 @@
     background-repeat: no-repeat;
     background-position: right 10px center;
     background-size: 13px;
-    background-color: #fff;
+    background-color: var(--tc-surface, #fff);
     cursor: pointer;
     transition: border-color 0.2s ease, box-shadow 0.2s ease;
 
@@ -84,7 +84,7 @@
     label {
       font-size: 0.82rem;
       font-weight: 500;
-      color: #555;
+      color: var(--tc-text-muted, #555);
     }
   }
 

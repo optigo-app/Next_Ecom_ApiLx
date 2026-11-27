@@ -30,7 +30,7 @@ const DeactivatedIllustration = () => (
     </defs>
 
     {/* soft ground shadow */}
-    <ellipse cx="140" cy="178" rx="94" ry="11" fill="#EDF1F5" />
+    <ellipse cx="140" cy="178" rx="94" ry="11" fill="var(--hm-accent-soft, #edf1f5)" />
 
     {/* stacked albums behind */}
     <rect
@@ -39,7 +39,7 @@ const DeactivatedIllustration = () => (
       width="126"
       height="90"
       rx="14"
-      fill="#E2E8F0"
+      fill="var(--hm-border, #e2e8f0)"
       transform="rotate(-9 115 109)"
     />
     <rect
@@ -60,14 +60,14 @@ const DeactivatedIllustration = () => (
       width="132"
       height="110"
       rx="14"
-      fill="#FFFFFF"
-      stroke="#E2E8F0"
+      fill="var(--hm-surface, #ffffff)"
+      stroke="var(--hm-border, #e2e8f0)"
       strokeWidth="2"
     />
 
     {/* photo area */}
     <g clipPath="url(#albumImgClipDeact)">
-      <rect x="104" y="62" width="108" height="66" fill="#EDF1F5" />
+      <rect x="104" y="62" width="108" height="66" fill="var(--hm-accent-soft, #edf1f5)" />
       <circle cx="126" cy="80" r="9" fill="#B9C4D0" />
       <path d="M98 132 L136 82 L156 102 L172 84 L220 132 Z" fill="#CBD5E1" />
     </g>
@@ -78,7 +78,7 @@ const DeactivatedIllustration = () => (
       height="66"
       rx="8"
       fill="none"
-      stroke="#E2E8F0"
+      stroke="var(--hm-border, #e2e8f0)"
       strokeWidth="2"
     />
 
@@ -87,24 +87,25 @@ const DeactivatedIllustration = () => (
     <rect x="104" y="149" width="46" height="7" rx="3.5" fill="#EFF3F7" />
 
     {/* lock badge */}
-    <circle cx="218" cy="52" r="28" fill="#F8F9FA" />
-    <circle cx="218" cy="52" r="24" fill="#1E293B" />
+    <circle cx="218" cy="52" r="28" fill="var(--hm-surface-muted, #f8f9fa)" />
+    <circle cx="218" cy="52" r="24" fill="var(--hm-text-secondary, #1e293b)" />
     <path
       d="M211 53 v-5 a7 7 0 0 1 14 0 v5"
-      stroke="#FFFFFF"
+      stroke="var(--hm-surface, #ffffff)"
       strokeWidth="3"
       strokeLinecap="round"
       fill="none"
     />
-    <rect x="207" y="52" width="22" height="16" rx="3.5" fill="#FFFFFF" />
-    <circle cx="218" cy="59" r="2.4" fill="#1E293B" />
-    <rect x="216.8" y="59.5" width="2.4" height="5" rx="1.2" fill="#1E293B" />
+    <rect x="207" y="52" width="22" height="16" rx="3.5" fill="var(--hm-surface, #ffffff)" />
+    <circle cx="218" cy="59" r="2.4" fill="var(--hm-text-secondary, #1e293b)" />
+    <rect x="216.8" y="59.5" width="2.4" height="5" rx="1.2" fill="var(--hm-text-secondary, #1e293b)" />
   </svg>
 );
 
 const AlbumDeactivatedPage = ({
   onReturnHome = () => (window.location.href = "/"),
   onContactSupport,
+  albumName,
 }) => {
   return (
     <Box
@@ -113,7 +114,7 @@ const AlbumDeactivatedPage = ({
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        bgcolor: "#F8F9FA",
+        bgcolor: "var(--hm-surface-muted, #f8f9fa)",
         px: 2,
         py: 6,
       }}
@@ -148,7 +149,7 @@ const AlbumDeactivatedPage = ({
           component="h1"
           sx={{
             fontWeight: 700,
-            color: "#111827",
+            color: "var(--hm-text-body, #111827)",
             fontSize: { xs: "1.5rem", sm: "1.85rem" },
             letterSpacing: "-0.02em",
             mb: 1.5,
@@ -165,12 +166,21 @@ const AlbumDeactivatedPage = ({
             lineHeight: 1.7,
             maxWidth: 420,
             mx: "auto",
-            mb: 3.5,
+            mb: albumName ? 2.5 : 3.5,
           }}
         >
           The album you are trying to access has been deactivated. You can no
           longer view its contents.
         </Typography>
+
+        {albumName && (
+          <Typography
+            variant="body2"
+            sx={{ color: "var(--hm-text-disabled, #9ca3af)", mb: 3, fontWeight: 500 }}
+          >
+            {albumName}
+          </Typography>
+        )}
 
         <Divider sx={{ maxWidth: 340, mx: "auto", my: 3, borderColor: "#EAECEF" }} />
 
@@ -204,7 +214,7 @@ const AlbumDeactivatedPage = ({
               borderRadius: 2.5,
               textTransform: "none",
               fontWeight: 600,
-              bgcolor: "#111827",
+              bgcolor: "var(--hm-text-body, #111827)",
               "&:hover": { bgcolor: "#1F2937" },
             }}
           >
@@ -225,7 +235,7 @@ const AlbumDeactivatedPage = ({
                 color: "#374151",
                 borderColor: "#D1D5DB",
                 "&:hover": {
-                  borderColor: "#9CA3AF",
+                  borderColor: "var(--hm-text-disabled, #9ca3af)",
                   bgcolor: "#F9FAFB",
                 },
               }}

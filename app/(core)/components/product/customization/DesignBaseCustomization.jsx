@@ -100,8 +100,7 @@ const DesignBaseCustomization = ({
               )}
             </Grid>
           )}
-        {((metalColorCombo?.length > 0 &&
-          (Number(storeInit?.IsMetalTypeWithColor) === 1 || isCartRestore)) ||
+        {(metalColorCombo?.length > 0 ||
           (isCartRestore && (metalColorName || metalColor))) && (
             <Grid
               item

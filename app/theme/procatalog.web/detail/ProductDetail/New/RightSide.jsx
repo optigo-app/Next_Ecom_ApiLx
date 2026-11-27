@@ -29,6 +29,7 @@ import { motion } from "framer-motion";
 import { getSession } from "@/app/(core)/utils/FetchSessionData";
 import CustomizerDrawer from "../Customiziation";
 import ProductDetailsSection from "./ProductDetailsSection";
+import CartQtyRemark from "@/app/(core)/components/product/cartExtras/CartQtyRemark";
 import { getDeliveryInfo } from "./deliveryUtils";
 import {
   isDesignBaseItemInMap,
@@ -78,6 +79,11 @@ const RightSide = ({
   isPriceloading,
   pdLoadImage,
   handleCart,
+  cartQty = 1,
+  cartRemark = "",
+  onCartRemarkChange,
+  onCartQtyChange,
+  isCartExtrasSaving = false,
   addToCardFlag,
   isCartBtnLoading = false,
   handleWishList,
@@ -156,6 +162,13 @@ const RightSide = ({
         .join("-") || null
     : null;
   const defaultDiaOrigin = String(defaultDiaStone?.MaterialTypeName ?? "").trim();
+  const selectedDiaLabel =
+    selectDiaQc && !String(selectDiaQc).includes("undefined")
+      ? String(selectDiaQc).replace(",", "-").toUpperCase()
+      : null;
+  const diamondQualityLabel = isDesignBase
+    ? selectedDiaLabel || defaultDiaQcLabel
+    : defaultDiaQcLabel;
 
   const decodeEntities = (html) => {
     var txt = document.createElement("textarea");
@@ -566,7 +579,7 @@ const RightSide = ({
               </Grid>
 
               {/* Diamond QC — article based from rd2 */}
-              {(isLoading || defaultDiaQcLabel) && (
+              {(isLoading || diamondQualityLabel) && (
                 <Grid
                   item
                   size={{
@@ -578,10 +591,10 @@ const RightSide = ({
                   </Typography>
 
                   <Typography sx={{ fontSize: "15px", fontWeight: 600 }}>
-                    {isLoading && !defaultDiaStone ? (
+                    {isLoading && !defaultDiaStone && !diamondQualityLabel ? (
                       <Skeleton variant="text" width={80} />
                     ) : (
-                      defaultDiaQcLabel
+                      diamondQualityLabel
                     )}
                   </Typography>
                 </Grid>
@@ -806,6 +819,17 @@ const RightSide = ({
             </Box>
           ) : (
             <Box sx={{ mt: 3, mb: 3 }}>
+              {/* Quantity & Remark (sent with add-to-cart, or saved via API when already in cart) */}
+              {typeof onCartQtyChange === "function" && (
+                <CartQtyRemark
+                  isInCart={isAddedToCart}
+                  quantity={cartQty}
+                  onQuantityChange={onCartQtyChange}
+                  remark={cartRemark}
+                  onRemarkChange={onCartRemarkChange}
+                  isSaving={isCartExtrasSaving}
+                />
+              )}
               {/* Action Buttons Row */}
               <Box sx={{ display: "flex", gap: 1.5, mb: 2 }}>
                 {/* ADD / REMOVE TO CART */}

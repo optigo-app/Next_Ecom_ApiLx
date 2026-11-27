@@ -339,7 +339,7 @@ const Header = ({ storeinit, logos }) => {
                   style={{
                     height: "30px",
                     width: "30px",
-                    color: "#7d7f85",
+                    color: "var(--hm-text-faint, #7d7f85)",
                     cursor: "pointer",
                   }}
                   onClick={toggleOverlay}
@@ -363,7 +363,7 @@ const Header = ({ storeinit, logos }) => {
                   style={{
                     height: "30px",
                     width: "30px",
-                    color: "#7d7f85",
+                    color: "var(--hm-text-faint, #7d7f85)",
                     cursor: "pointer",
                   }}
                   onClick={toggleOverlay}
@@ -949,7 +949,7 @@ const Header = ({ storeinit, logos }) => {
               style={{
                 display: "flex",
                 padding: "25px",
-                color: "#7d7f85",
+                color: "var(--hm-text-faint, #7d7f85)",
                 backgroundColor: "white",
                 gap: "50px",
                 justifyContent: 'space-between',

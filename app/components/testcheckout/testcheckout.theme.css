@@ -1,0 +1,93 @@
+/*
+ * Cart / Checkout (testcheckout) color tokens — PAGE-LEVEL SINGLE SOURCE.
+ *
+ * Components on this page consume var(--checkout-*, <fallback>). The
+ * CheckoutThemeProvider sets brand defaults inline higher up, but .tc-root
+ * sits inside it, so declarations here WIN for the whole page.
+ *
+ * TO RECOLOR THE PAGE: edit the --checkout-* hexes below. Everything
+ * (buttons, edit borders, badges, steppers) follows automatically.
+ * Later this file can move to :root / per-theme to go global.
+ */
+.tc-root {
+  /* ── Page accent (edit these) ─────────────────────────────────── */
+  --checkout-primary: #cca182;
+  --checkout-primary-hover: #b88d6e;
+  --checkout-primary-active: #9c6d48;
+  --checkout-primary-light: #faf4ee;
+  --checkout-primary-light-border: #edd8c7;
+  --checkout-primary-text: #9c6d48;
+  --checkout-badge-bg: #f5e8dd;
+  --checkout-badge-text: #8d613e;
+  --checkout-accent: var(--checkout-primary);
+  --checkout-btn-color: #ffffff;
+  --checkout-success: #16a34a;
+  --checkout-success-light: #f0fdf4;
+  --checkout-success-border: #dcfce7;
+
+  /* ── Semantic tokens (use var(--tc-*) in new code) ────────────── */
+  --tc-accent: var(--checkout-primary);
+  --tc-accent-strong: var(--checkout-primary-hover);
+  --tc-accent-deep: var(--checkout-primary-active);
+  --tc-accent-soft: var(--checkout-primary-light-border);
+
+  /* Surfaces */
+  --tc-surface: #ffffff;
+  --tc-surface-muted: #fafafa;
+  --tc-surface-subtle: #f5f5f5;
+  --tc-surface-warm: var(--checkout-primary-light);
+  --tc-surface-beige: #f8f7f4;
+  --tc-surface-cream: var(--checkout-badge-bg);
+
+  /* Text */
+  --tc-text: #111111;
+  --tc-text-body: #222222;
+  --tc-text-secondary: #333333;
+  --tc-text-muted: #555555;
+  --tc-text-faint: #777777;
+  --tc-text-disabled: #999999;
+
+  /* Warm text (used on beige surfaces) */
+  --tc-text-warm: #3b3428;
+  --tc-text-warm-muted: #8a7f6a;
+  --tc-text-warm-accent: #8b6f47;
+
+  /* Borders */
+  --tc-border: #dcdcdc;
+  --tc-border-light: #eeeeee;
+  --tc-border-warm: #e7e2d8;
+  --tc-border-warm-strong: #ddd5c4;
+  --tc-border-focus: #b9a88c;
+  --tc-border-focus-deep: #8b6f47;
+
+  /* Feedback */
+  --tc-danger: #d32f2f;
+  --tc-danger-alt: #e53935;
+  --tc-success: var(--checkout-success);
+  --tc-success-bg: var(--checkout-success-light);
+  --tc-success-border: var(--checkout-success-border);
+
+  /* Misc */
+  --tc-gold: #ffd700;
+  --tc-overlay-shadow: 0 16px 48px rgba(60, 50, 35, 0.18);
+  --tc-radius: 12px;
+}
+
+/* ── Extended neutrals & one-offs (auto-added: full testcheckout sweep) ── */
+.tc-root {
+  --tc-text-ink: #000000;
+  --tc-text-deep: #1a1a1a;
+  --tc-gray-50: #f9fafb;
+  --tc-danger-bg: #fff5f5;
+  --tc-pink: #ff4081;
+
+  /* Payment / gateway brand colors (logos, method chips) */
+  --tc-pay-paypal: #003087;
+  --tc-pay-deepblue: #0051ba;
+  --tc-pay-blue: #2196f3;
+  --tc-pay-sky: #3395ff;
+  --tc-pay-cyan: #02b3ea;
+  --tc-pay-indigo: #6058f7;
+  --tc-pay-indigo-light: #5c6bc0;
+  --tc-pay-purple: #5c249a;
+}
