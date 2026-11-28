@@ -4,9 +4,10 @@ import LocalMallOutlinedIcon from "@mui/icons-material/LocalMallOutlined";
 import LocalMallIcon from "@mui/icons-material/LocalMall";
 import ScaleIcon from "@mui/icons-material/Scale";
 import DiamondIcon from "@mui/icons-material/Diamond";
-import { formatter } from '@/app/(core)/utils/Glob_Functions/GlobalFunction';
+import { useCurrency } from '@/app/(core)/hooks/useCurrency';
 
 const NewStockitems = ({ stockItemArr, storeInit, loginInfo, cartArr, handleCartandWish, check }) => {
+  const { format: formatCurrency, symbol: currencySymbol } = useCurrency();
   const [storeData, setStoreData] = useState();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
@@ -225,7 +226,7 @@ const NewStockitems = ({ stockItemArr, storeInit, loginInfo, cartArr, handleCart
                   {check && (
                     <TableCell sx={{ fontWeight: 500, color: "#424242", height: 34, py: 1, fontSize: "0.875rem" }}>
                       <Typography variant="body1" fontWeight={700} color="gray">
-                        {loginInfo?.CurrencyCode ?? storeInit?.CurrencyCode} {formatter(ele?.Amount)}
+                        {currencySymbol ?? loginInfo?.CurrencyCode ?? storeInit?.CurrencyCode} {formatCurrency(ele?.Amount)}
                       </Typography>
                     </TableCell>
                   )}

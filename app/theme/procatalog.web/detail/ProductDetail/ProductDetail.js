@@ -9,7 +9,7 @@ import NewStockitem from "./InstockProduct/NewStockitem";
 import LeftSide from "./New/LeftSide";
 import RightSide from "./New/RightSide";
 import PreviewDialog from "./New/PreviewDialog";
-import ExtraProductSections from "./New/ExtraProductSections";
+// import ExtraProductSections from "./New/ExtraProductSections";
 import DetailPageSkeleton from "../DetailPageSkeleton";
 import DetailBreadcrumb from "./New/DetailBreadcrumb";
 import useDesignNavigation from "./New/useDesignNavigation";
@@ -204,12 +204,12 @@ const ProductDetail = ({ storeinit, searchParams, params }) => {
                 onCustomizerConfirm={handleCustomizerConfirm}
               />
             </Grid>
-            <ExtraProductSections
+            {/* <ExtraProductSections
               imgSrc={getImagesArr?.[0] || getImagesArr?.[1]}
               singleProd={singleProd}
               singleProd1={singleProd1}
               stockItemArr={stockItemArr}
-            />
+            /> */}
 
             {stockItemArr?.length > 0 &&
               stockItemArr?.[0]?.stat_code != 1005 &&

@@ -3,7 +3,8 @@ import  ReactHTMLTableToExcel  from 'react-html-table-to-excel';
 import { formatAmount } from '@/app/(core)/utils/Glob_Functions/AccountPages/AccountPage';
 import DoneIcon from '@mui/icons-material/Done';
 import CloseIcon from '@mui/icons-material/Close';
-const AccountLedgerExcel = ({filterArray, credit_curr_diff, credit_amt_diff, credit_mg_diff, credit_dia_diff, debit_curr_diff, debit_amt_diff, debit_mg_diff, debit_dia_diff, resultTotal, currencySymbol, currencyRate}) => {
+const AccountLedgerExcel = ({filterArray, credit_curr_diff, credit_amt_diff, credit_mg_diff, credit_dia_diff, debit_curr_diff, debit_amt_diff, debit_mg_diff, debit_dia_diff, resultTotal, currencySymbol, currencyRate, convertAmount}) => {
+  const formatDisplayAmount = (value) => formatAmount(convertAmount ? convertAmount(value) : value);
 
   const [summaryObj, setSummaryObj ] = useState({
     balance_amt : 0,
@@ -92,9 +93,9 @@ const AccountLedgerExcel = ({filterArray, credit_curr_diff, credit_amt_diff, cre
                     <b>
                     <span>
                             <span dangerouslySetInnerHTML={{__html:currencySymbol}}></span>&nbsp;
-                            { ((formatAmount(
+                            { ((formatDisplayAmount(
                                 (Math.abs(debit_curr_diff) + resultTotal?.debit_totalcurrency) - (Math.abs(credit_curr_diff) + resultTotal?.credit_totalcurrency))
-                              ) === 'NaN' ? '0.00' : (formatAmount(
+                              ) === 'NaN' ? '0.00' : (formatDisplayAmount(
                                 (Math.abs(debit_curr_diff) + resultTotal?.debit_totalcurrency) - (Math.abs(credit_curr_diff) + resultTotal?.credit_totalcurrency))
                               ))
                             }&nbsp;
@@ -149,7 +150,7 @@ const AccountLedgerExcel = ({filterArray, credit_curr_diff, credit_amt_diff, cre
                                             <td className='border_end_acc p_1_acc text_start_acc ps_1_acc'></td>
                                             <td className='border_end_acc p_1_acc text_end_acc ps_1_acc'>{ (Math.abs(debit_mg_diff))?.toFixed(3) === '0.000' ? '' : (Math.abs(debit_mg_diff))?.toFixed(3)}</td>
                                             <td className='border_end_acc p_1_acc text_end_acc ps_1_acc'>{(Math.abs(debit_dia_diff))?.toFixed(3) === '0.000' ? '' : (Math.abs(debit_dia_diff))?.toFixed(3)}</td>
-                                            <td className='border_end_acc p_1_acc text_end_acc pe_1_acc' style={{minWidth:'100px'}}>{Math.abs(debit_curr_diff) === 0.00 ? '' : <><span dangerouslySetInnerHTML={{__html:currencySymbol}}></span>&nbsp;{formatAmount(Math.abs(debit_curr_diff))}</>}</td>
+                                            <td className='border_end_acc p_1_acc text_end_acc pe_1_acc' style={{minWidth:'100px'}}>{Math.abs(debit_curr_diff) === 0.00 ? '' : <><span dangerouslySetInnerHTML={{__html:currencySymbol}}></span>&nbsp;{formatDisplayAmount(Math.abs(debit_curr_diff))}</>}</td>
                                             {/* <td className='border_end_acc p_1_acc text_end_acc pe_1_acc' style={{minWidth:'100px'}}>{Math.abs(debit_curr_diff) === 0.00 ? '' : formatAmount(Math.abs(debit_curr_diff))}</td>
                                             <td></td>
                                             <td></td>
@@ -160,7 +161,7 @@ const AccountLedgerExcel = ({filterArray, credit_curr_diff, credit_amt_diff, cre
                                             <td className='border_end_acc p_1_acc text_end_acc pe_1_acc'></td>
                                             <td className='border_end_acc p_1_acc text_end_acc ps_1_acc'>{(Math.abs(credit_mg_diff))?.toFixed(3) === '0.000' ? '' : (Math.abs(credit_mg_diff))?.toFixed(3)}</td>
                                             <td className='border_end_acc p_1_acc text_end_acc ps_1_acc'>{(Math.abs(credit_dia_diff))?.toFixed(3) === '0.000' ? '' : (Math.abs(credit_dia_diff))?.toFixed(3)}</td>
-                                            <td className='border_end_acc p_1_acc text_end_acc pe_1_acc' style={{minWidth:'100px'}}>{Math.abs(credit_curr_diff) === 0.00 ? '' : <><span dangerouslySetInnerHTML={{__html:currencySymbol}}></span>&nbsp;{formatAmount(Math.abs(credit_curr_diff))}</>}</td>
+                                            <td className='border_end_acc p_1_acc text_end_acc pe_1_acc' style={{minWidth:'100px'}}>{Math.abs(credit_curr_diff) === 0.00 ? '' : <><span dangerouslySetInnerHTML={{__html:currencySymbol}}></span>&nbsp;{formatDisplayAmount(Math.abs(credit_curr_diff))}</>}</td>
                                             {/* <td></td>
                                             <td></td>
                                             <td className='border_end_acc p_1_acc text_end_acc pe_1_acc' style={{minWidth:'100px'}}>{Math.abs(credit_curr_diff) === 0.00 ? '' : formatAmount(Math.abs(credit_curr_diff))}</td>
@@ -199,7 +200,7 @@ const AccountLedgerExcel = ({filterArray, credit_curr_diff, credit_amt_diff, cre
                     <td  align='center'>{e?.IsDebit === 0 ? '' : (e?.metalctw === 0 ? '' : e?.metalctw)}</td>
                     <td  align='center'>{e?.IsDebit === 0 ? '' : (e?.diamondctw === 0 ? '' : e?.diamondctw)}</td>
                     <td className='border_end_acc p_1_acc text_end_acc pe_1_acc' style={{minWidth:'100px'}}> { e?.IsDebit !== 0 && <span dangerouslySetInnerHTML={{__html: currencySymbol}}></span>} 
-                                                {e?.IsDebit === 0 ? '' : ` ${formatAmount(e?.Currency) === 'NaN' ? '' : formatAmount(e?.Currency)} `}</td>
+                                                {e?.IsDebit === 0 ? '' : ` ${formatDisplayAmount(e?.Currency) === 'NaN' ? '' : formatDisplayAmount(e?.Currency)} `}</td>
                     {/* <td  align='center'>{e?.IsDebit === 0 ? '' : ` ${(e?.Currency) === 'NaN' ? '' : (e?.Currency)} `}</td>
                     <td  align='center'>{ e?.IsDebit !== 0 && <span dangerouslySetInnerHTML={{__html: currencySymbol}}></span>}</td>
                     <td  align='center'>{ e?.IsDebit === 0 ? '' : e?.CurrRate }</td>
@@ -211,7 +212,7 @@ const AccountLedgerExcel = ({filterArray, credit_curr_diff, credit_amt_diff, cre
                     <td  align='center'>{e?.IsDebit === 0 ? e?.referenceno === '' ? e?.voucherno : e?.referenceno : ''}</td>
                     <td  align='center'>{e?.IsDebit === 0 ? (e?.metalctw === 0 ? '' : e?.metalctw) : ''}</td>
                     <td  align='center'>{e?.IsDebit === 0 ? (e?.diamondctw === 0 ? '' : e?.diamondctw) : ''}</td>
-                    <td className='border_end_acc p_1_acc text_end_acc pe_1_acc' style={{minWidth:'100px'}}> { e?.IsDebit === 0 && <span dangerouslySetInnerHTML={{__html: currencySymbol}}></span>} {e?.IsDebit === 0 ? ` ${e?.Currency === 0 ? '0.00' : formatAmount(e?.Currency)}`  : ''}</td>
+                    <td className='border_end_acc p_1_acc text_end_acc pe_1_acc' style={{minWidth:'100px'}}> { e?.IsDebit === 0 && <span dangerouslySetInnerHTML={{__html: currencySymbol}}></span>} {e?.IsDebit === 0 ? ` ${e?.Currency === 0 ? '0.00' : formatDisplayAmount(e?.Currency)}`  : ''}</td>
                     {/* <td  align='center'>{e?.IsDebit === 0 ? ` ${e?.Currency === 0 ? '' : (e?.Currency)}`  : ''}</td>
                     <td  align='center'>{ e?.IsDebit === 0 && <span dangerouslySetInnerHTML={{__html: currencySymbol}}></span>}</td>
                     <td  align='center'>{ e?.IsDebit === 0 ? e?.CurrRate : ''}</td>
@@ -230,7 +231,7 @@ const AccountLedgerExcel = ({filterArray, credit_curr_diff, credit_amt_diff, cre
                         <th  align='center'>{((Math.abs(debit_mg_diff) + resultTotal?.debit_metalgold))?.toFixed(3) === '0.000' ? '' : (( (Math.abs(debit_mg_diff) + resultTotal?.debit_metalgold))?.toFixed(3) === 'NaN' ? '0.00' : ( (Math.abs(debit_mg_diff) + resultTotal?.debit_metalgold))?.toFixed(3))}</th>
                         <th  align='center'>{((Math.abs(debit_dia_diff) + resultTotal?.debit_diamondwt))?.toFixed(3) === '0.000' ? '' : (((Math.abs(debit_dia_diff) + resultTotal?.debit_diamondwt))?.toFixed(3) === 'NaN' ? '0.00' : ((Math.abs(debit_dia_diff) + resultTotal?.debit_diamondwt))?.toFixed(3))}</th>
                         <td className='border_end_acc p_1_acc text_end_acc pe_1_acc' style={{minWidth:'100px'}}><b>
-                                                {formatAmount((Math.abs(debit_curr_diff) + resultTotal?.debit_totalcurrency)) === '0.00' ? '' :  <span dangerouslySetInnerHTML={{__html:currencySymbol}}></span>}&nbsp;{formatAmount((Math.abs(debit_curr_diff) + resultTotal?.debit_totalcurrency)) === '0.00' ? '' : (formatAmount((Math.abs(debit_curr_diff) + resultTotal?.debit_totalcurrency)) === 'NaN' ? '0.00' : formatAmount((Math.abs(debit_curr_diff) + resultTotal?.debit_totalcurrency)))}
+                                                {formatDisplayAmount(Math.abs(debit_curr_diff) + resultTotal?.debit_totalcurrency) === '0.00' ? '' :  <span dangerouslySetInnerHTML={{__html:currencySymbol}}></span>}&nbsp;{formatDisplayAmount(Math.abs(debit_curr_diff) + resultTotal?.debit_totalcurrency) === '0.00' ? '' : (formatDisplayAmount(Math.abs(debit_curr_diff) + resultTotal?.debit_totalcurrency) === 'NaN' ? '0.00' : formatDisplayAmount(Math.abs(debit_curr_diff) + resultTotal?.debit_totalcurrency))}
                                                 </b>
                                             </td>
                         {/* <th  align='center'>
@@ -254,9 +255,9 @@ const AccountLedgerExcel = ({filterArray, credit_curr_diff, credit_amt_diff, cre
                         <th  align='center'>{((Math.abs(credit_mg_diff) + resultTotal?.credit_metalgold))?.toFixed(3) === '0.000' ? '' : (((Math.abs(credit_mg_diff) + resultTotal?.credit_metalgold))?.toFixed(3) === 'NaN' ? '0.00' : ((Math.abs(credit_mg_diff) + resultTotal?.credit_metalgold))?.toFixed(3))}</th>
                         <th  align='center'>{((Math.abs(credit_dia_diff) + resultTotal?.credit_diamondwt))?.toFixed(3) === '0.000' ? '' : (((Math.abs(credit_dia_diff) + resultTotal?.credit_diamondwt))?.toFixed(3) === 'NaN' ? '0.00' : ((Math.abs(credit_dia_diff) + resultTotal?.credit_diamondwt))?.toFixed(3))}</th>
                         <td className='border_end_acc p_1_acc text_end_acc pe_1_acc' style={{minWidth:'100px'}}><b>
-                                                {formatAmount((Math.abs(credit_curr_diff) + resultTotal?.credit_totalcurrency)) === '0.00' ? '' : <span dangerouslySetInnerHTML={{__html:currencySymbol}}></span>}
+                                                {formatDisplayAmount(Math.abs(credit_curr_diff) + resultTotal?.credit_totalcurrency) === '0.00' ? '' : <span dangerouslySetInnerHTML={{__html:currencySymbol}}></span>}
                                                 &nbsp;
-                                                {formatAmount((Math.abs(credit_curr_diff) + resultTotal?.credit_totalcurrency)) === '0.00' ? '' : ((formatAmount((Math.abs(credit_curr_diff) + resultTotal?.credit_totalcurrency)) === 'NaN' ? '0.00' : formatAmount((Math.abs(credit_curr_diff) + resultTotal?.credit_totalcurrency))))}</b></td>
+                                                {formatDisplayAmount(Math.abs(credit_curr_diff) + resultTotal?.credit_totalcurrency) === '0.00' ? '' : ((formatDisplayAmount(Math.abs(credit_curr_diff) + resultTotal?.credit_totalcurrency) === 'NaN' ? '0.00' : formatDisplayAmount(Math.abs(credit_curr_diff) + resultTotal?.credit_totalcurrency)))}</b></td>
                         {/* <th  align='center'>
                           
                           {
@@ -280,7 +281,7 @@ const AccountLedgerExcel = ({filterArray, credit_curr_diff, credit_amt_diff, cre
           <td colSpan={12}></td>
         <td colSpan={2} align='center'>Balance (Amt) : </td>
         {/* <td colSpan={2} align='center'><b><span dangerouslySetInnerHTML={{__html:currencySymbol}}></span>&nbsp; {summaryObj?.balance_amt?.toFixed(2)}</b></td> */}
-        <td colSpan={2} align='center'><b>&nbsp; {Math.abs(+summaryObj?.balance_amt?.toFixed(2))}</b></td>
+        <td colSpan={2} align='center'><b>&nbsp; {Math.abs(+(convertAmount ? convertAmount(summaryObj?.balance_amt) : summaryObj?.balance_amt)?.toFixed(2))}</b></td>
       </tr>
       <tr>
       <td colSpan={12}></td>

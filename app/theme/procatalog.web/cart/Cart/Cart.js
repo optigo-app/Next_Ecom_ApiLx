@@ -21,7 +21,7 @@ import {
 } from "@mui/material";
 import { GetCountAPI } from "@/app/(core)/utils/API/GetCount/GetCountAPI";
 import RemarkDialog from "./OrderRemarkDialog";
-import { formatter } from "@/app/(core)/utils/Glob_Functions/GlobalFunction";
+import { useCurrency } from "@/app/(core)/hooks/useCurrency";
 import { handleOrderRemark } from "@/app/(core)/utils/API/OrderRemarkAPI/OrderRemarkAPI";
 import MobileCartDetails from "./MobileCartDetails";
 import ConfirmationDialog from "@/app/(core)/utils/Glob_Functions/ConfirmationDialog/ConfirmationDialog";
@@ -172,6 +172,7 @@ const ElveeCartPage = ({ storeinit, visiterId }) => {
   } = useCart();
   const { finalId, cartCountNum, setCartCountNum, islogin, loginUserDetail } =
     useStore();
+  const { format: formatCurrency, symbol: currencySymbol } = useCurrency();
   const navigate = useNavigate();
   const isTabletResponsive = useMediaQuery("(max-width:1000px)");
   const isMobileResp1 = useMediaQuery("(max-width:800px)");
@@ -408,9 +409,9 @@ const ElveeCartPage = ({ storeinit, visiterId }) => {
       {openDiscountModal && (
         <DiscountPopUp
           itemCount={finalCartData?.length}
-          totalPrice={formatter(getTotalPrice[0]?.total)}
+          totalPrice={formatCurrency(getTotalPrice[0]?.total)}
           CurrencyCode={
-            loginUserDetail?.CurrencyCode ?? CurrencyData?.CurrencyCode
+            currencySymbol ?? loginUserDetail?.CurrencyCode ?? CurrencyData?.CurrencyCode
           }
           CouponList={couponData}
           open={openDiscountModal}
@@ -432,7 +433,7 @@ const ElveeCartPage = ({ storeinit, visiterId }) => {
             handleRemoveAll={handleConfirmRemoveAll}
             totalPrice={getTotalPrice[0]?.total}
             CurrencyCode={
-              loginUserDetail?.CurrencyCode ?? CurrencyData?.CurrencyCode
+              currencySymbol ?? loginUserDetail?.CurrencyCode ?? CurrencyData?.CurrencyCode
             }
             IsPriceShow={!isPriceHidden(storeinit)}
             handleMoveToOrder={handleDiscountModalOpen}

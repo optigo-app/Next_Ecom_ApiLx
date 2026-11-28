@@ -5,7 +5,8 @@ import './elvMo_cartPage.modul.scss';
 import QuantitySelector from './QuantitySelector';
 import CloseIcon from "@mui/icons-material/Close";
 import { toast } from 'react-toastify';
-import { formatter, formatTitleLine } from '@/app/(core)/utils/Glob_Functions/GlobalFunction';
+import { formatTitleLine } from '@/app/(core)/utils/Glob_Functions/GlobalFunction';
+import { useCurrency } from '@/app/(core)/hooks/useCurrency';
 import noImageFound from "../../Assets/image-not-found.jpg"
 
 const MobileCartDetails = ({
@@ -36,6 +37,7 @@ const MobileCartDetails = ({
   open,
   handleClose
 }) => {
+  const { format: formatCurrency, symbol: currencySymbol } = useCurrency();
 
   const [metalTypeCombo, setMetalTypeCombo] = useState([]);
   const [metalColorCombo, setMetalColorCombo] = useState([]);
@@ -258,8 +260,8 @@ const MobileCartDetails = ({
                   <div className="product-price">
                     {!ispriceloding ? (
                       <span>
-                        {loginInfo?.CurrencyCode ?? storeInitData?.CurrencyCode} &nbsp;
-                        {formatter(selectedItem?.FinalCost)}
+                        {currencySymbol ?? loginInfo?.CurrencyCode ?? storeInitData?.CurrencyCode} &nbsp;
+                        {formatCurrency(selectedItem?.FinalCost)}
                       </span>
                     ) : (
                       <Skeleton className='elvMo_CartSkelton' variant="text" width="80%" animation="wave" />
@@ -276,14 +278,14 @@ const MobileCartDetails = ({
                         className="elv_currencyFont"
                         dangerouslySetInnerHTML={{
                           __html: decodeEntities(
-                            loginInfo?.CurrencyCode ?? storeInitData?.CurrencyCode
+                            currencySymbol ?? loginInfo?.CurrencyCode ?? storeInitData?.CurrencyCode
                           ),
                         }}
                       />
                       {ispriceloding ? (
                         <Skeleton className='elv_CartSkelton' variant="text" width="80%" animation="wave" />
                       ) : (
-                        formatter(selectedItem?.FinalCost)
+                        formatCurrency(selectedItem?.FinalCost)
                       )}
                     </span>
 
@@ -343,8 +345,8 @@ const MobileCartDetails = ({
                     <div className="elvMo_Stockproduct-price">
                       {!ispriceloding ? (
                         <span>
-                          {loginInfo?.CurrencyCode ?? storeInitData?.CurrencyCode} &nbsp;
-                          {formatter(selectedItem?.FinalCost)}
+                          {currencySymbol ?? loginInfo?.CurrencyCode ?? storeInitData?.CurrencyCode} &nbsp;
+                          {formatCurrency(selectedItem?.FinalCost)}
                         </span>
                       ) :
                         <Skeleton className='elvMo_CartSkelton' variant="text" width="80%" animation="wave" />
@@ -362,14 +364,14 @@ const MobileCartDetails = ({
                         className="elv_currencyFont"
                         dangerouslySetInnerHTML={{
                           __html: decodeEntities(
-                            loginInfo?.CurrencyCode ?? storeInitData?.CurrencyCode
+                            currencySymbol ?? loginInfo?.CurrencyCode ?? storeInitData?.CurrencyCode
                           ),
                         }}
                       />
                       {ispriceloding ? (
                         <Skeleton className='elv_CartSkelton' variant="text" width="80%" animation="wave" />
                       ) : (
-                        formatter(selectedItem?.FinalCost)
+                        formatCurrency(selectedItem?.FinalCost)
                       )}
                     </span>
 

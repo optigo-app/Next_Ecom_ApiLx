@@ -12,6 +12,7 @@ import { IoClose } from "react-icons/io5";
 import FilterAltIcon from "@mui/icons-material/FilterAlt";
 import FilterListIcon from "@mui/icons-material/FilterList";
 import { formatter } from "@/app/(core)/utils/Glob_Functions/GlobalFunction";
+import { useCurrency } from "@/app/(core)/hooks/useCurrency";
 import useLookBook from "@/app/(core)/hooks/useLookBook";
 import PaginationBlock from "./new/PaginationBlock";
 import DesignBlockView from "./new/DesignBlockView";
@@ -37,6 +38,7 @@ const CustomTooltipContent = ({ categories }) => (
 );
 
 const Lookbook = ({ storeInit }) => {
+  const { format: formatCurrency, symbol: currencySymbol } = useCurrency();
   const {
     // Core states
     loginUserDetail,
@@ -294,7 +296,7 @@ const Lookbook = ({ storeInit }) => {
                                 />
                               }
                               className="smr_mui_checkbox_label"
-                              label={opt?.Minval == 0 ? `Under ${loginUserDetail?.CurrencyCode ?? storeInit?.CurrencyCode}${opt?.Maxval}` : opt?.Maxval == 0 ? `Over ${loginUserDetail?.CurrencyCode ?? storeInit?.CurrencyCode}${opt?.Minval}` : `${loginUserDetail?.CurrencyCode ?? storeInit?.CurrencyCode}${opt?.Minval} - ${loginUserDetail?.CurrencyCode ?? storeInit?.CurrencyCode}${opt?.Maxval}`}
+                              label={opt?.Minval == 0 ? `Under ${currencySymbol ?? loginUserDetail?.CurrencyCode ?? storeInit?.CurrencyCode}${formatCurrency(opt?.Maxval)}` : opt?.Maxval == 0 ? `Over ${currencySymbol ?? loginUserDetail?.CurrencyCode ?? storeInit?.CurrencyCode}${formatCurrency(opt?.Minval)}` : `${currencySymbol ?? loginUserDetail?.CurrencyCode ?? storeInit?.CurrencyCode}${formatCurrency(opt?.Minval)} - ${currencySymbol ?? loginUserDetail?.CurrencyCode ?? storeInit?.CurrencyCode}${formatCurrency(opt?.Maxval)}`}
                               sx={{
                                 display: "flex",
                                 alignItems: "center",
@@ -618,7 +620,7 @@ const Lookbook = ({ storeInit }) => {
                                       />
                                     }
                                     className="smr_mui_checkbox_label"
-                                    label={opt?.Minval == 0 ? `Under ${loginUserDetail?.CurrencyCode ?? storeInit?.CurrencyCode}${opt?.Maxval}` : opt?.Maxval == 0 ? `Over ${loginUserDetail?.CurrencyCode ?? storeInit?.CurrencyCode}${opt?.Minval}` : `${loginUserDetail?.CurrencyCode ?? storeInit?.CurrencyCode}${opt?.Minval} - ${loginUserDetail?.CurrencyCode ?? storeInit?.CurrencyCode}${opt?.Maxval}`}
+                                    label={opt?.Minval == 0 ? `Under ${currencySymbol ?? loginUserDetail?.CurrencyCode ?? storeInit?.CurrencyCode}${formatCurrency(opt?.Maxval)}` : opt?.Maxval == 0 ? `Over ${currencySymbol ?? loginUserDetail?.CurrencyCode ?? storeInit?.CurrencyCode}${formatCurrency(opt?.Minval)}` : `${currencySymbol ?? loginUserDetail?.CurrencyCode ?? storeInit?.CurrencyCode}${formatCurrency(opt?.Minval)} - ${currencySymbol ?? loginUserDetail?.CurrencyCode ?? storeInit?.CurrencyCode}${formatCurrency(opt?.Maxval)}`}
                                     sx={{
                                       display: "flex",
                                       alignItems: "center",

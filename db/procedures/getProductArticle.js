@@ -394,7 +394,15 @@ export function getProductArticle(db, options = {}) {
           findingtypeid,
           findingAccessoriesId,
           findingtypename,
-          findingAccessories
+          findingAccessories,
+          IsMrpBase,
+          Metal_Type,
+          Org_metaltypename,
+          OrgWeight,
+          MetalPriceRatio,
+          MetalWastage,
+          IsPrimaryMetal,
+          IsDesignBaseWeb
         FROM "${matTable}" mt
         WHERE mt.${condition.whereClause}
         ORDER BY ArticleId ASC, mt.id ASC

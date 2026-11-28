@@ -18,6 +18,7 @@ import {
 } from "@mui/material";
 import { TfiClose } from "react-icons/tfi";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import { useCurrency } from "@/app/(core)/hooks/useCurrency";
 
 const VISIBLE_FILTER_OPTIONS = 5;
 
@@ -206,6 +207,7 @@ const FilterSidebar = ({
     isBelow768,
     isInline = false,
 }) => {
+  const { format: formatCurrency, symbol: currencySymbol } = useCurrency();
     const storeInit = storeInitProp || storeinitProp;
     const [expandedFilters, setExpandedFilters] = React.useState({});
     const toggleFilter = (key) =>
@@ -424,17 +426,17 @@ const FilterSidebar = ({
                                                     text={
                                                         opt?.Minval == 0
                                                             ? `Under ${decodeEntities(
-                                                                loginCurrency?.CurrencyCode ?? storeInit?.CurrencyCode
-                                                            )} ${formatter(opt?.Maxval)}`
+                                                                currencySymbol ?? loginCurrency?.CurrencyCode ?? storeInit?.CurrencyCode
+                                                            )} ${formatCurrency(opt?.Maxval)}`
                                                             : opt?.Maxval == 0
                                                                 ? `Over ${decodeEntities(
-                                                                    loginCurrency?.CurrencyCode ?? storeInit?.CurrencyCode
-                                                                )} ${formatter(opt?.Minval)}`
+                                                                    currencySymbol ?? loginCurrency?.CurrencyCode ?? storeInit?.CurrencyCode
+                                                                )} ${formatCurrency(opt?.Minval)}`
                                                                 : `${decodeEntities(
-                                                                    loginCurrency?.CurrencyCode ?? storeInit?.CurrencyCode
-                                                                )} ${formatter(opt?.Minval)} - ${decodeEntities(
-                                                                    loginCurrency?.CurrencyCode ?? storeInit?.CurrencyCode
-                                                                )} ${formatter(opt?.Maxval)}`
+                                                                    currencySymbol ?? loginCurrency?.CurrencyCode ?? storeInit?.CurrencyCode
+                                                                )} ${formatCurrency(opt?.Minval)} - ${decodeEntities(
+                                                                    currencySymbol ?? loginCurrency?.CurrencyCode ?? storeInit?.CurrencyCode
+                                                                )} ${formatCurrency(opt?.Maxval)}`
                                                     }
                                                 />
                                             }

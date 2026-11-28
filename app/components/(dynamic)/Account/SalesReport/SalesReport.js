@@ -386,12 +386,16 @@ const SalesReport = () => {
       let fromdates = `${fromDates?.["$y"]}-${checkMonth(fromDates?.["$M"])}-${fromDates?.["$D"]}`;
       let todates = `${toDates?.["$y"]}-${checkMonth(toDates?.["$M"])}-${toDates?.["$D"]}`;
 
-      let cutDate = cutDates;
-      const dateString = cutDates.join(' ');
-      const formattedDate = moment(dateString).format('YYYY-MM-DD');
+      let cutDate;
+      const dateString = cutDates?.join(' ');
+      const formattedDate = dateString ? moment(dateString).format('YYYY-MM-DD') : undefined;
 
       cutDate = formattedDate;
-      if (cutDate !== undefined) {
+      const noDateFilters = fromdates?.includes(undefined) && todates?.includes(undefined);
+      if (noDateFilters) {
+        flags.toDate = true;
+        flags.fromDate = true;
+      } else if (cutDate !== undefined && cutDate !== "Invalid date") {
         if (!fromdates?.includes(undefined) && !todates?.includes(undefined)) {
 
           let fromdat = moment(fromdates);
@@ -436,9 +440,6 @@ const SalesReport = () => {
             confirmButtonText: "ok"
           });
           resetAllFilters();
-        } else if (fromdates?.includes(undefined) && todates?.includes(undefined)) {
-          flags.toDate = true;
-          flags.fromDate = true;
         }
       }
 

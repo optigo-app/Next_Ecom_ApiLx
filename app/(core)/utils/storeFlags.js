@@ -9,6 +9,7 @@ export const STORE_INIT_FLAGS = Object.freeze({
   remarkOnProductDetail: "IsRemarkOnProductDetail",
   customOrder: "IsCustomOrder",
   priceShow: "IsPriceShow",
+  currencyConversion: "IsCurrencyConversion",
   b2bWebsite: "IsB2BWebsite",
   homeBestSeller: "IsHomeBestSeller",
   homeNewArrival: "IsHomeNewArrival",
@@ -24,13 +25,20 @@ export function isStoreInitFlagEnabled(storeInit, flagName) {
   return Number(storeInit?.[storeInitProperty]) === 1;
 }
 
-/** The site's IsPriceShow flag is configured to suppress prices when set to 1. */
+/** Prices are visible only when the site's IsPriceShow flag is enabled. */
 export function isPriceHidden(storeInitOrFlag) {
-  if (storeInitOrFlag && typeof storeInitOrFlag === "object") {
-    return isStoreInitFlagEnabled(storeInitOrFlag, "priceShow");
-  }
+  const flagValue =
+    storeInitOrFlag && typeof storeInitOrFlag === "object"
+      ? storeInitOrFlag?.[STORE_INIT_FLAGS.priceShow]
+      : storeInitOrFlag;
 
-  return Number(storeInitOrFlag) === 1;
+  return Number(flagValue) !== 1;
+}
+
+export function isCurrencyConversionEnabled(storeInit) {
+  const flagValue = storeInit?.[STORE_INIT_FLAGS.currencyConversion];
+  if (flagValue == null || flagValue === "") return true;
+  return Number(flagValue) === 1;
 }
 
 const HOME_SECTION_FLAGS = {

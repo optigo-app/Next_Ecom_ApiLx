@@ -32,6 +32,7 @@ import PhoneOutlinedIcon from "@mui/icons-material/PhoneOutlined";
 import NotesOutlinedIcon from "@mui/icons-material/NotesOutlined";
 import AddressDrawer from "./AddressDrawer";
 import OrderRemarkModal from "./OrderRemarkModal";
+import useCurrency from "@/app/(core)/hooks/useCurrency";
 
 const PAYMENT_METHODS_INFO = {
   1: { icon: <BsPaypal />, description: "Pay securely with PayPal", color: "var(--tc-pay-paypal, #003087)" },
@@ -68,6 +69,7 @@ export default function CheckoutPanel({
   isPlacingOrder,
   onCheckout,
 }) {
+  const { format: formatCurrency, code: dispCurrencyCode } = useCurrency();
   const router = useRouter();
   const { islogin: storeIsLogin } = useStore();
   const [mounted, setMounted] = useState(false);
@@ -125,7 +127,7 @@ export default function CheckoutPanel({
               <Skeleton width={90} height={22} />
             ) : (
               <Typography fontWeight={600} color="var(--tc-text-body, #222)">
-                {currencyCode} {formatter(subtotal)}
+                {dispCurrencyCode ?? currencyCode} {formatCurrency(subtotal)}
               </Typography>
             )}
           </Box>
@@ -136,7 +138,7 @@ export default function CheckoutPanel({
               <Skeleton width={80} height={22} />
             ) : (
               <Typography fontWeight={600} color="var(--tc-text-body, #222)">
-                {currencyCode} {formatter(estimatedTax)}
+                {dispCurrencyCode ?? currencyCode} {formatCurrency(estimatedTax)}
               </Typography>
             )}
           </Box>
@@ -151,7 +153,7 @@ export default function CheckoutPanel({
               <Skeleton width={110} height={30} />
             ) : (
               <Typography variant="h6" fontWeight={700} sx={{ color: "var(--checkout-primary-text, #9c6d48)", fontSize: "1.2rem" }}>
-                {currencyCode} {formatter(totalAmount)}
+                {dispCurrencyCode ?? currencyCode} {formatCurrency(totalAmount)}
               </Typography>
             )}
           </Box>

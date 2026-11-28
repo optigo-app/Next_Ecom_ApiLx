@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import './printCart.scss';
 import useCart from '@/app/(core)/utils/Glob_Functions/Cart_Wishlist/Cart';
-import { formatter } from '@/app/(core)/utils/Glob_Functions/GlobalFunction';
+import { useCurrency } from '@/app/(core)/hooks/useCurrency';
 import { getSession } from '@/app/(core)/utils/FetchSessionData';
 import { useStore } from '@/app/(core)/contexts/StoreProvider';
 
@@ -12,6 +12,7 @@ const PrintPageCard = () => {
 
   const noImageFound = "/image-not-found.jpg";
 
+  const { format: formatCurrency, symbol: currencySymbol } = useCurrency();
   const [imageSrcs, setImageSrcs] = useState({});
 
 
@@ -68,8 +69,8 @@ const PrintPageCard = () => {
                 </span>
               </div>
               <div className="price">
-                <span>{loginUserDetail?.CurrencyCode ?? storeInit?.CurrencyCode}</span>&nbsp;
-                {formatter(card?.UnitCostWithMarkUp)}
+                <span>{currencySymbol ?? loginUserDetail?.CurrencyCode ?? storeInit?.CurrencyCode}</span>&nbsp;
+                {formatCurrency(card?.UnitCostWithMarkUp)}
               </div>
             </div>
           </div>

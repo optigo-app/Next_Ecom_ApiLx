@@ -303,6 +303,7 @@ ResolvedPackages(package_id) AS (
     )`);
 
   // 4. Strict exact matching for attributes
+  const attrCollate = isPackageFilterDisabled(db) ? "" : " COLLATE NOCASE";
   for (const { config, values } of Object.values(collectedAttributes)) {
     const uniqueValues = Array.from(new Set(values.filter(Boolean)));
     if (uniqueValues.length === 0) continue;
@@ -313,10 +314,10 @@ ResolvedPackages(package_id) AS (
       if (!cleanVal) continue;
 
       if (/^\d+$/.test(cleanVal)) {
-        orClauses.push(`("${config.idCol}" = ? OR "${config.nameCol}" = ? COLLATE NOCASE)`);
+        orClauses.push(`("${config.idCol}" = ? OR "${config.nameCol}" = ?${attrCollate})`);
         params.push(Number(cleanVal), cleanVal);
       } else {
-        orClauses.push(`"${config.nameCol}" = ? COLLATE NOCASE`);
+        orClauses.push(`"${config.nameCol}" = ?${attrCollate}`);
         params.push(cleanVal);
       }
     }

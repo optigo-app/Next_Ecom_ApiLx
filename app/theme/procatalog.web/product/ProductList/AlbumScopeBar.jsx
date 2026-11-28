@@ -4,21 +4,18 @@ import React, { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { Box, Typography } from "@mui/material";
 import { ALBUM_PARAM } from "@/app/(core)/utils/album/albumScopeUrl";
-import { useStore } from "@/app/(core)/contexts/StoreProvider";
-import { useAlbumAuth } from "@/app/(core)/hooks/main/useAlbumAuth";
 
 /**
  * Slim album context header for the product listing.
  * Renders nothing unless the URL carries ?album=<key>.
  * The listing itself is filtered server-side (see db/procedures/albumScope.js).
- * Also signs in guests opening a shared-album link directly, so the listing
- * uses that customer's pricing table (same flow as the overlay).
+ * It never signs guests in implicitly; exclusive-album authentication is owned
+ * by the exclusive-album overlay entry flow.
  */
 export default function AlbumScopeBar({ domain }) {
   const searchParams = useSearchParams();
   const albumKey = searchParams.get(ALBUM_PARAM);
   const [album, setAlbum] = useState(null);
-  const { islogin } = useStore();
 
   useEffect(() => {
     if (!albumKey) return;
@@ -30,8 +27,6 @@ export default function AlbumScopeBar({ domain }) {
       .catch(() => {});
     return () => controller.abort();
   }, [albumKey, domain]);
-
-  useAlbumAuth(album?.row?.CustomerId, Boolean(albumKey) && !islogin && Boolean(album?.row));
 
   if (!albumKey || !album?.row) return null;
 

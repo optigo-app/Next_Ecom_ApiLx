@@ -4,13 +4,14 @@ import { getSession } from "@/app/(core)/utils/FetchSessionData";
 import "./elv_cartPage.scss";
 import { Button, Divider, Skeleton, Grid, Typography, MenuItem, Select, Box } from "@mui/material";
 import QuantitySelector from "./QuantitySelector";
-import { formatter } from "@/app/(core)/utils/Glob_Functions/GlobalFunction";
+import { useCurrency } from "@/app/(core)/hooks/useCurrency";
 import { toast } from "react-toastify";
 import TuneRoundedIcon from "@mui/icons-material/TuneRounded";
 import { SelectSx, LableField as LabelField, MenuItemSx } from "./New/CustomComponent";
 import React, { useEffect, useState } from "react";
 
 const Customization = ({ ispriceloding, selectedItem, qtyCount, handleIncrement, handleDecrement, sizeCombo, CurrencyData, mrpbasedPriceFlag, handleMetalTypeChange, handleMetalColorChange, handleDiamondChange, handleColorStoneChange, handleSizeChange, decodeEntities, onUpdateCart }) => {
+  const { format: formatCurrency, symbol: currencySymbol } = useCurrency();
   const { storeInit, loginUserDetail } = useStore();
   const [metalTypeCombo, setMetalTypeCombo] = useState([]);
   const [metalColorCombo, setMetalColorCombo] = useState([]);
@@ -170,10 +171,10 @@ const Customization = ({ ispriceloding, selectedItem, qtyCount, handleIncrement,
                   <span
                     className="elv_currencyFont"
                     dangerouslySetInnerHTML={{
-                      __html: decodeEntities(loginInfo?.CurrencyCode ?? storeInit?.CurrencyCode),
+                      __html: decodeEntities(currencySymbol ?? loginInfo?.CurrencyCode ?? storeInit?.CurrencyCode),
                     }}
                   />
-                  {ispriceloding ? <Skeleton className="elv_CartSkelton" variant="text" width="80%" animation="wave" /> : formatter(selectedItem?.FinalCost)}
+                  {ispriceloding ? <Skeleton className="elv_CartSkelton" variant="text" width="80%" animation="wave" /> : formatCurrency(selectedItem?.FinalCost)}
                 </span>
               </div>
             )}
@@ -362,14 +363,14 @@ const Customization = ({ ispriceloding, selectedItem, qtyCount, handleIncrement,
                         className="elv_currencyFont"
                         style={{ fontSize: "1.25rem", fontWeight: "bold" }}
                         dangerouslySetInnerHTML={{
-                          __html: decodeEntities(loginInfo?.CurrencyCode ?? storeInit?.CurrencyCode),
+                          __html: decodeEntities(currencySymbol ?? loginInfo?.CurrencyCode ?? storeInit?.CurrencyCode),
                         }}
                       />
                       {ispriceloding ? (
                         <Skeleton variant="rounded" width={100} height={30} sx={{ ml: 1 }} />
                       ) : (
                         <Typography variant="h6" sx={{ fontWeight: "bold", ml: 0.5 }}>
-                          {formatter(selectedItem?.FinalCost)}
+                          {formatCurrency(selectedItem?.FinalCost)}
                         </Typography>
                       )}
                     </Box>
@@ -643,7 +644,7 @@ export default Customization;
 //                         {ispriceloding ? (
 //                           <Skeleton variant="rounded" width={140} height={30} style={{ marginInline: "0.3rem" }} />
 //                         ) : (
-//                           formatter(selectedItem?.FinalCost)
+//                           formatCurrency(selectedItem?.FinalCost)
 //                         )}
 //                       </span>
 //                     </div>
@@ -722,7 +723,7 @@ export default Customization;
 //                         {ispriceloding ? (
 //                           <Skeleton variant="rounded" width={140} height={30} style={{ marginInline: "0.3rem" }} />
 //                         ) : (
-//                           formatter(selectedItem?.FinalCost)
+//                           formatCurrency(selectedItem?.FinalCost)
 //                         )}
 //                       </span>
 //                     </div>

@@ -22,9 +22,38 @@ import PrintIcon from '@mui/icons-material/Print';
 import DWSRprintComp from '../DWSRprintComp/DWSRprintComp';
 
 
+/**
+ * Image with a guaranteed fallback. Handles every failure mode:
+ * - empty/undefined src (renders fallback immediately)
+ * - error events that fired before React attached the handler
+ *   (checked via img.complete + naturalWidth after mount)
+ * - error loops (state guard)
+ */
+const FallbackImage = ({ src, fallback, ...props }) => {
+    const imgRef = useRef(null);
+    const [failed, setFailed] = useState(false);
+    useEffect(() => {
+        setFailed(false);
+    }, [src]);
+    useEffect(() => {
+        const img = imgRef.current;
+        if (!failed && img && img.complete && img.naturalWidth === 0) {
+            setFailed(true);
+        }
+    });
+    return (
+        <img
+            ref={imgRef}
+            src={failed || !src ? fallback : src}
+            onError={() => setFailed(true)}
+            {...props}
+        />
+    );
+};
+
 const DesignWiseSalesReport = () => {
     const isSmallScreen = useMediaQuery('(max-width:500px)');
-    const imageNotFound = 'Assets/image-not-found.jpg';
+    const imageNotFound = '/Assets/image-not-found.jpg';
 
     const [headerDetailsDWSR, setHeaderDetailsDWSER] = useState('');
 
@@ -1080,11 +1109,11 @@ const DesignWiseSalesReport = () => {
                                     <Box sx={{ paddingBottom: "10px" }}>
                                         <Box sx={{ minheight: "271px" }}>
                                             {isLoading === false ? (
-                                                <img className="prod_img"
+                                                <FallbackImage className="prod_img"
                                                     draggable={true}
                                                     alt="modalimages"
                                                     onContextMenu={(e) => e.preventDefault()}
-                                                    src={products?.imgsrc} onError={(e) => e.target.src = imageNotFound} style={{ objectFit: "contain", height: "100%", minheight: "271px", maxHeight: "271px" }} />
+                                                    src={products?.imgsrc} fallback={imageNotFound} style={{ objectFit: "contain", height: "100%", minheight: "271px", maxHeight: "271px" }} />
                                             ) : (
                                                 <Skeleton variant="rectangular" width={"100%"} style={{ marginBottom: '76px', height: '310px' }} />
                                             )}

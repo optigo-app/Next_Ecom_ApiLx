@@ -1705,6 +1705,20 @@ export function useProductDetail({ storeinit, searchParams, params }) {
         );
         if (res && res?.pdList) {
           const prod = res?.pdList[0];
+          // MRP/size-priced designs return no computed unit cost until a size
+          // is chosen — keep the listing price (carried in the URL) as the
+          // fallback instead of dropping to zero.
+          if (
+            !(Number(prod?.UnitCostWithMarkUp) > 0) &&
+            !(Number(prod?.UnitCostWithmarkup) > 0) &&
+            !(Number(prod?.TotalUnitCost) > 0) &&
+            decodeobj?.price
+          ) {
+            const urlPrice = parseFloat(decodeobj.price);
+            if (Number.isFinite(urlPrice) && urlPrice > 0) {
+              prod.UnitCostWithMarkUp = urlPrice;
+            }
+          }
           setSingleProd(prod);
 
           // After API loads, re-apply the URL-specified metal color so images stay correct

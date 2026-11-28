@@ -12,6 +12,7 @@ import {
 } from "@mui/material";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
+import { useCurrency } from "@/app/(core)/hooks/useCurrency";
 
 const imageNotFound = "/image-not-found.jpg";
 
@@ -39,7 +40,7 @@ export default function RelatedProduct({
   storeInit,
   handleMoveToDetail,
 }) {
-  const formatter = new Intl.NumberFormat("en-IN");
+  const { format: formatCurrency, symbol: currencySymbol } = useCurrency();
   const shouldUseSwiper = SimilarBrandArr?.length > 4;
 
   const renderProductCard = (elv, i) => (
@@ -76,8 +77,8 @@ export default function RelatedProduct({
               variant="body2"
               sx={{ mt: 0.6, fontSize: "14px", color: "#555" }}
             >
-              {(loginInfo?.CurrencyCode ?? storeInit?.CurrencyCode) + " "}
-              {formatter.format(elv.UnitCostWithMarkUp)}
+              {(currencySymbol ?? loginInfo?.CurrencyCode ?? storeInit?.CurrencyCode) + " "}
+              {formatCurrency(elv.UnitCostWithMarkUp)}
             </Typography>
           )}
         </CardContent>

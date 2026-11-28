@@ -8,7 +8,8 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import "swiper/css/pagination";
 import { useStore } from "@/app/(core)/contexts/StoreProvider";
-import { formatRedirectTitleLine, formatter,formatTitleLine } from "@/app/(core)/utils/Glob_Functions/GlobalFunction";
+import { formatRedirectTitleLine, formatTitleLine } from "@/app/(core)/utils/Glob_Functions/GlobalFunction";
+import { useCurrency } from "@/app/(core)/hooks/useCurrency";
 import { Get_Tren_BestS_NewAr_DesigSet_Album } from "@/app/(core)/utils/API/Home/Get_Tren_BestS_NewAr_DesigSet_Album/Get_Tren_BestS_NewAr_DesigSet_Album";
 import { useNextRouterLikeRR } from "@/app/(core)/hooks/useLocationRd";
 import Cookies from "js-cookie";
@@ -16,6 +17,7 @@ import pako from "pako";
 import MaxHeader from "./Header";
 
 const MaxGalleryView = ({ banner,storeinit }) => {
+  const { format: formatCurrency, symbol: currencySymbol } = useCurrency();
   const [trandingViewData, setTrandingViewData] = useState([]);
   const [imageUrl, setImageUrl] = useState();
   const navigation = useNextRouterLikeRR();
@@ -267,10 +269,10 @@ const MaxGalleryView = ({ banner,storeinit }) => {
                     }}
                   >
                     {islogin
-                      ? loginUserDetail?.CurrencyCode
-                      : storeInit?.CurrencyCode}
+                      ? (currencySymbol ?? loginUserDetail?.CurrencyCode)
+                      : (currencySymbol ?? storeInit?.CurrencyCode)}
                     &nbsp;
-                    {formatter(data?.UnitCostWithMarkUp)}
+                    {formatCurrency(data?.UnitCostWithMarkUp)}
                   </Typography>
                 )}
               </Box>

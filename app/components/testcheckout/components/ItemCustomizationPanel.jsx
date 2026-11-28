@@ -17,6 +17,7 @@ import {
 import CloseIcon from "@mui/icons-material/Close";
 import { formatTitleLine } from "@/app/(core)/utils/Glob_Functions/GlobalFunction";
 import QuantityStepper from "./QuantityStepper";
+import useCurrency from "@/app/(core)/hooks/useCurrency";
 
 const noImageFound = "/image-not-found.jpg";
 
@@ -41,6 +42,7 @@ export default function ItemCustomizationPanel({
   handleMoveToDetail,
 }) {
   const [imgSrc, setImgSrc] = useState("");
+  const { format: formatCurrency, code: dispCurrencyCode } = useCurrency();
 
   const CDNDesignImageFol = storeinit?.CDNDesignImageFol;
   const CDNDesignImageFolThumb = storeinit?.CDNDesignImageFolThumb;
@@ -668,7 +670,7 @@ export default function ItemCustomizationPanel({
               fontWeight={600}
               sx={{ color: "var(--checkout-primary-text, #9c6d48)", fontSize: "1.05rem" }}
             >
-              {currencyCode} {formatter(currentPrice)}
+              {dispCurrencyCode ?? currencyCode} {formatCurrency(currentPrice)}
             </Typography>
           )}
         </Box>

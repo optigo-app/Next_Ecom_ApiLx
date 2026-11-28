@@ -65,6 +65,27 @@ function ensureArticleIdColumn(db, tableName) {
   }
 }
 
+const ARTICLE_MATERIAL_DETAIL_COLUMNS = [
+  { name: "IsMrpBase", type: "INTEGER" },
+  { name: "Metal_Type", type: "TEXT" },
+  { name: "Org_metaltypename", type: "TEXT" },
+  { name: "OrgWeight", type: "DECIMAL(18,3)" },
+  { name: "MetalPriceRatio", type: "DECIMAL(18,3)" },
+  { name: "MetalWastage", type: "DECIMAL(18,3)" },
+  { name: "IsPrimaryMetal", type: "INTEGER" },
+];
+
+function ensureArticleMaterialDetailColumns(db, tableName) {
+  const cleanTable = sanitizeSqlIdentifier(tableName, "");
+  if (!cleanTable) throw new Error("Invalid article material table name");
+  const columns = new Set(db.prepare(`PRAGMA table_info("${cleanTable}")`).all().map((column) => column.name.toLowerCase()));
+  for (const column of ARTICLE_MATERIAL_DETAIL_COLUMNS) {
+    if (!columns.has(column.name.toLowerCase())) {
+      db.exec(`ALTER TABLE "${cleanTable}" ADD COLUMN "${column.name}" ${column.type}`);
+    }
+  }
+}
+
 /**
  * Ensures the dynamic article table and corresponding performance indexes exist in the tenant SQLite database.
  * 
@@ -215,6 +236,13 @@ export function ensureDynamicArticleMaterialTable(db, tableName) {
       findingAccessoriesId INTEGER DEFAULT 0,
       findingtypename TEXT,
       findingAccessories TEXT,
+      IsMrpBase INTEGER,
+      Metal_Type TEXT,
+      Org_metaltypename TEXT,
+      OrgWeight DECIMAL(18,3),
+      MetalPriceRatio DECIMAL(18,3),
+      MetalWastage DECIMAL(18,3),
+      IsPrimaryMetal INTEGER,
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
       updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
     );
@@ -236,6 +264,7 @@ export function ensureDynamicArticleMaterialTable(db, tableName) {
   db.exec(createTableSql);
   // Keep legacy material tables compatible with ArticleId-based joins and indexes.
   ensureArticleIdColumn(db, cleanTable);
+  ensureArticleMaterialDetailColumns(db, cleanTable);
   db.exec(indexSql);
 }
 

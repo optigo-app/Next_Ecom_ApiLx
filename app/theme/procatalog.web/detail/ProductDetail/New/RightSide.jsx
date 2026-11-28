@@ -22,7 +22,7 @@ import {
 import { LableField, MenuItemSx, SelectSx } from "../New/CustomField";
 import ProductCustomizationSection from "@/app/(core)/components/product/customization/ProductCustomizationSection";
 import useCustomizationMode from "@/app/(core)/components/product/customization/useCustomizationMode";
-import { formatter } from "@/app/(core)/utils/Glob_Functions/GlobalFunction";
+import { useCurrency } from "@/app/(core)/hooks/useCurrency";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import { motion } from "framer-motion";
@@ -101,6 +101,7 @@ const RightSide = ({
   storeWishArr,
   showColorStoneCustomization = true,
 }) => {
+  const { format: formatCurrency, symbol: currencySymbol } = useCurrency();
   const [isExpanded, setIsExpanded] = useState(false);
   const [activeTab, setActiveTab] = useState("details");
 
@@ -239,7 +240,7 @@ const RightSide = ({
   // hydrated so the UI never flashes "Add to cart" -> "In cart".
   const isCartWishReady = Boolean(storeCartArr?.__hydrated);
 
-  const CurrencyCode = loginData?.loginData ?? storeInit?.CurrencyCode;
+  const CurrencyCode = currencySymbol ?? loginData?.loginData ?? storeInit?.CurrencyCode;
   const stockLookupProducts = useMemo(
     () => [activeArticle, singleProd1, singleProd].filter(Boolean),
     [activeArticle, singleProd1, singleProd],
@@ -502,11 +503,7 @@ const RightSide = ({
                 gap: 1,
               }}
             >
-              <span
-                dangerouslySetInnerHTML={{
-                  __html: decodeEntities(CurrencyCode),
-                }}
-              />
+              <span>{currencySymbol ?? CurrencyCode}</span>
 
               {isPriceLoadingState ? (
                 <Skeleton
@@ -517,7 +514,7 @@ const RightSide = ({
                 />
               ) : (
                 <span>
-                  {formatter(
+                  {formatCurrency(
                     activeArticle?.UnitCostWithmarkup ??
                     activeArticle?.TotalUnitCost ??
                     singleProd?.UnitCostWithmarkup ??
@@ -1595,10 +1592,10 @@ const RightSide = ({
                                       ) : (
                                         <>
                                           <span className="elv_currencyFont">
-                                            {loginData?.CurrencyCode ??
+                                            {currencySymbol ?? loginData?.CurrencyCode ??
                                               storeInit?.CurrencyCode}
                                           </span>{" "}
-                                          {formatter(item.cost.toFixed(2))}
+                                          {formatCurrency(item.cost)}
                                         </>
                                       )}
                                     </TableCell>

@@ -20,7 +20,8 @@ import "swiper/css/navigation";
  
 import { useStore } from "@/app/(core)/contexts/StoreProvider";
 import { useNextRouterLikeRR } from "@/app/(core)/hooks/useLocationRd";
-import { formatRedirectTitleLine, formatter,  formatTitleLine, } from "@/app/(core)/utils/Glob_Functions/GlobalFunction";
+import { formatRedirectTitleLine, formatTitleLine } from "@/app/(core)/utils/Glob_Functions/GlobalFunction";
+import { useCurrency } from "@/app/(core)/hooks/useCurrency";
 import { Get_Tren_BestS_NewAr_DesigSet_Album } from "@/app/(core)/utils/API/Home/Get_Tren_BestS_NewAr_DesigSet_Album/Get_Tren_BestS_NewAr_DesigSet_Album";
 import Cookies from "js-cookie";
 import Pako from "pako";
@@ -231,6 +232,7 @@ const MaxBestSeller = ({ storeInit }) => {
 };
 
 const ProductCard = ({ item, storeInit, loginUserDetail, onClick }) => {
+  const { format: formatCurrency, symbol: currencySymbol } = useCurrency();
   return (
     <Box
       className="product-card-group"
@@ -307,8 +309,8 @@ const ProductCard = ({ item, storeInit, loginUserDetail, onClick }) => {
               fontSize: "15px",
             }}
           >
-            {loginUserDetail?.CurrencyCode ?? storeInit?.CurrencyCode} &nbsp;
-            {formatter(item?.UnitCostWithMarkUp)}
+            {currencySymbol ?? loginUserDetail?.CurrencyCode ?? storeInit?.CurrencyCode} &nbsp;
+            {formatCurrency(item?.UnitCostWithMarkUp)}
           </Typography>
         </Box> */}
         <Box
@@ -356,8 +358,8 @@ const ProductCard = ({ item, storeInit, loginUserDetail, onClick }) => {
               textShadow: "0px 1px 1px rgba(255,255,255,0.8)",
             }}
           >
-            {loginUserDetail?.CurrencyCode ?? storeInit?.CurrencyCode} &nbsp;
-            {formatter(item?.UnitCostWithMarkUp)}
+            {currencySymbol ?? loginUserDetail?.CurrencyCode ?? storeInit?.CurrencyCode} &nbsp;
+            {formatCurrency(item?.UnitCostWithMarkUp)}
           </Typography>
         </Box>
       </Box>

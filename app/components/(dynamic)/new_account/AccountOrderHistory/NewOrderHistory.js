@@ -1,4 +1,4 @@
-import { isPriceHidden } from "@/app/(core)/utils/storeFlags";
+import { isCurrencyConversionEnabled, isPriceHidden } from "@/app/(core)/utils/storeFlags";
 import React, { useEffect, useState } from "react";
 import "./neworderhistory.scss";
 import CircleIcon from "@mui/icons-material/Circle";
@@ -37,6 +37,7 @@ import { ExpandLess } from "@mui/icons-material";
 import { formatAmount, formatAmount2 } from '@/app/(core)/utils/Glob_Functions/AccountPages/AccountPage';
 import { formatRedirectTitleLine } from "@/app/(core)/utils/Glob_Functions/GlobalFunction";
 import { useNextRouterLikeRR } from "@/app/(core)/hooks/useLocationRd";
+import useCurrency from "@/app/(core)/hooks/useCurrency";
 
 
 const NewOrderHistory = () => {
@@ -49,6 +50,7 @@ const NewOrderHistory = () => {
   const [ukey, setUkey] = useState("");
   const [image_path, setImagePath] = useState("");
   const navigate = push;
+  const { convert: convertCurrency, code: selectedCurrencyCode } = useCurrency();
   // const [openListStatus, setOpenListStatus] = useState(false);
   const [openListStatus, setOpenListStatus] = useState(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -76,6 +78,17 @@ const NewOrderHistory = () => {
   const [openTaxes, setOpenTaxes] = useState(null);
   const [expandedAccordion, setExpandedAccordion] = useState(null);
   const [storeInit, setstoreInit] = useState(null);
+
+  const currencyConversionEnabled = isCurrencyConversionEnabled(storeInit);
+
+  const formatDisplayAmount = (value) =>
+    formatAmount2(currencyConversionEnabled ? convertCurrency(value) : value);
+
+  const getDisplayCurrencyCode = (orderCurrencyCode) =>
+    currencyConversionEnabled && selectedCurrencyCode
+      ? selectedCurrencyCode
+      : orderCurrencyCode || "";
+
   const getStatusColor = (orderType) => {
     switch (orderType) {
       case 1:
@@ -343,8 +356,8 @@ if (response?.Status === "200" || response?.Status === 200 || response?.Status =
                           </div>
                           {!isPriceHidden(storeInit) &&
                           <div>
-                            {<span className="fs_head_acc start_noh_acc  mx_4_noh_acc" style={{color:'black'}}><span className="fs_head_acc " style={{color:'black', fontWeight:'bold',paddingRight:'2px'}}>Total Amount : </span> <span className="fs_head_acc " style={{fontWeight:'bold', paddingRight:'5px'}} dangerouslySetInnerHTML={{__html: e?.Country_CurrencyCode}}></span> <span className="fs_head_acc " style={{fontWeight:'bold'}}>{formatAmount2(e?.orderAmountwithvat)}</span></span>}
-                            <div className="fs_head_acc_tax start_noh_acc  lh_head_acc mx_4_noh_acc" style={{color:'grey', display:'flex', justifyContent:'flex-end', alignItems:'center'}}>(<span className="fs_head_acc_tax " style={{color:'grey', paddingRight:'2px'}}>+ Estimated Tax : </span> <span className="fs_head_acc_tax" style={{paddingRight:'5px'}} dangerouslySetInnerHTML={{__html: e?.Country_CurrencyCode}}></span> <span className="fs_head_acc_tax ">{formatAmount2(e?.totaltaxAmount)}</span>)</div>
+                            {<span className="fs_head_acc start_noh_acc  mx_4_noh_acc" style={{color:'black'}}><span className="fs_head_acc " style={{color:'black', fontWeight:'bold',paddingRight:'2px'}}>Total Amount : </span> <span className="fs_head_acc " style={{fontWeight:'bold', paddingRight:'5px'}} dangerouslySetInnerHTML={{__html: getDisplayCurrencyCode(e?.Country_CurrencyCode)}}></span> <span className="fs_head_acc " style={{fontWeight:'bold'}}>{formatDisplayAmount(e?.orderAmountwithvat)}</span></span>}
+                            <div className="fs_head_acc_tax start_noh_acc  lh_head_acc mx_4_noh_acc" style={{color:'grey', display:'flex', justifyContent:'flex-end', alignItems:'center'}}>(<span className="fs_head_acc_tax " style={{color:'grey', paddingRight:'2px'}}>+ Estimated Tax : </span> <span className="fs_head_acc_tax" style={{paddingRight:'5px'}} dangerouslySetInnerHTML={{__html: getDisplayCurrencyCode(e?.Country_CurrencyCode)}}></span> <span className="fs_head_acc_tax ">{formatDisplayAmount(e?.totaltaxAmount)}</span>)</div>
                             {/* { max400px && <span className="fs_head_acc   mx_4_noh_acc" style={{color:'black', display:'flex', justifyContent:'flex-end', alignItems:'center'}}><span style={{color:'grey', paddingRight:'2px'}}>Total : </span> <span style={{fontWeight:'bold', paddingRight:'5px'}} dangerouslySetInnerHTML={{__html: e?.Country_CurrencyCode}}></span> <span style={{fontWeight:'bold'}}>{formatAmount2(e?.orderAmountwithvat)}</span></span>} */}
                           </div>
                 }
@@ -520,8 +533,8 @@ if (response?.Status === "200" || response?.Status === 200 || response?.Status =
                                           <div>
                                           <div>{el?.designno} - {`Quantity ${el?.quantity}`}</div>
                                             <div>{el?.metaltypename?.toUpperCase()?.split(" ")[1]} {el?.metalcolorname?.toUpperCase()} {el?.metaltypename?.toUpperCase()?.split(" ")[0]}</div>
-                                            {!isPriceHidden(storeInit) &&  <div style={{fontWeight:'bold'}}><span style={{paddingRight:'5px'}} dangerouslySetInnerHTML={{ __html: e?.Country_CurrencyCode }}></span>
-                                            {formatAmount2(el?.TotalUnitCostWithDiscount)}</div>
+                                            {!isPriceHidden(storeInit) &&  <div style={{fontWeight:'bold'}}><span style={{paddingRight:'5px'}} dangerouslySetInnerHTML={{ __html: getDisplayCurrencyCode(e?.Country_CurrencyCode) }}></span>
+                                            {formatDisplayAmount(el?.TotalUnitCostWithDiscount)}</div>
                 }
                                           </div>
                                       </Card>

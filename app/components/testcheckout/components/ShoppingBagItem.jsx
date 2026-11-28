@@ -14,6 +14,7 @@ import RateReviewOutlinedIcon from "@mui/icons-material/RateReviewOutlined";
 import ProductRemarkModal from "./ProductRemarkModal";
 import QuantityStepper from "./QuantityStepper";
 import ConfirmationDialog from "@/app/(core)/utils/Glob_Functions/ConfirmationDialog/ConfirmationDialog";
+import useCurrency from "@/app/(core)/hooks/useCurrency";
 
 const noImageFound = "/image-not-found.jpg";
 
@@ -32,6 +33,7 @@ export default function ShoppingBagItem({
   handleMoveToDetail,
 }) {
   const articleFlagValue = storeinit?.IsArticleBasedCartCustomization;
+  const { format: formatCurrency, code: dispCurrencyCode } = useCurrency();
   const isArticleCustomizationEnabled = articleCustomizationEnabled || (
     (articleFlagValue == null || articleFlagValue === ""
       ? process.env.NODE_ENV === "development"
@@ -281,7 +283,7 @@ export default function ShoppingBagItem({
               mb: 0.8,
             }}
           >
-            {currencyCode} {formatter(itemPrice)}
+            {dispCurrencyCode ?? currencyCode} {formatCurrency(itemPrice)}
           </Typography>
         )}
 

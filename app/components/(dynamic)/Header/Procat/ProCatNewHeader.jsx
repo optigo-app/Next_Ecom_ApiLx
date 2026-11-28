@@ -29,6 +29,7 @@ import { logoutUser } from "@/app/(core)/utils/authLogout";
 import ReusableConfirmModal from "../../../ui/Modal";
 import SearchBarToggle from "../Elvee/New/SearchBarToggle";
 import DrawerSearchBar from "../Elvee/New/DrawerSearchbar";
+import CurrencySwitcher from "@/app/components/(static)/CurrencySwitcher/CurrencySwitcher";
 
 const ProCatNewHeader = ({ storeinit, logos }) => {
   const { islogin, setislogin, cartCountNum, wishCountNum, loginUserDetail } = useStore();
@@ -242,6 +243,9 @@ const ProCatNewHeader = ({ storeinit, logos }) => {
                   ml: { md: 0.5, lg: 1 },
                 }}
               >
+                {/* CURRENCY SWITCHER */}
+                <CurrencySwitcher color="var(--hm-text, #1a1a1a)" />
+
                 {/* SEARCH ICON */}
                 <Tooltip title="Search">
                   <IconButton
@@ -329,6 +333,8 @@ const ProCatNewHeader = ({ storeinit, logos }) => {
                 gap: 0.5,
               }}
             >
+              <CurrencySwitcher color="var(--hm-text, #1a1a1a)" />
+
               <IconButton
                 aria-label="search"
                 onClick={() => setSearchOpen((prev) => !prev)}

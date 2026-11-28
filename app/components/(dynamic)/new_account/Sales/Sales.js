@@ -1,4 +1,5 @@
 import { isPriceHidden } from "@/app/(core)/utils/storeFlags";
+import useAccountCurrency from "@/app/(core)/hooks/useAccountCurrency";
 import React, { useEffect, useRef, useState } from 'react';
 import "./Sales.scss";
 import PropTypes from 'prop-types';
@@ -115,6 +116,7 @@ function EnhancedTableHead(props) {
 }
 
 const Sales = () => {
+    const { convertAmountFromCurrency, getCurrencyCode } = useAccountCurrency();
 
     const storedData = sessionStorage.getItem('loginUserDetail');
     const loginDetails = JSON.parse(storedData);
@@ -578,7 +580,7 @@ const Sales = () => {
                                                     </TableCell>
                                                     <TableCell align="center">{row.Date}</TableCell>
                                                     <TableCell align="center">{row.StockDocumentNo}</TableCell>
-                                                    {!isPriceHidden(IsPriceShow) && <TableCell align="right"><span dangerouslySetInnerHTML={{ __html: row?.Currencycode }}></span>&nbsp;{formatAmount(row.Amount)}</TableCell>
+                                                    {!isPriceHidden(IsPriceShow) && <TableCell align="right"><span dangerouslySetInnerHTML={{ __html: getCurrencyCode(row?.Currencycode) }}></span>&nbsp;{formatAmount(convertAmountFromCurrency(row.Amount, row.Currencycode, row.CurrencyExchRate))}</TableCell>
                                                     }                                                    <TableCell align="center"> <div onClick={() => handlePrintUrl(row?.PrintUrl)}> <PrintIcon /> </div> </TableCell>
                                                 </TableRow>
                                             );

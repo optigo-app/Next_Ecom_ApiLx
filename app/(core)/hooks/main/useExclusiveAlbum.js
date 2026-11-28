@@ -11,6 +11,7 @@ import { compressAndEncode } from "@/app/(core)/utils/Encoder&Decoder";
 import { getSession } from "@/app/(core)/utils/FetchSessionData";
 import { useStore } from "@/app/(core)/contexts/StoreProvider";
 import { useBroadcaster } from "@/app/(core)/contexts/BoardCastContext";
+import { useCurrency } from "@/app/(core)/hooks/useCurrency";
 import { getCartWishKey, isItemInMap } from "@/app/(core)/utils/API/GetCount/GetCountAPI";
 import { CartAndWishListAPI } from "@/app/(core)/utils/API/CartAndWishList/CartAndWishListAPI";
 import { RemoveCartAndWishAPI } from "@/app/(core)/utils/API/RemoveCartandWishAPI/RemoveCartAndWishAPI";
@@ -543,19 +544,22 @@ export function useExclusiveAlbum({
   }, [selectedAlbum, searchQuery]);
 
   // 9. Pricing & Currency Helpers
+  const { convert: convertToDisplayCurrency, symbol: selectedSymbol } =
+    useCurrency();
   const currencySymbol = useMemo(
-    () => decodeCurrencySymbol(storeConfig?.Currencysymbol),
-    [storeConfig]
+    () =>
+      selectedSymbol ?? decodeCurrencySymbol(storeConfig?.Currencysymbol),
+    [storeConfig, selectedSymbol]
   );
 
   const formatPrice = useCallback(
     (val) => {
       if (val == null || val === "" || isNaN(val)) return null;
-      return `${currencySymbol} ${Math.round(Number(val)).toLocaleString(
-        "en-IN"
-      )}`;
+      return `${currencySymbol} ${Math.round(
+        Number(convertToDisplayCurrency(val))
+      ).toLocaleString("en-IN")}`;
     },
-    [currencySymbol]
+    [currencySymbol, convertToDisplayCurrency]
   );
 
   // 10. Product Image Resolution

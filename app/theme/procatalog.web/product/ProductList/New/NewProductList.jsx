@@ -17,10 +17,8 @@ import { motion } from "framer-motion";
 import ProductSkeleton from "./Skeleton";
 import { useTheme } from "@emotion/react";
 import "./index.scss";
-import {
-  formatter,
-  formatTitleLine,
-} from "@/app/(core)/utils/Glob_Functions/GlobalFunction";
+import { formatTitleLine } from "@/app/(core)/utils/Glob_Functions/GlobalFunction";
+import { useCurrency } from "@/app/(core)/hooks/useCurrency";
 import CartToggleButton from "./CartToggleButton";
 import WishToggleButton from "./WishToggleButton";
 import MobileCartToggleButton from "./MobileCartButton";
@@ -382,6 +380,7 @@ const ProductCard = ({
   VideoCount,
   isMobile,
 }) => {
+  const { format: formatCurrency, symbol: currencySymbol } = useCurrency();
   const cardVariants = {
     hidden: {
       opacity: 0,
@@ -761,12 +760,12 @@ const ProductCard = ({
             <span
               dangerouslySetInnerHTML={{
                 __html: decodeEntities(
-                  loginCurrency?.CurrencyCode ?? StoreInit?.CurrencyCode,
+                  currencySymbol ?? loginCurrency?.CurrencyCode ?? StoreInit?.CurrencyCode,
                 ),
               }}
               style={{ paddingRight: "0.25rem" }}
             />
-            {formatter(productData?.UnitCostWithMarkUp)}
+            {formatCurrency(productData?.UnitCostWithMarkUp)}
           </Typography>
         )}
 
