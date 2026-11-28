@@ -13,7 +13,7 @@ import {
 import CloseIcon from "@mui/icons-material/Close";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import DiamondIcon from "@mui/icons-material/Diamond";
-import { formatter } from "@/app/(core)/utils/Glob_Functions/GlobalFunction";
+import { useCurrency } from "@/app/(core)/hooks/useCurrency";
 import { useProductStock } from "@/app/(core)/hooks/useProductStock";
 import { resolveProductStockStatus } from "@/app/(core)/utils/product/stockUtils";
 
@@ -365,6 +365,7 @@ export default function CustomizerDrawer({
   storeInit,
   loginData,
 }) {
+  const { format: formatCurrency, symbol: currencySymbol } = useCurrency();
   const [selectedMetal, setSelectedMetal] = useState(null);
   const [selectedSize, setSelectedSize] = useState(null);
   const [selectedDiaQc, setSelectedDiaQc] = useState(null);
@@ -691,7 +692,7 @@ export default function CustomizerDrawer({
   // ── Derived display ───────────────────────────────────────────────────────
   const price =
     activeArticle?.UnitCostWithmarkup ?? activeArticle?.TotalUnitCost ?? 0;
-  const CurrencyCode = loginData?.CurrencyCode ?? storeInit?.CurrencyCode ?? "";
+  const CurrencyCode = currencySymbol ?? loginData?.CurrencyCode ?? storeInit?.CurrencyCode ?? "";
   const hasData = metalCombos.length > 0;
 
   return (
@@ -760,7 +761,7 @@ export default function CustomizerDrawer({
                     letterSpacing: "-0.3px",
                   }}
                 >
-                  {CurrencyCode} {formatter(price)}
+                  {CurrencyCode} {formatCurrency(price)}
                 </Typography>
               </Box>
             )}

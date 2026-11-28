@@ -1,5 +1,6 @@
 import { getSession } from "../../FetchSessionData";
 import { CommonAPI } from "../CommonAPI/CommonAPI";
+import { getPricingPolicyParams } from "@/app/(core)/utils/product/pricingPolicy";
 
 export const CartAndWishListAPI = async (
   type,
@@ -22,9 +23,6 @@ export const CartAndWishListAPI = async (
     (storeInit?.IsB2BWebsite == 0 && islogin == false) || islogin == null
       ? visiterId
       : (loginUserDetail?.userid ?? "");
-
-  const isGuest =
-    storeInit?.IsB2BWebsite == 0 && (islogin == false || islogin == null);
 
   const withDesignBaseFlag = (product) => ({
     ...product,
@@ -50,26 +48,11 @@ export const CartAndWishListAPI = async (
     WebDiscount: islogin ? `${loginUserDetail?.WebDiscount ?? 0}` : `${0}`,
     IsZeroPriceProductShow: `${storeInit?.IsZeroPriceProductShow ?? 0}`,
     IsSolitaireWebsite: `${storeInit?.IsSolitaireWebsite ?? 0}`,
-    Laboursetid: isGuest
-      ? (storeInit?.pricemanagement_laboursetid ?? "")
-      : (loginUserDetail?.pricemanagement_laboursetid ??
-        storeInit?.pricemanagement_laboursetid ??
-        ""),
-    diamondpricelistname: isGuest
-      ? (storeInit?.diamondpricelistname ?? "")
-      : (loginUserDetail?.diamondpricelistname ??
-        storeInit?.diamondpricelistname ??
-        ""),
-    colorstonepricelistname: isGuest
-      ? (storeInit?.colorstonepricelistname ?? "")
-      : (loginUserDetail?.colorstonepricelistname ??
-        storeInit?.colorstonepricelistname ??
-        ""),
-    SettingPriceUniqueNo: isGuest
-      ? (storeInit?.SettingPriceUniqueNo ?? "")
-      : (loginUserDetail?.SettingPriceUniqueNo ??
-        storeInit?.SettingPriceUniqueNo ??
-        ""),
+    ...getPricingPolicyParams({
+      storeinit: storeInit,
+      loginUserDetail,
+      islogin,
+    }),
   };
 
   let body = {

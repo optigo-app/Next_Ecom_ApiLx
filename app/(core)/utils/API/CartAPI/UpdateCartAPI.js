@@ -1,6 +1,7 @@
 import { LocalSetup } from "@/app/env";
 import { getSession } from "../../FetchSessionData";
 import { CommonAPI } from "../CommonAPI/CommonAPI";
+import { getPricingPolicyParams } from "@/app/(core)/utils/product/pricingPolicy";
 
 export const updateCartAPI = async (updatedItems, metalID, metalCOLORID, diaIDData, colorStoneID, sizeId, markupData, finalPrice, finalPriceWithMarkup, ObjExtra, articleSelection) => {
     try {
@@ -17,8 +18,6 @@ export const updateCartAPI = async (updatedItems, metalID, metalCOLORID, diaIDDa
         // console.log('jbjasd--', updatedItems, metalID, metalCOLORID, diaIDData, colorStoneID, sizeId, markupData, finalPrice, finalPriceWithMarkup);
 
         const IsElvee = LocalSetup === "elvee.web";
-        const isGuest =
-            storeInit?.IsB2BWebsite == 0 && (islogin == false || islogin == null);
         const combinedValue = JSON.stringify({
             ForEvt: "Cart",
             FrontEnd_RegNo: `${storeInit?.FrontEnd_RegNo ?? ""}`,
@@ -55,26 +54,11 @@ export const updateCartAPI = async (updatedItems, metalID, metalCOLORID, diaIDDa
                     })
                 }],
             DomainForNo: `${storeInit?.DomainForNo ?? ""}`,
-            Laboursetid: isGuest
-                ? (storeInit?.pricemanagement_laboursetid ?? "")
-                : (loginUserDetail?.pricemanagement_laboursetid ??
-                  storeInit?.pricemanagement_laboursetid ??
-                  ""),
-            diamondpricelistname: isGuest
-                ? (storeInit?.diamondpricelistname ?? "")
-                : (loginUserDetail?.diamondpricelistname ??
-                  storeInit?.diamondpricelistname ??
-                  ""),
-            colorstonepricelistname: isGuest
-                ? (storeInit?.colorstonepricelistname ?? "")
-                : (loginUserDetail?.colorstonepricelistname ??
-                  storeInit?.colorstonepricelistname ??
-                  ""),
-            SettingPriceUniqueNo: isGuest
-                ? (storeInit?.SettingPriceUniqueNo ?? "")
-                : (loginUserDetail?.SettingPriceUniqueNo ??
-                  storeInit?.SettingPriceUniqueNo ??
-                  "")
+            ...getPricingPolicyParams({
+                storeinit: storeInit,
+                loginUserDetail,
+                islogin,
+            })
         });
         const encodedCombinedValue = btoa(combinedValue);
         const body = {

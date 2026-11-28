@@ -20,6 +20,7 @@ import NoProductFound from "./New/NoProductFound";
 import { generateBreadcrumbJsonLd } from "@/app/(core)/utils/seo/seo-utils";
 import { useStore } from "@/app/(core)/contexts/StoreProvider";
 import { usePathname, useSearchParams } from "next/navigation";
+import AlbumScopeBar from "./AlbumScopeBar";
 import { useNextRouterLikeRR } from "@/app/(core)/hooks/useLocationRd";
 import {
   useListingPage,
@@ -27,6 +28,7 @@ import {
   getCardImageUrl,
   convertUrl as convertUrlHelper,
   handleMoveToDetail as handleMoveToDetailHelper,
+  resolveProductDiaCombo,
   parseRangeData,
   decodeEntities,
   BreadCumsObj,
@@ -272,7 +274,7 @@ const ProductList = ({ storeinit, searchParams, params, initialData, initialFilt
       imageUrl,
       storeinit,
       selectedMetalId,
-      selectedDiaId,
+      selectedDiaId: resolveProductDiaCombo(productData) ?? selectedDiaId,
       selectedCsId,
       detailsMenu,
       outputFilters: FilterValueWithCheckedOnly(),
@@ -373,6 +375,7 @@ const ProductList = ({ storeinit, searchParams, params, initialData, initialFilt
           boxSizing: "border-box",
         }}
       >
+        <AlbumScopeBar domain={storeinit?.domain} />
         <BreadCrumbBar
           productListData={productListData}
           decodeURIComponent={decodeURIComponent}
@@ -434,7 +437,7 @@ const ProductList = ({ storeinit, searchParams, params, initialData, initialFilt
           sx={{
             display: "flex",
             alignItems: "flex-start",
-            gap: 0,
+            gap: 2.5,
           }}
         >
           {/* Persistent Sidebar — desktop only */}
@@ -448,13 +451,8 @@ const ProductList = ({ storeinit, searchParams, params, initialData, initialFilt
                 top: 0,
                 display: "flex",
                 flexDirection: "column",
-                backgroundColor: "#fff",
-                overflowY: "auto",
-                "&::-webkit-scrollbar": { width: "4px" },
-                "&::-webkit-scrollbar-thumb": {
-                  background: "#e0e0e0",
-                  borderRadius: "4px",
-                },
+                backgroundColor: "#f7f7f7",
+                overflow: "hidden",
               }}
             >
               <FilterSidebar {...filterSidebarProps} isInline />

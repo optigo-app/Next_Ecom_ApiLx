@@ -9,7 +9,11 @@ import {
   checkMonth,
 } from "@/app/(core)/utils/Glob_Functions/AccountPages/AccountPage";
 import moment from "moment";
-import ReactPaginate from "react-paginate";
+import ReactPaginateModule from "react-paginate";
+
+// CJS/UMD interop guard: in production bundles the default import can resolve
+// to the module namespace object instead of the component (React error #130).
+const ReactPaginate = ReactPaginateModule?.default ?? ReactPaginateModule;
 import { CommonAPI } from "@/app/(core)/utils/API/CommonAPI/CommonAPI";
 import Skeleton from "@mui/material/Skeleton";
 import Swal from "sweetalert2";

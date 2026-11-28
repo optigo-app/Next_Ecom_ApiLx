@@ -27,7 +27,12 @@ import { getQuotationJobData } from '@/app/(core)/utils/API/AccountTabs/quotatio
 
 import { headCells_Jobs as columns } from "@/app/(core)/utils/Glob_Functions/AccountPages/AccountPageColumns";
 import { formatter } from '@/app/(core)/utils/Glob_Functions/GlobalFunction';
-import ReactPaginate from 'react-paginate';
+import useAccountCurrency from '@/app/(core)/hooks/useAccountCurrency';
+import ReactPaginateModule from 'react-paginate';
+
+// CJS/UMD interop guard: in production bundles the default import can resolve
+// to the module namespace object instead of the component (React error #130).
+const ReactPaginate = ReactPaginateModule?.default ?? ReactPaginateModule;
 
 const CustomSortIcon = ({ order }) => {
   return (
@@ -39,6 +44,7 @@ const CustomSortIcon = ({ order }) => {
 };
 
 const QuotationJob = () => {
+  const { convertAmountFromCurrency, getCurrencyCode } = useAccountCurrency();
 
   const storedData = sessionStorage.getItem('loginUserDetail');
   const loginDetails = JSON.parse(storedData);
@@ -1383,7 +1389,7 @@ const QuotationJob = () => {
                                                 :
                                                 column?.format && typeof value === 'number'
                                                   ? column.format(value)
-                                                  : column?.id === 'FinalAmount' ? <>  <span dangerouslySetInnerHTML={{ __html: row?.Currencycode }}></span> {formatAmount(value)}</> : value}
+                                                  : column?.id === 'FinalAmount' ? <>  <span dangerouslySetInnerHTML={{ __html: getCurrencyCode(row?.Currencycode) }}></span> {formatAmount(convertAmountFromCurrency(value, row?.Currencycode, row?.CurrencyExchRate))}</> : value}
                                           </TableCell>
                                         );
                                       })}
@@ -1442,7 +1448,7 @@ const QuotationJob = () => {
                                       {products?.DesignNo}
                                     </Typography>
                                     <Typography style={{ fontSize: "12px", textTransform: "uppercase", cursor: "pointer", fontWeight: "bold", textAlign: "start" }} >
-                                      {products?.Currencycode} {formatter(products?.FinalAmount)}
+                                      {getCurrencyCode(products?.Currencycode)} {formatter(convertAmountFromCurrency(products?.FinalAmount, products?.Currencycode, products?.CurrencyExchRate))}
                                     </Typography>
                                   </Box>
                                   <Box sx={{ padding: "2px 5px", display: "flex", justifyContent: "space-between" }}>

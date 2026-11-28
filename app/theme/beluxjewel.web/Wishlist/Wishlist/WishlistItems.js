@@ -15,9 +15,9 @@ import {
   Typography,
 } from "@mui/material";
 import {
-  formatter,
   formatTitleLine,
 } from "@/app/(core)/utils/Glob_Functions/GlobalFunction";
+import { useCurrency } from "@/app/(core)/hooks/useCurrency";
 import { RiDeleteBinLine } from "react-icons/ri";
 import { useBroadcaster } from "@/app/(core)/contexts/BoardCastContext";
 import { useStore } from "@/app/(core)/contexts/StoreProvider";
@@ -37,6 +37,7 @@ const WishlistItems = ({
   handleWishlistToCart,
   handleMoveToDetail,
 }) => {
+  const { format: formatCurrency, symbol: currencySymbol } = useCurrency();
   const { setCartCountNum, setWishCountNum, storeInit, finalId } = useStore();
   const noImageFound = "image-not-found.jpg";
   const [imageSrc, setImageSrc] = useState();
@@ -335,12 +336,12 @@ const WishlistItems = ({
                             dangerouslySetInnerHTML={{
                               __html:
                                 decodeEntities(
-                                  loginInfo?.CurrencyCode ??
+                                  currencySymbol ?? loginInfo?.CurrencyCode ??
                                     storeInit?.CurrencyCode,
                                 ) + " ",
                             }}
                           />
-                          {formatter(item?.FinalCost)}
+                          {formatCurrency(item?.FinalCost)}
                         </Typography>
                       ) : (
                         <Typography

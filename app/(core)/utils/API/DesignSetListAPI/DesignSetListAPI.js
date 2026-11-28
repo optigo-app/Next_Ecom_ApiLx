@@ -1,5 +1,6 @@
 import { getSession } from "../../FetchSessionData";
 import { CommonAPI } from "../CommonAPI/CommonAPI";
+import { getPricingPolicyParams } from "@/app/(core)/utils/product/pricingPolicy";
 
 export const DesignSetListAPI = async (obj, dno, visiterId) => {
 
@@ -20,22 +21,11 @@ export const DesignSetListAPI = async (obj, dno, visiterId) => {
     Metalid: `${obj?.mt == undefined ? (loginInfo?.MetalId ?? storeinit?.MetalId) : obj?.mt}`,
     DiaQCid: `${obj?.diaQc == undefined ? (loginInfo?.cmboDiaQCid ?? storeinit?.cmboDiaQCid) : obj?.diaQc}`,
     CsQCid: `${obj?.csQc == undefined ? (loginInfo?.cmboCSQCid ?? storeinit?.cmboCSQCid) : obj?.csQc}`,
-    Laboursetid: `${storeinit?.IsB2BWebsite == 0 && (islogin == false || islogin == null)
-      ? storeinit?.pricemanagement_laboursetid ?? ""
-      : loginInfo?.pricemanagement_laboursetid ?? storeinit?.pricemanagement_laboursetid ?? ""
-      }`,
-    diamondpricelistname: `${storeinit?.IsB2BWebsite == 0 && (islogin == false || islogin == null)
-      ? storeinit?.diamondpricelistname ?? ""
-      : loginInfo?.diamondpricelistname ?? storeinit?.diamondpricelistname ?? ""
-      }`,
-    colorstonepricelistname: `${storeinit?.IsB2BWebsite == 0 && (islogin == false || islogin == null)
-      ? storeinit?.colorstonepricelistname ?? ""
-      : loginInfo?.colorstonepricelistname ?? storeinit?.colorstonepricelistname ?? ""
-      }`,
-    SettingPriceUniqueNo: `${storeinit?.IsB2BWebsite == 0 && (islogin == false || islogin == null)
-      ? storeinit?.SettingPriceUniqueNo ?? ""
-      : loginInfo?.SettingPriceUniqueNo ?? storeinit?.SettingPriceUniqueNo ?? ""
-      }`,
+    ...getPricingPolicyParams({
+      storeinit,
+      loginUserDetail: loginInfo,
+      islogin,
+    }),
     IsStockWebsite: `${storeinit?.IsStockWebsite}`,
     WebDiscount: islogin ? `${loginInfo?.WebDiscount ?? 0}` : `${0}`,
     IsZeroPriceProductShow: `${storeinit?.IsZeroPriceProductShow ?? 0}`,

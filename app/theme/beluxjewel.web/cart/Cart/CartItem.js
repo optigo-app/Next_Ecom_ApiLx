@@ -20,9 +20,9 @@ import ItemRemarkDialog from "./ItemRemarkDialog";
 import ConfirmationDialog from "@/app/(core)/utils/Glob_Functions/ConfirmationDialog/ConfirmationDialog";
 import { RiDeleteBinLine } from "react-icons/ri";
 import {
-  formatter,
   formatTitleLine,
 } from "@/app/(core)/utils/Glob_Functions/GlobalFunction";
+import { useCurrency } from "@/app/(core)/hooks/useCurrency";
 import { useBroadcaster } from "@/app/(core)/contexts/BoardCastContext";
 import { useStore } from "@/app/(core)/contexts/StoreProvider";
 import Cookies from "js-cookie";
@@ -53,6 +53,7 @@ const CartItem = ({
   openHandleUpdateCartModal,
   handleMoveToDetail,
 }) => {
+  const { format: formatCurrency, symbol: currencySymbol } = useCurrency();
   const [remark, setRemark] = useState(item.Remarks || "");
   const noImageFound = "/image-not-found.jpg";
   const { setCartCountNum, loginUserDetail, storeInit } = useStore();
@@ -391,12 +392,12 @@ const CartItem = ({
                     dangerouslySetInnerHTML={{
                       __html:
                         decodeEntities(
-                          loginUserDetail?.CurrencyCode ??
+                          currencySymbol ?? loginUserDetail?.CurrencyCode ??
                             storeInit?.CurrencyCode,
                         ) + " ",
                     }}
                   />
-                  {formatter(item?.FinalCost)}
+                  {formatCurrency(item?.FinalCost)}
                 </Typography>
               ) : (
                 <Typography

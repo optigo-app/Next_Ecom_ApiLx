@@ -33,6 +33,9 @@ import {
   Heart,
   ShoppingCart,
   Check,
+  User,
+  LayoutGrid,
+  Home,
 } from "lucide-react";
 
 const imageNotFound = "/image-not-found.jpg";
@@ -325,6 +328,9 @@ export default function ExclusiveAlbumOverlay({
     formatPrice,
     blockedStatus,
     blockedAlbum,
+    matchedAlbum,
+    albumListScope,
+    switchAlbumScope,
   } = useExclusiveAlbum({ initialDomain });
 
   const { islogin, loginUserDetail, setislogin, storeInit } = useStore();
@@ -576,6 +582,31 @@ export default function ExclusiveAlbumOverlay({
                   >
                     <ChevronRight size={18} />
                   </IconButton>
+
+                  {/* Go to main home page */}
+                  <Button
+                    size="small"
+                    onClick={handleClose}
+                    startIcon={<Home size={15} />}
+                    sx={{
+                      borderRadius: "2px",
+                      color: "var(--hm-text, #0f172a)",
+                      fontWeight: 700,
+                      fontSize: "0.8rem",
+                      letterSpacing: "0.04em",
+                      textTransform: "none",
+                      ml: 1,
+                      px: 1.5,
+                      backgroundColor: "var(--hm-surface-soft, #f8fafc)",
+                      border: "1px solid var(--hm-border, #e2e8f0)",
+                      "&:hover": {
+                        backgroundColor: "var(--hm-text, #0f172a)",
+                        color: "var(--hm-surface, #ffffff)",
+                      },
+                    }}
+                  >
+                    Home
+                  </Button>
 
                   {selectedAlbum && (
                     <Button
@@ -935,46 +966,77 @@ export default function ExclusiveAlbumOverlay({
               {/* ============================================================= */}
               {/* INITIAL LOADING STATE FOR SINGLE ALBUM                        */}
               {/* ============================================================= */}
-              {!selectedAlbum && loading && initialRandomNo && (
-                <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-                  <Box sx={{ display: "flex", flexDirection: { xs: "column", sm: "row" }, gap: 3.5, mb: 4, pb: 3.5, borderBottom: "1px solid var(--hm-border, #eeeeee)" }}>
-                    <Skeleton variant="rectangular" width={180} height={180} sx={{ borderRadius: "20px", flexShrink: 0 }} />
-                    <Box sx={{ display: 'flex', flexDirection: 'column', pt: 1, width: { xs: '100%', sm: '50%' } }}>
-                      <Skeleton width="25%" height={20} sx={{ mb: 1, borderRadius: "6px" }} />
-                      <Skeleton width="60%" height={48} sx={{ mb: 2, borderRadius: "8px" }} />
-                      <Box sx={{ display: 'flex', gap: 1.5 }}>
-                        <Skeleton width={80} height={30} sx={{ borderRadius: "12px" }} />
-                        <Skeleton width={110} height={30} sx={{ borderRadius: "12px" }} />
-                      </Box>
-                    </Box>
+              {!selectedAlbum && loading && initialRandomNo && !showAlbumList && (
+                <Box>
+                  {/* Masthead skeleton matching the album list view */}
+                  <Box sx={{ mb: 4, textAlign: "center" }}>
+                    <Skeleton width={280} height={56} sx={{ mx: "auto", borderRadius: "10px" }} />
+                    <Skeleton width={220} height={20} sx={{ mx: "auto", mt: 1, borderRadius: "6px" }} />
                   </Box>
-                  <Box sx={{
-                    display: "grid",
-                    gridTemplateColumns: {
-                      xs: "repeat(2, 1fr)",
-                      sm: "repeat(auto-fill, minmax(260px, 1fr))",
-                      md: "repeat(auto-fill, minmax(280px, 1fr))",
-                    },
-                    gap: { xs: 2.5, sm: 3, md: 4 },
-                  }}>
-                    {[1, 2, 3, 4, 5, 6, 7, 8].map(i => (
+                  {/* Album-card grid skeleton matching the list view cards */}
+                  <Box
+                    sx={{
+                      display: "grid",
+                      gridTemplateColumns: {
+                        xs: "repeat(1, 1fr)",
+                        sm: "repeat(2, 1fr)",
+                        md: "repeat(3, 1fr)",
+                        lg: "repeat(4, 1fr)",
+                      },
+                      columnGap: { xs: 3, sm: 4, md: 5 },
+                      rowGap: { xs: 4, sm: 5, md: 6 },
+                    }}
+                  >
+                    {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
                       <Box
                         key={i}
                         sx={{
-                          borderRadius: "20px",
+                          display: "flex",
+                          flexDirection: "column",
                           backgroundColor: "var(--hm-surface, #ffffff)",
-                          boxShadow: "0 8px 30px rgba(0, 0, 0, 0.03)",
+                          borderRadius: "20px",
+                          boxShadow: "0 8px 30px rgba(0, 0, 0, 0.04)",
                           overflow: "hidden",
                         }}
                       >
-                        <Skeleton variant="rectangular" width="100%" sx={{ aspectRatio: "1/1", transform: "none" }} />
-                        <Box sx={{ p: 2, display: "flex", flexDirection: "column", gap: 1 }}>
-                          <Skeleton width="75%" height={22} sx={{ borderRadius: "6px" }} />
-                          <Skeleton width="45%" height={18} sx={{ borderRadius: "6px" }} />
-                          <Box sx={{ display: "flex", justifyContent: "space-between", mt: 1 }}>
-                            <Skeleton width="40%" height={24} sx={{ borderRadius: "6px" }} />
-                            <Skeleton width={50} height={24} sx={{ borderRadius: "6px" }} />
-                          </Box>
+                        <Box
+                          sx={{
+                            width: "100%",
+                            aspectRatio: "1 / 1",
+                            position: "relative",
+                            backgroundColor: "var(--hm-surface-subtle, #f4f4f5)",
+                            overflow: "hidden",
+                          }}
+                        >
+                          <Skeleton
+                            variant="rectangular"
+                            animation="wave"
+                            sx={{
+                              width: "100%",
+                              height: "100% !important",
+                              transform: "none",
+                            }}
+                          />
+                        </Box>
+                        <Box
+                          sx={{
+                            p: 2,
+                            display: "flex",
+                            flexDirection: "column",
+                            alignItems: "center",
+                            gap: 0.8,
+                          }}
+                        >
+                          <Skeleton
+                            variant="text"
+                            animation="wave"
+                            sx={{ width: "65%", height: 28, borderRadius: "6px" }}
+                          />
+                          <Skeleton
+                            variant="text"
+                            animation="wave"
+                            sx={{ width: "35%", height: 18, borderRadius: "4px" }}
+                          />
                         </Box>
                       </Box>
                     ))}
@@ -1069,7 +1131,9 @@ export default function ExclusiveAlbumOverlay({
                         mb: 1,
                       }}
                     >
-                      My Albums
+                      {initialRandomNo && albumListScope === "one" && matchedAlbum
+                        ? matchedAlbum.albumName || "Shared Album"
+                        : "My Albums"}
                     </Typography>
                     <Typography
                       sx={{
@@ -1084,15 +1148,112 @@ export default function ExclusiveAlbumOverlay({
                     </Typography>
                   </motion.div>
 
-                  {/* Sub-bar: Sort Filter */}
+                  {/* Sub-bar: shared-link scope toggle + Sort Filter */}
                   <Box
                     sx={{
                       display: "flex",
                       alignItems: "center",
-                      justifyContent: "flex-end",
+                      justifyContent: initialRandomNo ? "space-between" : "flex-end",
+                      flexWrap: "wrap",
+                      gap: 1.5,
                       mb: 3,
                     }}
                   >
+                    {initialRandomNo && (
+                      <Box
+                        role="tablist"
+                        aria-label="Album scope"
+                        sx={{
+                          display: "flex",
+                          alignItems: "stretch",
+                          gap: "6px",
+                          p: "6px",
+                          borderRadius: "18px",
+                          backgroundColor: "var(--hm-surface-warm2, #f1f0ed)",
+                          border: "1px solid var(--hm-border, #e7e5e4)",
+                          width: { xs: "100%", sm: "auto" },
+                          minWidth: { sm: "430px" },
+                        }}
+                      >
+                        {[
+                          {
+                            key: "one",
+                            label: "My Albums",
+                            sub: matchedAlbum?.albumName || "This shared album",
+                            icon: <User size={18} />,
+                          },
+                          {
+                            key: "all",
+                            label: "Albums",
+                            sub: "All shared albums",
+                            icon: <LayoutGrid size={18} />,
+                          },
+                        ].map((tab) => {
+                          const active = albumListScope === tab.key;
+                          return (
+                            <Box
+                              key={tab.key}
+                              component="button"
+                              role="tab"
+                              aria-selected={active}
+                              onClick={() => switchAlbumScope(tab.key)}
+                              sx={{
+                                flex: 1,
+                                display: "flex",
+                                alignItems: "center",
+                                gap: "10px",
+                                px: 2.5,
+                                py: 1.4,
+                                border: "none",
+                                borderRadius: "13px",
+                                cursor: "pointer",
+                                fontFamily: "'Inter', sans-serif",
+                                textAlign: "left",
+                                color: active ? "#ffffff" : "var(--hm-text-faint, #71717a)",
+                                backgroundColor: active ? "#7c3aed" : "transparent",
+                                boxShadow: active
+                                  ? "0 6px 16px rgba(124, 58, 237, 0.35)"
+                                  : "none",
+                                transition: "all 0.25s ease",
+                                "&:hover": {
+                                  color: active ? "#ffffff" : "var(--hm-text-dark, #27272a)",
+                                  backgroundColor: active ? "#6d28d9" : "rgba(0,0,0,0.04)",
+                                },
+                              }}
+                            >
+                              <Box sx={{ flexShrink: 0, display: "flex", alignItems: "center" }}>
+                                {tab.icon}
+                              </Box>
+                              <Box sx={{ minWidth: 0 }}>
+                                <Box
+                                  sx={{
+                                    fontSize: "0.9rem",
+                                    fontWeight: 700,
+                                    lineHeight: 1.2,
+                                  }}
+                                >
+                                  {tab.label}
+                                </Box>
+                                <Box
+                                  sx={{
+                                    fontSize: "0.68rem",
+                                    fontWeight: 400,
+                                    lineHeight: 1.3,
+                                    opacity: active ? 0.85 : 0.75,
+                                    whiteSpace: "nowrap",
+                                    overflow: "hidden",
+                                    textOverflow: "ellipsis",
+                                    maxWidth: 180,
+                                  }}
+                                >
+                                  {tab.sub}
+                                </Box>
+                              </Box>
+                            </Box>
+                          );
+                        })}
+                      </Box>
+                    )}
                     <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
                       <Box
                         sx={{

@@ -18,8 +18,10 @@ import AccountLedgerExcel from './AccountLedgerExcel';
 import { downloadExcelLedgerData } from '@/app/(core)/utils/Glob_Functions/GlobalFunction';
 import excelExport from "@/app/(core)/utils/assets/Image/excel.png";
 import { loginUserDetailWiseAccountLedgerData } from '@/app/(core)/utils/Glob_Functions/AccountPages/AccountLedger';
+import useAccountCurrency from '@/app/(core)/hooks/useAccountCurrency';
 
 const AccountLedger = () => {
+    const { convertAmountFromRate, getCurrencyCode } = useAccountCurrency();
 
     const isSmallScreen = useMediaQuery('(max-width:500px)');
 
@@ -55,6 +57,9 @@ const AccountLedger = () => {
         currencySymbol:'',
         Currencyname:''
     });
+
+    const displayCurrencyCode = getCurrencyCode(currencyCode);
+    const convertLedgerAmount = (value) => convertAmountFromRate(value, currencyRate);
 
 
     useEffect(() => {
@@ -872,8 +877,8 @@ const AccountLedger = () => {
                                     Balance Amount
                                 </Typography>
                                 <Typography sx={{ fontSize: "1.05rem", fontWeight: 700, color: "#0b291d" }}>
-                                    <span dangerouslySetInnerHTML={{ __html: currencySymbol }}></span>&nbsp;
-                                    {((formatAmount((Math.abs(debit_curr_diff) + resultTotal?.debit_totalcurrency) - (Math.abs(credit_curr_diff) + resultTotal?.credit_totalcurrency))) === 'NaN' ? '0.00' : (formatAmount((Math.abs(debit_curr_diff) + resultTotal?.debit_totalcurrency) - (Math.abs(credit_curr_diff) + resultTotal?.credit_totalcurrency))))}&nbsp;
+                                    <span dangerouslySetInnerHTML={{ __html: displayCurrencyCode }}></span>&nbsp;
+                                    {((formatAmount(convertLedgerAmount((Math.abs(debit_curr_diff) + resultTotal?.debit_totalcurrency) - (Math.abs(credit_curr_diff) + resultTotal?.credit_totalcurrency)))) === 'NaN' ? '0.00' : (formatAmount(convertLedgerAmount((Math.abs(debit_curr_diff) + resultTotal?.debit_totalcurrency) - (Math.abs(credit_curr_diff) + resultTotal?.credit_totalcurrency)))))}&nbsp;
                                     {(((Math.abs(debit_curr_diff) + resultTotal?.debit_totalcurrency) - (Math.abs(credit_curr_diff) + resultTotal?.credit_totalcurrency)) ? 'Dr' : ' Cr')}
                                 </Typography>
                             </Box>
@@ -899,8 +904,9 @@ const AccountLedger = () => {
 
                                     resultTotal={resultTotal}
 
-                                    currencySymbol={currencySymbol}
+                                    currencySymbol={displayCurrencyCode}
                                     currencyRate={currencyRate}
+                                    convertAmount={convertLedgerAmount}
 
                                  />
                             </div>
@@ -945,7 +951,7 @@ const AccountLedger = () => {
                                             <td className='border_end_acc p_1_acc text_end_acc ps_1_acc'>{ (Math.abs(debit_mg_diff))?.toFixed(3) === '0.000' ? '' : (Math.abs(debit_mg_diff))?.toFixed(3)}</td>
                                             <td className='border_end_acc p_1_acc text_end_acc ps_1_acc'>{(Math.abs(debit_dia_diff))?.toFixed(3) === '0.000' ? '' : (Math.abs(debit_dia_diff))?.toFixed(3)}</td>
 
-                                            <td className='border_end_acc p_1_acc text_end_acc pe_1_acc' style={{minWidth:'100px'}}>{Math.abs(debit_curr_diff) === 0.00 ? '' : <><span dangerouslySetInnerHTML={{__html:currencyCode}}></span>&nbsp;{formatAmount(Math.abs(debit_curr_diff))}</>}</td>
+                                            <td className='border_end_acc p_1_acc text_end_acc pe_1_acc' style={{minWidth:'100px'}}>{Math.abs(debit_curr_diff) === 0.00 ? '' : <><span dangerouslySetInnerHTML={{__html:displayCurrencyCode}}></span>&nbsp;{formatAmount(convertLedgerAmount(Math.abs(debit_curr_diff)))}</>}</td>
                                             <td className='border_end_acc p_1_acc text_center_acc'></td>
                                             <td className='border_end_acc p_1_acc text_center_acc'></td>
                                             <td className='border_end_acc p_1_acc text_start_acc ps_1_acc' align='center'>Opening</td>
@@ -953,7 +959,7 @@ const AccountLedger = () => {
                                             <td className='border_end_acc p_1_acc text_end_acc ps_1_acc'>{(Math.abs(credit_mg_diff))?.toFixed(3) === '0.000' ? '' : (Math.abs(credit_mg_diff))?.toFixed(3)}</td>
                                             <td className='border_end_acc p_1_acc text_end_acc ps_1_acc'>{(Math.abs(credit_dia_diff))?.toFixed(3) === '0.000' ? '' : (Math.abs(credit_dia_diff))?.toFixed(3)}</td>
                   
-                                            <td className='border_end_acc p_1_acc text_end_acc pe_1_acc' style={{minWidth:'100px'}}>{Math.abs(credit_curr_diff) === 0.00 ? '' : <><span dangerouslySetInnerHTML={{__html:currencyCode}}></span>&nbsp;{formatAmount(Math.abs(credit_curr_diff))}</>}</td>
+                                            <td className='border_end_acc p_1_acc text_end_acc pe_1_acc' style={{minWidth:'100px'}}>{Math.abs(credit_curr_diff) === 0.00 ? '' : <><span dangerouslySetInnerHTML={{__html:displayCurrencyCode}}></span>&nbsp;{formatAmount(convertLedgerAmount(Math.abs(credit_curr_diff)))}</>}</td>
                                             <td className=' p_1_acc text_center_acc'></td>
                                         </tr> 
                                         }
@@ -997,8 +1003,8 @@ const AccountLedger = () => {
                                                 {/* <td className='border_end_acc p_1_acc text_start_acc ps_1_acc' style={{cursor:'pointer'}}  >{e?.IsDebit === 0 ? '' : e?.referenceno === '' ? e?.voucherno : e?.referenceno}</td> */}
                                                 <td className='border_end_acc p_1_acc text_end_acc pe_1_acc'>{e?.IsDebit === 0 ? '' : (e?.metalctw === 0 ? '' : e?.metalctw)}</td>
                                                 <td className='border_end_acc p_1_acc text_end_acc pe_1_acc'>{e?.IsDebit === 0 ? '' : (e?.diamondctw === 0 ? '' : e?.diamondctw)}</td>
-                                                <td className='border_end_acc p_1_acc text_end_acc pe_1_acc' style={{minWidth:'100px'}}> { e?.IsDebit !== 0 && <span dangerouslySetInnerHTML={{__html: currencyCode}}></span>} 
-                                                {e?.IsDebit === 0 ? '' : ` ${formatAmount(e?.Currency) === 'NaN' ? '' : formatAmount(e?.Currency)} `}</td>
+                                                <td className='border_end_acc p_1_acc text_end_acc pe_1_acc' style={{minWidth:'100px'}}> { e?.IsDebit !== 0 && <span dangerouslySetInnerHTML={{__html: displayCurrencyCode}}></span>} 
+                                                {e?.IsDebit === 0 ? '' : ` ${formatAmount(convertLedgerAmount(e?.Currency)) === 'NaN' ? '' : formatAmount(convertLedgerAmount(e?.Currency))} `}</td>
                                                 {/* <td className='border_end_acc p_1_acc text_center_acc'>{d_doneIcon}{d_closeIcon}</td> */}
                                                 <td className='border_end_acc p_1_acc text_center_acc'>{e?.IsDebit === 1 && icon}</td>
                                                 <td className='border_end_acc p_1_acc text_center_acc'>{e?.IsDebit === 0 ? e?.EntryDate : ''}</td>
@@ -1008,7 +1014,7 @@ const AccountLedger = () => {
                                                 <td className='border_end_acc p_1_acc text_end_acc pe_1_acc'>{e?.IsDebit === 0 ? (e?.metalctw === 0 ? '' : e?.metalctw) : ''}</td>
                                                 <td className='border_end_acc p_1_acc text_end_acc pe_1_acc'>{e?.IsDebit === 0 ? (e?.diamondctw === 0 ? '' : e?.diamondctw) : ''}</td>
 
-                                                <td className='border_end_acc p_1_acc text_end_acc pe_1_acc' style={{minWidth:'100px'}}> { e?.IsDebit === 0 && <span dangerouslySetInnerHTML={{__html: currencyCode}}></span>} {e?.IsDebit === 0 ? ` ${e?.Currency === 0 ? '' : formatAmount(e?.Currency)}`  : ''}</td>
+                                                <td className='border_end_acc p_1_acc text_end_acc pe_1_acc' style={{minWidth:'100px'}}> { e?.IsDebit === 0 && <span dangerouslySetInnerHTML={{__html: displayCurrencyCode}}></span>} {e?.IsDebit === 0 ? ` ${e?.Currency === 0 ? '' : formatAmount(convertLedgerAmount(e?.Currency))}`  : ''}</td>
             
                                                 {/* <td className=' p_1_acc text_center_acc'>{doneIcon}{closeIcon}</td> */}
                                                 <td className=' p_1_acc text_center_acc'>{e?.IsDebit === 0 && icon}</td>
@@ -1026,7 +1032,7 @@ const AccountLedger = () => {
                                             <td className='border_end_acc p_1_acc text_end_acc pe_1_acc'>{((Math.abs(debit_dia_diff) + resultTotal?.debit_diamondwt))?.toFixed(3) === '0.000' ? '' : (((Math.abs(debit_dia_diff) + resultTotal?.debit_diamondwt))?.toFixed(3) === 'NaN' ? '0.00' : ((Math.abs(debit_dia_diff) + resultTotal?.debit_diamondwt))?.toFixed(3))}</td>
              
                                             <td className='border_end_acc p_1_acc text_end_acc pe_1_acc' style={{minWidth:'100px'}}>
-                                                {formatAmount((Math.abs(debit_curr_diff) + resultTotal?.debit_totalcurrency)) === '0.00' ? '' :  <span dangerouslySetInnerHTML={{__html:currencySymbol}}></span>}&nbsp;{formatAmount((Math.abs(debit_curr_diff) + resultTotal?.debit_totalcurrency)) === '0.00' ? '' : (formatAmount((Math.abs(debit_curr_diff) + resultTotal?.debit_totalcurrency)) === 'NaN' ? '0.00' : formatAmount((Math.abs(debit_curr_diff) + resultTotal?.debit_totalcurrency)))}
+                                                {formatAmount(convertLedgerAmount(Math.abs(debit_curr_diff) + resultTotal?.debit_totalcurrency)) === '0.00' ? '' :  <span dangerouslySetInnerHTML={{__html:displayCurrencyCode}}></span>}&nbsp;{formatAmount(convertLedgerAmount(Math.abs(debit_curr_diff) + resultTotal?.debit_totalcurrency)) === '0.00' ? '' : (formatAmount(convertLedgerAmount(Math.abs(debit_curr_diff) + resultTotal?.debit_totalcurrency)) === 'NaN' ? '0.00' : formatAmount(convertLedgerAmount(Math.abs(debit_curr_diff) + resultTotal?.debit_totalcurrency)))}
                                             </td>
                                             <td className='border_end_acc p_1_acc text_center_acc'></td>
                                             <td className='border_end_acc p_1_acc text_center_acc'></td>
@@ -1036,9 +1042,9 @@ const AccountLedger = () => {
                                             <td className='border_end_acc p_1_acc text_end_acc pe_1_acc'>{((Math.abs(credit_dia_diff) + resultTotal?.credit_diamondwt))?.toFixed(3) === '0.000' ? '' : (((Math.abs(credit_dia_diff) + resultTotal?.credit_diamondwt))?.toFixed(3) === 'NaN' ? '0.00' : ((Math.abs(credit_dia_diff) + resultTotal?.credit_diamondwt))?.toFixed(3))}</td>
                    
                                             <td className='border_end_acc p_1_acc text_end_acc pe_1_acc' style={{minWidth:'100px'}}>
-                                                {formatAmount((Math.abs(credit_curr_diff) + resultTotal?.credit_totalcurrency)) === '0.00' ? '' : <span dangerouslySetInnerHTML={{__html:currencySymbol}}></span>}
+                                                {formatAmount(convertLedgerAmount(Math.abs(credit_curr_diff) + resultTotal?.credit_totalcurrency)) === '0.00' ? '' : <span dangerouslySetInnerHTML={{__html:displayCurrencyCode}}></span>}
                                                 &nbsp;
-                                                {formatAmount((Math.abs(credit_curr_diff) + resultTotal?.credit_totalcurrency)) === '0.00' ? '' : ((formatAmount((Math.abs(credit_curr_diff) + resultTotal?.credit_totalcurrency)) === 'NaN' ? '0.00' : formatAmount((Math.abs(credit_curr_diff) + resultTotal?.credit_totalcurrency))))}</td>
+                                                {formatAmount(convertLedgerAmount(Math.abs(credit_curr_diff) + resultTotal?.credit_totalcurrency)) === '0.00' ? '' : ((formatAmount(convertLedgerAmount(Math.abs(credit_curr_diff) + resultTotal?.credit_totalcurrency)) === 'NaN' ? '0.00' : formatAmount(convertLedgerAmount(Math.abs(credit_curr_diff) + resultTotal?.credit_totalcurrency))))}</td>
                                             <td className=' p_1_acc text_center_acc'></td>
                                         </tr>
                         </tbody>

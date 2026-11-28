@@ -24,12 +24,14 @@ import { getPricingPolicyParams, getDynamicDesignTableName } from "@/app/(core)/
 import { useProductStock } from "@/app/(core)/hooks/useProductStock";
 import { getStockBarcodeForProduct } from "@/app/(core)/utils/product/stockUtils";
 import { getStorePageSize } from "@/app/(core)/utils/storeFlags";
+import { readAlbumScopeFromUrl } from "@/app/(core)/utils/album/albumScopeUrl";
 
 import {
   compressAndEncode,
   getCardImageUrl,
   convertUrl,
   handleMoveToDetail,
+  resolveProductDiaCombo,
   parseRangeData,
   decodeEntities,
   BreadCumsObj,
@@ -42,6 +44,7 @@ export {
   getCardImageUrl,
   convertUrl,
   handleMoveToDetail,
+  resolveProductDiaCombo,
   parseRangeData,
   decodeEntities,
   BreadCumsObj,
@@ -875,6 +878,7 @@ export function useListingPage({
         PageNo: targetPage,
         pageSize: getStorePageSize(storeinit),
         PageSize: getStorePageSize(storeinit),
+        ...readAlbumScopeFromUrl(),
       };
 
       if (Array.isArray(targetQuery) && targetQuery.length >= 2) {
@@ -1308,6 +1312,7 @@ export function useListingPage({
           sortBy: effectiveSortBy,
           page: initialPage,
           pageSize: getStorePageSize(storeinit),
+          ...readAlbumScopeFromUrl(),
         };
 
         if (Array.isArray(targetQuery) && targetQuery.length >= 2) {

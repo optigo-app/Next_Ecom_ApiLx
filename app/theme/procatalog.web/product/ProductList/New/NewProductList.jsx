@@ -17,10 +17,8 @@ import { motion } from "framer-motion";
 import ProductSkeleton from "./Skeleton";
 import { useTheme } from "@emotion/react";
 import "./index.scss";
-import {
-  formatter,
-  formatTitleLine,
-} from "@/app/(core)/utils/Glob_Functions/GlobalFunction";
+import { formatTitleLine } from "@/app/(core)/utils/Glob_Functions/GlobalFunction";
+import { useCurrency } from "@/app/(core)/hooks/useCurrency";
 import CartToggleButton from "./CartToggleButton";
 import WishToggleButton from "./WishToggleButton";
 import MobileCartToggleButton from "./MobileCartButton";
@@ -382,6 +380,7 @@ const ProductCard = ({
   VideoCount,
   isMobile,
 }) => {
+  const { format: formatCurrency, symbol: currencySymbol } = useCurrency();
   const cardVariants = {
     hidden: {
       opacity: 0,
@@ -400,8 +399,19 @@ const ProductCard = ({
     },
   };
 
+  const readyStockStatus = Number(productData?.IsInReadyStock);
+  const isInMemo =
+    productData?.isInMemo === true ||
+    productData?.stockStatus === "IN_MEMO" ||
+    readyStockStatus === 2;
+  const isInStock =
+    !isInMemo &&
+    (productData?.isInStock === true ||
+      productData?.stockStatus === "IN_STOCK" ||
+      readyStockStatus === 1);
   const hasUpperTags =
-    productData?.IsInReadyStock == 1 ||
+    isInMemo ||
+    isInStock ||
     productData?.IsBestSeller == 1 ||
     productData?.IsTrending == 1 ||
     productData?.IsNewArrival == 1;
@@ -621,7 +631,8 @@ const ProductCard = ({
             gap: 0.8,
           }}
         >
-          {productData?.IsInReadyStock == 1 && ChipBar("In Stock")}
+          {isInMemo && ChipBar("In Memo", "#9A5A00")}
+          {!isInMemo && isInStock && ChipBar("In Stock")}
           {productData?.IsBestSeller == 1 && ChipBar("Best Seller")}
           {productData?.IsTrending == 1 && ChipBar("Trending")}
           {productData?.IsNewArrival == 1 && ChipBar("New", "#163164")}
@@ -749,12 +760,12 @@ const ProductCard = ({
             <span
               dangerouslySetInnerHTML={{
                 __html: decodeEntities(
-                  loginCurrency?.CurrencyCode ?? StoreInit?.CurrencyCode,
+                  currencySymbol ?? loginCurrency?.CurrencyCode ?? StoreInit?.CurrencyCode,
                 ),
               }}
               style={{ paddingRight: "0.25rem" }}
             />
-            {formatter(productData?.UnitCostWithMarkUp)}
+            {formatCurrency(productData?.UnitCostWithMarkUp)}
           </Typography>
         )}
 

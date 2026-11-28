@@ -1,6 +1,7 @@
 
 
 import { getSession } from "../../FetchSessionData";
+import { getPricingPolicyParams } from "../../product/pricingPolicy";
 import { CommonAPI } from "../CommonAPI/CommonAPI";
 
 
@@ -14,7 +15,11 @@ export const ColorStoneQualityColorComboAPI = async () => {
         const loginUserDetail = getSession("loginUserDetail") || "0";
         const FrontEnd_RegNo = storeInit?.FrontEnd_RegNo;
         const combinedValue = JSON.stringify({
-            FrontEnd_RegNo: `${FrontEnd_RegNo}`, colorstonepricelistname: `${loginUserDetail?.colorstonepricelistname ?? storeInit?.colorstonepricelistname}`
+            FrontEnd_RegNo: `${FrontEnd_RegNo}`,
+            ...getPricingPolicyParams({
+                storeinit: storeInit,
+                loginUserDetail,
+            })
         });
 
         const encodedCombinedValue = btoa(combinedValue);

@@ -1,6 +1,7 @@
 import { isPackageFilterDisabled } from "../packageScope.js";
 import { getDynamicDesignTableName, sanitizeSqlIdentifier } from "../schema/dynamicDesigns.js";
 import { resolveArticleTableName } from "../schema/dynamicArticles.js";
+import { buildAlbumCondition } from "./albumScope.js";
 
 /**
  * Clean & Ultra-Fast SQLite Query Procedure for Jewelry Product Listing (PLP)
@@ -302,6 +303,7 @@ ResolvedPackages(package_id) AS (
     )`);
 
   // 4. Strict exact matching for attributes
+  const attrCollate = isPackageFilterDisabled(db) ? "" : " COLLATE NOCASE";
   for (const { config, values } of Object.values(collectedAttributes)) {
     const uniqueValues = Array.from(new Set(values.filter(Boolean)));
     if (uniqueValues.length === 0) continue;
@@ -312,10 +314,10 @@ ResolvedPackages(package_id) AS (
       if (!cleanVal) continue;
 
       if (/^\d+$/.test(cleanVal)) {
-        orClauses.push(`("${config.idCol}" = ? OR "${config.nameCol}" = ? COLLATE NOCASE)`);
+        orClauses.push(`("${config.idCol}" = ? OR "${config.nameCol}" = ?${attrCollate})`);
         params.push(Number(cleanVal), cleanVal);
       } else {
-        orClauses.push(`"${config.nameCol}" = ? COLLATE NOCASE`);
+        orClauses.push(`"${config.nameCol}" = ?${attrCollate}`);
         params.push(cleanVal);
       }
     }
@@ -409,6 +411,9 @@ ResolvedPackages(package_id) AS (
     conditions.push(`autocode = ?`);
     params.push(directAutoCode.trim());
   }
+
+  const albumCondition = buildAlbumCondition(filters);
+  if (albumCondition) conditions.push(albumCondition);
 
   // 6. Price Range Filtering
   const priceBrackets = [];
@@ -608,11 +613,15 @@ ResolvedPackages(package_id) AS (
   }
 
   if (sort.includes("low_to_high") || sort.includes("price_asc") || sort === "1" || sort.includes("price low") || sort.includes("low to high")) {
-    orderClause = "COALESCE(UnitCostWithMarkUpIncTax, UnitCostWithMarkUp, UnitCost, 0) ASC, DisplayOrder ASC";
+    orderClause = "COALESCE(UnitCostWithMarkUpIncTax, UnitCostWithMarkUp, UnitCost, 0) ASC, DisplayOrder DESC";
   } else if (sort.includes("high_to_low") || sort.includes("price_desc") || sort === "2" || sort.includes("price high") || sort.includes("high to low")) {
-    orderClause = "COALESCE(UnitCostWithMarkUpIncTax, UnitCostWithMarkUp, UnitCost, 0) DESC, DisplayOrder ASC";
+    orderClause = "COALESCE(UnitCostWithMarkUpIncTax, UnitCostWithMarkUp, UnitCost, 0) DESC, DisplayOrder DESC";
+  } else if (sort.includes("trend")) {
+    orderClause = "IsTrending DESC, DisplayOrder DESC, EntryDate DESC";
+  } else if (sort.includes("best")) {
+    orderClause = "IsBestSeller DESC, SoldCnt DESC, DisplayOrder DESC";
   } else if (sort.includes("new") || sort.includes("latest") || sort === "3") {
-    orderClause = "EntryDate DESC, id DESC";
+    orderClause = "COALESCE(FrontEnd1_newArrivalsto, EntryDate) DESC, DisplayOrder DESC, designno ASC";
   }
   if (stockPriorityClause) {
     orderClause = `${stockPriorityClause}, ${orderClause}`;

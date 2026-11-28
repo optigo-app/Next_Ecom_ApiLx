@@ -1,6 +1,7 @@
 import { isPackageFilterDisabled } from "../packageScope.js";
 import { getDynamicDesignTableName, sanitizeSqlIdentifier } from "../schema/dynamicDesigns.js";
 import { resolveArticleTableName } from "../schema/dynamicArticles.js";
+import { buildAlbumCondition } from "./albumScope.js";
 
 /**
  * Clean & Ultra-Fast SQLite Query Procedure for Dynamic Filter Lists (GETFILTERLIST)
@@ -416,6 +417,9 @@ ResolvedPackages(package_id) AS (
     conditions.push(`autocode = ?`);
     params.push(directAutoCode.trim());
   }
+
+  const albumCondition = buildAlbumCondition(filters);
+  if (albumCondition) conditions.push(albumCondition);
 
   const whereClause = conditions.length > 0 ? conditions.join(" AND ") : "1=1";
   const queryParams = [pkgIdParam, pkgNameParam, ...params];

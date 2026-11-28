@@ -1,15 +1,13 @@
 import { getSession } from "../../FetchSessionData";
 import { CommonAPI } from "../CommonAPI/CommonAPI";
 import { syncFiltersToSqlite } from "../../sqlite/sqliteSync";
+import { getPricingPolicyParams } from "@/app/(core)/utils/product/pricingPolicy";
 
 
 export const FilterListAPI = async (mainData, visiterId) => {
   const storeinit = getSession("storeInit");
   const loginInfo = getSession("loginUserDetail");
   const islogin = getSession("LoginUser") ?? false;
-
-  const isGuest =
-    storeinit?.IsB2BWebsite == 0 && (islogin == false || islogin == null);
 
   const customerId =
     storeinit?.IsB2BWebsite == 0 && (islogin == false || islogin == null)
@@ -66,26 +64,11 @@ export const FilterListAPI = async (mainData, visiterId) => {
     SearchKey: serachVar?.b ?? "",
     CurrencyRate: loginInfo?.CurrencyRate ?? storeinit?.CurrencyRate ?? "",
     DomainForNo: storeinit?.DomainForNo ?? "",
-    Laboursetid: isGuest
-      ? (storeinit?.pricemanagement_laboursetid ?? "")
-      : (loginInfo?.pricemanagement_laboursetid ??
-        storeinit?.pricemanagement_laboursetid ??
-        ""),
-    diamondpricelistname: isGuest
-      ? (storeinit?.diamondpricelistname ?? "")
-      : (loginInfo?.diamondpricelistname ??
-        storeinit?.diamondpricelistname ??
-        ""),
-    colorstonepricelistname: isGuest
-      ? (storeinit?.colorstonepricelistname ?? "")
-      : (loginInfo?.colorstonepricelistname ??
-        storeinit?.colorstonepricelistname ??
-        ""),
-    SettingPriceUniqueNo: isGuest
-      ? (storeinit?.SettingPriceUniqueNo ?? "")
-      : (loginInfo?.SettingPriceUniqueNo ??
-        storeinit?.SettingPriceUniqueNo ??
-        ""),
+    ...getPricingPolicyParams({
+      storeinit,
+      loginUserDetail: loginInfo,
+      islogin,
+    }),
     ...MenuParams,
   };
   let body = {

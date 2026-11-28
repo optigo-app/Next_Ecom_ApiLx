@@ -1,5 +1,6 @@
 import { getSession } from "../../FetchSessionData";
 import { CommonAPI } from "../CommonAPI/CommonAPI";
+import { getPricingPolicyParams } from "@/app/(core)/utils/product/pricingPolicy";
 
 export const GetSinglePriceListApi = async (item) => {
 
@@ -14,22 +15,11 @@ export const GetSinglePriceListApi = async (item) => {
     "CurrencyRate": `${storeInit?.CurrencyRate ?? ""}`,
     "FrontEnd_RegNo": `${storeInit?.FrontEnd_RegNo ?? ""}`,
     "Customerid": `${customerId ?? 0}`,
-    "Laboursetid": `${storeInit?.IsB2BWebsite == 0 && (islogin == false || islogin == null)
-      ? storeInit?.pricemanagement_laboursetid ?? ""
-      : loginUserDetail?.pricemanagement_laboursetid ?? storeInit?.pricemanagement_laboursetid ?? ""
-      }`,
-    "diamondpricelistname": `${storeInit?.IsB2BWebsite == 0 && (islogin == false || islogin == null)
-      ? storeInit?.diamondpricelistname ?? ""
-      : loginUserDetail?.diamondpricelistname ?? storeInit?.diamondpricelistname ?? ""
-      }`,
-    "colorstonepricelistname": `${storeInit?.IsB2BWebsite == 0 && (islogin == false || islogin == null)
-      ? storeInit?.colorstonepricelistname ?? ""
-      : loginUserDetail?.colorstonepricelistname ?? storeInit?.colorstonepricelistname ?? ""
-      }`,
-    "SettingPriceUniqueNo": `${storeInit?.IsB2BWebsite == 0 && (islogin == false || islogin == null)
-      ? storeInit?.SettingPriceUniqueNo ?? ""
-      : loginUserDetail?.SettingPriceUniqueNo ?? storeInit?.SettingPriceUniqueNo ?? ""
-      }`,
+    ...getPricingPolicyParams({
+      storeinit: storeInit,
+      loginUserDetail,
+      islogin,
+    }),
     "designno": item?.designno,
     "FilterKey": "",
     "FilterVal": "",

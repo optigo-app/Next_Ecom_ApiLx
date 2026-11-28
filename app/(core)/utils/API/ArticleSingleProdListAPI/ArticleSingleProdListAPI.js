@@ -1,6 +1,7 @@
 import { getSession } from "../../FetchSessionData";
 import { CommonAPI } from "../CommonAPI/CommonAPI";
 import { getSqliteProductArticle } from "../../sqlite/sqliteActions";
+import { getPricingPolicyParams } from "@/app/(core)/utils/product/pricingPolicy";
 
 export const SingleArticleProdListAPI = async (
   singprod,
@@ -36,34 +37,11 @@ export const SingleArticleProdListAPI = async (
     Metalid: `${obj?.mt == null ? (loginInfo?.MetalId ?? storeinit?.MetalId) : obj?.mt}`,
     DiaQCid: `${obj?.diaQc == null ? (loginInfo?.cmboDiaQCid ?? storeinit?.cmboDiaQCid) : obj?.diaQc}`,
     CsQCid: `${obj?.csQc == null ? (loginInfo?.cmboCSQCid ?? storeinit?.cmboCSQCid) : (obj?.csQc ?? "0,0")}`,
-    Laboursetid: `${
-      storeinit?.IsB2BWebsite == 0 && (islogin == false || islogin == null)
-        ? (storeinit?.pricemanagement_laboursetid ?? "")
-        : (loginInfo?.pricemanagement_laboursetid ??
-          storeinit?.pricemanagement_laboursetid ??
-          "")
-    }`,
-    diamondpricelistname: `${
-      storeinit?.IsB2BWebsite == 0 && (islogin == false || islogin == null)
-        ? (storeinit?.diamondpricelistname ?? "")
-        : (loginInfo?.diamondpricelistname ??
-          storeinit?.diamondpricelistname ??
-          "")
-    }`,
-    colorstonepricelistname: `${
-      storeinit?.IsB2BWebsite == 0 && (islogin == false || islogin == null)
-        ? (storeinit?.colorstonepricelistname ?? "")
-        : (loginInfo?.colorstonepricelistname ??
-          storeinit?.colorstonepricelistname ??
-          "")
-    }`,
-    SettingPriceUniqueNo: `${
-      storeinit?.IsB2BWebsite == 0 && (islogin == false || islogin == null)
-        ? (storeinit?.SettingPriceUniqueNo ?? "")
-        : (loginInfo?.SettingPriceUniqueNo ??
-          storeinit?.SettingPriceUniqueNo ??
-          "")
-    }`,
+    ...getPricingPolicyParams({
+      storeinit,
+      loginUserDetail: loginInfo,
+      islogin,
+    }),
     IsStockWebsite: `${storeinit?.IsStockWebsite}`,
     Size: `${size}`,
     IsFromDesDet: 1,

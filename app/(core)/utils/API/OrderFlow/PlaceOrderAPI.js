@@ -1,5 +1,6 @@
 import { wesbiteDomainName } from "../../Glob_Functions/GlobalFunction";
 import { CommonAPI } from "../CommonAPI/CommonAPI";
+import { getPricingPolicyParams } from "@/app/(core)/utils/product/pricingPolicy";
 
 export const handlePaymentAPI = async (visiterId, islogin, mode) => {
     const domainname = wesbiteDomainName;
@@ -16,10 +17,6 @@ export const handlePaymentAPI = async (visiterId, islogin, mode) => {
         const { FrontEnd_RegNo } = storeInit;
 
         let packageId = storeInit?.IsB2BWebsite == 0 && islogin == false || islogin == null ? storeInit?.PackageId : data?.PackageId ?? 0
-        let laboursetid = storeInit?.IsB2BWebsite == 0 && islogin == false || islogin == null ? storeInit?.pricemanagement_laboursetid : data?.pricemanagement_laboursetid ?? 0
-        let diamondpricelistname = storeInit?.IsB2BWebsite == 0 && islogin == false || islogin == null ? storeInit?.diamondpricelistname : data?.diamondpricelistname ?? ""
-        let colorstonepricelistname = storeInit?.IsB2BWebsite == 0 && islogin == false || islogin == null ? storeInit?.colorstonepricelistname : data?.colorstonepricelistname ?? ""
-        let SettingPriceUniqueNo = storeInit?.IsB2BWebsite == 0 && islogin == false || islogin == null ? storeInit?.SettingPriceUniqueNo : data?.SettingPriceUniqueNo ?? ""
 
         let estimatedTaxId = data?.TaxId
 
@@ -34,10 +31,11 @@ export const handlePaymentAPI = async (visiterId, islogin, mode) => {
             FrontEnd_RegNo: `${FrontEnd_RegNo}`,
             Customerid: `${customerId}`,
             packageId: packageId,
-            Laboursetid: laboursetid,
-            diamondpricelistname: diamondpricelistname,
-            colorstonepricelistname: colorstonepricelistname,
-            SettingPriceUniqueNo: SettingPriceUniqueNo,
+            ...getPricingPolicyParams({
+                storeinit: storeInit,
+                loginUserDetail: data,
+                islogin,
+            }),
             domain: storeInit?.domain ?? "",
             IsPLW: storeInit?.IsPLW,
             CurrencyRate: `${data?.CurrencyRate ?? storeInit?.CurrencyRate}`,

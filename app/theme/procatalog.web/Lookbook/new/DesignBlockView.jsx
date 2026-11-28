@@ -6,7 +6,7 @@ import LookbookSkelton from "../lookbookSkelton";
 import { Pagination, FreeMode, Navigation, Thumbs, Scrollbar, Keyboard } from "swiper/modules";
 import LocalMallIcon from "@mui/icons-material/LocalMall";
 import LocalMallOutlinedIcon from "@mui/icons-material/LocalMallOutlined";
-import { formatter } from "@/app/(core)/utils/Glob_Functions/GlobalFunction";
+import { useCurrency } from "@/app/(core)/hooks/useCurrency";
 
 const DesignBlockView = ({
     selectedValue,
@@ -42,6 +42,7 @@ const DesignBlockView = ({
     imageSources,
     imageUrlDesignSet
 }) => {
+  const { format: formatCurrency, symbol: currencySymbol } = useCurrency();
     switch (selectedValue) {
         case 2:
             return (
@@ -118,9 +119,9 @@ const DesignBlockView = ({
                                                         className="smr_lookBookPriceShow"
                                                     >
                                                         {" "}
-                                                        <span className="smr_currencyFont">{loginUserDetail?.CurrencyCode ?? storeInit?.CurrencyCode}</span>
+                                                        <span className="smr_currencyFont">{currencySymbol ?? loginUserDetail?.CurrencyCode ?? storeInit?.CurrencyCode}</span>
                                                         &nbsp;
-                                                        {formatter(calculateTotalUnitCostWithMarkUp(JSON?.parse(slide.Designdetail)))}
+                                                        {formatCurrency(calculateTotalUnitCostWithMarkUp(JSON?.parse(slide.Designdetail)))}
                                                     </p>
                                                 )}
                                                 <button className="smr_lookBookBuyBtn" onClick={() => handleByCombo(parseDesignDetails(slide?.Designdetail, "Cart"))}>
@@ -276,9 +277,9 @@ const DesignBlockView = ({
                                                                 }}
                                                                 className="smr_lookBookPriceShow"
                                                             >
-                                                                <span className="smr_currencyFont">{loginUserDetail?.CurrencyCode ?? storeInit?.CurrencyCode}</span>
+                                                                <span className="smr_currencyFont">{currencySymbol ?? loginUserDetail?.CurrencyCode ?? storeInit?.CurrencyCode}</span>
                                                                 &nbsp;
-                                                                {formatter(calculateTotalUnitCostWithMarkUp(JSON?.parse(slide.Designdetail)))}
+                                                                {formatCurrency(calculateTotalUnitCostWithMarkUp(JSON?.parse(slide.Designdetail)))}
                                                             </p>
                                                         )}
                                                         <button className="smr_lookBookBuyBtn" onClick={() => handleByCombo(parseDesignDetails(slide?.Designdetail, "Cart"))}>
@@ -563,9 +564,9 @@ const DesignBlockView = ({
                                                                                         <br />
                                                                                         {!isPriceHidden(storeInit) && (
                                                                                             <>
-                                                                                                <span className="smr_currencyFont">{loginUserDetail?.CurrencyCode ?? storeInit?.CurrencyCode}</span>
+                                                                                                <span className="smr_currencyFont">{currencySymbol ?? loginUserDetail?.CurrencyCode ?? storeInit?.CurrencyCode}</span>
                                                                                                 &nbsp;
-                                                                                                {formatter(ele?.UnitCostWithMarkUp)}
+                                                                                                {formatCurrency(ele?.UnitCostWithMarkUp)}
                                                                                             </>
                                                                                         )}
                                                                                     </p>
@@ -598,9 +599,9 @@ const DesignBlockView = ({
                                                                 {!isPriceHidden(storeInit) && (
                                                                     <div className="smr_lb3TotalPrice">
                                                                         <span>
-                                                                            <span className="smr_currencyFont">{loginUserDetail?.CurrencyCode ?? storeInit?.CurrencyCode}</span>
+                                                                            <span className="smr_currencyFont">{currencySymbol ?? loginUserDetail?.CurrencyCode ?? storeInit?.CurrencyCode}</span>
                                                                             &nbsp;
-                                                                            {formatter(calculateTotalUnitCostWithMarkUp(JSON?.parse(slide.Designdetail)))}
+                                                                            {formatCurrency(calculateTotalUnitCostWithMarkUp(JSON?.parse(slide.Designdetail)))}
                                                                         </span>
                                                                     </div>
                                                                 )}

@@ -1,6 +1,7 @@
 "use server";
 import { getTenantDb } from "@/db/tenantManager.js";
 import { getDesigns } from "@/db/procedures/getDesignsByMenu.js";
+import { applyAlbumScope } from "@/db/procedures/albumScope.js";
 import {
   getHomeBestsellers,
   getHomeNewArrivals,
@@ -41,6 +42,19 @@ import { syncWebsiteColor } from "./syncWebsiteColor.js";
 function sanitizeDomain(domain, fallback = "") {
   if (!domain || typeof domain !== "string") return fallback;
   return domain.trim().split(":")[0] || fallback;
+}
+
+async function resolveViewerCustomerId() {
+  try {
+    const cookieStore = await cookies().catch(() => null);
+    const raw = cookieStore?.get("loginUserDetail")?.value;
+    if (!raw) return 0;
+    let txt = raw;
+    try { txt = decodeURIComponent(raw); } catch (_) {}
+    return Number(JSON.parse(txt)?.id) || 0;
+  } catch (_) {
+    return 0;
+  }
 }
 
 /**
@@ -168,6 +182,9 @@ export async function getSqliteProducts(filtersOrMenu = {}, filters = {}, domain
     });
 
     const db = getTenantDb(targetDomain);
+    if (queryFilters.album || queryFilters.Album) {
+      applyAlbumScope(db, queryFilters, await resolveViewerCustomerId());
+    }
     const result = getDesigns(db, queryFilters);
     const rows = result.rd || [];
     const totalCount = result.totalCount || 0;
@@ -260,6 +277,9 @@ export async function getSqliteFilters(filtersOrMenu = {}, extraFilters = {}, do
     }
 
     const db = getTenantDb(targetDomain);
+    if (finalFilters.album || finalFilters.Album) {
+      applyAlbumScope(db, finalFilters, await resolveViewerCustomerId());
+    }
     const filterList = getFilterList(db, finalFilters);
 
     logger.info("FILTERS_QUERY", `[FILTERS GENERATED] Tenant '${targetDomain}' → ${filterList?.length || 0} filter sections returned`, {

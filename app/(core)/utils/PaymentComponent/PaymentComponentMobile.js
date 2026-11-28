@@ -1,5 +1,6 @@
 "use client";
 import { isPriceHidden } from "@/app/(core)/utils/storeFlags";
+import useCurrency from "@/app/(core)/hooks/useCurrency";
 import React from 'react';
 import {
     Box,
@@ -53,6 +54,8 @@ export default function PaymentComponent({ bgcolor, textColor, top, storeinit })
         isloding,
         isPloding,
     } = usePaymentLogic(storeinit);
+
+    const { format: formatCurrency, code: currencyCode } = useCurrency();
 
     const { IsPriceShow } = storeinit;
 
@@ -259,20 +262,20 @@ export default function PaymentComponent({ bgcolor, textColor, top, storeinit })
                                         <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
                                             <Typography variant="body2" color="text.secondary">Subtotal</Typography>
                                             {!isPloding ? (
-                                                <Typography variant="body2" fontWeight="600">{currCode} {formatter(taxAmmountData?.TotalAmount)}</Typography>
+                                                <Typography variant="body2" fontWeight="600">{currencyCode ?? currCode} {formatCurrency(taxAmmountData?.TotalAmount)}</Typography>
                                             ) : <Skeleton variant="text" width={60} />}
                                         </Box>
                                         <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
                                             <Typography variant="body2" color="text.secondary">Estimated Tax</Typography>
                                             {!isPloding ? (
-                                                <Typography variant="body2" fontWeight="600">{currCode} {formatter(taxAmmountData?.TaxAmount)}</Typography>
+                                                <Typography variant="body2" fontWeight="600">{currencyCode ?? currCode} {formatCurrency(taxAmmountData?.TaxAmount)}</Typography>
                                             ) : <Skeleton variant="text" width={60} />}
                                         </Box>
                                         <Divider/>
                                          <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
                                             <Typography variant="body2" color="text.secondary"> Total Amount</Typography>
                                             {!isPloding ? (
-                                                <Typography variant="body2" fontWeight="600">{currCode} {formatter(Number((taxAmmountData?.TotalAmountWithTax)?.toFixed(3)))}</Typography>
+                                                <Typography variant="body2" fontWeight="600">{currencyCode ?? currCode} {formatCurrency(Number((taxAmmountData?.TotalAmountWithTax)?.toFixed(3)))}</Typography>
                                             ) : <Skeleton variant="text" width={60} />}
                                         </Box>
                                     </Stack>
@@ -313,7 +316,7 @@ export default function PaymentComponent({ bgcolor, textColor, top, storeinit })
                                     </Typography>
                                     {!isPloding ? (
                                         <Typography variant="h6" fontWeight="800" sx={{ lineHeight: 1.2 }}>
-                                            {currCode} {formatter(Number((taxAmmountData?.TotalAmountWithTax)?.toFixed(3)))}
+                                            {currencyCode ?? currCode} {formatCurrency(Number((taxAmmountData?.TotalAmountWithTax)?.toFixed(3)))}
                                         </Typography>
                                     ) : (
                                         <Skeleton variant="text" height={30} width="80%" />
@@ -577,7 +580,7 @@ export default function PaymentComponent({ bgcolor, textColor, top, storeinit })
 //                                             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
 //                                                 <Typography>Subtotal</Typography>
 //                                                 {!isPloding ? (
-//                                                     <Typography fontWeight="bold">{currCode} {formatter(taxAmmountData?.TotalAmount)}</Typography>
+//                                                     <Typography fontWeight="bold">{currencyCode ?? currCode} {formatCurrency(taxAmmountData?.TotalAmount)}</Typography>
 //                                                 ) :
 //                                                     <Skeleton variant="text" height={30} width={100} />
 //                                                 }
@@ -585,7 +588,7 @@ export default function PaymentComponent({ bgcolor, textColor, top, storeinit })
 //                                             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
 //                                                 <Typography>Estimated Tax</Typography>
 //                                                 {!isPloding ? (
-//                                                     <Typography fontWeight="bold">{currCode} {formatter(taxAmmountData?.TaxAmount)}</Typography>
+//                                                     <Typography fontWeight="bold">{currencyCode ?? currCode} {formatCurrency(taxAmmountData?.TaxAmount)}</Typography>
 //                                                 ) :
 //                                                     <Skeleton variant="text" height={30} width={100} />
 //                                                 }
@@ -595,7 +598,7 @@ export default function PaymentComponent({ bgcolor, textColor, top, storeinit })
 //                                                 <Typography variant="h6">Total Amount</Typography>
 //                                                 {!isPloding ? (
 //                                                     <Typography variant="h6">
-//                                                         {currCode} {formatter(Number((taxAmmountData?.TotalAmountWithTax)?.toFixed(3)))}
+//                                                         {currencyCode ?? currCode} {formatCurrency(Number((taxAmmountData?.TotalAmountWithTax)?.toFixed(3)))}
 //                                                     </Typography>
 //                                                 ) :
 //                                                     <Skeleton variant="text" height={30} width={100} />

@@ -1,6 +1,7 @@
 "use client";
 
 import { isPriceHidden } from "@/app/(core)/utils/storeFlags";
+import useCurrency from "@/app/(core)/hooks/useCurrency";
 import React from 'react';
 import {
     Box,
@@ -53,6 +54,8 @@ export default function PaymentComponent({ bgcolor, textColor, top, storeinit })
         isloder,
         isPloding,
     } = usePaymentLogic(storeinit);
+
+    const { format: formatCurrency, code: currencyCode } = useCurrency();
 
     const { IsPriceShow } = storeinit;
 
@@ -213,7 +216,7 @@ export default function PaymentComponent({ bgcolor, textColor, top, storeinit })
                                             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                                 <Typography>Subtotal</Typography>
                                                 {!isPloding ? (
-                                                    <Typography fontWeight="bold">{currCode} {formatter(taxAmmountData?.TotalAmount)}</Typography>
+                                                    <Typography fontWeight="bold">{currencyCode ?? currCode} {formatCurrency(taxAmmountData?.TotalAmount)}</Typography>
                                                 ) :
                                                     <Skeleton variant="text" height={30} width={100} />
                                                 }
@@ -221,7 +224,7 @@ export default function PaymentComponent({ bgcolor, textColor, top, storeinit })
                                             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                                 <Typography>Estimated Tax</Typography>
                                                 {!isPloding ? (
-                                                    <Typography fontWeight="bold">{currCode} {formatter(taxAmmountData?.TaxAmount)}</Typography>
+                                                    <Typography fontWeight="bold">{currencyCode ?? currCode} {formatCurrency(taxAmmountData?.TaxAmount)}</Typography>
                                                 ) :
                                                     <Skeleton variant="text" height={30} width={100} />
                                                 }
@@ -231,7 +234,7 @@ export default function PaymentComponent({ bgcolor, textColor, top, storeinit })
                                                 <Typography variant="h6">Total Amount</Typography>
                                                 {!isPloding ? (
                                                     <Typography variant="h6">
-                                                        {currCode} {formatter(Number((taxAmmountData?.TotalAmountWithTax)?.toFixed(3)))}
+                                                        {currencyCode ?? currCode} {formatCurrency(Number((taxAmmountData?.TotalAmountWithTax)?.toFixed(3)))}
                                                     </Typography>
                                                 ) :
                                                     <Skeleton variant="text" height={30} width={100} />

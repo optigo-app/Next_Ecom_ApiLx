@@ -1,6 +1,7 @@
 import { getTenantDb } from "@/db/tenantManager.js";
 import { saveMetalDensity } from "@/db/procedures/saveMetalDensity.js";
 import { logger } from "@/db/logger.js";
+import { syncMetalTypeCombo } from "./syncMetalTypeCombo.js";
 
 export async function syncMetalDensity(domain, storeInit) {
   const db = getTenantDb(domain);
@@ -34,7 +35,8 @@ export async function syncMetalDensity(domain, storeInit) {
     }
     const result = saveMetalDensity(db, payload);
     logger.info("METAL_DENSITY_SYNC", `Saved ${result.savedCount} metal density rows for '${domain}'`);
-    return { success: true, ...result };
+    const metalTypeCombo = await syncMetalTypeCombo(domain, storeInit);
+    return { success: true, ...result, metalTypeCombo };
   } catch (error) {
     logger.error("METAL_DENSITY_SYNC", `Metal density sync failed for '${domain}': ${error.message}`);
     return { success: false, error: error.message };

@@ -1,4 +1,5 @@
 import { isPriceHidden } from "@/app/(core)/utils/storeFlags";
+import useAccountCurrency from "@/app/(core)/hooks/useAccountCurrency";
 import React, { useEffect, useRef, useState } from "react";
 import "./SalesReport.scss";
 import {
@@ -258,6 +259,7 @@ EnhancedTableHead.propTypes = {
 };
 
 const SalesReport = () => {
+  const { convertAmountFromCurrency, conversionEnabled, getCurrencyCode } = useAccountCurrency();
 
   const storedData = sessionStorage.getItem('loginUserDetail');
   const loginDetails = JSON.parse(storedData);
@@ -299,6 +301,30 @@ const SalesReport = () => {
   });
   const fromDateRef = useRef(null);
   const toDateRef = useRef(null);
+
+  const displayTotal = React.useMemo(() => {
+    if (!conversionEnabled) return total;
+
+    const convertedTotals = {
+      MetalAmount: 0,
+      DiamondAmount: 0,
+      ColorStoneAmount: 0,
+      LabourAmount: 0,
+      OtherAmount: 0,
+      TotalAmount: 0,
+    };
+
+    filterData?.forEach((row) => {
+      convertedTotals.MetalAmount += Number(convertAmountFromCurrency(row?.MetalAmount, row?.Currencycode, row?.CurrencyExchRate)) || 0;
+      convertedTotals.DiamondAmount += Number(convertAmountFromCurrency(row?.DiamondAmount, row?.Currencycode, row?.CurrencyExchRate)) || 0;
+      convertedTotals.ColorStoneAmount += Number(convertAmountFromCurrency(row?.ColorStoneAmount, row?.Currencycode, row?.CurrencyExchRate)) || 0;
+      convertedTotals.LabourAmount += Number(convertAmountFromCurrency(row?.LabourAmount, row?.Currencycode, row?.CurrencyExchRate)) || 0;
+      convertedTotals.OtherAmount += Number(convertAmountFromCurrency(row?.OtherAmount, row?.Currencycode, row?.CurrencyExchRate)) || 0;
+      convertedTotals.TotalAmount += Number(convertAmountFromCurrency(row?.UnitCost, row?.Currencycode, row?.CurrencyExchRate)) || 0;
+    });
+
+    return { ...total, ...convertedTotals };
+  }, [conversionEnabled, filterData, total, convertAmountFromCurrency]);
 
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === "asc";
@@ -372,12 +398,16 @@ const SalesReport = () => {
       let fromdates = `${fromDates?.["$y"]}-${checkMonth(fromDates?.["$M"])}-${fromDates?.["$D"]}`;
       let todates = `${toDates?.["$y"]}-${checkMonth(toDates?.["$M"])}-${toDates?.["$D"]}`;
 
-      let cutDate = cutDates;
-      const dateString = cutDates.join(' ');
-      const formattedDate = moment(dateString).format('YYYY-MM-DD');
+      let cutDate;
+      const dateString = cutDates?.join(' ');
+      const formattedDate = dateString ? moment(dateString).format('YYYY-MM-DD') : undefined;
 
       cutDate = formattedDate;
-      if (cutDate !== undefined) {
+      const noDateFilters = fromdates?.includes(undefined) && todates?.includes(undefined);
+      if (noDateFilters) {
+        flags.toDate = true;
+        flags.fromDate = true;
+      } else if (cutDate !== undefined && cutDate !== "Invalid date") {
         if (!fromdates?.includes(undefined) && !todates?.includes(undefined)) {
 
           let fromdat = moment(fromdates);
@@ -422,9 +452,6 @@ const SalesReport = () => {
             confirmButtonText: "ok"
           });
           resetAllFilters();
-        } else if (fromdates?.includes(undefined) && todates?.includes(undefined)) {
-          flags.toDate = true;
-          flags.fromDate = true;
         }
       }
 
@@ -784,19 +811,19 @@ const SalesReport = () => {
                 </tr>
                 <tr>
                   <td className="fw_bold">
-                    {total?.MetalAmount >= 0 && <span dangerouslySetInnerHTML={{ __html: custCurrency }}></span>}&nbsp;{NumberWithCommas(total?.MetalAmount, 2)}
+                    {displayTotal?.MetalAmount >= 0 && <span dangerouslySetInnerHTML={{ __html: getCurrencyCode(custCurrency) }}></span>}&nbsp;{NumberWithCommas(displayTotal?.MetalAmount, 2)}
                   </td>
                   <td className="fw_bold">
-                    {total?.DiamondAmount >= 0 && <span dangerouslySetInnerHTML={{ __html: custCurrency }}></span>}&nbsp;{NumberWithCommas(total?.DiamondAmount, 2)}
+                    {displayTotal?.DiamondAmount >= 0 && <span dangerouslySetInnerHTML={{ __html: getCurrencyCode(custCurrency) }}></span>}&nbsp;{NumberWithCommas(displayTotal?.DiamondAmount, 2)}
                   </td>
                   <td className="fw_bold">
-                    {total?.ColorStoneAmount >= 0 && <span dangerouslySetInnerHTML={{ __html: custCurrency }}></span>}&nbsp;{NumberWithCommas(total?.ColorStoneAmount, 2)}
+                    {displayTotal?.ColorStoneAmount >= 0 && <span dangerouslySetInnerHTML={{ __html: getCurrencyCode(custCurrency) }}></span>}&nbsp;{NumberWithCommas(displayTotal?.ColorStoneAmount, 2)}
                   </td>
                   <td className="fw_bold">
-                    {total?.LabourAmount >= 0 && <span dangerouslySetInnerHTML={{ __html: custCurrency }}></span>}&nbsp;{NumberWithCommas(total?.LabourAmount, 2)}
+                    {displayTotal?.LabourAmount >= 0 && <span dangerouslySetInnerHTML={{ __html: getCurrencyCode(custCurrency) }}></span>}&nbsp;{NumberWithCommas(displayTotal?.LabourAmount, 2)}
                   </td>
                   <td className="fw_bold">
-                    {total?.OtherAmount >= 0 && <span dangerouslySetInnerHTML={{ __html: custCurrency }}></span>}&nbsp;{NumberWithCommas(total?.OtherAmount, 2)}
+                    {displayTotal?.OtherAmount >= 0 && <span dangerouslySetInnerHTML={{ __html: getCurrencyCode(custCurrency) }}></span>}&nbsp;{NumberWithCommas(displayTotal?.OtherAmount, 2)}
                   </td>
                   <td className="fw_bold">1</td>
                 </tr>
@@ -806,7 +833,7 @@ const SalesReport = () => {
           <Box sx={{ paddingBottom: "20px", paddingRight: "15px" }}>
             <Typography>Total Amount</Typography>
             <Typography sx={{ fontWeight: 700, textAlign: "center" }}>
-              {total?.TotalAmount >= 0 && <span dangerouslySetInnerHTML={{ __html: custCurrency }}></span>}&nbsp;{NumberWithCommas(total?.TotalAmount, 2)}
+              {displayTotal?.TotalAmount >= 0 && <span dangerouslySetInnerHTML={{ __html: getCurrencyCode(custCurrency) }}></span>}&nbsp;{NumberWithCommas(displayTotal?.TotalAmount, 2)}
             </Typography>
           </Box>
           <Box
@@ -1222,12 +1249,12 @@ const SalesReport = () => {
                           <TableCell align="center">{row.SKUNo}</TableCell>
                           <TableCell align="center">{row.designno}</TableCell>
                           <TableCell align="center">{row.MetalType}</TableCell>
-                          {!isPriceHidden(IsPriceShow) && <>  <TableCell align="center"><span dangerouslySetInnerHTML={{ __html: row?.Currencycode }}></span>&nbsp;{formatAmount(row.MetalAmount)}</TableCell>
-                            <TableCell align="center"><span dangerouslySetInnerHTML={{ __html: row?.Currencycode }}></span>&nbsp; {formatAmount(row.DiamondAmount)} </TableCell>
-                            <TableCell align="center"><span dangerouslySetInnerHTML={{ __html: row?.Currencycode }}></span>&nbsp; {formatAmount(row.ColorStoneAmount)} </TableCell>
-                            <TableCell align="center"><span dangerouslySetInnerHTML={{ __html: row?.Currencycode }}></span>&nbsp;{formatAmount(row.LabourAmount)}</TableCell>
-                            <TableCell align="center"><span dangerouslySetInnerHTML={{ __html: row?.Currencycode }}></span>&nbsp;{formatAmount(row.OtherAmount)}</TableCell>
-                            <TableCell align="center"><span dangerouslySetInnerHTML={{ __html: row?.Currencycode }}></span>&nbsp;{formatAmount(row.UnitCost)}</TableCell></>}
+                          {!isPriceHidden(IsPriceShow) && <>  <TableCell align="center"><span dangerouslySetInnerHTML={{ __html: getCurrencyCode(row?.Currencycode) }}></span>&nbsp;{formatAmount(convertAmountFromCurrency(row.MetalAmount, row.Currencycode, row.CurrencyExchRate))}</TableCell>
+                            <TableCell align="center"><span dangerouslySetInnerHTML={{ __html: getCurrencyCode(row?.Currencycode) }}></span>&nbsp; {formatAmount(convertAmountFromCurrency(row.DiamondAmount, row.Currencycode, row.CurrencyExchRate))} </TableCell>
+                            <TableCell align="center"><span dangerouslySetInnerHTML={{ __html: getCurrencyCode(row?.Currencycode) }}></span>&nbsp; {formatAmount(convertAmountFromCurrency(row.ColorStoneAmount, row.Currencycode, row.CurrencyExchRate))} </TableCell>
+                            <TableCell align="center"><span dangerouslySetInnerHTML={{ __html: getCurrencyCode(row?.Currencycode) }}></span>&nbsp;{formatAmount(convertAmountFromCurrency(row.LabourAmount, row.Currencycode, row.CurrencyExchRate))}</TableCell>
+                            <TableCell align="center"><span dangerouslySetInnerHTML={{ __html: getCurrencyCode(row?.Currencycode) }}></span>&nbsp;{formatAmount(convertAmountFromCurrency(row.OtherAmount, row.Currencycode, row.CurrencyExchRate))}</TableCell>
+                            <TableCell align="center"><span dangerouslySetInnerHTML={{ __html: getCurrencyCode(row?.Currencycode) }}></span>&nbsp;{formatAmount(convertAmountFromCurrency(row.UnitCost, row.Currencycode, row.CurrencyExchRate))}</TableCell></>}
                           <TableCell align="center">{row.Category}</TableCell>
                           <TableCell align="center">{row.GrossWt}</TableCell>
                           <TableCell align="center">{row.NetWt}</TableCell>

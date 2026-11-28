@@ -4,6 +4,8 @@ import ShoppingBagIcon from "@mui/icons-material/ShoppingBag";
 import { motion, AnimatePresence, useInView } from "framer-motion";
 import Tooltip from "@mui/material/Tooltip";
 import './CartHeader.scss'
+import { useCurrency } from "@/app/(core)/hooks/useCurrency";
+import { decodeEntities } from "@/app/(core)/utils/product/productListingHelpers";
 
 export default function CartHeader({
   summary,
@@ -18,6 +20,7 @@ export default function CartHeader({
   openClearAllModal,
   closeClearAllModal,
 }) {
+  const { format: formatCurrency, symbol: currencySymbol } = useCurrency();
   const IsSetupFor = false;
   const summaryRef = useRef(null);
   const isMobile = useMediaQuery("(max-width:768px)");
@@ -100,7 +103,7 @@ export default function CartHeader({
                           >
 
                             <Typography fontSize={14} fontWeight={700}>
-                              {CurrencyCode} {totalPrice?.toLocaleString("en-IN")}
+                              {currencySymbol ?? CurrencyCode} {formatCurrency(totalPrice)}
                             </Typography>
                           </Tooltip>
                         </Box>
@@ -166,7 +169,7 @@ export default function CartHeader({
                   }}>
                     <Typography fontSize={14} fontWeight={700} color="#b0b8c4" >Total</Typography>
                     <Typography fontSize={14} fontWeight={700}>
-                      {CurrencyCode} {totalPrice?.toLocaleString("en-IN")}
+                      {currencySymbol ?? CurrencyCode} {formatCurrency(totalPrice)}
                     </Typography>
                   </Box>
                 </Box>
@@ -206,7 +209,7 @@ export default function CartHeader({
                 color: "#64748b",
               }}
             >
-              {count} Items • {CurrencyCode} {totalPrice?.toLocaleString("en-IN")}
+              {count} Items • {currencySymbol ?? CurrencyCode} {formatCurrency(totalPrice)}
             </Typography>
           </Tooltip>
         )}
@@ -381,31 +384,35 @@ export default function CartHeader({
 
 
 
-const PriceTooltipContent = ({ summary }) => (
+const PriceTooltipContent = ({ summary }) => {
+  const { format: formatCurrency, symbol: tipSymbol } = useCurrency();
+  const tip = decodeEntities(tipSymbol || "₹");
+  return (
   <Box sx={{ p: 1 }}>
     <Typography variant="subtitle2" fontWeight="bold">
       Price Breakup
     </Typography>
     <Typography variant="body2">
-      Metal Cost: ₹{summary?.MetalCost?.toLocaleString()}
+      Metal Cost: {tip}{formatCurrency(summary?.MetalCost)}
     </Typography>
     <Typography variant="body2">
-      Diamond Cost: ₹{summary?.DiamondCost?.toLocaleString()}
+      Diamond Cost: {tip}{formatCurrency(summary?.DiamondCost)}
     </Typography>
     <Typography variant="body2">
-      Color Stone Cost: ₹{summary?.ColorStoneCost?.toLocaleString()}
+      Color Stone Cost: {tip}{formatCurrency(summary?.ColorStoneCost)}
     </Typography>
     <Typography variant="body2">
-      Misc Cost: ₹{summary?.MiscCost?.toLocaleString()}
+      Misc Cost: {tip}{formatCurrency(summary?.MiscCost)}
     </Typography>
     <Typography variant="body2">
-      Labour Cost: ₹{summary?.LabourCost?.toLocaleString()}
+      Labour Cost: {tip}{formatCurrency(summary?.LabourCost)}
     </Typography>
     <Typography variant="body2">
-      Other Cost: ₹{summary?.OtherCost?.toLocaleString()}
+      Other Cost: {tip}{formatCurrency(summary?.OtherCost)}
     </Typography>
   </Box>
-);
+  );
+};
 
 
 
@@ -437,7 +444,7 @@ const PriceTooltipContent = ({ summary }) => (
 //               color: "#152c55",
 //             }}
 //           >
-//             {count} Items • {CurrencyCode} {totalPrice?.toLocaleString("en-IN")}
+//             {count} Items • {currencySymbol ?? CurrencyCode} {formatCurrency(totalPrice)}
 //           </Typography>
 //         )}
 //       </Box>

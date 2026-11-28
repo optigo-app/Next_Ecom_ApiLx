@@ -2,7 +2,7 @@
 import React from "react";
 import { Box, Skeleton, Stack, Typography, Button, Divider } from "@mui/material";
 import Grid from "@mui/material/Grid";
-import { formatter } from "@/app/(core)/utils/Glob_Functions/GlobalFunction";
+import { useCurrency } from "@/app/(core)/hooks/useCurrency";
 
 const decodeEntities = (html) => {
   if (typeof document === "undefined") return html;
@@ -28,6 +28,7 @@ const ChevronRightIcon = () => (
 );
 
 export default function DetailPageSkeleton({ imageUrl, title, price, CurrencyCode, ArticleNo, nwt, media }) {
+  const { format: formatCurrency, symbol: currencySymbol } = useCurrency();
   const [failedImages, setFailedImages] = React.useState({});
 
   const candidateImages = React.useMemo(() => {
@@ -305,10 +306,10 @@ export default function DetailPageSkeleton({ imageUrl, title, price, CurrencyCod
               >
                 <span
                   dangerouslySetInnerHTML={{
-                    __html: decodeEntities(CurrencyCode || "$"),
+                    __html: decodeEntities(currencySymbol ?? CurrencyCode ?? "$"),
                   }}
                 />
-                <span>{formatter(price)}</span>
+                <span>{formatCurrency(price)}</span>
               </Typography>
             ) : (
               <Skeleton

@@ -13,7 +13,8 @@ import Pako from "pako";
 import Cookies from "js-cookie";
 import { useStore } from '@/app/(core)/contexts/StoreProvider';
 import '../blocks/Css/DesignSet.scss'
-import { formatter, formatTitleLine, formatRedirectTitleLine } from "@/app/(core)/utils/Glob_Functions/GlobalFunction";
+import { formatTitleLine, formatRedirectTitleLine } from "@/app/(core)/utils/Glob_Functions/GlobalFunction";
+import { useCurrency } from "@/app/(core)/hooks/useCurrency";
 import { useNextRouterLikeRR } from '@/app/(core)/hooks/useLocationRd';
 import { usePathname } from 'next/navigation';
 
@@ -48,6 +49,7 @@ const gradientColors = [
 ]
 
 const MaxDesignSet = ({ data }) => {
+  const { format: formatCurrency, symbol: currencySymbol } = useCurrency();
   const designSetRef = useRef(null);
   const navigate = useNextRouterLikeRR();
   const pathname = usePathname();
@@ -490,12 +492,12 @@ const MaxDesignSet = ({ data }) => {
                                         dangerouslySetInnerHTML={{
                                           __html: decodeEntities(
                                             islogin
-                                              ? loginUserDetail?.CurrencyCode
-                                              : storeInit?.CurrencyCode
+                                              ? (currencySymbol ?? loginUserDetail?.CurrencyCode)
+                                              : (currencySymbol ?? storeInit?.CurrencyCode)
                                           ),
                                         }}
                                       />{" "}
-                                      {formatter(detail?.UnitCostWithMarkUp)}
+                                      {formatCurrency(detail?.UnitCostWithMarkUp)}
                                     </Typography>
                                   )}
                                 </Box>

@@ -11,7 +11,8 @@ import CloseIcon from "@mui/icons-material/Close";
 import { GetCountAPI } from "@/app/(core)/utils/API/GetCount/GetCountAPI";
 import Cookies from "js-cookie";
 import { toast } from "react-toastify";
-import { formatter, formatTitleLine } from "@/app/(core)/utils/Glob_Functions/GlobalFunction";
+import { formatTitleLine } from "@/app/(core)/utils/Glob_Functions/GlobalFunction";
+import { useCurrency } from "@/app/(core)/hooks/useCurrency";
 import { Skeleton } from "@mui/material";
 import { useStore } from "@/app/(core)/contexts/StoreProvider";
 
@@ -31,6 +32,7 @@ const WishlistItems = ({
   handleMoveToDetail,
   storeInit
 }) => {
+  const { format: formatCurrency, symbol: currencySymbol } = useCurrency();
   const [imageSrc, setImageSrc] = useState();
   const [isLoading, setisLoading] = useState(true);
   const { setCartCountNum, setWishCountNum } = useStore()
@@ -227,9 +229,9 @@ const WishlistItems = ({
                     {!isPriceHidden(storeInit) && (
                       <>
                         <span className="smr_currencyFont">
-                          {loginInfo?.CurrencyCode ?? storeInit?.CurrencyCode}
+                          {currencySymbol ?? loginInfo?.CurrencyCode ?? storeInit?.CurrencyCode}
                         </span>{" "}
-                        <span>{formatter(item?.FinalCost)}</span>
+                        <span>{formatCurrency(item?.FinalCost)}</span>
                       </>
                     )}
                   </Typography>

@@ -38,7 +38,9 @@ export async function GET(req) {
 
     const randomNo = searchParams.get("RandomNo") || searchParams.get("randomNo");
 
-    if (!customerId && !randomNo) {
+    const albumKey = searchParams.get("album");
+
+    if (!customerId && !randomNo && !albumKey) {
       return NextResponse.json(
         {
           Status: "400",
@@ -51,10 +53,12 @@ export async function GET(req) {
 
     const options = {
       customerId,
+      album: searchParams.get("album"),
       id: searchParams.get("id"),
       albumcode: searchParams.get("albumcode") || searchParams.get("albumCode"),
       RandomNo: searchParams.get("RandomNo") || searchParams.get("randomNo"),
       includeDesigns: searchParams.get("includeDesigns") !== "false",
+      designLimit: Number(searchParams.get("designLimit")) || 0,
       statusOnly: searchParams.get("statusOnly") === "1" || searchParams.get("statusOnly") === "true",
     };
 
@@ -64,7 +68,7 @@ export async function GET(req) {
     let result = getExclusiveAlbumsWithDesigns(db, options);
 
     // If querying by RandomNo or customerId and no albums found in targetDomain, check fallback domains
-    if ((!result?.Data?.rd || result.Data.rd.length === 0) && (options.RandomNo || customerId)) {
+    if ((!result?.Data?.rd || result.Data.rd.length === 0) && (options.RandomNo || albumKey || customerId)) {
       const fallbackDomains = ["beluxjewel.web", "demostore", "procatalog.web", "procatalog2.web"].filter(
         (d) => d.toLowerCase() !== targetDomain.toLowerCase()
       );

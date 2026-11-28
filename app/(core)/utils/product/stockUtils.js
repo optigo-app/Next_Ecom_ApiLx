@@ -122,6 +122,53 @@ export function resolveProductStockStatus(product, stockMap) {
 }
 
 /**
+ * Resolves a design-level listing row's availability by aggregating every live
+ * stock record that belongs to the design: own StockBarcode first, then all
+ * records sharing ArticleNo, autocode, or designno (a design can have several
+ * article barcodes, e.g. ring sizes). Falls back to the stored IsInReadyStock
+ * flag when no stock record matches. Mirrors syncReadyStockFlags + PDP logic.
+ */
+export function resolveDesignStockStatus(product, stockMap) {
+  const resolved = resolveProductStockStatus(product, stockMap);
+  const readyStockStatus = Number(product?.IsInReadyStock ?? product?.isInReadyStock ?? 0);
+  const flagInMemo = readyStockStatus === 2 || Number(product?.InMemo ?? product?.inmemo ?? 0) === 1;
+  const flagInStock = !flagInMemo && (readyStockStatus === 1 || Number(product?.InStock ?? product?.instock ?? 0) === 1);
+
+  let isInMemo = resolved.isInMemo;
+  let isInStock = resolved.isInStock;
+  let stockRecord = resolved.stockRecord;
+
+  if (!stockRecord && stockMap instanceof Map && stockMap.size > 0) {
+    const articleNo = normalizeBarcode(product?.ArticleNo ?? product?.articleno).toLowerCase();
+    const autocode = normalizeBarcode(product?.autocode ?? product?.AutoCode).toLowerCase();
+    const designno = normalizeBarcode(product?.designno ?? product?.DesignNo).toLowerCase();
+    const matches = [...stockMap.values()].filter(
+      (record) =>
+        (articleNo && record.ArticleNo && record.ArticleNo.toLowerCase() === articleNo) ||
+        (autocode && record.autocode && record.autocode.toLowerCase() === autocode) ||
+        (designno && record.designno && record.designno.toLowerCase() === designno),
+    );
+    if (matches.length > 0) {
+      stockRecord = matches[0];
+      isInMemo = matches.some((record) => record.InMemo === 1);
+      isInStock = !isInMemo && matches.some((record) => record.InStock === 1);
+    }
+  }
+
+  // OR the stored flag like the PDP does: stock sync can leave the flag stale.
+  isInMemo = isInMemo || flagInMemo;
+  isInStock = isInStock || flagInStock;
+
+  return {
+    barcode: resolved.barcode,
+    stockRecord,
+    isInStock,
+    isInMemo,
+    stockStatus: isInMemo ? "IN_MEMO" : isInStock ? "IN_STOCK" : "MADE_TO_ORDER",
+  };
+}
+
+/**
  * Determines the live stock status of any single product or variant using StockBarcode.
  * 
  * @param {object|string} productOrBarcode - Product object or barcode string
@@ -196,21 +243,9 @@ export function checkProductStock(productOrBarcode, stockMap) {
  */
 export function enrichProductsWithStock(products = [], stockMap) {
   if (!Array.isArray(products) || products.length === 0) return [];
-  if (!stockMap || !(stockMap instanceof Map) || stockMap.size === 0) {
-    // If no stock map provided, check embedded properties
-    return products.map((item) => {
-      const stock = checkProductStock(item, stockMap);
-      return {
-        ...item,
-        isInStock: stock.isInStock,
-        isInMemo: stock.isInMemo,
-        stockStatus: stock.stockStatus,
-      };
-    });
-  }
 
   return products.map((item) => {
-    const stock = checkProductStock(item, stockMap);
+    const stock = resolveDesignStockStatus(item, stockMap);
     return {
       ...item,
       isInStock: stock.isInStock,

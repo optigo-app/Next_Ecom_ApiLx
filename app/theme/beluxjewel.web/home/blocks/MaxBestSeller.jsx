@@ -8,8 +8,8 @@ import "swiper/css/navigation";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import {
   formatRedirectTitleLine,
-  formatter,
 } from "@/app/(core)/utils/Glob_Functions/GlobalFunction";
+import { useCurrency } from "@/app/(core)/hooks/useCurrency";
 import Pako from "pako";
 import { useStore } from "@/app/(core)/contexts/StoreProvider";
 import { useNextRouterLikeRR } from "@/app/(core)/hooks/useLocationRd";
@@ -329,7 +329,9 @@ const MaxBestSeller = ({ storeInit, initialData = [] }) => {
 
 // ─── Product Card (matches Category dimensions) ───────────────────────────────
 
-const ProductCard = ({ item, storeInit, loginUserDetail, onClick }) => (
+const ProductCard = ({ item, storeInit, loginUserDetail, onClick }) => {
+  const { format: formatCurrency, symbol: currencySymbol } = useCurrency();
+  return (
   <Box
     className="product-card-group"
     sx={{
@@ -422,8 +424,8 @@ const ProductCard = ({ item, storeInit, loginUserDetail, onClick }) => (
             letterSpacing: "0.5px",
           }}
         >
-          {loginUserDetail?.CurrencyCode ?? storeInit?.CurrencyCode}&nbsp;
-          {formatter(item?.UnitCostWithMarkUp)}
+          {currencySymbol ?? loginUserDetail?.CurrencyCode ?? storeInit?.CurrencyCode}&nbsp;
+          {formatCurrency(item?.UnitCostWithMarkUp)}
         </Typography>
       </Box>}
     </Box>
@@ -462,6 +464,7 @@ const ProductCard = ({ item, storeInit, loginUserDetail, onClick }) => (
       )}
     </Box>
   </Box>
-);
+  );
+};
 
 export default MaxBestSeller;

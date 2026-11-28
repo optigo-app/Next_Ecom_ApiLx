@@ -1,5 +1,6 @@
 import { findCsQcId, findDiaQcId, findMetal } from "../../Glob_Functions/GlobalFunction";
 import { CommonAPI } from "../CommonAPI/CommonAPI";
+import { getPricingPolicyParams } from "@/app/(core)/utils/product/pricingPolicy";
 
 export const GetPriceListApi = async (page = 1, obj = {}, filterObj = {}, autocodeList, obje, mainData = "") => {
   const storeInit = JSON.parse(sessionStorage.getItem("storeInit"));
@@ -98,22 +99,11 @@ export const GetPriceListApi = async (page = 1, obj = {}, filterObj = {}, autoco
     // "colorstonepricelistname": `${loginUserDetail?.colorstonepricelistname}`,
     // "SettingPriceUniqueNo": `${loginUserDetail?.SettingPriceUniqueNo}`,
     Customerid: `${loginUserDetail?.id ?? 0}`,
-    Laboursetid: `${storeInit?.IsB2BWebsite == 0 && islogin == false
-        ? storeInit?.pricemanagement_laboursetid
-        : loginUserDetail?.pricemanagement_laboursetid
-      }`,
-    diamondpricelistname: `${storeInit?.IsB2BWebsite == 0 && islogin == false
-        ? storeInit?.diamondpricelistname
-        : loginUserDetail?.diamondpricelistname
-      }`,
-    colorstonepricelistname: `${storeInit?.IsB2BWebsite == 0 && islogin == false
-        ? storeInit?.colorstonepricelistname
-        : loginUserDetail?.colorstonepricelistname
-      }`,
-    SettingPriceUniqueNo: `${storeInit?.IsB2BWebsite == 0 && islogin == false
-        ? storeInit?.SettingPriceUniqueNo
-        : loginUserDetail?.SettingPriceUniqueNo
-      }`,
+    ...getPricingPolicyParams({
+      storeinit: storeInit,
+      loginUserDetail,
+      islogin,
+    }),
     designno: "",
     FilterKey: `${MenuParams?.FilterKey ?? ""}`,
     FilterVal: `${MenuParams?.FilterVal ?? ""}`,

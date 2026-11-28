@@ -84,7 +84,15 @@ export function batchInsertArticleMaterials(db, rawPayload = [], options = {}, t
       findingtypeid,
       findingAccessoriesId,
       findingtypename,
-      findingAccessories
+      findingAccessories,
+      IsMrpBase,
+      Metal_Type,
+      Org_metaltypename,
+      OrgWeight,
+      MetalPriceRatio,
+      MetalWastage,
+      IsPrimaryMetal,
+      IsDesignBaseWeb
     ) VALUES (
       @id,
       @DesignId,
@@ -126,7 +134,15 @@ export function batchInsertArticleMaterials(db, rawPayload = [], options = {}, t
       @findingtypeid,
       @findingAccessoriesId,
       @findingtypename,
-      @findingAccessories
+      @findingAccessories,
+      @IsMrpBase,
+      @Metal_Type,
+      @Org_metaltypename,
+      @OrgWeight,
+      @MetalPriceRatio,
+      @MetalWastage,
+      @IsPrimaryMetal,
+      @IsDesignBaseWeb
     )
     ON CONFLICT(id) DO UPDATE SET
       DesignId = excluded.DesignId,
@@ -169,6 +185,14 @@ export function batchInsertArticleMaterials(db, rawPayload = [], options = {}, t
       findingAccessoriesId = excluded.findingAccessoriesId,
       findingtypename = excluded.findingtypename,
       findingAccessories = excluded.findingAccessories,
+      IsMrpBase = excluded.IsMrpBase,
+      Metal_Type = excluded.Metal_Type,
+      Org_metaltypename = excluded.Org_metaltypename,
+      OrgWeight = excluded.OrgWeight,
+      MetalPriceRatio = excluded.MetalPriceRatio,
+      MetalWastage = excluded.MetalWastage,
+      IsPrimaryMetal = excluded.IsPrimaryMetal,
+      IsDesignBaseWeb = excluded.IsDesignBaseWeb,
       updated_at = CURRENT_TIMESTAMP
   `);
 
@@ -245,6 +269,14 @@ export function batchInsertArticleMaterials(db, rawPayload = [], options = {}, t
         findingAccessoriesId: sanitizeNumber(item.findingAccessoriesId, 0),
         findingtypename: sanitizeString(item.findingtypename),
         findingAccessories: sanitizeString(item.findingAccessories),
+        IsMrpBase: sanitizeNullableNumber(item.IsMrpBase),
+        Metal_Type: sanitizeString(item.Metal_Type),
+        Org_metaltypename: sanitizeString(item.Org_metaltypename),
+        OrgWeight: sanitizeNullableNumber(item.OrgWeight),
+        MetalPriceRatio: sanitizeNullableNumber(item.MetalPriceRatio),
+        MetalWastage: sanitizeNullableNumber(item.MetalWastage),
+        IsPrimaryMetal: sanitizeNullableNumber(item.IsPrimaryMetal),
+        IsDesignBaseWeb: Number(item.IsDesignBaseWeb ?? item.isDesignBaseWeb ?? 0) === 1 ? 1 : 0,
       };
 
       upsertStmt.run(record);

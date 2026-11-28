@@ -14,6 +14,7 @@ import { Navigation } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useCurrency } from "@/app/(core)/hooks/useCurrency";
 
 const imageNotFound = "/image-not-found.jpg";
 
@@ -139,14 +140,13 @@ export default function RecentlyViewed({
 }) {
   const prevRef = useRef(null);
   const nextRef = useRef(null);
-  const formatter = new Intl.NumberFormat("en-IN");
+  const { format: formatCurrency, symbol: selSymbol } = useCurrency();
 
   if (!recentlyViewedArr || recentlyViewedArr.length === 0) {
     return null;
   }
 
-  const currencySymbol =
-    loginInfo?.CurrencyCode ?? storeInit?.CurrencyCode ?? "INR";
+  const currencySymbol = selSymbol ?? loginInfo?.CurrencyCode ?? storeInit?.CurrencyCode ?? "INR";
   const shouldUseSwiper = recentlyViewedArr.length > 4;
 
   const renderCard = (item, index) => {
@@ -259,7 +259,7 @@ export default function RecentlyViewed({
                 letterSpacing: "0.2px",
               }}
             >
-              {currencySymbol}&nbsp;{formatter.format(item.UnitCostWithMarkUp)}
+              {currencySymbol}&nbsp;{formatCurrency(item.UnitCostWithMarkUp)}
             </Typography>
           )}
         </Box>

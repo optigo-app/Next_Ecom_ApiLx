@@ -1,5 +1,6 @@
 import { getSession } from "../../FetchSessionData";
 import { CommonAPI } from "../CommonAPI/CommonAPI";
+import { getPricingPolicyParams } from "@/app/(core)/utils/product/pricingPolicy";
 
 export const SearchProductPrice = async ({ searchVar, autocodeList }) => {
 
@@ -15,22 +16,11 @@ export const SearchProductPrice = async ({ searchVar, autocodeList }) => {
     CurrencyRate: `${loginUserDetail?.CurrencyRate ?? storeInit?.CurrencyRate ?? ""}`,
     FrontEnd_RegNo: `${storeInit?.FrontEnd_RegNo ?? ""}`,
     Customerid: `${loginUserDetail?.id ?? 0}`,
-    Laboursetid: `${isGuest
-        ? storeInit?.pricemanagement_laboursetid ?? ""
-        : loginUserDetail?.pricemanagement_laboursetid ?? storeInit?.pricemanagement_laboursetid ?? ""
-      }`,
-    diamondpricelistname: `${isGuest
-        ? storeInit?.diamondpricelistname ?? ""
-        : loginUserDetail?.diamondpricelistname ?? storeInit?.diamondpricelistname ?? ""
-      }`,
-    colorstonepricelistname: `${isGuest
-        ? storeInit?.colorstonepricelistname ?? ""
-        : loginUserDetail?.colorstonepricelistname ?? storeInit?.colorstonepricelistname ?? ""
-      }`,
-    SettingPriceUniqueNo: `${isGuest
-        ? storeInit?.SettingPriceUniqueNo ?? ""
-        : loginUserDetail?.SettingPriceUniqueNo ?? storeInit?.SettingPriceUniqueNo ?? ""
-      }`,
+    ...getPricingPolicyParams({
+      storeinit: storeInit,
+      loginUserDetail,
+      islogin,
+    }),
     "Metalid": `${loginUserDetail?.Metalid ?? storeInit?.MetalId ?? ""}`,
     "DiaQCid": `${loginUserDetail?.cmboDiaQCid ?? storeInit?.cmboDiaQCid ?? ""}`,
     "CsQCid": `${loginUserDetail?.cmboCSQCid ?? storeInit?.cmboCSQCid ?? ""}`,

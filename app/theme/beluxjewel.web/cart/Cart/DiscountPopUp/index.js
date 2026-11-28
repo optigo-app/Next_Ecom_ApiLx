@@ -33,6 +33,7 @@ import {
 } from "./styles";
 import { useConfetti } from "./Canfetti";
 import { toast } from "react-toastify";
+import { useCurrency } from "@/app/(core)/hooks/useCurrency";
 
 export default function DiscountPopUp({
   open,
@@ -43,6 +44,7 @@ export default function DiscountPopUp({
   itemCount,
   handleMoveToOrder,
 }) {
+  const { format: formatCurrency } = useCurrency();
   const visiterId = Cookies.get("visiterId");
   const [couponInput, setCouponInput] = useState("");
   const [appliedCoupon, setAppliedCoupon] = useState(null);
@@ -182,7 +184,7 @@ export default function DiscountPopUp({
         {typeof verifiedCoupon === "number" && verifiedCoupon > 0 && (
           <Bar>
             <Typography variant="body2" fontWeight={500}>
-              You saved {CurrencyCode} {verifiedCoupon} (
+              You saved {CurrencyCode} {formatCurrency(verifiedCoupon)} (
               {appliedCoupon?.DiamondDiscount || appliedCoupon?.LabourDiscount || 0}%)
             </Typography>
           </Bar>

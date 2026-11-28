@@ -4,7 +4,7 @@ import { Checkbox } from "@mui/material";
 import LocalMallOutlinedIcon from "@mui/icons-material/LocalMallOutlined";
 import LocalMallIcon from "@mui/icons-material/LocalMall";
 import Skeleton from "@mui/material/Skeleton";
-import { formatter } from "../../../../../../../utils/Glob_Functions/GlobalFunction";
+import { useCurrency } from "@/app/(core)/hooks/useCurrency";
 
 const Stockitems = ({
   stockItemArr,
@@ -14,6 +14,7 @@ const Stockitems = ({
   handleCartandWish,
   check,
 }) => {
+  const { format: formatCurrency, symbol: currencySymbol } = useCurrency();
 
   const [storeData, setStoreData] = useState();
 
@@ -154,15 +155,13 @@ const Stockitems = ({
                 {check && <td className="elv_stockItem_table_td">
                   <span>
                     <span className="elv_currencyFont">
-                      {loginInfo?.CurrencyCode ?? storeInit?.CurrencyCode}
+                      {currencySymbol ?? loginInfo?.CurrencyCode ?? storeInit?.CurrencyCode}
                     </span>
                     &nbsp;
                     <span>
                       {" "}
                       {
-                        formatter(
-                          ele?.Amount
-                        )
+                        formatCurrency(ele?.Amount)
                       }
                     </span>
                   </span>

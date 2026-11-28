@@ -14,7 +14,7 @@ import {
   useMediaQuery,
   Stack
 } from "@mui/material";
-import { formatter } from '@/app/(core)/utils/Glob_Functions/GlobalFunction';
+import { useCurrency } from '@/app/(core)/hooks/useCurrency';
 
 const DesignSet = ({
   storeInit,
@@ -23,6 +23,7 @@ const DesignSet = ({
   loginInfo,
   handleMoveToDetail,
 }) => {
+  const { format: formatCurrency, symbol: currencySymbol } = useCurrency();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
 
@@ -181,7 +182,7 @@ const DesignSet = ({
                                     variant="body2"
                                     sx={{ color: "#111", fontWeight: 600 }}
                                   >
-                                    {loginInfo?.CurrencyCode ?? storeInit?.CurrencyCode} {formatter(ele?.UnitCostWithMarkUp)}
+                                    {currencySymbol ?? loginInfo?.CurrencyCode ?? storeInit?.CurrencyCode} {formatCurrency(ele?.UnitCostWithMarkUp)}
                                   </Typography>
                                 )}
                               </Box>

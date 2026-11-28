@@ -8,6 +8,7 @@ import {
   ShoppingCart as ShoppingBagIcon,
   LogOut,
 } from "lucide-react";
+import CurrencySwitcher from "@/app/components/(static)/CurrencySwitcher/CurrencySwitcher";
 const RightSideMenu = ({
   is768px,
   isMobile,
@@ -35,6 +36,8 @@ const RightSideMenu = ({
           justifyContent: "flex-end",
         }}
       >
+        <CurrencySwitcher color={isHovered || isScrolled ? "#000" : "#fff"} />
+
         {(islogin || IsB2CWebsiteChek) && (
           <IconButton
             aria-label="Search"

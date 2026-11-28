@@ -1,4 +1,5 @@
 import { isPriceHidden } from "@/app/(core)/utils/storeFlags";
+import useAccountCurrency from "@/app/(core)/hooks/useAccountCurrency";
 import "./QuotationQuote.scss";
 import React, { useEffect, useRef, useState } from 'react'
 import PropTypes from 'prop-types';
@@ -131,6 +132,7 @@ function EnhancedTableHead(props) {
 
 
 const QuotationQuote = () => {
+    const { convertAmountFromCurrency, getCurrencyCode } = useAccountCurrency();
     const [order, setOrder] = React.useState('asc');
     const [orderBy, setOrderBy] = React.useState('calories');
     const [selected, setSelected] = React.useState([]);
@@ -625,7 +627,7 @@ const QuotationQuote = () => {
                                                     <TableCell align="center">{row.Date}</TableCell>
                                                     <TableCell align="center">{row.SKUNo}</TableCell>
                                                     <TableCell align="center">{row.TotalDesign}</TableCell>
-                                                    {!isPriceHidden(IsPriceShow) && <TableCell align="right"><span dangerouslySetInnerHTML={{ __html: row?.Currencycode }}></span>&nbsp;{formatAmount(row.Amount)}</TableCell>}
+                                                    {!isPriceHidden(IsPriceShow) && <TableCell align="right"><span dangerouslySetInnerHTML={{ __html: getCurrencyCode(row?.Currencycode) }}></span>&nbsp;{formatAmount(convertAmountFromCurrency(row.Amount, row.Currencycode, row.CurrencyExchRate))}</TableCell>}
                                                     <TableCell align="center">
                                                         <div onClick={() => handlePrintUrl(row?.PrintUrl)}>
                                                             <PrintIcon />

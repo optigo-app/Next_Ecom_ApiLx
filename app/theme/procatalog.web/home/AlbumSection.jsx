@@ -3,8 +3,9 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useStore } from "@/app/(core)/contexts/StoreProvider";
+import { buildAlbumListingUrl } from "@/app/(core)/utils/album/albumScopeUrl";
 import { Box, Button, CircularProgress, Grid, Typography, useMediaQuery, useTheme } from "@mui/material";
-import { FolderHeart, Globe2, LockKeyhole, ArrowUpRight } from "lucide-react";
+import { FolderHeart, Globe2, LockKeyhole } from "lucide-react";
 
 const imageNotFound = "/image-not-found.jpg";
 
@@ -22,19 +23,61 @@ function buildAlbumCoverUrl(album, albumImageBase) {
     return `${base}/${folder}/${encodedName}`;
 }
 
-function getDesignImageUrl(design, storeInit) {
-    const base = storeInit?.CDNDesignImageFol || storeInit?.DesignImageFol || "";
+function getDesignImageUrl(design, designImageBase) {
+    const base = designImageBase || "";
     const designNo = design?.designno || design?.autocode;
-    if (!base || !designNo) return imageNotFound;
+    if (!base || !designNo) return "";
 
     const ext = design?.ImageExtension || "webp";
     return `${base}${designNo}~1.${ext}`;
 }
 
+function AlbumDesignFallbackImage({ album, storeInit }) {
+    const designImageBase = storeInit?.CDNDesignImageFol || storeInit?.DesignImageFol || "";
+    const imageCandidates = useMemo(() => {
+        const designs = Array.isArray(album?.designs) ? album.designs : [];
+        return designs
+            .map((design) => ({ design, url: getDesignImageUrl(design, designImageBase) }))
+            .filter((candidate) => candidate.url);
+    }, [album?.designs, designImageBase]);
+    const [imageIndex, setImageIndex] = useState(0);
+
+    useEffect(() => setImageIndex(0), [imageCandidates]);
+
+    const currentCandidate = imageCandidates[imageIndex];
+
+    if (!currentCandidate) {
+        return (
+            <Box sx={{ height: "100%", display: "grid", placeItems: "center", bgcolor: "var(--hm-surface-subtle, #f4f4f5)", color: "#A1A1AA" }}>
+                <FolderHeart size={34} strokeWidth={1.25} />
+            </Box>
+        );
+    }
+
+    return (
+        <Box sx={{ width: "100%", height: "100%", overflow: "hidden", bgcolor: "var(--hm-surface-subtle, #f4f4f5)" }}>
+            <Box
+                component="img"
+                src={currentCandidate.url}
+                alt={currentCandidate.design?.TitleLine || `${album?.albumName || "Album"} design`}
+                loading="lazy"
+                onError={(event) => {
+                    if (imageIndex < imageCandidates.length - 1) {
+                        setImageIndex(imageIndex + 1);
+                        return;
+                    }
+                    event.currentTarget.onerror = null;
+                    event.currentTarget.src = imageNotFound;
+                }}
+                sx={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
+            />
+        </Box>
+    );
+}
+
 function AlbumArtwork({ album, storeInit }) {
     const coverUrl = buildAlbumCoverUrl(album, storeInit?.AlbumImageFol);
     const [coverFailed, setCoverFailed] = useState(false);
-    const designs = Array.isArray(album?.designs) ? album.designs.slice(0, 3) : [];
 
     useEffect(() => setCoverFailed(false), [coverUrl]);
 
@@ -53,56 +96,11 @@ function AlbumArtwork({ album, storeInit }) {
         );
     }
 
-    if (designs.length === 0) {
-        return (
-            <Box sx={{ height: "100%", display: "grid", placeItems: "center", bgcolor: "var(--hm-surface-subtle, #f4f4f5)", color: "#A1A1AA" }}>
-                <FolderHeart size={34} strokeWidth={1.25} />
-            </Box>
-        );
-    }
-
-    return (
-        <Box
-            sx={{
-                width: "100%",
-                height: "100%",
-                display: "grid",
-                gridTemplateColumns: designs.length > 1 ? "1.15fr 0.85fr" : "1fr",
-                gridTemplateRows: designs.length > 1 ? "1fr 1fr" : "1fr",
-                gap: "3px",
-                overflow: "hidden",
-                bgcolor: "var(--hm-surface, #fff)",
-            }}
-        >
-            {designs.map((design, index) => (
-                <Box
-                    key={design.id || design.autocode || index}
-                    component="img"
-                    src={getDesignImageUrl(design, storeInit)}
-                    alt={design.TitleLine || `${album?.albumName || "Album"} design ${index + 1}`}
-                    loading="lazy"
-                    onError={(event) => {
-                        event.currentTarget.onerror = null;
-                        event.currentTarget.src = imageNotFound;
-                    }}
-                    sx={{
-                        width: "100%",
-                        height: "100%",
-                        minHeight: 0,
-                        objectFit: "cover",
-                        gridColumn: index === 0 && designs.length > 1 ? "1" : "2",
-                        gridRow: index === 0 && designs.length > 1 ? "1 / span 2" : index === 1 ? "1" : "2",
-                        bgcolor: "var(--hm-surface-subtle, #f4f4f5)",
-                    }}
-                />
-            ))}
-        </Box>
-    );
+    return <AlbumDesignFallbackImage album={album} storeInit={storeInit} />;
 }
 
-function AlbumCard({ album, access, storeInit, onClick, onLoginRequired, showLoginLock, index }) {
+function AlbumCard({ album, storeInit, onClick, onLoginRequired, showLoginLock, index }) {
     const designCount = Number(album?.designCount || album?.totalAutocodes || album?.designs?.length || 0);
-    const isPrivate = access === "private";
 
     return (
         <Box
@@ -126,19 +124,12 @@ function AlbumCard({ album, access, storeInit, onClick, onLoginRequired, showLog
                 animation: "album-enter 420ms ease both",
                 animationDelay: `${index * 45}ms`,
                 "@keyframes album-enter": { from: { opacity: 0, transform: "translateY(12px)" }, to: { opacity: 1, transform: "translateY(0)" } },
-                "&:hover": { transform: "translateY(-4px)", boxShadow: "0 14px 34px rgba(35, 29, 24, 0.12)", "& .album-open-icon": { opacity: 1, transform: "translate(0, 0)" } },
+                "&:hover": { transform: "translateY(-4px)", boxShadow: "0 14px 34px rgba(35, 29, 24, 0.12)" },
                 "&:focus-visible": { outline: "2px solid var(--hm-accent, #0f3d4c)", outlineOffset: 3 },
             }}
         >
             <Box sx={{ position: "relative", aspectRatio: "1 / 1", overflow: "hidden" }}>
                 <AlbumArtwork album={album} storeInit={storeInit} />
-                <Box sx={{ position: "absolute", top: 12, left: 12, display: "flex", alignItems: "center", gap: 0.6, px: 1.15, py: 0.6, borderRadius: "20px", bgcolor: "rgba(255,255,255,0.9)", color: "var(--hm-text-slate, #334155)", backdropFilter: "blur(8px)" }}>
-                    {isPrivate ? <LockKeyhole size={13} strokeWidth={1.7} /> : <Globe2 size={13} strokeWidth={1.7} />}
-                    <Typography sx={{ fontSize: "0.68rem", fontWeight: 600, letterSpacing: "0.03em" }}>{isPrivate ? "PRIVATE" : "PUBLIC"}</Typography>
-                </Box>
-                <Box className="album-open-icon" sx={{ position: "absolute", right: 12, bottom: 12, width: 34, height: 34, display: "grid", placeItems: "center", borderRadius: "50%", bgcolor: "rgba(255,255,255,0.92)", color: "var(--hm-accent, #0f3d4c)", opacity: { xs: 1, sm: 0 }, transform: { sm: "translate(4px, 4px)" }, transition: "all 180ms ease" }}>
-                    <ArrowUpRight size={17} strokeWidth={1.7} />
-                </Box>
                 {showLoginLock && (
                     <Box
                         component="button"
@@ -207,23 +198,22 @@ export default function AlbumSection() {
             setLoading(true);
             setError(false);
             try {
-                // AlbumSecurityId drives visibility: 0/'' = public, 1 = ignored
-                // (already excluded server-side), 2 = private to its owner.
-                // One request returns every album visible to this customer.
+                // IsPublish drives the public "Albums" tab; "My Albums" lists
+                // every album owned by the logged-in customer. AlbumSecurityId
+                // only drives the lock badge per card. One request returns
+                // every album visible to this customer.
                 const custParam = islogin && customerId ? customerId : 0;
                 const response = await fetch(
-                    `/api/sqlite/exclusive-albums?domain=${encodeURIComponent(domain)}&customerId=${encodeURIComponent(custParam)}`,
+                    `/api/sqlite/exclusive-albums?domain=${encodeURIComponent(domain)}&customerId=${encodeURIComponent(custParam)}&designLimit=3`,
                     { signal: controller.signal }
                 );
                 const payload = response.ok ? await response.json() : null;
                 const rd = Array.isArray(payload?.Data?.rd) ? payload.Data.rd : [];
-                const securityOf = (a) => {
-                    const n = Number(a?.AlbumSecurityId);
-                    return Number.isNaN(n) ? 0 : n;
-                };
                 setAlbums({
-                    public: rd.filter((a) => securityOf(a) === 0),
-                    private: rd.filter((a) => securityOf(a) === 2),
+                    public: rd.filter((a) => Number(a?.IsPublish) === 1),
+                    private: rd.filter(
+                        (a) => customerId != null && String(a?.CustomerId) === String(customerId)
+                    ),
                 });
             } catch (fetchError) {
                 if (fetchError?.name !== "AbortError") {
@@ -243,9 +233,13 @@ export default function AlbumSection() {
         { key: "public", label: "Albums", Icon: Globe2 },
         { key: "private", label: "My Albums", Icon: LockKeyhole },
     ], []);
+    const isPrivateAlbum = (album) => Number(album?.AlbumSecurityId) === 2;
     const visibleAlbums = albums[activeTab] || [];
     const maxVisibleAlbums = isLargeScreen ? 8 : isMediumScreen ? 6 : 4;
     const displayedAlbums = useMemo(() => visibleAlbums.slice(0, maxVisibleAlbums), [visibleAlbums, maxVisibleAlbums]);
+    // The lock only applies to guests. Private (AlbumSecurityId=2) albums are
+    // always locked for them; a couple of public cards stay randomly locked as
+    // the existing login nudge.
     const loginLockIndexes = useMemo(() => {
         if (islogin || displayedAlbums.length === 0) return new Set();
         const lockCount = Math.min(displayedAlbums.length, Math.random() < 0.5 ? 1 : 2);
@@ -275,11 +269,7 @@ export default function AlbumSection() {
     };
 
     const openAlbum = (album) => {
-        const params = new URLSearchParams({ "exclusive-album": "1" });
-        if (album?.RandomNo) params.set("randomNo", String(album.RandomNo));
-        else if (album?.CustomerId !== undefined && album?.CustomerId !== null) params.set("customerid", String(album.CustomerId));
-        else return;
-        router.push(`/?${params.toString()}`);
+        router.push(buildAlbumListingUrl(album));
     };
 
     const redirectToLoginForAlbum = (album) => {
@@ -363,7 +353,7 @@ export default function AlbumSection() {
                         <Grid container spacing={{ xs: 1.5, sm: 2.25, md: 3 }}>
                             {displayedAlbums.map((album, index) => (
                                 <Grid item key={`${album.id}-${album.albumcode || ""}-${album.RandomNo || index}`} size={{ xs: 6, sm: 6, md: 4, lg: 3 }}>
-                                    <AlbumCard album={album} access={activeTab} storeInit={storeInit} index={index} showLoginLock={loginLockIndexes.has(index)} onLoginRequired={() => redirectToLoginForAlbum(album)} onClick={() => openAlbum(album)} />
+                                    <AlbumCard album={album} storeInit={storeInit} index={index} showLoginLock={!islogin && (isPrivateAlbum(album) || loginLockIndexes.has(index))} onLoginRequired={() => redirectToLoginForAlbum(album)} onClick={() => (!islogin && isPrivateAlbum(album) ? redirectToLoginForAlbum(album) : openAlbum(album))} />
                                 </Grid>
                             ))}
                         </Grid>

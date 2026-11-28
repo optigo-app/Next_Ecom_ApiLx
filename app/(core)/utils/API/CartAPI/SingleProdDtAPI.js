@@ -1,5 +1,6 @@
 import { getSession } from "../../FetchSessionData";
 import { CommonAPI } from "../CommonAPI/CommonAPI";
+import { getPricingPolicyParams } from "@/app/(core)/utils/product/pricingPolicy";
 
 export const fetchSingleProdDT = async (selectedItem, sizedata, diaId, csQid, selectedMetalId, visiterId) => {
     const storeInit = (typeof window !== 'undefined' && window.__STORE_INIT__) ? window.__STORE_INIT__ : getSession('storeInit');
@@ -13,10 +14,6 @@ export const fetchSingleProdDT = async (selectedItem, sizedata, diaId, csQid, se
     const { FrontEnd_RegNo } = storeInit;
 
     let packageId = isGuest ? storeInit?.PackageId : (data?.PackageId ?? storeInit?.PackageId ?? 0);
-    let laboursetid = isGuest ? (storeInit?.pricemanagement_laboursetid ?? "") : (data?.pricemanagement_laboursetid ?? storeInit?.pricemanagement_laboursetid ?? "");
-    let diamondpricelistname = isGuest ? (storeInit?.diamondpricelistname ?? "") : (data?.diamondpricelistname ?? storeInit?.diamondpricelistname ?? "");
-    let colorstonepricelistname = isGuest ? (storeInit?.colorstonepricelistname ?? "") : (data?.colorstonepricelistname ?? storeInit?.colorstonepricelistname ?? "");
-    let SettingPriceUniqueNo = isGuest ? (storeInit?.SettingPriceUniqueNo ?? "") : (data?.SettingPriceUniqueNo ?? storeInit?.SettingPriceUniqueNo ?? "");
 
     let mtID = selectedMetalId !== undefined && selectedMetalId !== null ? selectedMetalId : selectedItem?.metaltypeid;
     let diaID = diaId !== undefined && diaId !== null ? diaId : `${selectedItem?.diamondqualityid},${selectedItem?.diamondcolorid}`;
@@ -33,10 +30,11 @@ export const fetchSingleProdDT = async (selectedItem, sizedata, diaId, csQid, se
             FrontEnd_RegNo: FrontEnd_RegNo ?? "",
             Customerid: customerId ?? 0,
             PackageId: packageId ?? "",
-            Laboursetid: laboursetid,
-            diamondpricelistname: diamondpricelistname,
-            colorstonepricelistname: colorstonepricelistname,
-            SettingPriceUniqueNo: SettingPriceUniqueNo,
+            ...getPricingPolicyParams({
+                storeinit: storeInit,
+                loginUserDetail: data,
+                islogin,
+            }),
             Metalid: mtID ?? "",
             DiaQCid: diaID ?? "",
             CsQCid: csQID ?? "",
